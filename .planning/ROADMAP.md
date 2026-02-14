@@ -117,10 +117,11 @@ Plans:
   3. Files are stored with tenant-prefixed paths preventing cross-tenant access
   4. Files are served securely with MIME type validation
   5. File uploads are limited to safe types and reasonable sizes (10MB max)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 06-01-PLAN.md — S3-compatible storage client, file validation, Document model with RLS, repository, server actions
+- [ ] 06-02-PLAN.md — DocumentUpload and DocumentList components integrated into truck and route detail pages
 
 ### Phase 7: Driver Portal
 **Goal**: Drivers can view their assigned work without accessing company-wide data
@@ -194,7 +195,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 3. Truck Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 6. Document Storage & Files | 0/TBD | Not started | - |
+| 6. Document Storage & Files | 0/2 | In progress | - |
 | 7. Driver Portal | 0/TBD | Not started | - |
 | 8. Maintenance & Scheduling | 0/TBD | Not started | - |
 | 9. Notifications & Reminders | 0/TBD | Not started | - |
