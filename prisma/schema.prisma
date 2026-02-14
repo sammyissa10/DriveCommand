@@ -27,7 +27,8 @@ model Tenant {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  users User[]
+  users  User[]
+  trucks Truck[]
 }
 
 model User {
@@ -44,4 +45,23 @@ model User {
 
   @@index([tenantId])
   @@index([clerkUserId])
+}
+
+model Truck {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String   @db.Uuid
+  make              String
+  model             String
+  year              Int
+  vin               String
+  licensePlate      String
+  odometer          Int      // Whole miles only (federal requirement)
+  documentMetadata  Json?    // JSONB: registration number, insurance expiry, etc.
+  createdAt         DateTime @default(now()) @db.Timestamptz
+  updatedAt         DateTime @updatedAt @db.Timestamptz
+
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, vin])
+  @@index([tenantId])
 }
