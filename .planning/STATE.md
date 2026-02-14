@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 1 of 10 (Foundation & Multi-Tenant Setup)
-Plan: 2 of 3 in current phase
+Plan: 3 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-14 — Completed plan 01-02 (Application-level tenant isolation)
+Last activity: 2026-02-14 — Completed plan 01-03 (Repository pattern and isolation tests)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [███░░░░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 7 min
-- Total execution time: 0.22 hours
+- Total plans completed: 3
+- Average duration: 5 min
+- Total execution time: 0.27 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01    | 2     | 13 min | 7 min    |
+| 01    | 3     | 16 min | 5 min    |
 
 **Recent Trend:**
-- Last 5 plans: 8min, 5min
+- Last 5 plans: 8min, 5min, 3min
 - Trend: Improving velocity
 
 *Updated after each plan completion*
@@ -62,6 +62,13 @@ Recent decisions affecting current work:
 - x-tenant-id header as tenant context carrier between middleware and API routes
 - @ts-ignore for PrismaClient constructor due to Prisma 7 type issue
 
+**From Plan 01-03 (2026-02-14):**
+- Repository constructor takes tenantId parameter (not fetched from context) for flexibility in tests and API routes
+- Provisioning repository uses transaction-local bypass_rls for operations that create/query tenants
+- Tests use real PostgreSQL with actual RLS policies, not mocks or SQLite
+- Test helpers use bypass_rls in transaction-local scope for setup/teardown
+- Vitest timeout set to 30s to accommodate database operations
+
 ### Pending Todos
 
 None yet.
@@ -76,5 +83,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed plan 01-02 (Application-level tenant isolation)
-Resume file: .planning/phases/01-foundation-multi-tenant-setup/01-02-SUMMARY.md
+Stopped at: Completed plan 01-03 (Repository pattern and isolation tests)
+Resume file: .planning/phases/01-foundation-multi-tenant-setup/01-03-SUMMARY.md
