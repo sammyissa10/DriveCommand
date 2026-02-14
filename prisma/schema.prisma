@@ -17,6 +17,13 @@ enum UserRole {
   DRIVER
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
 // Models
 model Tenant {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -27,8 +34,9 @@ model Tenant {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  users  User[]
-  trucks Truck[]
+  users             User[]
+  trucks            Truck[]
+  driverInvitations DriverInvitation[]
 }
 
 model User {
@@ -38,6 +46,10 @@ model User {
   email         String
   role          UserRole
   isSystemAdmin Boolean  @default(false)
+  firstName     String?
+  lastName      String?
+  licenseNumber String?
+  isActive      Boolean  @default(true)
   createdAt     DateTime @default(now()) @db.Timestamptz
   updatedAt     DateTime @updatedAt @db.Timestamptz
 
@@ -45,6 +57,7 @@ model User {
 
   @@index([tenantId])
   @@index([clerkUserId])
+  @@index([email])
 }
 
 model Truck {
@@ -64,4 +77,26 @@ model Truck {
 
   @@unique([tenantId, vin])
   @@index([tenantId])
+}
+
+model DriverInvitation {
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String           @db.Uuid
+  email              String
+  firstName          String
+  lastName           String
+  licenseNumber      String?
+  clerkInvitationId  String           @unique
+  expiresAt          DateTime         @db.Timestamptz
+  status             InvitationStatus @default(PENDING)
+  acceptedAt         DateTime?        @db.Timestamptz
+  userId             String?          @db.Uuid
+  createdAt          DateTime         @default(now()) @db.Timestamptz
+  updatedAt          DateTime         @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([email])
+  @@index([clerkInvitationId])
 }
