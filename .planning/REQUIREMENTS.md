@@ -18,10 +18,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Truck Management
 
-- [ ] **TRUK-01**: Owner can add a truck with core fields (make, model, year, VIN, license plate, odometer)
-- [ ] **TRUK-02**: Owner can edit and delete trucks
-- [ ] **TRUK-03**: Owner can view all trucks with filtering and sorting
-- [ ] **TRUK-04**: Owner can store structured document fields per truck (registration number, insurance expiry)
+- [x] **TRUK-01**: Owner can add a truck with core fields (make, model, year, VIN, license plate, odometer)
+- [x] **TRUK-02**: Owner can edit and delete trucks
+- [x] **TRUK-03**: Owner can view all trucks with filtering and sorting
+- [x] **TRUK-04**: Owner can store structured document fields per truck (registration number, insurance expiry)
 - [ ] **TRUK-05**: Owner can upload files per truck (PDFs, images, scans of documents)
 
 ### Driver Management
@@ -113,10 +113,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-04 | Phase 10 | Pending |
 | AUTH-05 | Phase 1 | Pending |
 | AUTH-06 | Phase 2 | ✓ Done |
-| TRUK-01 | Phase 3 | Pending |
-| TRUK-02 | Phase 3 | Pending |
-| TRUK-03 | Phase 3 | Pending |
-| TRUK-04 | Phase 3 | Pending |
+| TRUK-01 | Phase 3 | ✓ Done |
+| TRUK-02 | Phase 3 | ✓ Done |
+| TRUK-03 | Phase 3 | ✓ Done |
+| TRUK-04 | Phase 3 | ✓ Done |
 | TRUK-05 | Phase 6 | Pending |
 | DRVR-01 | Phase 4 | Pending |
 | DRVR-02 | Phase 4 | Pending |

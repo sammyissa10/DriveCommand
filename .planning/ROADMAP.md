@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Multi-Tenant Setup** - Database schema with RLS, tenant provisioning, middleware
 - [x] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
-- [ ] **Phase 3: Truck Management** - Vehicle CRUD, listing, filtering, structured fields
+- [x] **Phase 3: Truck Management** - Vehicle CRUD, listing, filtering, structured fields
 - [ ] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
 - [ ] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
 - [ ] **Phase 6: Document Storage & Files** - Cloudflare R2 integration, file uploads, tenant-isolated storage
@@ -72,8 +72,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Data layer: Prisma Truck model with RLS, Zod schemas, repository, server actions
-- [ ] 03-02-PLAN.md — UI: TanStack Table truck list, create/edit forms, detail view with document metadata
+- [x] 03-01-PLAN.md — Data layer: Prisma Truck model with RLS, Zod schemas, repository, server actions
+- [x] 03-02-PLAN.md — UI: TanStack Table truck list, create/edit forms, detail view with document metadata
 
 ### Phase 4: Driver Management
 **Goal**: Owners can manage driver accounts with invite-based provisioning
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 1. Foundation & Multi-Tenant Setup | 3/3 | ✓ Complete | 2026-02-14 |
 | 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
-| 3. Truck Management | 0/2 | In progress | - |
+| 3. Truck Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 4. Driver Management | 0/TBD | Not started | - |
 | 5. Route Management | 0/TBD | Not started | - |
 | 6. Document Storage & Files | 0/TBD | Not started | - |
