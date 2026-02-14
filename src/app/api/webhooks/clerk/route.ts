@@ -95,6 +95,9 @@ export async function POST(req: NextRequest) {
           privateMetadata: {
             tenantId: existingUser.tenantId,
           },
+          publicMetadata: {
+            role: existingUser.role,
+          },
         });
 
         return NextResponse.json(
@@ -126,11 +129,14 @@ export async function POST(req: NextRequest) {
         return { tenant, user };
       });
 
-      // Update Clerk user metadata with tenant ID
+      // Update Clerk user metadata with tenant ID and role
       const client = await clerkClient();
       await client.users.updateUserMetadata(clerkUserId, {
         privateMetadata: {
           tenantId: result.tenant.id,
+        },
+        publicMetadata: {
+          role: 'OWNER',
         },
       });
 
