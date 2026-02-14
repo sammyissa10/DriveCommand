@@ -13,7 +13,7 @@ DriveCommand builds from secure multi-tenant foundations through entity manageme
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Multi-Tenant Setup** - Database schema with RLS, tenant provisioning, middleware
-- [ ] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
+- [x] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
 - [ ] **Phase 3: Truck Management** - Vehicle CRUD, listing, filtering, structured fields
 - [ ] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
 - [ ] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
@@ -55,9 +55,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- RBAC foundation: role definitions, server auth helpers, webhook publicMetadata sync
-- [ ] 02-02-PLAN.md -- Auth UI: sign-in, sign-up, onboarding, UserMenu for sign-out
-- [ ] 02-03-PLAN.md -- Portal layouts with role-based access control, RoleGuard component
+- [x] 02-01-PLAN.md -- RBAC foundation: role definitions, server auth helpers, webhook publicMetadata sync
+- [x] 02-02-PLAN.md -- Auth UI: sign-in, sign-up, onboarding, UserMenu for sign-out
+- [x] 02-03-PLAN.md -- Portal layouts with role-based access control, RoleGuard component
 
 ### Phase 3: Truck Management
 **Goal**: Owners can manage their fleet inventory with complete CRUD operations
@@ -187,7 +187,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Multi-Tenant Setup | 3/3 | ✓ Complete | 2026-02-14 |
-| 2. Authentication & Authorization | 0/TBD | Not started | - |
+| 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
 | 3. Truck Management | 0/TBD | Not started | - |
 | 4. Driver Management | 0/TBD | Not started | - |
 | 5. Route Management | 0/TBD | Not started | - |

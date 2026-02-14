@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication & Multi-Tenancy
 
-- [ ] **AUTH-01**: User can sign up as a company owner (self-service)
-- [ ] **AUTH-02**: User can log in with email/password and stay logged in across sessions
-- [ ] **AUTH-03**: User can log out from any page
+- [x] **AUTH-01**: User can sign up as a company owner (self-service)
+- [x] **AUTH-02**: User can log in with email/password and stay logged in across sessions
+- [x] **AUTH-03**: User can log out from any page
 - [ ] **AUTH-04**: System Admin can view and manage all tenants
 - [ ] **AUTH-05**: Each tenant's data is completely isolated via Row-Level Security
-- [ ] **AUTH-06**: Three roles enforced: System Admin, Owner/Manager, Driver
+- [x] **AUTH-06**: Three roles enforced: System Admin, Owner/Manager, Driver
 
 ### Truck Management
 
@@ -107,12 +107,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | ✓ Done |
+| AUTH-02 | Phase 2 | ✓ Done |
+| AUTH-03 | Phase 2 | ✓ Done |
 | AUTH-04 | Phase 10 | Pending |
 | AUTH-05 | Phase 1 | Pending |
-| AUTH-06 | Phase 2 | Pending |
+| AUTH-06 | Phase 2 | ✓ Done |
 | TRUK-01 | Phase 3 | Pending |
 | TRUK-02 | Phase 3 | Pending |
 | TRUK-03 | Phase 3 | Pending |
