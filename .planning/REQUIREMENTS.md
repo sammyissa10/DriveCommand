@@ -107,44 +107,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | — | Pending |
-| AUTH-02 | — | Pending |
-| AUTH-03 | — | Pending |
-| AUTH-04 | — | Pending |
-| AUTH-05 | — | Pending |
-| AUTH-06 | — | Pending |
-| TRUK-01 | — | Pending |
-| TRUK-02 | — | Pending |
-| TRUK-03 | — | Pending |
-| TRUK-04 | — | Pending |
-| TRUK-05 | — | Pending |
-| DRVR-01 | — | Pending |
-| DRVR-02 | — | Pending |
-| DRVR-03 | — | Pending |
-| ROUT-01 | — | Pending |
-| ROUT-02 | — | Pending |
-| ROUT-03 | — | Pending |
-| ROUT-04 | — | Pending |
-| ROUT-05 | — | Pending |
-| ROUT-06 | — | Pending |
-| DPRT-01 | — | Pending |
-| DPRT-02 | — | Pending |
-| DPRT-03 | — | Pending |
-| DPRT-04 | — | Pending |
-| MNTC-01 | — | Pending |
-| MNTC-02 | — | Pending |
-| MNTC-03 | — | Pending |
-| MNTC-04 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| ADMN-01 | — | Pending |
-| ADMN-02 | — | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 10 | Pending |
+| AUTH-05 | Phase 1 | Pending |
+| AUTH-06 | Phase 2 | Pending |
+| TRUK-01 | Phase 3 | Pending |
+| TRUK-02 | Phase 3 | Pending |
+| TRUK-03 | Phase 3 | Pending |
+| TRUK-04 | Phase 3 | Pending |
+| TRUK-05 | Phase 6 | Pending |
+| DRVR-01 | Phase 4 | Pending |
+| DRVR-02 | Phase 4 | Pending |
+| DRVR-03 | Phase 4 | Pending |
+| ROUT-01 | Phase 5 | Pending |
+| ROUT-02 | Phase 5 | Pending |
+| ROUT-03 | Phase 5 | Pending |
+| ROUT-04 | Phase 5 | Pending |
+| ROUT-05 | Phase 6 | Pending |
+| ROUT-06 | Phase 5 | Pending |
+| DPRT-01 | Phase 7 | Pending |
+| DPRT-02 | Phase 7 | Pending |
+| DPRT-03 | Phase 7 | Pending |
+| DPRT-04 | Phase 7 | Pending |
+| MNTC-01 | Phase 8 | Pending |
+| MNTC-02 | Phase 8 | Pending |
+| MNTC-03 | Phase 9 | Pending |
+| MNTC-04 | Phase 9 | Pending |
+| DASH-01 | Phase 10 | Pending |
+| DASH-02 | Phase 10 | Pending |
+| ADMN-01 | Phase 10 | Pending |
+| ADMN-02 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 32 total
-- Mapped to phases: 0
-- Unmapped: 32 ⚠️
+- Mapped to phases: 32
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after initial definition*
+*Last updated: 2026-02-14 after roadmap creation*
