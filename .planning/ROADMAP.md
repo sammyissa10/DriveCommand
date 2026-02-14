@@ -85,10 +85,11 @@ Plans:
   3. Owner can edit driver information and deactivate driver accounts
   4. Driver receives invite and can complete account setup
   5. Deactivated drivers cannot log in or access any data
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 04-01-PLAN.md — Data layer: Prisma schema extensions (User + DriverInvitation), migration with RLS, Zod schemas, server actions with Clerk invite integration
+- [ ] 04-02-PLAN.md — Webhook extension for driver sign-up + UI: TanStack Table driver list, invite form, detail/edit pages
 
 ### Phase 5: Route Management
 **Goal**: Owners can create and manage routes with full driver-truck-document coordination
