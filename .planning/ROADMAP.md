@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
 - [x] **Phase 3: Truck Management** - Vehicle CRUD, listing, filtering, structured fields
 - [x] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
-- [ ] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
+- [x] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
 - [ ] **Phase 6: Document Storage & Files** - Cloudflare R2 integration, file uploads, tenant-isolated storage
 - [ ] **Phase 7: Driver Portal** - Read-only driver interface, assigned route view, restricted access
 - [ ] **Phase 8: Maintenance & Scheduling** - Service history, dual-trigger scheduling, expiry tracking
@@ -104,8 +104,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Data layer: Prisma Route model with RouteStatus enum, RLS, Zod schemas, date utilities, server actions with state machine
-- [ ] 05-02-PLAN.md — UI: TanStack Table route list, create form with driver/truck dropdowns, unified detail view, status transitions, edit
+- [x] 05-01-PLAN.md — Data layer: Prisma Route model with RouteStatus enum, RLS, Zod schemas, date utilities, server actions with state machine
+- [x] 05-02-PLAN.md — UI: TanStack Table route list, create form with driver/truck dropdowns, unified detail view, status transitions, edit
 
 ### Phase 6: Document Storage & Files
 **Goal**: Users can securely upload and retrieve files with tenant isolation
@@ -193,7 +193,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
 | 3. Truck Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 5. Route Management | 0/TBD | Not started | - |
+| 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 6. Document Storage & Files | 0/TBD | Not started | - |
 | 7. Driver Portal | 0/TBD | Not started | - |
 | 8. Maintenance & Scheduling | 0/TBD | Not started | - |
