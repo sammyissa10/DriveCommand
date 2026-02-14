@@ -101,10 +101,11 @@ Plans:
   3. Route progresses through lifecycle: Planned -> In Progress -> Completed
   4. Owner can view unified route detail showing driver, truck, documents, and status on one screen
   5. Owner can view all routes with filtering by status, driver, truck, or date
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 05-01-PLAN.md — Data layer: Prisma Route model with RouteStatus enum, RLS, Zod schemas, date utilities, server actions with state machine
+- [ ] 05-02-PLAN.md — UI: TanStack Table route list, create form with driver/truck dropdowns, unified detail view, status transitions, edit
 
 ### Phase 6: Document Storage & Files
 **Goal**: Users can securely upload and retrieve files with tenant isolation
