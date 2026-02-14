@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TRUK-02**: Owner can edit and delete trucks
 - [x] **TRUK-03**: Owner can view all trucks with filtering and sorting
 - [x] **TRUK-04**: Owner can store structured document fields per truck (registration number, insurance expiry)
-- [ ] **TRUK-05**: Owner can upload files per truck (PDFs, images, scans of documents)
+- [x] **TRUK-05**: Owner can upload files per truck (PDFs, images, scans of documents)
 
 ### Driver Management
 
@@ -36,7 +36,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ROUT-02**: Owner can assign a driver and truck to a route
 - [ ] **ROUT-03**: Route has lifecycle statuses: Planned → In Progress → Completed
 - [ ] **ROUT-04**: Owner can view unified route detail (driver + truck + documents + status on one screen)
-- [ ] **ROUT-05**: Owner can attach documents to a route (shipping docs, delivery receipts, inspections, compliance)
+- [x] **ROUT-05**: Owner can attach documents to a route (shipping docs, delivery receipts, inspections, compliance)
 - [ ] **ROUT-06**: Owner can view all routes with filtering and sorting
 
 ### Driver Portal
@@ -117,7 +117,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRUK-02 | Phase 3 | ✓ Done |
 | TRUK-03 | Phase 3 | ✓ Done |
 | TRUK-04 | Phase 3 | ✓ Done |
-| TRUK-05 | Phase 6 | Pending |
+| TRUK-05 | Phase 6 | ✓ Done |
 | DRVR-01 | Phase 4 | ✓ Done |
 | DRVR-02 | Phase 4 | ✓ Done |
 | DRVR-03 | Phase 4 | ✓ Done |
@@ -125,7 +125,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ROUT-02 | Phase 5 | Pending |
 | ROUT-03 | Phase 5 | Pending |
 | ROUT-04 | Phase 5 | Pending |
-| ROUT-05 | Phase 6 | Pending |
+| ROUT-05 | Phase 6 | ✓ Done |
 | ROUT-06 | Phase 5 | Pending |
 | DPRT-01 | Phase 7 | Pending |
 | DPRT-02 | Phase 7 | Pending |
