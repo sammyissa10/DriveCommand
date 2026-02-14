@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTruck } from '@/app/(owner)/actions/trucks';
+import { listDocuments } from '@/app/(owner)/actions/documents';
 import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
+import { TruckDocumentsSection } from './truck-documents-section';
 
 interface TruckDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,6 +16,9 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   if (!truck) {
     notFound();
   }
+
+  // Fetch documents for this truck
+  const documents = await listDocuments('truck', id);
 
   // Parse and validate document metadata
   let documentMetadata = null;
@@ -90,7 +95,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
       </div>
 
       {/* Document Metadata */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Document Information</h2>
         {documentMetadata &&
         (documentMetadata.registrationNumber ||
@@ -134,6 +139,12 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
         ) : (
           <p className="text-gray-500">No document information recorded</p>
         )}
+      </div>
+
+      {/* Files Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold mb-4">Files</h2>
+        <TruckDocumentsSection truckId={truck.id} initialDocuments={documents} />
       </div>
     </div>
   );

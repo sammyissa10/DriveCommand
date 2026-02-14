@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getRoute, updateRouteStatus } from '@/app/(owner)/actions/routes';
+import { listDocuments } from '@/app/(owner)/actions/documents';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
+import { RouteDocumentsSection } from './route-documents-section';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -18,6 +20,9 @@ export default async function RouteDetailPage({
   if (!route) {
     notFound();
   }
+
+  // Fetch documents for this route
+  const documents = await listDocuments('route', id);
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(
@@ -62,6 +67,12 @@ export default async function RouteDetailPage({
           />
         }
       />
+
+      {/* Files Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold mb-4">Files</h2>
+        <RouteDocumentsSection routeId={route.id} initialDocuments={documents} />
+      </div>
     </div>
   );
 }
