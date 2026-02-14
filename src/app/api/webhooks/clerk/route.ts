@@ -1,0 +1,164 @@
+import { Webhook } from 'svix';
+import { headers } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db/prisma';
+import { clerkClient } from '@clerk/nextjs/server';
+
+/**
+ * Clerk webhook handler for user provisioning
+ *
+ * Handles user.created events to:
+ * 1. Create a new Tenant record
+ * 2. Create a User record linked to the tenant with OWNER role
+ * 3. Update Clerk user's privateMetadata with tenantId
+ *
+ * CRITICAL: This handler is IDEMPOTENT - uses upsert to handle duplicate deliveries
+ * (Clerk retries failed webhooks, and there's a race condition between webhook and first login)
+ */
+export async function POST(req: NextRequest) {
+  // Get webhook secret from environment
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+
+  if (!WEBHOOK_SECRET) {
+    console.error('Missing CLERK_WEBHOOK_SECRET environment variable');
+    return NextResponse.json(
+      { error: 'Server configuration error' },
+      { status: 500 }
+    );
+  }
+
+  // Get Svix headers for signature verification
+  const headerPayload = await headers();
+  const svix_id = headerPayload.get('svix-id');
+  const svix_timestamp = headerPayload.get('svix-timestamp');
+  const svix_signature = headerPayload.get('svix-signature');
+
+  // Verify all required headers are present
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+    return NextResponse.json(
+      { error: 'Missing Svix headers' },
+      { status: 400 }
+    );
+  }
+
+  // Get request body
+  const payload = await req.json();
+  const body = JSON.stringify(payload);
+
+  // Verify webhook signature
+  const wh = new Webhook(WEBHOOK_SECRET);
+  let evt: any;
+
+  try {
+    evt = wh.verify(body, {
+      'svix-id': svix_id,
+      'svix-timestamp': svix_timestamp,
+      'svix-signature': svix_signature,
+    });
+  } catch (err) {
+    console.error('Error verifying webhook:', err);
+    return NextResponse.json(
+      { error: 'Invalid signature' },
+      { status: 400 }
+    );
+  }
+
+  // Handle user.created event
+  if (evt.type === 'user.created') {
+    const { id: clerkUserId, email_addresses, public_metadata } = evt.data;
+
+    // Extract user information
+    const primaryEmail = email_addresses.find((email: any) => email.id === evt.data.primary_email_address_id);
+    const email = primaryEmail?.email_address || email_addresses[0]?.email_address;
+
+    if (!email) {
+      console.error('No email found for user:', clerkUserId);
+      return NextResponse.json(
+        { error: 'User email is required' },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Check if user already exists (idempotency check)
+      const existingUser = await prisma.user.findUnique({
+        where: { clerkUserId },
+        include: { tenant: true },
+      });
+
+      if (existingUser) {
+        console.log('User already exists, skipping tenant creation:', clerkUserId);
+
+        // Ensure Clerk metadata is set (in case webhook was retried after partial success)
+        const client = await clerkClient();
+        await client.users.updateUserMetadata(clerkUserId, {
+          privateMetadata: {
+            tenantId: existingUser.tenantId,
+          },
+        });
+
+        return NextResponse.json(
+          { message: 'User already provisioned', tenantId: existingUser.tenantId },
+          { status: 200 }
+        );
+      }
+
+      // Create new tenant and user in a transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Create tenant
+        const tenant = await tx.tenant.create({
+          data: {
+            name: (public_metadata?.companyName as string) || email.split('@')[0] || 'My Company',
+            timezone: (public_metadata?.timezone as string) || 'UTC',
+          },
+        });
+
+        // Create user with OWNER role
+        const user = await tx.user.create({
+          data: {
+            clerkUserId,
+            email,
+            tenantId: tenant.id,
+            role: 'OWNER',
+          },
+        });
+
+        return { tenant, user };
+      });
+
+      // Update Clerk user metadata with tenant ID
+      const client = await clerkClient();
+      await client.users.updateUserMetadata(clerkUserId, {
+        privateMetadata: {
+          tenantId: result.tenant.id,
+        },
+      });
+
+      console.log('Tenant provisioned successfully:', {
+        tenantId: result.tenant.id,
+        userId: result.user.id,
+        clerkUserId,
+      });
+
+      return NextResponse.json(
+        {
+          message: 'Tenant provisioned successfully',
+          tenantId: result.tenant.id,
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error('Error provisioning tenant:', error);
+      return NextResponse.json(
+        { error: 'Failed to provision tenant' },
+        { status: 500 }
+      );
+    }
+  }
+
+  // For other event types, just acknowledge receipt
+  return NextResponse.json(
+    { message: 'Webhook received' },
+    { status: 200 }
+  );
+}
