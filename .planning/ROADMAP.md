@@ -69,10 +69,11 @@ Plans:
   3. Owner can view all their trucks in a filterable and sortable list
   4. Owner can store structured document metadata per truck (registration number, insurance expiry date)
   5. Each tenant only sees their own trucks (no data leakage)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 03-01-PLAN.md — Data layer: Prisma Truck model with RLS, Zod schemas, repository, server actions
+- [ ] 03-02-PLAN.md — UI: TanStack Table truck list, create/edit forms, detail view with document metadata
 
 ### Phase 4: Driver Management
 **Goal**: Owners can manage driver accounts with invite-based provisioning
@@ -188,7 +189,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 |-------|----------------|--------|-----------|
 | 1. Foundation & Multi-Tenant Setup | 3/3 | ✓ Complete | 2026-02-14 |
 | 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
-| 3. Truck Management | 0/TBD | Not started | - |
+| 3. Truck Management | 0/2 | In progress | - |
 | 4. Driver Management | 0/TBD | Not started | - |
 | 5. Route Management | 0/TBD | Not started | - |
 | 6. Document Storage & Files | 0/TBD | Not started | - |
