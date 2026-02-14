@@ -52,10 +52,12 @@ Plans:
   3. User can log out from any page
   4. System enforces three distinct roles: System Admin, Owner/Manager, Driver
   5. Users only see features and data appropriate to their role
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 02-01-PLAN.md -- RBAC foundation: role definitions, server auth helpers, webhook publicMetadata sync
+- [ ] 02-02-PLAN.md -- Auth UI: sign-in, sign-up, onboarding, UserMenu for sign-out
+- [ ] 02-03-PLAN.md -- Portal layouts with role-based access control, RoleGuard component
 
 ### Phase 3: Truck Management
 **Goal**: Owners can manage their fleet inventory with complete CRUD operations
