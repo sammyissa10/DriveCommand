@@ -35,10 +35,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Tenant provisioning creates isolated data context for new companies
   4. Next.js middleware injects tenant context into all requests
   5. Base repository pattern filters all queries by tenant_id
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 01-01-PLAN.md — Project scaffolding + Prisma schema with RLS migration
+- [ ] 01-02-PLAN.md — Prisma RLS extension, tenant context, proxy, Clerk webhook
+- [ ] 01-03-PLAN.md — Base repository pattern + cross-tenant isolation tests
 
 ### Phase 2: Authentication & Authorization
 **Goal**: Users can securely access the platform with role-appropriate permissions
@@ -92,7 +94,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Owner can create routes (one-time or recurring) with origin, destination, and date
   2. Owner can assign a specific driver and truck to each route
-  3. Route progresses through lifecycle: Planned → In Progress → Completed
+  3. Route progresses through lifecycle: Planned -> In Progress -> Completed
   4. Owner can view unified route detail showing driver, truck, documents, and status on one screen
   5. Owner can view all routes with filtering by status, driver, truck, or date
 **Plans**: TBD
@@ -178,11 +180,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Multi-Tenant Setup | 0/TBD | Not started | - |
+| 1. Foundation & Multi-Tenant Setup | 0/3 | Planning complete | - |
 | 2. Authentication & Authorization | 0/TBD | Not started | - |
 | 3. Truck Management | 0/TBD | Not started | - |
 | 4. Driver Management | 0/TBD | Not started | - |
