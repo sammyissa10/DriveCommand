@@ -133,10 +133,11 @@ Plans:
   3. Driver can view route documents (shipping docs, compliance paperwork)
   4. Driver cannot access other routes, trucks, or company-wide data (enforced at DB and UI level)
   5. Driver has read-only access (cannot modify routes, trucks, or documents)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 07-01-PLAN.md — Driver-scoped server actions with IDOR-proof user-level filtering
+- [ ] 07-02-PLAN.md — Driver portal UI: landing page, read-only route/truck/documents view
 
 ### Phase 8: Maintenance & Scheduling
 **Goal**: Owners can track service history and schedule future maintenance with dual triggers
@@ -196,7 +197,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
-| 7. Driver Portal | 0/TBD | Not started | - |
+| 7. Driver Portal | 0/2 | In progress | - |
 | 8. Maintenance & Scheduling | 0/TBD | Not started | - |
 | 9. Notifications & Reminders | 0/TBD | Not started | - |
 | 10. Dashboard & System Admin | 0/TBD | Not started | - |
