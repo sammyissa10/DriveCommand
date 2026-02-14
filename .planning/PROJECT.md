@@ -2,11 +2,11 @@
 
 ## What This Is
 
-A multi-tenant SaaS web platform for fleet management. Companies sign up, add their vehicles and drivers, and manage maintenance records, service schedules, and vehicle documentation through role-based portals. Managers get full control; drivers see only their assigned vehicle.
+A multi-tenant SaaS web platform for logistics fleet management. Logistics company owners sign up, manage their trucks, drivers, and routes through a dedicated portal. The core operational unit is a Route — which ties together a driver, a truck, and all associated documents (shipping docs, inspections, compliance). Drivers access a read-only portal showing their assigned route, truck, and documents. A system admin portal allows platform operators to manage tenants.
 
 ## Core Value
 
-Managers can track and manage their entire fleet — vehicles, drivers, maintenance, and documentation — from one place, with complete tenant isolation between companies.
+Logistics owners can manage their entire operation — trucks, drivers, routes, and documents — from one platform, with each route showing the full picture (driver + truck + documents + status) on a single screen.
 
 ## Requirements
 
@@ -17,17 +17,22 @@ Managers can track and manage their entire fleet — vehicles, drivers, maintena
 ### Active
 
 - [ ] Multi-tenant architecture with complete data isolation between companies
-- [ ] Owner/Manager portal with full fleet visibility and control
-- [ ] Driver portal with read-only access to assigned vehicle only
-- [ ] Vehicle CRUD with structured fields (VIN, registration, insurance expiry, etc.)
-- [ ] Document storage per vehicle (file uploads: PDFs, images, scans)
-- [ ] Maintenance records — log past maintenance events
-- [ ] Service scheduling — schedule future services with reminders
-- [ ] Dashboard + email reminders for upcoming services
-- [ ] Flexible driver-to-vehicle assignment (unassigned allowed, reassignment anytime)
-- [ ] Manager creates driver accounts (invite-based onboarding)
-- [ ] Self-service company signup + platform admin tenant management
-- [ ] Role-based access control (Owner/Manager, Driver, Platform Admin)
+- [ ] Three portals: System Admin, Owner/Manager, Driver
+- [ ] Route management — create one-time or recurring routes with lifecycle statuses (Planned, In Progress, Completed)
+- [ ] Route detail — unified view showing assigned driver, truck, documents, and status
+- [ ] Truck CRUD with structured fields (make, model, year, VIN, license plate, odometer)
+- [ ] Truck document storage (file uploads + structured fields: registration, insurance, inspection certs)
+- [ ] Driver management — manager-provisioned accounts with invite-based onboarding
+- [ ] Driver-truck-route assignment — assign a driver and truck to each route
+- [ ] Driver portal — read-only view of assigned route, truck, and route documents
+- [ ] Owner can view drivers, trucks, and routes individually and together
+- [ ] Route documents — shipping docs, delivery receipts, inspection forms, compliance paperwork, and more
+- [ ] Maintenance records — log past maintenance events per truck
+- [ ] Service scheduling — schedule future services with time and mileage triggers
+- [ ] Dashboard + email reminders for upcoming services and expiring documents
+- [ ] Fleet overview dashboard with filtering and sorting
+- [ ] Self-service company signup + system admin tenant management
+- [ ] Role-based access control (System Admin, Owner/Manager, Driver)
 - [ ] Secure authentication for all portals
 
 ### Out of Scope
@@ -36,14 +41,19 @@ Managers can track and manage their entire fleet — vehicles, drivers, maintena
 - Real-time GPS tracking — high complexity, not core to management value
 - Billing/subscription management — defer until product-market fit validated
 - Push notifications — dashboard + email sufficient for v1
+- Route optimization / dispatch algorithms — different domain (logistics routing)
+- Fuel card integrations — manual logging acceptable for v1
 
 ## Context
 
-- SaaS product intended for multiple companies as paying customers
+- SaaS product for logistics companies as paying customers
 - No existing codebase — greenfield build
-- Tech stack to be determined by research
+- Tech stack: Next.js 16 + PostgreSQL 17 (RLS) + Clerk + Prisma 7 + Cloudflare R2 + Resend (from research)
+- Core data model: Route = Driver + Truck + Documents + Status
+- Routes can be one-time trips or recurring assignments
+- Route lifecycle: Planned → In Progress → Completed
 - Driver accounts are manager-provisioned, not self-registered
-- Each driver maps to one vehicle; vehicles can exist without a driver assigned
+- Drivers see only their assigned route/truck — no company-wide data
 
 ## Constraints
 
@@ -55,10 +65,11 @@ Managers can track and manage their entire fleet — vehicles, drivers, maintena
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
+| Three portals (Admin, Owner, Driver) | Multi-tenant SaaS needs platform admin; owners and drivers have distinct needs | — Pending |
+| Route as core operational unit | Routes tie together driver + truck + documents — reflects real logistics operations | — Pending |
 | Manager-provisioned driver accounts | Prevents unauthorized access to fleet data | — Pending |
 | Dashboard + email for reminders (no push) | Simpler v1, covers primary use case | — Pending |
 | Self-service signup + admin panel | Enables SaaS growth while maintaining control | — Pending |
-| Tech stack deferred to research | No strong preferences; let domain research inform choices | — Pending |
 
 ---
-*Last updated: 2026-02-14 after initialization*
+*Last updated: 2026-02-14 after questioning (route-centric model clarification)*
