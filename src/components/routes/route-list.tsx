@@ -16,8 +16,8 @@ import {
 
 interface Driver {
   id: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
 }
 
 interface Truck {
@@ -68,7 +68,7 @@ const columns = [
       }).format(new Date(value));
     },
   }),
-  columnHelper.accessor((row) => `${row.driver.firstName} ${row.driver.lastName}`, {
+  columnHelper.accessor((row) => `${row.driver.firstName || ''} ${row.driver.lastName || ''}`.trim(), {
     id: 'driver',
     header: 'Driver',
     cell: (info) => info.getValue(),

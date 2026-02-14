@@ -12,7 +12,7 @@ interface RouteFormProps {
     truckId: string;
     notes?: string;
   };
-  drivers: Array<{ id: string; firstName: string; lastName: string }>;
+  drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{
     id: string;
     make: string;
@@ -125,7 +125,7 @@ export function RouteForm({
           <option value="">Select a driver...</option>
           {drivers.map((driver) => (
             <option key={driver.id} value={driver.id}>
-              {driver.firstName} {driver.lastName}
+              {driver.firstName || ''} {driver.lastName || ''}
             </option>
           ))}
         </select>

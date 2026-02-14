@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 interface Driver {
   id: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
   email: string;
   licenseNumber: string | null;
 }
@@ -118,7 +118,7 @@ export function RouteDetail({
           <div>
             <p className="text-sm font-medium text-gray-500">Name</p>
             <p className="mt-1 text-sm text-gray-900">
-              {route.driver.firstName} {route.driver.lastName}
+              {route.driver.firstName || ''} {route.driver.lastName || ''}
             </p>
           </div>
 
