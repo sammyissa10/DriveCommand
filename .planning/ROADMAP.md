@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation & Multi-Tenant Setup** - Database schema with RLS, tenant provisioning, middleware
 - [x] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
 - [x] **Phase 3: Truck Management** - Vehicle CRUD, listing, filtering, structured fields
-- [ ] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
+- [x] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
 - [ ] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
 - [ ] **Phase 6: Document Storage & Files** - Cloudflare R2 integration, file uploads, tenant-isolated storage
 - [ ] **Phase 7: Driver Portal** - Read-only driver interface, assigned route view, restricted access
@@ -88,8 +88,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Data layer: Prisma schema extensions (User + DriverInvitation), migration with RLS, Zod schemas, server actions with Clerk invite integration
-- [ ] 04-02-PLAN.md — Webhook extension for driver sign-up + UI: TanStack Table driver list, invite form, detail/edit pages
+- [x] 04-01-PLAN.md — Data layer: Prisma schema extensions (User + DriverInvitation), migration with RLS, Zod schemas, server actions with Clerk invite integration
+- [x] 04-02-PLAN.md — Webhook extension for driver sign-up + UI: TanStack Table driver list, invite form, detail/edit pages
 
 ### Phase 5: Route Management
 **Goal**: Owners can create and manage routes with full driver-truck-document coordination
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 1. Foundation & Multi-Tenant Setup | 3/3 | ✓ Complete | 2026-02-14 |
 | 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
 | 3. Truck Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 4. Driver Management | 0/TBD | Not started | - |
+| 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 5. Route Management | 0/TBD | Not started | - |
 | 6. Document Storage & Files | 0/TBD | Not started | - |
 | 7. Driver Portal | 0/TBD | Not started | - |

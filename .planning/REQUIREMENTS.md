@@ -26,9 +26,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Driver Management
 
-- [ ] **DRVR-01**: Owner can create driver accounts (invite-based)
-- [ ] **DRVR-02**: Owner can view, edit, and deactivate drivers
-- [ ] **DRVR-03**: Owner can view all drivers with filtering and sorting
+- [x] **DRVR-01**: Owner can create driver accounts (invite-based)
+- [x] **DRVR-02**: Owner can view, edit, and deactivate drivers
+- [x] **DRVR-03**: Owner can view all drivers with filtering and sorting
 
 ### Route Management
 
@@ -118,9 +118,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRUK-03 | Phase 3 | ✓ Done |
 | TRUK-04 | Phase 3 | ✓ Done |
 | TRUK-05 | Phase 6 | Pending |
-| DRVR-01 | Phase 4 | Pending |
-| DRVR-02 | Phase 4 | Pending |
-| DRVR-03 | Phase 4 | Pending |
+| DRVR-01 | Phase 4 | ✓ Done |
+| DRVR-02 | Phase 4 | ✓ Done |
+| DRVR-03 | Phase 4 | ✓ Done |
 | ROUT-01 | Phase 5 | Pending |
 | ROUT-02 | Phase 5 | Pending |
 | ROUT-03 | Phase 5 | Pending |
