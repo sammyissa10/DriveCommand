@@ -154,10 +154,8 @@ export async function completeUpload(data: {
     const repo = new DocumentRepository(tenantId);
     const document = await repo.create({
       ...result.data,
-      tenant: { connect: { id: tenantId } },
-      uploader: { connect: { id: user.id } },
-      ...(result.data.truckId && { truck: { connect: { id: result.data.truckId } } }),
-      ...(result.data.routeId && { route: { connect: { id: result.data.routeId } } }),
+      tenantId,
+      uploadedBy: user.id,
     });
 
     // Revalidate the entity detail page
