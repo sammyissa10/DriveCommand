@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 1 of 10 (Foundation & Multi-Tenant Setup)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-14 — Roadmap created with 10 phases covering all 32 v1 requirements
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-14 — Completed plan 01-01 (Project scaffold and database schema)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: - min
-- Total execution time: 0.0 hours
+- Total plans completed: 1
+- Average duration: 8 min
+- Total execution time: 0.13 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01    | 1     | 8 min | 8 min    |
 
 **Recent Trend:**
-- Last 5 plans: None yet
-- Trend: Not established
+- Last 5 plans: 8min
+- Trend: Establishing baseline
 
 *Updated after each plan completion*
 
@@ -46,6 +46,14 @@ Recent decisions affecting current work:
 - Route as core operational unit: Routes tie together driver + truck + documents — reflects real logistics operations
 - Manager-provisioned driver accounts: Prevents unauthorized access to fleet data
 
+**From Plan 01-01 (2026-02-14):**
+- UUID primary keys (not slugs) for security - slug is optional field on Tenant
+- Hard deletes (no deletedAt field) - simpler for v1
+- isSystemAdmin boolean on User - platform-level admin, not special tenant
+- All timestamps use TIMESTAMPTZ - store UTC, display in tenant timezone
+- Conditional ClerkProvider - allows build without Clerk keys for development
+- Manual migration creation - no database running yet, RLS policies require customization
+
 ### Pending Todos
 
 None yet.
@@ -59,6 +67,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-14 (roadmap creation)
-Stopped at: Roadmap complete, ready for Phase 1 planning
-Resume file: None
+Last session: 2026-02-14 (plan execution)
+Stopped at: Completed plan 01-01 (Foundation & Multi-Tenant Setup)
+Resume file: .planning/phases/01-foundation-multi-tenant-setup/01-01-SUMMARY.md
