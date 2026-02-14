@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 5 of 10 (Route Management)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-14 — Phase 4 complete (2/2 plans, verification passed)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-14 — Completed 05-01-PLAN.md
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
+- Total plans completed: 11
 - Average duration: 3 min
-- Total execution time: 0.64 hours
+- Total execution time: 0.69 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: [████░░░░░░] 40%
 | 02    | 3     | 6 min  | 2 min    |
 | 03    | 2     | 7 min  | 3.5 min  |
 | 04    | 2     | 7 min  | 3.5 min  |
+| 05    | 1     | 3 min  | 3 min    |
 
 **Recent Trend:**
-- Last 5 plans: 3min, 2min, 4min, 4min, 3.5min
+- Last 5 plans: 2min, 4min, 4min, 3.5min, 3min
 - Trend: Excellent velocity
 
 *Updated after each plan completion*
@@ -42,9 +43,9 @@ Progress: [████░░░░░░] 40%
 
 | Plan | Duration (s) | Tasks | Files |
 |------|--------------|-------|-------|
+| Phase 05 P01 | 183 | 2 tasks | 5 files |
 | Phase 04 P02 | 212 | 2 tasks | 9 files |
 | Phase 04 P01 | 232 | 2 tasks | 4 files |
-| Phase 03 P02 | 181 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -116,6 +117,15 @@ Recent decisions affecting current work:
 - useOptimistic for status toggles - instant UI feedback while server action processes
 - Webhook validates invitation expiry before creating user - expired invitations marked EXPIRED and rejected
 
+**From Plan 05-01 (2026-02-14):**
+- RouteStatus enum enforces three-state lifecycle (PLANNED, IN_PROGRESS, COMPLETED) at database level
+- State machine with VALID_TRANSITIONS prevents invalid status changes (e.g., COMPLETED cannot transition back)
+- completedAt timestamp automatically set when route transitions to COMPLETED status
+- scheduledDate validated as string (not z.string().datetime()) because HTML datetime-local sends 'YYYY-MM-DDTHH:mm' without timezone offset
+- Date utilities use Intl.DateTimeFormat (no external libraries) for timezone-aware formatting to avoid hydration mismatches
+- Business rule validation before route creation: driver must be active, have DRIVER role, and truck must exist
+- Both OWNER and MANAGER can manage routes, but DRIVER can only view (list and get actions)
+
 ### Pending Todos
 
 None yet.
@@ -130,5 +140,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (phase execution)
-Stopped at: Phase 4 complete — verification passed, ready for Phase 5 planning
-Resume file: .planning/phases/04-driver-management/04-VERIFICATION.md
+Stopped at: Completed 05-01-PLAN.md
+Resume file: .planning/phases/05-route-management/05-01-SUMMARY.md
