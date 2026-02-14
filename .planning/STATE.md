@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 1 of 10 (Foundation & Multi-Tenant Setup)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-14 — Completed plan 01-01 (Project scaffold and database schema)
+Last activity: 2026-02-14 — Completed plan 01-02 (Application-level tenant isolation)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 8 min
-- Total execution time: 0.13 hours
+- Total plans completed: 2
+- Average duration: 7 min
+- Total execution time: 0.22 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01    | 1     | 8 min | 8 min    |
+| 01    | 2     | 13 min | 7 min    |
 
 **Recent Trend:**
-- Last 5 plans: 8min
-- Trend: Establishing baseline
+- Last 5 plans: 8min, 5min
+- Trend: Improving velocity
 
 *Updated after each plan completion*
 
@@ -54,6 +54,14 @@ Recent decisions affecting current work:
 - Conditional ClerkProvider - allows build without Clerk keys for development
 - Manual migration creation - no database running yet, RLS policies require customization
 
+**From Plan 01-02 (2026-02-14):**
+- Transaction-local set_config (third param TRUE) prevents connection pool contamination
+- Tenant resolved from Clerk privateMetadata, not URL or subdomain
+- Middleware uses standard filename (middleware.ts) for Next.js 16
+- Webhook is idempotent with existence check before tenant creation
+- x-tenant-id header as tenant context carrier between middleware and API routes
+- @ts-ignore for PrismaClient constructor due to Prisma 7 type issue
+
 ### Pending Todos
 
 None yet.
@@ -68,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed plan 01-01 (Foundation & Multi-Tenant Setup)
-Resume file: .planning/phases/01-foundation-multi-tenant-setup/01-01-SUMMARY.md
+Stopped at: Completed plan 01-02 (Application-level tenant isolation)
+Resume file: .planning/phases/01-foundation-multi-tenant-setup/01-02-SUMMARY.md
