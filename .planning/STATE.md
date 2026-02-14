@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 5 of 10 (Route Management)
-Plan: 1 of 2 in current phase
+Plan: 2 of 2 in current phase
 Status: In progress
-Last activity: 2026-02-14 — Completed 05-01-PLAN.md
+Last activity: 2026-02-14 — Completed 05-02-PLAN.md
 
-Progress: [████░░░░░░] 44%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: 3 min
-- Total execution time: 0.69 hours
+- Total execution time: 0.77 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [████░░░░░░] 44%
 | 02    | 3     | 6 min  | 2 min    |
 | 03    | 2     | 7 min  | 3.5 min  |
 | 04    | 2     | 7 min  | 3.5 min  |
-| 05    | 1     | 3 min  | 3 min    |
+| 05    | 2     | 8 min  | 4 min    |
 
 **Recent Trend:**
-- Last 5 plans: 2min, 4min, 4min, 3.5min, 3min
+- Last 5 plans: 4min, 4min, 3.5min, 3min, 5min
 - Trend: Excellent velocity
 
 *Updated after each plan completion*
@@ -43,9 +43,9 @@ Progress: [████░░░░░░] 44%
 
 | Plan | Duration (s) | Tasks | Files |
 |------|--------------|-------|-------|
+| Phase 05 P02 | 297 | 2 tasks | 11 files |
 | Phase 05 P01 | 183 | 2 tasks | 5 files |
 | Phase 04 P02 | 212 | 2 tasks | 9 files |
-| Phase 04 P01 | 232 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -126,6 +126,13 @@ Recent decisions affecting current work:
 - Business rule validation before route creation: driver must be active, have DRIVER role, and truck must exist
 - Both OWNER and MANAGER can manage routes, but DRIVER can only view (list and get actions)
 
+**From Plan 05-02 (2026-02-14):**
+- Unified detail view shows route + driver + truck on one screen (ROUT-04 requirement)
+- Active drivers only in dropdown: new/edit pages query WHERE isActive=true for driver selection
+- Status transition buttons rendered conditionally based on current status (PLANNED shows Start, IN_PROGRESS shows Complete, COMPLETED shows checkmark)
+- Nullable firstName/lastName handling: database schema allows null, UI renders empty string fallback
+- Optimistic delete for instant UI feedback using React 19 useOptimistic hook
+
 ### Pending Todos
 
 None yet.
@@ -140,5 +147,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (phase execution)
-Stopped at: Completed 05-01-PLAN.md
-Resume file: .planning/phases/05-route-management/05-01-SUMMARY.md
+Stopped at: Completed 05-02-PLAN.md (Phase 5 complete)
+Resume file: .planning/phases/05-route-management/05-02-SUMMARY.md
