@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 
   // Handle user.created event
   if (evt.type === 'user.created') {
-    const { id: clerkUserId, email_addresses, public_metadata } = evt.data;
+    const { id: clerkUserId, email_addresses, public_metadata, private_metadata } = evt.data;
 
     // Extract user information
     const primaryEmail = email_addresses.find((email: any) => email.id === evt.data.primary_email_address_id);
@@ -106,7 +106,97 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Create new tenant and user in a transaction
+      // Extract metadata to check for driver invitation sign-up
+      const inviteRole = public_metadata?.role as string | undefined;
+      const inviteTenantId = private_metadata?.tenantId as string | undefined;
+
+      // Check if this is a driver invitation sign-up
+      if (inviteRole === 'DRIVER' && inviteTenantId) {
+        // Driver invitation flow - handle separately
+        console.log('Processing driver invitation sign-up:', { clerkUserId, email, tenantId: inviteTenantId });
+
+        try {
+          // Find pending invitation
+          const invitation = await prisma.driverInvitation.findFirst({
+            where: {
+              email,
+              tenantId: inviteTenantId,
+              status: 'PENDING'
+            },
+          });
+
+          if (!invitation) {
+            console.error('No pending invitation found for driver:', { email, tenantId: inviteTenantId });
+            return NextResponse.json(
+              { error: 'Driver accounts require an invitation' },
+              { status: 400 }
+            );
+          }
+
+          // Check invitation expiry
+          if (new Date() > invitation.expiresAt) {
+            console.error('Invitation expired:', { email, expiresAt: invitation.expiresAt });
+            await prisma.driverInvitation.update({
+              where: { id: invitation.id },
+              data: { status: 'EXPIRED' },
+            });
+            return NextResponse.json(
+              { error: 'Invitation has expired' },
+              { status: 400 }
+            );
+          }
+
+          // Create User record with DRIVER role
+          const user = await prisma.user.create({
+            data: {
+              clerkUserId,
+              email,
+              tenantId: inviteTenantId,
+              role: 'DRIVER',
+              firstName: invitation.firstName,
+              lastName: invitation.lastName,
+              licenseNumber: invitation.licenseNumber,
+              isActive: true,
+            },
+          });
+
+          // Mark invitation as accepted
+          await prisma.driverInvitation.update({
+            where: { id: invitation.id },
+            data: {
+              status: 'ACCEPTED',
+              acceptedAt: new Date(),
+              userId: user.id
+            },
+          });
+
+          // Update Clerk metadata for the new driver
+          const client = await clerkClient();
+          await client.users.updateUserMetadata(clerkUserId, {
+            publicMetadata: { role: 'DRIVER' },
+            privateMetadata: { tenantId: inviteTenantId },
+          });
+
+          console.log('Driver account created successfully:', {
+            userId: user.id,
+            clerkUserId,
+            tenantId: inviteTenantId,
+          });
+
+          return NextResponse.json(
+            { message: 'Driver account created', userId: user.id },
+            { status: 200 }
+          );
+        } catch (error) {
+          console.error('Error creating driver account:', error);
+          return NextResponse.json(
+            { error: 'Failed to create driver account' },
+            { status: 500 }
+          );
+        }
+      }
+
+      // Owner provisioning flow: Create new tenant and user in a transaction
       const result = await prisma.$transaction(async (tx) => {
         // Create tenant
         const tenant = await tx.tenant.create({
@@ -123,6 +213,7 @@ export async function POST(req: NextRequest) {
             email,
             tenantId: tenant.id,
             role: 'OWNER',
+            isActive: true,
           },
         });
 
