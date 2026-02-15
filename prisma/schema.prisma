@@ -36,6 +36,33 @@ enum NotificationStatus {
   FAILED
 }
 
+enum SafetyEventType {
+  HARSH_BRAKING
+  HARSH_ACCELERATION
+  HARSH_CORNERING
+  SPEEDING
+  DISTRACTED_DRIVING
+  ROLLING_STOP
+  SEATBELT_VIOLATION
+  FOLLOWING_TOO_CLOSE
+}
+
+enum SafetyEventSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FuelType {
+  DIESEL
+  GASOLINE
+  ELECTRIC
+  HYBRID
+  CNG
+  LPG
+}
+
 // Models
 model Tenant {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -54,6 +81,9 @@ model Tenant {
   maintenanceEvents  MaintenanceEvent[]
   scheduledServices  ScheduledService[]
   notificationLogs   NotificationLog[]
+  gpsLocations       GPSLocation[]
+  safetyEvents       SafetyEvent[]
+  fuelRecords        FuelRecord[]
 }
 
 model User {
@@ -70,9 +100,10 @@ model User {
   createdAt     DateTime @default(now()) @db.Timestamptz
   updatedAt     DateTime @updatedAt @db.Timestamptz
 
-  tenant            Tenant     @relation(fields: [tenantId], references: [id])
+  tenant            Tenant        @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
   uploadedDocuments Document[]
+  safetyEvents      SafetyEvent[]
 
   @@index([tenantId])
   @@index([clerkUserId])
@@ -97,6 +128,9 @@ model Truck {
   documents          Document[]
   maintenanceEvents  MaintenanceEvent[]
   scheduledServices  ScheduledService[]
+  gpsLocations       GPSLocation[]
+  safetyEvents       SafetyEvent[]
+  fuelRecords        FuelRecord[]
 
   @@unique([tenantId, vin])
   @@index([tenantId])
@@ -138,10 +172,11 @@ model Route {
   createdAt     DateTime    @default(now()) @db.Timestamptz
   updatedAt     DateTime    @updatedAt @db.Timestamptz
 
-  tenant    Tenant     @relation(fields: [tenantId], references: [id])
-  driver    User       @relation(fields: [driverId], references: [id])
-  truck     Truck      @relation(fields: [truckId], references: [id])
-  documents Document[]
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  driver       User          @relation(fields: [driverId], references: [id])
+  truck        Truck         @relation(fields: [truckId], references: [id])
+  documents    Document[]
+  safetyEvents SafetyEvent[]
 
   @@index([tenantId])
   @@index([driverId])
@@ -242,4 +277,85 @@ model NotificationLog {
   @@index([status])
   @@index([idempotencyKey])
   @@index([createdAt])
+}
+
+model GPSLocation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @db.Uuid
+  truckId   String   @db.Uuid
+  latitude  Decimal  @db.Decimal(10, 8)
+  longitude Decimal  @db.Decimal(11, 8)
+  speed     Int?
+  heading   Int?
+  altitude  Int?
+  accuracy  Decimal? @db.Decimal(6, 2)
+  timestamp DateTime @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])
+}
+
+model SafetyEvent {
+  id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String              @db.Uuid
+  truckId    String              @db.Uuid
+  driverId   String?             @db.Uuid
+  routeId    String?             @db.Uuid
+  eventType  SafetyEventType
+  severity   SafetyEventSeverity
+  gForce     Decimal?            @db.Decimal(4, 2)
+  speed      Int?
+  speedLimit Int?
+  latitude   Decimal             @db.Decimal(10, 8)
+  longitude  Decimal             @db.Decimal(11, 8)
+  timestamp  DateTime            @db.Timestamptz
+  metadata   Json?
+  createdAt  DateTime            @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+  driver User?  @relation(fields: [driverId], references: [id])
+  route  Route? @relation(fields: [routeId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([driverId])
+  @@index([routeId])
+  @@index([eventType])
+  @@index([severity])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])
+}
+
+model FuelRecord {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @db.Uuid
+  truckId     String   @db.Uuid
+  fuelType    FuelType
+  quantity    Decimal  @db.Decimal(10, 2)
+  unitCost    Decimal? @db.Decimal(10, 4)
+  totalCost   Decimal? @db.Decimal(10, 2)
+  odometer    Int
+  location    String?
+  latitude    Decimal? @db.Decimal(10, 8)
+  longitude   Decimal? @db.Decimal(11, 8)
+  timestamp   DateTime @db.Timestamptz
+  isEstimated Boolean  @default(false)
+  notes       String?
+  createdAt   DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])
+  @@index([isEstimated])
 }
