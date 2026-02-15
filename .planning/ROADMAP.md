@@ -217,7 +217,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Database contains GPSLocation, SafetyEvent, and FuelRecord models with RLS policies matching v1.0 tenant isolation patterns
   4. Mock data seed scripts generate realistic GPS coordinates, safety events, and fuel records for all trucks
   5. All mock data flows through RLS-protected APIs (not raw SQL) to validate tenant isolation
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Sidebar navigation: Install shadcn/ui, create Samsara-style collapsible sidebar with grouped menu sections
+- [ ] 11-02-PLAN.md — Data models: Add GPSLocation, SafetyEvent, FuelRecord to Prisma schema with RLS migration
+- [ ] 11-03-PLAN.md — Mock data seeding: Idempotent seed scripts with Turf.js GPS interpolation, safety events, fuel records
 
 ### Phase 12: Live GPS Map
 **Goal**: Owners can view real-time fleet locations and route history on an interactive map
@@ -284,7 +289,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. Maintenance & Scheduling | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
 | 9. Notifications & Reminders | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 11. Navigation & Data Foundation | v2.0 | 0/TBD | Not started | - |
+| 11. Navigation & Data Foundation | v2.0 | 0/3 | Planned | - |
 | 12. Live GPS Map | v2.0 | 0/TBD | Not started | - |
 | 13. Safety Analytics Dashboard | v2.0 | 0/TBD | Not started | - |
 | 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
