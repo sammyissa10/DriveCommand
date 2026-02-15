@@ -43,3 +43,137 @@ export async function getLatestVehicleLocations(): Promise<VehicleLocation[]> {
     },
   }));
 }
+
+/**
+ * Get GPS route history for a vehicle
+ * Returns GPS points for the specified time window (default: 24 hours)
+ */
+export async function getVehicleRouteHistory(
+  truckId: string,
+  hoursBack: number = 24
+): Promise<Array<{ latitude: number; longitude: number; speed: number | null; timestamp: Date }>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+  const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000);
+
+  // @ts-ignore - Prisma 7 extension type issue
+  const locations = await db.gPSLocation.findMany({
+    where: {
+      truckId,
+      timestamp: { gte: cutoffTime },
+    },
+    orderBy: { timestamp: 'asc' },
+    select: {
+      latitude: true,
+      longitude: true,
+      speed: true,
+      timestamp: true,
+    },
+  });
+
+  // Convert Decimal lat/lng to Number
+  return locations.map((loc: any) => ({
+    latitude: Number(loc.latitude),
+    longitude: Number(loc.longitude),
+    speed: loc.speed,
+    timestamp: loc.timestamp,
+  }));
+}
+
+/**
+ * Get comprehensive diagnostics for a vehicle
+ * Returns truck info, latest GPS location, latest fuel record, engine state, and estimated fuel level
+ */
+export async function getVehicleDiagnostics(truckId: string) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  // Fetch truck data, latest GPS, and latest fuel in parallel
+  const [truck, latestGPS, latestFuel] = await Promise.all([
+    // @ts-ignore - Prisma 7 extension type issue
+    db.truck.findUnique({
+      where: { id: truckId },
+      select: {
+        make: true,
+        model: true,
+        year: true,
+        licensePlate: true,
+        odometer: true,
+      },
+    }),
+    // @ts-ignore - Prisma 7 extension type issue
+    db.gPSLocation.findFirst({
+      where: { truckId },
+      orderBy: { timestamp: 'desc' },
+      select: {
+        latitude: true,
+        longitude: true,
+        speed: true,
+        heading: true,
+        timestamp: true,
+      },
+    }),
+    // @ts-ignore - Prisma 7 extension type issue
+    db.fuelRecord.findFirst({
+      where: { truckId },
+      orderBy: { timestamp: 'desc' },
+      select: {
+        quantity: true,
+        timestamp: true,
+        odometer: true,
+      },
+    }),
+  ]);
+
+  if (!truck) {
+    throw new Error('Truck not found');
+  }
+
+  // Derive engine state from speed
+  let engineState: 'running' | 'idle' | 'off' = 'off';
+  if (latestGPS && latestGPS.speed !== null) {
+    if (latestGPS.speed > 5) {
+      engineState = 'running';
+    } else if (latestGPS.speed > 0) {
+      engineState = 'idle';
+    }
+  }
+
+  // Estimate fuel level (simplified heuristic)
+  let estimatedFuelLevel = 50; // Default to 50% if no fuel data
+  if (latestFuel) {
+    const milesSinceLastFill = truck.odometer - latestFuel.odometer;
+    const estimatedGallonsUsed = milesSinceLastFill / 6; // Assume 6 MPG
+    const estimatedGallonsRemaining = Math.max(
+      0,
+      Number(latestFuel.quantity) - estimatedGallonsUsed
+    );
+    estimatedFuelLevel = Math.round((estimatedGallonsRemaining / 150) * 100); // 150 gallon tank
+    // Clamp to 0-100 range
+    estimatedFuelLevel = Math.max(0, Math.min(100, estimatedFuelLevel));
+  }
+
+  return {
+    truck,
+    latestGPS: latestGPS
+      ? {
+          latitude: Number(latestGPS.latitude),
+          longitude: Number(latestGPS.longitude),
+          speed: latestGPS.speed,
+          heading: latestGPS.heading,
+          timestamp: latestGPS.timestamp,
+        }
+      : null,
+    latestFuel: latestFuel
+      ? {
+          quantity: Number(latestFuel.quantity),
+          timestamp: latestFuel.timestamp,
+          odometer: latestFuel.odometer,
+        }
+      : null,
+    engineState,
+    estimatedFuelLevel,
+  };
+}
