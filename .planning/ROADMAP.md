@@ -2,15 +2,19 @@
 
 ## Overview
 
-DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications) and platform administration. Each phase delivers complete, verifiable capabilities, starting with tenant isolation and authentication, progressing through core fleet entities, route coordination, driver access, maintenance automation, and finishing with dashboard oversight and system administration.
+DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications) and platform administration. v1.0 delivered complete fleet management (phases 1-10). v2.0 transforms the platform into a Samsara-inspired fleet intelligence system with live GPS tracking, safety analytics, fuel efficiency dashboards, and modern sidebar navigation—all powered by mock data for rapid validation.
+
+## Milestones
+
+- ✅ **v1.0 Fleet Management** - Phases 1-10 (shipped 2026-02-15)
+- 🚧 **v2.0 Samsara-Inspired Fleet Intelligence** - Phases 11-15 (in progress)
 
 ## Phases
 
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+<details>
+<summary>✅ v1.0 Fleet Management (Phases 1-10) - SHIPPED 2026-02-15</summary>
 
-Decimal phases appear between their surrounding integers in numeric order.
+**Milestone Goal:** Multi-tenant SaaS platform for logistics fleet management with trucks, drivers, routes, documents, maintenance, and notifications.
 
 - [x] **Phase 1: Foundation & Multi-Tenant Setup** - Database schema with RLS, tenant provisioning, middleware
 - [x] **Phase 2: Authentication & Authorization** - Clerk integration, role-based access, signup/login flows
@@ -22,8 +26,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Maintenance & Scheduling** - Service history, dual-trigger scheduling, expiry tracking
 - [x] **Phase 9: Notifications & Reminders** - Email service, background jobs, maintenance/document alerts
 - [x] **Phase 10: Dashboard & System Admin** - Fleet overview, metrics, system admin tenant management
-
-## Phase Details
 
 ### Phase 1: Foundation & Multi-Tenant Setup
 **Goal**: Multi-tenant database architecture with complete data isolation is operational
@@ -187,20 +189,103 @@ Plans:
 - [x] 10-01-PLAN.md — Owner dashboard with fleet stat cards and parallel data fetching
 - [x] 10-02-PLAN.md — System admin tenant management with cross-tenant CRUD and confirmation dialogs
 
+</details>
+
+## 🚧 v2.0 Samsara-Inspired Fleet Intelligence (In Progress)
+
+**Milestone Goal:** Transform DriveCommand into a Samsara-inspired fleet intelligence platform with live GPS tracking, safety analytics, fuel efficiency dashboards, and modern sidebar navigation—all powered by mock data for rapid UI validation.
+
+**Phase Numbering:**
+- Integer phases (11-15): Planned milestone work
+- Decimal phases (e.g., 11.1, 11.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 11: Navigation & Data Foundation** - Sidebar navigation + GPS/Safety/Fuel data models + mock data seeding
+- [ ] **Phase 12: Live GPS Map** - Leaflet map + vehicle markers + detail panel + route trails + clustering
+- [ ] **Phase 13: Safety Analytics Dashboard** - Safety scores + event tracking + trends + rankings + thresholds
+- [ ] **Phase 14: Fuel & Energy Dashboard** - MPG trends + cost analysis + emissions + idle time + rankings
+- [ ] **Phase 15: Tags/Groups & Polish** - Organization system + loading states + error handling + mobile responsive
+
+### Phase 11: Navigation & Data Foundation
+**Goal**: Modern sidebar navigation is operational and intelligence data models are ready for dashboard features
+**Depends on**: Phase 10
+**Requirements**: NAVI-01, NAVI-02
+**Success Criteria** (what must be TRUE):
+  1. Owner portal displays Samsara-style collapsible icon sidebar with role-based menu items (Dashboard, Live Map, Safety, Fuel, Trucks, Drivers, Routes)
+  2. Sidebar persists across all owner portal pages with active state highlighting
+  3. Database contains GPSLocation, SafetyEvent, and FuelRecord models with RLS policies matching v1.0 tenant isolation patterns
+  4. Mock data seed scripts generate realistic GPS coordinates, safety events, and fuel records for all trucks
+  5. All mock data flows through RLS-protected APIs (not raw SQL) to validate tenant isolation
+**Plans**: TBD
+
+### Phase 12: Live GPS Map
+**Goal**: Owners can view real-time fleet locations and route history on an interactive map
+**Depends on**: Phase 11
+**Requirements**: GMAP-01, GMAP-02, GMAP-03, GMAP-04
+**Success Criteria** (what must be TRUE):
+  1. Owner can view live map showing all fleet vehicles with color-coded status markers (moving/idle/offline)
+  2. Owner can click vehicle marker to open detail sidebar showing diagnostics (fuel level, speed, engine state, DEF level, odometer, last GPS update)
+  3. Owner can view vehicle route history as breadcrumb trail polylines showing past 24 hours of travel
+  4. Map automatically clusters nearby vehicle markers when zoomed out for fleets with 20+ vehicles
+  5. Map initializes without SSR errors (Leaflet loaded via dynamic import with ssr: false)
+**Plans**: TBD
+
+### Phase 13: Safety Analytics Dashboard
+**Goal**: Owners can monitor driver safety performance with scores, events, and trends
+**Depends on**: Phase 11
+**Requirements**: SAFE-01, SAFE-02, SAFE-03, SAFE-04, SAFE-05
+**Success Criteria** (what must be TRUE):
+  1. Owner can view fleet-wide safety dashboard with composite safety score (0-100 scale)
+  2. Owner can view safety events (harsh braking, speeding, rapid acceleration) with distribution charts (bar chart by type, donut chart for percentages)
+  3. Owner can view safety score trends over time (30-day line chart showing daily average scores)
+  4. Owner can view driver safety performance rankings (leaderboard showing top and bottom performers)
+  5. Owner can configure safety alert thresholds (g-force sensitivity settings per vehicle class: light/medium/heavy duty)
+**Plans**: TBD
+
+### Phase 14: Fuel & Energy Dashboard
+**Goal**: Owners can track fuel efficiency and environmental impact across the fleet
+**Depends on**: Phase 11
+**Requirements**: FUEL-01, FUEL-02, FUEL-03, FUEL-04
+**Success Criteria** (what must be TRUE):
+  1. Owner can view per-vehicle fuel efficiency trends (MPG line chart, total gallons consumed, total cost, cost per mile)
+  2. Owner can view estimated CO2 emissions per vehicle based on fuel consumption (kg CO2 with calculation methodology visible)
+  3. Owner can view idle time percentage per vehicle (time spent idling vs. moving, with cost impact)
+  4. Owner can view fleet fuel efficiency rankings (leaderboard showing top and bottom performers by MPG)
+  5. Dashboard aggregations execute in <2 seconds with proper date filtering and database indexes
+**Plans**: TBD
+
+### Phase 15: Tags/Groups & Polish
+**Goal**: Fleet organization system is complete and all dashboards have production-ready UX
+**Depends on**: Phase 12, Phase 13, Phase 14
+**Requirements**: NAVI-03
+**Success Criteria** (what must be TRUE):
+  1. Owner can create tags/groups to organize vehicles and drivers into teams (e.g., "Long Haul", "Local Delivery", "Maintenance")
+  2. Owner can filter all dashboards (Map, Safety, Fuel) by tags/groups
+  3. All dashboard pages display loading states (Suspense boundaries for data fetching) and error states (no data, empty states)
+  4. All charts and maps are responsive on mobile devices (sidebar collapses to drawer, charts stack vertically)
+  5. First-load JavaScript bundle size is under 500KB (verified with bundle analyzer, Leaflet and Recharts loaded via dynamic imports)
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13 → 14 → 15
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation & Multi-Tenant Setup | 3/3 | ✓ Complete | 2026-02-14 |
-| 2. Authentication & Authorization | 3/3 | ✓ Complete | 2026-02-14 |
-| 3. Truck Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
-| 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
-| 7. Driver Portal | 2/2 | ✓ Complete | 2026-02-14 |
-| 8. Maintenance & Scheduling | 2/2 | ✓ Complete | 2026-02-14 |
-| 9. Notifications & Reminders | 2/2 | ✓ Complete | 2026-02-15 |
-| 10. Dashboard & System Admin | 2/2 | ✓ Complete | 2026-02-15 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation & Multi-Tenant Setup | v1.0 | 3/3 | ✓ Complete | 2026-02-14 |
+| 2. Authentication & Authorization | v1.0 | 3/3 | ✓ Complete | 2026-02-14 |
+| 3. Truck Management | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 4. Driver Management | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 5. Route Management | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 6. Document Storage & Files | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 7. Driver Portal | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 8. Maintenance & Scheduling | v1.0 | 2/2 | ✓ Complete | 2026-02-14 |
+| 9. Notifications & Reminders | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
+| 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
+| 11. Navigation & Data Foundation | v2.0 | 0/TBD | Not started | - |
+| 12. Live GPS Map | v2.0 | 0/TBD | Not started | - |
+| 13. Safety Analytics Dashboard | v2.0 | 0/TBD | Not started | - |
+| 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
+| 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |

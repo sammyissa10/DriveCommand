@@ -146,13 +146,15 @@ Deferred to future milestones. Tracked but not in current roadmap.
 
 Which phases cover which requirements. Updated during roadmap creation.
 
+### v1.0 Coverage
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUTH-01 | Phase 2 | ✓ Done |
 | AUTH-02 | Phase 2 | ✓ Done |
 | AUTH-03 | Phase 2 | ✓ Done |
-| AUTH-04 | Phase 10 | Pending |
-| AUTH-05 | Phase 1 | Pending |
+| AUTH-04 | Phase 10 | ✓ Done |
+| AUTH-05 | Phase 1 | ✓ Done |
 | AUTH-06 | Phase 2 | ✓ Done |
 | TRUK-01 | Phase 3 | ✓ Done |
 | TRUK-02 | Phase 3 | ✓ Done |
@@ -162,35 +164,56 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DRVR-01 | Phase 4 | ✓ Done |
 | DRVR-02 | Phase 4 | ✓ Done |
 | DRVR-03 | Phase 4 | ✓ Done |
-| ROUT-01 | Phase 5 | Pending |
-| ROUT-02 | Phase 5 | Pending |
-| ROUT-03 | Phase 5 | Pending |
-| ROUT-04 | Phase 5 | Pending |
+| ROUT-01 | Phase 5 | ✓ Done |
+| ROUT-02 | Phase 5 | ✓ Done |
+| ROUT-03 | Phase 5 | ✓ Done |
+| ROUT-04 | Phase 5 | ✓ Done |
 | ROUT-05 | Phase 6 | ✓ Done |
-| ROUT-06 | Phase 5 | Pending |
-| DPRT-01 | Phase 7 | Pending |
-| DPRT-02 | Phase 7 | Pending |
-| DPRT-03 | Phase 7 | Pending |
-| DPRT-04 | Phase 7 | Pending |
-| MNTC-01 | Phase 8 | Pending |
-| MNTC-02 | Phase 8 | Pending |
-| MNTC-03 | Phase 9 | Pending |
-| MNTC-04 | Phase 9 | Pending |
-| DASH-01 | Phase 10 | Pending |
-| DASH-02 | Phase 10 | Pending |
-| ADMN-01 | Phase 10 | Pending |
-| ADMN-02 | Phase 10 | Pending |
+| ROUT-06 | Phase 5 | ✓ Done |
+| DPRT-01 | Phase 7 | ✓ Done |
+| DPRT-02 | Phase 7 | ✓ Done |
+| DPRT-03 | Phase 7 | ✓ Done |
+| DPRT-04 | Phase 7 | ✓ Done |
+| MNTC-01 | Phase 8 | ✓ Done |
+| MNTC-02 | Phase 8 | ✓ Done |
+| MNTC-03 | Phase 9 | ✓ Done |
+| MNTC-04 | Phase 9 | ✓ Done |
+| DASH-01 | Phase 10 | ✓ Done |
+| DASH-02 | Phase 10 | ✓ Done |
+| ADMN-01 | Phase 10 | ✓ Done |
+| ADMN-02 | Phase 10 | ✓ Done |
 
-**v1.0 Coverage:**
+**v1.0 Summary:**
 - v1 requirements: 32 total
 - Mapped to phases: 32
 - Unmapped: 0 ✓
 
-**v2.0 Coverage:**
+### v2.0 Coverage
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| GMAP-01 | Phase 12 | Pending |
+| GMAP-02 | Phase 12 | Pending |
+| GMAP-03 | Phase 12 | Pending |
+| GMAP-04 | Phase 12 | Pending |
+| SAFE-01 | Phase 13 | Pending |
+| SAFE-02 | Phase 13 | Pending |
+| SAFE-03 | Phase 13 | Pending |
+| SAFE-04 | Phase 13 | Pending |
+| SAFE-05 | Phase 13 | Pending |
+| FUEL-01 | Phase 14 | Pending |
+| FUEL-02 | Phase 14 | Pending |
+| FUEL-03 | Phase 14 | Pending |
+| FUEL-04 | Phase 14 | Pending |
+| NAVI-01 | Phase 11 | Pending |
+| NAVI-02 | Phase 11 | Pending |
+| NAVI-03 | Phase 15 | Pending |
+
+**v2.0 Summary:**
 - v2.0 requirements: 16 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-15 after v2.0 milestone requirements defined*
+*Last updated: 2026-02-15 after v2.0 roadmap creation (phases 11-15)*
