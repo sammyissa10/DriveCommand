@@ -8,6 +8,8 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { useRouter } from 'next/navigation';
 import VehicleMarker from './vehicle-marker';
+import RouteHistoryLayer from './route-history-layer';
+import VehicleDetailsSheet from '@/components/vehicle/vehicle-details-sheet';
 import {
   VehicleLocation,
   calculateBounds,
@@ -97,7 +99,15 @@ export default function LiveMap({ initialVehicles }: LiveMapProps) {
             />
           ))}
         </MarkerClusterGroup>
+
+        {selectedVehicleId && <RouteHistoryLayer truckId={selectedVehicleId} />}
       </MapContainer>
+
+      <VehicleDetailsSheet
+        truckId={selectedVehicleId || ''}
+        open={!!selectedVehicleId}
+        onClose={() => setSelectedVehicleId(null)}
+      />
     </>
   );
 }
