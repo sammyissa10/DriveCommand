@@ -116,10 +116,13 @@
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
 | react-leaflet | 5.0.0 | React components for Leaflet maps | Open-source (BSD-2), zero API costs, excellent GPS trail rendering with Polyline/GeoJSON components, mature ecosystem, requires React 19 as peer dependency |
-| leaflet | 1.9.x | Core mapping library | Industry standard for 2D maps, completely free (no quotas or API limits), robust plugin ecosystem, perfect for fleet tracking routes, 120KB bundle size |
-| @types/leaflet | 1.9.21 | TypeScript definitions for Leaflet | Official type definitions from DefinitelyTyped, required for TypeScript projects |
+| leaflet | 1.9.4 | Core mapping library | Industry standard for 2D maps, completely free (no quotas or API limits), robust plugin ecosystem, perfect for fleet tracking routes, 145KB bundle size (with react-leaflet) |
+| leaflet.markercluster | 1.5.3 | Fleet vehicle marker clustering | Handles 10K-50K markers with smooth animations, prevents map overcrowding with multiple vehicles, automatic zoom-based clustering, spiderfy clusters at bottom zoom level, essential for fleet tracking |
+| leaflet-defaulticon-compatibility | 0.1.2 | Fix marker icon paths in webpack/Next.js | Solves Leaflet marker icon loading issues in Next.js builds (marker images won't display without this) |
+| @types/leaflet | 1.9.x | TypeScript definitions for Leaflet | Official type definitions from DefinitelyTyped, required for TypeScript projects |
+| @types/leaflet.markercluster | 1.5.x | TypeScript definitions for marker clustering | Prevents TypeScript errors with clustering plugin |
 
-**Integration Pattern:**
+**Integration Pattern (Maps):**
 ```typescript
 // app/components/FleetMap.tsx
 "use client"
@@ -132,14 +135,42 @@ const MapComponent = dynamic(
 )
 
 export default MapComponent
+
+// components/MapComponentInner.tsx
+"use client"
+
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+
+export default function MapComponentInner({ vehicles }) {
+  return (
+    <MapContainer center={[39.8283, -98.5795]} zoom={4} className="h-96">
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; OpenStreetMap contributors'
+      />
+      <MarkerClusterGroup>
+        {vehicles.map(vehicle => (
+          <Marker key={vehicle.id} position={[vehicle.lat, vehicle.lng]}>
+            <Popup>{vehicle.name}</Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
+    </MapContainer>
+  )
+}
 ```
 
 **Why Leaflet over Mapbox GL:**
 - **Zero cost:** Completely open-source, no API limits or monthly quotas
 - **GPS trails:** Polyline and GeoJSON components handle route visualization perfectly
-- **Lighter weight:** Smaller bundle size (120KB vs 500KB+ for Mapbox GL)
+- **Lighter weight:** Smaller bundle size (145KB vs 500KB+ for Mapbox GL)
 - **Sufficient for use case:** Fleet tracking doesn't need WebGL 3D extrusions or vector tiles
 - **No vendor lock-in:** OpenStreetMap tiles are free and globally available
+- **Marker clustering built-in:** leaflet.markercluster handles 10K+ markers efficiently
 
 **When to consider Mapbox GL:**
 - Real-time tracking of 500+ vehicles simultaneously (WebGL acceleration)
@@ -150,34 +181,44 @@ export default MapComponent
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| recharts | 3.7.0 | React charting library | Built on D3 and React, built-in TypeScript types (no @types package needed), works with React 19, 11 chart types including donut/pie for compliance metrics, composable components match React patterns, declarative API |
+| recharts | 3.7.0 | React charting library | Built on D3 and React, built-in TypeScript types (no @types package needed), works with React 19, 11 chart types including donut/pie for compliance metrics, composable components match React patterns, declarative API, used by shadcn/ui |
+| date-fns | 4.1.0 | Date formatting and time series | Tree-shakable functional API, optimal for analytics date ranges and time series, better bundle size than Moment.js (tree-shaking), more React-friendly immutable API than dayjs, works in Server Components |
 
 **Chart Types for Fleet Dashboard:**
-- **Line charts:** Fuel efficiency trends over time
-- **Bar charts:** Safety scores by driver/truck
-- **Area charts:** Cumulative metrics (total miles, fuel costs)
-- **Pie/Donut charts:** Compliance percentages, fleet composition
-- **Histogram-style bars:** Safety score distribution
+- **Line charts:** Fuel efficiency trends over time, safety score trends
+- **Bar charts:** Safety scores by driver/truck, maintenance costs by vehicle
+- **Area charts:** Cumulative metrics (total miles, fuel costs over time)
+- **Pie/Donut charts:** Compliance percentages, fleet composition breakdown
+- **Composed charts:** Multiple metrics on single chart (fuel cost + miles driven)
 
 **React 19 Compatibility:**
 Recharts 3.7.0 supports React 19. You may encounter peer dependency warnings during installation. Use `npm install recharts --legacy-peer-deps` if needed. Functional compatibility confirmed by community testing.
 
-**Integration Pattern:**
+**Integration Pattern (Charts):**
 ```typescript
 // app/components/SafetyChart.tsx
 "use client"
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { format } from 'date-fns'
 
 export default function SafetyChart({ data }: { data: SafetyScore[] }) {
   return (
-    <BarChart width={600} height={300} data={data}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="driverName" />
-      <YAxis />
-      <Tooltip />
-      <Bar dataKey="score" fill="#3b82f6" />
-    </BarChart>
+    <ResponsiveContainer width="100%" height={350}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+        <XAxis
+          dataKey="date"
+          tickFormatter={(date) => format(new Date(date), 'MMM d')}
+        />
+        <YAxis />
+        <Tooltip
+          contentStyle={{ backgroundColor: 'hsl(var(--card))' }}
+          labelFormatter={(date) => format(new Date(date), 'MMM d, yyyy')}
+        />
+        <Bar dataKey="score" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
   )
 }
 ```
@@ -193,19 +234,26 @@ export default function SafetyChart({ data }: { data: SafetyScore[] }) {
 - Already using shadcn/ui and want matching aesthetics
 - Don't need deep customization of chart internals
 
+**Why Recharts over Chart.js:**
+- **React-native API:** Declarative component-based approach vs imperative canvas API
+- **Composability:** Charts built from smaller React components, easier to customize
+- **TypeScript:** Built-in types, better DX with autocomplete
+- **SVG rendering:** More flexible styling with CSS, better for responsive designs
+
 ### Icons and Navigation
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|-----------------|
-| lucide-react | 0.564.0 | Icon library for React | Tree-shakeable (only imported icons in bundle), 1400+ icons including fleet-specific ones (Truck, MapPin, Gauge, Fuel), actively maintained (published Feb 13, 2026), works with React 19, returns typed React components as inline SVG |
+| lucide-react | 0.564.0 | Icon library for React | Tree-shakeable (only imported icons in bundle), 1400+ icons including fleet-specific ones (Truck, MapPin, Gauge, Fuel), actively maintained (published Feb 13, 2026), works with React 19, returns typed React components as inline SVG, SSR-safe |
 
 **Relevant Icons for Fleet Management:**
-- **Navigation:** `Menu`, `PanelRight`, `Navigation`, `LayoutDashboard`
-- **Fleet:** `Truck`, `Car`, `Bus`
-- **Safety:** `AlertTriangle`, `Shield`, `ShieldAlert`
-- **Fuel:** `Fuel`, `Zap` (for electric), `Battery`
-- **Maps:** `MapPin`, `Map`, `Route`, `Navigation2`
-- **Metrics:** `Gauge`, `TrendingUp`, `BarChart3`, `PieChart`
+- **Navigation:** `Menu`, `PanelRight`, `Navigation`, `LayoutDashboard`, `ChevronDown`, `ChevronRight`
+- **Fleet:** `Truck`, `Car`, `Bus`, `Package`
+- **Safety:** `AlertTriangle`, `Shield`, `ShieldAlert`, `AlertCircle`
+- **Fuel:** `Fuel`, `Zap` (for electric), `Battery`, `Leaf` (eco-driving)
+- **Maps:** `MapPin`, `Map`, `Route`, `Navigation2`, `Compass`
+- **Metrics:** `Gauge`, `TrendingUp`, `TrendingDown`, `BarChart3`, `PieChart`, `LineChart`
+- **Maintenance:** `Wrench`, `Calendar`, `Clock`, `CheckCircle2`
 
 **Integration:**
 ```typescript
@@ -213,6 +261,7 @@ import { Truck, Gauge, MapPin, Fuel } from 'lucide-react'
 
 // Can be used in Server or Client Components
 <Truck className="w-5 h-5 text-blue-600" />
+<Gauge className="w-4 h-4" strokeWidth={2.5} />
 ```
 
 **Why Lucide over alternatives:**
@@ -221,6 +270,118 @@ import { Truck, Gauge, MapPin, Fuel } from 'lucide-react'
 - **TypeScript:** Fully typed components with auto-complete
 - **Customization:** Accepts all SVG props (size, color, strokeWidth, className, etc.)
 - **SSR-safe:** Works in both Server and Client Components without hydration issues
+
+### Sidebar Navigation (Samsara-style)
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| shadcn/ui Sidebar | Latest | Collapsible sidebar navigation | Already using shadcn/ui, composable sidebar component released in 2024, supports collapsible sections, icon-only collapsed state, keyboard shortcuts (Cmd+B), mobile responsive, built on Radix UI primitives |
+
+**Sidebar Component Integration:**
+```typescript
+// app/layout.tsx (or specific dashboard layout)
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Truck, MapPin, Gauge, Fuel, ChevronRight } from 'lucide-react'
+
+export default function DashboardLayout({ children }) {
+  return (
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Fleet</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="/dashboard/trucks">
+                      <Truck className="w-4 h-4" />
+                      <span>Trucks</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton>
+                      <MapPin className="w-4 h-4" />
+                      <span>Tracking</span>
+                      <ChevronRight className="ml-auto w-4 h-4 transition-transform group-data-[state=open]:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild className="pl-8">
+                          <a href="/dashboard/tracking/live">Live Map</a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild className="pl-8">
+                          <a href="/dashboard/tracking/history">Route History</a>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="/dashboard/safety">
+                      <Gauge className="w-4 h-4" />
+                      <span>Safety</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <a href="/dashboard/fuel">
+                      <Fuel className="w-4 h-4" />
+                      <span>Fuel</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+
+      <main className="flex-1">
+        <SidebarTrigger />
+        {children}
+      </main>
+    </SidebarProvider>
+  )
+}
+```
+
+**Samsara-style Features Achieved:**
+- **Collapsible sections:** Use Collapsible component for nested menu items
+- **Icon + text layout:** SidebarMenuButton supports icon + label
+- **Collapsed state:** Sidebar collapses to icon-only mode
+- **Keyboard shortcuts:** Built-in Cmd+B / Ctrl+B toggle
+- **Mobile responsive:** Automatically adjusts for mobile (offcanvas mode)
+- **Persistent state:** Collapsed state saved to localStorage via SidebarProvider
+
+**Installation:**
+```bash
+npx shadcn@latest add sidebar
+npx shadcn@latest add collapsible
+```
 
 ### Mock Data Generation
 
@@ -235,7 +396,7 @@ import { Truck, Gauge, MapPin, Fuel } from 'lucide-react'
 - **Foreign key validation:** Database enforces referential integrity
 - **Repeatability:** Idempotent seed scripts with `skipDuplicates: true`
 
-**Integration Pattern:**
+**Integration Pattern (Mock Data):**
 ```typescript
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client'
@@ -272,8 +433,65 @@ async function seedGPSRoutes() {
   }
 }
 
+async function seedSafetyEvents() {
+  const tenantId = 'your-tenant-id'
+
+  const drivers = await prisma.driver.findMany({
+    where: { tenantId },
+    select: { id: true }
+  })
+
+  for (const driver of drivers) {
+    const events = Array.from({ length: faker.number.int({ min: 5, max: 20 }) }, () => ({
+      driverId: driver.id,
+      tenantId,
+      eventType: faker.helpers.arrayElement(['harsh_braking', 'speeding', 'sharp_turn', 'acceleration']),
+      severity: faker.number.int({ min: 1, max: 10 }),
+      timestamp: faker.date.recent({ days: 30 }),
+      latitude: faker.location.latitude({ min: 33, max: 49 }),
+      longitude: faker.location.longitude({ min: -125, max: -65 }),
+    }))
+
+    await prisma.safetyEvent.createMany({
+      data: events,
+      skipDuplicates: true,
+    })
+  }
+}
+
+async function seedFuelData() {
+  const tenantId = 'your-tenant-id'
+
+  const trucks = await prisma.truck.findMany({
+    where: { tenantId },
+    select: { id: true }
+  })
+
+  for (const truck of trucks) {
+    const fuelRecords = Array.from({ length: 30 }, (_, i) => ({
+      truckId: truck.id,
+      tenantId,
+      date: faker.date.recent({ days: 30 - i }),
+      gallons: faker.number.float({ min: 20, max: 150, precision: 0.1 }),
+      cost: faker.number.float({ min: 60, max: 450, precision: 0.01 }),
+      milesDriven: faker.number.float({ min: 100, max: 600, precision: 0.1 }),
+      mpg: null, // Calculated field
+    }))
+
+    await prisma.fuelRecord.createMany({
+      data: fuelRecords.map(record => ({
+        ...record,
+        mpg: (record.milesDriven / record.gallons).toFixed(2)
+      })),
+      skipDuplicates: true,
+    })
+  }
+}
+
 async function main() {
   await seedGPSRoutes()
+  await seedSafetyEvents()
+  await seedFuelData()
 }
 
 main()
@@ -306,10 +524,11 @@ npx prisma db seed
 
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| date-fns | 4.x | Date manipulation | Lighter than Moment.js. For service schedule calculations, maintenance reminders. |
+| date-fns | 4.x | Date manipulation | For service schedule calculations, maintenance reminders, time series aggregation. |
 | @tanstack/react-table | 8.x | Data tables | If building complex vehicle/driver tables with sorting, filtering, pagination. |
 | zustand | 4.x | Client state | Lightweight state management (dashboard UI state, filters, modals). Use for client-only state, not server data. |
 | react-dropzone | 14.x | File uploads | For vehicle document uploads. Handles drag-drop, validation, previews. |
+| clsx | 2.x | Conditional className management | Already in project (via shadcn/ui pattern) - use for dynamic styling. |
 
 ## Development Tools
 
@@ -319,6 +538,7 @@ npx prisma db seed
 | Prettier | Code formatting | Standard config: 2-space indent, single quotes, trailing commas. |
 | Husky | Git hooks | Run linting, type checking, tests before commits. |
 | lint-staged | Staged file linting | Run Prettier and ESLint only on changed files. |
+| tsx | TypeScript execution | For running Prisma seed scripts (faster than ts-node). |
 
 ## Installation
 
@@ -331,29 +551,33 @@ npx shadcn@latest init
 npx shadcn@latest add form input button table select dialog
 
 # NEW: Map rendering (Milestone 2)
-npm install react-leaflet leaflet
-npm install -D @types/leaflet
+npm install react-leaflet@^5.0.0 leaflet@^1.9.4 leaflet.markercluster@^1.5.3 leaflet-defaulticon-compatibility@^0.1.2
+npm install -D @types/leaflet @types/leaflet.markercluster
 
 # NEW: Charts (Milestone 2)
-npm install recharts
+npm install recharts@^3.7.0
 
 # NEW: Icons (Milestone 2)
-npm install lucide-react
+npm install lucide-react@^0.564.0
+
+# NEW: Sidebar navigation (Milestone 2)
+npx shadcn@latest add sidebar
+npx shadcn@latest add collapsible
+
+# NEW: Date utilities (Milestone 2)
+npm install date-fns@^4.1.0
 
 # NEW: Mock data generation (Milestone 2)
-npm install -D @faker-js/faker
+npm install -D @faker-js/faker@^10.3.0
 
 # File upload
 npm install react-dropzone
-
-# Date utilities
-npm install date-fns
 
 # Email (if using Resend)
 npm install resend react-email
 
 # Dev dependencies
-npm install -D prisma @types/node typescript eslint prettier husky lint-staged
+npm install -D prisma @types/node typescript eslint prettier husky lint-staged tsx
 npm install -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/jest-dom
 npm install -D @playwright/test
 
@@ -375,10 +599,14 @@ npx @sentry/wizard@latest -i nextjs
 | Email | Resend | SendGrid, AWS SES | Resend has modern API + React Email integration. SendGrid better for enterprise deliverability. AWS SES cheapest but requires more setup. |
 | **Maps** | **Leaflet** | **Mapbox GL JS** | Mapbox has API costs after free tier (50K loads/month), requires API key management, WebGL complexity overkill for 2D routes, vendor lock-in |
 | **Maps** | **Leaflet** | **Google Maps** | Expensive ($7/1000 loads after $200 credit), requires credit card, complex pricing |
-| **Charts** | **Recharts** | **Tremor** | Tremor is built on Recharts (adds abstraction layer), opinionated Tailwind styling, less flexibility |
-| **Charts** | **Recharts** | **Chart.js** | Imperative API (not React-native), manual state management, less composable |
-| **Icons** | **Lucide React** | **React Icons** | No tree-shaking (bundles all icon sets), inconsistent design, larger bundle |
-| **Mock Data** | **Faker.js** | **Chance.js** | Less active maintenance (last update 2020), smaller ecosystem |
+| **Charts** | **Recharts** | **Tremor** | Tremor is built on Recharts (adds abstraction layer), opinionated Tailwind styling, less flexibility for custom branding |
+| **Charts** | **Recharts** | **Chart.js** | Imperative API (not React-native), manual state management, less composable, canvas rendering less flexible for styling |
+| **Charts** | **Recharts** | **Victory** | Heavier bundle size, more opinionated styling, less active development |
+| **Icons** | **Lucide React** | **React Icons** | No tree-shaking (bundles all icon sets), inconsistent design across sets, larger bundle |
+| **Icons** | **Lucide React** | **Heroicons** | Smaller icon library (~200 icons vs 1400+), missing fleet-specific icons (Fuel, Truck variants) |
+| **Mock Data** | **Faker.js** | **Chance.js** | Less active maintenance (last update 2020), smaller ecosystem, fewer realistic generators |
+| **Mock Data** | **Faker.js** | **casual** | Abandoned (last update 2016), security vulnerabilities |
+| **Sidebar** | **shadcn/ui Sidebar** | **react-pro-sidebar** | Another dependency to manage, shadcn pattern gives full code control, styling conflicts |
 
 ## What NOT to Use
 
@@ -395,7 +623,9 @@ npx @sentry/wizard@latest -i nextjs
 | **Mapbox GL JS v1.x** | **Changed to proprietary license, expensive for commercial use** | **Leaflet or MapLibre GL JS** |
 | **faker (old package)** | **Abandoned in 2020, security vulnerabilities** | **@faker-js/faker** |
 | **@types/recharts** | **Recharts 3.x has built-in types, stub package unnecessary** | **Import types directly from recharts** |
-| **Static JSON mock files** | **Bypasses database validation, doesn't test RLS policies** | **Prisma seed scripts with Faker.js** |
+| **Static JSON mock files** | **Bypasses database validation, doesn't test RLS policies, stale data** | **Prisma seed scripts with Faker.js** |
+| **react-leaflet-markercluster (old)** | **Deprecated, unmaintained (last update 2021)** | **react-leaflet-cluster (active fork)** |
+| **Google Maps API** | **Expensive, complex pricing, requires credit card for all usage** | **Leaflet + OpenStreetMap (free)** |
 
 ## Stack Patterns by Variant
 
@@ -404,6 +634,8 @@ npx @sentry/wizard@latest -i nextjs
 - Use Vercel (zero-config deployment)
 - Use Prisma (rapid schema iteration)
 - Use shadcn/ui (pre-built components)
+- **Use Leaflet for maps (zero cost, no API limits)**
+- **Use Recharts for dashboards (batteries-included, composable)**
 - **Because:** Maximize velocity, minimize infrastructure work.
 
 **If cost-conscious (bootstrap/side project):**
@@ -412,6 +644,7 @@ npx @sentry/wizard@latest -i nextjs
 - Use Cloudflare R2 (free tier: 10GB storage, 1M reads/month)
 - Use Resend free tier (3,000 emails/month)
 - **Use Leaflet for maps (zero cost, no API limits)**
+- **Use Recharts (no cost, open-source)**
 - **Because:** Free/low tiers available, total cost under $20/month.
 
 **If enterprise/high-compliance:**
@@ -425,6 +658,7 @@ npx @sentry/wizard@latest -i nextjs
 - Use Fly.io for hosting (persistent VMs, not serverless)
 - Use Pusher or Ably for real-time channels
 - **Consider Mapbox GL for 500+ simultaneous vehicles (WebGL acceleration)**
+- **Use TanStack Query with polling (every 5-10s) for "near real-time" on budget**
 - **Because:** Vercel serverless has cold starts and limits for long-lived connections.
 
 ## Version Compatibility
@@ -439,6 +673,8 @@ npx @sentry/wizard@latest -i nextjs
 | **react-leaflet 5.0.0** | **React 19, Leaflet 1.9** | **Requires React 19 as peer dependency** |
 | **recharts 3.7.0** | **React 16.8+, React 19** | **Peer dependency warnings with React 19 (use --legacy-peer-deps), functional** |
 | **lucide-react 0.564.0** | **React 16.4+, React 19** | **No compatibility issues** |
+| **leaflet.markercluster 1.5.3** | **Leaflet 1.0+** | **Works with Leaflet 1.9.4** |
+| **date-fns 4.1.0** | **Framework agnostic** | **Works in Node.js and browsers, SSR-safe** |
 
 ## SSR and Hydration Considerations
 
@@ -490,6 +726,86 @@ export default function SafetyChart({ data }) {
 }
 ```
 
+## CSS Requirements
+
+### Leaflet Styles (Required)
+
+Add to `app/globals.css`:
+
+```css
+/* Leaflet core styles */
+@import 'leaflet/dist/leaflet.css';
+
+/* Leaflet marker clustering styles */
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+/* Fix for marker icon paths in Next.js */
+@import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
+```
+
+**Why:** Leaflet's CSS is not modular. Must be imported globally for markers, popups, controls, and clusters to render correctly.
+
+**Alternative (if avoiding global CSS):**
+- Import CSS in individual map components (but causes flash of unstyled content)
+- Better to import once globally
+
+### Recharts Customization
+
+No CSS import required. Style via:
+- Tailwind classes on container (ResponsiveContainer)
+- Inline `stroke`, `fill`, `strokeWidth` props on chart elements
+- Custom theme colors from `tailwind.config.js` via CSS variables
+- Tooltip/Legend custom content components
+
+**Example using Tailwind CSS variables:**
+```typescript
+<Bar
+  dataKey="score"
+  fill="hsl(var(--primary))"
+  className="hover:opacity-80 transition-opacity"
+/>
+```
+
+## Performance Considerations
+
+### Map Rendering
+- **Limit visible markers:** Use clustering for 100+ vehicles
+- **Viewport culling:** Only render markers in current map bounds
+- **Lazy load:** Use dynamic import with `ssr: false` to defer map bundle
+- **Cluster performance:** leaflet.markercluster handles 10K-50K markers efficiently
+- **Use chunkedLoading:** For 10K+ markers to prevent page freeze
+
+### Chart Rendering
+- **Recharts uses SVG:** Performant for <1000 data points
+- **Downsample large datasets:** Aggregate daily data into weekly/monthly for longer time ranges
+- **ResponsiveContainer:** Ensures proper sizing without manual calculations
+- **Memoize data:** Use React.memo or useMemo to prevent unnecessary re-renders
+- **Debounce filters:** Avoid re-rendering charts on every keystroke
+
+### Bundle Size Impact
+
+| Library | Bundle Size (gzipped) | Impact | Mitigation |
+|---------|----------------------|--------|------------|
+| react-leaflet + leaflet | ~145 KB | Medium | Lazy load with dynamic import (only loads on map pages) |
+| recharts | ~450 KB | Medium | Tree-shakable (import only chart types used), code-split by route |
+| date-fns | ~25 KB | Low | Excellent tree-shaking (import only functions used) |
+| leaflet.markercluster | ~35 KB | Low | Only loaded with map component |
+| lucide-react | ~1-2 KB per icon | Low | Tree-shakable (only imported icons in bundle) |
+| @faker-js/faker | Dev only | None | Not included in production bundle |
+
+**Total new bundle (milestone 2):** ~655 KB gzipped
+- **Map pages:** +180 KB (Leaflet + clustering, lazy loaded)
+- **Dashboard pages:** +475 KB (Recharts, shared across routes)
+- **All pages:** +2-10 KB (Lucide icons, tree-shaken per page)
+
+**Optimization strategy:**
+1. **Route-based code splitting** (Next.js automatic)
+2. **Lazy load maps** (dynamic import with ssr: false)
+3. **Tree-shake Recharts** (import specific chart types)
+4. **Tree-shake date-fns** (import specific functions)
+5. **Tree-shake Lucide** (import specific icons)
+
 ## Multi-Tenant Architecture Notes
 
 **Database Isolation Strategy:**
@@ -518,6 +834,7 @@ export default function SafetyChart({ data }) {
 - Query existing tenant-scoped records (trucks, drivers) before creating related data
 - Use `createMany` with `skipDuplicates: true` for idempotent seeding
 - Never hardcode IDs across tenants (use foreign key relationships)
+- GPS coordinates should be realistic for tenant's operating region
 
 ## Sources
 
@@ -531,11 +848,16 @@ export default function SafetyChart({ data }) {
 - [Prisma Documentation](https://www.prisma.io/docs/orm) - Prisma 7 pure TypeScript architecture
 - [Clerk Documentation](https://clerk.com/docs) - Multi-tenant SaaS patterns
 - [Stripe SaaS Integration Guide](https://docs.stripe.com/saas) - Subscription billing best practices
-- **[React Leaflet Documentation](https://react-leaflet.js.org/) - Official docs, version 5.0.0 (MEDIUM-HIGH confidence)**
+- **[React Leaflet Official Documentation](https://react-leaflet.js.org/) - v5.x current version, React 19 compatibility (HIGH confidence)**
+- **[Leaflet Official Documentation](https://leafletjs.com/) - Core mapping library, version 1.9.4 (HIGH confidence)**
+- **[Recharts Official Documentation](https://recharts.github.io/) - v3.7.0 current stable (HIGH confidence)**
 - **[Recharts npm package](https://www.npmjs.com/package/recharts) - Version 3.7.0 verification (HIGH confidence)**
 - **[Lucide React Documentation](https://lucide.dev/guide/packages/lucide-react) - Official docs (HIGH confidence)**
+- **[shadcn/ui Sidebar Component](https://ui.shadcn.com/docs/components/radix/sidebar) - Official component documentation (HIGH confidence)**
+- **[date-fns Documentation](https://date-fns.org/) - Functional date utilities (HIGH confidence)**
 - **[Prisma Seeding Documentation](https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding) - Official seeding guide (HIGH confidence)**
 - **[@faker-js/faker npm](https://www.npmjs.com/package/@faker-js/faker) - Version 10.3.0 verification (HIGH confidence)**
+- **[Leaflet.markercluster GitHub](https://github.com/Leaflet/Leaflet.markercluster) - Official clustering plugin (HIGH confidence)**
 
 ### Comparison Articles (MEDIUM-HIGH confidence)
 - [Clerk vs Auth0 for Next.js](https://clerk.com/articles/clerk-vs-auth0-for-nextjs) - Technical comparison, 2026
@@ -544,25 +866,34 @@ export default function SafetyChart({ data }) {
 - [Prisma vs Drizzle ORM 2026](https://makerkit.dev/blog/tutorials/drizzle-vs-prisma) - Performance vs DX tradeoffs
 - [PostgreSQL Row-Level Security Multi-Tenant](https://www.crunchydata.com/blog/row-level-security-for-tenants-in-postgres) - RLS implementation patterns
 - **[Mapbox vs Leaflet Comparison](https://medium.com/visarsoft-blog/leaflet-or-mapbox-choosing-the-right-tool-for-interactive-maps-53dea7cc3c40) - Architecture decision (MEDIUM confidence)**
+- **[React Map Library Comparison - LogRocket](https://blog.logrocket.com/react-map-library-comparison/) - Technical comparison (MEDIUM confidence)**
+- **[Recharts vs Chart.js Comparison](https://stackshare.io/stackups/js-chart-vs-recharts) - Technical comparison (MEDIUM confidence)**
+- **[Best React Chart Libraries 2025 - LogRocket](https://blog.logrocket.com/best-react-chart-libraries-2025/) - Feature comparison (MEDIUM confidence)**
+- **[Top 5 React Chart Libraries 2026 - Syncfusion](https://www.syncfusion.com/blogs/post/top-5-react-chart-libraries) - Current trends (MEDIUM confidence)**
+- **[date-fns vs dayjs Comparison](https://www.dhiwise.com/post/date-fns-vs-dayjs-the-battle-of-javascript-date-libraries) - Bundle size analysis (MEDIUM confidence)**
 - **[Tremor built on Recharts](https://www.tremor.so/) - Alternative comparison (HIGH confidence)**
+
+### Integration Guides (MEDIUM confidence)
+- **[React Leaflet on Next.js 15 App Router](https://xxlsteve.net/blog/react-leaflet-on-next-15/) - Integration patterns (MEDIUM confidence)**
+- **[React Leaflet with Next.js - PlaceKit](https://placekit.io/blog/articles/making-react-leaflet-work-with-nextjs-493i) - SSR handling (MEDIUM confidence)**
+- **[How to use Leaflet with Next.js - MapTiler](https://docs.maptiler.com/leaflet/examples/nextjs/) - Official guide (HIGH confidence)**
+- **[Building Next.js Dashboard with Charts and SSR - Cube](https://cube.dev/blog/building-nextjs-dashboard-with-dynamic-charts-and-ssr) - Recharts + Next.js patterns (MEDIUM confidence)**
+- **[Next.js and Recharts Dashboard - Ably](https://ably.com/blog/informational-dashboard-with-nextjs-and-recharts) - Implementation guide (MEDIUM confidence)**
+- **[Leaflet Marker Clustering Tutorial](https://www.leighhalliday.com/leaflet-clustering) - Practical guide (MEDIUM confidence)**
+- **[shadcn Sidebar Component Guide - CodeParrot](https://codeparrot.ai/blogs/why-developers-love-the-shadcn-sidebar-component) - Best practices (MEDIUM confidence)**
 
 ### SaaS Architecture Research (MEDIUM confidence, verified across multiple sources)
 - [WorkOS Multi-Tenant Architecture Guide](https://workos.com/blog/developers-guide-saas-multi-tenant-architecture) - Tenant isolation strategies
 - [Best Tech Stack for Multi-Tenant SaaS 2025](https://ideadope.com/roadmaps/best-tech-stack-for-multi-tenant-saas-mvp-to-scale) - Stack recommendations
 - [Next.js SaaS Architecture Patterns](https://vladimirsiedykh.com/blog/saas-architecture-patterns-nextjs) - Modular monolith pattern
 - [AWS Multi-Tenant Data Isolation with PostgreSQL RLS](https://aws.amazon.com/blogs/database/multi-tenant-data-isolation-with-postgresql-row-level-security/) - Enterprise RLS patterns
+- **[Prisma Multi-Tenant RLS Guide](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35) - RLS seeding pattern (MEDIUM confidence)**
 
 ### Fleet Management Domain (MEDIUM confidence)
 - [Fleet Management Software Development Guide 2025](https://www.inexture.com/fleet-management-software-for-logistics-and-delivery-operations/) - Industry feature requirements
 - [Fleet Management Technology Trends 2025](https://intelliarts.com/blog/fleet-management-technology-trends/) - IoT, AI, cloud computing integration
 
-### Milestone 2 Research (MEDIUM confidence, web search + official docs)
-- **[React Leaflet with Next.js Integration](https://placekit.io/blog/articles/making-react-leaflet-work-with-nextjs-493i) - Next.js App Router pattern (MEDIUM confidence)**
-- **[Recharts React 19 Support Issue](https://github.com/recharts/recharts/issues/4558) - Compatibility verification (HIGH confidence)**
-- **[Next.js Hydration Error Guide](https://medium.com/@nathancodes05/fixing-next-js-hydration-errors-a-comprehensive-guide-5ddd0ed65560) - Best practices (MEDIUM confidence)**
-- **[Prisma Multi-Tenant RLS](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35) - RLS seeding pattern (MEDIUM confidence)**
-
 ---
 *Stack research for: Multi-tenant Fleet Management SaaS*
-*Researched: 2026-02-14 (Updated: 2026-02-15 for Milestone 2 - Maps, Charts, Icons, Mock Data)*
-*Next.js 16 + PostgreSQL 17 + Clerk + Prisma 7 + Leaflet + Recharts + Lucide + Faker.js*
+*Researched: 2026-02-14 (Updated: 2026-02-15 for Milestone 2 - Maps, Charts, Icons, Mock Data, Sidebar Navigation)*
+*Next.js 16 + PostgreSQL 17 + Clerk + Prisma 7 + Leaflet + Recharts + Lucide + Faker.js + shadcn/ui Sidebar*

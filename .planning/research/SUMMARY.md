@@ -1,355 +1,331 @@
 # Project Research Summary
 
-**Project:** DriveCommand - Fleet Intelligence Layer (Milestone 2.0)
-**Domain:** Fleet telematics and business intelligence overlay for existing fleet management system
+**Project:** DriveCommand v2.0 — Samsara-Inspired Fleet Intelligence
+**Domain:** Fleet management telematics dashboard (GPS tracking, safety analytics, fuel monitoring)
 **Researched:** 2026-02-15
-**Confidence:** MEDIUM-HIGH
+**Confidence:** HIGH
 
 ## Executive Summary
 
-DriveCommand is extending from a basic CRUD fleet management app (v1.0) to a Samsara-style intelligence platform with live GPS tracking, safety analytics, and fuel monitoring. Research shows this type of feature set is table stakes for modern fleet management SaaS, with established patterns around GPS telemetry, event-based safety scoring, and fuel efficiency dashboards. The recommended approach uses mock data flowing through real database models and APIs, allowing UI-first development without hardware dependencies while maintaining production-ready data flows.
+DriveCommand v2.0 adds a Samsara-style intelligence layer to the existing fleet management platform (10 phases complete, covering Truck/Driver/Route CRUD, maintenance, documents). This milestone introduces live GPS map tracking, safety analytics dashboards, fuel efficiency monitoring, and sidebar navigation—all using **mock data** to simulate hardware telemetry. The approach is deliberate: validate product-market fit and UI patterns before investing in real hardware integration or telematics APIs.
 
-The critical technical foundation involves three new data models (GPS locations, safety events, fuel records) with strict RLS enforcement in a multi-tenant PostgreSQL database. Client-side rendering for maps (Leaflet with dynamic imports) and charts (Recharts) is mandatory but introduces bundle size and hydration risks. The existing v1.0 architecture (Next.js 16 App Router + PostgreSQL RLS + Clerk + Prisma) provides solid foundation, but integration requires careful navigation refactoring and performance-conscious aggregation queries.
+The recommended technical approach leverages the existing Next.js 16 App Router + PostgreSQL 17 (RLS) + Prisma 7 stack without introducing new architectural patterns. All intelligence features follow established v1.0 patterns: Server Component pages fetch data via Server Actions, which query RLS-protected repositories. The only additions are client-only rendering for maps (Leaflet via dynamic import) and charts (Recharts with "use client" directive). New Prisma models (GPSLocation, SafetyEvent, FuelRecord) extend existing tenant isolation with row-level security policies identical to v1.0 patterns.
 
-Key risks center on SSR failures with map libraries, RLS bypass during mock data generation, memory leaks from real-time updates, and database performance with aggregation queries on time-series data. All are avoidable with proper dynamic imports, RLS-aware seed scripts, marker cleanup patterns, and indexed time-range queries. The mock data approach is validated for demos/MVPs but creates clear v2 pivot point when integrating real hardware telemetry.
+The critical risks center on maintaining multi-tenant security and performance at scale. GPS tracking generates time-series data (1 point/minute = 1,440 rows/day per truck), requiring careful indexing and query patterns to avoid sequential scans. RLS must be tested with restricted database users—not superuser connections that bypass policies. Map and chart libraries introduce 600KB+ of client-side JavaScript, requiring aggressive code splitting. Most critically, developers must resist shortcuts: all mock data must flow through RLS-protected APIs (not raw SQL inserts), and all client components must handle SSR constraints (maps via dynamic import, charts marked "use client").
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Foundation (existing, validated in v1.0):**
-Next.js 16 with App Router provides server components for data fetching and RLS-protected queries. PostgreSQL 17 with Row-Level Security ensures tenant isolation at database level. Clerk handles authentication/organizations. Prisma 7 (pure TypeScript) offers excellent DX with client extensions for RLS context injection.
+**Core approach:** Extend existing stack with zero-cost, open-source tools optimized for mock data and rapid iteration.
 
-**New for intelligence layer:**
-- **Leaflet + react-leaflet 5.0.0:** Open-source maps with zero API costs, perfect for 2D GPS trails and vehicle markers. Requires dynamic import (ssr: false) to avoid Next.js server rendering crashes.
-- **Recharts 3.7.0:** React-native charting library for safety score trends, fuel efficiency visualizations. Built-in TypeScript types, composable components. Client-only rendering required for ResponsiveContainer.
-- **Lucide React 0.564.0:** Tree-shakeable icon library with fleet-specific icons (Truck, MapPin, Gauge, Fuel). SSR-safe, works in both server and client components.
-- **@faker-js/faker 10.3.0:** Mock data generation for GPS coordinates, safety events, fuel consumption. Must flow through Prisma seed scripts (not raw SQL) to validate RLS isolation.
+The v1.0 stack (Next.js 16, React 19, PostgreSQL 17 with RLS, Prisma 7, Clerk, Tailwind/shadcn) remains unchanged. Four new libraries support intelligence features:
 
-**Critical version compatibility:**
-- react-leaflet 5.0.0 requires React 19 (peer dependency)
-- Recharts 3.7.0 works with React 19 (use --legacy-peer-deps during install)
-- All libraries SSR-compatible except Leaflet (requires dynamic import)
+- **Leaflet + react-leaflet** (maps): Open-source 2D maps with zero API costs. Handles GPS trails and marker clustering for fleets <100 vehicles. Requires dynamic import (`ssr: false`) due to DOM dependencies. Alternative considered: Mapbox GL (WebGL-accelerated, better for 500+ vehicles, but $50-200/month API costs and vendor lock-in).
+
+- **Recharts** (charts): React-native declarative charting with built-in TypeScript types. Composable components (LineChart, BarChart, PieChart) match established patterns. All charts marked "use client" to avoid hydration errors. 450KB bundle impact, mitigated via tree-shaking and route-based code splitting.
+
+- **lucide-react** (icons): Tree-shakeable icon library (1,400+ icons, 1-2KB per imported icon). Fleet-specific icons (Truck, Gauge, Fuel, MapPin) with consistent design system. SSR-safe—works in both Server and Client Components.
+
+- **@faker-js/faker** (mock data): Generates realistic GPS coordinates, timestamps, safety events, and fuel records for seed scripts. Mock data flows through Prisma repositories with RLS context (critical for validating tenant isolation).
+
+**Why this stack over alternatives:** Zero incremental infrastructure cost (Leaflet vs. Mapbox saves $50+/month), composable React patterns (Recharts vs. Chart.js canvas API), and validation-first approach (Faker.js with Prisma vs. static JSON files that bypass RLS).
 
 ### Expected Features
 
-**Must have (table stakes for intelligence layer):**
-- Live GPS map with vehicle markers color-coded by status (moving/idle/offline)
-- Route breadcrumb trails showing historical vehicle paths
-- Vehicle detail sidebar panel with current diagnostics (fuel, DEF, speed, engine state)
-- Safety dashboard with composite scores (0-100), harsh braking/speeding/acceleration events
-- Safety trend charts showing score improvements over time
-- Fuel & energy dashboard with MPG, cost, CO2 emissions, idle time tracking
-- Sidebar navigation organizing intelligence features separate from CRUD sections
+**Must have (table stakes):**
+Intelligence layer feels incomplete without these—competitors (Samsara, Geotab, Motive) all provide:
 
-**Should have (competitive differentiators):**
-- Driver safety leaderboard with top/bottom performers
-- Check engine light display with DTC codes (P0XXX)
-- Fuel anomaly detection flagging suspicious drops (theft/leak)
-- Event distribution charts (histogram + donut) for coaching insights
-- Geofence visualization on map (foundation for route compliance)
+- **Live GPS map** with vehicle markers color-coded by status (moving/idle/offline)
+- **Route breadcrumb trails** showing historical paths (polylines rendered from GPS telemetry)
+- **Vehicle detail sidebar** (collapsible panel showing fuel level, speed, last update, DEF level, engine state)
+- **Safety dashboard** with composite score (0-100), harsh braking/speeding/acceleration events, trend charts, and event distribution (donut/histogram)
+- **Fuel & energy dashboard** with MPG trends, cost per mile, idle time percentage, CO2 emissions
+- **Sidebar navigation** (icon-based, collapsible, with active states)—Samsara's signature UI pattern
 
-**Defer to v2+ (validate MVP first):**
-- Route compliance visualization (planned vs actual path blue/red overlay)
-- Predictive maintenance from DTC frequency patterns
-- Multi-vehicle route replay with timeline scrubber
-- Driver coaching workflow with manager task assignments
-- Real-time ETA sharing via public links
-- Hardware integration replacing mock data (Geotab API, Samsara integration)
+**Should have (competitive):**
+Differentiators that increase perceived value but not strictly required for v2.0 launch:
+
+- **Geofence visualization** (polygon-based boundaries for depots/customer sites)
+- **Geofence entry/exit alerts** (email/SMS when vehicle crosses boundaries)
+- **Driver safety leaderboard** (top/bottom performers with trend arrows, gamification)
+- **Configurable safety thresholds** (g-force sensitivity per vehicle class: light/medium/heavy duty)
+- **Check engine light / DTC codes** (P0XXX codes displayed in vehicle panel, trigger maintenance events)
+
+**Defer (v2+):**
+High-value but complex; wait until mock data validates patterns:
+
+- **Trip replay with timeline scrubber** (playback vehicle path at any past moment with speed control)
+- **Route compliance visualization** (blue/red overlay showing deviations from planned route)
+- **Predictive maintenance** (use DTC frequency to predict component failures)
+- **Driver coaching workflow** (manager assigns tasks when safety events occur, track completion)
+- **Real-time ETA sharing** (public tracking links for customers via SMS)
+- **Hardware integration** (replace mock data with Geotab/Samsara API or real OBD-II dongles)
 
 ### Architecture Approach
 
-The existing `(owner)` route group extends with new pages (`/live-map`, `/safety`, `/fuel`) without requiring new route groups. Sidebar navigation refactor modifies `(owner)/layout.tsx` to add persistent navigation across all pages. The server component / client component boundary is critical: pages and data fetching remain server components using server actions, while maps and charts are isolated client components with dynamic imports.
+**Integration strategy:** All v2.0 features extend existing v1.0 architecture without introducing new patterns. New pages live in the existing `(owner)` route group, sharing authentication and RLS middleware.
 
 **Major components:**
-1. **GPS Repository (new):** Time-series data access with RLS tenant isolation. Queries always bounded by date range (last 24 hours, last 30 days) to prevent unbounded scans. Uses composite indexes on `[tenantId, timestamp]`.
-2. **SafetyEvent Repository (new):** Event tracking with aggregation patterns for safety scoring. Implements weighted formula (base 100 - event penalties per 1000 miles). Uses Prisma groupBy for simple aggregations, raw SQL for complex weighted scoring.
-3. **FuelRecord Repository (new):** Consumption tracking with MPG calculations using window functions (LAG) for odometer deltas. Filters by `isEstimated` flag to separate actual fill-ups from calculated consumption.
-4. **Map Components (Leaflet):** Client-only rendering with dynamic import (ssr: false). Wrapper component (MapWrapper) handles loading state, actual map component loads Leaflet in useEffect to avoid SSR crashes.
-5. **Chart Components (Recharts):** Client components with `'use client'` directive. Server components fetch/aggregate data, pass props to client chart wrappers. Keeps client bundle boundaries small.
-6. **Sidebar Navigation:** Client component using `usePathname` for active state tracking, rendered in server component layout. Persists across navigation without re-rendering.
 
-**Data flow pattern:**
-Server Component (page.tsx) → Server Action (data aggregation with RLS) → Repository (Prisma + tenant context) → PostgreSQL RLS policies → Return aggregated data → Pass as props to Client Component (map/chart) → Interactive rendering
+1. **New Prisma models** (GPSLocation, SafetyEvent, FuelRecord) with foreign keys to existing Truck/Driver/Route models. All tables include `tenantId` with RLS policies matching v1.0 pattern: `USING (tenant_id = current_setting('app.current_tenant_id')::uuid)`.
+
+2. **Time-series data repositories** (GPSRepository, SafetyEventRepository, FuelRecordRepository) extend existing TenantRepository base class. All queries use RLS-protected Prisma client extensions (no raw SQL without tenant context).
+
+3. **Server Actions** (`actions/gps.ts`, `actions/safety.ts`, `actions/fuel.ts`) follow established pattern: auth check → getTenantPrisma() → repository query → return typed data. Parallel fetching with Promise.all() for dashboard pages.
+
+4. **Client-only map component** (Leaflet) uses Next.js dynamic import with `ssr: false` to avoid "window is not defined" errors. MapWrapper component provides loading skeleton during JavaScript load.
+
+5. **Client chart components** (Recharts) marked with "use client" directive to prevent hydration mismatches. Server Component pages fetch data and pass as props to chart components.
+
+6. **Modified shared layout** (`(owner)/layout.tsx`) adds Sidebar component. Sidebar persists across all owner portal pages (new intelligence features + existing CRUD pages).
+
+**Key architectural insight:** v2.0 doesn't change the architecture—it validates that established patterns (Server Components → Server Actions → Repositories → Prisma + RLS) scale to time-series GPS data and dashboard aggregations.
 
 ### Critical Pitfalls
 
-1. **Map libraries failing SSR in Next.js App Router:** Leaflet crashes with "window is not defined" during server rendering. Solution: Always use `dynamic(() => import('./map'), { ssr: false })` and configure Leaflet inside `useEffect` after component mounts. Custom marker icons require special handling (initialize inside useEffect, not module level).
+1. **Map libraries failing SSR in Next.js App Router** — Leaflet crashes with "window is not defined" if imported normally. **Prevention:** Always use `dynamic(() => import('./map'), { ssr: false })` and mark map containers as client components. Custom marker icons must be initialized inside `useEffect`, not module-level.
 
-2. **RLS bypass during development breaking production security:** Seed scripts using postgres superuser bypass RLS entirely, creating false confidence. Solution: Create restricted database user for application, set tenant context in seed scripts via `set_config('app.current_tenant_id', ...)`, verify isolation with integration tests using non-superuser credentials.
+2. **RLS bypass during development breaking production security** — Using superuser database connection (postgres role) bypasses RLS policies, creating false security confidence. **Prevention:** Create restricted database user for Prisma (`DATABASE_URL`), use separate admin connection only for migrations (`DATABASE_URL_ADMIN`). Test with restricted user. Add RLS verification to seed scripts (query as tenant1, verify no tenant2 data visible).
 
-3. **Memory leaks from real-time map updates:** Adding markers without removing old ones leaks memory (100MB → 2GB+ over hours). Solution: Store marker references in Map/WeakMap, remove old markers before adding new ones (`marker.remove()`), cleanup all markers in useEffect return, disconnect EventSource/WebSocket connections on unmount.
+3. **Memory leaks from real-time map updates** — Every GPS update creates new marker instances without removing old ones, causing browser memory to grow from 100MB to 2GB+ over hours. **Prevention:** Track markers in Map, remove old markers before adding new ones, clean up event listeners in `useEffect` return, close EventSource/WebSocket connections on unmount.
 
-4. **Dashboard aggregations killing database performance:** GROUP BY queries on millions of GPS/safety/fuel records without date filters cause 10-30 second queries. Solution: Always filter by date range before aggregating, create composite indexes on `[tenantId, timestamp]`, use LEAKPROOF functions in RLS policies to enable index usage, consider materialized views for complex daily/weekly aggregations.
+4. **Dashboard aggregations killing database performance** — Aggregating 30 days of GPS/safety/fuel data without indexes or date filters causes 10-30s queries and 100% DB CPU. **Prevention:** Index all columns in GROUP BY and WHERE clauses (especially `tenant_id, timestamp`), always filter by date range before aggregating, use database aggregations (not in-memory JavaScript), mark RLS functions as LEAKPROOF to enable index usage.
 
-5. **Sidebar navigation migration breaking existing routes:** Restructuring route groups changes which layouts apply to existing pages from 10 completed v1.0 phases. Solution: Add sidebar to existing `(owner)` route group (don't rename groups), test all existing routes after navigation changes, handle scroll restoration in main content area to prevent layout shifts.
+5. **Client component proliferation exploding bundle size** — Adding Leaflet (150KB) + react-leaflet (20KB) + Recharts (100KB) + dependencies balloons first-load JS from 200KB to 800KB+, slowing page loads to 4-6s on 3G. **Prevention:** Use dynamic imports for all heavy components, keep client component boundaries small (wrap only interactive widgets, not entire pages), enable `optimizePackageImports` in next.config.js, set bundle size budgets (fail build if >500KB).
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure prioritizes data foundation first, then builds UI features with increasing complexity while validating mock data patterns early.
+Based on research, suggested phase structure for v2.0 milestone (phases numbered 11-15 to continue from v1.0's 10 phases):
 
-### Phase 1: Live GPS Map Foundation
-**Rationale:** Establishes all three new data models (GPS, safety, fuel) with RLS policies and seed scripts using proper tenant isolation. Creates reusable patterns (dynamic imports, marker cleanup, RLS-aware seeding) that subsequent phases copy. Validates that mock data flows through real APIs and repositories, not raw SQL bypassing security.
+### Phase 11: Live GPS Map Foundation
+**Rationale:** GPS data model and map visualization establish patterns for all subsequent features. Must be built first because Safety and Fuel dashboards depend on understanding time-series data storage and querying. Addresses critical SSR pitfalls (dynamic import pattern) and RLS isolation patterns that phases 12-14 will reuse.
 
 **Delivers:**
-- GPSLocation, SafetyEvent, FuelRecord Prisma models with RLS policies
-- Repository classes with tenant-scoped queries
-- Seed scripts generating realistic mock data via repository layer
-- Live GPS map with vehicle markers (color-coded by status)
-- MapWrapper pattern with dynamic import and cleanup
-- Bundle size baseline (<500KB first-load JS)
+- GPSLocation Prisma model with RLS policies
+- GPS telemetry seed scripts (realistic routes with interpolated waypoints)
+- Live map page with Leaflet displaying latest truck positions
+- MapWrapper component (reusable dynamic import pattern)
+- Vehicle detail sidebar (click marker → see truck diagnostics)
 
-**Addresses:**
-- Table stakes: Live GPS map, vehicle markers, route breadcrumbs
-- Stack: Leaflet + react-leaflet integration, @faker-js/faker seeding
-- Architecture: GPS Repository, time-series querying patterns
+**Addresses features:**
+- Live GPS map with vehicle markers (table stakes)
+- Route breadcrumb trails (polylines from GPS history)
+- Vehicle detail sidebar with fuel/speed/last update (table stakes)
 
-**Avoids:**
-- Pitfall 1: Map SSR failures (dynamic import pattern from start)
-- Pitfall 3: RLS bypass (restricted DB user, seed via repositories)
-- Pitfall 4: Memory leaks (marker cleanup in useEffect returns)
-- Pitfall 7: Mock data bypassing APIs (repository layer validation)
+**Avoids pitfalls:**
+- Map SSR failures (establish dynamic import pattern from start)
+- RLS bypass (create restricted DB user, test with tenant isolation)
+- Memory leaks (implement marker cleanup in useEffect)
+- Mock data bypassing RLS (seed scripts use repository layer)
 
-**Research flag:** Standard patterns, well-documented Leaflet + Next.js integration. Skip `/gsd:research-phase`.
+**Research flag:** Standard pattern (Leaflet integration well-documented). Skip `/gsd:research-phase`.
 
 ---
 
-### Phase 2: Sidebar Navigation Foundation
-**Rationale:** Refactors shared layout before building more intelligence features. Ensures all existing v1.0 routes (10 phases) continue working with new navigation structure. Low-risk change (UI-only, no data layer) but blocks all subsequent phases because they need navigation links to access new pages.
+### Phase 12: Sidebar Navigation Foundation
+**Rationale:** Navigation refactor must happen before adding more dashboard pages (Phases 13-14) to avoid rework. Existing 10 phases use header navigation; switching to sidebar requires testing all existing routes to prevent 404s or layout breaks. Can be built in parallel with Phase 11 (no data dependencies).
 
 **Delivers:**
-- Sidebar component (client component with usePathname)
-- Updated `(owner)/layout.tsx` with sidebar integration
-- Navigation links to Dashboard, Live Map, Safety, Fuel, existing v1.0 pages
-- Responsive behavior (drawer on mobile, persistent on desktop)
-- Active state highlighting with scroll restoration
+- Sidebar component (icon-based, collapsible, with active states)
+- Modified `(owner)/layout.tsx` with Sidebar wrapper
+- Navigation items for Dashboard, Live Map, Safety, Fuel, Trucks, Drivers, Routes
+- Responsive mobile behavior (drawer on mobile, permanent on desktop)
 
-**Addresses:**
-- Table stakes: Sidebar navigation with hierarchical menu
-- Stack: Lucide React icons (tree-shakeable, SSR-safe)
-- Architecture: Shared layout pattern preserving auth guards
+**Addresses features:**
+- Sidebar navigation (table stakes, Samsara UI pattern)
+- Hierarchical menu structure with collapsible groups
 
-**Avoids:**
-- Pitfall 5: Route breakage (test all existing routes, incremental migration)
-- Layout shifts between pages (scroll restoration with key={pathname})
+**Avoids pitfalls:**
+- Sidebar navigation breaking existing routes (incremental migration, test all 10 phases' routes)
+- Layout shift between page navigations (scroll restoration, stable layout)
 
-**Research flag:** Standard Next.js layout patterns. Skip `/gsd:research-phase`.
+**Research flag:** Standard pattern (shadcn/ui Sidebar component). Skip `/gsd:research-phase`.
 
 ---
 
-### Phase 3: Safety Dashboard Core
-**Rationale:** First dashboard using charts, establishes Recharts integration pattern with client component boundaries. Safety scoring is well-documented (industry formulas available), simpler than fuel MPG calculations (which need window functions for odometer deltas). Validates aggregation query patterns with realistic data volumes.
+### Phase 13: Safety Dashboard Core
+**Rationale:** Safety analytics introduce chart library and dashboard aggregation patterns that Fuel Dashboard (Phase 14) will reuse. Must come after GPS Map (Phase 11) to understand time-series data, but before Fuel to establish Recharts patterns.
 
 **Delivers:**
-- Safety score calculation (weighted formula: base 100 - event penalties)
-- Server actions: getSafetyScoreTrend(), getEventsByType(), getTopDriverIssues()
-- Chart components: SafetyScoreTrendChart (LineChart), EventsByTypeChart (BarChart)
-- Safety dashboard page with parallel data fetching (Promise.all)
-- Query performance validation (<2s with 1000 vehicles, 30 days data)
+- SafetyEvent Prisma model with RLS policies
+- Safety event seed scripts (harsh braking/speeding linked to GPS locations)
+- Safety dashboard page with composite score (0-100)
+- Safety trend chart (LineChart showing 30-day scores)
+- Event distribution charts (BarChart by type, PieChart for percentages)
+- Configurable alert thresholds (g-force sensitivity per vehicle class)
 
-**Addresses:**
-- Table stakes: Safety dashboard, composite scores, harsh braking/speeding events
-- Stack: Recharts integration, client component patterns
-- Architecture: SafetyEvent Repository, aggregation with Prisma groupBy
+**Addresses features:**
+- Safety dashboard with composite score (table stakes)
+- Harsh braking, speeding, rapid acceleration events (table stakes)
+- Safety trend over time (line chart)
+- Event histogram and donut chart (table stakes)
+- Configurable alert thresholds (competitive)
 
-**Avoids:**
-- Pitfall 2: Chart hydration mismatches ('use client' directive, ssr: false)
-- Pitfall 8: Slow aggregations (indexed GROUP BY, date range filters, EXPLAIN ANALYZE validation)
-- Pitfall 6: Bundle bloat (small client boundaries, dynamic imports for charts)
+**Avoids pitfalls:**
+- Chart hydration mismatches (mark all charts "use client", establish pattern)
+- Dashboard aggregation performance (index `tenant_id, timestamp`, filter by date before GROUP BY)
 
-**Research flag:** Standard patterns for event tracking and scoring. Skip `/gsd:research-phase`.
+**Research flag:** Standard pattern (Recharts integration documented). Skip `/gsd:research-phase`.
 
 ---
 
-### Phase 4: Fuel & Energy Dashboard
-**Rationale:** Similar pattern to Safety Dashboard, reuses Recharts components and aggregation approaches. Fuel calculations more complex (window functions for odometer deltas, idle time from engine state), but patterns established in Phase 3. Final dashboard completes intelligence layer MVP.
+### Phase 14: Fuel & Energy Dashboard
+**Rationale:** Follows Safety Dashboard (Phase 13) to reuse established chart patterns. Similar aggregation logic (MPG = distance / gallons) but with window functions (LAG for odometer delta).
 
 **Delivers:**
-- Fuel efficiency calculations (MPG = distance / fuel consumed)
-- Server actions: getFuelEfficiencyTrend(), getFuelCostPerMile(), getFuelByTruck()
-- Chart components: FuelTrendChart (LineChart), CostPerMileChart (BarChart)
-- Fuel dashboard page with CO2 emissions, idle time percentage
-- Window function queries (LAG for odometer deltas)
+- FuelRecord Prisma model with RLS policies
+- Fuel transaction seed scripts (progressive odometer readings)
+- Fuel dashboard page with MPG trends
+- Fuel efficiency chart (LineChart showing 30-day MPG)
+- Cost per mile chart (BarChart by truck)
+- Summary cards (total cost, average MPG, gallons consumed, CO2 emissions)
 
-**Addresses:**
-- Table stakes: Fuel dashboard, MPG tracking, cost analysis, emissions
-- Architecture: FuelRecord Repository, window function aggregations
-- Stack: Recharts reuse, date-fns for time calculations
+**Addresses features:**
+- MPG / fuel efficiency metric (table stakes, "north star" metric)
+- Total fuel consumed and estimated cost (table stakes)
+- Carbon emissions (CO2) (table stakes, growing ESG requirement)
+- Idle time percentage (competitive, high ROI coaching opportunity)
+- Top/bottom performers by MPG (competitive)
 
-**Avoids:**
-- Same pitfalls as Phase 3 (hydration, performance, bundle size)
-- Already validated patterns, lower risk
+**Avoids pitfalls:**
+- Dashboard aggregations without date filters (same as Phase 13)
+- Window function performance (index for LAG query on odometer)
 
-**Research flag:** Skip `/gsd:research-phase`. Copy patterns from Phase 3.
+**Research flag:** Standard pattern (Recharts established in Phase 13). Skip `/gsd:research-phase`.
 
 ---
 
-### Phase 5: Vehicle Detail Panel & Diagnostics
-**Rationale:** Depends on GPS map (Phase 1) existing. Adds interactivity to map with click → sidebar detail panel. Displays real-time diagnostics (fuel level, DEF, engine hours, DTC codes) by extending Truck model or creating TruckDiagnostics join table.
+### Phase 15: Intelligence Layer Polish
+**Rationale:** Refinement after core features work. Optimization pass before milestone completion.
 
 **Delivers:**
-- Click handler on map markers → slide-out panel
-- Current diagnostics display (fuel, DEF, speed, odometer, engine state)
-- Last reported timestamp ("2 minutes ago" freshness indicator)
-- Check engine light indicator with DTC code list (if present)
+- Loading states (Suspense boundaries for dashboard sections)
+- Error boundaries (handle no data gracefully, show empty states)
+- Date range filters (7/30/90 day tabs for dashboards)
+- Map marker clustering (for fleets >20 vehicles)
+- Performance optimization (review EXPLAIN ANALYZE, optimize indexes)
+- Mobile responsive testing (chart responsive containers, sidebar collapse)
 
-**Addresses:**
-- Table stakes: Vehicle detail sidebar, current diagnostics display
-- Architecture: Extend Truck model or create TruckDiagnostics table
-- UX: Real-time feedback on data freshness
+**Addresses features:**
+- Map clustering for large fleets (table stakes)
+- Map controls and filters (table stakes)
 
-**Avoids:**
-- N+1 queries (fetch diagnostics in initial map data query, not per marker click)
+**Avoids pitfalls:**
+- Bundle size explosion (verify <500KB first-load JS)
+- Missing loading/error states (polish UX)
 
-**Research flag:** Skip `/gsd:research-phase`. Standard UI pattern.
-
----
-
-### Phase 6: Polish & Enhancement
-**Rationale:** After core intelligence features work, add polish that improves UX without changing data models. Optimizes performance based on profiling from Phases 3-4.
-
-**Delivers:**
-- Loading states (Suspense boundaries for async server components)
-- Error boundaries for map/chart components
-- Date range filters on dashboards (last 7/30/90 days)
-- Export functionality (CSV downloads for safety/fuel reports)
-- Mobile responsive testing and fixes
-- Performance optimizations based on bundle analysis
-
-**Addresses:**
-- UX pitfalls: Loading states, empty states for new tenants
-- Performance: Bundle optimization, query optimization based on profiling
-- Production readiness: Error handling, responsive design
-
-**Avoids:**
-- Premature optimization (do this after features work)
-
-**Research flag:** Skip `/gsd:research-phase`. Standard polish work.
+**Research flag:** No new patterns. Skip `/gsd:research-phase`.
 
 ---
 
 ### Phase Ordering Rationale
 
-**Why Phase 1 first:**
-- Creates data foundation (all three models + RLS policies + seed patterns)
-- Establishes reusable patterns (dynamic imports, cleanup, RLS seeding)
-- Validates mock data approach early (before building more dashboards)
-- High-risk integrations (Leaflet SSR, RLS, memory leaks) addressed immediately
-- Blocks nothing (can proceed in parallel with Phase 2)
+**Dependency-driven sequencing:**
+- Phase 11 first: GPS data model establishes time-series patterns
+- Phase 12 parallel: Navigation has no data dependencies
+- Phase 13 before 14: Safety establishes chart/aggregation patterns for Fuel
+- Phase 15 last: Polish depends on features being complete
 
-**Why Phase 2 before Phase 3-4:**
-- Navigation refactor affects all existing routes (risky, need to test thoroughly)
-- Low complexity (UI-only, no data layer), safe to do early
-- Blocks Phase 3-4 (they need navigation links to new dashboard pages)
-- Can validate with existing v1.0 pages before intelligence features exist
+**Architecture alignment:**
+- All phases follow established v1.0 patterns (Server Components → Repositories → RLS)
+- Phases 11-14 each introduce one new model, avoiding overwhelming schema changes
+- Phase 12 (Navigation) touches existing routes but not data layer
 
-**Why Safety (Phase 3) before Fuel (Phase 4):**
-- Safety scoring simpler than fuel MPG (no window functions needed)
-- Establishes Recharts + aggregation patterns that Fuel copies
-- Lower complexity, validates chart integration before more complex queries
-
-**Why Vehicle Detail (Phase 5) after dashboards:**
-- Depends on map existing (Phase 1), but not urgent for MVP
-- Dashboards provide more value (fleet-wide insights > individual vehicle details)
-- Can be deferred if timeline pressure, dashboards are table stakes
-
-**Why Polish (Phase 6) last:**
-- Only after features work, avoid premature optimization
-- Performance insights come from profiling Phases 3-4 under load
-- Error boundaries need real error scenarios from integration testing
+**Pitfall mitigation:**
+- Phase 11 addresses SSR, RLS, memory leaks early (patterns carry forward)
+- Phase 12 prevents navigation rework (do once before adding more pages)
+- Phase 13 establishes chart hydration patterns (Phase 14 reuses)
+- Phase 15 addresses bundle size after features stabilized
 
 ### Research Flags
 
-**Phases with standard patterns (skip research-phase):**
-- **Phase 1 (GPS Map):** Well-documented Leaflet + Next.js patterns, RLS patterns established in v1.0
-- **Phase 2 (Sidebar):** Standard Next.js layout refactoring
-- **Phase 3 (Safety):** Industry-standard safety scoring formulas, Recharts docs clear
-- **Phase 4 (Fuel):** Copy Phase 3 patterns, window functions well-documented
-- **Phase 5 (Detail Panel):** Standard UI pattern (click → sidebar)
-- **Phase 6 (Polish):** Standard optimization work
+**Phases with standard patterns (skip `/gsd:research-phase`):**
+- **Phase 11:** Leaflet + Next.js integration well-documented
+- **Phase 12:** shadcn/ui Sidebar component has official docs
+- **Phase 13:** Recharts + Next.js patterns established
+- **Phase 14:** Same patterns as Phase 13
+- **Phase 15:** Polish and optimization (no new tech)
 
-**No phases need `/gsd:research-phase`:** All patterns well-documented, research complete.
+**No phases need deeper research.** All technologies (Leaflet, Recharts, Lucide, Faker.js) have:
+- Official documentation with Next.js integration guides
+- Active maintenance (published Feb 2026)
+- Community patterns for SSR handling
+- Established best practices for v2.0 use cases
 
-**When to trigger deeper research:**
-- If switching from mock data to real hardware (Geotab API, OBD-II dongles) → research hardware integration
-- If adding route compliance (geofence detection) → research PostGIS spatial queries
-- If real-time updates needed (WebSocket/SSE) → research streaming architectures
+**When to trigger `/gsd:research-phase` in future:**
+- **Real-time updates (v2.1+):** If adding WebSocket/SSE for <5s GPS updates, research connection management patterns
+- **Hardware integration (v2.2+):** If replacing mock data with Geotab/Samsara API, research authentication and rate limits
+- **Advanced features (v2.2+):** Trip replay, route compliance, predictive maintenance
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Leaflet, Recharts, Lucide widely used with Next.js 16. Version compatibility verified via npm, GitHub issues, community reports. Mock data approach validated in similar projects. |
-| Features | MEDIUM | Based on Samsara/Geotab/Motive patterns (industry leaders), but mock data simulation has assumptions (GPS frequency, event distribution) that need validation with real users. |
-| Architecture | HIGH | Next.js 16 App Router patterns well-established. RLS with Prisma validated in v1.0 (10 phases). Dynamic imports and client boundaries documented extensively. Time-series querying standard PostgreSQL. |
-| Pitfalls | HIGH | SSR failures, RLS bypass, memory leaks, aggregation performance all well-documented with proven solutions. Community has solved these repeatedly in production. |
+| Stack | HIGH | All libraries verified with official docs, version compatibility confirmed, Next.js 16 + React 19 support validated |
+| Features | HIGH | Based on Samsara/Geotab/Motive 2026 patterns, official platform docs, fleet industry standards |
+| Architecture | HIGH | All patterns already established in v1.0 (10 phases complete), no new architectural concepts introduced |
+| Pitfalls | HIGH | Researched from official troubleshooting docs, GitHub issues, production incident reports, Next.js migration guides |
 
-**Overall confidence:** MEDIUM-HIGH
-
-Research is strong on technical implementation (stack, architecture, pitfalls), with clear patterns and solutions. Moderate uncertainty on feature prioritization (which safety metrics matter most to users) and mock data realism (do simulated patterns match real hardware telemetry). Both resolved through user validation during Phase 1-3 execution.
+**Overall confidence:** HIGH
 
 ### Gaps to Address
 
-**Mock data realism:**
-- GPS frequency (30-60s intervals) and route interpolation algorithms are estimates. Validate with fleet managers during Phase 1 demo. If feedback suggests routes look "too geometric," refine interpolation with noise/variance.
-- Safety event distribution (harsh braking 70%, speeding 20%) based on industry averages. May not match customer's fleet behavior. Make event probabilities configurable in seed scripts.
+**No major gaps identified.** Research provided clear recommendations for all areas. Minor clarifications needed during implementation:
 
-**Aggregation performance at scale:**
-- Query performance validated with "1000 vehicles, 30 days data" benchmark, but actual production loads unknown. Phase 3 should include load testing with 10x data (10K vehicles, 90 days) to validate index strategy holds.
+- **PostGIS for spatial queries:** Phase 11 can start with simple DECIMAL(lat, lng) columns. If proximity queries are needed in Phase 15 or v2.1 (e.g., "vehicles within 10 miles"), migrate to PostGIS GEOMETRY type with GIST indexes. Decision deferred until use case emerges.
 
-**Hardware integration assumptions:**
-- v2 pivot assumes switching from mock data to real telemetry via API (Geotab, Samsara) or OBD-II dongles. Research assumes clean API integration, but real hardware has data quality issues (GPS drift, missing signals, delayed updates). Address when v2 integration begins, not now.
+- **Real-time update frequency:** Phase 11 starts with 30-60s polling (acceptable for trucking, standard industry practice). If users request <5s updates, upgrade to Server-Sent Events (Phase 15 or v2.1). Research shows 30-60s sufficient for fleet management (vs. 1s for last-mile delivery).
 
-**Real-time update frequency:**
-- MVP uses polling (30-60s refresh), not true real-time (WebSocket/SSE). Acceptable for most fleet management (not emergency services), but validate with users. If demand for <5s updates, research streaming architecture in v2.
+- **Mock data realism:** Seed scripts generate interpolated GPS routes with realistic speeds (40-65 mph) and progressive odometer readings. If dashboards reveal unrealistic patterns during Phase 13-14, refine seed logic (e.g., add traffic delays, idle periods). Current approach sufficient for v2.0 validation.
+
+- **Bundle size optimization:** Phase 11 establishes dynamic import pattern. If Phase 15 bundle analysis shows >500KB first-load JS, implement aggressive tree-shaking (import specific Recharts components, not full library) or consider lighter alternatives (CSS-based charts for simple metrics).
 
 ## Sources
 
 ### Primary (HIGH confidence)
-**Official documentation:**
-- Next.js 16 documentation (Turbopack, App Router, server components)
-- React 19.2 release notes (Server Components, Activity component)
-- PostgreSQL 17 release notes (performance, logical replication)
-- Prisma 7 documentation (pure TypeScript, client extensions)
-- Tailwind CSS v4 announcement (performance, CSS-first config)
-- React Leaflet documentation (version 5.0.0)
-- Recharts npm package (version 3.7.0 verification)
-- Lucide React documentation (tree-shakeable icons)
-- Prisma seeding documentation (official patterns)
 
-**Technology comparisons:**
-- Clerk vs Auth0 for Next.js (technical comparison, 2026)
-- Cloudflare R2 vs AWS S3 (pricing, feature parity)
-- Prisma vs Drizzle ORM 2026 (DX vs performance tradeoffs)
+**Stack:**
+- [Next.js 16 Documentation](https://nextjs.org/docs) — App Router patterns, Server Components, dynamic imports
+- [React Leaflet Official Documentation](https://react-leaflet.js.org/) — v5.x integration, React 19 compatibility
+- [Recharts Official Documentation](https://recharts.github.io/) — v3.7.0 API, composition patterns
+- [Prisma Documentation](https://www.prisma.io/docs/orm) — Prisma 7 RLS patterns, multi-tenant seeding
+- [PostgreSQL 17 Release Notes](https://www.postgresql.org/docs/release/17.0/) — Performance improvements, RLS enhancements
+- [shadcn/ui Sidebar Component](https://ui.shadcn.com/docs/components/radix/sidebar) — Official component documentation
+- [Lucide React Documentation](https://lucide.dev/guide/packages/lucide-react) — Icon library integration
+- [@faker-js/faker npm](https://www.npmjs.com/package/@faker-js/faker) — Version 10.3.0 API
 
-### Secondary (MEDIUM-HIGH confidence)
-**Fleet management domain research:**
-- Samsara GPS Fleet Tracking (1-second updates, live map, traffic overlays)
-- Geotab Driver Scorecards (scorecard patterns, leaderboards)
-- Motive (KeepTruckin) safety features (AI safety score, video integration)
-- Fleet management KPIs 2026 (safety metrics, coaching patterns)
-- EPA emission factors (10.21 kg CO2/gallon diesel standard)
+**Features:**
+- [Samsara GPS Fleet Tracking](https://www.samsara.com/products/telematics/gps-fleet-tracking) — Industry leader patterns
+- [Driver Behavior Monitoring: Complete Fleet Safety Guide 2026](https://oxmaint.com/industries/fleet-management/driver-behavior-monitoring-complete-fleet-safety-guide-2026) — Safety metrics, scoring formulas
+- [Top 10 Fleet Management KPIs to Track in 2026](https://oxmaint.com/industries/fleet-management/top-10-fleet-management-kpis-track-2026) — Fuel efficiency metrics
+- [Harsh Event Detection - Samsara](https://kb.samsara.com/hc/en-us/articles/5321169919501-Harsh-Event-Detection) — G-force thresholds
 
-**Integration patterns:**
-- Leaflet with Next.js App Router (dynamic import patterns, SSR handling)
-- Recharts React 19 compatibility (GitHub issues, community testing)
-- PostgreSQL RLS with Prisma (multi-tenant isolation, performance optimization)
-- Next.js hydration error handling (SSR/CSR mismatches)
+**Architecture:**
+- [How to Design Database for Fleet Management Systems - GeeksforGeeks](https://www.geeksforgeeks.org/dbms/how-to-design-database-for-fleet-management-systems/) — GPS data schema patterns
+- [Securing Multi-Tenant Applications Using Row Level Security in PostgreSQL with Prisma ORM | Medium](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35) — RLS seeding patterns
 
-**Performance and pitfalls:**
-- React Leaflet memory leak prevention (marker cleanup patterns)
-- PostgreSQL RLS performance best practices (LEAKPROOF functions, index usage)
-- Next.js bundle optimization (package bundling, lazy loading)
-- GROUP BY performance in PostgreSQL (work_mem, hash aggregates)
+**Pitfalls:**
+- [Making React-Leaflet work with NextJS | PlaceKit](https://placekit.io/blog/articles/making-react-leaflet-work-with-nextjs-493i) — SSR handling
+- [Text content does not match server-rendered HTML | Next.js](https://nextjs.org/docs/messages/react-hydration-error) — Hydration error patterns
+- [Common Postgres Row-Level-Security footguns](https://www.bytebase.com/blog/postgres-row-level-security-footguns/) — RLS bypass scenarios
+- [Optimizing Postgres Row Level Security (RLS) for Performance | Scott Pierce](https://scottpierce.dev/posts/optimizing-postgres-rls/) — LEAKPROOF functions
 
-### Tertiary (LOW confidence, needs validation)
-**Mock data patterns:**
-- GPS breadcrumb generation algorithms (interpolation between waypoints)
-- Safety event distribution probabilities (harsh braking 70%, speeding 20%)
-- Fuel consumption formulas (6-8 MPG loaded, idle 0.8 gal/hour)
+### Secondary (MEDIUM confidence)
 
-These are industry averages and estimates. Validate during Phase 1 execution with fleet manager feedback.
+**Comparisons and patterns:**
+- [Mapbox vs Leaflet Comparison](https://medium.com/visarsoft-blog/leaflet-or-mapbox-choosing-the-right-tool-for-interactive-maps-53dea7cc3c40) — Technology decision rationale
+- [Best React Chart Libraries 2025 - LogRocket](https://blog.logrocket.com/best-react-chart-libraries-2025/) — Recharts vs. alternatives
+- [Speeding up GROUP BY in PostgreSQL | CYBERTEC](https://www.cybertec-postgresql.com/en/speeding-up-group-by-in-postgresql/) — Aggregation optimization
+- [PostGIS Performance: Indexing and EXPLAIN | Crunchy Data](https://www.crunchydata.com/blog/postgis-performance-indexing-and-explain) — Spatial index patterns
+
+### Tertiary (LOW confidence)
+
+**Community patterns (needs validation during implementation):**
+- [Streaming in Next.js 15: WebSockets vs Server-Sent Events | HackerNoon](https://hackernoon.com/streaming-in-nextjs-15-websockets-vs-server-sent-events) — Real-time update patterns (for v2.1+)
+- [How To Debug Memory Leaks in React Native Applications](https://oneuptime.com/blog/post/2026-01-15-react-native-memory-leaks/view) — Memory profiling techniques
 
 ---
 *Research completed: 2026-02-15*
 *Ready for roadmap: yes*
+*Phases suggested: 5 (numbered 11-15 to continue from v1.0's 10 phases)*

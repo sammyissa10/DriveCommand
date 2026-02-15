@@ -436,6 +436,277 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 
 ---
 
+### Pitfall 9: RLS Connection Pool Contamination Causing Tenant Data Leaks
+
+**What goes wrong:**
+Connection pooling (PgBouncer, Prisma connection pool) reuses database connections across requests. If tenant context (`current_tenant_id` session variable) isn't reset between requests, one tenant's queries can leak into another tenant's session. Request A sets `current_tenant_id = tenant-1`, connection returns to pool still set to tenant-1, Request B (from tenant-2) reuses that connection without resetting context → Request B sees tenant-1's data. This is a catastrophic security breach that bypasses RLS entirely.
+
+**Why it happens:**
+Modern SaaS apps use connection pooling to avoid connection overhead (PostgreSQL connections are expensive). When Prisma/PgBouncer returns a connection to the pool, session variables persist unless explicitly cleared. Developers assume each request gets a fresh connection, but poolers reuse connections. Async context can swap mid-request (race conditions in async/await blocks), causing tenant context to bleed between concurrent requests.
+
+**How to avoid:**
+1. **Configure connection pooler with session reset**:
+```bash
+# PgBouncer: Use transaction pooling + server_reset_query
+server_reset_query = DISCARD ALL
+pool_mode = transaction
+```
+2. **Set tenant context per transaction, not per connection**:
+```typescript
+// ❌ Bad: Set once per connection (persists across requests)
+await prisma.$executeRaw`SET app.current_tenant_id = ${tenantId}`;
+
+// ✅ Good: Set per transaction
+await prisma.$transaction(async (tx) => {
+  await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+  // TRUE = transaction-local, resets after transaction
+  return tx.gpsLocation.findMany();
+});
+```
+3. **Use Prisma Client extension for automatic tenant injection**:
+```typescript
+const tenantPrisma = prisma.$extends({
+  query: {
+    async $allOperations({ args, query }) {
+      // Inject tenant context before every query
+      await prisma.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+      return query(args);
+    },
+  },
+});
+```
+4. **Never trust connection state** - always set context explicitly
+5. **Verify RLS with integration tests** that simulate connection reuse:
+```typescript
+// Test: Request A → Request B on same connection
+const db1 = await getTenantDb(tenant1Id);
+const data1 = await db1.gpsLocation.findMany();
+
+// Simulate connection return to pool and reuse
+const db2 = await getTenantDb(tenant2Id);
+const data2 = await db2.gpsLocation.findMany();
+
+// Assert no overlap
+assert(data1.every(row => row.tenantId === tenant1Id));
+assert(data2.every(row => row.tenantId === tenant2Id));
+```
+6. **Use Defense-in-Depth** - don't rely on RLS alone:
+   - Application-layer filtering (`WHERE tenant_id = ?`)
+   - RLS policies as backup
+   - Audit logs to detect leaks
+   - Periodic cross-tenant data checks
+
+**Warning signs:**
+- Sporadic reports of users seeing other organization's data
+- Inconsistent query results (same query returns different data)
+- RLS violations in audit logs
+- Connection pool exhaustion or timeout errors
+- Data visible in development but not production (different pooling configs)
+
+**Phase to address:**
+Phase 1 (Live GPS Map Foundation) - Implement transaction-scoped tenant context from the start. Add connection pool configuration to deployment docs. Create integration test suite that validates tenant isolation under connection reuse.
+
+---
+
+### Pitfall 10: PostGIS Spatial Indexes Not Used Due to Type Mismatches
+
+**What goes wrong:**
+GPS coordinates stored as `DECIMAL(10,8)` for latitude/longitude instead of PostGIS `GEOMETRY(Point, 4326)` type. Queries filtering by proximity ("find all trucks within 10 miles of location") perform sequential scans instead of using spatial indexes. With millions of GPS points, queries take 30+ seconds. Map features like "show vehicles near route" become unusable. Database CPU spikes during map interactions.
+
+**Why it happens:**
+Developers use simple DECIMAL columns for coordinates (easier to understand, no PostGIS extension required). Proximity queries use Haversine formula in SQL or application code, which can't leverage indexes. PostGIS GIST indexes only work with GEOMETRY/GEOGRAPHY types. Prisma doesn't natively support PostGIS types, so developers avoid them. Without spatial indexes, every proximity query scans all rows.
+
+**How to avoid:**
+1. **Enable PostGIS extension**:
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+2. **Use GEOMETRY or GEOGRAPHY type for coordinates**:
+```sql
+-- In migration
+ALTER TABLE gps_locations
+  ADD COLUMN location GEOMETRY(Point, 4326);
+
+-- Populate from existing lat/lng
+UPDATE gps_locations
+  SET location = ST_SetSRID(ST_MakePoint(longitude, latitude), 4326);
+```
+3. **Create spatial index (GIST)**:
+```sql
+CREATE INDEX idx_gps_locations_geom
+  ON gps_locations USING GIST(location);
+
+-- Also index by tenant_id for multi-tenant queries
+CREATE INDEX idx_gps_locations_tenant_geom
+  ON gps_locations (tenant_id, location);
+```
+4. **Use PostGIS functions in queries**:
+```typescript
+// Find vehicles within 10 miles (16093 meters) of point
+const nearbyVehicles = await db.$queryRaw`
+  SELECT v.id, v.make, v.model,
+         ST_Distance(g.location, ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)) as distance
+  FROM gps_locations g
+  INNER JOIN vehicles v ON g.vehicle_id = v.id
+  WHERE g.tenant_id = ${tenantId}
+    AND ST_DWithin(
+      g.location,
+      ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography,
+      16093  -- meters
+    )
+  ORDER BY distance
+  LIMIT 50
+`;
+```
+5. **Handle PostGIS in Prisma**:
+```typescript
+// Prisma doesn't support GEOMETRY natively, use Unsupported type
+model GPSLocation {
+  id        String   @id @default(uuid())
+  tenantId  String
+  vehicleId String
+  location  Unsupported("GEOMETRY(Point, 4326)")?
+  // Keep lat/lng for backward compatibility
+  latitude  Decimal  @db.Decimal(10, 8)
+  longitude Decimal  @db.Decimal(11, 8)
+}
+```
+6. **Validate spatial queries with EXPLAIN ANALYZE**:
+```sql
+EXPLAIN ANALYZE
+  SELECT * FROM gps_locations
+  WHERE ST_DWithin(location, ST_MakePoint(-122.4194, 37.7749)::geography, 16093);
+
+-- Should show "Index Scan using idx_gps_locations_geom"
+-- NOT "Seq Scan on gps_locations"
+```
+
+**Warning signs:**
+- Proximity queries taking >5 seconds
+- EXPLAIN ANALYZE showing sequential scans on GPS queries
+- Database CPU spiking during map zoom/pan operations
+- "Out of memory" errors during spatial queries
+- Map features timing out when filtering by location
+
+**Phase to address:**
+Phase 1 (Live GPS Map Foundation) - Evaluate PostGIS early. If proximity queries are needed (Phase 2+), migrate to GEOMETRY type. If only displaying points on map (Phase 1), DECIMAL is acceptable. Document decision and migration path.
+
+---
+
+### Pitfall 11: Real-Time Updates Without Rate Limiting Overwhelming Server
+
+**What goes wrong:**
+Implementing "live tracking" with aggressive polling (every 1-2 seconds) from client-side. With 50 concurrent users each polling 50 vehicles, server handles 2,500 requests/second. Database connection pool exhausts. API routes timeout. Other users experience degraded performance. Vercel serverless functions hit concurrency limits, causing 429 errors. Monthly bill explodes from increased function invocations.
+
+**Why it happens:**
+Developers implement "real-time" with `setInterval(() => fetch('/api/gps/latest'), 2000)` without considering scale. Each dashboard refresh queries database, even if data hasn't changed. No caching layer between API and database. Server Actions aren't designed for high-frequency polling (they have authentication overhead). Vercel's serverless model charges per invocation, not per second of computation.
+
+**How to avoid:**
+1. **Use Server-Sent Events (SSE) instead of polling**:
+```typescript
+// Client: app/components/LiveMap.tsx
+useEffect(() => {
+  const eventSource = new EventSource('/api/gps/stream');
+
+  eventSource.onmessage = (event) => {
+    const location = JSON.parse(event.data);
+    updateMarker(location);
+  };
+
+  return () => {
+    eventSource.close();
+  };
+}, []);
+
+// Server: app/api/gps/stream/route.ts
+export async function GET(request: Request) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      // Send updates only when data changes
+      while (true) {
+        const locations = await getLatestLocations();
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(locations)}\n\n`));
+        await sleep(10000); // 10 second interval
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+```
+2. **Implement rate limiting on API routes**:
+```typescript
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '10 s'), // 10 requests per 10 seconds
+});
+
+export async function GET(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response('Too many requests', { status: 429 });
+  }
+
+  // Handle request
+}
+```
+3. **Cache GPS data with short TTL**:
+```typescript
+import { unstable_cache } from 'next/cache';
+
+const getLatestLocations = unstable_cache(
+  async (tenantId: string) => {
+    return db.gpsLocation.findMany({ where: { tenantId } });
+  },
+  ['gps-latest'],
+  { revalidate: 10 } // 10 second cache
+);
+```
+4. **Throttle updates on client-side**:
+```typescript
+import { useThrottle } from '@uidotdev/usehooks';
+
+function LiveMap({ locations }) {
+  const throttledLocations = useThrottle(locations, 1000); // Max 1 update/second
+  // Render map with throttled data
+}
+```
+5. **Use WebSockets for bidirectional real-time** (requires self-hosting, not Vercel):
+```typescript
+// Only if truly real-time (<1s latency) required
+// Requires Fly.io, Railway, or other VM-based hosting
+import { WebSocketServer } from 'ws';
+
+const wss = new WebSocketServer({ port: 8080 });
+wss.on('connection', (ws) => {
+  // Send updates via WebSocket
+});
+```
+
+**Warning signs:**
+- API route hitting rate limits or timeouts
+- Database connection pool exhausted errors
+- Vercel bill showing 10M+ function invocations
+- Slow dashboard performance with multiple concurrent users
+- Browser network tab showing hundreds of pending requests
+
+**Phase to address:**
+Phase 1 (Live GPS Map Foundation) - Start with SSE or cached polling (30s interval). Document that "true real-time" (<5s latency) requires WebSocket migration to self-hosted infrastructure (Phase 2+).
+
+---
+
 ## Technical Debt Patterns
 
 | Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
@@ -450,6 +721,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Hardcoded tenant context | Faster than middleware lookups | Tenant data leaks, security vulnerabilities | Never - always use context from middleware |
 | Aggregating without date filters | Shows "all time" data | Slow queries, database overload | Only for tenants with <100 vehicles and <1 month of data |
 | Client-side real-time updates | Easy to implement with polling | Excessive API calls, poor performance | Only for dashboards with <10 concurrent users |
+| DECIMAL for GPS coordinates | No PostGIS dependency, simpler schema | No spatial indexes, slow proximity queries | Only if no location-based queries needed |
+| Session-scoped tenant context | Simpler code, fewer queries | Connection pool contamination, tenant leaks | Never - always use transaction-scoped |
 
 ## Integration Gotchas
 
@@ -465,6 +738,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Map tile providers | Use free tier without limits | Implement request caching, set max zoom levels |
 | Dashboard aggregations | No date range filters | Always filter by date before GROUP BY, use indexes |
 | WebSocket/SSE connections | Create new connection per component | Singleton connection manager, share across components |
+| PostGIS spatial queries | Query without spatial index | Create GIST index, use ST_DWithin with GEOGRAPHY type |
+| Connection pooling with RLS | Set tenant context per connection | Set tenant context per transaction with TRUE parameter |
 
 ## Performance Traps
 
@@ -480,6 +755,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Unoptimized aggregations with GROUP BY | Dashboard queries >5s | Index GROUP BY columns, filter with WHERE before grouping, increase work_mem | >100K rows aggregated |
 | Real-time updates without throttling | Excessive re-renders, UI lag | Throttle updates to 1/second, batch marker updates | >10 vehicles streaming |
 | Non-LEAKPROOF RLS functions | Indexes not used, sequential scans | Mark safe functions LEAKPROOF, verify with EXPLAIN ANALYZE | >10K rows per tenant |
+| Proximity queries without spatial index | 30+ second queries on location data | Use PostGIS GEOMETRY type with GIST index, ST_DWithin function | >100K GPS locations |
+| Aggressive polling without caching | Server overload, API timeouts | Use SSE or cached responses with 10-30s TTL | >20 concurrent users |
 
 ## Security Mistakes
 
@@ -493,6 +770,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Exposing GPS coordinates without authorization | Privacy violations, competitor intel leaks | Verify user has access to vehicle before returning GPS data |
 | Not forcing RLS for table owners | Developers bypass RLS without knowing | Use `ALTER TABLE ... FORCE ROW LEVEL SECURITY` |
 | Real-time data endpoints without auth | Anyone can access GPS stream | Verify tenant context and vehicle ownership before streaming |
+| Connection-scoped tenant context | Connection pool contamination, tenant leaks | Use transaction-scoped context (set_config with TRUE parameter) |
+| Trusting client-provided coordinates | GPS spoofing, fraudulent mileage claims | Validate coordinate bounds, detect impossible speeds, cross-reference with route data |
 
 ## UX Pitfalls
 
@@ -508,6 +787,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Map markers all same color | Can't distinguish vehicle types/status | Color-code by vehicle type, status, fuel level, safety score |
 | Sidebar navigation with no active state | Users lost, don't know current page | Highlight active route, show breadcrumbs for nested pages |
 | Dashboard auto-refresh without indicator | Confusing when data changes unexpectedly | Show "Updated 30s ago" or refresh indicator |
+| No loading states for aggregations | Dashboard appears broken during slow queries | Show skeleton loaders, progress indicators, or "Calculating..." messages |
+| GPS trail rendering 10K+ points | Map freezes, laggy interactions | Simplify polylines (Douglas-Peucker algorithm), render only visible zoom level |
 
 ## "Looks Done But Isn't" Checklist
 
@@ -526,6 +807,9 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 - [ ] **Route Migration:** All pages load - verify no 404s, layouts apply correctly, auth guards work
 - [ ] **EventSource/WebSocket:** Streams data - verify closed on cleanup, no connection leaks
 - [ ] **Responsive Charts:** Resize correctly - verify no hydration errors, consistent dimensions
+- [ ] **Spatial Queries:** Proximity filtering works - verify spatial indexes used (EXPLAIN ANALYZE)
+- [ ] **Connection Pooling:** Multi-tenant isolation - verify tenant context resets between requests
+- [ ] **Rate Limiting:** API protection - verify endpoints have rate limits, return 429 when exceeded
 
 ## Recovery Strategies
 
@@ -541,6 +825,9 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Slow dashboard aggregations | **MEDIUM** | 1. Add indexes on GROUP BY columns, 2. Add WHERE filters before aggregation, 3. Consider materialized views for complex metrics |
 | EventSource not closed | **LOW** | 1. Add cleanup to useEffect return, 2. Create connection manager singleton, 3. Document pattern |
 | Non-LEAKPROOF RLS functions | **MEDIUM** | 1. Mark safe functions LEAKPROOF, 2. Run EXPLAIN ANALYZE, 3. Verify indexes used, 4. Document RLS function requirements |
+| Connection pool contamination | **CRITICAL** | 1. Switch to transaction-scoped context, 2. Add DISCARD ALL to pool config, 3. Audit all tenant queries, 4. Add integration tests |
+| Missing spatial indexes | **MEDIUM** | 1. Enable PostGIS extension, 2. Add GEOMETRY column, 3. Create GIST index, 4. Migrate queries to ST_DWithin |
+| API rate limit overload | **MEDIUM** | 1. Implement SSE or increase cache TTL, 2. Add rate limiting middleware, 3. Throttle client-side updates |
 
 ## Pitfall-to-Phase Mapping
 
@@ -558,13 +845,16 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 | Sidebar scroll/layout shift | Phase 2: Sidebar Navigation Foundation | No layout shift when navigating, scroll position stable |
 | EventSource/WebSocket not cleaned up | Phase 1: Live GPS Map Foundation | No active connections after unmounting components |
 | Non-LEAKPROOF functions in RLS | Phase 1: Live GPS Map Foundation | EXPLAIN ANALYZE shows index usage on tenant queries |
+| Connection pool contamination | Phase 1: Live GPS Map Foundation | Transaction-scoped context, integration tests verify isolation |
+| Missing PostGIS spatial indexes | Phase 1 or defer to Phase 5 | EXPLAIN ANALYZE shows GIST index usage on proximity queries |
+| Real-time rate limiting | Phase 1: Live GPS Map Foundation | API routes have rate limits, dashboards throttle updates |
 
 ## Sources
 
 ### Map Library Pitfalls
 - [How to use react-leaflet in Nextjs with TypeScript (Surviving it) | Medium](https://andresmpa.medium.com/how-to-use-react-leaflet-in-nextjs-with-typescript-surviving-it-21a3379d4d18)
 - [Making React-Leaflet work with NextJS | PlaceKit](https://placekit.io/blog/articles/making-react-leaflet-work-with-nextjs-493i)
-- [React Leaflet on Next.js 15 (App router) | XXL Steve](https://xxlsteve.net/blog/react-leaflet-on-next-15/)
+- [Making Next.js and Mapbox GL JS get along | Medium](https://medium.com/@timothyde/making-next-js-and-mapbox-gl-js-get-along-a99608667e67)
 - [Understand memory leak prevention](https://app.studyraid.com/en/read/11881/378250/memory-leak-prevention)
 - [Memory Leak after map.remove() · Issue #4862 · mapbox/mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js/issues/4862)
 
@@ -573,6 +863,7 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 - [Mastering SSR and CSR in Next.js: Data Visualizations](https://dzone.com/articles/mastering-ssr-and-csr-in-nextjs)
 - [Next.js Charts with Recharts - A Useful Guide](https://app-generator.dev/docs/technologies/nextjs/integrate-recharts.html)
 - [Responsive Container doesnt support Server Side Rendering · Issue #531 · recharts/recharts](https://github.com/recharts/recharts/issues/531)
+- [Best React chart libraries (2025 update): Features, performance & use cases - LogRocket Blog](https://blog.logrocket.com/best-react-chart-libraries-2025/)
 
 ### PostgreSQL RLS Performance and Security
 - [RLS Performance and Best Practices · supabase · Discussion #14576](https://github.com/orgs/supabase/discussions/14576)
@@ -580,6 +871,8 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 - [Common Postgres Row-Level-Security footguns](https://www.bytebase.com/blog/postgres-row-level-security-footguns/)
 - [Postgres RLS Implementation Guide - Best Practices, and Common Pitfalls](https://www.permit.io/blog/postgres-rls-implementation-guide)
 - [Securing Multi-Tenant Applications Using Row Level Security in PostgreSQL with Prisma ORM | Medium](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35)
+- [Multi-Tenant Leakage: When "Row-Level Security" Fails in SaaS | Medium](https://medium.com/@instatunnel/multi-tenant-leakage-when-row-level-security-fails-in-saas-da25f40c788c)
+- [Tenant Isolation in Multi-Tenant Systems: Architecture, Identity, and Security - Security Boulevard](https://securityboulevard.com/2025/12/tenant-isolation-in-multi-tenant-systems-architecture-identity-and-security/)
 
 ### Next.js Bundle Size and Performance
 - [Guides: Package Bundling | Next.js](https://nextjs.org/docs/app/guides/package-bundling)
@@ -590,11 +883,15 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 - [Layout shift when routing to different page · Issue #43418 · vercel/next.js](https://github.com/vercel/next.js/issues/43418)
 - [File-system conventions: Route Groups | Next.js](https://nextjs.org/docs/app/api-reference/file-conventions/route-groups)
 - [Upgrading: Version 15 | Next.js](https://nextjs.org/docs/app/guides/upgrading/version-15)
+- [Next.js: The Complete Guide for 2026 | DevToolbox Blog](https://devtoolbox.dedyn.io/blog/nextjs-complete-guide)
+- [Getting Started: Server and Client Components | Next.js](https://nextjs.org/docs/app/getting-started/server-and-client-components)
 
 ### Real-Time Data and Fleet Management
 - [Next.js Real-Time Chat: The Right Way to Use WebSocket and SSE · BetterLink Blog](https://eastondev.com/blog/en/posts/dev/20260107-nextjs-realtime-chat/)
 - [Streaming in Next.js 15: WebSockets vs Server-Sent Events | HackerNoon](https://hackernoon.com/streaming-in-nextjs-15-websockets-vs-server-sent-events)
 - [How To Debug Memory Leaks in React Native Applications](https://oneuptime.com/blog/post/2026-01-15-react-native-memory-leaks/view)
+- [Real-Time Tracking using Node.js, WebSockets, Redis and Open Layers | Altimetrik](https://www.altimetrik.com/blog/real-time-tracking-using-node-js-websockets-redis-and-open-layers)
+- [Implementing Rate Limiting in Next.js](https://peerlist.io/blog/engineering/how-to-implement-rate-limiting-in-nextjs)
 
 ### Dashboard and Aggregation Performance
 - [Speeding up GROUP BY in PostgreSQL | CYBERTEC](https://www.cybertec-postgresql.com/en/speeding-up-group-by-in-postgresql/)
@@ -602,9 +899,17 @@ Phase 3 (Safety Dashboard Core) and Phase 4 (Fuel & Energy Dashboard) - Create a
 - [Fleet Management Dashboards Explained for 2026](https://www.fanruan.com/en/blog/fleet-management-dashboard)
 - [Driver Behavior Monitoring: Complete Fleet Safety Guide 2026](https://oxmaint.com/industries/fleet-management/driver-behavior-monitoring-complete-fleet-safety-guide-2026)
 
+### PostGIS and Spatial Indexing
+- [PostGIS Performance: Indexing and EXPLAIN | Crunchy Data Blog](https://www.crunchydata.com/blog/postgis-performance-indexing-and-explain)
+- [How do I use spatial indexes? | PostGIS](https://postgis.net/documentation/faq/spatial-indexes/)
+- [Optimizing Geospatial Data Storage with PostgreSQL and PostGIS | Medium](https://medium.com/@lfoster49203/optimizing-geospatial-data-storage-with-postgresql-and-postgis-dd6aee7df005)
+- [How To Create A Spatial Index In PostGIS](https://mapscaping.com/create-a-spatial-index-in-postgis/)
+- [PostGIS/GIS support · Issue #2789 · prisma/prisma](https://github.com/prisma/prisma/issues/2789)
+
 ### Mock Data and Testing
 - [Supabase Row Level Security (RLS): Complete Guide (2026) | DesignRevision](https://designrevision.com/blog/supabase-row-level-security)
 - [Multi-tenant data isolation with PostgreSQL Row Level Security | Amazon Web Services](https://aws.amazon.com/blogs/database/multi-tenant-data-isolation-with-postgresql-row-level-security/)
+- [Real-Time GPS & Fleet Tracking with Confluent Cloud & MongoDB](https://www.confluent.io/blog/fleet-management-gps-tracking-with-confluent-cloud-mongodb/)
 
 ---
 *Pitfalls research for: Adding GPS mapping, dashboards, and navigation to existing Next.js 16 multi-tenant fleet management app*
