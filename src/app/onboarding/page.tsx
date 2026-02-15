@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { SignOutButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 export default async function OnboardingPage() {
@@ -35,6 +36,13 @@ export default async function OnboardingPage() {
             <p className="text-gray-600">This usually takes a few seconds.</p>
             <div className="mt-8">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            </div>
+            <div className="mt-8">
+              <SignOutButton redirectUrl="/sign-in">
+                <button className="text-sm text-gray-400 hover:text-gray-600 underline">
+                  Sign out and try again
+                </button>
+              </SignOutButton>
             </div>
           </div>
         </div>
