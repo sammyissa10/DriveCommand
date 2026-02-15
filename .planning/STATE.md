@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Logistics owners can manage their entire operation — trucks, drivers, routes, and documents — from one platform, with each route showing the full picture on a single screen.
-**Current focus:** Phase 12 - Live GPS Map (v2.0 Samsara-Inspired Fleet Intelligence)
+**Current focus:** Phase 13 - Safety Analytics Dashboard (v2.0 Samsara-Inspired Fleet Intelligence)
 
 ## Current Position
 
-Phase: 12 of 15 (Live GPS Map)
-Plan: 2 of 2 in current phase
-Status: Completed
-Last activity: 2026-02-15 — Plan 12-02 complete (Vehicle details & route history)
+Phase: 13 of 15 (Safety Analytics Dashboard)
+Plan: 0 of TBD in current phase
+Status: Ready to plan
+Last activity: 2026-02-15 — Phase 12 complete (2/2 plans, verified)
 
 Progress: [████████████████████░░░░░] 80% (25 plans complete, 10 v1.0 phases shipped)
 
@@ -83,5 +83,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 12-02-PLAN.md — Vehicle details sheet and route history trail with speed-based color coding
+Stopped at: Phase 12 complete, ready to plan Phase 13
 Resume file: None

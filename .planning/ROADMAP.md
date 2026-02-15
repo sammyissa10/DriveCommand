@@ -202,7 +202,7 @@ Plans:
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 11: Navigation & Data Foundation** - Sidebar navigation + GPS/Safety/Fuel data models + mock data seeding
-- [ ] **Phase 12: Live GPS Map** - Leaflet map + vehicle markers + detail panel + route trails + clustering
+- [x] **Phase 12: Live GPS Map** - Leaflet map + vehicle markers + detail panel + route trails + clustering
 - [ ] **Phase 13: Safety Analytics Dashboard** - Safety scores + event tracking + trends + rankings + thresholds
 - [ ] **Phase 14: Fuel & Energy Dashboard** - MPG trends + cost analysis + emissions + idle time + rankings
 - [ ] **Phase 15: Tags/Groups & Polish** - Organization system + loading states + error handling + mobile responsive
@@ -237,8 +237,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 12-01-PLAN.md — Leaflet setup, server actions, utility functions, map page with color-coded vehicle markers and clustering
-- [ ] 12-02-PLAN.md — Vehicle detail sidebar with diagnostics and route history breadcrumb trail polylines
+- [x] 12-01-PLAN.md — Leaflet setup, server actions, utility functions, map page with color-coded vehicle markers and clustering
+- [x] 12-02-PLAN.md — Vehicle detail sidebar with diagnostics and route history breadcrumb trail polylines
 
 ### Phase 13: Safety Analytics Dashboard
 **Goal**: Owners can monitor driver safety performance with scores, events, and trends
@@ -294,7 +294,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Notifications & Reminders | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 11. Navigation & Data Foundation | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
-| 12. Live GPS Map | v2.0 | 0/2 | Not started | - |
+| 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 13. Safety Analytics Dashboard | v2.0 | 0/TBD | Not started | - |
 | 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
 | 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
