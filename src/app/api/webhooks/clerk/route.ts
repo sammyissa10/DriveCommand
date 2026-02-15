@@ -256,8 +256,15 @@ export async function POST(req: NextRequest) {
       );
     } catch (error: any) {
       console.error('Error provisioning tenant:', error);
+      const subErrors = error?.errors?.map((e: any) => e?.message || String(e)) || [];
       return NextResponse.json(
-        { error: 'Failed to provision tenant', details: error?.message || String(error) },
+        {
+          error: 'Failed to provision tenant',
+          details: error?.message || String(error),
+          name: error?.name,
+          subErrors,
+          code: error?.code,
+        },
         { status: 500 }
       );
     }
