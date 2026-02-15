@@ -149,10 +149,11 @@ Plans:
   3. Owner can schedule future services with time-based triggers (every 90 days)
   4. Owner can schedule future services with mileage-based triggers (every 5,000 miles)
   5. System tracks both trigger types simultaneously for each scheduled service
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 08-01-PLAN.md — Data layer: Prisma models (MaintenanceEvent + ScheduledService), migration with RLS, Zod schemas, calculateNextDue utility, server actions
+- [ ] 08-02-PLAN.md — UI: Combined maintenance page, log event form, schedule service form, TanStack Table lists with due status, truck detail link
 
 ### Phase 9: Notifications & Reminders
 **Goal**: System automatically sends timely reminders for maintenance and expiring documents
@@ -198,6 +199,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
 | 7. Driver Portal | 2/2 | ✓ Complete | 2026-02-14 |
-| 8. Maintenance & Scheduling | 0/TBD | Not started | - |
+| 8. Maintenance & Scheduling | 0/2 | Planned | - |
 | 9. Notifications & Reminders | 0/TBD | Not started | - |
 | 10. Dashboard & System Admin | 0/TBD | Not started | - |
