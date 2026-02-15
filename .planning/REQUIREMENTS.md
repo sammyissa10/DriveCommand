@@ -63,20 +63,60 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **ADMN-01**: System admin can view all tenants and their status
 - [ ] **ADMN-02**: System admin can create, suspend, or delete tenants
 
-## v2 Requirements
+## v2.0 Requirements
 
-Deferred to future release. Tracked but not in current roadmap.
+Requirements for milestone v2.0: Samsara-Inspired Fleet Intelligence. Each maps to roadmap phases 11-15.
+
+### GPS & Live Map
+
+- [ ] **GMAP-01**: Owner can view live map showing all fleet vehicles with color-coded status markers (moving/idle/offline)
+- [ ] **GMAP-02**: Owner can view vehicle route history as breadcrumb trail polylines on the map
+- [ ] **GMAP-03**: Owner can click a vehicle marker to open a detail sidebar showing diagnostics (fuel level, speed, engine state, DEF level, odometer)
+- [ ] **GMAP-04**: Map clusters nearby vehicle markers when zoomed out for fleets with many vehicles
+
+### Safety Analytics
+
+- [ ] **SAFE-01**: Owner can view fleet-wide safety dashboard with composite safety score (0-100)
+- [ ] **SAFE-02**: Owner can view safety events (harsh braking, speeding, rapid acceleration) with distribution charts (donut/histogram)
+- [ ] **SAFE-03**: Owner can view safety score trends over time (30-day line chart per driver or fleet-wide)
+- [ ] **SAFE-04**: Owner can view driver safety performance rankings (leaderboard of top/bottom performers)
+- [ ] **SAFE-05**: Owner can configure safety alert thresholds (g-force sensitivity per vehicle class)
+
+### Fuel & Energy
+
+- [ ] **FUEL-01**: Owner can view per-vehicle fuel efficiency (MPG) trends, total cost, gallons consumed, and cost per mile
+- [ ] **FUEL-02**: Owner can view estimated CO2 emissions per vehicle based on fuel consumption
+- [ ] **FUEL-03**: Owner can view idle time percentage per vehicle
+- [ ] **FUEL-04**: Owner can view fleet fuel efficiency rankings (top/bottom performers by MPG)
+
+### Navigation & Infrastructure
+
+- [ ] **NAVI-01**: Owner portal uses Samsara-style collapsible icon sidebar navigation with role-based menu items
+- [ ] **NAVI-02**: System seeds realistic mock data for GPS locations, safety events, and fuel records through RLS-protected APIs
+- [ ] **NAVI-03**: Owner can organize vehicles and drivers into tags/groups for filtering across all dashboards
+
+## Future Requirements
+
+Deferred to future milestones. Tracked but not in current roadmap.
 
 ### Operations
 
 - **OPER-01**: Pre/post-trip inspection checklists (DVIR) with photo uploads
 - **OPER-02**: Work order management (create from inspection failures, track to completion)
-- **OPER-03**: Fuel tracking (manual entry: date, gallons, cost, odometer)
 
 ### Reporting
 
 - **REPT-01**: Cost tracking and reporting per truck (maintenance + fuel costs)
 - **REPT-02**: Advanced analytics (cost trends, utilization, replacement timing)
+
+### Advanced Fleet Intelligence (v2.1+)
+
+- **ADVN-01**: Trip replay with timeline scrubber (playback vehicle path at any past moment)
+- **ADVN-02**: Route compliance visualization (planned vs actual path overlay)
+- **ADVN-03**: Geofence creation and entry/exit alerts
+- **ADVN-04**: Driver coaching workflow (assign tasks from safety events)
+- **ADVN-05**: Real-time ETA sharing (public tracking links for customers)
+- **ADVN-06**: Hardware telematics integration (replace mock data with real devices)
 
 ### Integrations
 
@@ -91,15 +131,16 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Feature | Reason |
 |---------|--------|
-| Real-time GPS tracking | High complexity, hardware dependency, not core to management value |
+| Real hardware/telematics integration | Mock data for v2.0, hardware-ready APIs later |
 | Route optimization / dispatch algorithms | Different domain (logistics routing), complex algorithms |
 | Billing/subscription management | Defer until product-market fit validated |
-| Push notifications | Dashboard + email sufficient for v1 |
+| Push notifications | Dashboard + email sufficient |
 | AI dashcam / video telematics | Requires hardware, video storage, complex AI |
-| Telematics / OBD-II diagnostics | Requires hardware dongles, vehicle integration |
 | Built-in messaging/chat | Scope creep — email + external tools suffice |
 | Driver payroll / HR features | Complex regulatory domain, integrate with existing systems |
-| Predictive maintenance | Requires 6-12 months of historical data to be effective |
+| Predictive maintenance | Requires historical data from real hardware |
+| FMCSA/DOT HOS compliance logic | UI dashboard only for v2.0, compliance logic later |
+| Live Share (public location links) | Defer to v2.1 |
 
 ## Traceability
 
@@ -140,11 +181,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMN-01 | Phase 10 | Pending |
 | ADMN-02 | Phase 10 | Pending |
 
-**Coverage:**
+**v1.0 Coverage:**
 - v1 requirements: 32 total
 - Mapped to phases: 32
 - Unmapped: 0 ✓
 
+**v2.0 Coverage:**
+- v2.0 requirements: 16 total
+- Mapped to phases: 0 (pending roadmap creation)
+- Unmapped: 16 ⚠️
+
 ---
 *Requirements defined: 2026-02-14*
-*Last updated: 2026-02-14 after roadmap creation*
+*Last updated: 2026-02-15 after v2.0 milestone requirements defined*
