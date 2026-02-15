@@ -81,9 +81,13 @@ export async function POST(req: NextRequest) {
 
     try {
       // Check if user already exists (idempotency check)
-      const existingUser = await prisma.user.findUnique({
-        where: { clerkUserId },
-        include: { tenant: true },
+      // Must bypass RLS since User table has FORCE ROW LEVEL SECURITY
+      const existingUser = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.user.findUnique({
+          where: { clerkUserId },
+          include: { tenant: true },
+        });
       });
 
       if (existingUser) {
@@ -146,18 +150,21 @@ export async function POST(req: NextRequest) {
             );
           }
 
-          // Create User record with DRIVER role
-          const user = await prisma.user.create({
-            data: {
-              clerkUserId,
-              email,
-              tenantId: inviteTenantId,
-              role: 'DRIVER',
-              firstName: invitation.firstName,
-              lastName: invitation.lastName,
-              licenseNumber: invitation.licenseNumber,
-              isActive: true,
-            },
+          // Create User record with DRIVER role (use transaction to bypass RLS)
+          const user = await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            return tx.user.create({
+              data: {
+                clerkUserId,
+                email,
+                tenantId: inviteTenantId,
+                role: 'DRIVER',
+                firstName: invitation.firstName,
+                lastName: invitation.lastName,
+                licenseNumber: invitation.licenseNumber,
+                isActive: true,
+              },
+            });
           });
 
           // Mark invitation as accepted
@@ -198,6 +205,9 @@ export async function POST(req: NextRequest) {
 
       // Owner provisioning flow: Create new tenant and user in a transaction
       const result = await prisma.$transaction(async (tx) => {
+        // Bypass RLS for provisioning (User table has FORCE ROW LEVEL SECURITY)
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
         // Create tenant
         const tenant = await tx.tenant.create({
           data: {
