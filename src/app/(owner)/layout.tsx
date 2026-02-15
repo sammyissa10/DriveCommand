@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
-import { UserMenu } from "@/components/navigation/user-menu";
+import { OwnerShell } from "@/components/navigation/owner-shell";
 
 /**
  * Owner portal layout
@@ -30,15 +30,5 @@ export default async function OwnerLayout({
     redirect("/unauthorized");
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-xl font-semibold text-gray-900">DriveCommand</h1>
-          <UserMenu />
-        </div>
-      </header>
-      <main className="p-6">{children}</main>
-    </div>
-  );
+  return <OwnerShell>{children}</OwnerShell>;
 }
