@@ -1,805 +1,1270 @@
-# Architecture Research
+# Architecture Research: Fleet Intelligence Features Integration
 
-**Domain:** Multi-Tenant Fleet Management SaaS
-**Researched:** 2026-02-14
+**Domain:** Fleet management dashboard with GPS tracking, safety events, and fuel monitoring
+**Researched:** 2026-02-15
 **Confidence:** HIGH
 
-## Standard Architecture
-
-### System Overview
+## Integration Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      Presentation Layer                             │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌────────────────┐           ┌────────────────┐                    │
-│  │  Owner/Manager │           │ Driver Portal  │                    │
-│  │     Portal     │           │  (Read-Only)   │                    │
-│  └───────┬────────┘           └───────┬────────┘                    │
-│          │                            │                             │
-├──────────┴────────────────────────────┴─────────────────────────────┤
-│                      API Gateway Layer                              │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │  Auth Middleware → Tenant Context → RBAC Enforcement         │   │
-│  └──────────────────────────────────────────────────────────────┘   │
-├─────────────────────────────────────────────────────────────────────┤
-│                      Application Layer                              │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │
-│  │ Vehicle  │  │  Driver  │  │Maintenance│  │  User    │            │
-│  │ Service  │  │ Service  │  │  Service  │  │  Mgmt    │            │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘            │
-│       │             │             │             │                   │
-│  ┌────┴─────────────┴─────────────┴─────────────┴─────┐            │
-│  │          Tenant Provisioning Service                │            │
-│  └─────────────────────────────────────────────────────┘            │
-│                                                                      │
-├─────────────────────────────────────────────────────────────────────┤
-│                      Integration Layer                              │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐    │
-│  │Email/SMS   │  │ File       │  │ Background │  │   Event    │    │
-│  │Notification│  │ Storage    │  │   Jobs     │  │   Bus      │    │
-│  │  Service   │  │  (S3)      │  │  (Queue)   │  │            │    │
-│  └────────────┘  └────────────┘  └────────────┘  └────────────┘    │
-│                                                                      │
-├─────────────────────────────────────────────────────────────────────┤
-│                      Data Layer                                     │
-├─────────────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │            Relational Database (PostgreSQL/MySQL)            │    │
-│  │  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐   │    │
-│  │  │  Tenant A     │  │  Tenant B     │  │  Tenant C     │   │    │
-│  │  │   Schema      │  │   Schema      │  │   Schema      │   │    │
-│  │  └───────────────┘  └───────────────┘  └───────────────┘   │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-│                                                                      │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │              Object Storage (S3/Blob Storage)                │    │
-│  │  tenant-a/  tenant-b/  tenant-c/  (prefix-based isolation)   │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     App Router Route Groups (Shared Layout)                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  (owner)/                                                                    │
+│    ├── layout.tsx          [Enhanced with Sidebar Navigation]               │
+│    ├── dashboard/          [Existing fleet overview stats]                  │
+│    ├── live-map/           [NEW: Live GPS tracking map]                     │
+│    ├── safety/             [NEW: Safety events dashboard]                   │
+│    ├── fuel/               [NEW: Fuel/energy dashboard]                     │
+│    ├── trucks/             [Existing]                                       │
+│    ├── drivers/            [Existing]                                       │
+│    └── routes/             [Existing]                                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                     Server Components (Data Fetching)                        │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
+│  │Dashboard │  │Live Map  │  │  Safety  │  │   Fuel   │                   │
+│  │Page (SC) │  │Page (SC) │  │Page (SC) │  │Page (SC) │                   │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘                   │
+│       │             │              │             │                          │
+│       ↓             ↓              ↓             ↓                          │
+│  Server Actions  Server Actions  Server Actions  Server Actions            │
+│  (Aggregations)  (GPS Data)      (Events Data)  (Fuel Data)                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                     Client Components (Interactivity)                        │
+│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐               │
+│  │ Map Component  │  │ Chart Component│  │ Chart Component│               │
+│  │ (dynamic, CSR) │  │  (use client)  │  │  (use client)  │               │
+│  │   Leaflet      │  │    Recharts    │  │    Recharts    │               │
+│  └────────────────┘  └────────────────┘  └────────────────┘               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                     Data Access Layer (Repository Pattern)                  │
+│  ┌──────────────────────────────────────────────────────────────────┐      │
+│  │  TenantRepository → Prisma Client + withTenantRLS Extension      │      │
+│  │    ├── GPS Repository (NEW)                                      │      │
+│  │    ├── SafetyEvent Repository (NEW)                              │      │
+│  │    ├── FuelRecord Repository (NEW)                               │      │
+│  │    ├── Truck Repository (Existing)                               │      │
+│  │    ├── Driver Repository (Existing)                              │      │
+│  │    └── Route Repository (Existing)                               │      │
+│  └──────────────────────────────────────────────────────────────────┘      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                     PostgreSQL Database (RLS-Enabled)                        │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
+│  │  Truck   │  │  Route   │  │ GPS      │  │  Safety  │                   │
+│  │(Existing)│  │(Existing)│  │Location  │  │  Event   │                   │
+│  └──────────┘  └──────────┘  │  (NEW)   │  │  (NEW)   │                   │
+│                               └──────────┘  └──────────┘                   │
+│                               ┌──────────┐                                 │
+│                               │   Fuel   │                                 │
+│                               │  Record  │                                 │
+│                               │  (NEW)   │                                 │
+│                               └──────────┘                                 │
+│  All tables: RLS policies + tenantId isolation                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Component Responsibilities
+## Component Responsibilities
 
-| Component | Responsibility | Typical Implementation |
-|-----------|----------------|------------------------|
-| **API Gateway** | Authentication, tenant context injection, rate limiting, request routing | Express.js middleware, Next.js API routes, or dedicated API gateway (Kong, AWS API Gateway) |
-| **Auth Middleware** | Validates JWT tokens, extracts tenant ID, enforces tenant-scoped sessions | Passport.js, Auth0, Clerk, Supabase Auth |
-| **Tenant Context** | Injects tenant ID into all requests, ensures queries are scoped | Request-scoped context/async local storage |
-| **RBAC Enforcement** | Role checks (owner/manager vs driver), permission validation | Middleware or policy engine (Casbin, CASL, Permit.io) |
-| **Vehicle Service** | CRUD for vehicles, assignment to drivers, status tracking | Business logic layer with repository pattern |
-| **Driver Service** | Driver management, vehicle assignment, access control | Business logic layer with repository pattern |
-| **Maintenance Service** | Service schedules, reminders, history tracking | Business logic + scheduler integration |
-| **User Management** | Account creation, password reset, role assignment | Identity provider or custom auth service |
-| **Tenant Provisioning** | Self-service signup, schema creation, admin onboarding | Automated pipeline (IaC, migration scripts) |
-| **Notification Service** | Email/SMS reminders for maintenance, scheduled jobs | SendGrid/SES/Twilio + job queue (Bull/BullMQ) |
-| **File Storage** | Vehicle document uploads (insurance, registration) | S3/CloudFlare R2 with presigned URLs |
-| **Background Jobs** | Scheduled maintenance reminders, data exports | Redis Queue, BullMQ, or cloud-native schedulers |
-| **Event Bus** | Decoupled inter-service communication | Optional for larger systems (RabbitMQ, Kafka, EventBridge) |
+| Component | Responsibility | Rendering Strategy |
+|-----------|----------------|-------------------|
+| **Sidebar Navigation** | Persistent navigation across all owner portal pages | Server Component in layout |
+| **Live Map Page** | Server component wrapper that fetches truck locations | Server Component |
+| **Map Component** | Interactive Leaflet map (window/document dependent) | Client Component (dynamic import, ssr: false) |
+| **Safety Dashboard Page** | Server component that fetches safety event aggregations | Server Component |
+| **Fuel Dashboard Page** | Server component that fetches fuel consumption aggregations | Server Component |
+| **Chart Components** | Interactive Recharts charts (browser APIs for interactions) | Client Component ("use client") |
+| **GPS Repository** | Data access for GPS locations with RLS tenant isolation | Server-side class |
+| **SafetyEvent Repository** | Data access for safety events with RLS tenant isolation | Server-side class |
+| **FuelRecord Repository** | Data access for fuel records with RLS tenant isolation | Server-side class |
 
-## Recommended Project Structure
+## New Route Structure
+
+### No New Route Groups Required
+
+The existing `(owner)` route group is sufficient. New pages live alongside existing pages within the same group.
 
 ```
-src/
-├── app/                    # Next.js app directory (if using App Router)
-│   ├── (auth)/            # Auth-related routes (sign-in, sign-up)
-│   ├── (dashboard)/       # Protected dashboard routes
-│   │   ├── owner/         # Owner/Manager portal
-│   │   └── driver/        # Driver portal
-│   └── api/               # API routes
-│       ├── auth/          # Authentication endpoints
-│       ├── vehicles/      # Vehicle CRUD
-│       ├── drivers/       # Driver CRUD
-│       ├── maintenance/   # Maintenance records
-│       └── onboarding/    # Tenant provisioning
-├── lib/                   # Core business logic
-│   ├── auth/              # Auth utilities, RBAC helpers
-│   ├── services/          # Business services (vehicle, driver, etc.)
-│   ├── repositories/      # Data access layer
-│   ├── tenant/            # Tenant context management
-│   ├── notifications/     # Email/SMS service
-│   └── storage/           # File upload utilities
-├── db/                    # Database layer
-│   ├── schema.ts          # Drizzle/Prisma schema
-│   ├── migrations/        # Schema migrations
-│   └── seed.ts            # Seed data for development
-├── middleware/            # Next.js middleware
-│   └── tenant.ts          # Tenant context injection
-├── components/            # React components
-│   ├── ui/                # Reusable UI components
-│   ├── owner/             # Owner-specific components
-│   └── driver/            # Driver-specific components
-├── types/                 # TypeScript type definitions
-├── config/                # Configuration files
-└── jobs/                  # Background job definitions
-    └── maintenance-reminders.ts
+src/app/(owner)/
+├── layout.tsx                    [MODIFIED: Add sidebar navigation]
+├── dashboard/page.tsx            [Existing: Fleet overview stats]
+├── live-map/                     [NEW]
+│   └── page.tsx                  [Server component wrapper]
+├── safety/                       [NEW]
+│   └── page.tsx                  [Server component + client chart wrappers]
+├── fuel/                         [NEW]
+│   └── page.tsx                  [Server component + client chart wrappers]
+├── trucks/                       [Existing]
+├── drivers/                      [Existing]
+└── routes/                       [Existing]
 ```
 
-### Structure Rationale
+### Navigation Pattern: Sidebar in Shared Layout
 
-- **app/ (Next.js App Router):** Modern Next.js pattern with colocation of routes, layouts, and server components. Auth and dashboard groups allow shared layouts.
-- **lib/ for business logic:** Framework-agnostic core logic. Makes testing easier and allows future framework migrations.
-- **services/ vs repositories/:** Services contain business logic, repositories handle data access. Clear separation of concerns.
-- **tenant/ directory:** Centralized tenant context management. Every service imports from here to ensure tenant-scoped queries.
-- **middleware/tenant.ts:** Extracts tenant ID from JWT or session, makes it available to all downstream requests.
+**Current state:** Simple header with logo + UserMenu, no navigation links
+**New state:** Persistent sidebar with navigation links to all sections
 
-## Architectural Patterns
+**Implementation approach:**
 
-### Pattern 1: Shared Database with Schema-Per-Tenant
+```typescript
+// src/app/(owner)/layout.tsx (MODIFIED)
+export default async function OwnerLayout({ children }) {
+  // ... auth checks (unchanged)
 
-**What:** All tenants share the same database instance, but each tenant gets a dedicated schema (PostgreSQL) or namespace. Each data access query is automatically scoped to the tenant's schema.
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="flex">
+        {/* NEW: Sidebar navigation */}
+        <Sidebar />
 
-**When to use:**
-- 100-10,000 tenants
-- Strong data isolation required (regulatory, security)
-- Balance between resource efficiency and isolation
-- Each tenant has customizable schema extensions
+        <div className="flex-1">
+          <header className="bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between px-6 py-4">
+              <h1 className="text-xl font-semibold text-gray-900">DriveCommand</h1>
+              <UserMenu />
+            </div>
+          </header>
+          <main className="p-6">{children}</main>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
 
-**Trade-offs:**
-- **Pros:** Strong isolation, efficient resource use, easier backups than separate DBs, allows per-tenant migrations
-- **Cons:** More complex than shared schema, schema sprawl at massive scale, requires connection pooling awareness
+**Sidebar component:**
+
+```typescript
+// src/components/navigation/sidebar.tsx (NEW)
+"use client";
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+export function Sidebar() {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: DashboardIcon },
+    { href: '/live-map', label: 'Live Map', icon: MapIcon },
+    { href: '/safety', label: 'Safety', icon: ShieldIcon },
+    { href: '/fuel', label: 'Fuel', icon: FuelIcon },
+    { href: '/trucks', label: 'Trucks', icon: TruckIcon },
+    { href: '/drivers', label: 'Drivers', icon: UserIcon },
+    { href: '/routes', label: 'Routes', icon: RouteIcon },
+  ];
+
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200">
+      <nav className="p-4 space-y-2">
+        {navItems.map(item => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={pathname === item.href ? 'active' : ''}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+    </aside>
+  );
+}
+```
+
+**Why this approach:**
+- Sidebar is client component for active state tracking (usePathname)
+- Layout remains server component for auth checks
+- Sidebar preserves state on navigation (doesn't re-render)
+- Matches Next.js App Router best practices for nested layouts
+
+## New Prisma Models
+
+### GPS Location Tracking
+
+```prisma
+model GPSLocation {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  truckId    String   @db.Uuid
+  latitude   Decimal  @db.Decimal(10, 8)  // -90 to 90 with 8 decimal precision
+  longitude  Decimal  @db.Decimal(11, 8)  // -180 to 180 with 8 decimal precision
+  speed      Int?     // mph, nullable for stationary vehicles
+  heading    Int?     // degrees 0-359, nullable
+  altitude   Int?     // meters, nullable
+  accuracy   Decimal? @db.Decimal(6, 2)  // meters, GPS accuracy estimate
+  timestamp  DateTime @db.Timestamptz
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])  // For time-range queries per tenant
+}
+```
+
+**Rationale:**
+- `Decimal` for coordinates ensures precision (Float has rounding issues)
+- `timestamp` separate from `createdAt` (timestamp = GPS reading time, createdAt = DB insert time)
+- Composite index on `[tenantId, timestamp]` optimizes dashboard queries
+- Speed/heading/altitude nullable (not all GPS devices report these)
+
+### Safety Events
+
+```prisma
+enum SafetyEventType {
+  HARSH_BRAKING
+  HARSH_ACCELERATION
+  HARSH_CORNERING
+  SPEEDING
+  DISTRACTED_DRIVING
+}
+
+enum SafetyEventSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model SafetyEvent {
+  id          String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String               @db.Uuid
+  truckId     String               @db.Uuid
+  driverId    String?              @db.Uuid  // Nullable if route not assigned
+  routeId     String?              @db.Uuid  // Nullable if no active route
+  eventType   SafetyEventType
+  severity    SafetyEventSeverity
+  gForce      Decimal?             @db.Decimal(4, 2)  // G-force magnitude for braking/acceleration
+  speed       Int?                 // mph at time of event
+  speedLimit  Int?                 // Posted speed limit (for speeding events)
+  latitude    Decimal              @db.Decimal(10, 8)
+  longitude   Decimal              @db.Decimal(11, 8)
+  timestamp   DateTime             @db.Timestamptz
+  metadata    Json?                // JSONB for event-specific data (video URL, telemetry)
+  createdAt   DateTime             @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+  driver User?  @relation(fields: [driverId], references: [id])
+  route  Route? @relation(fields: [routeId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([driverId])
+  @@index([routeId])
+  @@index([eventType])
+  @@index([severity])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])  // Dashboard time-range queries
+}
+```
+
+**Rationale:**
+- Enums for event type and severity (type-safe, indexed efficiently)
+- `gForce` as Decimal (precision matters for safety scoring)
+- `driverId` and `routeId` nullable (events can occur outside assigned routes)
+- `metadata` JSONB for extensibility (dashcam URLs, detailed telemetry)
+- Indexes on filters used in safety dashboard (eventType, severity, timestamp)
+
+### Fuel/Energy Records
+
+```prisma
+enum FuelType {
+  DIESEL
+  GASOLINE
+  ELECTRIC
+  HYBRID
+  CNG  // Compressed Natural Gas
+  LPG  // Liquified Petroleum Gas
+}
+
+model FuelRecord {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String    @db.Uuid
+  truckId         String    @db.Uuid
+  fuelType        FuelType
+  quantity        Decimal   @db.Decimal(10, 2)  // Gallons or kWh
+  unitCost        Decimal?  @db.Decimal(10, 4)  // Per gallon/kWh
+  totalCost       Decimal?  @db.Decimal(10, 2)  // Total transaction cost
+  odometer        Int       // Odometer reading at fill-up
+  location        String?   // Station name or address
+  latitude        Decimal?  @db.Decimal(10, 8)
+  longitude       Decimal?  @db.Decimal(11, 8)
+  timestamp       DateTime  @db.Timestamptz
+  isEstimated     Boolean   @default(false)  // True for calculated consumption vs actual fill-ups
+  notes           String?
+  createdAt       DateTime  @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([timestamp])
+  @@index([tenantId, timestamp])
+  @@index([isEstimated])  // Separate actual vs calculated records
+}
+```
+
+**Rationale:**
+- Enum for fuel type (supports electric/hybrid fleets)
+- `quantity` unit depends on `fuelType` (gallons for diesel/gas, kWh for electric)
+- `isEstimated` distinguishes actual fill-ups from calculated consumption
+- `odometer` critical for MPG/efficiency calculations
+- Nullable costs (some orgs track usage but not cost)
+
+### Model Relation Updates
+
+**Existing models need new relations:**
+
+```prisma
+model Tenant {
+  // ... existing fields
+  gpsLocations  GPSLocation[]
+  safetyEvents  SafetyEvent[]
+  fuelRecords   FuelRecord[]
+}
+
+model Truck {
+  // ... existing fields
+  gpsLocations  GPSLocation[]
+  safetyEvents  SafetyEvent[]
+  fuelRecords   FuelRecord[]
+}
+
+model User {
+  // ... existing fields
+  safetyEvents  SafetyEvent[]  // Driver-attributed safety events
+}
+
+model Route {
+  // ... existing fields
+  safetyEvents  SafetyEvent[]  // Events during this route
+}
+```
+
+## Data Flow Patterns
+
+### Pattern 1: Live Map Real-Time Data
+
+**What:** Server component fetches latest GPS locations, client component renders interactive map
+**When to use:** GPS tracking, any map-based visualization
+**Trade-offs:** Client-only map increases JS bundle, but necessary for Leaflet
+
+**Flow:**
+```
+1. Server Component (page.tsx)
+   ↓
+2. Server Action (getLatestTruckLocations)
+   ↓
+3. Repository (GPSRepository.getLatestByTenant)
+   ↓
+4. Prisma + RLS (SELECT DISTINCT ON (truckId) ... ORDER BY timestamp DESC)
+   ↓
+5. Return typed data to server component
+   ↓
+6. Pass data as props to dynamic client component
+   ↓
+7. Client Component (MapWrapper) dynamically imports actual Map
+   ↓
+8. Map Component renders Leaflet with markers
+```
 
 **Example:**
 ```typescript
-// lib/tenant/context.ts
-import { AsyncLocalStorage } from 'async_hooks';
+// src/app/(owner)/live-map/page.tsx (Server Component)
+import { requireRole } from '@/lib/auth/server';
+import { UserRole } from '@/lib/auth/roles';
+import { getLatestTruckLocations } from '@/app/(owner)/actions/gps';
+import { MapWrapper } from '@/components/map/map-wrapper';
 
-const tenantContext = new AsyncLocalStorage<{ tenantId: string }>();
+export default async function LiveMapPage() {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-export function setTenantContext(tenantId: string) {
-  return tenantContext.run({ tenantId }, () => {
-    // All code in this context has access to tenantId
-  });
-}
+  const locations = await getLatestTruckLocations();
 
-export function getTenantId(): string {
-  const context = tenantContext.getStore();
-  if (!context) throw new Error('No tenant context');
-  return context.tenantId;
-}
-
-// lib/repositories/base.ts
-export class BaseRepository {
-  protected async query<T>(sql: string, params: any[]): Promise<T> {
-    const tenantId = getTenantId();
-    // Set schema for this connection
-    await this.db.raw(`SET search_path TO tenant_${tenantId}`);
-    return this.db.query(sql, params);
-  }
-}
-```
-
-### Pattern 2: Row-Level Security with Tenant ID Column
-
-**What:** All tenants share the same database and schema. Every table has a `tenant_id` column. Application-level or database-level RLS ensures queries are automatically filtered.
-
-**When to use:**
-- 1-1,000 tenants (simpler systems)
-- Minimal customization needs
-- Rapid prototyping or MVP
-- Cost-sensitive early stages
-
-**Trade-offs:**
-- **Pros:** Simplest to implement, easy migrations, shared indexes, fewer database objects
-- **Cons:** Risk of tenant data leakage if bugs in filtering, less isolation, harder to give tenant-specific backups
-
-**Example:**
-```typescript
-// lib/repositories/vehicle.ts
-export class VehicleRepository {
-  async findAll(): Promise<Vehicle[]> {
-    const tenantId = getTenantId();
-    // Every query MUST include tenant_id filter
-    return db.query.vehicles.findMany({
-      where: eq(vehicles.tenantId, tenantId)
-    });
-  }
-
-  async findById(id: string): Promise<Vehicle | null> {
-    const tenantId = getTenantId();
-    return db.query.vehicles.findFirst({
-      where: and(
-        eq(vehicles.id, id),
-        eq(vehicles.tenantId, tenantId) // Critical: prevents cross-tenant access
-      )
-    });
-  }
-}
-
-// Or use Postgres RLS (database-enforced)
-// CREATE POLICY tenant_isolation ON vehicles
-// USING (tenant_id = current_setting('app.tenant_id')::uuid);
-```
-
-### Pattern 3: Prefix-Based File Storage Isolation
-
-**What:** All tenant files stored in a shared S3 bucket with tenant ID as prefix (`tenant-{id}/vehicles/{vehicleId}/insurance.pdf`). IAM policies or application logic enforces access control.
-
-**When to use:**
-- Any multi-tenant SaaS with file uploads
-- Centralized storage management
-- Cost optimization (avoid bucket limits)
-
-**Trade-offs:**
-- **Pros:** Scales to thousands of tenants, centralized management, lower cost than bucket-per-tenant
-- **Cons:** Requires strict application-level filtering, risk of misconfigured access policies
-
-**Example:**
-```typescript
-// lib/storage/upload.ts
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
-export async function generateUploadUrl(
-  vehicleId: string,
-  filename: string
-): Promise<string> {
-  const tenantId = getTenantId();
-  const key = `tenant-${tenantId}/vehicles/${vehicleId}/${filename}`;
-
-  const command = new PutObjectCommand({
-    Bucket: process.env.S3_BUCKET,
-    Key: key,
-    // Enforce tenant context in metadata
-    Metadata: { tenantId }
-  });
-
-  return getSignedUrl(s3Client, command, { expiresIn: 3600 });
-}
-
-// When retrieving, always verify tenant ownership
-export async function getFileUrl(key: string): Promise<string> {
-  const tenantId = getTenantId();
-  if (!key.startsWith(`tenant-${tenantId}/`)) {
-    throw new Error('Unauthorized: File does not belong to tenant');
-  }
-  // Return signed URL
-}
-```
-
-### Pattern 4: Middleware-Based Tenant Context Injection
-
-**What:** Next.js middleware intercepts all requests, extracts tenant ID from JWT or session, injects it into request context, and makes it available to all downstream code.
-
-**When to use:**
-- Always for multi-tenant Next.js apps
-- Prevents manual tenant ID passing through function chains
-- Ensures tenant context is never forgotten
-
-**Trade-offs:**
-- **Pros:** Automatic context propagation, reduces boilerplate, catches missing tenant checks
-- **Cons:** AsyncLocalStorage overhead (minimal), requires understanding of Node.js context
-
-**Example:**
-```typescript
-// middleware.ts (Next.js middleware)
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { verifyJWT } from '@/lib/auth/jwt';
-
-export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('auth-token')?.value;
-
-  if (!token) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
-  }
-
-  const payload = await verifyJWT(token);
-
-  // Inject tenant context into headers for downstream use
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', payload.tenantId);
-  requestHeaders.set('x-user-id', payload.userId);
-  requestHeaders.set('x-user-role', payload.role);
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders
-    }
-  });
-}
-
-export const config = {
-  matcher: ['/api/:path*', '/dashboard/:path*']
-};
-
-// lib/tenant/context.ts
-import { headers } from 'next/headers';
-
-export function getTenantContext() {
-  const headersList = headers();
-  const tenantId = headersList.get('x-tenant-id');
-  const userId = headersList.get('x-user-id');
-  const role = headersList.get('x-user-role') as 'owner' | 'manager' | 'driver';
-
-  if (!tenantId) throw new Error('Missing tenant context');
-
-  return { tenantId, userId, role };
-}
-```
-
-### Pattern 5: Job Queue for Scheduled Maintenance Reminders
-
-**What:** Background job queue (BullMQ, Inngest) processes scheduled tasks like sending maintenance reminder emails. Jobs are tenant-scoped and idempotent.
-
-**When to use:**
-- Any feature requiring scheduled actions
-- Email/SMS notifications
-- Data exports, reports, cleanup tasks
-
-**Trade-offs:**
-- **Pros:** Decouples long-running tasks from HTTP requests, retries on failure, scales horizontally
-- **Cons:** Adds infrastructure complexity, eventual consistency, requires monitoring
-
-**Example:**
-```typescript
-// jobs/maintenance-reminders.ts
-import { Queue, Worker } from 'bullmq';
-
-interface ReminderJob {
-  tenantId: string;
-  maintenanceId: string;
-  vehicleId: string;
-  dueDate: string;
-}
-
-export const reminderQueue = new Queue<ReminderJob>('maintenance-reminders', {
-  connection: redisConnection
-});
-
-// Schedule reminder when maintenance record is created
-export async function scheduleMaintenanceReminder(
-  maintenance: Maintenance
-) {
-  await reminderQueue.add(
-    'send-reminder',
-    {
-      tenantId: maintenance.tenantId,
-      maintenanceId: maintenance.id,
-      vehicleId: maintenance.vehicleId,
-      dueDate: maintenance.dueDate
-    },
-    {
-      delay: calculateDelayUntilReminder(maintenance.dueDate), // e.g., 7 days before
-      removeOnComplete: true
-    }
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Live Fleet Map</h1>
+      <MapWrapper locations={locations} />
+    </div>
   );
 }
 
-// Worker processes jobs
-const worker = new Worker<ReminderJob>(
-  'maintenance-reminders',
-  async (job) => {
-    // Set tenant context for this job
-    return setTenantContext(job.data.tenantId, async () => {
-      const maintenance = await maintenanceRepo.findById(job.data.maintenanceId);
-      const vehicle = await vehicleRepo.findById(job.data.vehicleId);
+// src/components/map/map-wrapper.tsx (Client Component, dynamic import)
+"use client";
 
-      await emailService.sendMaintenanceReminder({
-        to: vehicle.ownerEmail,
-        vehicle,
-        maintenance
-      });
-    });
-  },
-  { connection: redisConnection }
-);
-```
+import dynamic from 'next/dynamic';
 
-## Data Flow
+const Map = dynamic(() => import('./map'), { ssr: false });
 
-### Request Flow
-
-```
-[User Action: Manager creates vehicle]
-    ↓
-[Browser] → POST /api/vehicles with JWT
-    ↓
-[Next.js Middleware] → Verify JWT → Extract tenant_id, user_id, role
-    ↓
-[API Route Handler] → getTenantContext() → { tenantId, userId, role }
-    ↓
-[Vehicle Service] → Validate permissions (role check)
-    ↓
-[Vehicle Repository] → INSERT with tenant_id column/schema
-    ↓
-[Database] → Store record in tenant-scoped location
-    ↓
-[Response] ← Return created vehicle (tenant-filtered)
-    ↓
-[Browser] ← 201 Created with vehicle data
-```
-
-### Authentication & Tenant Context Flow
-
-```
-[User Login]
-    ↓
-[Auth Provider (Clerk/Auth0)] → Verify credentials
-    ↓
-[JWT Created] → { userId, tenantId, role, email }
-    ↓
-[Cookie Set] → httpOnly, secure, sameSite
-    ↓
-[Subsequent Requests]
-    ↓
-[Middleware] → Decode JWT → Extract tenantId
-    ↓
-[Request Headers] → x-tenant-id, x-user-id, x-user-role
-    ↓
-[All Services] → Access via getTenantContext()
-```
-
-### Tenant Onboarding Flow
-
-```
-[Self-Service Signup Form]
-    ↓
-POST /api/onboarding/signup
-    ↓
-[Tenant Provisioning Service]
-    ↓
-1. Create tenant record in tenants table
-    ↓
-2. Create database schema (tenant_{id}) OR initialize tenant_id row
-    ↓
-3. Run migrations for tenant schema
-    ↓
-4. Create admin user for tenant
-    ↓
-5. Initialize S3 folder prefix (tenant-{id}/)
-    ↓
-6. Send welcome email
-    ↓
-[Return auth token] → User logged into new tenant
-```
-
-### Maintenance Reminder Flow
-
-```
-[Manager creates maintenance schedule]
-    ↓
-[Maintenance Service] → Save to DB
-    ↓
-[Schedule reminder job] → BullMQ.add({ tenantId, maintenanceId, dueDate })
-    ↓
-[Job Queue] → Stores job with delay (e.g., 7 days before due date)
-    ↓
-... time passes ...
-    ↓
-[Worker picks up job] → setTenantContext(tenantId)
-    ↓
-[Fetch maintenance record] → tenantRepo.findMaintenanceById(maintenanceId)
-    ↓
-[Fetch vehicle & owner] → vehicleRepo.findById(vehicleId)
-    ↓
-[Send email] → emailService.send({ to: owner.email, template: 'reminder' })
-    ↓
-[Mark job complete]
-```
-
-### File Upload Flow
-
-```
-[Manager clicks "Upload Insurance Document"]
-    ↓
-[Frontend] → Request presigned upload URL
-    ↓
-POST /api/vehicles/:id/documents/upload-url
-    ↓
-[API Handler] → getTenantContext() → Verify vehicle ownership
-    ↓
-[Storage Service] → Generate presigned URL for tenant-{id}/vehicles/{id}/insurance.pdf
-    ↓
-[Return URL] ← Presigned S3 URL (expires in 1 hour)
-    ↓
-[Frontend] → PUT file directly to S3 using presigned URL
-    ↓
-[S3] ← File stored at tenant-{id}/vehicles/{id}/insurance.pdf
-    ↓
-[Frontend] → POST /api/vehicles/:id/documents with { key, filename, size }
-    ↓
-[API Handler] → Save document metadata to database with tenant_id
-    ↓
-[Response] ← 201 Created
-```
-
-### Key Data Flows
-
-1. **Tenant-Scoped Query Pattern:** Every database query must either filter by `tenant_id` (row-level) or set the schema context (schema-per-tenant) before executing. This is enforced at the repository layer.
-
-2. **Role-Based Authorization:** After tenant context is established, role checks determine access level. Owners/Managers get full CRUD, Drivers get read-only access to their assigned vehicle only.
-
-3. **File Storage Isolation:** All file operations use tenant-prefixed paths. Upload URLs are generated with tenant context, and download URLs verify tenant ownership before serving.
-
-4. **Background Job Context:** Jobs inherit tenant context from the data they're processing. Job payload always includes `tenantId` to re-establish context in the worker.
-
-## Scaling Considerations
-
-| Scale | Architecture Adjustments |
-|-------|--------------------------|
-| **0-100 tenants** | Shared database with row-level tenant_id filtering. Single Next.js deployment. S3 with prefix-based isolation. Simple email service (SendGrid). No caching needed. |
-| **100-1,000 tenants** | Move to schema-per-tenant for better isolation. Add Redis for session caching. Implement database read replicas. Add CDN for static assets. Consider managed queue service (Inngest, Upstash QStash). |
-| **1,000-10,000 tenants** | Implement database connection pooling (PgBouncer). Add full-page caching with Redis/Vercel KV. Separate notification service. Implement tenant-aware rate limiting. Consider multi-region deployment. Monitor per-tenant resource usage. |
-| **10,000+ tenants** | Shard database by tenant ID ranges. Consider hybrid isolation (premium = schema-per-tenant, standard = shared schema). Implement tenant tiering. Add separate analytics database. Consider microservices split (notifications, file processing). Implement cost allocation and per-tenant billing. |
-
-### Scaling Priorities
-
-1. **First bottleneck: Database connections**
-   - **Symptom:** Connection pool exhaustion, slow queries
-   - **Fix:** Implement PgBouncer for connection pooling. Move to schema-per-tenant to allow better query optimization. Add read replicas for reporting queries.
-
-2. **Second bottleneck: File storage costs**
-   - **Symptom:** High S3 costs, slow upload/download
-   - **Fix:** Implement lifecycle policies (archive old documents to Glacier). Add CloudFront CDN for frequently accessed files. Consider per-tenant storage quotas with soft/hard limits.
-
-3. **Third bottleneck: Background job queue**
-   - **Symptom:** Delayed maintenance reminders, queue backlog
-   - **Fix:** Scale worker instances horizontally. Implement job priority queues (premium tenants first). Add job batching for bulk operations.
-
-## Anti-Patterns
-
-### Anti-Pattern 1: Manual Tenant ID Passing Through Function Chains
-
-**What people do:** Pass `tenantId` as a parameter to every function call throughout the application.
-
-```typescript
-// ANTI-PATTERN
-async function getVehicles(tenantId: string) {
-  return vehicleRepo.findAll(tenantId);
+export function MapWrapper({ locations }) {
+  return <Map locations={locations} />;
 }
 
-async function getVehicleWithDriver(vehicleId: string, tenantId: string) {
-  const vehicle = await vehicleRepo.findById(vehicleId, tenantId);
-  const driver = await driverRepo.findById(vehicle.driverId, tenantId);
-  return { vehicle, driver };
+// src/components/map/map.tsx (Client Component, Leaflet)
+"use client";
+
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+
+export default function Map({ locations }) {
+  return (
+    <MapContainer center={[37.7749, -122.4194]} zoom={10}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {locations.map(loc => (
+        <Marker key={loc.truckId} position={[loc.latitude, loc.longitude]}>
+          <Popup>{loc.truckName}</Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+}
+
+// src/app/(owner)/actions/gps.ts (Server Action)
+'use server';
+
+import { requireRole } from '@/lib/auth/server';
+import { UserRole } from '@/lib/auth/roles';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
+
+export async function getLatestTruckLocations() {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  // Distinct on truckId, ordered by timestamp desc = latest location per truck
+  const locations = await db.$queryRaw`
+    SELECT DISTINCT ON (g."truckId")
+      g."truckId",
+      g.latitude,
+      g.longitude,
+      g.speed,
+      g.heading,
+      g.timestamp,
+      t.make || ' ' || t.model AS "truckName"
+    FROM "GPSLocation" g
+    INNER JOIN "Truck" t ON g."truckId" = t.id
+    WHERE g."tenantId" = current_tenant_id()
+    ORDER BY g."truckId", g.timestamp DESC
+  `;
+
+  return locations;
 }
 ```
 
-**Why it's wrong:**
-- Easy to forget tenant ID in a function, causing data leakage
-- Verbose and error-prone
-- Testing becomes harder (must mock tenant ID everywhere)
+### Pattern 2: Dashboard Aggregations with Charts
 
-**Do this instead:** Use AsyncLocalStorage or middleware headers to inject tenant context once at the request boundary.
+**What:** Server component fetches aggregated data, client component renders interactive charts
+**When to use:** Any dashboard with charts (safety scores, fuel trends, maintenance alerts)
+**Trade-offs:** Recharts requires client-side rendering for interactions (tooltips, zooming)
 
+**Flow:**
+```
+1. Server Component (page.tsx)
+   ↓
+2. Multiple Server Actions in parallel (Promise.all)
+   - getSafetyScoreTrend()
+   - getEventsByType()
+   - getTopDriverIssues()
+   ↓
+3. Repositories with aggregation queries
+   ↓
+4. Prisma aggregate/groupBy + RLS
+   ↓
+5. Return aggregated data to server component
+   ↓
+6. Pass data to client chart components
+   ↓
+7. Client Components render Recharts (LineChart, BarChart, PieChart)
+```
+
+**Example:**
 ```typescript
-// CORRECT PATTERN
-import { getTenantContext } from '@/lib/tenant/context';
+// src/app/(owner)/safety/page.tsx (Server Component)
+import { requireRole } from '@/lib/auth/server';
+import { UserRole } from '@/lib/auth/roles';
+import {
+  getSafetyScoreTrend,
+  getEventsByType,
+  getTopDriverIssues,
+} from '@/app/(owner)/actions/safety';
+import { SafetyScoreTrendChart } from '@/components/charts/safety-score-trend';
+import { EventsByTypeChart } from '@/components/charts/events-by-type';
+import { TopDriversTable } from '@/components/safety/top-drivers-table';
 
-async function getVehicles() {
-  // Tenant context automatically available
-  return vehicleRepo.findAll();
+export default async function SafetyDashboardPage() {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  // Parallel fetch all dashboard data
+  const [scoreTrend, eventsByType, topDrivers] = await Promise.all([
+    getSafetyScoreTrend({ days: 30 }),
+    getEventsByType({ days: 30 }),
+    getTopDriverIssues({ limit: 10 }),
+  ]);
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-6">Safety Dashboard</h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <SafetyScoreTrendChart data={scoreTrend} />
+        <EventsByTypeChart data={eventsByType} />
+      </div>
+
+      <TopDriversTable drivers={topDrivers} />
+    </div>
+  );
 }
 
-// Repository internally uses getTenantContext()
-class VehicleRepository {
-  async findAll() {
-    const { tenantId } = getTenantContext();
-    return db.query.vehicles.findMany({
-      where: eq(vehicles.tenantId, tenantId)
-    });
-  }
+// src/components/charts/safety-score-trend.tsx (Client Component)
+"use client";
+
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+export function SafetyScoreTrendChart({ data }) {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <h3 className="text-lg font-semibold mb-4">Safety Score Trend (30 Days)</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis domain={[0, 100]} />
+          <Tooltip />
+          <Line type="monotone" dataKey="score" stroke="#8884d8" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
 }
-```
 
-### Anti-Pattern 2: Trusting Client-Provided Tenant ID
+// src/app/(owner)/actions/safety.ts (Server Action)
+'use server';
 
-**What people do:** Accept tenant ID from request body or query params and use it directly.
+import { requireRole } from '@/lib/auth/server';
+import { UserRole } from '@/lib/auth/roles';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 
-```typescript
-// ANTI-PATTERN
-app.post('/api/vehicles', async (req, res) => {
-  const { tenantId, ...vehicleData } = req.body; // DANGEROUS!
-  const vehicle = await vehicleService.create(tenantId, vehicleData);
-  return res.json(vehicle);
-});
-```
+export async function getSafetyScoreTrend({ days }: { days: number }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-**Why it's wrong:**
-- Any user can impersonate another tenant by changing the tenant ID
-- Massive security vulnerability
-- Violates zero-trust principles
+  const db = await getTenantPrisma();
 
-**Do this instead:** Extract tenant ID only from authenticated session/JWT, never from client input.
-
-```typescript
-// CORRECT PATTERN
-app.post('/api/vehicles', async (req, res) => {
-  const { tenantId } = getTenantContext(); // From JWT, set by middleware
-  const vehicleData = req.body; // No tenantId in body
-  const vehicle = await vehicleService.create(vehicleData);
-  return res.json(vehicle);
-});
-```
-
-### Anti-Pattern 3: Bucket-Per-Tenant for File Storage
-
-**What people do:** Create a separate S3 bucket for each tenant.
-
-**Why it's wrong:**
-- AWS has a soft limit of 100 buckets per account (hard limit 1,000)
-- Managing thousands of buckets is operationally complex
-- Higher costs (bucket lifecycle policies must be set per bucket)
-- Harder to implement cross-tenant analytics or backups
-
-**Do this instead:** Use a shared bucket with prefix-based isolation (`tenant-{id}/`).
-
-### Anti-Pattern 4: Running Migrations Synchronously During Signup
-
-**What people do:** When a new tenant signs up, run database migrations synchronously before returning the response.
-
-```typescript
-// ANTI-PATTERN
-app.post('/api/onboarding/signup', async (req, res) => {
-  const tenant = await createTenant(req.body);
-  await runMigrationsForTenant(tenant.id); // SLOW! Blocks response
-  return res.json({ success: true });
-});
-```
-
-**Why it's wrong:**
-- Slow signup experience (migrations can take 10-30 seconds)
-- HTTP request timeouts
-- Poor user experience
-
-**Do this instead:** Offload provisioning to a background job, return immediately, and notify when ready.
-
-```typescript
-// CORRECT PATTERN
-app.post('/api/onboarding/signup', async (req, res) => {
-  const tenant = await createTenant(req.body);
-  await provisioningQueue.add('provision-tenant', { tenantId: tenant.id });
-  return res.json({
-    success: true,
-    status: 'provisioning',
-    message: 'Your account is being set up. You will receive an email shortly.'
+  // Aggregate safety events per day, calculate score
+  const events = await db.safetyEvent.groupBy({
+    by: ['timestamp'],
+    _count: { id: true },
+    _avg: { severity: true },  // Assuming severity mapped to numeric
+    where: {
+      timestamp: {
+        gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
+      },
+    },
   });
+
+  // Transform to daily scores (example scoring logic)
+  const trend = events.map(day => ({
+    date: day.timestamp.toISOString().split('T')[0],
+    score: 100 - (day._count.id * 5),  // Simplified scoring
+  }));
+
+  return trend;
+}
+```
+
+### Pattern 3: Seed Scripts with RLS Isolation
+
+**What:** Mock data generation respecting multi-tenant RLS policies
+**When to use:** Development, demo environments, testing
+**Trade-offs:** Must bypass RLS carefully to avoid leaking data between tenants
+
+**Approach:**
+
+**Option A: Use app.bypass_rls session variable (Recommended)**
+
+```typescript
+// prisma/seeds/gps-locations.ts
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function seedGPSLocations(tenantId: string, truckIds: string[]) {
+  // Wrap in transaction with RLS context set
+  await prisma.$transaction(async (tx) => {
+    // Set tenant context for RLS
+    await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+
+    const locations = [];
+
+    for (const truckId of truckIds) {
+      // Generate 100 mock locations per truck (simulate movement)
+      for (let i = 0; i < 100; i++) {
+        locations.push({
+          tenantId,
+          truckId,
+          latitude: 37.7749 + (Math.random() - 0.5) * 0.1,  // San Francisco area
+          longitude: -122.4194 + (Math.random() - 0.5) * 0.1,
+          speed: Math.floor(Math.random() * 70),
+          heading: Math.floor(Math.random() * 360),
+          timestamp: new Date(Date.now() - i * 60 * 1000),  // 1 min intervals
+        });
+      }
+    }
+
+    // Batch insert with RLS enforced
+    await tx.gPSLocation.createMany({ data: locations });
+  });
+}
+
+// Usage in main seed script
+async function main() {
+  const tenant = await prisma.tenant.create({
+    data: { name: 'Demo Fleet Inc', slug: 'demo' },
+  });
+
+  const trucks = await prisma.truck.createMany({
+    data: [
+      { tenantId: tenant.id, make: 'Freightliner', model: 'Cascadia', year: 2022, vin: 'VIN1', licensePlate: 'ABC123', odometer: 50000 },
+      { tenantId: tenant.id, make: 'Volvo', model: 'VNL', year: 2021, vin: 'VIN2', licensePlate: 'XYZ789', odometer: 75000 },
+    ],
+  });
+
+  const truckIds = await prisma.truck.findMany({ where: { tenantId: tenant.id } }).then(t => t.map(t => t.id));
+
+  await seedGPSLocations(tenant.id, truckIds);
+  await seedSafetyEvents(tenant.id, truckIds);
+  await seedFuelRecords(tenant.id, truckIds);
+}
+```
+
+**Option B: Admin connection with BYPASSRLS (For admin tasks)**
+
+```typescript
+// lib/db/admin-prisma.ts
+import { PrismaClient } from '@prisma/client';
+
+// Admin client bypasses RLS entirely (use sparingly!)
+export const adminPrisma = new PrismaClient({
+  datasourceUrl: process.env.ADMIN_DATABASE_URL,  // Connection string with RLS-bypass user
+});
+
+// In migration/seed scripts that create tenants:
+const tenant = await adminPrisma.tenant.create({
+  data: { name: 'New Tenant' },
 });
 ```
 
-### Anti-Pattern 5: Shared Global State for Tenant Context
+**Why this approach:**
+- Seed scripts MUST set tenant context per transaction (prevents cross-tenant contamination)
+- Batch inserts with `createMany` after setting context (efficient)
+- Each tenant seeded in separate transaction with correct `current_tenant_id`
+- Admin client only for tenant creation, not for tenant-scoped data
 
-**What people do:** Use a global variable to store current tenant ID.
+## Map Component Rendering Strategy
+
+### Client-Only with Dynamic Import (Required)
+
+**Why client-only:**
+- Leaflet accesses `window` and `document` during initialization
+- Next.js server rendering throws "window is not defined" errors
+- `react-leaflet` is not SSR-compatible
+
+**Implementation:**
 
 ```typescript
-// ANTI-PATTERN
-let currentTenantId: string;
+// src/components/map/map-wrapper.tsx
+"use client";
 
-export function setCurrentTenant(id: string) {
-  currentTenantId = id;
-}
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export function getCurrentTenant() {
-  return currentTenantId;
+// Dynamic import with ssr: false prevents server-side rendering
+const Map = dynamic(() => import('./map'), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[600px] w-full" />,
+});
+
+export function MapWrapper({ locations }) {
+  return <Map locations={locations} />;
 }
 ```
 
+**Key points:**
+- `ssr: false` is REQUIRED (not optional)
+- `loading` component shows placeholder during import
+- Wrapper component can be used in server component pages
+- Actual map component (`./map`) has Leaflet imports
+
+**Dependencies needed:**
+
+```bash
+npm install leaflet react-leaflet
+npm install -D @types/leaflet
+```
+
+## Chart Component Rendering Strategy
+
+### Client Components with "use client" (Recommended)
+
+**Why client components:**
+- Recharts uses browser APIs for SVG rendering and interactions
+- Tooltips, hover effects, animations require client-side JavaScript
+- Server rendering charts provides no SEO benefit (charts are not indexable content)
+
+**When to use server vs client:**
+
+| Scenario | Component Type | Rationale |
+|----------|---------------|-----------|
+| Dashboard page wrapper | Server Component | Auth checks, parallel data fetching |
+| Data aggregation/queries | Server Action | Database access, RLS enforcement |
+| Chart rendering (Recharts) | Client Component | Interactivity (tooltips, zoom, filters) |
+| Static summary cards | Server Component | No interactivity needed |
+
+**Implementation:**
+
+```typescript
+// src/components/charts/fuel-trend.tsx
+"use client";
+
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface FuelTrendChartProps {
+  data: { date: string; mpg: number }[];
+}
+
+export function FuelTrendChart({ data }: FuelTrendChartProps) {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <h3 className="text-lg font-semibold mb-4">Fuel Efficiency Trend</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" />
+          <YAxis label={{ value: 'MPG', angle: -90, position: 'insideLeft' }} />
+          <Tooltip />
+          <Line type="monotone" dataKey="mpg" stroke="#10b981" strokeWidth={2} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+```
+
+**Dependencies needed:**
+
+```bash
+npm install recharts
+```
+
+**No TypeScript types needed** (Recharts includes built-in types)
+
+## Dashboard Data Flow for Aggregations
+
+### Safety Score Calculation
+
+**Query strategy:**
+
+```typescript
+// src/app/(owner)/actions/safety.ts
+export async function getSafetyScoreByDriver(options: { days: number }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  // Aggregate events per driver with severity weighting
+  const scores = await db.safetyEvent.groupBy({
+    by: ['driverId'],
+    _count: { id: true },
+    _sum: {
+      // Map severity to numeric (assuming enum ordinals or custom scoring)
+      severity: true,  // Would need custom SQL for complex scoring
+    },
+    where: {
+      timestamp: {
+        gte: new Date(Date.now() - options.days * 24 * 60 * 60 * 1000),
+      },
+      driverId: { not: null },
+    },
+  });
+
+  // Join with driver names
+  const driversWithScores = await Promise.all(
+    scores.map(async (score) => {
+      const driver = await db.user.findUnique({
+        where: { id: score.driverId },
+        select: { firstName: true, lastName: true },
+      });
+
+      // Calculate safety score (100 baseline - penalties)
+      const eventPenalty = score._count.id * 2;
+      const safetyScore = Math.max(0, 100 - eventPenalty);
+
+      return {
+        driverId: score.driverId,
+        driverName: `${driver?.firstName} ${driver?.lastName}`,
+        eventCount: score._count.id,
+        safetyScore,
+      };
+    })
+  );
+
+  return driversWithScores.sort((a, b) => b.safetyScore - a.safetyScore);
+}
+```
+
+**Alternative: Raw SQL for complex aggregations**
+
+```typescript
+export async function getSafetyScoreByDriver(options: { days: number }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  const scores = await db.$queryRaw`
+    SELECT
+      u.id AS "driverId",
+      u."firstName" || ' ' || u."lastName" AS "driverName",
+      COUNT(se.id) AS "eventCount",
+      GREATEST(0, 100 - (
+        COUNT(se.id) * 2 +
+        SUM(CASE
+          WHEN se.severity = 'CRITICAL' THEN 10
+          WHEN se.severity = 'HIGH' THEN 5
+          WHEN se.severity = 'MEDIUM' THEN 2
+          ELSE 1
+        END)
+      )) AS "safetyScore"
+    FROM "User" u
+    LEFT JOIN "SafetyEvent" se ON u.id = se."driverId"
+      AND se.timestamp >= NOW() - INTERVAL '${options.days} days'
+      AND se."tenantId" = current_tenant_id()
+    WHERE u."tenantId" = current_tenant_id()
+      AND u.role = 'DRIVER'
+    GROUP BY u.id, u."firstName", u."lastName"
+    ORDER BY "safetyScore" DESC
+  `;
+
+  return scores;
+}
+```
+
+**Rationale:**
+- Use Prisma `groupBy` for simple aggregations (counts, sums)
+- Use raw SQL for complex scoring logic (CASE statements, weighted sums)
+- Always filter by `current_tenant_id()` in raw queries (RLS doesn't auto-apply)
+- Parallel `Promise.all` for independent queries (scores + driver lookups)
+
+### Fuel Dashboard Aggregations
+
+**MPG calculation over time:**
+
+```typescript
+export async function getFuelEfficiencyTrend(options: { days: number }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  // Get fuel records with odometer deltas
+  const records = await db.$queryRaw`
+    WITH fuel_with_delta AS (
+      SELECT
+        DATE(f.timestamp) AS date,
+        f."truckId",
+        f.odometer,
+        f.quantity,
+        LAG(f.odometer) OVER (PARTITION BY f."truckId" ORDER BY f.timestamp) AS prev_odometer
+      FROM "FuelRecord" f
+      WHERE f."tenantId" = current_tenant_id()
+        AND f.timestamp >= NOW() - INTERVAL '${options.days} days'
+        AND f."isEstimated" = false
+      ORDER BY f.timestamp
+    )
+    SELECT
+      date,
+      ROUND(AVG((odometer - prev_odometer)::numeric / quantity), 2) AS mpg
+    FROM fuel_with_delta
+    WHERE prev_odometer IS NOT NULL  -- Exclude first record per truck
+    GROUP BY date
+    ORDER BY date ASC
+  `;
+
+  return records;
+}
+```
+
+**Cost per mile:**
+
+```typescript
+export async function getFuelCostPerMile(options: { truckId?: string; days: number }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const db = await getTenantPrisma();
+
+  const costPerMile = await db.$queryRaw`
+    WITH fuel_with_delta AS (
+      SELECT
+        f."truckId",
+        t.make || ' ' || t.model AS "truckName",
+        SUM(f."totalCost") AS "totalCost",
+        MAX(f.odometer) - MIN(f.odometer) AS "milesDriven"
+      FROM "FuelRecord" f
+      INNER JOIN "Truck" t ON f."truckId" = t.id
+      WHERE f."tenantId" = current_tenant_id()
+        AND f.timestamp >= NOW() - INTERVAL '${options.days} days'
+        AND f."totalCost" IS NOT NULL
+        ${options.truckId ? Prisma.sql`AND f."truckId" = ${options.truckId}::uuid` : Prisma.empty}
+      GROUP BY f."truckId", t.make, t.model
+      HAVING MAX(f.odometer) - MIN(f.odometer) > 0
+    )
+    SELECT
+      "truckId",
+      "truckName",
+      "totalCost",
+      "milesDriven",
+      ROUND(("totalCost" / "milesDriven")::numeric, 4) AS "costPerMile"
+    FROM fuel_with_delta
+    ORDER BY "costPerMile" DESC
+  `;
+
+  return costPerMile;
+}
+```
+
+**Rationale:**
+- Window functions (LAG) calculate odometer deltas efficiently
+- CTEs (WITH clauses) make complex queries readable
+- Filter `isEstimated = false` for actual fill-ups (not calculated consumption)
+- RLS enforced via `current_tenant_id()` in WHERE clauses
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Fetching GPS Data Without Time Bounds
+
+**What people do:** Query all GPS locations without date filters
+
+```typescript
+// BAD: Fetches entire GPS history (could be millions of rows)
+const locations = await db.gPSLocation.findMany({
+  where: { truckId },
+});
+```
+
+**Why it's wrong:** GPS data grows unbounded; a truck logging every 30 seconds generates 2,880 records/day. After 1 year: ~1M records per truck.
+
+**Do this instead:**
+
+```typescript
+// GOOD: Time-bounded query with limit
+const locations = await db.gPSLocation.findMany({
+  where: {
+    truckId,
+    timestamp: {
+      gte: new Date(Date.now() - 24 * 60 * 60 * 1000),  // Last 24 hours
+    },
+  },
+  orderBy: { timestamp: 'desc' },
+  take: 1000,  // Safety limit
+});
+```
+
+**Additional optimization:** PostgreSQL partitioning by timestamp
+
+```sql
+-- In migration: Partition GPS table by month
+CREATE TABLE "GPSLocation" (
+  -- ... columns
+) PARTITION BY RANGE (timestamp);
+
+CREATE TABLE "GPSLocation_2026_02" PARTITION OF "GPSLocation"
+  FOR VALUES FROM ('2026-02-01') TO ('2026-03-01');
+```
+
+### Anti-Pattern 2: Client-Side Safety Score Calculations
+
+**What people do:** Fetch all safety events to client, calculate scores in React
+
+```typescript
+// BAD: 10,000 events sent to browser, calculated in JavaScript
+const events = await fetch('/api/safety-events');
+const scores = events.reduce((acc, event) => {
+  // Complex scoring logic in client
+}, {});
+```
+
 **Why it's wrong:**
-- Node.js is single-threaded but handles multiple concurrent requests
-- Global state gets overwritten by concurrent requests
-- Tenant A's request could read Tenant B's data
+- Large data transfer (10,000 events × 500 bytes = 5MB JSON)
+- Client-side calculation blocks UI rendering
+- Scoring logic duplicated (server and client)
+- Security risk (exposes raw event data)
 
-**Do this instead:** Use AsyncLocalStorage (Node.js 12+) for request-scoped context.
+**Do this instead:**
 
-## Integration Points
+```typescript
+// GOOD: Aggregate on server, return only scores
+export async function getSafetyScores() {
+  const db = await getTenantPrisma();
 
-### External Services
+  const scores = await db.$queryRaw`
+    SELECT
+      "driverId",
+      -- Complex scoring logic in SQL
+      100 - SUM(severity_weight) AS score
+    FROM safety_events_with_weights
+    GROUP BY "driverId"
+  `;
 
-| Service | Integration Pattern | Notes |
-|---------|---------------------|-------|
-| **Email (SendGrid/AWS SES)** | Server-side API calls from notification service | Use tenant-specific templates, track per-tenant sending quotas |
-| **SMS (Twilio)** | Server-side API for optional SMS reminders | Consider as premium feature, store tenant opt-in preferences |
-| **Auth (Clerk/Auth0/Supabase)** | OAuth2/OIDC with custom JWT claims for tenant ID | Ensure tenant ID is in JWT payload for middleware extraction |
-| **File Storage (S3/R2)** | Presigned URLs for direct client uploads | Always verify tenant ownership before generating URLs |
-| **Payment (Stripe)** | Subscription management with Stripe Customer ID per tenant | Store `stripe_customer_id` in tenants table, webhook handlers must validate tenant |
-| **Monitoring (Sentry/Datadog)** | Tag all errors with tenant ID for filtering | Add tenant context to error boundaries |
+  return scores;  // ~100 rows × 50 bytes = 5KB
+}
+```
 
-### Internal Boundaries
+### Anti-Pattern 3: Separate Queries Instead of Parallel Fetches
 
-| Boundary | Communication | Notes |
-|----------|---------------|-------|
-| **Frontend ↔ API** | REST/GraphQL over HTTPS with JWT auth | All requests include tenant context in token |
-| **API ↔ Database** | Direct connection via ORM/query builder | Repository layer enforces tenant-scoped queries |
-| **API ↔ Job Queue** | Message queue (Redis/RabbitMQ) | Job payloads include tenant ID for context restoration |
-| **API ↔ File Storage** | S3 SDK with presigned URLs | Application enforces prefix-based isolation |
-| **Job Worker ↔ Notification Service** | Direct API calls or queue | Workers restore tenant context from job data |
+**What people do:** Sequential awaits for independent data
 
-## Build Order Implications
+```typescript
+// BAD: 3 sequential queries = 3 × 50ms = 150ms
+const scoreTrend = await getSafetyScoreTrend();
+const eventsByType = await getEventsByType();
+const topDrivers = await getTopDriverIssues();
+```
 
-### Phase 1 Foundation Dependencies
-**Build these first (no dependencies):**
-1. Database schema design with tenant isolation strategy (shared DB with schema-per-tenant)
-2. Auth system with tenant ID in JWT
-3. Middleware for tenant context injection
-4. Base repository pattern with tenant-scoped queries
+**Why it's wrong:** Each query waits for previous to complete, even though they're independent
 
-**Why:** These are foundational. Everything else depends on tenant context being established correctly.
+**Do this instead:**
 
-### Phase 2 Core Entities
-**Build after Phase 1:**
-1. Tenant provisioning (signup flow, schema creation)
-2. User management (admin user creation, role assignment)
-3. Vehicle service (depends on tenant context)
-4. Driver service (depends on vehicle for assignment)
+```typescript
+// GOOD: Parallel fetch = max(50ms, 50ms, 50ms) = 50ms
+const [scoreTrend, eventsByType, topDrivers] = await Promise.all([
+  getSafetyScoreTrend(),
+  getEventsByType(),
+  getTopDriverIssues(),
+]);
+```
 
-**Why:** Core domain entities. Maintenance and reminders depend on vehicles/drivers existing.
+**When NOT to parallelize:** Dependent queries (need result of first for second)
 
-### Phase 3 Advanced Features
-**Build after Phase 2:**
-1. Maintenance service (depends on vehicles)
-2. File upload system (depends on vehicles for documents)
-3. Notification service (depends on maintenance for reminders)
-4. Background jobs (depends on notification service)
+```typescript
+// Correct sequential: Second query depends on first result
+const truck = await db.truck.findUnique({ where: { id } });
+const latestLocation = await db.gPSLocation.findFirst({
+  where: { truckId: truck.id },
+  orderBy: { timestamp: 'desc' },
+});
+```
 
-**Why:** These are enhancement features that require core entities to be in place.
+### Anti-Pattern 4: Server Actions for Real-Time Updates
 
-### Phase 4 Polish & Scaling
-**Build after Phase 3:**
-1. Dashboard analytics
-2. Email reminders (scheduled jobs)
-3. Reporting/exports
-4. Caching layer
-5. Multi-region support (if needed)
+**What people do:** Poll server actions every 5 seconds for live GPS
 
-**Why:** These are performance and UX improvements that can wait until core functionality is proven.
+```typescript
+// BAD: Server actions not designed for high-frequency polling
+useEffect(() => {
+  const interval = setInterval(async () => {
+    const locations = await getLatestTruckLocations();
+    setLocations(locations);
+  }, 5000);
+}, []);
+```
 
-## Recommended Technology Decisions
+**Why it's wrong:**
+- Server actions have overhead (authentication, RLS setup per call)
+- No WebSocket support (inefficient HTTP polling)
+- Stale data (5-second gaps)
 
-Based on the multi-tenant SaaS fleet management requirements, the recommended stack would be:
+**Do this instead:**
 
-- **Framework:** Next.js 14+ with App Router (handles SSR, API routes, middleware)
-- **Database:** PostgreSQL with schema-per-tenant isolation (Neon, Supabase, or self-hosted)
-- **ORM:** Drizzle ORM (type-safe, supports schema-per-tenant patterns)
-- **Auth:** Clerk or Auth0 (multi-tenant aware, includes RBAC)
-- **File Storage:** AWS S3 or Cloudflare R2 with prefix-based isolation
-- **Job Queue:** Inngest or BullMQ (scheduled reminders, async provisioning)
-- **Email:** Resend or SendGrid (transactional emails, templates)
-- **Deployment:** Vercel (Next.js optimized) or Railway/Render
+For true real-time (not in initial milestone):
+
+```typescript
+// FUTURE: WebSocket/SSE for real-time updates
+const ws = new WebSocket('/api/gps/stream');
+ws.onmessage = (event) => {
+  const location = JSON.parse(event.data);
+  updateMap(location);
+};
+```
+
+For initial milestone (acceptable polling):
+
+```typescript
+// ACCEPTABLE: Route handler with caching, longer poll interval
+useEffect(() => {
+  const interval = setInterval(async () => {
+    const res = await fetch('/api/gps/latest');  // Cached for 10s
+    const locations = await res.json();
+    setLocations(locations);
+  }, 30000);  // 30-second refresh (not true real-time)
+}, []);
+```
+
+### Anti-Pattern 5: Ignoring RLS in Seed Scripts
+
+**What people do:** Create seed data without setting tenant context
+
+```typescript
+// BAD: RLS blocks inserts (no tenant context set)
+await prisma.gPSLocation.createMany({
+  data: locations,  // Fails: current_tenant_id() is NULL
+});
+```
+
+**Why it's wrong:** RLS policies require `current_tenant_id()` to be set; without it, inserts are blocked
+
+**Do this instead:**
+
+```typescript
+// GOOD: Set tenant context in transaction
+await prisma.$transaction(async (tx) => {
+  await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+  await tx.gPSLocation.createMany({ data: locations });
+});
+```
+
+## Build Order (Dependency-Aware)
+
+### Phase 1: Database Schema & Seed Foundation
+**Why first:** All features depend on data models
+
+1. Create Prisma models (GPSLocation, SafetyEvent, FuelRecord)
+2. Generate migration with RLS policies
+3. Run migration
+4. Create repository classes (GPSRepository, SafetyEventRepository, FuelRecordRepository)
+5. Create seed scripts with RLS-aware tenant context
+6. Seed demo data for development
+
+**Dependencies:** None
+**Blocks:** Everything else
+**Validation:** Query seed data via Prisma Studio, verify RLS isolation
+
+---
+
+### Phase 2: Navigation Infrastructure
+**Why second:** Shared layout change affects all pages
+
+1. Create Sidebar component (client component with usePathname)
+2. Add navigation links (Dashboard, Live Map, Safety, Fuel, Trucks, Drivers, Routes)
+3. Modify `(owner)/layout.tsx` to include Sidebar
+4. Style active states and responsive behavior
+
+**Dependencies:** None
+**Blocks:** Nothing (can be done in parallel with Phase 1)
+**Validation:** Navigate between existing pages, verify sidebar persists
+
+---
+
+### Phase 3: Live GPS Map
+**Why third:** Independent of other new features, showcases new data
+
+1. Install Leaflet dependencies (`leaflet`, `react-leaflet`)
+2. Create server action `getLatestTruckLocations()` in `actions/gps.ts`
+3. Create Map component (client, Leaflet)
+4. Create MapWrapper component (dynamic import, ssr: false)
+5. Create `/live-map/page.tsx` (server component)
+6. Test with seed data
+
+**Dependencies:** Phase 1 (GPS data), Phase 2 (navigation link)
+**Blocks:** Nothing
+**Validation:** Map loads, markers show truck locations, tooltips display truck names
+
+---
+
+### Phase 4: Safety Dashboard
+**Why fourth:** Independent of fuel, leverages existing chart patterns
+
+1. Install Recharts dependency
+2. Create server actions in `actions/safety.ts`:
+   - `getSafetyScoreTrend()`
+   - `getEventsByType()`
+   - `getTopDriverIssues()`
+3. Create chart components (SafetyScoreTrendChart, EventsByTypeChart)
+4. Create TopDriversTable component
+5. Create `/safety/page.tsx` (server component with parallel fetches)
+6. Test with seed data
+
+**Dependencies:** Phase 1 (SafetyEvent data), Phase 2 (navigation link)
+**Blocks:** Nothing
+**Validation:** Charts render, data aggregates correctly, scores calculate properly
+
+---
+
+### Phase 5: Fuel Dashboard
+**Why fifth:** Similar pattern to safety, can reuse chart components
+
+1. Create server actions in `actions/fuel.ts`:
+   - `getFuelEfficiencyTrend()`
+   - `getFuelCostPerMile()`
+   - `getFuelByTruck()`
+2. Create chart components (FuelTrendChart, CostPerMileChart)
+3. Create fuel summary cards component
+4. Create `/fuel/page.tsx` (server component with parallel fetches)
+5. Test with seed data, verify MPG calculations
+
+**Dependencies:** Phase 1 (FuelRecord data), Phase 2 (navigation link), Phase 4 (Recharts installed)
+**Blocks:** Nothing
+**Validation:** Fuel trends display, MPG calculations accurate, cost breakdowns correct
+
+---
+
+### Phase 6: Polish & Performance
+**Why last:** Optimization after features work
+
+1. Add loading states (Suspense boundaries)
+2. Add error boundaries for charts
+3. Optimize database indexes (review query plans)
+4. Add date range filters to dashboards
+5. Add export functionality (CSV download for safety/fuel reports)
+6. Mobile responsive testing
+
+**Dependencies:** Phases 3, 4, 5 (all features built)
+**Blocks:** Nothing (final polish)
+**Validation:** Load testing, mobile testing, error simulation
+
+---
+
+## Integration Points Summary
+
+| Integration Area | How It Works |
+|------------------|--------------|
+| **Route Structure** | New pages in existing `(owner)` route group, no new groups needed |
+| **Layout Changes** | Add Sidebar to `(owner)/layout.tsx`, preserve existing header/auth |
+| **Data Access** | New repositories extend TenantRepository pattern, use existing RLS extension |
+| **Server Actions** | New action files (`gps.ts`, `safety.ts`, `fuel.ts`) follow existing pattern in `actions/` |
+| **Component Pattern** | Server components for pages/data fetching, client components for maps/charts |
+| **Seed Scripts** | Respect RLS by setting `current_tenant_id` in transactions, batch insert with `createMany` |
+| **Dependencies** | Leaflet (dynamic import, ssr: false), Recharts ("use client"), existing Next.js/Prisma/Clerk |
 
 ## Sources
 
-### Multi-Tenant Architecture Patterns
-- [Designing Multi-tenant SaaS Architecture on AWS: The Complete Guide for 2026](https://www.clickittech.com/software-development/multi-tenant-architecture/)
-- [The developer's guide to SaaS multi-tenant architecture — WorkOS](https://workos.com/blog/developers-guide-saas-multi-tenant-architecture)
-- [Let's Architect! Building multi-tenant SaaS systems | AWS Architecture Blog](https://aws.amazon.com/blogs/architecture/lets-architect-building-multi-tenant-saas-systems/)
-- [SaaS and Multitenant Solution Architecture - Azure Architecture Center | Microsoft Learn](https://learn.microsoft.com/en-us/azure/architecture/guide/saas-multitenant-solution-architecture/)
-- [Multi-Tenant SaaS Explained: Architecture, Benefits, and Best Practices | Medium](https://medium.com/@pawannanaware3115/multi-tenant-saas-explained-architecture-benefits-and-best-practices-4cb77a064286)
+**Next.js App Router & Layouts:**
+- [Getting Started: Layouts and Pages | Next.js](https://nextjs.org/docs/app/getting-started/layouts-and-pages)
+- [A guide to Next.js layouts and nested layouts - LogRocket Blog](https://blog.logrocket.com/guide-next-js-layouts-nested-layouts/)
 
-### Fleet Management System Components
-- [Fleet Management Software Development Guide 2025 — Features, Architecture & Cost](https://www.inexture.com/fleet-management-software-for-logistics-and-delivery-operations/)
-- [Reference architecture for connected fleets - Microsoft for Mobility reference architecture | Microsoft Learn](https://learn.microsoft.com/en-us/industry/mobility/architecture/ra-mobility-connected-fleets)
-- [Fleet Management Software Development in 2026: Full Guide](https://www.cleveroad.com/blog/fleet-management-software-development/)
+**Map Component Integration:**
+- [How to use Leaflet with Next.js and Vector Tiles | Leaflet | MapTiler](https://docs.maptiler.com/leaflet/examples/nextjs/)
+- [Displaying a Leaflet Map in NextJS | by Tomisin Abiodun | Medium](https://medium.com/@tomisinabiodun/displaying-a-leaflet-map-in-nextjs-85f86fccc10c)
+
+**Charts & Server Components:**
+- [Next.js Charts with Recharts - A Useful Guide](https://app-generator.dev/docs/technologies/nextjs/integrate-recharts.html)
+- [Getting Started: Server and Client Components | Next.js](https://nextjs.org/docs/app/getting-started/server-and-client-components)
+
+**Data Fetching Patterns:**
+- [Data Fetching: Data Fetching Patterns and Best Practices | Next.js](https://nextjs.org/docs/14/app/building-your-application/data-fetching/patterns)
+- [Getting Started: Fetching Data | Next.js](https://nextjs.org/docs/app/getting-started/fetching-data)
+
+**Fleet Management Data Models:**
 - [How to Design Database for Fleet Management Systems - GeeksforGeeks](https://www.geeksforgeeks.org/dbms/how-to-design-database-for-fleet-management-systems/)
+- [Driver Behavior Monitoring: Complete Fleet Safety Guide 2026](https://oxmaint.com/industries/fleet-management/driver-behavior-monitoring-complete-fleet-safety-guide-2026)
 
-### Data Isolation Strategies
-- [Architectural Approaches for Storage and Data in Multitenant Solutions - Azure Architecture Center | Microsoft Learn](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/approaches/storage-data)
-- [The Multi-Tenant Performance Crisis: Advanced Isolation Strategies for 2026 - AddWeb Solution](https://www.addwebsolution.com/blog/multi-tenant-performance-crisis-advanced-isolation-2026)
-- [Multi-Tenant Database Architecture Patterns Explained](https://www.bytebase.com/blog/multi-tenant-database-architecture-patterns-explained/)
-- [Tenant isolation in multi-tenant systems: What you need to know — WorkOS](https://workos.com/blog/tenant-isolation-in-multi-tenant-systems)
-
-### Role-Based Access Control
-- [Building Role-Based Access Control for a Multi-Tenant SaaS Startup | Medium](https://medium.com/@my_journey_to_be_an_architect/building-role-based-access-control-for-a-multi-tenant-saas-startup-26b89d603fdb)
-- [Best Practices for Multi-Tenant Authorization](https://www.permit.io/blog/best-practices-for-multi-tenant-authorization)
-- [How to Choose the Right Authorization Model for Your Multi-Tenant SaaS Application](https://auth0.com/blog/how-to-choose-the-right-authorization-model-for-your-multi-tenant-saas-application/)
-
-### Tenant Provisioning & Onboarding
-- [Tenant Onboarding Best Practices in SaaS with the AWS Well-Architected SaaS Lens | Amazon Web Services](https://aws.amazon.com/blogs/apn/tenant-onboarding-best-practices-in-saas-with-the-aws-well-architected-saas-lens/)
-- [Multi-Tenant Deployment: 2026 Complete Guide & Examples | Qrvey](https://qrvey.com/blog/multi-tenant-deployment/)
-- [Tenant Onboarding - SaaS Lens](https://docs.aws.amazon.com/wellarchitected/latest/saas-lens/tenant-onboarding.html)
-
-### File Storage Architecture
-- [Design patterns for multi-tenant access control on Amazon S3 | AWS Storage Blog](https://aws.amazon.com/blogs/storage/design-patterns-for-multi-tenant-access-control-on-amazon-s3/)
-- [Partitioning and Isolating Multi-Tenant SaaS Data with Amazon S3 | AWS Partner Network (APN) Blog](https://aws.amazon.com/blogs/apn/partitioning-and-isolating-multi-tenant-saas-data-with-amazon-s3/)
-- [Multitenancy and Azure Storage - Azure Architecture Center | Microsoft Learn](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/storage)
-
-### Notification Systems
-- [Notification System Design: Architecture & Best Practices](https://www.magicbell.com/blog/notification-system-design)
-- [Best Notification Infrastructure Tool for SAAS and B2B Developers](https://www.suprsend.com/post/best-notification-infrastructure-tool-for-saas-and-b2b-developers)
+**Multi-Tenant RLS with Prisma:**
+- [Securing Multi-Tenant Applications Using Row Level Security in PostgreSQL with Prisma ORM | by Franco Labuschagne | Medium](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35)
+- [Using Row-Level Security in Prisma | Atlas Guides](https://atlasgo.io/guides/orms/prisma/row-level-security)
 
 ---
-*Architecture research for: Multi-Tenant Fleet Management SaaS (DriveCommand)*
-*Researched: 2026-02-14*
+
+*Architecture research for: DriveCommand Fleet Intelligence Features*
+*Researched: 2026-02-15*
 *Confidence: HIGH*

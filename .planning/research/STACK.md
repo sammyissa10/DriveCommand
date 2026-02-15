@@ -1,7 +1,7 @@
 # Technology Stack
 
 **Project:** DriveCommand
-**Researched:** 2026-02-14
+**Researched:** 2026-02-14 (Updated: 2026-02-15 for Milestone 2)
 **Confidence:** HIGH
 
 ## Recommended Stack
@@ -107,6 +107,201 @@
 |------------|---------|---------|-----------------|
 | GitHub Actions | N/A | CI/CD pipeline | Native GitHub integration. Free for public repos, 2,000 minutes/month for private. Standard workflow: install deps → build → test → deploy. Use environments with protection rules for production. Cache dependencies aggressively. Pin action versions for security. |
 
+---
+
+## NEW: Milestone 2 Stack Additions
+
+### Map Rendering
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| react-leaflet | 5.0.0 | React components for Leaflet maps | Open-source (BSD-2), zero API costs, excellent GPS trail rendering with Polyline/GeoJSON components, mature ecosystem, requires React 19 as peer dependency |
+| leaflet | 1.9.x | Core mapping library | Industry standard for 2D maps, completely free (no quotas or API limits), robust plugin ecosystem, perfect for fleet tracking routes, 120KB bundle size |
+| @types/leaflet | 1.9.21 | TypeScript definitions for Leaflet | Official type definitions from DefinitelyTyped, required for TypeScript projects |
+
+**Integration Pattern:**
+```typescript
+// app/components/FleetMap.tsx
+"use client"
+
+import dynamic from 'next/dynamic'
+
+const MapComponent = dynamic(
+  () => import('./MapComponentInner'),
+  { ssr: false, loading: () => <div className="h-96 bg-gray-100 animate-pulse" /> }
+)
+
+export default MapComponent
+```
+
+**Why Leaflet over Mapbox GL:**
+- **Zero cost:** Completely open-source, no API limits or monthly quotas
+- **GPS trails:** Polyline and GeoJSON components handle route visualization perfectly
+- **Lighter weight:** Smaller bundle size (120KB vs 500KB+ for Mapbox GL)
+- **Sufficient for use case:** Fleet tracking doesn't need WebGL 3D extrusions or vector tiles
+- **No vendor lock-in:** OpenStreetMap tiles are free and globally available
+
+**When to consider Mapbox GL:**
+- Real-time tracking of 500+ vehicles simultaneously (WebGL acceleration)
+- Need for 3D building extrusions or advanced styling
+- Custom vector tiles with brand-specific styling
+
+### Charting and Data Visualization
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| recharts | 3.7.0 | React charting library | Built on D3 and React, built-in TypeScript types (no @types package needed), works with React 19, 11 chart types including donut/pie for compliance metrics, composable components match React patterns, declarative API |
+
+**Chart Types for Fleet Dashboard:**
+- **Line charts:** Fuel efficiency trends over time
+- **Bar charts:** Safety scores by driver/truck
+- **Area charts:** Cumulative metrics (total miles, fuel costs)
+- **Pie/Donut charts:** Compliance percentages, fleet composition
+- **Histogram-style bars:** Safety score distribution
+
+**React 19 Compatibility:**
+Recharts 3.7.0 supports React 19. You may encounter peer dependency warnings during installation. Use `npm install recharts --legacy-peer-deps` if needed. Functional compatibility confirmed by community testing.
+
+**Integration Pattern:**
+```typescript
+// app/components/SafetyChart.tsx
+"use client"
+
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+
+export default function SafetyChart({ data }: { data: SafetyScore[] }) {
+  return (
+    <BarChart width={600} height={300} data={data}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="driverName" />
+      <YAxis />
+      <Tooltip />
+      <Bar dataKey="score" fill="#3b82f6" />
+    </BarChart>
+  )
+}
+```
+
+**Why Recharts over Tremor:**
+- **Direct control:** Recharts gives you granular control over chart customization
+- **Tremor is a wrapper:** Tremor is built on top of Recharts, adding opinionated styling
+- **Your use case:** Fleet dashboards need custom styling to match brand, not pre-made themes
+- **Portability:** Recharts knowledge transfers to any React project; Tremor is Tailwind-specific
+
+**When to consider Tremor:**
+- Rapid prototyping where you want beautiful defaults immediately
+- Already using shadcn/ui and want matching aesthetics
+- Don't need deep customization of chart internals
+
+### Icons and Navigation
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| lucide-react | 0.564.0 | Icon library for React | Tree-shakeable (only imported icons in bundle), 1400+ icons including fleet-specific ones (Truck, MapPin, Gauge, Fuel), actively maintained (published Feb 13, 2026), works with React 19, returns typed React components as inline SVG |
+
+**Relevant Icons for Fleet Management:**
+- **Navigation:** `Menu`, `PanelRight`, `Navigation`, `LayoutDashboard`
+- **Fleet:** `Truck`, `Car`, `Bus`
+- **Safety:** `AlertTriangle`, `Shield`, `ShieldAlert`
+- **Fuel:** `Fuel`, `Zap` (for electric), `Battery`
+- **Maps:** `MapPin`, `Map`, `Route`, `Navigation2`
+- **Metrics:** `Gauge`, `TrendingUp`, `BarChart3`, `PieChart`
+
+**Integration:**
+```typescript
+import { Truck, Gauge, MapPin, Fuel } from 'lucide-react'
+
+// Can be used in Server or Client Components
+<Truck className="w-5 h-5 text-blue-600" />
+```
+
+**Why Lucide over alternatives:**
+- **Tree-shaking:** Only pays for what you use (vs react-icons which bundles everything)
+- **Consistency:** All icons follow same design system (24x24 grid, consistent stroke width)
+- **TypeScript:** Fully typed components with auto-complete
+- **Customization:** Accepts all SVG props (size, color, strokeWidth, className, etc.)
+- **SSR-safe:** Works in both Server and Client Components without hydration issues
+
+### Mock Data Generation
+
+| Technology | Version | Purpose | Why Recommended |
+|------------|---------|---------|-----------------|
+| @faker-js/faker | 10.3.0 | Generate realistic mock data | Industry standard for seed data, generates realistic GPS coordinates, timestamps, names, VINs, and metrics; active maintenance (published Feb 7, 2026), works with Prisma seed scripts, locale support for internationalization |
+
+**Why Faker.js with Prisma seeds (not in-memory mocks):**
+- **Requirement:** Mock data must flow through real API contracts (database models, server actions)
+- **Type safety:** Prisma generates types from schema, seed data is validated against schema
+- **RLS compliance:** Seed scripts set `tenantId` for proper multi-tenant isolation
+- **Foreign key validation:** Database enforces referential integrity
+- **Repeatability:** Idempotent seed scripts with `skipDuplicates: true`
+
+**Integration Pattern:**
+```typescript
+// prisma/seed.ts
+import { PrismaClient } from '@prisma/client'
+import { faker } from '@faker-js/faker'
+
+const prisma = new PrismaClient()
+
+async function seedGPSRoutes() {
+  const tenantId = 'your-tenant-id'
+
+  const trucks = await prisma.truck.findMany({
+    where: { tenantId },
+    select: { id: true }
+  })
+
+  for (const truck of trucks) {
+    const routes = Array.from({ length: 20 }, () => ({
+      truckId: truck.id,
+      tenantId, // Critical for RLS
+      startLat: faker.location.latitude({ min: 33, max: 49 }),
+      startLng: faker.location.longitude({ min: -125, max: -65 }),
+      endLat: faker.location.latitude({ min: 33, max: 49 }),
+      endLng: faker.location.longitude({ min: -125, max: -65 }),
+      distance: faker.number.float({ min: 10, max: 500, precision: 0.1 }),
+      fuelUsed: faker.number.float({ min: 5, max: 50, precision: 0.1 }),
+      safetyScore: faker.number.int({ min: 60, max: 100 }),
+      timestamp: faker.date.recent({ days: 30 }),
+    }))
+
+    await prisma.route.createMany({
+      data: routes,
+      skipDuplicates: true,
+    })
+  }
+}
+
+async function main() {
+  await seedGPSRoutes()
+}
+
+main()
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
+```
+
+**Configure in package.json:**
+```json
+{
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
+```
+
+**Run seeding:**
+```bash
+npx prisma db seed
+```
+
+---
+
 ## Supporting Libraries
 
 | Library | Version | Purpose | When to Use |
@@ -115,7 +310,6 @@
 | @tanstack/react-table | 8.x | Data tables | If building complex vehicle/driver tables with sorting, filtering, pagination. |
 | zustand | 4.x | Client state | Lightweight state management (dashboard UI state, filters, modals). Use for client-only state, not server data. |
 | react-dropzone | 14.x | File uploads | For vehicle document uploads. Handles drag-drop, validation, previews. |
-| recharts | 2.x | Charts/graphs | If building dashboard analytics (fuel costs, maintenance trends). |
 
 ## Development Tools
 
@@ -129,15 +323,25 @@
 ## Installation
 
 ```bash
-# Initialize Next.js project
-npx create-next-app@latest drivecommand --typescript --tailwind --app --use-npm
-
-# Core dependencies
+# Core dependencies (existing from v1.0)
 npm install @prisma/client @clerk/nextjs zod react-hook-form @hookform/resolvers @tanstack/react-query
 
-# UI components
+# UI components (existing)
 npx shadcn@latest init
 npx shadcn@latest add form input button table select dialog
+
+# NEW: Map rendering (Milestone 2)
+npm install react-leaflet leaflet
+npm install -D @types/leaflet
+
+# NEW: Charts (Milestone 2)
+npm install recharts
+
+# NEW: Icons (Milestone 2)
+npm install lucide-react
+
+# NEW: Mock data generation (Milestone 2)
+npm install -D @faker-js/faker
 
 # File upload
 npm install react-dropzone
@@ -169,6 +373,12 @@ npx @sentry/wizard@latest -i nextjs
 | Hosting | Vercel | Netlify, AWS Amplify | Vercel built by Next.js creators, best Next.js optimization. Netlify comparable but less Next.js-specific. AWS Amplify has complex setup. |
 | File Storage | Cloudflare R2 | AWS S3, Google Cloud Storage | R2 has zero egress fees, massive cost savings for user-facing file downloads. S3 only if deep AWS integration needed. |
 | Email | Resend | SendGrid, AWS SES | Resend has modern API + React Email integration. SendGrid better for enterprise deliverability. AWS SES cheapest but requires more setup. |
+| **Maps** | **Leaflet** | **Mapbox GL JS** | Mapbox has API costs after free tier (50K loads/month), requires API key management, WebGL complexity overkill for 2D routes, vendor lock-in |
+| **Maps** | **Leaflet** | **Google Maps** | Expensive ($7/1000 loads after $200 credit), requires credit card, complex pricing |
+| **Charts** | **Recharts** | **Tremor** | Tremor is built on Recharts (adds abstraction layer), opinionated Tailwind styling, less flexibility |
+| **Charts** | **Recharts** | **Chart.js** | Imperative API (not React-native), manual state management, less composable |
+| **Icons** | **Lucide React** | **React Icons** | No tree-shaking (bundles all icon sets), inconsistent design, larger bundle |
+| **Mock Data** | **Faker.js** | **Chance.js** | Less active maintenance (last update 2020), smaller ecosystem |
 
 ## What NOT to Use
 
@@ -182,6 +392,10 @@ npx @sentry/wizard@latest -i nextjs
 | Webpack manual config | Next.js uses Turbopack by default in v16. Don't fight the framework. | Accept Next.js defaults |
 | Heroku | Expensive compared to modern alternatives. No auto-scaling. $5-7/month for basic dyno. | Railway, Render, Fly.io for better pricing |
 | Deprecated Next.js patterns | Pages Router, getServerSideProps, getStaticProps | App Router, Server Components, fetch with caching |
+| **Mapbox GL JS v1.x** | **Changed to proprietary license, expensive for commercial use** | **Leaflet or MapLibre GL JS** |
+| **faker (old package)** | **Abandoned in 2020, security vulnerabilities** | **@faker-js/faker** |
+| **@types/recharts** | **Recharts 3.x has built-in types, stub package unnecessary** | **Import types directly from recharts** |
+| **Static JSON mock files** | **Bypasses database validation, doesn't test RLS policies** | **Prisma seed scripts with Faker.js** |
 
 ## Stack Patterns by Variant
 
@@ -197,6 +411,7 @@ npx @sentry/wizard@latest -i nextjs
 - Use Railway or Coolify (predictable pricing, includes database)
 - Use Cloudflare R2 (free tier: 10GB storage, 1M reads/month)
 - Use Resend free tier (3,000 emails/month)
+- **Use Leaflet for maps (zero cost, no API limits)**
 - **Because:** Free/low tiers available, total cost under $20/month.
 
 **If enterprise/high-compliance:**
@@ -209,6 +424,7 @@ npx @sentry/wizard@latest -i nextjs
 **If real-time features needed (live tracking, WebSockets):**
 - Use Fly.io for hosting (persistent VMs, not serverless)
 - Use Pusher or Ably for real-time channels
+- **Consider Mapbox GL for 500+ simultaneous vehicles (WebGL acceleration)**
 - **Because:** Vercel serverless has cold starts and limits for long-lived connections.
 
 ## Version Compatibility
@@ -220,6 +436,59 @@ npx @sentry/wizard@latest -i nextjs
 | TanStack Query 5.x | React 18+ | Uses useSyncExternalStore (React 18 API). |
 | Tailwind CSS 4.x | Modern browsers | Safari 16.4+, Chrome 111+, Firefox 128+. For older browsers, use Tailwind v3.4. |
 | TypeScript 5.8 | Node.js 23.6+ | Direct execution feature requires Node.js 23.6+. |
+| **react-leaflet 5.0.0** | **React 19, Leaflet 1.9** | **Requires React 19 as peer dependency** |
+| **recharts 3.7.0** | **React 16.8+, React 19** | **Peer dependency warnings with React 19 (use --legacy-peer-deps), functional** |
+| **lucide-react 0.564.0** | **React 16.4+, React 19** | **No compatibility issues** |
+
+## SSR and Hydration Considerations
+
+### Maps (Leaflet)
+- **SSR:** Not compatible (requires `window`, `document`, DOM APIs)
+- **Solution:** `dynamic(() => import('./Map'), { ssr: false })`
+- **Hydration:** N/A (client-only rendering)
+- **Best practice:** Show loading skeleton while map loads client-side
+
+### Charts (Recharts)
+- **SSR:** Partially compatible (can render on server but may have hydration issues)
+- **Solution:** Use "use client" directive, ensure data stability during hydration
+- **Hydration:** Can work if data is consistent between server and client
+- **Best practice:** Fetch data in Server Component, pass as props to chart Client Component
+
+### Icons (Lucide)
+- **SSR:** ✅ Fully compatible (renders as inline SVG)
+- **Solution:** No special handling needed
+- **Hydration:** No issues
+- **Best practice:** Use freely in both Server and Client Components
+
+**Critical Pattern for Next.js 16 App Router:**
+
+```typescript
+// Server Component fetches data
+// app/dashboard/safety/page.tsx
+import SafetyChart from '@/components/SafetyChart'
+import { getSafetyScores } from '@/lib/actions'
+
+export default async function SafetyDashboard() {
+  const scores = await getSafetyScores() // Server-side fetch
+
+  return (
+    <div>
+      <h1>Safety Dashboard</h1>
+      <SafetyChart data={scores} /> {/* Client Component receives data */}
+    </div>
+  )
+}
+
+// Client Component renders chart
+// components/SafetyChart.tsx
+"use client"
+
+import { BarChart, Bar, XAxis, YAxis } from 'recharts'
+
+export default function SafetyChart({ data }) {
+  return <BarChart width={600} height={300} data={data}>...</BarChart>
+}
+```
 
 ## Multi-Tenant Architecture Notes
 
@@ -244,6 +513,12 @@ npx @sentry/wizard@latest -i nextjs
 
 **Critical:** Never trust client-provided tenant_id. Always derive from authenticated user's session.
 
+**Mock Data for Multi-Tenant:**
+- Seed scripts MUST include `tenantId` in all records
+- Query existing tenant-scoped records (trucks, drivers) before creating related data
+- Use `createMany` with `skipDuplicates: true` for idempotent seeding
+- Never hardcode IDs across tenants (use foreign key relationships)
+
 ## Sources
 
 ### Official Documentation (HIGH confidence)
@@ -256,6 +531,11 @@ npx @sentry/wizard@latest -i nextjs
 - [Prisma Documentation](https://www.prisma.io/docs/orm) - Prisma 7 pure TypeScript architecture
 - [Clerk Documentation](https://clerk.com/docs) - Multi-tenant SaaS patterns
 - [Stripe SaaS Integration Guide](https://docs.stripe.com/saas) - Subscription billing best practices
+- **[React Leaflet Documentation](https://react-leaflet.js.org/) - Official docs, version 5.0.0 (MEDIUM-HIGH confidence)**
+- **[Recharts npm package](https://www.npmjs.com/package/recharts) - Version 3.7.0 verification (HIGH confidence)**
+- **[Lucide React Documentation](https://lucide.dev/guide/packages/lucide-react) - Official docs (HIGH confidence)**
+- **[Prisma Seeding Documentation](https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding) - Official seeding guide (HIGH confidence)**
+- **[@faker-js/faker npm](https://www.npmjs.com/package/@faker-js/faker) - Version 10.3.0 verification (HIGH confidence)**
 
 ### Comparison Articles (MEDIUM-HIGH confidence)
 - [Clerk vs Auth0 for Next.js](https://clerk.com/articles/clerk-vs-auth0-for-nextjs) - Technical comparison, 2026
@@ -263,6 +543,8 @@ npx @sentry/wizard@latest -i nextjs
 - [Resend vs SendGrid Comparison 2026](https://forwardemail.net/en/blog/resend-vs-sendgrid-email-service-comparison) - Developer experience, deliverability
 - [Prisma vs Drizzle ORM 2026](https://makerkit.dev/blog/tutorials/drizzle-vs-prisma) - Performance vs DX tradeoffs
 - [PostgreSQL Row-Level Security Multi-Tenant](https://www.crunchydata.com/blog/row-level-security-for-tenants-in-postgres) - RLS implementation patterns
+- **[Mapbox vs Leaflet Comparison](https://medium.com/visarsoft-blog/leaflet-or-mapbox-choosing-the-right-tool-for-interactive-maps-53dea7cc3c40) - Architecture decision (MEDIUM confidence)**
+- **[Tremor built on Recharts](https://www.tremor.so/) - Alternative comparison (HIGH confidence)**
 
 ### SaaS Architecture Research (MEDIUM confidence, verified across multiple sources)
 - [WorkOS Multi-Tenant Architecture Guide](https://workos.com/blog/developers-guide-saas-multi-tenant-architecture) - Tenant isolation strategies
@@ -274,7 +556,13 @@ npx @sentry/wizard@latest -i nextjs
 - [Fleet Management Software Development Guide 2025](https://www.inexture.com/fleet-management-software-for-logistics-and-delivery-operations/) - Industry feature requirements
 - [Fleet Management Technology Trends 2025](https://intelliarts.com/blog/fleet-management-technology-trends/) - IoT, AI, cloud computing integration
 
+### Milestone 2 Research (MEDIUM confidence, web search + official docs)
+- **[React Leaflet with Next.js Integration](https://placekit.io/blog/articles/making-react-leaflet-work-with-nextjs-493i) - Next.js App Router pattern (MEDIUM confidence)**
+- **[Recharts React 19 Support Issue](https://github.com/recharts/recharts/issues/4558) - Compatibility verification (HIGH confidence)**
+- **[Next.js Hydration Error Guide](https://medium.com/@nathancodes05/fixing-next-js-hydration-errors-a-comprehensive-guide-5ddd0ed65560) - Best practices (MEDIUM confidence)**
+- **[Prisma Multi-Tenant RLS](https://medium.com/@francolabuschagne90/securing-multi-tenant-applications-using-row-level-security-in-postgresql-with-prisma-orm-4237f4d4bd35) - RLS seeding pattern (MEDIUM confidence)**
+
 ---
 *Stack research for: Multi-tenant Fleet Management SaaS*
-*Researched: 2026-02-14*
-*Next.js 16 + PostgreSQL 17 + Clerk + Prisma 7 + Cloudflare R2*
+*Researched: 2026-02-14 (Updated: 2026-02-15 for Milestone 2 - Maps, Charts, Icons, Mock Data)*
+*Next.js 16 + PostgreSQL 17 + Clerk + Prisma 7 + Leaflet + Recharts + Lucide + Faker.js*
