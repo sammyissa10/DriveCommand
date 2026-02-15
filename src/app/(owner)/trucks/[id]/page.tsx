@@ -52,12 +52,20 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           <h1 className="text-3xl font-bold text-gray-900">
             {truck.year} {truck.make} {truck.model}
           </h1>
-          <Link
-            href={`/trucks/${truck.id}/edit`}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
-          >
-            Edit Truck
-          </Link>
+          <div className="flex gap-3">
+            <Link
+              href={`/trucks/${truck.id}/maintenance`}
+              className="border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-md"
+            >
+              Maintenance
+            </Link>
+            <Link
+              href={`/trucks/${truck.id}/edit`}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
+            >
+              Edit Truck
+            </Link>
+          </div>
         </div>
       </div>
 
