@@ -2,15 +2,17 @@
  * Dashboard page - Owner portal landing page
  *
  * This is the post-login destination (NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard).
- * Shows upcoming maintenance and expiring documents.
+ * Shows fleet overview stat cards and alert widgets for upcoming maintenance and expiring documents.
  */
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { getFleetStats } from '@/app/(owner)/actions/dashboard';
 import {
   getUpcomingMaintenance,
   getExpiringDocuments,
 } from '@/app/(owner)/actions/notifications';
+import { StatCard } from '@/components/dashboard/stat-card';
 import { UpcomingMaintenanceWidget } from '@/components/dashboard/upcoming-maintenance-widget';
 import { ExpiringDocumentsWidget } from '@/components/dashboard/expiring-documents-widget';
 
@@ -18,15 +20,30 @@ export default async function DashboardPage() {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Fetch data for both widgets
-  const upcomingMaintenance = await getUpcomingMaintenance();
-  const expiringDocuments = await getExpiringDocuments();
+  // Fetch all dashboard data in parallel
+  const [stats, upcomingMaintenance, expiringDocuments] = await Promise.all([
+    getFleetStats(),
+    getUpcomingMaintenance(),
+    getExpiringDocuments(),
+  ]);
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-1 text-sm text-gray-600">Fleet overview and alerts</p>
+      </div>
+
+      <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Total Trucks" value={stats.totalTrucks} href="/trucks" />
+        <StatCard label="Active Drivers" value={stats.activeDrivers} href="/drivers" />
+        <StatCard label="Active Routes" value={stats.activeRoutes} href="/routes" />
+        <StatCard
+          label="Maintenance Alerts"
+          value={stats.maintenanceAlerts}
+          href="/trucks"
+          variant={stats.maintenanceAlerts > 0 ? 'warning' : 'default'}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
