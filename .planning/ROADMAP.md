@@ -165,10 +165,11 @@ Plans:
   3. Email reminders are sent for upcoming scheduled services (7 days before due date)
   4. Email reminders are sent for expiring documents (14 days before expiry)
   5. Background jobs process reminders without blocking user requests
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 09-01-PLAN.md — Notification infrastructure: NotificationLog model, Resend + React Email templates, cron endpoint with deduplication
+- [ ] 09-02-PLAN.md — Dashboard widgets: upcoming maintenance and expiring documents with color-coded urgency
 
 ### Phase 10: Dashboard & System Admin
 **Goal**: Owners see fleet overview and system admins can manage all tenants
@@ -200,5 +201,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
 | 7. Driver Portal | 2/2 | ✓ Complete | 2026-02-14 |
 | 8. Maintenance & Scheduling | 2/2 | ✓ Complete | 2026-02-14 |
-| 9. Notifications & Reminders | 0/TBD | Not started | - |
+| 9. Notifications & Reminders | 0/2 | In progress | - |
 | 10. Dashboard & System Admin | 0/TBD | Not started | - |
