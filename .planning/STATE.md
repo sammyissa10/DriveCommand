@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 8 of 10 (Maintenance & Scheduling)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-15 — Plan 08-01 complete (maintenance data layer)
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-02-15 — Plan 08-02 complete (maintenance UI)
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 3.7 min
-- Total execution time: 1.18 hours
+- Total plans completed: 18
+- Average duration: 4.1 min
+- Total execution time: 1.24 hours
 
 **By Phase:**
 
@@ -34,10 +34,10 @@ Progress: [████████░░] 75%
 | 05    | 2     | 8 min  | 4 min    |
 | 06    | 2     | 15 min | 7.5 min  |
 | 07    | 2     | 6 min  | 3 min    |
-| 08    | 1     | 5 min  | 5 min    |
+| 08    | 2     | 8.5 min | 4.3 min  |
 
 **Recent Trend:**
-- Last 5 plans: 7min, 7.7min, 1.9min, 3.7min, 5.1min
+- Last 5 plans: 7.7min, 1.9min, 3.7min, 5.1min, 3.5min
 - Trend: Excellent velocity
 
 *Updated after each plan completion*
@@ -51,6 +51,7 @@ Progress: [████████░░] 75%
 | Phase 06 P02 | 463 | 2 tasks | 6 files |
 | Phase 06 P01 | 403 | 2 tasks | 11 files |
 | Phase 05 P02 | 297 | 2 tasks | 11 files |
+| Phase 08-maintenance-scheduling P02 | 212 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -169,6 +170,12 @@ Recent decisions affecting current work:
 - listScheduledServices augments results with dueStatus - server action computes isDue/isDueByDate/isDueByMileage before returning to UI
 - Empty form fields converted to null for optional fields - FormData returns empty strings, use ternary pattern for cost/provider/notes/intervals
 
+**From Plan 08-02 (2026-02-15):**
+- Custom sorting function for status column - prioritizes Due > Upcoming > OK for visibility in TanStack Table
+- Color coding thresholds: red (overdue), yellow (14 days or 500 miles), green (OK) - based on commercial truck maintenance practices
+- Client wrapper pattern for delete operations - server component fetches data, client wrapper handles mutations with useOptimistic
+- Outline button style for Maintenance link - visual differentiation from primary Edit Truck button (secondary navigation)
+
 ### Pending Todos
 
 None yet.
@@ -183,5 +190,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15 (phase execution)
-Stopped at: Phase 08 Plan 01 complete (maintenance data layer)
-Resume file: .planning/phases/08-maintenance-scheduling/08-01-SUMMARY.md
+Stopped at: Phase 08 complete (maintenance scheduling)
+Resume file: .planning/phases/08-maintenance-scheduling/08-02-SUMMARY.md
