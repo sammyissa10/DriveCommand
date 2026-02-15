@@ -1,4 +1,4 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, clerkClient, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const isPublicRoute = createRouteMatcher([
@@ -18,6 +18,7 @@ const isPublicRoute = createRouteMatcher([
  * 4. Authenticated users with tenantId get x-tenant-id header injected
  *
  * CRITICAL: Tenant is resolved from Clerk session metadata, NOT from URL/subdomain.
+ * Falls back to Clerk API if session token doesn't contain privateMetadata.
  */
 export default clerkMiddleware(async (auth, request: NextRequest) => {
   if (isPublicRoute(request)) {
@@ -33,9 +34,20 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
     return NextResponse.redirect(signInUrl);
   }
 
-  // Extract tenant ID from Clerk private metadata
+  // Extract tenant ID from Clerk private metadata (session claims)
   const privateMetadata = sessionClaims?.privateMetadata as { tenantId?: string } | undefined;
-  const tenantId = privateMetadata?.tenantId;
+  let tenantId = privateMetadata?.tenantId;
+
+  // Fallback: fetch directly from Clerk API if session token doesn't have tenantId
+  if (!tenantId) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      tenantId = (user.privateMetadata as { tenantId?: string })?.tenantId;
+    } catch {
+      // Clerk API failed - proceed without tenantId
+    }
+  }
 
   // User is authenticated but has no tenant assigned
   if (!tenantId) {
