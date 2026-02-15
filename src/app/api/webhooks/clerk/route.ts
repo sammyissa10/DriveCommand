@@ -254,10 +254,10 @@ export async function POST(req: NextRequest) {
         },
         { status: 200 }
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error provisioning tenant:', error);
       return NextResponse.json(
-        { error: 'Failed to provision tenant' },
+        { error: 'Failed to provision tenant', details: error?.message || String(error) },
         { status: 500 }
       );
     }
