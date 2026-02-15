@@ -40,11 +40,13 @@ model Tenant {
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
 
-  users             User[]
-  trucks            Truck[]
-  driverInvitations DriverInvitation[]
-  routes            Route[]
-  documents         Document[]
+  users              User[]
+  trucks             Truck[]
+  driverInvitations  DriverInvitation[]
+  routes             Route[]
+  documents          Document[]
+  maintenanceEvents  MaintenanceEvent[]
+  scheduledServices  ScheduledService[]
 }
 
 model User {
@@ -83,9 +85,11 @@ model Truck {
   createdAt         DateTime @default(now()) @db.Timestamptz
   updatedAt         DateTime @updatedAt @db.Timestamptz
 
-  tenant         Tenant     @relation(fields: [tenantId], references: [id])
-  assignedRoutes Route[]
-  documents      Document[]
+  tenant             Tenant             @relation(fields: [tenantId], references: [id])
+  assignedRoutes     Route[]
+  documents          Document[]
+  maintenanceEvents  MaintenanceEvent[]
+  scheduledServices  ScheduledService[]
 
   @@unique([tenantId, vin])
   @@index([tenantId])
@@ -161,4 +165,48 @@ model Document {
   @@index([truckId])
   @@index([routeId])
   @@index([uploadedBy])
+}
+
+model MaintenanceEvent {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String   @db.Uuid
+  truckId           String   @db.Uuid
+  serviceType       String
+  serviceDate       DateTime @db.Timestamptz
+  odometerAtService Int
+  cost              Decimal? @db.Decimal(10, 2)
+  provider          String?
+  notes             String?
+  createdAt         DateTime @default(now()) @db.Timestamptz
+  updatedAt         DateTime @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([serviceDate])
+}
+
+model ScheduledService {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String    @db.Uuid
+  truckId          String    @db.Uuid
+  serviceType      String
+  intervalDays     Int?
+  intervalMiles    Int?
+  baselineDate     DateTime  @db.Timestamptz
+  baselineOdometer Int
+  notes            String?
+  isCompleted      Boolean   @default(false)
+  completedAt      DateTime? @db.Timestamptz
+  createdAt        DateTime  @default(now()) @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  truck  Truck  @relation(fields: [truckId], references: [id])
+
+  @@index([tenantId])
+  @@index([truckId])
+  @@index([isCompleted])
 }
