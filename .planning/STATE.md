@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 9 of 10 (Notifications & Reminders)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-14 — Phase 8 complete (2/2 plans, verification passed)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-15 — Phase 9 Plan 01 complete (notification infrastructure)
 
 Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
-- Average duration: 4.1 min
-- Total execution time: 1.24 hours
+- Total plans completed: 19
+- Average duration: 4.2 min
+- Total execution time: 1.35 hours
 
 **By Phase:**
 
@@ -35,6 +35,7 @@ Progress: [████████░░] 80%
 | 06    | 2     | 15 min | 7.5 min  |
 | 07    | 2     | 6 min  | 3 min    |
 | 08    | 2     | 8.5 min | 4.3 min  |
+| 09    | 1     | 6.3 min | 6.3 min  |
 
 **Recent Trend:**
 - Last 5 plans: 7.7min, 1.9min, 3.7min, 5.1min, 3.5min
@@ -46,12 +47,12 @@ Progress: [████████░░] 80%
 
 | Plan | Duration (s) | Tasks | Files |
 |------|--------------|-------|-------|
+| Phase 09-notifications-reminders P01 | 380 | 2 tasks | 15 files |
 | Phase 08-maintenance-scheduling P01 | 307 | 2 tasks | 5 files |
 | Phase 07-driver-portal P02 | 220 | 2 tasks | 4 files |
 | Phase 06 P02 | 463 | 2 tasks | 6 files |
 | Phase 06 P01 | 403 | 2 tasks | 11 files |
 | Phase 05 P02 | 297 | 2 tasks | 11 files |
-| Phase 08-maintenance-scheduling P02 | 212 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -176,6 +177,14 @@ Recent decisions affecting current work:
 - Client wrapper pattern for delete operations - server component fetches data, client wrapper handles mutations with useOptimistic
 - Outline button style for Maintenance link - visual differentiation from primary Edit Truck button (secondary navigation)
 
+**From Plan 09-01 (2026-02-15):**
+- NotificationLog without RLS policies - cron jobs run as system-level operations without request context; RLS would block queries
+- Lazy-initialized Resend client via Proxy - allows build without RESEND_API_KEY, matches S3 client pattern from Phase 06
+- Idempotency key format {type}:{entityId}:{YYYY-MM-DD} - one notification per entity per day prevents spam
+- Send to all OWNER-role users - fleet owners need visibility, managers may not have notification authority
+- 7-day window for maintenance, 14-day for documents - maintenance cycles shorter, documents have longer renewal processes
+- Daily cron at 14:00 UTC - reasonable business hours (9 AM EST / 6 AM PST) for email delivery
+
 ### Pending Todos
 
 None yet.
@@ -189,6 +198,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-14 (phase execution)
-Stopped at: Phase 8 complete — verification passed, ready for Phase 9 planning
-Resume file: .planning/phases/08-maintenance-scheduling/08-VERIFICATION.md
+Last session: 2026-02-15 (phase execution)
+Stopped at: Phase 9 Plan 01 complete — notification infrastructure built
+Resume file: .planning/phases/09-notifications-reminders/09-01-SUMMARY.md
