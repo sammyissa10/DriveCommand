@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 12 of 15 (Live GPS Map)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-02-15 — Plan 12-01 complete (Live GPS Map foundation)
+Plan: 2 of 2 in current phase
+Status: Completed
+Last activity: 2026-02-15 — Plan 12-02 complete (Vehicle details & route history)
 
-Progress: [████████████████████░░░░░] 77% (24 plans complete, 10 v1.0 phases shipped)
+Progress: [████████████████████░░░░░] 80% (25 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -31,8 +31,9 @@ Progress: [████████████████████░░░
 | 11    | 02   | 3m 0s    | 2     | 2     | 2026-02-15 |
 | 11    | 03   | 5m 3s    | 2     | 8     | 2026-02-15 |
 | 12    | 01   | 4m 44s   | 2     | 9     | 2026-02-15 |
+| 12    | 02   | 3m 52s   | 2     | 4     | 2026-02-15 |
 
-**v2.0 totals:** 4 plans completed, 19m 50s total time
+**v2.0 totals:** 5 plans completed, 23m 42s total time
 
 ## Accumulated Context
 
@@ -67,6 +68,9 @@ Recent v2.0 decisions:
 - [Phase 12-01]: Use react-leaflet-cluster v4.x for React 19 compatibility — Latest version required for react-leaflet v5.x peer dependency
 - [Phase 12-01]: DISTINCT ON raw SQL for per-truck latest GPS position — More efficient than GROUP BY for time-series "latest per entity" queries
 - [Phase 12-01]: Router.refresh() polling for real-time updates — 30-second intervals sufficient for GPS tracking on serverless platform (no WebSockets needed)
+- [Phase 12-02]: Polyline segment overlap for continuity — Last point of segment N becomes first point of segment N+1 when color changes
+- [Phase 12-02]: Fuel level estimation using 6 MPG heuristic — Simplified calculation for truck diagnostics in absence of real-time fuel sensors
+- [Phase 12-02]: Engine state derived from GPS speed — Running (>5 mph), idle (>0 mph), off (no speed data)
 
 ### Pending Todos
 
@@ -79,5 +83,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 12-01-PLAN.md — Live GPS Map foundation with Leaflet, clustering, and real-time polling
+Stopped at: Completed 12-02-PLAN.md — Vehicle details sheet and route history trail with speed-based color coding
 Resume file: None
