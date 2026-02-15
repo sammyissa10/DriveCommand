@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 11 of 15 (Navigation & Data Foundation)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: Executing
-Last activity: 2026-02-15 — Completed 11-01 (Sidebar Navigation Infrastructure)
+Last activity: 2026-02-15 — Completed 11-02 (Fleet Intelligence Data Models)
 
-Progress: [████████████████████░░░░░] 70% (21 plans complete, 10 v1.0 phases shipped)
+Progress: [████████████████████░░░░░] 73% (22 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -28,8 +28,9 @@ Progress: [████████████████████░░░
 | Phase | Plan | Duration | Tasks | Files | Completed |
 |-------|------|----------|-------|-------|-----------|
 | 11    | 01   | 7m 3s    | 2     | 17    | 2026-02-15 |
+| 11    | 02   | 3m 0s    | 2     | 2     | 2026-02-15 |
 
-**v2.0 totals:** 1 plan completed, 7m 3s total time
+**v2.0 totals:** 2 plans completed, 10m 3s total time
 
 ## Accumulated Context
 
@@ -53,6 +54,9 @@ Recent v2.0 decisions:
 - shadcn/ui for component library (11-01) — Industry-standard library with built-in accessibility and responsive behavior
 - Icon rail collapse mode (11-01) — Matches Samsara UX, maintains spatial memory for power users
 - Role-based Fleet Intelligence visibility (11-01) — Only OWNER/MANAGER see Live Map, Safety, Fuel sections
+- [Phase 11]: Used Decimal types for coordinates (latitude/longitude) with explicit precision for GPS accuracy
+- [Phase 11]: Added composite indexes on [tenantId, timestamp] for efficient dashboard queries (time-series data pattern)
+- [Phase 11]: Made driverId and routeId optional in SafetyEvent (events can occur when no driver assigned or outside active routes)
 
 ### Pending Todos
 
@@ -65,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Completed 11-01-PLAN.md (Sidebar Navigation Infrastructure)
+Stopped at: Completed 11-02-PLAN.md (Fleet Intelligence Data Models)
 Resume file: None
