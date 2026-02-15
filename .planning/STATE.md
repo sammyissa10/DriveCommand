@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 ## Current Position
 
 Phase: 8 of 10 (Maintenance & Scheduling)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-14 — Phase 7 complete (2/2 plans, verification passed)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-15 — Plan 08-01 complete (maintenance data layer)
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: 3.6 min
-- Total execution time: 1.10 hours
+- Total plans completed: 17
+- Average duration: 3.7 min
+- Total execution time: 1.18 hours
 
 **By Phase:**
 
@@ -34,9 +34,10 @@ Progress: [███████░░░] 70%
 | 05    | 2     | 8 min  | 4 min    |
 | 06    | 2     | 15 min | 7.5 min  |
 | 07    | 2     | 6 min  | 3 min    |
+| 08    | 1     | 5 min  | 5 min    |
 
 **Recent Trend:**
-- Last 5 plans: 5min, 7min, 7.7min, 1.9min, 3.7min
+- Last 5 plans: 7min, 7.7min, 1.9min, 3.7min, 5.1min
 - Trend: Excellent velocity
 
 *Updated after each plan completion*
@@ -45,11 +46,11 @@ Progress: [███████░░░] 70%
 
 | Plan | Duration (s) | Tasks | Files |
 |------|--------------|-------|-------|
+| Phase 08-maintenance-scheduling P01 | 307 | 2 tasks | 5 files |
 | Phase 07-driver-portal P02 | 220 | 2 tasks | 4 files |
 | Phase 06 P02 | 463 | 2 tasks | 6 files |
 | Phase 06 P01 | 403 | 2 tasks | 11 files |
 | Phase 05 P02 | 297 | 2 tasks | 11 files |
-| Phase 05 P01 | 183 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -161,6 +162,13 @@ Recent decisions affecting current work:
 - Landing page uses redirect() to /my-route instead of inline rendering - cleaner URL structure, driver can bookmark directly
 - No status transition buttons in driver portal - owner/manager controls route status, drivers are read-only consumers
 
+**From Plan 08-01 (2026-02-15):**
+- @ts-ignore for Prisma 7 withTenantRLS extension - follows existing pattern from Phase 03, extended client doesn't properly infer new model types
+- calculateNextDue uses Date.setDate() not millisecond math - avoids DST bugs per 08-RESEARCH.md findings
+- Zod .refine() enforces at least one trigger - validates business rule (intervalDays OR intervalMiles required) at schema level
+- listScheduledServices augments results with dueStatus - server action computes isDue/isDueByDate/isDueByMileage before returning to UI
+- Empty form fields converted to null for optional fields - FormData returns empty strings, use ternary pattern for cost/provider/notes/intervals
+
 ### Pending Todos
 
 None yet.
@@ -174,6 +182,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-14 (phase execution)
-Stopped at: Phase 7 complete — verification passed, ready for Phase 8 planning
-Resume file: .planning/phases/07-driver-portal/07-VERIFICATION.md
+Last session: 2026-02-15 (phase execution)
+Stopped at: Phase 08 Plan 01 complete (maintenance data layer)
+Resume file: .planning/phases/08-maintenance-scheduling/08-01-SUMMARY.md
