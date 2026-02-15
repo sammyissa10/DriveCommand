@@ -234,7 +234,11 @@ Plans:
   3. Owner can view vehicle route history as breadcrumb trail polylines showing past 24 hours of travel
   4. Map automatically clusters nearby vehicle markers when zoomed out for fleets with 20+ vehicles
   5. Map initializes without SSR errors (Leaflet loaded via dynamic import with ssr: false)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Leaflet setup, server actions, utility functions, map page with color-coded vehicle markers and clustering
+- [ ] 12-02-PLAN.md — Vehicle detail sidebar with diagnostics and route history breadcrumb trail polylines
 
 ### Phase 13: Safety Analytics Dashboard
 **Goal**: Owners can monitor driver safety performance with scores, events, and trends
@@ -290,7 +294,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Notifications & Reminders | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 11. Navigation & Data Foundation | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
-| 12. Live GPS Map | v2.0 | 0/TBD | Not started | - |
+| 12. Live GPS Map | v2.0 | 0/2 | Not started | - |
 | 13. Safety Analytics Dashboard | v2.0 | 0/TBD | Not started | - |
 | 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
 | 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
