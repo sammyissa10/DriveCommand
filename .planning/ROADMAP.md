@@ -250,7 +250,11 @@ Plans:
   3. Owner can view safety score trends over time (30-day line chart showing daily average scores)
   4. Owner can view driver safety performance rankings (leaderboard showing top and bottom performers)
   5. Owner can configure safety alert thresholds (g-force sensitivity settings per vehicle class: light/medium/heavy duty)
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Install shadcn chart components, fix seed enums, create score calculator and safety server actions
+- [ ] 13-02-PLAN.md — Safety dashboard page with score card, event charts, trend line, leaderboard, and threshold config
 
 ### Phase 14: Fuel & Energy Dashboard
 **Goal**: Owners can track fuel efficiency and environmental impact across the fleet
@@ -295,6 +299,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 11. Navigation & Data Foundation | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 13. Safety Analytics Dashboard | v2.0 | 0/TBD | Not started | - |
+| 13. Safety Analytics Dashboard | v2.0 | 0/2 | Not started | - |
 | 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
 | 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
