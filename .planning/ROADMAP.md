@@ -181,10 +181,11 @@ Plans:
   3. System admin can view all tenants and their status in admin portal
   4. System admin can create new tenants manually (for enterprise sales)
   5. System admin can suspend or delete tenants (with confirmation)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD during planning
+- [ ] 10-01-PLAN.md — Owner dashboard with fleet stat cards and parallel data fetching
+- [ ] 10-02-PLAN.md — System admin tenant management with cross-tenant CRUD and confirmation dialogs
 
 ## Progress
 
