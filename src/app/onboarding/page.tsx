@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { SignOutButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
@@ -10,11 +10,23 @@ export default async function OnboardingPage() {
     redirect("/sign-in");
   }
 
-  // Check if tenant is provisioned
+  // Check if tenant is provisioned (from session claims first)
   const privateMetadata = sessionClaims?.privateMetadata as
     | { tenantId?: string }
     | undefined;
-  const tenantId = privateMetadata?.tenantId;
+  let tenantId = privateMetadata?.tenantId;
+
+  // Fallback: directly fetch user metadata from Clerk API
+  // (session token may not have updated claims yet)
+  if (!tenantId) {
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      tenantId = (user.privateMetadata as { tenantId?: string })?.tenantId;
+    } catch (e) {
+      console.error("Failed to fetch user metadata from Clerk:", e);
+    }
+  }
 
   // Tenant is ready - onboarding complete, redirect to dashboard
   if (tenantId) {
