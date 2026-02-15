@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
 - [x] **Phase 6: Document Storage & Files** - Cloudflare R2 integration, file uploads, tenant-isolated storage
 - [x] **Phase 7: Driver Portal** - Read-only driver interface, assigned route view, restricted access
-- [ ] **Phase 8: Maintenance & Scheduling** - Service history, dual-trigger scheduling, expiry tracking
+- [x] **Phase 8: Maintenance & Scheduling** - Service history, dual-trigger scheduling, expiry tracking
 - [ ] **Phase 9: Notifications & Reminders** - Email service, background jobs, maintenance/document alerts
 - [ ] **Phase 10: Dashboard & System Admin** - Fleet overview, metrics, system admin tenant management
 
@@ -152,8 +152,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Data layer: Prisma models (MaintenanceEvent + ScheduledService), migration with RLS, Zod schemas, calculateNextDue utility, server actions
-- [ ] 08-02-PLAN.md — UI: Combined maintenance page, log event form, schedule service form, TanStack Table lists with due status, truck detail link
+- [x] 08-01-PLAN.md — Data layer: Prisma models (MaintenanceEvent + ScheduledService), migration with RLS, Zod schemas, calculateNextDue utility, server actions
+- [x] 08-02-PLAN.md — UI: Combined maintenance page, log event form, schedule service form, TanStack Table lists with due status, truck detail link
 
 ### Phase 9: Notifications & Reminders
 **Goal**: System automatically sends timely reminders for maintenance and expiring documents
@@ -199,6 +199,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
 | 7. Driver Portal | 2/2 | ✓ Complete | 2026-02-14 |
-| 8. Maintenance & Scheduling | 0/2 | Planned | - |
+| 8. Maintenance & Scheduling | 2/2 | ✓ Complete | 2026-02-14 |
 | 9. Notifications & Reminders | 0/TBD | Not started | - |
 | 10. Dashboard & System Admin | 0/TBD | Not started | - |
