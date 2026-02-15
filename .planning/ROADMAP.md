@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Driver Management** - Driver accounts, invite system, listing, role enforcement
 - [x] **Phase 5: Route Management** - Route CRUD, lifecycle, driver-truck assignment, unified detail view
 - [x] **Phase 6: Document Storage & Files** - Cloudflare R2 integration, file uploads, tenant-isolated storage
-- [ ] **Phase 7: Driver Portal** - Read-only driver interface, assigned route view, restricted access
+- [x] **Phase 7: Driver Portal** - Read-only driver interface, assigned route view, restricted access
 - [ ] **Phase 8: Maintenance & Scheduling** - Service history, dual-trigger scheduling, expiry tracking
 - [ ] **Phase 9: Notifications & Reminders** - Email service, background jobs, maintenance/document alerts
 - [ ] **Phase 10: Dashboard & System Admin** - Fleet overview, metrics, system admin tenant management
@@ -136,8 +136,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Driver-scoped server actions with IDOR-proof user-level filtering
-- [ ] 07-02-PLAN.md — Driver portal UI: landing page, read-only route/truck/documents view
+- [x] 07-01-PLAN.md — Driver-scoped server actions with IDOR-proof user-level filtering
+- [x] 07-02-PLAN.md — Driver portal UI: landing page, read-only route/truck/documents view
 
 ### Phase 8: Maintenance & Scheduling
 **Goal**: Owners can track service history and schedule future maintenance with dual triggers
@@ -197,7 +197,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 4. Driver Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 5. Route Management | 2/2 | ✓ Complete | 2026-02-14 |
 | 6. Document Storage & Files | 2/2 | ✓ Complete | 2026-02-14 |
-| 7. Driver Portal | 0/2 | In progress | - |
+| 7. Driver Portal | 2/2 | ✓ Complete | 2026-02-14 |
 | 8. Maintenance & Scheduling | 0/TBD | Not started | - |
 | 9. Notifications & Reminders | 0/TBD | Not started | - |
 | 10. Dashboard & System Admin | 0/TBD | Not started | - |
