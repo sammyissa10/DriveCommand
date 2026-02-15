@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 12 of 15 (Live GPS Map)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-15 — Phase 11 complete (3/3 plans, verified)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-15 — Plan 12-01 complete (Live GPS Map foundation)
 
-Progress: [████████████████████░░░░░] 76% (23 plans complete, 10 v1.0 phases shipped)
+Progress: [████████████████████░░░░░] 77% (24 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -30,8 +30,9 @@ Progress: [████████████████████░░░
 | 11    | 01   | 7m 3s    | 2     | 17    | 2026-02-15 |
 | 11    | 02   | 3m 0s    | 2     | 2     | 2026-02-15 |
 | 11    | 03   | 5m 3s    | 2     | 8     | 2026-02-15 |
+| 12    | 01   | 4m 44s   | 2     | 9     | 2026-02-15 |
 
-**v2.0 totals:** 3 plans completed, 15m 6s total time
+**v2.0 totals:** 4 plans completed, 19m 50s total time
 
 ## Accumulated Context
 
@@ -62,6 +63,10 @@ Recent v2.0 decisions:
 - [Phase 11]: Generate GPS points every 2 miles (not 1 mile) — Keeps total under 50K records for reasonable data volume
 - [Phase 11]: Link safety events to actual GPS coordinates — Events appear on route path, not random locations
 - [Phase 11]: Exclude prisma/seeds from Next.js build — Seed files use ESM imports, separate from app build
+- [Phase 12-01]: Client component wrapper pattern for browser-only libraries — Encapsulate ssr: false dynamic import in client component to comply with Next.js 15 restrictions
+- [Phase 12-01]: Use react-leaflet-cluster v4.x for React 19 compatibility — Latest version required for react-leaflet v5.x peer dependency
+- [Phase 12-01]: DISTINCT ON raw SQL for per-truck latest GPS position — More efficient than GROUP BY for time-series "latest per entity" queries
+- [Phase 12-01]: Router.refresh() polling for real-time updates — 30-second intervals sufficient for GPS tracking on serverless platform (no WebSockets needed)
 
 ### Pending Todos
 
@@ -74,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-15
-Stopped at: Phase 11 complete, ready to plan Phase 12
+Stopped at: Completed 12-01-PLAN.md — Live GPS Map foundation with Leaflet, clustering, and real-time polling
 Resume file: None
