@@ -30,6 +30,12 @@ enum RouteStatus {
   COMPLETED
 }
 
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
 // Models
 model Tenant {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -47,6 +53,7 @@ model Tenant {
   documents          Document[]
   maintenanceEvents  MaintenanceEvent[]
   scheduledServices  ScheduledService[]
+  notificationLogs   NotificationLog[]
 }
 
 model User {
@@ -209,4 +216,30 @@ model ScheduledService {
   @@index([tenantId])
   @@index([truckId])
   @@index([isCompleted])
+}
+
+model NotificationLog {
+  id              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String             @db.Uuid
+  idempotencyKey  String             @unique
+  notificationType String
+  entityType      String?
+  entityId        String?            @db.Uuid
+  recipientEmail  String
+  status          NotificationStatus @default(PENDING)
+  sentAt          DateTime?          @db.Timestamptz
+  failedAt        DateTime?          @db.Timestamptz
+  errorMessage    String?
+  retryCount      Int                @default(0)
+  emailSubject    String?
+  externalId      String?
+  createdAt       DateTime           @default(now()) @db.Timestamptz
+  updatedAt       DateTime           @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([idempotencyKey])
+  @@index([createdAt])
 }

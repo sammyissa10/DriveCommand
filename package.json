@@ -16,6 +16,7 @@
     "@clerk/nextjs": "^6.37.4",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "@react-email/components": "^1.0.7",
     "@tanstack/react-table": "^8.21.3",
     "file-type": "^21.3.0",
     "nanoid": "^5.1.6",
@@ -24,6 +25,7 @@
     "prisma": "^7.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.9.2",
     "svix": "^1.85.0",
     "zod": "^4.3.6"
   },
