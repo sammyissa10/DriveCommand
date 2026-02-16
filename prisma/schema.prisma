@@ -84,6 +84,8 @@ model Tenant {
   gpsLocations       GPSLocation[]
   safetyEvents       SafetyEvent[]
   fuelRecords        FuelRecord[]
+  tags               Tag[]
+  tagAssignments     TagAssignment[]
 }
 
 model User {
@@ -100,10 +102,11 @@ model User {
   createdAt     DateTime @default(now()) @db.Timestamptz
   updatedAt     DateTime @updatedAt @db.Timestamptz
 
-  tenant            Tenant        @relation(fields: [tenantId], references: [id])
+  tenant            Tenant          @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
   uploadedDocuments Document[]
   safetyEvents      SafetyEvent[]
+  tagAssignments    TagAssignment[]
 
   @@index([tenantId])
   @@index([clerkUserId])
@@ -131,6 +134,7 @@ model Truck {
   gpsLocations       GPSLocation[]
   safetyEvents       SafetyEvent[]
   fuelRecords        FuelRecord[]
+  tagAssignments     TagAssignment[]
 
   @@unique([tenantId, vin])
   @@index([tenantId])
@@ -358,4 +362,40 @@ model FuelRecord {
   @@index([timestamp])
   @@index([tenantId, timestamp])
   @@index([isEstimated])
+}
+
+model Tag {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @db.Uuid
+  name      String
+  color     String   @default("#3b82f6")
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  tenant      Tenant          @relation(fields: [tenantId], references: [id])
+  assignments TagAssignment[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model TagAssignment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @db.Uuid
+  tagId     String   @db.Uuid
+  truckId   String?  @db.Uuid
+  userId    String?  @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  truck  Truck? @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  user   User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, truckId])
+  @@unique([tagId, userId])
+  @@index([tenantId])
+  @@index([tagId])
+  @@index([truckId])
+  @@index([userId])
 }
