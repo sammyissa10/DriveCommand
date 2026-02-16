@@ -57,7 +57,7 @@ See: [.planning/milestones/v2.0-ROADMAP.md] for full phase details.
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 16: Route Finance Foundation** — Financial tracking with line-item expenses and profit calculation
+- [x] **Phase 16: Route Finance Foundation** — Financial tracking with line-item expenses and profit calculation
 - [ ] **Phase 17: Unified Route View/Edit Page** — Single route page with edit mode toggle
 - [ ] **Phase 18: Driver Document Uploads** — Driver license, application, and general document uploads
 
@@ -74,11 +74,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 5 plans
 
 Plans:
-- [ ] 16-01-PLAN.md — Database schema, migration, RLS policies, seed data for financial models
-- [ ] 16-02-PLAN.md — Expense CRUD: validation, server actions, form, list, route page integration
-- [ ] 16-03-PLAN.md — Payment CRUD + Financial summary: payments, profit calculator, summary card
-- [ ] 16-04-PLAN.md — Expense categories + templates: settings pages, template apply feature
-- [ ] 16-05-PLAN.md — Cost per mile with fleet average comparison + profit margin alerts
+- [x] 16-01-PLAN.md — Database schema, migration, RLS policies, seed data for financial models
+- [x] 16-02-PLAN.md — Expense CRUD: validation, server actions, form, list, route page integration
+- [x] 16-03-PLAN.md — Payment CRUD + Financial summary: payments, profit calculator, summary card
+- [x] 16-04-PLAN.md — Expense categories + templates: settings pages, template apply feature
+- [x] 16-05-PLAN.md — Cost per mile with fleet average comparison + profit margin alerts
 
 #### Phase 17: Unified Route View/Edit Page
 **Goal**: Users can view and edit route details on a single page with seamless mode toggling
@@ -131,6 +131,6 @@ Phases execute in numeric order: 16 → 17 → 18
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-16 |
-| 16. Route Finance Foundation | v3.0 | 0/5 | Not started | - |
+| 16. Route Finance Foundation | v3.0 | 5/5 | ✓ Complete | 2026-02-16 |
 | 17. Unified Route View/Edit Page | v3.0 | 0/TBD | Not started | - |
 | 18. Driver Document Uploads | v3.0 | 0/TBD | Not started | - |
