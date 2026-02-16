@@ -7,7 +7,7 @@ DriveCommand builds from secure multi-tenant foundations through entity manageme
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** - Phases 1-10 (shipped 2026-02-15)
-- ✅ **v2.0 Samsara-Inspired Fleet Intelligence** - Phases 11-15 (shipped 2026-02-15)
+- ✅ **v2.0 Samsara-Inspired Fleet Intelligence** - Phases 11-15 (shipped 2026-02-16)
 
 ## Phases
 
@@ -191,7 +191,7 @@ Plans:
 
 </details>
 
-## 🚧 v2.0 Samsara-Inspired Fleet Intelligence (In Progress)
+## ✅ v2.0 Samsara-Inspired Fleet Intelligence — SHIPPED 2026-02-16
 
 **Milestone Goal:** Transform DriveCommand into a Samsara-inspired fleet intelligence platform with live GPS tracking, safety analytics, fuel efficiency dashboards, and modern sidebar navigation—all powered by mock data for rapid UI validation.
 
@@ -310,4 +310,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
+| 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-16 |
