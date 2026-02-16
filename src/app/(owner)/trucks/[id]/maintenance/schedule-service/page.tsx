@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getTruck } from '@/app/(owner)/actions/trucks';
 import { createScheduledService } from '@/app/(owner)/actions/maintenance';
@@ -20,21 +21,22 @@ export default async function ScheduleServicePage({ params }: ScheduleServicePag
   const boundAction = createScheduledService.bind(null, id);
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
+    <div className="space-y-6">
+      <div>
         <Link
           href={`/trucks/${id}/maintenance`}
-          className="text-blue-600 hover:text-blue-800 mb-2 inline-block"
+          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
-          ← Back to Maintenance
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Maintenance
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Schedule Service</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Schedule Service</h1>
+        <p className="text-muted-foreground mt-1">
           {truck.year} {truck.make} {truck.model}
         </p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <ScheduledServiceForm
           action={boundAction}
           currentOdometer={truck.odometer}

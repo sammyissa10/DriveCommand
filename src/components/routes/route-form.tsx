@@ -24,6 +24,9 @@ interface RouteFormProps {
   submitLabel: string;
 }
 
+const inputClass = "mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors";
+const labelClass = "block text-sm font-medium text-foreground";
+
 export function RouteForm({
   action,
   initialData,
@@ -36,175 +39,153 @@ export function RouteForm({
   });
 
   return (
-    <form action={formAction} className="max-w-2xl space-y-4">
-      {/* Origin */}
-      <div>
-        <label
-          htmlFor="origin"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Origin
-        </label>
-        <AddressAutocomplete
-          id="origin"
-          name="origin"
-          defaultValue={initialData?.origin || ''}
-          required
-          disabled={isPending}
-          placeholder="Enter origin address..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        />
-        {state?.error?.origin && (
-          <p className="mt-1 text-sm text-red-600">{state.error.origin}</p>
-        )}
+    <form action={formAction} className="max-w-2xl space-y-5">
+      {/* Origin & Destination */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Route Details</h3>
+
+        <div>
+          <label htmlFor="origin" className={labelClass}>Origin</label>
+          <AddressAutocomplete
+            id="origin"
+            name="origin"
+            defaultValue={initialData?.origin || ''}
+            required
+            disabled={isPending}
+            placeholder="Enter origin address..."
+            className={inputClass}
+          />
+          {state?.error?.origin && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="destination" className={labelClass}>Destination</label>
+          <AddressAutocomplete
+            id="destination"
+            name="destination"
+            defaultValue={initialData?.destination || ''}
+            required
+            disabled={isPending}
+            placeholder="Enter destination address..."
+            className={inputClass}
+          />
+          {state?.error?.destination && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="scheduledDate" className={labelClass}>Scheduled Date</label>
+          <input
+            type="datetime-local"
+            id="scheduledDate"
+            name="scheduledDate"
+            defaultValue={initialData?.scheduledDate || ''}
+            required
+            disabled={isPending}
+            className={inputClass}
+          />
+          {state?.error?.scheduledDate && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.scheduledDate}</p>
+          )}
+        </div>
       </div>
 
-      {/* Destination */}
-      <div>
-        <label
-          htmlFor="destination"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Destination
-        </label>
-        <AddressAutocomplete
-          id="destination"
-          name="destination"
-          defaultValue={initialData?.destination || ''}
-          required
-          disabled={isPending}
-          placeholder="Enter destination address..."
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        />
-        {state?.error?.destination && (
-          <p className="mt-1 text-sm text-red-600">{state.error.destination}</p>
-        )}
-      </div>
+      {/* Assignments */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Assignments</h3>
 
-      {/* Scheduled Date */}
-      <div>
-        <label
-          htmlFor="scheduledDate"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Scheduled Date
-        </label>
-        <input
-          type="datetime-local"
-          id="scheduledDate"
-          name="scheduledDate"
-          defaultValue={initialData?.scheduledDate || ''}
-          required
-          disabled={isPending}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        />
-        {state?.error?.scheduledDate && (
-          <p className="mt-1 text-sm text-red-600">
-            {state.error.scheduledDate}
-          </p>
-        )}
-      </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="driverId" className={labelClass}>Driver</label>
+            <select
+              id="driverId"
+              name="driverId"
+              defaultValue={initialData?.driverId || ''}
+              required
+              disabled={isPending || drivers.length === 0}
+              className={inputClass}
+            >
+              <option value="">
+                {drivers.length === 0 ? 'No drivers available' : 'Select a driver...'}
+              </option>
+              {drivers.map((driver) => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.firstName || ''} {driver.lastName || ''}
+                </option>
+              ))}
+            </select>
+            {drivers.length === 0 && (
+              <p className="mt-1.5 text-sm text-amber-600">
+                Invite drivers first before creating routes.
+              </p>
+            )}
+            {state?.error?.driverId && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.driverId}</p>
+            )}
+          </div>
 
-      {/* Driver */}
-      <div>
-        <label
-          htmlFor="driverId"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Driver
-        </label>
-        <select
-          id="driverId"
-          name="driverId"
-          defaultValue={initialData?.driverId || ''}
-          required
-          disabled={isPending || drivers.length === 0}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        >
-          <option value="">
-            {drivers.length === 0 ? 'No drivers available — invite drivers first' : 'Select a driver...'}
-          </option>
-          {drivers.map((driver) => (
-            <option key={driver.id} value={driver.id}>
-              {driver.firstName || ''} {driver.lastName || ''}
-            </option>
-          ))}
-        </select>
-        {drivers.length === 0 && (
-          <p className="mt-1 text-sm text-amber-600">
-            Go to Drivers → Invite Driver to add drivers before creating routes.
-          </p>
-        )}
-        {state?.error?.driverId && (
-          <p className="mt-1 text-sm text-red-600">{state.error.driverId}</p>
-        )}
-      </div>
+          <div>
+            <label htmlFor="truckId" className={labelClass}>Truck</label>
+            <select
+              id="truckId"
+              name="truckId"
+              defaultValue={initialData?.truckId || ''}
+              required
+              disabled={isPending}
+              className={inputClass}
+            >
+              <option value="">Select a truck...</option>
+              {trucks.map((truck) => (
+                <option key={truck.id} value={truck.id}>
+                  {truck.year} {truck.make} {truck.model} ({truck.licensePlate})
+                </option>
+              ))}
+            </select>
+            {state?.error?.truckId && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.truckId}</p>
+            )}
+          </div>
+        </div>
 
-      {/* Truck */}
-      <div>
-        <label
-          htmlFor="truckId"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Truck
-        </label>
-        <select
-          id="truckId"
-          name="truckId"
-          defaultValue={initialData?.truckId || ''}
-          required
-          disabled={isPending}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        >
-          <option value="">Select a truck...</option>
-          {trucks.map((truck) => (
-            <option key={truck.id} value={truck.id}>
-              {truck.year} {truck.make} {truck.model} ({truck.licensePlate})
-            </option>
-          ))}
-        </select>
-        {state?.error?.truckId && (
-          <p className="mt-1 text-sm text-red-600">{state.error.truckId}</p>
-        )}
-      </div>
-
-      {/* Notes */}
-      <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Notes (Optional)
-        </label>
-        <textarea
-          id="notes"
-          name="notes"
-          defaultValue={initialData?.notes || ''}
-          maxLength={1000}
-          rows={4}
-          disabled={isPending}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
-        />
-        {state?.error?.notes && (
-          <p className="mt-1 text-sm text-red-600">{state.error.notes}</p>
-        )}
+        <div>
+          <label htmlFor="notes" className={labelClass}>
+            Notes <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            defaultValue={initialData?.notes || ''}
+            maxLength={1000}
+            rows={3}
+            disabled={isPending}
+            className={inputClass}
+          />
+          {state?.error?.notes && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.notes}</p>
+          )}
+        </div>
       </div>
 
       {/* General Error */}
       {state?.error?.message && (
-        <div className="rounded-md bg-red-50 p-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm text-red-800">{state.error.message}</p>
         </div>
       )}
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {isPending ? 'Saving...' : submitLabel}
-      </button>
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={isPending}
+          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isPending ? 'Saving...' : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }

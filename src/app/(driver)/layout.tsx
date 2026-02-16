@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { UserMenu } from "@/components/navigation/user-menu";
+import { Truck } from "lucide-react";
 
 /**
  * Driver portal layout
@@ -31,10 +32,15 @@ export default async function DriverLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-700 text-white border-b border-blue-800">
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-6 py-4">
-          <h1 className="text-xl font-semibold">DriveCommand</h1>
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white">
+              <Truck className="h-4 w-4" />
+            </div>
+            <h1 className="text-lg font-bold tracking-tight text-foreground">DriveCommand</h1>
+          </div>
           <UserMenu />
         </div>
       </header>

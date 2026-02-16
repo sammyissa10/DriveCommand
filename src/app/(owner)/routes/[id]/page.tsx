@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getRoute, updateRouteStatus } from '@/app/(owner)/actions/routes';
 import { listDocuments } from '@/app/(owner)/actions/documents';
@@ -34,25 +35,28 @@ export default async function RouteDetailPage({
     : undefined;
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/routes" className="text-blue-600 hover:text-blue-800">
-            ← Back to Routes
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/routes"
+          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Routes
+        </Link>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {route.origin} to {route.destination}
+          </h1>
+          <Link
+            href={`/routes/${id}/edit`}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+          >
+            <Pencil className="h-4 w-4" />
+            Edit Route
           </Link>
         </div>
-        <Link
-          href={`/routes/${id}/edit`}
-          className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        >
-          Edit Route
-        </Link>
       </div>
-
-      <h1 className="text-2xl font-bold text-gray-900">
-        {route.origin} to {route.destination}
-      </h1>
 
       {/* Route Detail */}
       <RouteDetail
@@ -69,8 +73,8 @@ export default async function RouteDetailPage({
       />
 
       {/* Files Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-4">Files</h2>
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Files</h2>
         <RouteDocumentsSection routeId={route.id} initialDocuments={documents} />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft, Wrench, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getTruck } from '@/app/(owner)/actions/trucks';
 import { listDocuments } from '@/app/(owner)/actions/documents';
@@ -43,26 +44,32 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <Link href="/trucks" className="text-blue-600 hover:text-blue-800 mb-2 inline-block">
-          ← Back to Trucks
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/trucks"
+          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Trucks
         </Link>
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {truck.year} {truck.make} {truck.model}
           </h1>
           <div className="flex gap-3">
             <Link
               href={`/trucks/${truck.id}/maintenance`}
-              className="border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 rounded-md"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
             >
+              <Wrench className="h-4 w-4" />
               Maintenance
             </Link>
             <Link
               href={`/trucks/${truck.id}/edit`}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
             >
+              <Pencil className="h-4 w-4" />
               Edit Truck
             </Link>
           </div>
@@ -70,32 +77,36 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
       </div>
 
       {/* Main Details */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Vehicle Information</h2>
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Vehicle Information</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <dt className="text-sm font-medium text-gray-500">VIN</dt>
-            <dd className="mt-1 text-base text-gray-900">{truck.vin}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">VIN</dt>
+            <dd className="mt-1 text-base font-mono text-card-foreground">{truck.vin}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">License Plate</dt>
-            <dd className="mt-1 text-base text-gray-900">{truck.licensePlate}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">License Plate</dt>
+            <dd className="mt-1">
+              <span className="inline-flex items-center rounded-md bg-muted px-2.5 py-0.5 text-sm font-medium">
+                {truck.licensePlate}
+              </span>
+            </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Odometer</dt>
-            <dd className="mt-1 text-base text-gray-900">
+            <dt className="text-sm font-medium text-muted-foreground">Odometer</dt>
+            <dd className="mt-1 text-base text-card-foreground">
               {truck.odometer.toLocaleString()} miles
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Created</dt>
-            <dd className="mt-1 text-base text-gray-900">
+            <dt className="text-sm font-medium text-muted-foreground">Created</dt>
+            <dd className="mt-1 text-base text-card-foreground">
               {formatDate(truck.createdAt.toISOString())}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Last Updated</dt>
-            <dd className="mt-1 text-base text-gray-900">
+            <dt className="text-sm font-medium text-muted-foreground">Last Updated</dt>
+            <dd className="mt-1 text-base text-card-foreground">
               {formatDate(truck.updatedAt.toISOString())}
             </dd>
           </div>
@@ -103,8 +114,8 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
       </div>
 
       {/* Document Metadata */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Document Information</h2>
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Document Information</h2>
         {documentMetadata &&
         (documentMetadata.registrationNumber ||
           documentMetadata.registrationExpiry ||
@@ -113,45 +124,45 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {documentMetadata.registrationNumber && (
               <div>
-                <dt className="text-sm font-medium text-gray-500">Registration Number</dt>
-                <dd className="mt-1 text-base text-gray-900">
+                <dt className="text-sm font-medium text-muted-foreground">Registration Number</dt>
+                <dd className="mt-1 text-base text-card-foreground">
                   {documentMetadata.registrationNumber}
                 </dd>
               </div>
             )}
             {documentMetadata.registrationExpiry && (
               <div>
-                <dt className="text-sm font-medium text-gray-500">Registration Expiry</dt>
-                <dd className="mt-1 text-base text-gray-900">
+                <dt className="text-sm font-medium text-muted-foreground">Registration Expiry</dt>
+                <dd className="mt-1 text-base text-card-foreground">
                   {formatDate(documentMetadata.registrationExpiry)}
                 </dd>
               </div>
             )}
             {documentMetadata.insuranceNumber && (
               <div>
-                <dt className="text-sm font-medium text-gray-500">Insurance Number</dt>
-                <dd className="mt-1 text-base text-gray-900">
+                <dt className="text-sm font-medium text-muted-foreground">Insurance Number</dt>
+                <dd className="mt-1 text-base text-card-foreground">
                   {documentMetadata.insuranceNumber}
                 </dd>
               </div>
             )}
             {documentMetadata.insuranceExpiry && (
               <div>
-                <dt className="text-sm font-medium text-gray-500">Insurance Expiry</dt>
-                <dd className="mt-1 text-base text-gray-900">
+                <dt className="text-sm font-medium text-muted-foreground">Insurance Expiry</dt>
+                <dd className="mt-1 text-base text-card-foreground">
                   {formatDate(documentMetadata.insuranceExpiry)}
                 </dd>
               </div>
             )}
           </div>
         ) : (
-          <p className="text-gray-500">No document information recorded</p>
+          <p className="text-muted-foreground">No document information recorded</p>
         )}
       </div>
 
       {/* Files Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold mb-4">Files</h2>
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Files</h2>
         <TruckDocumentsSection truckId={truck.id} initialDocuments={documents} />
       </div>
     </div>

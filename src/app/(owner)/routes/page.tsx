@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Plus } from 'lucide-react';
 import { listRoutes, deleteRoute } from '@/app/(owner)/actions/routes';
 import { RouteListWrapper } from './route-list-wrapper';
 
@@ -6,19 +7,21 @@ export default async function RoutesPage() {
   const routes = await listRoutes();
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Page Header */}
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Routes</h1>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Routes</h1>
+          <p className="mt-1 text-muted-foreground">{routes.length} route{routes.length !== 1 ? 's' : ''} configured</p>
+        </div>
         <Link
           href="/routes/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
         >
+          <Plus className="h-4 w-4" />
           Create Route
         </Link>
       </div>
 
-      {/* Route List */}
       <RouteListWrapper initialRoutes={routes} deleteAction={deleteRoute} />
     </div>
   );

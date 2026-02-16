@@ -18,14 +18,14 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
     <form action={formAction} className="max-w-2xl space-y-4">
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
 
       {/* Service Type */}
       <div>
-        <label htmlFor="serviceType" className="block font-medium mb-1">
+        <label htmlFor="serviceType" className="block text-sm font-medium text-foreground mb-1.5">
           Service Type
         </label>
         <input
@@ -34,7 +34,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           name="serviceType"
           placeholder="e.g., Oil Change, Tire Rotation"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
         {state?.error?.serviceType && (
@@ -44,7 +44,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
 
       {/* Service Date */}
       <div>
-        <label htmlFor="serviceDate" className="block font-medium mb-1">
+        <label htmlFor="serviceDate" className="block text-sm font-medium text-foreground mb-1.5">
           Service Date
         </label>
         <input
@@ -54,7 +54,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           defaultValue={today}
           max={today}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
         {state?.error?.serviceDate && (
@@ -64,7 +64,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
 
       {/* Odometer at Service */}
       <div>
-        <label htmlFor="odometerAtService" className="block font-medium mb-1">
+        <label htmlFor="odometerAtService" className="block text-sm font-medium text-foreground mb-1.5">
           Odometer at Service (miles)
         </label>
         <input
@@ -75,10 +75,10 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           min={0}
           step={1}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        <p className="mt-1 text-xs text-gray-500">Current odometer: {currentOdometer.toLocaleString()} miles</p>
+        <p className="mt-1 text-xs text-muted-foreground">Current odometer: {currentOdometer.toLocaleString()} miles</p>
         {state?.error?.odometerAtService && (
           <p className="mt-1 text-sm text-red-600">{state.error.odometerAtService}</p>
         )}
@@ -86,7 +86,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
 
       {/* Cost */}
       <div>
-        <label htmlFor="cost" className="block font-medium mb-1">
+        <label htmlFor="cost" className="block text-sm font-medium text-foreground mb-1.5">
           Cost (optional)
         </label>
         <input
@@ -97,7 +97,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           step={0.01}
           placeholder="0.00"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.cost && (
           <p className="mt-1 text-sm text-red-600">{state.error.cost}</p>
@@ -106,7 +106,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
 
       {/* Provider */}
       <div>
-        <label htmlFor="provider" className="block font-medium mb-1">
+        <label htmlFor="provider" className="block text-sm font-medium text-foreground mb-1.5">
           Provider (optional)
         </label>
         <input
@@ -115,7 +115,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           name="provider"
           placeholder="e.g., Joe's Auto Shop"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.provider && (
           <p className="mt-1 text-sm text-red-600">{state.error.provider}</p>
@@ -124,7 +124,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
 
       {/* Notes */}
       <div>
-        <label htmlFor="notes" className="block font-medium mb-1">
+        <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-1.5">
           Notes (optional)
         </label>
         <textarea
@@ -132,7 +132,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           name="notes"
           rows={3}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.notes && (
           <p className="mt-1 text-sm text-red-600">{state.error.notes}</p>
@@ -144,7 +144,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
         <button
           type="submit"
           disabled={isPending}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isPending ? 'Saving...' : submitLabel}
         </button>

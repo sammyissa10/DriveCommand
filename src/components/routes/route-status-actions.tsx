@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
+import { Play, CheckCircle } from 'lucide-react';
 
 interface RouteStatusActionsProps {
   routeId: string;
@@ -33,8 +34,9 @@ export function RouteStatusActions({
           )
         }
         disabled={isPending}
-        className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
+        <Play className="h-4 w-4" />
         {isPending ? 'Updating...' : 'Start Route'}
       </button>
     );
@@ -50,8 +52,9 @@ export function RouteStatusActions({
           )
         }
         disabled={isPending}
-        className="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
+        <CheckCircle className="h-4 w-4" />
         {isPending ? 'Updating...' : 'Complete Route'}
       </button>
     );
@@ -59,8 +62,8 @@ export function RouteStatusActions({
 
   if (currentStatus === 'COMPLETED') {
     return (
-      <p className="text-sm text-gray-600">
-        <span className="mr-1">✓</span>
+      <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+        <CheckCircle className="h-4 w-4 text-emerald-500" />
         Route completed
       </p>
     );

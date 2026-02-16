@@ -1,20 +1,26 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { TruckForm } from '@/components/trucks/truck-form';
 import { createTruck } from '@/app/(owner)/actions/trucks';
 
 export default function NewTruckPage() {
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <Link href="/trucks" className="text-blue-600 hover:text-blue-800 mb-2 inline-block">
-          ← Back to Trucks
+    <div className="space-y-6">
+      <div>
+        <Link
+          href="/trucks"
+          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
+        >
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Trucks
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Add New Truck</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Add New Truck</h1>
+        <p className="mt-1 text-muted-foreground">Enter the vehicle details below</p>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <TruckForm action={createTruck} submitLabel="Create Truck" />
       </div>
     </div>

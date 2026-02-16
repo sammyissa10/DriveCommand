@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { getRoute } from '@/app/(owner)/actions/routes';
@@ -56,21 +57,20 @@ export default async function EditRoutePage({ params }: EditRoutePageProps) {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Page Header */}
-      <div className="flex items-center space-x-4">
+    <div className="space-y-6">
+      <div>
         <Link
           href={`/routes/${id}`}
-          className="text-blue-600 hover:text-blue-800"
+          className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
-          ← Back to Route
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Route
         </Link>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Route</h1>
+        <p className="mt-1 text-muted-foreground">Update route details</p>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900">Edit Route</h1>
-
-      {/* Form */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <EditRouteClient
           routeId={id}
           initialData={initialData}

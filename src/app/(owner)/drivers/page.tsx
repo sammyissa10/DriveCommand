@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { UserPlus } from 'lucide-react';
 import { listDrivers, deactivateDriver, reactivateDriver } from '@/app/(owner)/actions/drivers';
 import { DriverListWrapper } from './driver-list-wrapper';
 
@@ -6,19 +7,21 @@ export default async function DriversPage() {
   const drivers = await listDrivers();
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Drivers</h1>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Drivers</h1>
+          <p className="mt-1 text-muted-foreground">{drivers.length} driver{drivers.length !== 1 ? 's' : ''} registered</p>
+        </div>
         <Link
           href="/drivers/invite"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
         >
+          <UserPlus className="h-4 w-4" />
           Invite Driver
         </Link>
       </div>
 
-      {/* Driver List */}
       <DriverListWrapper
         initialDrivers={drivers}
         deactivateAction={deactivateDriver}

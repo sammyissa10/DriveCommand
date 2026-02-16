@@ -28,13 +28,17 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-600">Fleet overview and alerts</p>
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+        <p className="mt-1 text-muted-foreground">
+          Your fleet at a glance
+        </p>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total Trucks" value={stats.totalTrucks} href="/trucks" />
         <StatCard label="Active Drivers" value={stats.activeDrivers} href="/drivers" />
         <StatCard label="Active Routes" value={stats.activeRoutes} href="/routes" />
@@ -46,6 +50,7 @@ export default async function DashboardPage() {
         />
       </div>
 
+      {/* Alert Widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <UpcomingMaintenanceWidget items={upcomingMaintenance} />
         <ExpiringDocumentsWidget items={expiringDocuments} />

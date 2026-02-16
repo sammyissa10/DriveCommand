@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ShieldX } from "lucide-react";
 
 /**
  * Unauthorized access page
@@ -8,15 +9,18 @@ import Link from "next/link";
  */
 export default function UnauthorizedPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md text-center">
-        <h1 className="mb-4 text-4xl font-bold text-gray-900">Access Denied</h1>
-        <p className="mb-8 text-lg text-gray-600">
-          You don't have permission to access this page.
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+          <ShieldX className="h-8 w-8 text-red-500" />
+        </div>
+        <h1 className="mb-3 text-3xl font-bold text-foreground">Access Denied</h1>
+        <p className="mb-8 text-muted-foreground">
+          You don&apos;t have permission to access this page.
         </p>
         <Link
           href="/"
-          className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
         >
           Return to home
         </Link>

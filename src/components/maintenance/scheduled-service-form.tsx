@@ -18,14 +18,14 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
     <form action={formAction} className="max-w-2xl space-y-4">
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
 
       {/* Service Type */}
       <div>
-        <label htmlFor="serviceType" className="block font-medium mb-1">
+        <label htmlFor="serviceType" className="block text-sm font-medium text-foreground mb-1.5">
           Service Type
         </label>
         <input
@@ -34,7 +34,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           name="serviceType"
           placeholder="e.g., Oil Change, Brake Inspection"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
         {state?.error?.serviceType && (
@@ -44,7 +44,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
 
       {/* Interval Days */}
       <div>
-        <label htmlFor="intervalDays" className="block font-medium mb-1">
+        <label htmlFor="intervalDays" className="block text-sm font-medium text-foreground mb-1.5">
           Time Interval (days)
         </label>
         <input
@@ -55,7 +55,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           step={1}
           placeholder="e.g., 90"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.intervalDays && (
           <p className="mt-1 text-sm text-red-600">{state.error.intervalDays}</p>
@@ -64,7 +64,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
 
       {/* Interval Miles */}
       <div>
-        <label htmlFor="intervalMiles" className="block font-medium mb-1">
+        <label htmlFor="intervalMiles" className="block text-sm font-medium text-foreground mb-1.5">
           Mileage Interval (miles)
         </label>
         <input
@@ -75,19 +75,19 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           step={1}
           placeholder="e.g., 5000"
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.intervalMiles && (
           <p className="mt-1 text-sm text-red-600">{state.error.intervalMiles}</p>
         )}
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           At least one interval is required. Service is due when EITHER trigger is met.
         </p>
       </div>
 
       {/* Baseline Date */}
       <div>
-        <label htmlFor="baselineDate" className="block font-medium mb-1">
+        <label htmlFor="baselineDate" className="block text-sm font-medium text-foreground mb-1.5">
           Baseline Date (last service or today)
         </label>
         <input
@@ -96,7 +96,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           name="baselineDate"
           defaultValue={today}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
         {state?.error?.baselineDate && (
@@ -106,7 +106,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
 
       {/* Baseline Odometer */}
       <div>
-        <label htmlFor="baselineOdometer" className="block font-medium mb-1">
+        <label htmlFor="baselineOdometer" className="block text-sm font-medium text-foreground mb-1.5">
           Baseline Odometer
         </label>
         <input
@@ -117,7 +117,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           min={0}
           step={1}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
         {state?.error?.baselineOdometer && (
@@ -127,7 +127,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
 
       {/* Notes */}
       <div>
-        <label htmlFor="notes" className="block font-medium mb-1">
+        <label htmlFor="notes" className="block text-sm font-medium text-foreground mb-1.5">
           Notes (optional)
         </label>
         <textarea
@@ -135,7 +135,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           name="notes"
           rows={3}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
         {state?.error?.notes && (
           <p className="mt-1 text-sm text-red-600">{state.error.notes}</p>
@@ -147,7 +147,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
         <button
           type="submit"
           disabled={isPending}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isPending ? 'Saving...' : submitLabel}
         </button>

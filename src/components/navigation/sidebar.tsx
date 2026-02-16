@@ -42,16 +42,17 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       {/* Header with company branding */}
-      <SidebarHeader>
+      <SidebarHeader className="border-b border-sidebar-border pb-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-md">
                   <Truck className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">DriveCommand</span>
+                  <span className="truncate font-bold tracking-tight">DriveCommand</span>
+                  <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -60,7 +61,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* Main navigation content */}
-      <SidebarContent>
+      <SidebarContent className="pt-2">
         {/* Dashboard - standalone at top */}
         <SidebarGroup>
           <SidebarGroupContent>
@@ -89,8 +90,9 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   tooltip="Add Truck"
+                  className="bg-sidebar-primary/10 text-sidebar-primary hover:bg-sidebar-primary/20 hover:text-sidebar-primary font-medium"
                 >
-                  <Link href="/trucks/new" className="!bg-blue-600 !text-white hover:!bg-blue-700">
+                  <Link href="/trucks/new">
                     <Plus />
                     <span>Add Truck</span>
                   </Link>
@@ -103,7 +105,9 @@ export function AppSidebar() {
         {/* Fleet Intelligence - OWNER/MANAGER only */}
         {canViewFleetIntelligence && (
           <SidebarGroup>
-            <SidebarGroupLabel>Fleet Intelligence</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Intelligence
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -134,11 +138,11 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname.startsWith("/fuel")}
-                    tooltip="Fuel"
+                    tooltip="Fuel & Energy"
                   >
                     <Link href="/fuel">
                       <Fuel />
-                      <span>Fuel</span>
+                      <span>Fuel & Energy</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -149,13 +153,15 @@ export function AppSidebar() {
 
         {/* Fleet Management */}
         <SidebarGroup>
-          <SidebarGroupLabel>Fleet Management</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+            Management
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith("/trucks")}
+                  isActive={pathname.startsWith("/trucks") && !pathname.includes("/maintenance")}
                   tooltip="Trucks"
                 >
                   <Link href="/trucks">
@@ -200,14 +206,6 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Maintenance - standalone */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -229,7 +227,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer with user menu */}
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center gap-2 px-2 py-1.5">

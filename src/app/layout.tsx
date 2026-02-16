@@ -1,6 +1,9 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'DriveCommand',
@@ -17,7 +20,7 @@ export default function RootLayout({
 
   const content = (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         {!hasClerkKey && (
           <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4">
             <p className="font-bold">Development Mode</p>

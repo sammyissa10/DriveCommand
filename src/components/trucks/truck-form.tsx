@@ -35,7 +35,8 @@ function stripCommas(value: string): string {
   return value.replace(/,/g, '');
 }
 
-const inputClass = "w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50";
+const inputClass = "w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors";
+const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
 export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
@@ -65,270 +66,250 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
   };
 
   return (
-    <form action={formAction} className="max-w-2xl space-y-4">
+    <form action={formAction} className="max-w-2xl space-y-5">
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
-        <div className="rounded-md bg-red-50 border border-red-200 p-4">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
 
-      {/* Year - searchable dropdown, first field */}
-      <div>
-        <label htmlFor="yearSearch" className="block font-medium mb-1">
-          Year
-        </label>
-        <div className="relative" ref={yearContainerRef}>
-          <input
-            type="text"
-            id="yearSearch"
-            placeholder="Search year..."
-            value={yearOpen ? yearFilter : (selectedYear?.toString() ?? '')}
-            onChange={(e) => {
-              setYearFilter(e.target.value);
-              if (!yearOpen) setYearOpen(true);
-            }}
-            onFocus={() => {
-              setYearOpen(true);
-              setYearFilter('');
-            }}
-            onBlur={(e) => {
-              // Delay close so click on option registers
-              setTimeout(() => {
-                if (!yearContainerRef.current?.contains(document.activeElement)) {
-                  setYearOpen(false);
-                  setYearFilter('');
-                }
-              }, 150);
-            }}
-            disabled={isPending}
-            className={inputClass}
-            autoComplete="off"
-            required
-          />
-          {/* Hidden input for form submission */}
-          <input type="hidden" name="year" value={selectedYear?.toString() ?? ''} />
-          {yearOpen && (
-            <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
-              {filteredYears.length > 0 ? (
-                filteredYears.map((year) => (
-                  <li
-                    key={year}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setSelectedYear(year);
-                      setYearOpen(false);
-                      setYearFilter('');
-                    }}
-                    className={`cursor-pointer px-3 py-2 hover:bg-blue-50 ${
-                      selectedYear === year ? 'bg-blue-100 font-medium' : ''
-                    }`}
-                  >
-                    {year}
-                  </li>
-                ))
-              ) : (
-                <li className="px-3 py-2 text-gray-500">No matching years</li>
-              )}
-            </ul>
+      {/* Vehicle Information */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Vehicle Information</h3>
+
+        {/* Year - searchable dropdown */}
+        <div>
+          <label htmlFor="yearSearch" className={labelClass}>Year</label>
+          <div className="relative" ref={yearContainerRef}>
+            <input
+              type="text"
+              id="yearSearch"
+              placeholder="Search year..."
+              value={yearOpen ? yearFilter : (selectedYear?.toString() ?? '')}
+              onChange={(e) => {
+                setYearFilter(e.target.value);
+                if (!yearOpen) setYearOpen(true);
+              }}
+              onFocus={() => {
+                setYearOpen(true);
+                setYearFilter('');
+              }}
+              onBlur={(e) => {
+                setTimeout(() => {
+                  if (!yearContainerRef.current?.contains(document.activeElement)) {
+                    setYearOpen(false);
+                    setYearFilter('');
+                  }
+                }, 150);
+              }}
+              disabled={isPending}
+              className={inputClass}
+              autoComplete="off"
+              required
+            />
+            <input type="hidden" name="year" value={selectedYear?.toString() ?? ''} />
+            {yearOpen && (
+              <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card shadow-lg">
+                {filteredYears.length > 0 ? (
+                  filteredYears.map((year) => (
+                    <li
+                      key={year}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSelectedYear(year);
+                        setYearOpen(false);
+                        setYearFilter('');
+                      }}
+                      className={`cursor-pointer px-3 py-2 text-sm hover:bg-primary/5 ${
+                        selectedYear === year ? 'bg-primary/10 font-medium text-primary' : ''
+                      }`}
+                    >
+                      {year}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-3 py-2 text-sm text-muted-foreground">No matching years</li>
+                )}
+              </ul>
+            )}
+          </div>
+          {state?.error?.year && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.year}</p>
           )}
         </div>
-        {state?.error?.year && (
-          <p className="mt-1 text-sm text-red-600">{state.error.year}</p>
-        )}
-      </div>
 
-      {/* Make */}
-      <div>
-        <label htmlFor="make" className="block font-medium mb-1">
-          Make
-        </label>
-        <input
-          type="text"
-          id="make"
-          name="make"
-          defaultValue={initialData?.make || ''}
-          disabled={isPending}
-          className={inputClass}
-          required
-        />
-        {state?.error?.make && (
-          <p className="mt-1 text-sm text-red-600">{state.error.make}</p>
-        )}
-      </div>
+        {/* Make & Model in grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="make" className={labelClass}>Make</label>
+            <input
+              type="text"
+              id="make"
+              name="make"
+              defaultValue={initialData?.make || ''}
+              disabled={isPending}
+              className={inputClass}
+              required
+            />
+            {state?.error?.make && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.make}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="model" className={labelClass}>Model</label>
+            <input
+              type="text"
+              id="model"
+              name="model"
+              defaultValue={initialData?.model || ''}
+              disabled={isPending}
+              className={inputClass}
+              required
+            />
+            {state?.error?.model && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.model}</p>
+            )}
+          </div>
+        </div>
 
-      {/* Model */}
-      <div>
-        <label htmlFor="model" className="block font-medium mb-1">
-          Model
-        </label>
-        <input
-          type="text"
-          id="model"
-          name="model"
-          defaultValue={initialData?.model || ''}
-          disabled={isPending}
-          className={inputClass}
-          required
-        />
-        {state?.error?.model && (
-          <p className="mt-1 text-sm text-red-600">{state.error.model}</p>
-        )}
-      </div>
+        {/* VIN */}
+        <div>
+          <label htmlFor="vin" className={labelClass}>VIN</label>
+          <input
+            type="text"
+            id="vin"
+            name="vin"
+            maxLength={17}
+            pattern="[A-HJ-NPR-Z0-9]{17}"
+            defaultValue={initialData?.vin || ''}
+            disabled={isPending}
+            className={`${inputClass} uppercase font-mono`}
+            required
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">17 characters, no I, O, or Q</p>
+          {state?.error?.vin && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.vin}</p>
+          )}
+        </div>
 
-      {/* VIN */}
-      <div>
-        <label htmlFor="vin" className="block font-medium mb-1">
-          VIN
-        </label>
-        <input
-          type="text"
-          id="vin"
-          name="vin"
-          maxLength={17}
-          pattern="[A-HJ-NPR-Z0-9]{17}"
-          defaultValue={initialData?.vin || ''}
-          disabled={isPending}
-          className={`${inputClass} uppercase`}
-          required
-        />
-        <p className="mt-1 text-xs text-gray-500">17 characters, no I, O, or Q</p>
-        {state?.error?.vin && (
-          <p className="mt-1 text-sm text-red-600">{state.error.vin}</p>
-        )}
-      </div>
-
-      {/* License Plate */}
-      <div>
-        <label htmlFor="licensePlate" className="block font-medium mb-1">
-          License Plate
-        </label>
-        <input
-          type="text"
-          id="licensePlate"
-          name="licensePlate"
-          maxLength={20}
-          defaultValue={initialData?.licensePlate || ''}
-          disabled={isPending}
-          className={inputClass}
-          required
-        />
-        {state?.error?.licensePlate && (
-          <p className="mt-1 text-sm text-red-600">{state.error.licensePlate}</p>
-        )}
-      </div>
-
-      {/* Odometer with comma formatting */}
-      <div>
-        <label htmlFor="odometerDisplay" className="block font-medium mb-1">
-          Odometer (miles)
-        </label>
-        <input
-          type="text"
-          id="odometerDisplay"
-          inputMode="numeric"
-          value={odometerDisplay}
-          onChange={handleOdometerChange}
-          disabled={isPending}
-          className={inputClass}
-          placeholder="e.g. 125,000"
-          required
-        />
-        {/* Hidden input submits the raw number */}
-        <input
-          type="hidden"
-          name="odometer"
-          ref={odometerHiddenRef}
-          defaultValue={initialData?.odometer?.toString() ?? ''}
-        />
-        {state?.error?.odometer && (
-          <p className="mt-1 text-sm text-red-600">{state.error.odometer}</p>
-        )}
+        {/* License Plate & Odometer in grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="licensePlate" className={labelClass}>License Plate</label>
+            <input
+              type="text"
+              id="licensePlate"
+              name="licensePlate"
+              maxLength={20}
+              defaultValue={initialData?.licensePlate || ''}
+              disabled={isPending}
+              className={inputClass}
+              required
+            />
+            {state?.error?.licensePlate && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.licensePlate}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="odometerDisplay" className={labelClass}>Odometer (miles)</label>
+            <input
+              type="text"
+              id="odometerDisplay"
+              inputMode="numeric"
+              value={odometerDisplay}
+              onChange={handleOdometerChange}
+              disabled={isPending}
+              className={inputClass}
+              placeholder="e.g. 125,000"
+              required
+            />
+            <input
+              type="hidden"
+              name="odometer"
+              ref={odometerHiddenRef}
+              defaultValue={initialData?.odometer?.toString() ?? ''}
+            />
+            {state?.error?.odometer && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.odometer}</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Document Metadata Section */}
-      <div className="pt-4 border-t border-gray-200">
-        <h3 className="text-lg font-medium mb-4">Documents</h3>
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Documents</h3>
 
-        {/* Registration Number */}
-        <div className="mb-4">
-          <label htmlFor="registrationNumber" className="block font-medium mb-1">
-            Registration Number
-          </label>
-          <input
-            type="text"
-            id="registrationNumber"
-            name="registrationNumber"
-            defaultValue={initialData?.documentMetadata?.registrationNumber || ''}
-            disabled={isPending}
-            className={inputClass}
-          />
-          {state?.error?.registrationNumber && (
-            <p className="mt-1 text-sm text-red-600">{state.error.registrationNumber}</p>
-          )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="registrationNumber" className={labelClass}>Registration Number</label>
+            <input
+              type="text"
+              id="registrationNumber"
+              name="registrationNumber"
+              defaultValue={initialData?.documentMetadata?.registrationNumber || ''}
+              disabled={isPending}
+              className={inputClass}
+            />
+            {state?.error?.registrationNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.registrationNumber}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="registrationExpiry" className={labelClass}>Registration Expiry</label>
+            <input
+              type="date"
+              id="registrationExpiry"
+              name="registrationExpiry"
+              defaultValue={initialData?.documentMetadata?.registrationExpiry || ''}
+              disabled={isPending}
+              className={inputClass}
+            />
+            {state?.error?.registrationExpiry && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.registrationExpiry}</p>
+            )}
+          </div>
         </div>
 
-        {/* Registration Expiry */}
-        <div className="mb-4">
-          <label htmlFor="registrationExpiry" className="block font-medium mb-1">
-            Registration Expiry
-          </label>
-          <input
-            type="date"
-            id="registrationExpiry"
-            name="registrationExpiry"
-            defaultValue={initialData?.documentMetadata?.registrationExpiry || ''}
-            disabled={isPending}
-            className={inputClass}
-          />
-          {state?.error?.registrationExpiry && (
-            <p className="mt-1 text-sm text-red-600">{state.error.registrationExpiry}</p>
-          )}
-        </div>
-
-        {/* Insurance Number */}
-        <div className="mb-4">
-          <label htmlFor="insuranceNumber" className="block font-medium mb-1">
-            Insurance Number
-          </label>
-          <input
-            type="text"
-            id="insuranceNumber"
-            name="insuranceNumber"
-            defaultValue={initialData?.documentMetadata?.insuranceNumber || ''}
-            disabled={isPending}
-            className={inputClass}
-          />
-          {state?.error?.insuranceNumber && (
-            <p className="mt-1 text-sm text-red-600">{state.error.insuranceNumber}</p>
-          )}
-        </div>
-
-        {/* Insurance Expiry */}
-        <div className="mb-4">
-          <label htmlFor="insuranceExpiry" className="block font-medium mb-1">
-            Insurance Expiry
-          </label>
-          <input
-            type="date"
-            id="insuranceExpiry"
-            name="insuranceExpiry"
-            defaultValue={initialData?.documentMetadata?.insuranceExpiry || ''}
-            disabled={isPending}
-            className={inputClass}
-          />
-          {state?.error?.insuranceExpiry && (
-            <p className="mt-1 text-sm text-red-600">{state.error.insuranceExpiry}</p>
-          )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="insuranceNumber" className={labelClass}>Insurance Number</label>
+            <input
+              type="text"
+              id="insuranceNumber"
+              name="insuranceNumber"
+              defaultValue={initialData?.documentMetadata?.insuranceNumber || ''}
+              disabled={isPending}
+              className={inputClass}
+            />
+            {state?.error?.insuranceNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.insuranceNumber}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="insuranceExpiry" className={labelClass}>Insurance Expiry</label>
+            <input
+              type="date"
+              id="insuranceExpiry"
+              name="insuranceExpiry"
+              defaultValue={initialData?.documentMetadata?.insuranceExpiry || ''}
+              disabled={isPending}
+              className={inputClass}
+            />
+            {state?.error?.insuranceExpiry && (
+              <p className="mt-1.5 text-sm text-red-600">{state.error.insuranceExpiry}</p>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Submit Button */}
-      <div className="pt-4">
+      <div className="pt-2">
         <button
           type="submit"
           disabled={isPending}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isPending ? 'Saving...' : submitLabel}
         </button>
