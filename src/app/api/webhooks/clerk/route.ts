@@ -121,13 +121,16 @@ export async function POST(req: NextRequest) {
         console.log('Processing driver invitation sign-up:', { clerkUserId, email, tenantId: inviteTenantId });
 
         try {
-          // Find pending invitation
-          const invitation = await prisma.driverInvitation.findFirst({
-            where: {
-              email,
-              tenantId: inviteTenantId,
-              status: 'PENDING'
-            },
+          // Find pending invitation (must bypass RLS - DriverInvitation has FORCE ROW LEVEL SECURITY)
+          const invitation = await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            return tx.driverInvitation.findFirst({
+              where: {
+                email,
+                tenantId: inviteTenantId,
+                status: 'PENDING'
+              },
+            });
           });
 
           if (!invitation) {
@@ -141,9 +144,13 @@ export async function POST(req: NextRequest) {
           // Check invitation expiry
           if (new Date() > invitation.expiresAt) {
             console.error('Invitation expired:', { email, expiresAt: invitation.expiresAt });
-            await prisma.driverInvitation.update({
-              where: { id: invitation.id },
-              data: { status: 'EXPIRED' },
+            // Mark as expired (must bypass RLS)
+            await prisma.$transaction(async (tx) => {
+              await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+              return tx.driverInvitation.update({
+                where: { id: invitation.id },
+                data: { status: 'EXPIRED' },
+              });
             });
             return NextResponse.json(
               { error: 'Invitation has expired' },
@@ -168,14 +175,17 @@ export async function POST(req: NextRequest) {
             });
           });
 
-          // Mark invitation as accepted
-          await prisma.driverInvitation.update({
-            where: { id: invitation.id },
-            data: {
-              status: 'ACCEPTED',
-              acceptedAt: new Date(),
-              userId: user.id
-            },
+          // Mark invitation as accepted (must bypass RLS)
+          await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            return tx.driverInvitation.update({
+              where: { id: invitation.id },
+              data: {
+                status: 'ACCEPTED',
+                acceptedAt: new Date(),
+                userId: user.id
+              },
+            });
           });
 
           // Update Clerk metadata for the new driver

@@ -169,10 +169,10 @@ export function RouteForm({
         </div>
       </div>
 
-      {/* General Error */}
-      {state?.error?.message && (
+      {/* General Error - flat string from server action catch */}
+      {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
-          <p className="text-sm text-red-800">{state.error.message}</p>
+          <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
 

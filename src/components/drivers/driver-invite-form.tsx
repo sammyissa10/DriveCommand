@@ -19,8 +19,11 @@ const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 export function DriverForm({ action, initialData, submitLabel, mode }: DriverFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
 
+  // Force form remount on success to reset uncontrolled inputs
+  const formKey = state?.success ? Date.now() : 'form';
+
   return (
-    <form action={formAction} className="max-w-2xl space-y-5">
+    <form key={formKey} action={formAction} className="max-w-2xl space-y-5">
       {/* Success message */}
       {state?.success && state?.message && (
         <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4">

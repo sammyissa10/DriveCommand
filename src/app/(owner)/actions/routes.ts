@@ -56,64 +56,73 @@ export async function createRoute(prevState: any, formData: FormData) {
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
 
-  // Validate driver exists, is active, and has DRIVER role
-  const driver = await prisma.user.findUnique({
-    where: { id: driverId },
-  });
+  let createdRouteId: string;
 
-  if (!driver) {
-    return {
-      error: {
-        driverId: ['Driver not found'],
+  try {
+    // Validate driver exists, is active, and has DRIVER role
+    const driver = await prisma.user.findUnique({
+      where: { id: driverId },
+    });
+
+    if (!driver) {
+      return {
+        error: {
+          driverId: ['Driver not found'],
+        },
+      };
+    }
+
+    if (!driver.isActive) {
+      return {
+        error: {
+          driverId: ['Driver is not active'],
+        },
+      };
+    }
+
+    if (driver.role !== 'DRIVER') {
+      return {
+        error: {
+          driverId: ['Selected user is not a driver'],
+        },
+      };
+    }
+
+    // Validate truck exists
+    const truck = await prisma.truck.findUnique({
+      where: { id: truckId },
+    });
+
+    if (!truck) {
+      return {
+        error: {
+          truckId: ['Truck not found'],
+        },
+      };
+    }
+
+    // Create route with PLANNED status (default)
+    const route = await prisma.route.create({
+      data: {
+        tenantId,
+        origin,
+        destination,
+        scheduledDate: new Date(scheduledDate),
+        driverId,
+        truckId,
+        notes,
       },
-    };
+    });
+
+    createdRouteId = route.id;
+  } catch (error) {
+    console.error('Failed to create route:', error);
+    return { error: 'Failed to create route. Please try again.' };
   }
 
-  if (!driver.isActive) {
-    return {
-      error: {
-        driverId: ['Driver is not active'],
-      },
-    };
-  }
-
-  if (driver.role !== 'DRIVER') {
-    return {
-      error: {
-        driverId: ['Selected user is not a driver'],
-      },
-    };
-  }
-
-  // Validate truck exists
-  const truck = await prisma.truck.findUnique({
-    where: { id: truckId },
-  });
-
-  if (!truck) {
-    return {
-      error: {
-        truckId: ['Truck not found'],
-      },
-    };
-  }
-
-  // Create route with PLANNED status (default)
-  const route = await prisma.route.create({
-    data: {
-      tenantId,
-      origin,
-      destination,
-      scheduledDate: new Date(scheduledDate),
-      driverId,
-      truckId,
-      notes,
-    },
-  });
-
-  // Revalidate and redirect
+  // Revalidate and redirect (outside try/catch to avoid catching NEXT_REDIRECT)
   revalidatePath('/routes');
-  redirect(`/routes/${route.id}`);
+  redirect(`/routes/${createdRouteId}`);
 }
 
 /**
@@ -157,71 +166,80 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
 
   const prisma = await getTenantPrisma();
 
-  // Validate driver if provided
-  if (result.data.driverId) {
-    const driver = await prisma.user.findUnique({
-      where: { id: result.data.driverId },
+  let updatedRouteId: string;
+
+  try {
+    // Validate driver if provided
+    if (result.data.driverId) {
+      const driver = await prisma.user.findUnique({
+        where: { id: result.data.driverId },
+      });
+
+      if (!driver) {
+        return {
+          error: {
+            driverId: ['Driver not found'],
+          },
+        };
+      }
+
+      if (!driver.isActive) {
+        return {
+          error: {
+            driverId: ['Driver is not active'],
+          },
+        };
+      }
+
+      if (driver.role !== 'DRIVER') {
+        return {
+          error: {
+            driverId: ['Selected user is not a driver'],
+          },
+        };
+      }
+    }
+
+    // Validate truck if provided
+    if (result.data.truckId) {
+      const truck = await prisma.truck.findUnique({
+        where: { id: result.data.truckId },
+      });
+
+      if (!truck) {
+        return {
+          error: {
+            truckId: ['Truck not found'],
+          },
+        };
+      }
+    }
+
+    // Build update data object
+    const updateData: any = {};
+    if (result.data.origin) updateData.origin = result.data.origin;
+    if (result.data.destination) updateData.destination = result.data.destination;
+    if (result.data.scheduledDate) updateData.scheduledDate = new Date(result.data.scheduledDate);
+    if (result.data.driverId) updateData.driverId = result.data.driverId;
+    if (result.data.truckId) updateData.truckId = result.data.truckId;
+    if (result.data.notes !== undefined) updateData.notes = result.data.notes;
+
+    // Update route
+    const route = await prisma.route.update({
+      where: { id },
+      data: updateData,
     });
 
-    if (!driver) {
-      return {
-        error: {
-          driverId: ['Driver not found'],
-        },
-      };
-    }
-
-    if (!driver.isActive) {
-      return {
-        error: {
-          driverId: ['Driver is not active'],
-        },
-      };
-    }
-
-    if (driver.role !== 'DRIVER') {
-      return {
-        error: {
-          driverId: ['Selected user is not a driver'],
-        },
-      };
-    }
+    updatedRouteId = route.id;
+  } catch (error) {
+    console.error('Failed to update route:', error);
+    return { error: 'Failed to update route. Please try again.' };
   }
 
-  // Validate truck if provided
-  if (result.data.truckId) {
-    const truck = await prisma.truck.findUnique({
-      where: { id: result.data.truckId },
-    });
-
-    if (!truck) {
-      return {
-        error: {
-          truckId: ['Truck not found'],
-        },
-      };
-    }
-  }
-
-  // Build update data object
-  const updateData: any = {};
-  if (result.data.origin) updateData.origin = result.data.origin;
-  if (result.data.destination) updateData.destination = result.data.destination;
-  if (result.data.scheduledDate) updateData.scheduledDate = new Date(result.data.scheduledDate);
-  if (result.data.driverId) updateData.driverId = result.data.driverId;
-  if (result.data.truckId) updateData.truckId = result.data.truckId;
-  if (result.data.notes !== undefined) updateData.notes = result.data.notes;
-
-  // Update route
-  const route = await prisma.route.update({
-    where: { id },
-    data: updateData,
-  });
-
-  // Revalidate and redirect
+  // Revalidate and redirect (outside try/catch to avoid catching NEXT_REDIRECT)
   revalidatePath('/routes');
   revalidatePath(`/routes/${id}`);
-  redirect(`/routes/${route.id}`);
+  redirect(`/routes/${updatedRouteId}`);
 }
 
 /**
