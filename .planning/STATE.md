@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 16 of 18 (Route Finance Foundation)
-Plan: 4 of 5 in current phase
-Status: Executing
-Last activity: 2026-02-16 — Completed 16-04-PLAN.md (Expense Category and Template Management)
+Plan: 5 of 5 in current phase
+Status: Complete
+Last activity: 2026-02-16 — Completed 16-05-PLAN.md (Cost-Per-Mile Analysis and Profit Alerts)
 
 Progress: [███████████████████████████████████████████████████░░░] 83% (15/18 phases complete)
 
@@ -34,6 +34,7 @@ Progress: [███████████████████████
 - Phase 16-02 (2026-02-16): Expense line-item CRUD — 368s, 3 tasks, 5 files affected
 - Phase 16-03 (2026-02-16): Payment & revenue tracking — 438s, 3 tasks, 7 files affected
 - Phase 16-04 (2026-02-16): Expense category and template management — 351s, 2 tasks, 10 files affected
+- Phase 16-05 (2026-02-16): Cost-per-mile analysis and profit alerts — 211s, 2 tasks, 6 files affected
 
 **Combined:**
 - Total: 15 phases complete, 16 in progress (34 plans + 1 new)
@@ -94,6 +95,14 @@ Progress: [███████████████████████
 - Used dropdown menu pattern for template selection on route detail page
 - Showed system default vs custom badges with blue/gray color distinction
 
+**Phase 16-05 decisions:**
+- Fleet average calculated from COMPLETED routes in last 90 days (rolling window for relevance)
+- Used Prisma query + TypeScript iteration for fleet analytics (simpler than raw SQL aggregation)
+- Fleet average requires MANAGER or OWNER role (DRIVER role cannot see fleet-wide data)
+- Cost per mile returns null when odometer data missing (graceful degradation)
+- Profit margin alert only renders when isLowMargin is true (conditional rendering)
+- Zero-division protection for both fleet average and cost-per-mile calculations
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -122,6 +131,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-04-PLAN.md (Expense Category and Template Management)
+Stopped at: Completed 16-05-PLAN.md (Cost-Per-Mile Analysis and Profit Alerts)
 Resume file: None
-Next action: `/gsd:execute-phase 16` to continue with 16-05-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
+Next action: Phase 16 complete — ready to proceed to Phase 17 or run end-to-end testing for Route Finance workflow
