@@ -40,6 +40,9 @@ try {
     .filter(d => existsSync(join(migrationsDir, d, 'migration.sql')))
     .sort();
 
+  // Clean up any previously failed migrations so they can be retried
+  await client.query('DELETE FROM "_prisma_migrations" WHERE "finished_at" IS NULL');
+
   let ranCount = 0;
 
   for (const dir of dirs) {
@@ -54,22 +57,20 @@ try {
     const startedAt = new Date();
 
     try {
+      // Wrap in transaction so migration is atomic (all or nothing)
+      await client.query('BEGIN');
       await client.query(sql);
       await client.query(
         `INSERT INTO "_prisma_migrations" ("id", "checksum", "migration_name", "finished_at", "started_at", "applied_steps_count")
          VALUES ($1, $2, $3, $4, $5, 1)`,
         [id, 'manual', dir, new Date(), startedAt]
       );
+      await client.query('COMMIT');
       ranCount++;
       console.log(`  Applied: ${dir}`);
     } catch (e) {
+      await client.query('ROLLBACK').catch(() => {});
       console.error(`  Failed: ${dir}:`, e.message);
-      // Record failed migration
-      await client.query(
-        `INSERT INTO "_prisma_migrations" ("id", "checksum", "migration_name", "logs", "started_at", "applied_steps_count")
-         VALUES ($1, $2, $3, $4, $5, 0)`,
-        [id, 'manual', dir, e.message, startedAt]
-      ).catch(() => {});
       throw e;
     }
   }
