@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
 
 interface RouteFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -44,14 +45,13 @@ export function RouteForm({
         >
           Origin
         </label>
-        <input
-          type="text"
+        <AddressAutocomplete
           id="origin"
           name="origin"
           defaultValue={initialData?.origin || ''}
-          maxLength={200}
           required
           disabled={isPending}
+          placeholder="Enter origin address..."
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
         />
         {state?.error?.origin && (
@@ -67,14 +67,13 @@ export function RouteForm({
         >
           Destination
         </label>
-        <input
-          type="text"
+        <AddressAutocomplete
           id="destination"
           name="destination"
           defaultValue={initialData?.destination || ''}
-          maxLength={200}
           required
           disabled={isPending}
+          placeholder="Enter destination address..."
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
         />
         {state?.error?.destination && (
@@ -119,16 +118,23 @@ export function RouteForm({
           name="driverId"
           defaultValue={initialData?.driverId || ''}
           required
-          disabled={isPending}
+          disabled={isPending || drivers.length === 0}
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
         >
-          <option value="">Select a driver...</option>
+          <option value="">
+            {drivers.length === 0 ? 'No drivers available — invite drivers first' : 'Select a driver...'}
+          </option>
           {drivers.map((driver) => (
             <option key={driver.id} value={driver.id}>
               {driver.firstName || ''} {driver.lastName || ''}
             </option>
           ))}
         </select>
+        {drivers.length === 0 && (
+          <p className="mt-1 text-sm text-amber-600">
+            Go to Drivers → Invite Driver to add drivers before creating routes.
+          </p>
+        )}
         {state?.error?.driverId && (
           <p className="mt-1 text-sm text-red-600">{state.error.driverId}</p>
         )}

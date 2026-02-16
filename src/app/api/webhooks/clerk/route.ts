@@ -111,8 +111,9 @@ export async function POST(req: NextRequest) {
       }
 
       // Extract metadata to check for driver invitation sign-up
+      // Note: tenantId is passed in publicMetadata during invitation creation (inviteDriver action)
       const inviteRole = public_metadata?.role as string | undefined;
-      const inviteTenantId = private_metadata?.tenantId as string | undefined;
+      const inviteTenantId = public_metadata?.tenantId as string | undefined;
 
       // Check if this is a driver invitation sign-up
       if (inviteRole === 'DRIVER' && inviteTenantId) {

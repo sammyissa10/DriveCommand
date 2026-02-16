@@ -13,6 +13,7 @@ import {
   Route as RouteIcon,
   Wrench,
   Tag,
+  Plus,
 } from "lucide-react"
 import {
   Sidebar,
@@ -73,6 +74,25 @@ export function AppSidebar() {
                   <Link href="/dashboard">
                     <LayoutDashboard />
                     <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Quick Create */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  tooltip="Add Truck"
+                >
+                  <Link href="/trucks/new" className="!bg-blue-600 !text-white hover:!bg-blue-700">
+                    <Plus />
+                    <span>Add Truck</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

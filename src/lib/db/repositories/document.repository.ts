@@ -4,7 +4,6 @@
  */
 
 import { TenantRepository } from './base.repository';
-import { prisma } from '../prisma';
 
 export interface DocumentCreateInput {
   tenantId: string;
@@ -22,8 +21,8 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific truck
    */
   async findByTruckId(truckId: string) {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
-    return prisma.document.withTenantRLS(this.tenantId).findMany({
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.findMany({
       where: { truckId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -42,8 +41,8 @@ export class DocumentRepository extends TenantRepository {
    * Find all documents for a specific route
    */
   async findByRouteId(routeId: string) {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
-    return prisma.document.withTenantRLS(this.tenantId).findMany({
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.findMany({
       where: { routeId },
       orderBy: { createdAt: 'desc' },
       include: {
@@ -63,8 +62,8 @@ export class DocumentRepository extends TenantRepository {
    * Returns null if not found or wrong tenant (RLS)
    */
   async findById(id: string) {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
-    return prisma.document.withTenantRLS(this.tenantId).findUnique({
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.findUnique({
       where: { id },
       include: {
         uploader: {
@@ -82,8 +81,8 @@ export class DocumentRepository extends TenantRepository {
    * Create a new document record
    */
   async create(data: DocumentCreateInput) {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
-    return prisma.document.withTenantRLS(this.tenantId).create({
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.create({
       data,
     });
   }
@@ -93,8 +92,8 @@ export class DocumentRepository extends TenantRepository {
    * Returns the deleted record (so caller can get s3Key for S3 cleanup)
    */
   async delete(id: string) {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
-    return prisma.document.withTenantRLS(this.tenantId).delete({
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.delete({
       where: { id },
     });
   }

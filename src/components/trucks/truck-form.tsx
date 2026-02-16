@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState, useRef } from 'react';
 
 interface TruckFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -21,8 +21,48 @@ interface TruckFormProps {
   submitLabel: string;
 }
 
+// Generate year options from current+1 down to 1990
+const currentYear = new Date().getFullYear();
+const YEAR_OPTIONS = Array.from({ length: currentYear + 1 - 1990 + 1 }, (_, i) => currentYear + 1 - i);
+
+function formatWithCommas(value: string | number): string {
+  const num = typeof value === 'number' ? value : parseInt(value.replace(/,/g, ''), 10);
+  if (isNaN(num)) return '';
+  return num.toLocaleString('en-US');
+}
+
+function stripCommas(value: string): string {
+  return value.replace(/,/g, '');
+}
+
+const inputClass = "w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50";
+
 export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  const [odometerDisplay, setOdometerDisplay] = useState(
+    initialData?.odometer != null ? formatWithCommas(initialData.odometer) : ''
+  );
+  const odometerHiddenRef = useRef<HTMLInputElement>(null);
+  const [yearFilter, setYearFilter] = useState('');
+  const [yearOpen, setYearOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<number | null>(initialData?.year ?? null);
+  const yearContainerRef = useRef<HTMLDivElement>(null);
+
+  const filteredYears = yearFilter
+    ? YEAR_OPTIONS.filter(y => y.toString().includes(yearFilter))
+    : YEAR_OPTIONS;
+
+  const handleOdometerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = stripCommas(e.target.value).replace(/[^0-9]/g, '');
+    if (raw === '') {
+      setOdometerDisplay('');
+      if (odometerHiddenRef.current) odometerHiddenRef.current.value = '';
+      return;
+    }
+    const num = parseInt(raw, 10);
+    setOdometerDisplay(formatWithCommas(num));
+    if (odometerHiddenRef.current) odometerHiddenRef.current.value = num.toString();
+  };
 
   return (
     <form action={formAction} className="max-w-2xl space-y-4">
@@ -32,6 +72,71 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
           <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
+
+      {/* Year - searchable dropdown, first field */}
+      <div>
+        <label htmlFor="yearSearch" className="block font-medium mb-1">
+          Year
+        </label>
+        <div className="relative" ref={yearContainerRef}>
+          <input
+            type="text"
+            id="yearSearch"
+            placeholder="Search year..."
+            value={yearOpen ? yearFilter : (selectedYear?.toString() ?? '')}
+            onChange={(e) => {
+              setYearFilter(e.target.value);
+              if (!yearOpen) setYearOpen(true);
+            }}
+            onFocus={() => {
+              setYearOpen(true);
+              setYearFilter('');
+            }}
+            onBlur={(e) => {
+              // Delay close so click on option registers
+              setTimeout(() => {
+                if (!yearContainerRef.current?.contains(document.activeElement)) {
+                  setYearOpen(false);
+                  setYearFilter('');
+                }
+              }, 150);
+            }}
+            disabled={isPending}
+            className={inputClass}
+            autoComplete="off"
+            required
+          />
+          {/* Hidden input for form submission */}
+          <input type="hidden" name="year" value={selectedYear?.toString() ?? ''} />
+          {yearOpen && (
+            <ul className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+              {filteredYears.length > 0 ? (
+                filteredYears.map((year) => (
+                  <li
+                    key={year}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setSelectedYear(year);
+                      setYearOpen(false);
+                      setYearFilter('');
+                    }}
+                    className={`cursor-pointer px-3 py-2 hover:bg-blue-50 ${
+                      selectedYear === year ? 'bg-blue-100 font-medium' : ''
+                    }`}
+                  >
+                    {year}
+                  </li>
+                ))
+              ) : (
+                <li className="px-3 py-2 text-gray-500">No matching years</li>
+              )}
+            </ul>
+          )}
+        </div>
+        {state?.error?.year && (
+          <p className="mt-1 text-sm text-red-600">{state.error.year}</p>
+        )}
+      </div>
 
       {/* Make */}
       <div>
@@ -44,7 +149,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
           name="make"
           defaultValue={initialData?.make || ''}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className={inputClass}
           required
         />
         {state?.error?.make && (
@@ -63,32 +168,11 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
           name="model"
           defaultValue={initialData?.model || ''}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className={inputClass}
           required
         />
         {state?.error?.model && (
           <p className="mt-1 text-sm text-red-600">{state.error.model}</p>
-        )}
-      </div>
-
-      {/* Year */}
-      <div>
-        <label htmlFor="year" className="block font-medium mb-1">
-          Year
-        </label>
-        <input
-          type="number"
-          id="year"
-          name="year"
-          min={1900}
-          max={new Date().getFullYear() + 1}
-          defaultValue={initialData?.year || ''}
-          disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-          required
-        />
-        {state?.error?.year && (
-          <p className="mt-1 text-sm text-red-600">{state.error.year}</p>
         )}
       </div>
 
@@ -105,7 +189,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
           pattern="[A-HJ-NPR-Z0-9]{17}"
           defaultValue={initialData?.vin || ''}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 uppercase"
+          className={`${inputClass} uppercase`}
           required
         />
         <p className="mt-1 text-xs text-gray-500">17 characters, no I, O, or Q</p>
@@ -126,7 +210,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
           maxLength={20}
           defaultValue={initialData?.licensePlate || ''}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className={inputClass}
           required
         />
         {state?.error?.licensePlate && (
@@ -134,21 +218,28 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
         )}
       </div>
 
-      {/* Odometer */}
+      {/* Odometer with comma formatting */}
       <div>
-        <label htmlFor="odometer" className="block font-medium mb-1">
+        <label htmlFor="odometerDisplay" className="block font-medium mb-1">
           Odometer (miles)
         </label>
         <input
-          type="number"
-          id="odometer"
-          name="odometer"
-          min={0}
-          step={1}
-          defaultValue={initialData?.odometer || ''}
+          type="text"
+          id="odometerDisplay"
+          inputMode="numeric"
+          value={odometerDisplay}
+          onChange={handleOdometerChange}
           disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className={inputClass}
+          placeholder="e.g. 125,000"
           required
+        />
+        {/* Hidden input submits the raw number */}
+        <input
+          type="hidden"
+          name="odometer"
+          ref={odometerHiddenRef}
+          defaultValue={initialData?.odometer?.toString() ?? ''}
         />
         {state?.error?.odometer && (
           <p className="mt-1 text-sm text-red-600">{state.error.odometer}</p>
@@ -170,7 +261,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
             name="registrationNumber"
             defaultValue={initialData?.documentMetadata?.registrationNumber || ''}
             disabled={isPending}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            className={inputClass}
           />
           {state?.error?.registrationNumber && (
             <p className="mt-1 text-sm text-red-600">{state.error.registrationNumber}</p>
@@ -188,7 +279,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
             name="registrationExpiry"
             defaultValue={initialData?.documentMetadata?.registrationExpiry || ''}
             disabled={isPending}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            className={inputClass}
           />
           {state?.error?.registrationExpiry && (
             <p className="mt-1 text-sm text-red-600">{state.error.registrationExpiry}</p>
@@ -206,7 +297,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
             name="insuranceNumber"
             defaultValue={initialData?.documentMetadata?.insuranceNumber || ''}
             disabled={isPending}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            className={inputClass}
           />
           {state?.error?.insuranceNumber && (
             <p className="mt-1 text-sm text-red-600">{state.error.insuranceNumber}</p>
@@ -224,7 +315,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
             name="insuranceExpiry"
             defaultValue={initialData?.documentMetadata?.insuranceExpiry || ''}
             disabled={isPending}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            className={inputClass}
           />
           {state?.error?.insuranceExpiry && (
             <p className="mt-1 text-sm text-red-600">{state.error.insuranceExpiry}</p>
