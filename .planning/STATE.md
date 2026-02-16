@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Logistics owners can manage their entire operation — trucks, drivers, routes, and documents — from one platform, with each route showing the full picture on a single screen.
-**Current focus:** Phase 14 - Fuel & Energy Dashboard (v2.0 Samsara-Inspired Fleet Intelligence)
+**Current focus:** Phase 15 - Tags, Groups & Polish (v2.0 Samsara-Inspired Fleet Intelligence)
 
 ## Current Position
 
-Phase: 14 of 15 (Fuel & Energy Dashboard)
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-02-16 — Completed 14-02 (fuel dashboard UI with 5 chart components)
+Phase: 15 of 15 (Tags, Groups & Polish)
+Plan: 2 of 3 in current phase
+Status: In Progress
+Last activity: 2026-02-16 — Completed 15-01 (tag data model and management UI)
 
-Progress: [█████████████████████░░░░] 90% (29 plans complete, 10 v1.0 phases shipped)
+Progress: [██████████████████████░░░] 93% (30 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -37,8 +37,9 @@ Progress: [█████████████████████░░
 | 13    | 02   | 3m 23s   | 2     | 6     | 2026-02-16 |
 | 14    | 01   | 2m 18s   | 2     | 2     | 2026-02-16 |
 | 14    | 02   | 3m 17s   | 2     | 6     | 2026-02-16 |
+| 15    | 01   | 7m 56s   | 2     | 12    | 2026-02-16 |
 
-**v2.0 totals:** 9 plans completed, 37m 20s total time
+**v2.0 totals:** 10 plans completed, 45m 16s total time
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Recent v2.0 decisions:
 - [Phase 14-01]: Fleet truck MPG thresholds — >=7 excellent, >=5.5 good, >=4 below average, <4 poor (based on typical fleet ranges)
 - [Phase 14-02]: Uniform bar color for idle time chart — Simplified approach instead of per-bar color coding for cleaner implementation
 - [Phase 14-02]: Visual indicators in fuel leaderboard — Top 3 get Trophy, poor performers (<4 MPG) get AlertTriangle for quick identification
+- [Phase 15-01]: 8 preset Tailwind colors for tag palette — Blue, green, red, yellow, purple, orange, pink, teal provide consistent color scheme for fleet organization
+- [Phase 15-01]: Tabbed assignment interface for trucks vs drivers — Reduces UI clutter with large fleets, separates entity types logically
+- [Phase 15-01]: Popover for tag assignment instead of dropdown — Better UX for selecting available tags, filters already-assigned tags per entity
 
 ### Pending Todos
 
@@ -101,5 +105,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed Phase 14 - Fuel & Energy Dashboard (fuel analytics + UI complete)
+Stopped at: Completed 15-01-PLAN.md (tag data model and management UI)
 Resume file: None
