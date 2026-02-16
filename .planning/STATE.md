@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 
 Phase: 15 of 15 (Tags, Groups & Polish)
 Plan: 3 of 3 in current phase
-Status: In Progress
-Last activity: 2026-02-16 — Completed 15-02 (dashboard tag filtering and loading states)
+Status: Complete
+Last activity: 2026-02-16 — Completed 15-03 (E2E testing and mobile polish)
 
-Progress: [██████████████████████░░░] 94% (31 plans complete, 10 v1.0 phases shipped)
+Progress: [█████████████████████████] 100% (32 plans complete, 10 v1.0 phases shipped, 5 v2.0 phases shipped)
 
 ## Performance Metrics
 
@@ -39,8 +39,9 @@ Progress: [██████████████████████░
 | 14    | 02   | 3m 17s   | 2     | 6     | 2026-02-16 |
 | 15    | 01   | 7m 56s   | 2     | 12    | 2026-02-16 |
 | 15    | 02   | 7m 44s   | 2     | 5     | 2026-02-16 |
+| 15    | 03   | 15m 59s  | 2     | 13    | 2026-02-16 |
 
-**v2.0 totals:** 11 plans completed, 53m 0s total time
+**v2.0 totals:** 12 plans completed, 68m 59s total time
 
 ## Accumulated Context
 
@@ -97,6 +98,9 @@ Recent v2.0 decisions:
 - [Phase 15-02]: Ternary conditional pattern for tag filtering queries — Complete query duplication for clarity vs. Prisma.sql/Prisma.empty template interpolation
 - [Phase 15-02]: Next.js loading.tsx for Suspense boundaries — Skeleton layouts match exact grid structure of dashboard pages for seamless UX transition
 - [Phase 15-02]: INNER JOIN TagAssignment pattern for tag-filtered queries — Efficient SQL filtering for tagged vehicle data across all dashboards
+- [Phase 15-03]: Auth-aware E2E tests with graceful skipping — Tests check for sign-in redirects and skip when authentication required, preventing CI failures
+- [Phase 15-03]: iPhone 14 viewport for mobile testing — 390x844px Playwright mobile project matches real-world device dimensions for responsive verification
+- [Phase 15-03]: Conditional SQL queries without Prisma helpers — Ternary pattern for filtered vs unfiltered queries since Prisma.sql/Prisma.empty not exported in Prisma 7
 
 ### Pending Todos
 
@@ -109,5 +113,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 15-02-PLAN.md (dashboard tag filtering and loading states)
+Stopped at: Completed 15-03-PLAN.md (E2E testing and mobile polish) — Phase 15 Complete
 Resume file: None
