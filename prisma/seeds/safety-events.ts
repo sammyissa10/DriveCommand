@@ -4,7 +4,7 @@
  * Generates safety events linked to actual GPS trail coordinates.
  */
 
-import { PrismaClient, Prisma, SafetyEventType, SeverityLevel } from '@prisma/client';
+import { PrismaClient, Prisma, SafetyEventType, SafetyEventSeverity } from '../../src/generated/prisma';
 import { faker } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
@@ -53,36 +53,28 @@ export async function seedSafetyEvents(
 
       // Pick random event type with weighted distribution
       const eventType = faker.helpers.weightedArrayElement([
-        { weight: 30, value: SafetyEventType.HARSH_BRAKING },
-        { weight: 30, value: SafetyEventType.SPEEDING },
+        { weight: 33, value: SafetyEventType.HARSH_BRAKING },
+        { weight: 33, value: SafetyEventType.SPEEDING },
         { weight: 20, value: SafetyEventType.HARSH_ACCELERATION },
-        { weight: 10, value: SafetyEventType.HARSH_CORNERING },
-        { weight: 5, value: SafetyEventType.LANE_DEPARTURE },
-        { weight: 3, value: SafetyEventType.COLLISION },
-        { weight: 2, value: SafetyEventType.ROLLOVER_RISK },
+        { weight: 14, value: SafetyEventType.HARSH_CORNERING },
       ]);
 
       // Severity based on event type
-      let severity: SeverityLevel;
+      let severity: SafetyEventSeverity;
       if (eventType === SafetyEventType.SPEEDING) {
         severity = faker.helpers.arrayElement([
-          SeverityLevel.HIGH,
-          SeverityLevel.HIGH,
-          SeverityLevel.CRITICAL,
+          SafetyEventSeverity.HIGH,
+          SafetyEventSeverity.HIGH,
+          SafetyEventSeverity.CRITICAL,
         ]);
       } else if (eventType === SafetyEventType.HARSH_BRAKING) {
         severity = faker.helpers.arrayElement([
-          SeverityLevel.MEDIUM,
-          SeverityLevel.MEDIUM,
-          SeverityLevel.HIGH,
+          SafetyEventSeverity.MEDIUM,
+          SafetyEventSeverity.MEDIUM,
+          SafetyEventSeverity.HIGH,
         ]);
-      } else if (
-        eventType === SafetyEventType.COLLISION ||
-        eventType === SafetyEventType.ROLLOVER_RISK
-      ) {
-        severity = SeverityLevel.CRITICAL;
       } else {
-        severity = faker.helpers.arrayElement([SeverityLevel.LOW, SeverityLevel.MEDIUM]);
+        severity = faker.helpers.arrayElement([SafetyEventSeverity.LOW, SafetyEventSeverity.MEDIUM]);
       }
 
       // G-force: only for harsh braking/acceleration/cornering events
@@ -98,18 +90,15 @@ export async function seedSafetyEvents(
       }
 
       // Speed: 45-95 mph (higher for speeding events)
-      const speed = new Prisma.Decimal(
+      const speed =
         eventType === SafetyEventType.SPEEDING
-          ? faker.number.float({ min: 75, max: 95, fractionDigits: 1 }).toFixed(1)
-          : faker.number.float({ min: 45, max: 75, fractionDigits: 1 }).toFixed(1)
-      );
+          ? faker.number.int({ min: 75, max: 95 })
+          : faker.number.int({ min: 45, max: 75 });
 
       // SpeedLimit: only for speeding events (55-75 mph, lower than actual speed)
-      let speedLimit: Prisma.Decimal | null = null;
+      let speedLimit: number | null = null;
       if (eventType === SafetyEventType.SPEEDING) {
-        speedLimit = new Prisma.Decimal(
-          faker.number.float({ min: 55, max: 70, fractionDigits: 0 }).toFixed(0)
-        );
+        speedLimit = faker.number.int({ min: 55, max: 70 });
       }
 
       // Metadata: context field
