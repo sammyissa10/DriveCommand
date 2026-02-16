@@ -4,11 +4,15 @@ import { notFound } from 'next/navigation';
 import { getRoute, updateRouteStatus } from '@/app/(owner)/actions/routes';
 import { listDocuments } from '@/app/(owner)/actions/documents';
 import { listExpenses, listExpenseCategories } from '@/app/(owner)/actions/expenses';
+import { listPayments } from '@/app/(owner)/actions/payments';
+import { calculateRouteFinancials } from '@/lib/finance/route-calculator';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
 import { RouteDocumentsSection } from './route-documents-section';
 import { RouteExpensesSection } from '@/components/routes/route-expenses-section';
+import { RoutePaymentsSection } from '@/components/routes/route-payments-section';
+import { RouteFinancialSummary } from '@/components/routes/route-financial-summary';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -24,12 +28,16 @@ export default async function RouteDetailPage({
     notFound();
   }
 
-  // Fetch documents, expenses, and categories for this route
-  const [documents, expenses, categories] = await Promise.all([
+  // Fetch documents, expenses, payments, and categories for this route
+  const [documents, expenses, payments, categories] = await Promise.all([
     listDocuments('route', id),
     listExpenses(id),
+    listPayments(id),
     listExpenseCategories(),
   ]);
+
+  // Calculate financial metrics using Decimal.js
+  const financials = calculateRouteFinancials(expenses, payments, 10);
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(
@@ -78,6 +86,17 @@ export default async function RouteDetailPage({
         }
       />
 
+      {/* Financial Summary */}
+      <RouteFinancialSummary
+        totalExpenses={financials.totalExpenses}
+        totalRevenue={financials.totalRevenue}
+        totalPaidRevenue={financials.totalPaidRevenue}
+        totalPendingRevenue={financials.totalPendingRevenue}
+        profit={financials.profit}
+        marginPercent={financials.marginPercent}
+        isLowMargin={financials.isLowMargin}
+      />
+
       {/* Expenses Section */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-card-foreground mb-4">Expenses</h2>
@@ -86,6 +105,16 @@ export default async function RouteDetailPage({
           routeStatus={route.status}
           categories={categories}
           initialExpenses={expenses}
+        />
+      </div>
+
+      {/* Payments Section */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Payments</h2>
+        <RoutePaymentsSection
+          routeId={route.id}
+          routeStatus={route.status}
+          initialPayments={payments}
         />
       </div>
 
