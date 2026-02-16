@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 13 of 15 (Safety Analytics Dashboard)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-15 — Phase 12 complete (2/2 plans, verified)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-16 — Completed 13-01 (data layer with score calculator and server actions)
 
-Progress: [████████████████████░░░░░] 80% (25 plans complete, 10 v1.0 phases shipped)
+Progress: [████████████████████░░░░░] 81% (26 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -33,7 +33,9 @@ Progress: [████████████████████░░░
 | 12    | 01   | 4m 44s   | 2     | 9     | 2026-02-15 |
 | 12    | 02   | 3m 52s   | 2     | 4     | 2026-02-15 |
 
-**v2.0 totals:** 5 plans completed, 23m 42s total time
+| 13    | 01   | 4m 40s   | 2     | 9     | 2026-02-16 |
+
+**v2.0 totals:** 6 plans completed, 28m 22s total time
 
 ## Accumulated Context
 
@@ -71,6 +73,10 @@ Recent v2.0 decisions:
 - [Phase 12-02]: Polyline segment overlap for continuity — Last point of segment N becomes first point of segment N+1 when color changes
 - [Phase 12-02]: Fuel level estimation using 6 MPG heuristic — Simplified calculation for truck diagnostics in absence of real-time fuel sensors
 - [Phase 12-02]: Engine state derived from GPS speed — Running (>5 mph), idle (>0 mph), off (no speed data)
+- [Phase 13-01]: Severity-weighted penalty system for safety scores — Exponential weights (LOW=1, MEDIUM=2, HIGH=4, CRITICAL=8) emphasize critical events over linear scaling
+- [Phase 13-01]: Aggregate safety rankings by truck instead of driver — Seed data has driverId=null, truck-level aggregation provides meaningful metrics
+- [Phase 13-01]: LEFT JOIN for zero-event trucks in rankings — Include trucks with no safety events (score=100) at top of rankings for complete fleet view
+- [Phase 13-01]: Initialize all dates in trend queries — Days with no events show score=100, not missing from chart, for continuous timeline
 
 ### Pending Todos
 
@@ -82,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15
-Stopped at: Phase 12 complete, ready to plan Phase 13
+Last session: 2026-02-16
+Stopped at: Completed 13-01-PLAN.md (safety data layer with score calculator and server actions)
 Resume file: None
