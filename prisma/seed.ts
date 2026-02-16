@@ -443,6 +443,29 @@ async function main() {
   }
   console.log(`   ✅ Created ${paymentCount} route payments\n`);
 
+  // 4.5 Update completed routes with odometer data for cost-per-mile calculation
+  console.log('   Updating completed routes with odometer data...');
+  const routesToUpdate = completedRoutes.slice(0, 3); // Update first 3 completed routes
+  const odometerData = [
+    { startOdometer: 45000, endOdometer: 45380 }, // 380 miles
+    { startOdometer: 52000, endOdometer: 52290 }, // 290 miles
+    { startOdometer: 61000, endOdometer: 61450 }, // 450 miles
+  ];
+
+  for (let i = 0; i < Math.min(routesToUpdate.length, odometerData.length); i++) {
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`
+        UPDATE "Route"
+        SET "startOdometer" = ${odometerData[i].startOdometer},
+            "endOdometer" = ${odometerData[i].endOdometer},
+            "updatedAt" = NOW()
+        WHERE "id" = ${routesToUpdate[i].id}::uuid
+      `;
+    });
+  }
+  console.log(`   ✅ Updated ${Math.min(routesToUpdate.length, odometerData.length)} routes with odometer data\n`);
+
   // ===================================
   // 5. Create Driver Invitations
   // ===================================

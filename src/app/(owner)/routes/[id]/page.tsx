@@ -6,7 +6,7 @@ import { listDocuments } from '@/app/(owner)/actions/documents';
 import { listExpenses, listExpenseCategories } from '@/app/(owner)/actions/expenses';
 import { listPayments } from '@/app/(owner)/actions/payments';
 import { listTemplates } from '@/app/(owner)/actions/expense-templates';
-import { calculateRouteFinancials } from '@/lib/finance/route-calculator';
+import { getRouteFinancialAnalytics } from '@/app/(owner)/actions/route-analytics';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
@@ -15,6 +15,8 @@ import { RouteExpensesSection } from '@/components/routes/route-expenses-section
 import { RoutePaymentsSection } from '@/components/routes/route-payments-section';
 import { RouteFinancialSummary } from '@/components/routes/route-financial-summary';
 import { ApplyTemplateButton } from '@/components/routes/apply-template-button';
+import { RouteCostPerMile } from '@/components/routes/route-cost-per-mile';
+import { ProfitMarginAlert } from '@/components/routes/profit-margin-alert';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -30,17 +32,21 @@ export default async function RouteDetailPage({
     notFound();
   }
 
-  // Fetch documents, expenses, payments, categories, and templates for this route
-  const [documents, expenses, payments, categories, templates] = await Promise.all([
-    listDocuments('route', id),
-    listExpenses(id),
-    listPayments(id),
-    listExpenseCategories(),
-    listTemplates(),
-  ]);
+  // Fetch documents, expenses, payments, categories, templates, and financial analytics
+  const [documents, expenses, payments, categories, templates, analytics] =
+    await Promise.all([
+      listDocuments('route', id),
+      listExpenses(id),
+      listPayments(id),
+      listExpenseCategories(),
+      listTemplates(),
+      getRouteFinancialAnalytics(id),
+    ]);
 
-  // Calculate financial metrics using Decimal.js
-  const financials = calculateRouteFinancials(expenses, payments, 10);
+  // If analytics failed to load, return not found
+  if (!analytics) {
+    notFound();
+  }
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(
@@ -89,15 +95,33 @@ export default async function RouteDetailPage({
         }
       />
 
+      {/* Profit Margin Alert (only shows if low margin) */}
+      <ProfitMarginAlert
+        isLowMargin={analytics.financials.isLowMargin}
+        marginPercent={analytics.financials.marginPercent}
+        threshold={analytics.profitMarginThreshold}
+      />
+
       {/* Financial Summary */}
       <RouteFinancialSummary
-        totalExpenses={financials.totalExpenses}
-        totalRevenue={financials.totalRevenue}
-        totalPaidRevenue={financials.totalPaidRevenue}
-        totalPendingRevenue={financials.totalPendingRevenue}
-        profit={financials.profit}
-        marginPercent={financials.marginPercent}
-        isLowMargin={financials.isLowMargin}
+        totalExpenses={analytics.financials.totalExpenses}
+        totalRevenue={analytics.financials.totalRevenue}
+        totalPaidRevenue={analytics.financials.totalPaidRevenue}
+        totalPendingRevenue={analytics.financials.totalPendingRevenue}
+        profit={analytics.financials.profit}
+        marginPercent={analytics.financials.marginPercent}
+        isLowMargin={analytics.financials.isLowMargin}
+      />
+
+      {/* Cost Per Mile Analysis */}
+      <RouteCostPerMile
+        costPerMile={analytics.costPerMile.costPerMile}
+        miles={analytics.costPerMile.miles}
+        fleetAverage={analytics.fleetAverage.costPerMile}
+        fleetRouteCount={analytics.fleetAverage.routeCount}
+        comparison={analytics.comparison.comparison}
+        difference={analytics.comparison.difference}
+        differencePercent={analytics.comparison.differencePercent}
       />
 
       {/* Expenses Section */}
