@@ -46,7 +46,21 @@ Logistics owners can manage their entire operation — trucks, drivers, routes, 
 
 ### Active
 
-(No active requirements — next milestone not yet defined)
+<!-- v3.0 Route Finance & Driver Documents -->
+
+- [ ] Route finance tracking with line-item expenses (gas cost, driver salary, insurance, custom)
+- [ ] Route payment tracking with total operating cost and profit calculation
+- [ ] Unified route view/edit page with edit mode toggle and status editing
+- [ ] Driver document uploads (driver license, driver application, general documents)
+
+## Current Milestone: v3.0 Route Finance & Driver Documents
+
+**Goal:** Add financial tracking to routes (expenses, payments, profit) with a consolidated route page UX, plus driver document upload capabilities.
+
+**Target features:**
+- Route finance: line-item expenses, payment tracking, operating cost, profit
+- Route page consolidation: merge view/edit into one page with edit mode
+- Driver documents: upload driver license, application, and general documents
 
 ### Out of Scope
 
@@ -66,6 +80,7 @@ Logistics owners can manage their entire operation — trucks, drivers, routes, 
 - SaaS product for logistics companies as paying customers
 - v1.0 shipped — full fleet management (trucks, drivers, routes, documents, maintenance, notifications)
 - v2.0 shipped — Samsara-inspired fleet intelligence (GPS map, safety analytics, fuel dashboard, tags/groups)
+- v3.0 in progress — Route finance tracking, route page consolidation, driver document uploads
 - Tech stack: Next.js 16 + PostgreSQL 17 (RLS) + Clerk + Prisma 7 + AWS S3 + Resend + Leaflet + Recharts
 - 71,160 lines of TypeScript across 15 phases
 - All fleet intelligence features use mock/simulated data with API contracts for future hardware integration
@@ -100,4 +115,4 @@ Logistics owners can manage their entire operation — trucks, drivers, routes, 
 | Client component wrapper for Leaflet | SSR-safe dynamic import pattern for browser-only libraries | ✓ Good |
 
 ---
-*Last updated: 2026-02-16 after v2.0 milestone shipped (Samsara-inspired fleet intelligence)*
+*Last updated: 2026-02-16 after v3.0 milestone started (Route Finance & Driver Documents)*
