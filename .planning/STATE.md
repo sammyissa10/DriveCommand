@@ -101,6 +101,7 @@ Recent v2.0 decisions:
 - [Phase 15-03]: Auth-aware E2E tests with graceful skipping — Tests check for sign-in redirects and skip when authentication required, preventing CI failures
 - [Phase 15-03]: iPhone 14 viewport for mobile testing — 390x844px Playwright mobile project matches real-world device dimensions for responsive verification
 - [Phase 15-03]: Conditional SQL queries without Prisma helpers — Ternary pattern for filtered vs unfiltered queries since Prisma.sql/Prisma.empty not exported in Prisma 7
+- [Phase 15-03]: Specific Turf package imports for bundle optimization — Replace @turf/turf (~500KB) with @turf/helpers + @turf/bbox (<20KB) for calculateBounds functionality
 
 ### Pending Todos
 
