@@ -5,6 +5,7 @@ import { getRoute, updateRouteStatus } from '@/app/(owner)/actions/routes';
 import { listDocuments } from '@/app/(owner)/actions/documents';
 import { listExpenses, listExpenseCategories } from '@/app/(owner)/actions/expenses';
 import { listPayments } from '@/app/(owner)/actions/payments';
+import { listTemplates } from '@/app/(owner)/actions/expense-templates';
 import { calculateRouteFinancials } from '@/lib/finance/route-calculator';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { RouteDetail } from '@/components/routes/route-detail';
@@ -13,6 +14,7 @@ import { RouteDocumentsSection } from './route-documents-section';
 import { RouteExpensesSection } from '@/components/routes/route-expenses-section';
 import { RoutePaymentsSection } from '@/components/routes/route-payments-section';
 import { RouteFinancialSummary } from '@/components/routes/route-financial-summary';
+import { ApplyTemplateButton } from '@/components/routes/apply-template-button';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -28,12 +30,13 @@ export default async function RouteDetailPage({
     notFound();
   }
 
-  // Fetch documents, expenses, payments, and categories for this route
-  const [documents, expenses, payments, categories] = await Promise.all([
+  // Fetch documents, expenses, payments, categories, and templates for this route
+  const [documents, expenses, payments, categories, templates] = await Promise.all([
     listDocuments('route', id),
     listExpenses(id),
     listPayments(id),
     listExpenseCategories(),
+    listTemplates(),
   ]);
 
   // Calculate financial metrics using Decimal.js
@@ -99,7 +102,14 @@ export default async function RouteDetailPage({
 
       {/* Expenses Section */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-card-foreground mb-4">Expenses</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-card-foreground">Expenses</h2>
+          <ApplyTemplateButton
+            routeId={route.id}
+            routeStatus={route.status}
+            templates={templates}
+          />
+        </div>
         <RouteExpensesSection
           routeId={route.id}
           routeStatus={route.status}
