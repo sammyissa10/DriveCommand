@@ -96,7 +96,7 @@ export function IdleTimeCard({ data }: IdleTimeCardProps) {
         </ChartContainer>
 
         {/* Summary below chart */}
-        <div className="mt-4 pt-4 border-t flex justify-between text-sm">
+        <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 text-sm">
           <div>
             <span className="text-muted-foreground">Fleet Average Idle:</span>
             <span className="ml-2 font-medium">{fleetAvgIdle.toFixed(1)}%</span>

@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf';
+import { point } from '@turf/helpers';
+import bbox from '@turf/bbox';
 
 export interface VehicleLocation {
   id: string;
@@ -29,18 +30,21 @@ export function calculateBounds(
 
   // Create GeoJSON points from vehicle positions
   const points = vehicles.map(v =>
-    turf.point([v.longitude, v.latitude])
+    point([v.longitude, v.latitude])
   );
 
-  // Create feature collection and calculate bbox
-  const featureCollection = turf.featureCollection(points);
-  const bbox = turf.bbox(featureCollection);
+  // Create feature collection manually (no need for turf.featureCollection helper)
+  const featureCollection = {
+    type: 'FeatureCollection' as const,
+    features: points,
+  };
+  const bboxResult = bbox(featureCollection);
 
   // Convert turf bbox [minX, minY, maxX, maxY] to Leaflet bounds [[minY, minX], [maxY, maxX]]
   // Note: turf uses [lng, lat], Leaflet uses [lat, lng]
   return [
-    [bbox[1], bbox[0]], // [minLat, minLng]
-    [bbox[3], bbox[2]], // [maxLat, maxLng]
+    [bboxResult[1], bboxResult[0]], // [minLat, minLng]
+    [bboxResult[3], bboxResult[2]], // [maxLat, maxLng]
   ];
 }
 
