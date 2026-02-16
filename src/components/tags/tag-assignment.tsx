@@ -25,12 +25,11 @@ type Tag = {
   color: string;
 };
 
-type Assignment = {
+type RawAssignment = {
   id: string;
   tagId: string;
   truckId: string | null;
   userId: string | null;
-  tag: Tag;
   truck?: {
     id: string;
     make: string;
@@ -45,8 +44,12 @@ type Assignment = {
   } | null;
 };
 
+type Assignment = RawAssignment & {
+  tag: Tag;
+};
+
 type TagWithAssignments = Tag & {
-  assignments: Assignment[];
+  assignments: RawAssignment[];
 };
 
 type Truck = {
@@ -75,26 +78,26 @@ export function TagAssignment({ tags, trucks, drivers }: TagAssignmentProps) {
   const [isUnassigning, setIsUnassigning] = useState<string | null>(null);
   const [openPopover, setOpenPopover] = useState<string | null>(null);
 
-  // Get assignments for a specific truck
+  // Get assignments for a specific truck (enriched with parent tag)
   const getTruckAssignments = (truckId: string): Assignment[] => {
     const assignments: Assignment[] = [];
     tags.forEach((tag) => {
       tag.assignments.forEach((assignment) => {
         if (assignment.truckId === truckId) {
-          assignments.push(assignment);
+          assignments.push({ ...assignment, tag: { id: tag.id, name: tag.name, color: tag.color } });
         }
       });
     });
     return assignments;
   };
 
-  // Get assignments for a specific driver
+  // Get assignments for a specific driver (enriched with parent tag)
   const getDriverAssignments = (userId: string): Assignment[] => {
     const assignments: Assignment[] = [];
     tags.forEach((tag) => {
       tag.assignments.forEach((assignment) => {
         if (assignment.userId === userId) {
-          assignments.push(assignment);
+          assignments.push({ ...assignment, tag: { id: tag.id, name: tag.name, color: tag.color } });
         }
       });
     });
