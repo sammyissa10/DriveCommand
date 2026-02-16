@@ -8,24 +8,36 @@ import { VehicleLocation } from '@/lib/maps/map-utils';
 /**
  * Get the latest GPS location for each vehicle in the fleet
  * Uses DISTINCT ON to fetch only the most recent position per truck
+ * Optionally filters by tag
  */
-export async function getLatestVehicleLocations(): Promise<VehicleLocation[]> {
+export async function getLatestVehicleLocations(tagId?: string): Promise<VehicleLocation[]> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
 
-  // Use raw SQL with DISTINCT ON to get most recent GPS location per truck
+  // Build query with conditional tag filter
   // @ts-ignore - Raw query typing
-  const results = await db.$queryRaw`
-    SELECT DISTINCT ON (gps."truckId")
-      gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-      t.make, t.model, t."licensePlate"
-    FROM "GPSLocation" gps
-    INNER JOIN "Truck" t ON gps."truckId" = t.id
-    WHERE gps."tenantId" = ${tenantId}::uuid
-    ORDER BY gps."truckId", gps.timestamp DESC
-  `;
+  const results = tagId
+    ? await db.$queryRaw`
+        SELECT DISTINCT ON (gps."truckId")
+          gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
+          t.make, t.model, t."licensePlate"
+        FROM "GPSLocation" gps
+        INNER JOIN "Truck" t ON gps."truckId" = t.id
+        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+        WHERE gps."tenantId" = ${tenantId}::uuid
+        ORDER BY gps."truckId", gps.timestamp DESC
+      `
+    : await db.$queryRaw`
+        SELECT DISTINCT ON (gps."truckId")
+          gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
+          t.make, t.model, t."licensePlate"
+        FROM "GPSLocation" gps
+        INNER JOIN "Truck" t ON gps."truckId" = t.id
+        WHERE gps."tenantId" = ${tenantId}::uuid
+        ORDER BY gps."truckId", gps.timestamp DESC
+      `;
 
   // Map results and convert Decimal lat/lng to Number
   return (results as any[]).map((row) => ({

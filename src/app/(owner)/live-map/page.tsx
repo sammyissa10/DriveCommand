@@ -1,22 +1,37 @@
 import { getLatestVehicleLocations } from './actions';
+import { listTags } from '@/app/(owner)/actions/tags';
 import LiveMapWrapper from '@/components/maps/live-map-wrapper';
+import { TagFilter } from '@/components/tags/tag-filter';
 
 // Force dynamic rendering for real-time data
 export const fetchCache = 'force-no-store';
 
-export default async function LiveMapPage() {
-  // Fetch initial GPS data
-  const vehicles = await getLatestVehicleLocations();
+export default async function LiveMapPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tagId?: string }>;
+}) {
+  // Await searchParams (Next.js 16 requirement)
+  const { tagId } = await searchParams;
+
+  // Fetch tags and GPS data in parallel
+  const [tags, vehicles] = await Promise.all([
+    listTags(),
+    getLatestVehicleLocations(tagId),
+  ]);
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
       {/* Header with title and legend */}
       <div className="mb-4 space-y-3">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Live Fleet Map</h1>
-          <p className="text-muted-foreground">
-            {vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} tracked
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Live Fleet Map</h1>
+            <p className="text-muted-foreground">
+              {vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} tracked
+            </p>
+          </div>
+          <TagFilter tags={tags} selectedTagId={tagId || null} />
         </div>
 
         {/* Status legend */}

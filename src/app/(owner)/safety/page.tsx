@@ -1,32 +1,45 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getFleetSafetyScore, getEventDistribution, getSafetyScoreTrend, getDriverRankings } from './actions';
+import { listTags } from '@/app/(owner)/actions/tags';
 import { SafetyScoreCard } from '@/components/safety/safety-score-card';
 import { EventDistributionChart } from '@/components/safety/event-distribution-chart';
 import { SafetyTrendChart } from '@/components/safety/safety-trend-chart';
 import { DriverLeaderboard } from '@/components/safety/driver-leaderboard';
 import { ThresholdConfig } from '@/components/safety/threshold-config';
+import { TagFilter } from '@/components/tags/tag-filter';
 
 // Force fresh data on every load
 export const fetchCache = 'force-no-store';
 
-export default async function SafetyPage() {
+export default async function SafetyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tagId?: string }>;
+}) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
+  // Await searchParams (Next.js 16 requirement)
+  const { tagId } = await searchParams;
+
   // Parallel data fetching for all dashboard sections
-  const [score, distribution, trends, rankings] = await Promise.all([
-    getFleetSafetyScore(),
-    getEventDistribution(),
-    getSafetyScoreTrend(30),
-    getDriverRankings(),
+  const [tags, score, distribution, trends, rankings] = await Promise.all([
+    listTags(),
+    getFleetSafetyScore(30, tagId),
+    getEventDistribution(30, tagId),
+    getSafetyScoreTrend(30, tagId),
+    getDriverRankings(30, tagId),
   ]);
 
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Safety Dashboard</h1>
-        <p className="text-muted-foreground">Fleet-wide safety performance and driver rankings</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Safety Dashboard</h1>
+          <p className="text-muted-foreground">Fleet-wide safety performance and driver rankings</p>
+        </div>
+        <TagFilter tags={tags} selectedTagId={tagId || null} />
       </div>
 
       {/* Top row: Score card + Event distribution */}
