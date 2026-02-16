@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 16 of 18 (Route Finance Foundation)
-Plan: 2 of 5 in current phase
+Plan: 3 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-16 — Completed 16-02-PLAN.md (Expense Line-Item CRUD)
+Last activity: 2026-02-16 — Completed 16-03-PLAN.md (Payment & Revenue Tracking)
 
 Progress: [███████████████████████████████████████████████████░░░] 83% (15/18 phases complete)
 
@@ -32,6 +32,7 @@ Progress: [███████████████████████
 **v3.0 metrics:**
 - Phase 16-01 (2026-02-16): Database foundation — 470s, 2 tasks, 4 files affected
 - Phase 16-02 (2026-02-16): Expense line-item CRUD — 368s, 3 tasks, 5 files affected
+- Phase 16-03 (2026-02-16): Payment & revenue tracking — 438s, 3 tasks, 7 files affected
 
 **Combined:**
 - Total: 15 phases complete, 16 in progress (34 plans + 1 new)
@@ -74,6 +75,15 @@ Progress: [███████████████████████
 - Calculated total operating cost client-side using parseFloat for display purposes (server handles accurate Decimal calculations)
 - Used Promise.all to fetch expenses and categories in parallel on route detail page for performance
 
+**Phase 16-03 decisions:**
+- Created centralized route-calculator.ts library for all financial math (single source of truth)
+- Used local state (useState) in PaymentForm to track status and conditionally render paidAt field
+- Applied green badge for PAID status, yellow/amber badge for PENDING status for visual distinction
+- Calculated margin as (profit / totalRevenue) * 100 with zero-division protection
+- Set default profitMarginThreshold to 10% (can be made configurable from Tenant model later)
+- Auto-set paidAt to current date when status changes to PAID without explicit date in server action
+- Used parseFloat ONLY for display formatting (Intl.NumberFormat), never for calculations
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -102,6 +112,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-02-PLAN.md (Expense Line-Item CRUD)
+Stopped at: Completed 16-03-PLAN.md (Payment & Revenue Tracking)
 Resume file: None
-Next action: `/gsd:execute-phase 16` to continue with 16-03-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
+Next action: `/gsd:execute-phase 16` to continue with 16-04-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
