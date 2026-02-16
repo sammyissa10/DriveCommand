@@ -2,12 +2,13 @@
 
 ## Overview
 
-DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts.
+DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads.
 
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** — Phases 1-10 (shipped 2026-02-15)
 - ✅ **v2.0 Samsara-Inspired Fleet Intelligence** — Phases 11-15 (shipped 2026-02-16)
+- 🚧 **v3.0 Route Finance & Driver Documents** — Phases 16-18 (in progress)
 
 ## Phases
 
@@ -46,7 +47,68 @@ See: [.planning/milestones/v2.0-ROADMAP.md] for full phase details.
 
 </details>
 
+### 🚧 v3.0 Route Finance & Driver Documents (In Progress)
+
+**Milestone Goal:** Add financial tracking to routes (expenses, payments, profit) with a consolidated route page UX, plus driver document upload capabilities for DOT compliance.
+
+**Phase Numbering:**
+- Integer phases (16, 17, 18): Planned milestone work
+- Decimal phases (16.1, 16.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 16: Route Finance Foundation** — Financial tracking with line-item expenses and profit calculation
+- [ ] **Phase 17: Unified Route View/Edit Page** — Single route page with edit mode toggle
+- [ ] **Phase 18: Driver Document Uploads** — Driver license, application, and general document uploads
+
+#### Phase 16: Route Finance Foundation
+**Goal**: Users can track route expenses, payments, and profitability with financial precision
+**Depends on**: Phase 15 (v2.0 complete)
+**Requirements**: FIN-01, FIN-02, FIN-03, FIN-04, FIN-05, FIN-06, FIN-07, FIN-08, FIN-09, FIN-10
+**Success Criteria** (what must be TRUE):
+  1. User can add, edit, and delete line-item expenses for a route with gas cost, driver salary, insurance, tolls, and custom categories
+  2. User can record payment/revenue for a route and track payment status (pending/paid)
+  3. User can see total operating cost (sum of all expenses) and profit calculation (payment - expenses) per route
+  4. User can create custom expense categories for their tenant and apply expense templates to pre-fill common costs
+  5. User can view cost per mile and compare against fleet average, and receives alerts when profit margin falls below threshold
+**Plans**: TBD
+
+Plans:
+- [ ] TBD
+
+#### Phase 17: Unified Route View/Edit Page
+**Goal**: Users can view and edit route details on a single page with seamless mode toggling
+**Depends on**: Phase 16
+**Requirements**: RUX-01, RUX-02, RUX-03
+**Success Criteria** (what must be TRUE):
+  1. User can view all route details (info, expenses, documents) on a single unified page
+  2. User can toggle between view mode and edit mode without leaving the page or losing context
+  3. User can edit route status and other route details from the unified page in edit mode
+  4. User is protected from losing unsaved changes when navigating away or switching modes
+**Plans**: TBD
+
+Plans:
+- [ ] TBD
+
+#### Phase 18: Driver Document Uploads
+**Goal**: Users can upload and manage driver compliance documents with expiry tracking
+**Depends on**: Phase 17
+**Requirements**: DOC-01, DOC-02, DOC-03, DOC-04, DOC-05
+**Success Criteria** (what must be TRUE):
+  1. User can upload driver license, driver application, and general documents to a driver profile
+  2. User can set expiry dates on driver documents during upload or edit
+  3. User can see expiry status warnings (valid, expiring soon, expired) on driver documents
+  4. User can upload large scanned files (50-100MB PDFs) with progress indicators and retry logic
+  5. User receives notifications 30/60/90 days before driver documents expire
+**Plans**: TBD
+
+Plans:
+- [ ] TBD
+
 ## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 16 → 17 → 18
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -65,3 +127,6 @@ See: [.planning/milestones/v2.0-ROADMAP.md] for full phase details.
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-16 |
+| 16. Route Finance Foundation | v3.0 | 0/TBD | Not started | - |
+| 17. Unified Route View/Edit Page | v3.0 | 0/TBD | Not started | - |
+| 18. Driver Document Uploads | v3.0 | 0/TBD | Not started | - |

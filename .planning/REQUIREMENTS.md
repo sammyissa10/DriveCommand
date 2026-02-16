@@ -70,30 +70,35 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FIN-01 | — | Pending |
-| FIN-02 | — | Pending |
-| FIN-03 | — | Pending |
-| FIN-04 | — | Pending |
-| FIN-05 | — | Pending |
-| FIN-06 | — | Pending |
-| FIN-07 | — | Pending |
-| FIN-08 | — | Pending |
-| FIN-09 | — | Pending |
-| FIN-10 | — | Pending |
-| RUX-01 | — | Pending |
-| RUX-02 | — | Pending |
-| RUX-03 | — | Pending |
-| DOC-01 | — | Pending |
-| DOC-02 | — | Pending |
-| DOC-03 | — | Pending |
-| DOC-04 | — | Pending |
-| DOC-05 | — | Pending |
+| FIN-01 | Phase 16 | Pending |
+| FIN-02 | Phase 16 | Pending |
+| FIN-03 | Phase 16 | Pending |
+| FIN-04 | Phase 16 | Pending |
+| FIN-05 | Phase 16 | Pending |
+| FIN-06 | Phase 16 | Pending |
+| FIN-07 | Phase 16 | Pending |
+| FIN-08 | Phase 16 | Pending |
+| FIN-09 | Phase 16 | Pending |
+| FIN-10 | Phase 16 | Pending |
+| RUX-01 | Phase 17 | Pending |
+| RUX-02 | Phase 17 | Pending |
+| RUX-03 | Phase 17 | Pending |
+| DOC-01 | Phase 18 | Pending |
+| DOC-02 | Phase 18 | Pending |
+| DOC-03 | Phase 18 | Pending |
+| DOC-04 | Phase 18 | Pending |
+| DOC-05 | Phase 18 | Pending |
 
 **Coverage:**
 - v3.0 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18 ⚠️
+- Mapped to phases: 18 (100% ✓)
+- Unmapped: 0
+
+**Phase breakdown:**
+- Phase 16 (Route Finance Foundation): 10 requirements
+- Phase 17 (Unified Route View/Edit Page): 3 requirements
+- Phase 18 (Driver Document Uploads): 5 requirements
 
 ---
 *Requirements defined: 2026-02-16*
-*Last updated: 2026-02-16 after initial definition*
+*Last updated: 2026-02-16 after v3.0 roadmap creation*
