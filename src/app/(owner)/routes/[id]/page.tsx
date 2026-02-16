@@ -3,10 +3,12 @@ import { ArrowLeft, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getRoute, updateRouteStatus } from '@/app/(owner)/actions/routes';
 import { listDocuments } from '@/app/(owner)/actions/documents';
+import { listExpenses, listExpenseCategories } from '@/app/(owner)/actions/expenses';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
 import { RouteDocumentsSection } from './route-documents-section';
+import { RouteExpensesSection } from '@/components/routes/route-expenses-section';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -22,8 +24,12 @@ export default async function RouteDetailPage({
     notFound();
   }
 
-  // Fetch documents for this route
-  const documents = await listDocuments('route', id);
+  // Fetch documents, expenses, and categories for this route
+  const [documents, expenses, categories] = await Promise.all([
+    listDocuments('route', id),
+    listExpenses(id),
+    listExpenseCategories(),
+  ]);
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(
@@ -71,6 +77,17 @@ export default async function RouteDetailPage({
           />
         }
       />
+
+      {/* Expenses Section */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Expenses</h2>
+        <RouteExpensesSection
+          routeId={route.id}
+          routeStatus={route.status}
+          categories={categories}
+          initialExpenses={expenses}
+        />
+      </div>
 
       {/* Files Section */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
