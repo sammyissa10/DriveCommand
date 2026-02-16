@@ -92,6 +92,14 @@ async function main() {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
+      // Delete financial records first (they depend on routes)
+      // Use raw SQL for robustness (handles model regeneration edge cases)
+      const paymentCount = await tx.$executeRaw`DELETE FROM "RoutePayment"`;
+      const expenseCount = await tx.$executeRaw`DELETE FROM "RouteExpense"`;
+      const templateItemCount = await tx.$executeRaw`DELETE FROM "ExpenseTemplateItem"`;
+      const templateCount = await tx.$executeRaw`DELETE FROM "ExpenseTemplate"`;
+      const categoryCount = await tx.$executeRaw`DELETE FROM "ExpenseCategory"`;
+
       const routeCount = await tx.route.deleteMany({});
       const invitationCount = await tx.driverInvitation.deleteMany({});
       const truckCount = await tx.truck.deleteMany({});
@@ -100,6 +108,11 @@ async function main() {
         where: { role: 'DRIVER' },
       });
 
+      console.log(`   Deleted ${paymentCount} route payments`);
+      console.log(`   Deleted ${expenseCount} route expenses`);
+      console.log(`   Deleted ${templateItemCount} expense template items`);
+      console.log(`   Deleted ${templateCount} expense templates`);
+      console.log(`   Deleted ${categoryCount} expense categories`);
       console.log(`   Deleted ${routeCount.count} routes`);
       console.log(`   Deleted ${invitationCount.count} driver invitations`);
       console.log(`   Deleted ${truckCount.count} trucks`);
@@ -295,7 +308,143 @@ async function main() {
   console.log(`   ✅ Created ${routes.length} routes\n`);
 
   // ===================================
-  // 4. Create Driver Invitations
+  // 4. Create Financial Data
+  // ===================================
+  console.log('💰 Creating financial data...');
+
+  // 4.1 Create system-default expense categories
+  console.log('   Creating expense categories...');
+  const categoryNames = ['Fuel', 'Driver Pay', 'Insurance', 'Tolls', 'Maintenance', 'Permits & Fees'];
+  const categories = [];
+
+  for (const name of categoryNames) {
+    const category = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      // Use raw SQL to avoid Prisma client caching issues
+      const result: any[] = await tx.$queryRaw`
+        INSERT INTO "ExpenseCategory" ("tenantId", "name", "isSystemDefault", "createdAt", "updatedAt")
+        VALUES (${tenant.id}::uuid, ${name}, true, NOW(), NOW())
+        ON CONFLICT ("tenantId", "name") DO UPDATE SET "updatedAt" = NOW()
+        RETURNING *
+      `;
+      return result[0];
+    });
+    categories.push(category);
+  }
+  console.log(`   ✅ Created ${categories.length} expense categories`);
+
+  // 4.2 Create an expense template
+  console.log('   Creating expense template...');
+  const fuelCategory = categories.find((c) => c.name === 'Fuel')!;
+  const driverPayCategory = categories.find((c) => c.name === 'Driver Pay')!;
+  const insuranceCategory = categories.find((c) => c.name === 'Insurance')!;
+
+  const template = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+    // Insert template using raw SQL
+    const templateResult: any[] = await tx.$queryRaw`
+      INSERT INTO "ExpenseTemplate" ("tenantId", "name", "createdAt", "updatedAt")
+      VALUES (${tenant.id}::uuid, 'Standard Route', NOW(), NOW())
+      ON CONFLICT ("tenantId", "name") DO UPDATE SET "updatedAt" = NOW()
+      RETURNING *
+    `;
+    const templateId = templateResult[0].id;
+
+    // Delete existing template items to avoid duplicates on re-run
+    await tx.$executeRaw`DELETE FROM "ExpenseTemplateItem" WHERE "templateId" = ${templateId}::uuid`;
+
+    // Insert template items
+    await tx.$executeRaw`
+      INSERT INTO "ExpenseTemplateItem" ("templateId", "categoryId", "amount", "description")
+      VALUES
+        (${templateId}::uuid, ${fuelCategory.id}::uuid, 250.00, 'Estimated fuel cost'),
+        (${templateId}::uuid, ${driverPayCategory.id}::uuid, 400.00, 'Standard driver pay'),
+        (${templateId}::uuid, ${insuranceCategory.id}::uuid, 75.00, 'Route insurance coverage')
+    `;
+
+    return templateResult[0];
+  });
+  console.log(`   ✅ Created expense template with 3 items`);
+
+  // 4.3 Create route expenses (for completed routes only)
+  console.log('   Creating route expenses...');
+  const completedRoutes = routes.filter((r) => r.status === 'COMPLETED');
+  const tollsCategory = categories.find((c) => c.name === 'Tolls')!;
+  let expenseCount = 0;
+
+  for (const route of completedRoutes) {
+    // Each completed route gets 2-4 random expenses
+    const numExpenses = faker.number.int({ min: 2, max: 4 });
+    const expenseCategories = faker.helpers.arrayElements(
+      [fuelCategory, driverPayCategory, tollsCategory, insuranceCategory],
+      numExpenses
+    );
+
+    for (const category of expenseCategories) {
+      let amount;
+      let description;
+
+      switch (category.name) {
+        case 'Fuel':
+          amount = faker.number.float({ min: 180, max: 350, fractionDigits: 2 });
+          description = 'Fuel purchase';
+          break;
+        case 'Driver Pay':
+          amount = faker.number.float({ min: 300, max: 500, fractionDigits: 2 });
+          description = 'Driver compensation';
+          break;
+        case 'Tolls':
+          amount = faker.number.float({ min: 15, max: 45, fractionDigits: 2 });
+          description = 'Highway tolls';
+          break;
+        case 'Insurance':
+          amount = faker.number.float({ min: 50, max: 100, fractionDigits: 2 });
+          description = 'Route insurance';
+          break;
+        default:
+          amount = faker.number.float({ min: 20, max: 100, fractionDigits: 2 });
+          description = 'Miscellaneous expense';
+      }
+
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        const notes = faker.datatype.boolean() ? faker.lorem.sentence() : null;
+        await tx.$executeRaw`
+          INSERT INTO "RouteExpense" ("tenantId", "routeId", "categoryId", "amount", "description", "notes", "createdAt", "updatedAt")
+          VALUES (${tenant.id}::uuid, ${route.id}::uuid, ${category.id}::uuid, ${amount}, ${description}, ${notes}, NOW(), NOW())
+        `;
+      });
+      expenseCount++;
+    }
+  }
+  console.log(`   ✅ Created ${expenseCount} route expenses`);
+
+  // 4.4 Create route payments (for completed routes)
+  console.log('   Creating route payments...');
+  let paymentCount = 0;
+
+  for (const route of completedRoutes) {
+    // Each completed route gets 1 payment
+    const amount = faker.number.float({ min: 800, max: 2500, fractionDigits: 2 });
+    const status = faker.helpers.arrayElement(['PENDING', 'PAID'] as const);
+    const paidAt = status === 'PAID' ? faker.date.recent({ days: 7 }) : null;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const notes = faker.datatype.boolean() ? 'Payment processed' : null;
+      await tx.$executeRaw`
+        INSERT INTO "RoutePayment" ("tenantId", "routeId", "amount", "status", "paidAt", "notes", "createdAt", "updatedAt")
+        VALUES (${tenant.id}::uuid, ${route.id}::uuid, ${amount}, ${status}::"PaymentStatus", ${paidAt}, ${notes}, NOW(), NOW())
+      `;
+    });
+    paymentCount++;
+  }
+  console.log(`   ✅ Created ${paymentCount} route payments\n`);
+
+  // ===================================
+  // 5. Create Driver Invitations
   // ===================================
   console.log('📧 Creating driver invitations...');
   const invitations = [];
@@ -341,10 +490,14 @@ async function main() {
   // ===================================
   console.log('============================');
   console.log('✅ Seeding Complete!\n');
-  console.log(`   Drivers:     ${drivers.length}`);
-  console.log(`   Trucks:      ${trucks.length}`);
-  console.log(`   Routes:      ${routes.length}`);
-  console.log(`   Invitations: ${invitations.length}\n`);
+  console.log(`   Drivers:           ${drivers.length}`);
+  console.log(`   Trucks:            ${trucks.length}`);
+  console.log(`   Routes:            ${routes.length}`);
+  console.log(`   Expense Categories: ${categories.length}`);
+  console.log(`   Expense Templates:  1`);
+  console.log(`   Route Expenses:    ${expenseCount}`);
+  console.log(`   Route Payments:    ${paymentCount}`);
+  console.log(`   Invitations:       ${invitations.length}\n`);
   console.log('💡 To seed fleet intelligence data (GPS, safety, fuel), run:');
   console.log('   npm run seed:fleet\n');
 }
