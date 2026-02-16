@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-15)
 
 **Core value:** Logistics owners can manage their entire operation — trucks, drivers, routes, and documents — from one platform, with each route showing the full picture on a single screen.
-**Current focus:** Phase 13 - Safety Analytics Dashboard (v2.0 Samsara-Inspired Fleet Intelligence)
+**Current focus:** Phase 14 - Fuel & Energy Dashboard (v2.0 Samsara-Inspired Fleet Intelligence)
 
 ## Current Position
 
-Phase: 13 of 15 (Safety Analytics Dashboard)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-16 — Completed 13-02 (safety dashboard UI with 5 chart components)
+Phase: 14 of 15 (Fuel & Energy Dashboard)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-16 — Completed 14-01 (fuel analytics data layer with CO2, MPG, idle time)
 
-Progress: [█████████████████████░░░░] 84% (27 plans complete, 10 v1.0 phases shipped)
+Progress: [█████████████████████░░░░] 87% (28 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -35,8 +35,9 @@ Progress: [█████████████████████░░
 
 | 13    | 01   | 4m 40s   | 2     | 9     | 2026-02-16 |
 | 13    | 02   | 3m 23s   | 2     | 6     | 2026-02-16 |
+| 14    | 01   | 2m 18s   | 2     | 2     | 2026-02-16 |
 
-**v2.0 totals:** 7 plans completed, 31m 45s total time
+**v2.0 totals:** 8 plans completed, 34m 3s total time
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent v2.0 decisions:
 - [Phase 13-02]: localStorage for threshold config persistence — Client-side settings for mock data context, no backend needed
 - [Phase 13-02]: Empty state handling for all charts — Explicit checks prevent broken Recharts rendering when data is empty
 - [Phase 13-02]: ChartContainer min-h pattern — All Recharts must have min-h-[300px] to prevent 0px height collapse
+- [Phase 14-01]: EPA standard CO2 factor (8.887 kg/gallon) for emissions tracking — Industry-standard methodology for fleet carbon footprint
+- [Phase 14-01]: Idle time derived from GPS speed data — Speed=0 for idle, speed>0 for moving, using 5-min GPS intervals for cost estimation
+- [Phase 14-01]: Fleet truck MPG thresholds — >=7 excellent, >=5.5 good, >=4 below average, <4 poor (based on typical fleet ranges)
 
 ### Pending Todos
 
@@ -94,5 +98,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 13-02-PLAN.md (safety dashboard UI with 5 chart components) - Phase 13 complete
+Stopped at: Completed 14-01-PLAN.md (fuel analytics data layer with CO2, MPG, idle time)
 Resume file: None
