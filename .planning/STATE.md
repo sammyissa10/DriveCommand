@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 16 of 18 (Route Finance Foundation)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-16 — Completed 16-03-PLAN.md (Payment & Revenue Tracking)
+Last activity: 2026-02-16 — Completed 16-04-PLAN.md (Expense Category and Template Management)
 
 Progress: [███████████████████████████████████████████████████░░░] 83% (15/18 phases complete)
 
@@ -33,6 +33,7 @@ Progress: [███████████████████████
 - Phase 16-01 (2026-02-16): Database foundation — 470s, 2 tasks, 4 files affected
 - Phase 16-02 (2026-02-16): Expense line-item CRUD — 368s, 3 tasks, 5 files affected
 - Phase 16-03 (2026-02-16): Payment & revenue tracking — 438s, 3 tasks, 7 files affected
+- Phase 16-04 (2026-02-16): Expense category and template management — 351s, 2 tasks, 10 files affected
 
 **Combined:**
 - Total: 15 phases complete, 16 in progress (34 plans + 1 new)
@@ -84,6 +85,15 @@ Progress: [███████████████████████
 - Auto-set paidAt to current date when status changes to PAID without explicit date in server action
 - Used parseFloat ONLY for display formatting (Intl.NumberFormat), never for calculations
 
+**Phase 16-04 decisions:**
+- Reused listCategories instead of creating duplicate listExpenseCategories action
+- Used JSON serialization in hidden field for dynamic template items (itemsJson)
+- Protected system default categories from deletion at action level (not just UI)
+- Hard delete for categories and templates (configuration, not financial records)
+- Applied applyTemplate in transaction to ensure atomicity of multi-expense creation
+- Used dropdown menu pattern for template selection on route detail page
+- Showed system default vs custom badges with blue/gray color distinction
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -112,6 +122,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-03-PLAN.md (Payment & Revenue Tracking)
+Stopped at: Completed 16-04-PLAN.md (Expense Category and Template Management)
 Resume file: None
-Next action: `/gsd:execute-phase 16` to continue with 16-04-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
+Next action: `/gsd:execute-phase 16` to continue with 16-05-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
