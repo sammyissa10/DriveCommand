@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Phase: 15 of 15 (Tags, Groups & Polish)
-Plan: 2 of 3 in current phase
+Plan: 3 of 3 in current phase
 Status: In Progress
-Last activity: 2026-02-16 — Completed 15-01 (tag data model and management UI)
+Last activity: 2026-02-16 — Completed 15-02 (dashboard tag filtering and loading states)
 
-Progress: [██████████████████████░░░] 93% (30 plans complete, 10 v1.0 phases shipped)
+Progress: [██████████████████████░░░] 94% (31 plans complete, 10 v1.0 phases shipped)
 
 ## Performance Metrics
 
@@ -38,8 +38,9 @@ Progress: [██████████████████████░
 | 14    | 01   | 2m 18s   | 2     | 2     | 2026-02-16 |
 | 14    | 02   | 3m 17s   | 2     | 6     | 2026-02-16 |
 | 15    | 01   | 7m 56s   | 2     | 12    | 2026-02-16 |
+| 15    | 02   | 7m 44s   | 2     | 5     | 2026-02-16 |
 
-**v2.0 totals:** 10 plans completed, 45m 16s total time
+**v2.0 totals:** 11 plans completed, 53m 0s total time
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ Recent v2.0 decisions:
 - [Phase 15-01]: 8 preset Tailwind colors for tag palette — Blue, green, red, yellow, purple, orange, pink, teal provide consistent color scheme for fleet organization
 - [Phase 15-01]: Tabbed assignment interface for trucks vs drivers — Reduces UI clutter with large fleets, separates entity types logically
 - [Phase 15-01]: Popover for tag assignment instead of dropdown — Better UX for selecting available tags, filters already-assigned tags per entity
+- [Phase 15-02]: Ternary conditional pattern for tag filtering queries — Complete query duplication for clarity vs. Prisma.sql/Prisma.empty template interpolation
+- [Phase 15-02]: Next.js loading.tsx for Suspense boundaries — Skeleton layouts match exact grid structure of dashboard pages for seamless UX transition
+- [Phase 15-02]: INNER JOIN TagAssignment pattern for tag-filtered queries — Efficient SQL filtering for tagged vehicle data across all dashboards
 
 ### Pending Todos
 
@@ -105,5 +109,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 15-01-PLAN.md (tag data model and management UI)
+Stopped at: Completed 15-02-PLAN.md (dashboard tag filtering and loading states)
 Resume file: None
