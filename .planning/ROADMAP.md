@@ -7,7 +7,7 @@ DriveCommand builds from secure multi-tenant foundations through entity manageme
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** - Phases 1-10 (shipped 2026-02-15)
-- 🚧 **v2.0 Samsara-Inspired Fleet Intelligence** - Phases 11-15 (in progress)
+- ✅ **v2.0 Samsara-Inspired Fleet Intelligence** - Phases 11-15 (shipped 2026-02-15)
 
 ## Phases
 
@@ -205,7 +205,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 12: Live GPS Map** - Leaflet map + vehicle markers + detail panel + route trails + clustering
 - [x] **Phase 13: Safety Analytics Dashboard** - Safety scores + event tracking + trends + rankings + thresholds
 - [x] **Phase 14: Fuel & Energy Dashboard** - MPG trends + cost analysis + emissions + idle time + rankings
-- [ ] **Phase 15: Tags/Groups & Polish** - Organization system + loading states + error handling + mobile responsive
+- [x] **Phase 15: Tags/Groups & Polish** - Organization system + loading states + error handling + mobile responsive
 
 ### Phase 11: Navigation & Data Foundation
 **Goal**: Modern sidebar navigation is operational and intelligence data models are ready for dashboard features
@@ -285,9 +285,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 15-01-PLAN.md — Tag/group data model, CRUD server actions, and tag management page with assignment UI
-- [ ] 15-02-PLAN.md — Dashboard tag filtering across Map, Safety, Fuel pages + loading/error states
-- [ ] 15-03-PLAN.md — Mobile responsive polish and bundle size verification/optimization
+- [x] 15-01-PLAN.md — Tag/group data model, CRUD server actions, and tag management page with assignment UI
+- [x] 15-02-PLAN.md — Dashboard tag filtering across Map, Safety, Fuel pages + loading/error states
+- [x] 15-03-PLAN.md — Mobile responsive polish and bundle size verification/optimization
 
 ## Progress
 
@@ -310,4 +310,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 15. Tags/Groups & Polish | v2.0 | 0/3 | Not started | - |
+| 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
