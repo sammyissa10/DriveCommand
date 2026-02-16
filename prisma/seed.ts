@@ -107,8 +107,11 @@ async function main() {
     });
   }
 
-  // Check for existing data (idempotent check)
-  const existingTruckCount = await prisma.truck.count();
+  // Check for existing data (idempotent check, bypass RLS)
+  const existingTruckCount = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.truck.count();
+  });
 
   if (existingTruckCount > 0 && !shouldReset) {
     console.log(`✅ Seed data already exists (${existingTruckCount} trucks found)`);
@@ -116,16 +119,40 @@ async function main() {
     return;
   }
 
-  // Fetch first active tenant
-  const tenant = await prisma.tenant.findFirst({
-    where: { isActive: true },
-    orderBy: { createdAt: 'asc' },
+  // Fetch or create tenant (bypass RLS for seed operations)
+  let tenant = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.tenant.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: 'asc' },
+    });
   });
 
   if (!tenant) {
-    throw new Error(
-      'No active tenant found. Sign up in the app first to create a tenant.'
-    );
+    console.log('📋 No tenant found — creating demo tenant and owner...');
+    tenant = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const t = await tx.tenant.create({
+        data: {
+          name: 'DriveCommand Demo',
+          slug: 'drivecommand-demo',
+          isActive: true,
+        },
+      });
+      // Create an owner user for the tenant
+      await tx.user.create({
+        data: {
+          tenantId: t.id,
+          clerkUserId: `demo_owner_${faker.string.alphanumeric(16)}`,
+          email: 'owner@drivecommand.demo',
+          role: 'OWNER',
+          firstName: 'Demo',
+          lastName: 'Owner',
+          isActive: true,
+        },
+      });
+      return t;
+    });
   }
 
   console.log(`📦 Seeding for tenant: ${tenant.name} (${tenant.id})\n`);
@@ -196,16 +223,19 @@ async function main() {
   const trucks = [];
 
   for (const model of TRUCK_MODELS) {
-    const truck = await prisma.truck.create({
-      data: {
-        tenantId: tenant.id,
-        make: model.make,
-        model: model.model,
-        year: model.year,
-        vin: generateVIN(),
-        licensePlate: generateLicensePlate(),
-        odometer: faker.number.int({ min: 50000, max: 250000 }),
-      },
+    const truck = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.truck.create({
+        data: {
+          tenantId: tenant.id,
+          make: model.make,
+          model: model.model,
+          year: model.year,
+          vin: generateVIN(),
+          licensePlate: generateLicensePlate(),
+          odometer: faker.number.int({ min: 50000, max: 250000 }),
+        },
+      });
     });
     trucks.push(truck);
   }
@@ -241,21 +271,24 @@ async function main() {
         ? faker.date.recent({ days: 10 })
         : faker.date.soon({ days: 14 });
 
-    const route = await prisma.route.create({
-      data: {
-        tenantId: tenant.id,
-        origin: pair.origin,
-        destination: pair.destination,
-        scheduledDate,
-        driverId: driver.id,
-        truckId: truck.id,
-        status,
-        completedAt,
-        notes:
-          i % 2 === 0
-            ? `${faker.commerce.product()} delivery - ${faker.number.int({ min: 5, max: 45 })}K lbs`
-            : undefined,
-      },
+    const route = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.route.create({
+        data: {
+          tenantId: tenant.id,
+          origin: pair.origin,
+          destination: pair.destination,
+          scheduledDate,
+          driverId: driver.id,
+          truckId: truck.id,
+          status,
+          completedAt,
+          notes:
+            i % 2 === 0
+              ? `${faker.commerce.product()} delivery - ${faker.number.int({ min: 5, max: 45 })}K lbs`
+              : undefined,
+        },
+      });
     });
     routes.push(route);
   }
