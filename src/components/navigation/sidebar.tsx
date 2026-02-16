@@ -12,6 +12,7 @@ import {
   Users,
   Route as RouteIcon,
   Wrench,
+  Tag,
 } from "lucide-react"
 import {
   Sidebar,
@@ -164,6 +165,18 @@ export function AppSidebar() {
                   <Link href="/routes">
                     <RouteIcon />
                     <span>Routes</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith("/tags")}
+                  tooltip="Tags"
+                >
+                  <Link href="/tags">
+                    <Tag />
+                    <span>Tags</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
