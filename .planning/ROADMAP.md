@@ -89,10 +89,11 @@ Plans:
   2. User can toggle between view mode and edit mode without leaving the page or losing context
   3. User can edit route status and other route details from the unified page in edit mode
   4. User is protected from losing unsaved changes when navigating away or switching modes
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD
+- [ ] 17-01-PLAN.md — Client components: unsaved changes hook, route edit section, unified page client wrapper
+- [ ] 17-02-PLAN.md — Server integration: unified page wiring, optimistic locking, old edit page redirect
 
 #### Phase 18: Driver Document Uploads
 **Goal**: Users can upload and manage driver compliance documents with expiry tracking
