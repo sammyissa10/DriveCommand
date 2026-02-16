@@ -266,7 +266,11 @@ Plans:
   3. Owner can view idle time percentage per vehicle (time spent idling vs. moving, with cost impact)
   4. Owner can view fleet fuel efficiency rankings (leaderboard showing top and bottom performers by MPG)
   5. Dashboard aggregations execute in <2 seconds with proper date filtering and database indexes
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Fuel calculator utility and 5 RLS-scoped server actions for fuel metrics, trends, emissions, idle time, and rankings
+- [ ] 14-02-PLAN.md — Fuel dashboard page with summary card, MPG trend chart, emissions card, idle time analysis, and fuel leaderboard
 
 ### Phase 15: Tags/Groups & Polish
 **Goal**: Fleet organization system is complete and all dashboards have production-ready UX
@@ -300,5 +304,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 11. Navigation & Data Foundation | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
+| 14. Fuel & Energy Dashboard | v2.0 | 0/2 | Not started | - |
 | 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
