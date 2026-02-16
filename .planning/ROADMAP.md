@@ -282,7 +282,12 @@ Plans:
   3. All dashboard pages display loading states (Suspense boundaries for data fetching) and error states (no data, empty states)
   4. All charts and maps are responsive on mobile devices (sidebar collapses to drawer, charts stack vertically)
   5. First-load JavaScript bundle size is under 500KB (verified with bundle analyzer, Leaflet and Recharts loaded via dynamic imports)
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Tag/group data model, CRUD server actions, and tag management page with assignment UI
+- [ ] 15-02-PLAN.md — Dashboard tag filtering across Map, Safety, Fuel pages + loading/error states
+- [ ] 15-03-PLAN.md — Mobile responsive polish and bundle size verification/optimization
 
 ## Progress
 
@@ -305,4 +310,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
+| 15. Tags/Groups & Polish | v2.0 | 0/3 | Not started | - |
