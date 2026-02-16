@@ -63,15 +63,21 @@ enum FuelType {
   LPG
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
 // Models
 model Tenant {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  slug      String?  @unique
-  timezone  String   @default("UTC")
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @updatedAt @db.Timestamptz
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String
+  slug                  String?  @unique
+  timezone              String   @default("UTC")
+  isActive              Boolean  @default(true)
+  profitMarginThreshold Decimal  @default(10) @db.Decimal(5, 2)
+  createdAt             DateTime @default(now()) @db.Timestamptz
+  updatedAt             DateTime @updatedAt @db.Timestamptz
 
   users              User[]
   trucks             Truck[]
@@ -86,6 +92,10 @@ model Tenant {
   fuelRecords        FuelRecord[]
   tags               Tag[]
   tagAssignments     TagAssignment[]
+  expenseCategories  ExpenseCategory[]
+  expenseTemplates   ExpenseTemplate[]
+  routeExpenses      RouteExpense[]
+  routePayments      RoutePayment[]
 }
 
 model User {
@@ -163,24 +173,29 @@ model DriverInvitation {
 }
 
 model Route {
-  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String      @db.Uuid
-  driverId      String      @db.Uuid
-  truckId       String      @db.Uuid
-  origin        String
-  destination   String
-  scheduledDate DateTime    @db.Timestamptz
-  status        RouteStatus @default(PLANNED)
-  notes         String?
-  completedAt   DateTime?   @db.Timestamptz
-  createdAt     DateTime    @default(now()) @db.Timestamptz
-  updatedAt     DateTime    @updatedAt @db.Timestamptz
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String      @db.Uuid
+  driverId       String      @db.Uuid
+  truckId        String      @db.Uuid
+  origin         String
+  destination    String
+  scheduledDate  DateTime    @db.Timestamptz
+  status         RouteStatus @default(PLANNED)
+  notes          String?
+  completedAt    DateTime?   @db.Timestamptz
+  version        Int         @default(1)
+  startOdometer  Int?
+  endOdometer    Int?
+  createdAt      DateTime    @default(now()) @db.Timestamptz
+  updatedAt      DateTime    @updatedAt @db.Timestamptz
 
-  tenant       Tenant        @relation(fields: [tenantId], references: [id])
-  driver       User          @relation(fields: [driverId], references: [id])
-  truck        Truck         @relation(fields: [truckId], references: [id])
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+  driver       User           @relation(fields: [driverId], references: [id])
+  truck        Truck          @relation(fields: [truckId], references: [id])
   documents    Document[]
   safetyEvents SafetyEvent[]
+  expenses     RouteExpense[]
+  payments     RoutePayment[]
 
   @@index([tenantId])
   @@index([driverId])
@@ -398,4 +413,91 @@ model TagAssignment {
   @@index([tagId])
   @@index([truckId])
   @@index([userId])
+}
+
+model ExpenseCategory {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @db.Uuid
+  name            String
+  isSystemDefault Boolean  @default(false)
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+
+  tenant        Tenant                @relation(fields: [tenantId], references: [id])
+  expenses      RouteExpense[]
+  templateItems ExpenseTemplateItem[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model RouteExpense {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @db.Uuid
+  routeId     String    @db.Uuid
+  categoryId  String    @db.Uuid
+  amount      Decimal   @db.Decimal(10, 2)
+  description String
+  notes       String?
+  deletedAt   DateTime? @db.Timestamptz
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id])
+  route    Route           @relation(fields: [routeId], references: [id])
+  category ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([tenantId])
+  @@index([routeId])
+  @@index([categoryId])
+  @@index([deletedAt])
+}
+
+model ExpenseTemplate {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String   @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  tenant Tenant                @relation(fields: [tenantId], references: [id])
+  items  ExpenseTemplateItem[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model ExpenseTemplateItem {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  templateId  String  @db.Uuid
+  categoryId  String  @db.Uuid
+  amount      Decimal @db.Decimal(10, 2)
+  description String
+
+  template ExpenseTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  category ExpenseCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([templateId])
+  @@index([categoryId])
+}
+
+model RoutePayment {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String        @db.Uuid
+  routeId   String        @db.Uuid
+  amount    Decimal       @db.Decimal(10, 2)
+  status    PaymentStatus @default(PENDING)
+  paidAt    DateTime?     @db.Timestamptz
+  notes     String?
+  deletedAt DateTime?     @db.Timestamptz
+  createdAt DateTime      @default(now()) @db.Timestamptz
+  updatedAt DateTime      @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  route  Route  @relation(fields: [routeId], references: [id])
+
+  @@index([tenantId])
+  @@index([routeId])
+  @@index([status])
+  @@index([deletedAt])
 }
