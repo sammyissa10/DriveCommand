@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "seed": "tsx prisma/seed.ts",
     "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts"
   },
   "dependencies": {
