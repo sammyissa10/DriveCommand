@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 16 of 18 (Route Finance Foundation)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: Executing
-Last activity: 2026-02-16 — Completed 16-01-PLAN.md (Database Foundation)
+Last activity: 2026-02-16 — Completed 16-02-PLAN.md (Expense Line-Item CRUD)
 
 Progress: [███████████████████████████████████████████████████░░░] 83% (15/18 phases complete)
 
@@ -31,6 +31,7 @@ Progress: [███████████████████████
 
 **v3.0 metrics:**
 - Phase 16-01 (2026-02-16): Database foundation — 470s, 2 tasks, 4 files affected
+- Phase 16-02 (2026-02-16): Expense line-item CRUD — 368s, 3 tasks, 5 files affected
 
 **Combined:**
 - Total: 15 phases complete, 16 in progress (34 plans + 1 new)
@@ -64,6 +65,15 @@ Progress: [███████████████████████
 - Implemented soft delete pattern (deletedAt) on RouteExpense and RoutePayment for audit trail
 - Added Route.version field for optimistic locking to prevent concurrent edit race conditions
 
+**Phase 16-02 decisions:**
+- Used Prisma.Decimal (imported from @/generated/prisma) for all money calculations to avoid floating-point errors
+- Enforced COMPLETED route protection at server action level (not just UI) for security
+- Used soft delete pattern (deletedAt check) in all query and mutation actions
+- Implemented inline edit/add forms in RouteExpensesSection instead of modal dialogs for better UX
+- Used window.confirm() for delete confirmation (simple and effective for v1)
+- Calculated total operating cost client-side using parseFloat for display purposes (server handles accurate Decimal calculations)
+- Used Promise.all to fetch expenses and categories in parallel on route detail page for performance
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -92,6 +102,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: Completed 16-01-PLAN.md (Database Foundation for Route Finance)
+Stopped at: Completed 16-02-PLAN.md (Expense Line-Item CRUD)
 Resume file: None
-Next action: `/gsd:execute-phase 16` to continue with 16-02-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
+Next action: `/gsd:execute-phase 16` to continue with 16-03-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
