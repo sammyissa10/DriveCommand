@@ -203,7 +203,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 11: Navigation & Data Foundation** - Sidebar navigation + GPS/Safety/Fuel data models + mock data seeding
 - [x] **Phase 12: Live GPS Map** - Leaflet map + vehicle markers + detail panel + route trails + clustering
-- [ ] **Phase 13: Safety Analytics Dashboard** - Safety scores + event tracking + trends + rankings + thresholds
+- [x] **Phase 13: Safety Analytics Dashboard** - Safety scores + event tracking + trends + rankings + thresholds
 - [ ] **Phase 14: Fuel & Energy Dashboard** - MPG trends + cost analysis + emissions + idle time + rankings
 - [ ] **Phase 15: Tags/Groups & Polish** - Organization system + loading states + error handling + mobile responsive
 
@@ -253,8 +253,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 13-01-PLAN.md — Install shadcn chart components, fix seed enums, create score calculator and safety server actions
-- [ ] 13-02-PLAN.md — Safety dashboard page with score card, event charts, trend line, leaderboard, and threshold config
+- [x] 13-01-PLAN.md — Install shadcn chart components, fix seed enums, create score calculator and safety server actions
+- [x] 13-02-PLAN.md — Safety dashboard page with score card, event charts, trend line, leaderboard, and threshold config
 
 ### Phase 14: Fuel & Energy Dashboard
 **Goal**: Owners can track fuel efficiency and environmental impact across the fleet
@@ -299,6 +299,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 10. Dashboard & System Admin | v1.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 11. Navigation & Data Foundation | v2.0 | 3/3 | ✓ Complete | 2026-02-15 |
 | 12. Live GPS Map | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
-| 13. Safety Analytics Dashboard | v2.0 | 0/2 | Not started | - |
+| 13. Safety Analytics Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 14. Fuel & Energy Dashboard | v2.0 | 0/TBD | Not started | - |
 | 15. Tags/Groups & Polish | v2.0 | 0/TBD | Not started | - |
