@@ -214,13 +214,50 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Owner provisioning flow: Create new tenant and user in a transaction
+      // Owner provisioning flow: Join existing tenant (if unowned) or create new one
       const result = await prisma.$transaction(async (tx) => {
         // Bypass RLS for provisioning (User table has FORCE ROW LEVEL SECURITY)
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-        // Create tenant
-        const tenant = await tx.tenant.create({
+        // Check if there's an existing tenant with only a demo owner (from seed data)
+        const existingTenant = await tx.tenant.findFirst({
+          where: { isActive: true },
+          include: {
+            users: {
+              where: { role: 'OWNER', isActive: true },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
+        });
+
+        let tenant;
+        if (existingTenant && existingTenant.users.length > 0 && existingTenant.users[0].clerkUserId.startsWith('demo_owner_')) {
+          // Take over the demo tenant: update the demo owner to the real Clerk user
+          tenant = existingTenant;
+          await tx.user.update({
+            where: { id: existingTenant.users[0].id },
+            data: {
+              clerkUserId,
+              email,
+              firstName: evt.data.first_name || null,
+              lastName: evt.data.last_name || null,
+            },
+          });
+
+          // Rename tenant if company name provided
+          if (public_metadata?.companyName) {
+            await tx.tenant.update({
+              where: { id: tenant.id },
+              data: { name: public_metadata.companyName as string },
+            });
+          }
+
+          const user = existingTenant.users[0];
+          return { tenant, user };
+        }
+
+        // No demo tenant found — create a new one
+        tenant = await tx.tenant.create({
           data: {
             name: (public_metadata?.companyName as string) || email.split('@')[0] || 'My Company',
             timezone: (public_metadata?.timezone as string) || 'UTC',
