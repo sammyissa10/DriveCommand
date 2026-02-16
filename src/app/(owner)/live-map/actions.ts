@@ -2,7 +2,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { VehicleLocation } from '@/lib/maps/map-utils';
 
 /**
@@ -13,31 +13,31 @@ import { VehicleLocation } from '@/lib/maps/map-utils';
 export async function getLatestVehicleLocations(tagId?: string): Promise<VehicleLocation[]> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
 
-  // Build query with conditional tag filter
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT DISTINCT ON (gps."truckId")
-          gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-          t.make, t.model, t."licensePlate"
-        FROM "GPSLocation" gps
-        INNER JOIN "Truck" t ON gps."truckId" = t.id
-        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-        WHERE gps."tenantId" = ${tenantId}::uuid
-        ORDER BY gps."truckId", gps.timestamp DESC
-      `
-    : await db.$queryRaw`
-        SELECT DISTINCT ON (gps."truckId")
-          gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-          t.make, t.model, t."licensePlate"
-        FROM "GPSLocation" gps
-        INNER JOIN "Truck" t ON gps."truckId" = t.id
-        WHERE gps."tenantId" = ${tenantId}::uuid
-        ORDER BY gps."truckId", gps.timestamp DESC
-      `;
+  // Use tenantRawQuery to ensure RLS context is set for raw SQL
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT DISTINCT ON (gps."truckId")
+            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
+            t.make, t.model, t."licensePlate"
+          FROM "GPSLocation" gps
+          INNER JOIN "Truck" t ON gps."truckId" = t.id
+          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+          WHERE gps."tenantId" = ${tenantId}::uuid
+          ORDER BY gps."truckId", gps.timestamp DESC
+        `
+      : tx.$queryRaw`
+          SELECT DISTINCT ON (gps."truckId")
+            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
+            t.make, t.model, t."licensePlate"
+          FROM "GPSLocation" gps
+          INNER JOIN "Truck" t ON gps."truckId" = t.id
+          WHERE gps."tenantId" = ${tenantId}::uuid
+          ORDER BY gps."truckId", gps.timestamp DESC
+        `
+  );
 
   // Map results and convert Decimal lat/lng to Number
   return (results as any[]).map((row) => ({

@@ -2,7 +2,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import {
   calculateCO2Emissions,
   calculateMPG,
@@ -20,32 +20,31 @@ import {
 export async function getFleetFuelSummary(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL to aggregate fuel records
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          SUM(quantity)::float as "totalGallons",
-          SUM("totalCost")::float as "totalCost",
-          MAX(odometer) - MIN(odometer) as "totalMiles",
-          COUNT(*)::int as "fillUpCount"
-        FROM "FuelRecord" fr
-        WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
-          AND fr."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-      `
-    : await db.$queryRaw`
-        SELECT
-          SUM(quantity)::float as "totalGallons",
-          SUM("totalCost")::float as "totalCost",
-          MAX(odometer) - MIN(odometer) as "totalMiles",
-          COUNT(*)::int as "fillUpCount"
-        FROM "FuelRecord" fr
-        WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            SUM(quantity)::float as "totalGallons",
+            SUM("totalCost")::float as "totalCost",
+            MAX(odometer) - MIN(odometer) as "totalMiles",
+            COUNT(*)::int as "fillUpCount"
+          FROM "FuelRecord" fr
+          WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
+            AND fr."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+        `
+      : tx.$queryRaw`
+          SELECT
+            SUM(quantity)::float as "totalGallons",
+            SUM("totalCost")::float as "totalCost",
+            MAX(odometer) - MIN(odometer) as "totalMiles",
+            COUNT(*)::int as "fillUpCount"
+          FROM "FuelRecord" fr
+          WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
+        `
+  );
 
   const row = (results as any[])[0];
 
@@ -80,36 +79,35 @@ export async function getFleetFuelSummary(daysBack: number = 30, tagId?: string)
 export async function getFuelEfficiencyTrend(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL: Daily fuel efficiency by aggregating fill-ups per day
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          DATE(timestamp) as date,
-          SUM(quantity)::float as gallons,
-          SUM("totalCost")::float as cost,
-          MAX(odometer) - MIN(odometer) as miles
-        FROM "FuelRecord" fr
-        WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
-          AND fr."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-        GROUP BY DATE(timestamp)
-        ORDER BY date ASC
-      `
-    : await db.$queryRaw`
-        SELECT
-          DATE(timestamp) as date,
-          SUM(quantity)::float as gallons,
-          SUM("totalCost")::float as cost,
-          MAX(odometer) - MIN(odometer) as miles
-        FROM "FuelRecord" fr
-        WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
-        GROUP BY DATE(timestamp)
-        ORDER BY date ASC
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            DATE(timestamp) as date,
+            SUM(quantity)::float as gallons,
+            SUM("totalCost")::float as cost,
+            MAX(odometer) - MIN(odometer) as miles
+          FROM "FuelRecord" fr
+          WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
+            AND fr."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+          GROUP BY DATE(timestamp)
+          ORDER BY date ASC
+        `
+      : tx.$queryRaw`
+          SELECT
+            DATE(timestamp) as date,
+            SUM(quantity)::float as gallons,
+            SUM("totalCost")::float as cost,
+            MAX(odometer) - MIN(odometer) as miles
+          FROM "FuelRecord" fr
+          WHERE fr."tenantId" = ${tenantId}::uuid AND fr.timestamp >= ${cutoff}
+          GROUP BY DATE(timestamp)
+          ORDER BY date ASC
+        `
+  );
 
   // Initialize all dates in range with zeros
   const dateMap = new Map<
@@ -158,42 +156,41 @@ export async function getFuelEfficiencyTrend(daysBack: number = 30, tagId?: stri
 export async function getCO2Emissions(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL: Per-truck fuel consumption for CO2 calculation
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
-          COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost"
-        FROM "Truck" t
-        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-        LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY "totalGallons" DESC NULLS LAST
-      `
-    : await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
-          COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost"
-        FROM "Truck" t
-        LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY "totalGallons" DESC NULLS LAST
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
+            COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost"
+          FROM "Truck" t
+          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+          LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY "totalGallons" DESC NULLS LAST
+        `
+      : tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
+            COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost"
+          FROM "Truck" t
+          LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY "totalGallons" DESC NULLS LAST
+        `
+  );
 
   let fleetTotalCO2 = 0;
   let fleetTotalGallons = 0;
@@ -233,42 +230,41 @@ export async function getCO2Emissions(daysBack: number = 30, tagId?: string) {
 export async function getIdleTimeAnalysis(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL on GPSLocation: Count total points, idle points, and moving points
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COUNT(g.id)::int as "totalPoints",
-          SUM(CASE WHEN g.speed IS NOT NULL AND g.speed = 0 THEN 1 ELSE 0 END)::int as "idlePoints",
-          SUM(CASE WHEN g.speed IS NOT NULL AND g.speed > 0 THEN 1 ELSE 0 END)::int as "movingPoints"
-        FROM "Truck" t
-        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-        LEFT JOIN "GPSLocation" g ON t.id = g."truckId" AND g.timestamp >= ${cutoff} AND g."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-      `
-    : await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COUNT(g.id)::int as "totalPoints",
-          SUM(CASE WHEN g.speed IS NOT NULL AND g.speed = 0 THEN 1 ELSE 0 END)::int as "idlePoints",
-          SUM(CASE WHEN g.speed IS NOT NULL AND g.speed > 0 THEN 1 ELSE 0 END)::int as "movingPoints"
-        FROM "Truck" t
-        LEFT JOIN "GPSLocation" g ON t.id = g."truckId" AND g.timestamp >= ${cutoff} AND g."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COUNT(g.id)::int as "totalPoints",
+            SUM(CASE WHEN g.speed IS NOT NULL AND g.speed = 0 THEN 1 ELSE 0 END)::int as "idlePoints",
+            SUM(CASE WHEN g.speed IS NOT NULL AND g.speed > 0 THEN 1 ELSE 0 END)::int as "movingPoints"
+          FROM "Truck" t
+          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+          LEFT JOIN "GPSLocation" g ON t.id = g."truckId" AND g.timestamp >= ${cutoff} AND g."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+        `
+      : tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COUNT(g.id)::int as "totalPoints",
+            SUM(CASE WHEN g.speed IS NOT NULL AND g.speed = 0 THEN 1 ELSE 0 END)::int as "idlePoints",
+            SUM(CASE WHEN g.speed IS NOT NULL AND g.speed > 0 THEN 1 ELSE 0 END)::int as "movingPoints"
+          FROM "Truck" t
+          LEFT JOIN "GPSLocation" g ON t.id = g."truckId" AND g.timestamp >= ${cutoff} AND g."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+        `
+  );
 
   // Calculate idle percent and cost for each truck
   const trucks = (results as any[]).map((row) => {
@@ -312,46 +308,45 @@ export async function getIdleTimeAnalysis(daysBack: number = 30, tagId?: string)
 export async function getFuelEfficiencyRankings(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL: Per-truck MPG ranking using LEFT JOIN
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
-          COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost",
-          COALESCE(MAX(fr.odometer) - MIN(fr.odometer), 0)::int as "totalMiles",
-          COUNT(fr.id)::int as "fillUpCount"
-        FROM "Truck" t
-        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-        LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY "totalMiles" DESC NULLS LAST
-      `
-    : await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
-          COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost",
-          COALESCE(MAX(fr.odometer) - MIN(fr.odometer), 0)::int as "totalMiles",
-          COUNT(fr.id)::int as "fillUpCount"
-        FROM "Truck" t
-        LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY "totalMiles" DESC NULLS LAST
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
+            COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost",
+            COALESCE(MAX(fr.odometer) - MIN(fr.odometer), 0)::int as "totalMiles",
+            COUNT(fr.id)::int as "fillUpCount"
+          FROM "Truck" t
+          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+          LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY "totalMiles" DESC NULLS LAST
+        `
+      : tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(fr.quantity), 0)::float as "totalGallons",
+            COALESCE(SUM(fr."totalCost"), 0)::float as "totalCost",
+            COALESCE(MAX(fr.odometer) - MIN(fr.odometer), 0)::int as "totalMiles",
+            COUNT(fr.id)::int as "fillUpCount"
+          FROM "Truck" t
+          LEFT JOIN "FuelRecord" fr ON t.id = fr."truckId" AND fr.timestamp >= ${cutoff} AND fr."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY "totalMiles" DESC NULLS LAST
+        `
+  );
 
   // Calculate MPG and cost per mile for each truck
   const rankings = (results as any[]).map((row) => {

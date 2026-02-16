@@ -2,7 +2,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { SafetyEventSeverity, SafetyEventType } from '@/generated/prisma';
 import { calculateSafetyScore } from '@/lib/safety/score-calculator';
 
@@ -50,26 +50,25 @@ const SEVERITY_COLORS: Record<SafetyEventSeverity, string> = {
 export async function getFleetSafetyScore(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL to get event counts by severity
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-          AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-        GROUP BY severity
-      `
-    : await db.$queryRaw`
-        SELECT severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-        GROUP BY severity
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+            AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+          GROUP BY severity
+        `
+      : tx.$queryRaw`
+          SELECT severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+          GROUP BY severity
+        `
+  );
 
   // Build counts object with all severities initialized to 0
   const counts: Record<SafetyEventSeverity, number> = {
@@ -107,45 +106,45 @@ export async function getFleetSafetyScore(daysBack: number = 30, tagId?: string)
 export async function getEventDistribution(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Get distribution by event type
-  // @ts-ignore - Raw query typing
-  const typeResults = tagId
-    ? await db.$queryRaw`
-        SELECT "eventType", COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-          AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-        GROUP BY "eventType"
-        ORDER BY count DESC
-      `
-    : await db.$queryRaw`
-        SELECT "eventType", COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-        GROUP BY "eventType"
-        ORDER BY count DESC
-      `;
+  // Run both queries in the same tenant-scoped transaction
+  const { typeResults, severityResults } = await tenantRawQuery(async (tx) => {
+    const typeResults = tagId
+      ? await tx.$queryRaw`
+          SELECT "eventType", COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+            AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+          GROUP BY "eventType"
+          ORDER BY count DESC
+        `
+      : await tx.$queryRaw`
+          SELECT "eventType", COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+          GROUP BY "eventType"
+          ORDER BY count DESC
+        `;
 
-  // Get distribution by severity
-  // @ts-ignore - Raw query typing
-  const severityResults = tagId
-    ? await db.$queryRaw`
-        SELECT severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-          AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-        GROUP BY severity
-      `
-    : await db.$queryRaw`
-        SELECT severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-        GROUP BY severity
-      `;
+    const severityResults = tagId
+      ? await tx.$queryRaw`
+          SELECT severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+            AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+          GROUP BY severity
+        `
+      : await tx.$queryRaw`
+          SELECT severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+          GROUP BY severity
+        `;
+
+    return { typeResults, severityResults };
+  });
 
   // Map type results with human-readable labels
   const byType = (typeResults as any[]).map((row) => ({
@@ -175,28 +174,27 @@ export async function getEventDistribution(daysBack: number = 30, tagId?: string
 export async function getSafetyScoreTrend(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Raw SQL to get daily event counts by severity
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT DATE(timestamp) as date, severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-          AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
-        GROUP BY DATE(timestamp), severity
-        ORDER BY date ASC
-      `
-    : await db.$queryRaw`
-        SELECT DATE(timestamp) as date, severity, COUNT(*)::int as count
-        FROM "SafetyEvent" se
-        WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
-        GROUP BY DATE(timestamp), severity
-        ORDER BY date ASC
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT DATE(timestamp) as date, severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+            AND se."truckId" IN (SELECT "truckId" FROM "TagAssignment" WHERE "tagId" = ${tagId}::uuid AND "truckId" IS NOT NULL)
+          GROUP BY DATE(timestamp), severity
+          ORDER BY date ASC
+        `
+      : tx.$queryRaw`
+          SELECT DATE(timestamp) as date, severity, COUNT(*)::int as count
+          FROM "SafetyEvent" se
+          WHERE se."tenantId" = ${tenantId}::uuid AND se.timestamp >= ${cutoff}
+          GROUP BY DATE(timestamp), severity
+          ORDER BY date ASC
+        `
+  );
 
   // Initialize all dates in the range with zero counts
   const dateMap = new Map<
@@ -252,48 +250,47 @@ export async function getSafetyScoreTrend(daysBack: number = 30, tagId?: string)
 export async function getDriverRankings(daysBack: number = 30, tagId?: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const db = await getTenantPrisma();
   const tenantId = await requireTenantId();
   const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000);
 
-  // Aggregate by truck with LEFT JOIN to include trucks with zero events
-  // @ts-ignore - Raw query typing
-  const results = tagId
-    ? await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(CASE WHEN se.severity = 'LOW' THEN 1 ELSE 0 END), 0)::int as low_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'MEDIUM' THEN 1 ELSE 0 END), 0)::int as medium_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'HIGH' THEN 1 ELSE 0 END), 0)::int as high_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'CRITICAL' THEN 1 ELSE 0 END), 0)::int as critical_count,
-          COUNT(se.id)::int as total_events
-        FROM "Truck" t
-        INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-        LEFT JOIN "SafetyEvent" se ON t.id = se."truckId" AND se.timestamp >= ${cutoff} AND se."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY total_events ASC
-      `
-    : await db.$queryRaw`
-        SELECT
-          t.id as "truckId",
-          t.make,
-          t.model,
-          t."licensePlate",
-          COALESCE(SUM(CASE WHEN se.severity = 'LOW' THEN 1 ELSE 0 END), 0)::int as low_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'MEDIUM' THEN 1 ELSE 0 END), 0)::int as medium_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'HIGH' THEN 1 ELSE 0 END), 0)::int as high_count,
-          COALESCE(SUM(CASE WHEN se.severity = 'CRITICAL' THEN 1 ELSE 0 END), 0)::int as critical_count,
-          COUNT(se.id)::int as total_events
-        FROM "Truck" t
-        LEFT JOIN "SafetyEvent" se ON t.id = se."truckId" AND se.timestamp >= ${cutoff} AND se."tenantId" = ${tenantId}::uuid
-        WHERE t."tenantId" = ${tenantId}::uuid
-        GROUP BY t.id, t.make, t.model, t."licensePlate"
-        ORDER BY total_events ASC
-      `;
+  const results = await tenantRawQuery((tx) =>
+    tagId
+      ? tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(CASE WHEN se.severity = 'LOW' THEN 1 ELSE 0 END), 0)::int as low_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'MEDIUM' THEN 1 ELSE 0 END), 0)::int as medium_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'HIGH' THEN 1 ELSE 0 END), 0)::int as high_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'CRITICAL' THEN 1 ELSE 0 END), 0)::int as critical_count,
+            COUNT(se.id)::int as total_events
+          FROM "Truck" t
+          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
+          LEFT JOIN "SafetyEvent" se ON t.id = se."truckId" AND se.timestamp >= ${cutoff} AND se."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY total_events ASC
+        `
+      : tx.$queryRaw`
+          SELECT
+            t.id as "truckId",
+            t.make,
+            t.model,
+            t."licensePlate",
+            COALESCE(SUM(CASE WHEN se.severity = 'LOW' THEN 1 ELSE 0 END), 0)::int as low_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'MEDIUM' THEN 1 ELSE 0 END), 0)::int as medium_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'HIGH' THEN 1 ELSE 0 END), 0)::int as high_count,
+            COALESCE(SUM(CASE WHEN se.severity = 'CRITICAL' THEN 1 ELSE 0 END), 0)::int as critical_count,
+            COUNT(se.id)::int as total_events
+          FROM "Truck" t
+          LEFT JOIN "SafetyEvent" se ON t.id = se."truckId" AND se.timestamp >= ${cutoff} AND se."tenantId" = ${tenantId}::uuid
+          WHERE t."tenantId" = ${tenantId}::uuid
+          GROUP BY t.id, t.make, t.model, t."licensePlate"
+          ORDER BY total_events ASC
+        `
+  );
 
   // Calculate score per truck
   const rankings = (results as any[]).map((row) => {

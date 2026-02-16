@@ -33,3 +33,22 @@ export async function getTenantPrisma() {
   const tenantId = await requireTenantId();
   return prisma.$extends(withTenantRLS(tenantId));
 }
+
+/**
+ * Execute a callback containing raw SQL queries ($queryRaw / $executeRaw)
+ * within a transaction that has the tenant RLS context set.
+ *
+ * The Prisma RLS extension (withTenantRLS) only intercepts model-level operations
+ * ($allModels.$allOperations). Raw queries bypass it, so RLS blocks all rows.
+ * This helper wraps raw queries in a transaction that sets app.current_tenant_id first.
+ *
+ * @param fn - Callback receiving a transaction client to run raw queries on
+ * @returns The result of the callback
+ */
+export async function tenantRawQuery<T>(fn: (tx: any) => Promise<T>): Promise<T> {
+  const tenantId = await requireTenantId();
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
+    return fn(tx);
+  });
+}
