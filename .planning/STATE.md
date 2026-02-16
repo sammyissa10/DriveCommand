@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 16 of 18 (Route Finance Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-02-16 — v3.0 roadmap created with 3 phases (16-18)
+Plan: 1 of 5 in current phase
+Status: Executing
+Last activity: 2026-02-16 — Completed 16-01-PLAN.md (Database Foundation)
 
 Progress: [███████████████████████████████████████████████████░░░] 83% (15/18 phases complete)
 
@@ -29,9 +29,12 @@ Progress: [███████████████████████
 - Files modified: 103
 - Lines added: 19,316
 
+**v3.0 metrics:**
+- Phase 16-01 (2026-02-16): Database foundation — 470s, 2 tasks, 4 files affected
+
 **Combined:**
-- Total: 15 phases, 34 plans
-- Total project LOC: 71,160 TypeScript
+- Total: 15 phases complete, 16 in progress (34 plans + 1 new)
+- Total project LOC: 71,160 TypeScript + financial schema
 
 **Quick tasks:**
 - Quick-1 (2026-02-16): Management pages bugs + seed data — 457s, 3 tasks, 7 files affected
@@ -53,6 +56,14 @@ Progress: [███████████████████████
 - Moved redirect() calls outside try/catch blocks to avoid catching NEXT_REDIRECT errors
 - Created comprehensive seed script with production-realistic data (names, cities, license plates)
 
+**Phase 16-01 decisions:**
+- Used Decimal(10,2) for all money amounts matching existing FuelRecord pattern
+- Applied RLS tenant_isolation_policy to all financial tables with tenantId
+- ExpenseTemplateItem does not have RLS directly (inherits through ExpenseTemplate)
+- Used raw SQL for financial seed data to avoid tsx Prisma client caching issues
+- Implemented soft delete pattern (deletedAt) on RouteExpense and RoutePayment for audit trail
+- Added Route.version field for optimistic locking to prevent concurrent edit race conditions
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -66,6 +77,10 @@ None.
 - Financial records MUST use soft delete only (never hard delete) for audit trail preservation
 - s3Key validation MUST enforce tenant isolation for driver document uploads
 
+**Phase 16 Notes:**
+- .env file created by copying .env.local (not committed - contains secrets)
+- tsx caching issue with Prisma client worked around using raw SQL in seed script
+
 None blocking immediate progress.
 
 ### Quick Tasks Completed
@@ -77,6 +92,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-16
-Stopped at: v3.0 roadmap created (Phases 16-18), ready for Phase 16 planning
+Stopped at: Completed 16-01-PLAN.md (Database Foundation for Route Finance)
 Resume file: None
-Next action: `/gsd:plan-phase 16` to create execution plan for Route Finance Foundation
+Next action: `/gsd:execute-phase 16` to continue with 16-02-PLAN.md (or `/gsd:plan-phase 16` if plans need adjustment)
