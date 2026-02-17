@@ -155,6 +155,9 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   const notes = formData.get('notes') as string;
   if (notes !== null && notes !== undefined) rawData.notes = notes;
 
+  // Parse version field for optimistic locking
+  const versionStr = formData.get('version') as string;
+
   // Validate with Zod schema
   const result = routeUpdateSchema.safeParse(rawData);
 
@@ -224,13 +227,39 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
     if (result.data.truckId) updateData.truckId = result.data.truckId;
     if (result.data.notes !== undefined) updateData.notes = result.data.notes;
 
-    // Update route
-    const route = await prisma.route.update({
-      where: { id },
-      data: updateData,
-    });
+    // If version field is provided, use optimistic locking
+    if (versionStr) {
+      const currentVersion = parseInt(versionStr, 10);
+      if (isNaN(currentVersion)) {
+        return { error: 'Invalid version field. Please refresh the page.' };
+      }
 
-    updatedRouteId = route.id;
+      try {
+        const route = await prisma.route.update({
+          where: { id, version: currentVersion },
+          data: {
+            ...updateData,
+            version: { increment: 1 },
+          },
+        });
+        updatedRouteId = route.id;
+      } catch (error: any) {
+        // Prisma P2025 = Record to update not found (version mismatch)
+        if (error?.code === 'P2025') {
+          return {
+            error: 'This route was modified by another user. Please refresh the page and try again.',
+          };
+        }
+        throw error;
+      }
+    } else {
+      // Fallback: update without version check (backwards compatibility)
+      const route = await prisma.route.update({
+        where: { id },
+        data: updateData,
+      });
+      updatedRouteId = route.id;
+    }
   } catch (error) {
     console.error('Failed to update route:', error);
     return { error: 'Failed to update route. Please try again.' };
