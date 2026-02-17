@@ -22,6 +22,7 @@ interface RouteFormProps {
     licensePlate: string;
   }>;
   submitLabel: string;
+  extraHiddenFields?: Record<string, string | number>;
 }
 
 const inputClass = "mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors";
@@ -33,6 +34,7 @@ export function RouteForm({
   drivers,
   trucks,
   submitLabel,
+  extraHiddenFields,
 }: RouteFormProps) {
   const [state, formAction, isPending] = useActionState(action, {
     success: false,
@@ -40,6 +42,11 @@ export function RouteForm({
 
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
+      {/* Extra hidden fields (e.g., version for optimistic locking) */}
+      {extraHiddenFields && Object.entries(extraHiddenFields).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={String(value)} />
+      ))}
+
       {/* Origin & Destination */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Route Details</h3>
