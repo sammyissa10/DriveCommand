@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 18 of 18 (Driver Document Uploads)
-Plan: 1/3 complete
+Plan: 2/3 complete
 Status: In Progress
-Last activity: 2026-02-17 — Completed 18-01-PLAN.md: Driver Document Storage Foundation
+Last activity: 2026-02-17 — Completed 18-02-PLAN.md: Upload UI Components
 
 Progress: [█████████████████████████████████████████████████████░░] 94% (17/18 phases complete)
 
@@ -38,6 +38,7 @@ Progress: [███████████████████████
 - Phase 17-01 (2026-02-17): Client components for unified route view/edit — 188s, 2 tasks, 4 files affected
 - Phase 17-02 (2026-02-17): Server integration with optimistic locking — 220s, 2 tasks, 3 files affected
 - Phase 18-01 (2026-02-17): Driver document storage foundation — 373s, 2 tasks, 10 files affected
+- Phase 18-02 (2026-02-17): Upload UI components — 396s, 2 tasks, 6 files affected
 
 **Combined:**
 - Total: 17 phases complete, 42 plans
@@ -64,6 +65,13 @@ Progress: [███████████████████████
 - Enforce defense-in-depth s3Key validation in 4 locations (tenant prefix + drivers category check)
 - Abort multipart upload on validation failure to prevent orphaned parts in R2
 - Make all new Document fields optional for backwards compatibility with existing truck/route documents
+
+**Phase 18-02 decisions:**
+- Used date-fns for expiry date calculations (differenceInDays) - clean date math API
+- XMLHttpRequest instead of fetch for part uploads - required for progress event tracking
+- 5MB threshold for small vs multipart uploads - balances simplicity with large file support
+- Inline edit form for document metadata - faster than modal dialog UX
+- 30-day threshold for "expiring soon" status - standard compliance warning window
 
 **Quick-1 decisions:**
 - Wrapped ALL DriverInvitation queries in webhook with RLS-bypassed transactions (3 locations)
@@ -157,6 +165,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 18-01-PLAN.md: Driver Document Storage Foundation
+Stopped at: Completed 18-02-PLAN.md: Upload UI Components
 Resume file: None
-Next action: `/gsd:execute-phase 18` to continue with 18-02-PLAN.md (Upload UI Components)
+Next action: `/gsd:execute-phase 18` to continue with 18-03-PLAN.md (Expiry Notifications)
