@@ -1,17 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Truck, MapPin, Shield, Fuel, ArrowRight } from "lucide-react";
 
-export default async function Home() {
-  const { userId } = await auth();
-
-  // Redirect authenticated users to dashboard
-  if (userId) {
-    redirect("/dashboard");
-  }
-
-  // Landing page for visitors
+export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
       {/* Hero Section */}
@@ -38,17 +28,11 @@ export default async function Home() {
 
           <div className="flex gap-3 justify-center pt-2">
             <Link
-              href="/sign-in"
+              href="/dashboard"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
             >
-              Sign In
+              Go to Dashboard
               <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/sign-up"
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-6 py-3 text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-colors"
-            >
-              Get Started
             </Link>
           </div>
         </div>
