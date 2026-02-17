@@ -68,6 +68,12 @@ enum PaymentStatus {
   PAID
 }
 
+enum DocumentType {
+  DRIVER_LICENSE
+  DRIVER_APPLICATION
+  GENERAL
+}
+
 // Models
 model Tenant {
   id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -115,6 +121,7 @@ model User {
   tenant            Tenant          @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
   uploadedDocuments Document[]
+  driverDocuments   Document[]      @relation(name: "DriverDocuments")
   safetyEvents      SafetyEvent[]
   tagAssignments    TagAssignment[]
 
@@ -205,26 +212,33 @@ model Route {
 }
 
 model Document {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String   @db.Uuid
-  truckId     String?  @db.Uuid
-  routeId     String?  @db.Uuid
-  fileName    String
-  s3Key       String
-  contentType String
-  sizeBytes   Int
-  uploadedBy  String   @db.Uuid
-  createdAt   DateTime @default(now()) @db.Timestamptz
-  updatedAt   DateTime @updatedAt @db.Timestamptz
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String        @db.Uuid
+  truckId      String?       @db.Uuid
+  routeId      String?       @db.Uuid
+  driverId     String?       @db.Uuid
+  fileName     String
+  s3Key        String
+  contentType  String
+  sizeBytes    Int
+  uploadedBy   String        @db.Uuid
+  documentType DocumentType?
+  expiryDate   DateTime?     @db.Timestamptz
+  notes        String?
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @db.Timestamptz
 
   tenant   Tenant @relation(fields: [tenantId], references: [id])
   truck    Truck?  @relation(fields: [truckId], references: [id])
   route    Route?  @relation(fields: [routeId], references: [id])
-  uploader User   @relation(fields: [uploadedBy], references: [id])
+  driver   User?   @relation(name: "DriverDocuments", fields: [driverId], references: [id])
+  uploader User    @relation(fields: [uploadedBy], references: [id])
 
   @@index([tenantId])
   @@index([truckId])
   @@index([routeId])
+  @@index([driverId])
+  @@index([expiryDate])
   @@index([uploadedBy])
 }
 

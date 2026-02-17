@@ -12,8 +12,8 @@ export const ALLOWED_TYPES: Record<string, string[]> = {
   'image/png': ['.png'],
 };
 
-// Maximum file size: 10MB
-export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+// Maximum file size: 100MB
+export const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
 export interface FileValidationResult {
   valid: true;
