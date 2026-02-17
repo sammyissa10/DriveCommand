@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getDriver } from '@/app/(owner)/actions/drivers';
+import { listDriverDocuments } from '@/app/(owner)/actions/driver-documents';
+import { DriverDocumentsSection } from './driver-documents-section';
 
 interface DriverDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,6 +16,9 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
   if (!driver) {
     notFound();
   }
+
+  // Fetch driver documents
+  const documents = await listDriverDocuments(id);
 
   return (
     <div className="space-y-6">
@@ -100,6 +105,9 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
           </div>
         </div>
       </div>
+
+      {/* Driver Documents */}
+      <DriverDocumentsSection driverId={id} initialDocuments={documents} />
     </div>
   );
 }
