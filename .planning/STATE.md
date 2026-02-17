@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 ## Current Position
 
-Phase: 16 of 18 (Route Finance Foundation) ✓ COMPLETE
-Plan: 5/5 complete
-Status: Phase complete, verified
-Last activity: 2026-02-16 — Phase 16 executed and verified (5 plans, 3 waves)
+Phase: 17 of 18 (Unified Route View/Edit Page)
+Plan: 1/2 complete
+Status: In progress
+Last activity: 2026-02-17 — Plan 17-01 complete (client components for view/edit toggle)
 
 Progress: [████████████████████████████████████████████████████░░░] 89% (16/18 phases complete)
 
@@ -35,9 +35,10 @@ Progress: [███████████████████████
 - Phase 16-03 (2026-02-16): Payment & revenue tracking — 438s, 3 tasks, 7 files affected
 - Phase 16-04 (2026-02-16): Expense category and template management — 351s, 2 tasks, 10 files affected
 - Phase 16-05 (2026-02-16): Cost-per-mile analysis and profit alerts — 211s, 2 tasks, 6 files affected
+- Phase 17-01 (2026-02-17): Client components for unified route view/edit — 188s, 2 tasks, 4 files affected
 
 **Combined:**
-- Total: 16 phases complete, 39 plans
+- Total: 16 phases complete, 40 plans (1 in progress)
 - Total project LOC: 71,160+ TypeScript
 
 **Quick tasks:**
@@ -103,6 +104,13 @@ Progress: [███████████████████████
 - Profit margin alert only renders when isLowMargin is true (conditional rendering)
 - Zero-division protection for both fleet average and cost-per-mile calculations
 
+**Phase 17-01 decisions:**
+- Used event delegation (onInput/onChange on wrapper div) for dirty tracking instead of controlled inputs to avoid re-render loops with RouteForm's defaultValue pattern
+- Used window.history.replaceState instead of Next.js router.replace to avoid server roundtrips for URL state sync
+- Added extraHiddenFields prop to RouteForm as backwards-compatible way to inject version field for optimistic locking
+- Kept updateRoute's existing redirect behavior (redirects to /routes/[id] without mode param) which naturally returns to view mode after save
+- Used window.confirm for unsaved changes dialog (simple, effective, matches existing pattern in expenses/payments sections)
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -130,7 +138,7 @@ None blocking immediate progress.
 
 ## Session Continuity
 
-Last session: 2026-02-16
-Stopped at: Phase 16 complete and verified
+Last session: 2026-02-17
+Stopped at: Completed 17-01-PLAN.md
 Resume file: None
-Next action: `/gsd:plan-phase 17` to plan Unified Route View/Edit Page
+Next action: `/gsd:execute-phase 17` to execute plan 17-02
