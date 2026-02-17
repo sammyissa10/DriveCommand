@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 ## Current Position
 
 Phase: 17 of 18 (Unified Route View/Edit Page)
-Plan: 1/2 complete
-Status: In progress
-Last activity: 2026-02-17 — Plan 17-01 complete (client components for view/edit toggle)
+Plan: 2/2 complete
+Status: Complete
+Last activity: 2026-02-17 — Plan 17-02 complete (server integration with optimistic locking)
 
-Progress: [████████████████████████████████████████████████████░░░] 89% (16/18 phases complete)
+Progress: [█████████████████████████████████████████████████████░░] 94% (17/18 phases complete)
 
 ## Performance Metrics
 
@@ -36,9 +36,10 @@ Progress: [███████████████████████
 - Phase 16-04 (2026-02-16): Expense category and template management — 351s, 2 tasks, 10 files affected
 - Phase 16-05 (2026-02-16): Cost-per-mile analysis and profit alerts — 211s, 2 tasks, 6 files affected
 - Phase 17-01 (2026-02-17): Client components for unified route view/edit — 188s, 2 tasks, 4 files affected
+- Phase 17-02 (2026-02-17): Server integration with optimistic locking — 220s, 2 tasks, 3 files affected
 
 **Combined:**
-- Total: 16 phases complete, 40 plans (1 in progress)
+- Total: 17 phases complete, 41 plans
 - Total project LOC: 71,160+ TypeScript
 
 **Quick tasks:**
@@ -111,6 +112,13 @@ Progress: [███████████████████████
 - Kept updateRoute's existing redirect behavior (redirects to /routes/[id] without mode param) which naturally returns to view mode after save
 - Used window.confirm for unsaved changes dialog (simple, effective, matches existing pattern in expenses/payments sections)
 
+**Phase 17-02 decisions:**
+- Used searchParams to determine initial edit mode (server-side decision before rendering client component)
+- Fetch drivers/trucks conditionally only when in edit mode for performance optimization (avoid unnecessary DB queries in view mode)
+- Version field is optional in updateRoute for backwards compatibility with existing route forms that don't use optimistic locking
+- Prisma P2025 error code indicates version mismatch (optimistic locking conflict) — return user-friendly error message
+- Keep old /routes/[id]/edit page as redirect rather than removing (preserves bookmarks and existing links)
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -135,10 +143,11 @@ None blocking immediate progress.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Audit and fix all Management pages with Playwright tests | 2026-02-16 | f543014 | [1-audit-and-fix-all-management-pages-with-](./quick/1-audit-and-fix-all-management-pages-with-/) |
+| Phase 17 P02 | 220 | 2 tasks | 3 files |
 
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 17-01-PLAN.md
+Stopped at: Completed 17-02-PLAN.md (Phase 17 complete)
 Resume file: None
-Next action: `/gsd:execute-phase 17` to execute plan 17-02
+Next action: Ready for Phase 18
