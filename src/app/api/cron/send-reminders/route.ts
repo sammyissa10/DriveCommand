@@ -20,8 +20,10 @@ import { prisma } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
 import { findExpiringDocuments } from '@/lib/notifications/check-expiring-documents';
+import { findExpiringDriverDocuments } from '@/lib/notifications/check-expiring-driver-documents';
 import { sendMaintenanceReminder } from '@/lib/email/send-maintenance-reminder';
 import { sendDocumentExpiryReminder } from '@/lib/email/send-document-expiry-reminder';
+import { sendDriverDocumentExpiryReminder, formatDocumentType } from '@/lib/email/send-driver-document-expiry-reminder';
 import {
   generateIdempotencyKey,
   wasNotificationAlreadySent,
@@ -75,6 +77,7 @@ export async function GET(request: NextRequest) {
   // 3. Process each tenant
   const maintenanceStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
   const documentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
+  const driverDocumentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
 
   for (const tenant of tenants) {
     console.log(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
@@ -212,6 +215,58 @@ export async function GET(request: NextRequest) {
           }
         }
       }
+
+      // Process driver document expiry reminders
+      const expiringDriverDocuments = await findExpiringDriverDocuments(tenant.id);
+      console.log(`[CRON] send-reminders: Found ${expiringDriverDocuments.length} expiring driver document(s)`);
+
+      for (const item of expiringDriverDocuments) {
+        const today = new Date();
+        const idempotencyKey = generateIdempotencyKey(
+          'driver-document-expiry',
+          item.documentId,
+          today
+        );
+
+        // Check if already sent today
+        const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
+        if (alreadySent) {
+          console.log(`[CRON] send-reminders: Skipping duplicate driver doc reminder for ${item.driverName} ${item.documentType}`);
+          driverDocumentStats.skipped++;
+          continue;
+        }
+
+        // Send to all owners
+        for (const owner of owners) {
+          try {
+            const logId = await recordNotification(prisma, {
+              tenantId: tenant.id,
+              idempotencyKey,
+              notificationType: 'driver-document-expiry',
+              entityType: 'Document',
+              entityId: item.documentId,
+              recipientEmail: owner.email,
+              emailSubject: `Document Expiring: ${formatDocumentType(item.documentType)} - ${item.driverName}`,
+            });
+
+            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/drivers/${item.driverId}`;
+            const result = await sendDriverDocumentExpiryReminder(owner.email, {
+              driverName: item.driverName,
+              documentType: formatDocumentType(item.documentType),
+              expiryDate: item.expiryDate.toLocaleDateString(),
+              daysUntilExpiry: item.daysUntilExpiry,
+              dashboardUrl,
+            });
+
+            await markNotificationSent(prisma, logId, result.id);
+            console.log(`[CRON] send-reminders: Sent driver doc reminder to ${owner.email} for ${item.driverName}`);
+            driverDocumentStats.sent++;
+          } catch (error) {
+            console.error(`[CRON] send-reminders: Failed to send driver doc reminder to ${owner.email}:`, error);
+            driverDocumentStats.failed++;
+          }
+        }
+      }
     } catch (error) {
       console.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
       // Continue with next tenant
@@ -225,6 +280,7 @@ export async function GET(request: NextRequest) {
     processedTenants: tenants.length,
     maintenance: maintenanceStats,
     documents: documentStats,
+    driverDocuments: driverDocumentStats,
   };
 
   console.log('[CRON] send-reminders: Completed', summary);
