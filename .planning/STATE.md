@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 
 ## Current Position
 
-Phase: 17 of 18 (Unified Route View/Edit Page)
-Plan: 2/2 complete
-Status: Complete
-Last activity: 2026-02-17 — Completed quick task 2: Change login method - remove Google, create owner login
+Phase: 18 of 18 (Driver Document Uploads)
+Plan: 1/3 complete
+Status: In Progress
+Last activity: 2026-02-17 — Completed 18-01-PLAN.md: Driver Document Storage Foundation
 
 Progress: [█████████████████████████████████████████████████████░░] 94% (17/18 phases complete)
 
@@ -37,9 +37,10 @@ Progress: [███████████████████████
 - Phase 16-05 (2026-02-16): Cost-per-mile analysis and profit alerts — 211s, 2 tasks, 6 files affected
 - Phase 17-01 (2026-02-17): Client components for unified route view/edit — 188s, 2 tasks, 4 files affected
 - Phase 17-02 (2026-02-17): Server integration with optimistic locking — 220s, 2 tasks, 3 files affected
+- Phase 18-01 (2026-02-17): Driver document storage foundation — 373s, 2 tasks, 10 files affected
 
 **Combined:**
-- Total: 17 phases complete, 41 plans
+- Total: 17 phases complete, 42 plans
 - Total project LOC: 71,160+ TypeScript
 
 **Quick tasks:**
@@ -55,6 +56,14 @@ Progress: [███████████████████████
 - Use soft delete pattern (deletedAt) for financial records — preserves audit trail for tax/compliance
 - Defense-in-depth s3Key validation for driver documents — tenant prefix + entity ownership checks
 - Multipart upload for files >5MB — handles large scanned driver compliance documents
+
+**Phase 18-01 decisions:**
+- Use DocumentType enum only for driver documents (DRIVER_LICENSE, DRIVER_APPLICATION, GENERAL) - existing truck documents use JSONB metadata to avoid migration complexity
+- Increase MAX_FILE_SIZE from 10MB to 100MB to support large scanned compliance PDFs
+- Implement multipart upload using presigned URLs per part (client uploads directly to R2) rather than server-side streaming
+- Enforce defense-in-depth s3Key validation in 4 locations (tenant prefix + drivers category check)
+- Abort multipart upload on validation failure to prevent orphaned parts in R2
+- Make all new Document fields optional for backwards compatibility with existing truck/route documents
 
 **Quick-1 decisions:**
 - Wrapped ALL DriverInvitation queries in webhook with RLS-bypassed transactions (3 locations)
@@ -148,6 +157,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed quick task 2: Change login method - remove Google, create owner login
+Stopped at: Completed 18-01-PLAN.md: Driver Document Storage Foundation
 Resume file: None
-Next action: `/gsd:execute-phase 18` to execute Driver Document Uploads
+Next action: `/gsd:execute-phase 18` to continue with 18-02-PLAN.md (Upload UI Components)
