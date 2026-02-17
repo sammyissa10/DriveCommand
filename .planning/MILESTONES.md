@@ -33,3 +33,21 @@
 
 ---
 
+
+## v3.0 Route Finance & Driver Documents (Shipped: 2026-02-17)
+
+**Phases completed:** 3 phases (16-18), 10 plans, 20 tasks
+**Timeline:** 2026-02-16 → 2026-02-17 (2 days)
+**Files modified:** 80 | **Lines added:** 13,221
+**Total project LOC:** 71,500+ TypeScript
+
+**Key accomplishments:**
+- Route financial tracking with line-item expenses, payments, profit calculation, and Decimal.js precision
+- Expense categories and templates with system defaults and tenant-customizable presets
+- Cost-per-mile analysis with fleet average comparison and profit margin alerts
+- Unified route view/edit page with seamless mode toggling and optimistic locking
+- Driver document uploads (license, application, general) with multipart support for 100MB files
+- Expiry tracking with color-coded status badges and 30/60/90 day email notifications via cron
+
+---
+

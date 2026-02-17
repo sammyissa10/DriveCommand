@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-16)
+See: .planning/PROJECT.md (updated 2026-02-17)
 
-**Core value:** Logistics owners can manage their entire operation from one platform, with fleet intelligence dashboards providing real-time visibility into vehicle location, driver safety, and fuel efficiency.
-**Current focus:** Phase 17 complete — ready for Phase 18
+**Core value:** Logistics owners can manage their entire operation — trucks, drivers, routes, finances, and compliance documents — from one platform, with fleet intelligence dashboards providing real-time visibility into vehicle location, driver safety, and fuel efficiency.
+**Current focus:** v3.0 milestone complete — planning next milestone
 
 ## Current Position
 
-Phase: 18 of 18 (Driver Document Uploads)
-Plan: 3/3 complete
-Status: Complete
-Last activity: 2026-02-17 — Completed 18-03-PLAN.md: Driver Document Expiry Notifications
+Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
+Phase: 18 of 18 (all complete)
+Status: Between milestones
+Last activity: 2026-02-17 — Completed v3.0 milestone
 
-Progress: [████████████████████████████████████████████████████████] 100% (18/18 phases complete)
+Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
 ## Performance Metrics
 
