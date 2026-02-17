@@ -8,7 +8,7 @@ DriveCommand builds from secure multi-tenant foundations through entity manageme
 
 - ✅ **v1.0 Fleet Management** — Phases 1-10 (shipped 2026-02-15)
 - ✅ **v2.0 Samsara-Inspired Fleet Intelligence** — Phases 11-15 (shipped 2026-02-16)
-- 🚧 **v3.0 Route Finance & Driver Documents** — Phases 16-18 (in progress)
+- ✅ **v3.0 Route Finance & Driver Documents** — Phases 16-18 (shipped 2026-02-17)
 
 ## Phases
 
@@ -47,7 +47,7 @@ See: [.planning/milestones/v2.0-ROADMAP.md] for full phase details.
 
 </details>
 
-### 🚧 v3.0 Route Finance & Driver Documents (In Progress)
+### ✅ v3.0 Route Finance & Driver Documents (Shipped 2026-02-17)
 
 **Milestone Goal:** Add financial tracking to routes (expenses, payments, profit) with a consolidated route page UX, plus driver document upload capabilities for DOT compliance.
 
@@ -59,7 +59,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 16: Route Finance Foundation** — Financial tracking with line-item expenses and profit calculation
 - [x] **Phase 17: Unified Route View/Edit Page** — Single route page with edit mode toggle
-- [ ] **Phase 18: Driver Document Uploads** — Driver license, application, and general document uploads
+- [x] **Phase 18: Driver Document Uploads** — Driver license, application, and general document uploads
 
 #### Phase 16: Route Finance Foundation
 **Goal**: Users can track route expenses, payments, and profitability with financial precision
@@ -108,9 +108,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 18-01-PLAN.md — Database schema extension, multipart upload infrastructure, driver document server actions
-- [ ] 18-02-PLAN.md — UI components: upload with progress, document list with expiry badges, driver page integration
-- [ ] 18-03-PLAN.md — Expiry notification query, email template, cron job extension for driver documents
+- [x] 18-01-PLAN.md — Database schema extension, multipart upload infrastructure, driver document server actions
+- [x] 18-02-PLAN.md — UI components: upload with progress, document list with expiry badges, driver page integration
+- [x] 18-03-PLAN.md — Expiry notification query, email template, cron job extension for driver documents
 
 ## Progress
 
@@ -136,4 +136,4 @@ Phases execute in numeric order: 16 → 17 → 18
 | 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-16 |
 | 16. Route Finance Foundation | v3.0 | 5/5 | ✓ Complete | 2026-02-16 |
 | 17. Unified Route View/Edit Page | v3.0 | 2/2 | ✓ Complete | 2026-02-16 |
-| 18. Driver Document Uploads | v3.0 | 0/3 | Not started | - |
+| 18. Driver Document Uploads | v3.0 | 3/3 | ✓ Complete | 2026-02-17 |
