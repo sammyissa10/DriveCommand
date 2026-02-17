@@ -58,7 +58,7 @@ See: [.planning/milestones/v2.0-ROADMAP.md] for full phase details.
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 16: Route Finance Foundation** — Financial tracking with line-item expenses and profit calculation
-- [ ] **Phase 17: Unified Route View/Edit Page** — Single route page with edit mode toggle
+- [x] **Phase 17: Unified Route View/Edit Page** — Single route page with edit mode toggle
 - [ ] **Phase 18: Driver Document Uploads** — Driver license, application, and general document uploads
 
 #### Phase 16: Route Finance Foundation
@@ -92,8 +92,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — Client components: unsaved changes hook, route edit section, unified page client wrapper
-- [ ] 17-02-PLAN.md — Server integration: unified page wiring, optimistic locking, old edit page redirect
+- [x] 17-01-PLAN.md — Client components: unsaved changes hook, route edit section, unified page client wrapper
+- [x] 17-02-PLAN.md — Server integration: unified page wiring, optimistic locking, old edit page redirect
 
 #### Phase 18: Driver Document Uploads
 **Goal**: Users can upload and manage driver compliance documents with expiry tracking
@@ -133,5 +133,5 @@ Phases execute in numeric order: 16 → 17 → 18
 | 14. Fuel & Energy Dashboard | v2.0 | 2/2 | ✓ Complete | 2026-02-15 |
 | 15. Tags/Groups & Polish | v2.0 | 3/3 | ✓ Complete | 2026-02-16 |
 | 16. Route Finance Foundation | v3.0 | 5/5 | ✓ Complete | 2026-02-16 |
-| 17. Unified Route View/Edit Page | v3.0 | 0/TBD | Not started | - |
+| 17. Unified Route View/Edit Page | v3.0 | 2/2 | ✓ Complete | 2026-02-16 |
 | 18. Driver Document Uploads | v3.0 | 0/TBD | Not started | - |

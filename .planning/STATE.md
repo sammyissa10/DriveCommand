@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-16)
 
 **Core value:** Logistics owners can manage their entire operation from one platform, with fleet intelligence dashboards providing real-time visibility into vehicle location, driver safety, and fuel efficiency.
-**Current focus:** Phase 16 complete — ready for Phase 17
+**Current focus:** Phase 17 complete — ready for Phase 18
 
 ## Current Position
 
@@ -143,11 +143,10 @@ None blocking immediate progress.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Audit and fix all Management pages with Playwright tests | 2026-02-16 | f543014 | [1-audit-and-fix-all-management-pages-with-](./quick/1-audit-and-fix-all-management-pages-with-/) |
-| Phase 17 P02 | 220 | 2 tasks | 3 files |
 
 ## Session Continuity
 
 Last session: 2026-02-17
 Stopped at: Completed 17-02-PLAN.md (Phase 17 complete)
 Resume file: None
-Next action: Ready for Phase 18
+Next action: `/gsd:plan-phase 18` to plan Driver Document Uploads
