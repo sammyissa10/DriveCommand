@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-16)
 Phase: 17 of 18 (Unified Route View/Edit Page)
 Plan: 2/2 complete
 Status: Complete
-Last activity: 2026-02-17 — Plan 17-02 complete (server integration with optimistic locking)
+Last activity: 2026-02-17 — Completed quick task 2: Change login method - remove Google, create owner login
 
 Progress: [█████████████████████████████████████████████████████░░] 94% (17/18 phases complete)
 
@@ -143,10 +143,11 @@ None blocking immediate progress.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Audit and fix all Management pages with Playwright tests | 2026-02-16 | f543014 | [1-audit-and-fix-all-management-pages-with-](./quick/1-audit-and-fix-all-management-pages-with-/) |
+| 2 | Change login method - remove Google, create owner login | 2026-02-17 | a6d016f | [2-change-login-method-remove-google-create](./quick/2-change-login-method-remove-google-create/) |
 
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 17-02-PLAN.md (Phase 17 complete)
+Stopped at: Completed quick task 2: Change login method - remove Google, create owner login
 Resume file: None
-Next action: `/gsd:plan-phase 18` to plan Driver Document Uploads
+Next action: `/gsd:execute-phase 18` to execute Driver Document Uploads
