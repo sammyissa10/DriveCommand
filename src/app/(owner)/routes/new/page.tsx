@@ -6,29 +6,38 @@ import { NewRouteClient } from './new-route-client';
 export default async function NewRoutePage() {
   const prisma = await getTenantPrisma();
 
-  // Fetch active drivers
-  const drivers = await prisma.user.findMany({
-    where: {
-      role: 'DRIVER',
-      isActive: true,
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-    },
-  });
+  let drivers: Array<{ id: string; firstName: string | null; lastName: string | null }> = [];
+  let trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }> = [];
 
-  // Fetch all trucks
-  const trucks = await prisma.truck.findMany({
-    select: {
-      id: true,
-      make: true,
-      model: true,
-      year: true,
-      licensePlate: true,
-    },
-  });
+  try {
+    [drivers, trucks] = await Promise.all([
+      prisma.user.findMany({
+        where: {
+          role: 'DRIVER',
+          isActive: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+        },
+        orderBy: { firstName: 'asc' },
+      }),
+      prisma.truck.findMany({
+        select: {
+          id: true,
+          make: true,
+          model: true,
+          year: true,
+          licensePlate: true,
+        },
+        orderBy: { year: 'desc' },
+      }),
+    ]);
+  } catch (error) {
+    console.error('Failed to load drivers/trucks for route form:', error);
+    // Continue with empty arrays - form will show "No drivers available" / "No trucks available"
+  }
 
   return (
     <div className="space-y-6">

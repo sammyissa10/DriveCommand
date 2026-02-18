@@ -31,7 +31,10 @@ export default async function RouteDetailPage({
   // Fetch documents, expenses, payments, categories, templates, and financial analytics
   const [documents, expenses, payments, categories, templates, analytics] =
     await Promise.all([
-      listDocuments('route', id),
+      listDocuments('route', id).catch((err) => {
+        console.error('Failed to load route documents:', err);
+        return [] as any[];
+      }),
       listExpenses(id),
       listPayments(id),
       listExpenseCategories(),
@@ -49,16 +52,22 @@ export default async function RouteDetailPage({
   let trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }> = [];
 
   if (isEditMode) {
-    const prisma = await getTenantPrisma();
-    [drivers, trucks] = await Promise.all([
-      prisma.user.findMany({
-        where: { role: 'DRIVER', isActive: true },
-        select: { id: true, firstName: true, lastName: true },
-      }),
-      prisma.truck.findMany({
-        select: { id: true, make: true, model: true, year: true, licensePlate: true },
-      }),
-    ]);
+    try {
+      const prisma = await getTenantPrisma();
+      [drivers, trucks] = await Promise.all([
+        prisma.user.findMany({
+          where: { role: 'DRIVER', isActive: true },
+          select: { id: true, firstName: true, lastName: true },
+          orderBy: { firstName: 'asc' },
+        }),
+        prisma.truck.findMany({
+          select: { id: true, make: true, model: true, year: true, licensePlate: true },
+          orderBy: { year: 'desc' },
+        }),
+      ]);
+    } catch (error) {
+      console.error('Failed to load drivers/trucks for route edit:', error);
+    }
   }
 
   // Format dates in tenant timezone (hardcode UTC for v1)
