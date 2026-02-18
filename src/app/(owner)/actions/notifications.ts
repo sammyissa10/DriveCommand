@@ -7,8 +7,9 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';
+import { revalidatePath } from 'next/cache';
 
 /**
  * Upcoming maintenance item for dashboard widget.
@@ -199,4 +200,94 @@ export async function getExpiringDocuments(): Promise<ExpiringDocumentItem[]> {
   });
 
   return expiringItems;
+}
+
+// ─── Customer Notification Actions ─────────────────────────
+
+/**
+ * Send an automated load update notification to a customer.
+ * Creates an interaction record in the CRM.
+ */
+export async function sendLoadUpdateNotification(
+  customerId: string,
+  routeId: string,
+  message: string,
+) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  try {
+    const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+    if (!customer) return { error: 'Customer not found.' };
+
+    const route = await prisma.route.findUnique({
+      where: { id: routeId },
+      include: { truck: true, driver: true },
+    });
+    if (!route) return { error: 'Route not found.' };
+
+    await prisma.customerInteraction.create({
+      data: {
+        tenantId,
+        customerId,
+        type: 'LOAD_UPDATE',
+        subject: `Load Update: ${route.origin} → ${route.destination}`,
+        description: message,
+        isAutomated: true,
+      },
+    });
+
+    await prisma.customer.update({
+      where: { id: customerId },
+      data: { lastLoadDate: new Date() },
+    });
+
+    revalidatePath(`/crm/${customerId}`);
+    return { success: true, message: 'Load update notification sent.' };
+  } catch {
+    return { error: 'Failed to send notification.' };
+  }
+}
+
+/**
+ * Send an ETA notification to a customer.
+ */
+export async function sendETANotification(
+  customerId: string,
+  routeId: string,
+  estimatedArrival: string,
+) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  try {
+    const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+    if (!customer) return { error: 'Customer not found.' };
+
+    const route = await prisma.route.findUnique({
+      where: { id: routeId },
+      include: { truck: true, driver: true },
+    });
+    if (!route) return { error: 'Route not found.' };
+
+    await prisma.customerInteraction.create({
+      data: {
+        tenantId,
+        customerId,
+        type: 'ETA_NOTIFICATION',
+        subject: `ETA Update: Arriving ${estimatedArrival}`,
+        description: `Route: ${route.origin} → ${route.destination}\nEstimated arrival: ${estimatedArrival}\nTruck: ${route.truck.make} ${route.truck.model} (${route.truck.licensePlate})`,
+        isAutomated: true,
+      },
+    });
+
+    revalidatePath(`/crm/${customerId}`);
+    return { success: true, message: 'ETA notification sent.' };
+  } catch {
+    return { error: 'Failed to send ETA notification.' };
+  }
 }
