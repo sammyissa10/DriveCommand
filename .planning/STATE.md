@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 11: Build Compliance Dashboard
+Last activity: 2026-02-18 — Completed quick task 12: Build AI Document Reading
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -53,6 +53,7 @@ Progress: [███████████████████████
 - Quick-9 (2026-02-18): Build Automated Customer Communications — 334s, 2 tasks, 8 files affected
 - Quick-10 (2026-02-18): Build Profit Per Lane Analysis — ~10min, 3 tasks, 6 files affected
 - Quick-11 (2026-02-18): Build Compliance Dashboard — ~6min, 2 tasks, 7 files affected
+- Quick-12 (2026-02-18): Build AI Document Reading — ~8min, 2 tasks, 6 files affected
 
 ## Accumulated Context
 
@@ -193,6 +194,12 @@ Progress: [███████████████████████
 - Alerts panel sorted by priority: EXPIRED first, then soonest expiry date
 - Sidebar link under Intelligence section with ClipboardCheck icon (OWNER/MANAGER only)
 
+**Quick-12 decisions:**
+- Use anthropic.beta.messages.create with betas=['pdfs-2024-09-25'] for PDFs (separate code path from images) to avoid TypeScript union type error on response.content
+- claude-haiku-4-5-20251001 model — fast and cost-efficient for structured extraction tasks
+- Magic-byte file validation before Claude call — prevents spoofed MIME type attacks and invalid API calls
+- Return ExtractedFreightData as typed interface — enables future load form pre-fill without raw JSON
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -227,10 +234,11 @@ None blocking immediate progress.
 | 9 | Build Automated Customer Communications with load status emails and CRM interaction logging | 2026-02-18 | 41c0ba7 | [9-build-automated-customer-communications-](./quick/9-build-automated-customer-communications-/) |
 | 10 | Build Profit Per Lane Analysis with sortable table, bar chart, and summary cards | 2026-02-18 | 4cc3422 | [10-build-profit-per-lane-analysis](./quick/10-build-profit-per-lane-analysis/) |
 | 11 | Build compliance dashboard with driver/truck expiry tracking, safety events, and alerts | 2026-02-18 | 4fbb6b9 | [11-build-compliance-dashboard](./quick/11-build-compliance-dashboard/) |
+| 12 | Build AI document reading with Claude-powered freight data extraction | 2026-02-18 | 30d354d | [12-build-ai-document-reading](./quick/12-build-ai-document-reading/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 11: Build Compliance Dashboard
+Stopped at: Completed quick task 12: Build AI Document Reading
 Resume file: None
-Next action: Compliance dashboard live at /compliance. Tracks driver document expiry, truck registration/insurance expiry, and safety events. Alerts panel with prioritized items. Sidebar link under Intelligence for OWNER/MANAGER.
+Next action: AI Document Reading live at /ai-documents. Upload rate confirmations, invoices, or load tenders (PDF/JPEG/PNG) for Claude extraction of 12 freight fields. Requires ANTHROPIC_API_KEY in .env.local. Sidebar link under Business for OWNER/MANAGER.
