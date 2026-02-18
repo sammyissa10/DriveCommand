@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 7: Build Invoice/Billing UI and Payroll UI
+Last activity: 2026-02-18 — Completed quick task 8: Build Dispatch and Load Management
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -49,6 +49,7 @@ Progress: [███████████████████████
 - Quick-1 (2026-02-16): Management pages bugs + seed data — 457s, 3 tasks, 7 files affected
 - Quick-6 (2026-02-18): Fix truck save/view errors and route driver dropdown — 133s, 2 tasks, 4 files affected
 - Quick-7 (2026-02-18): Build Invoice/Billing UI and Payroll UI — ~900s, 3 tasks, 20 files affected
+- Quick-8 (2026-02-18): Build Dispatch and Load Management — ~25min, 3 tasks, 14 files affected
 
 ## Accumulated Context
 
@@ -159,6 +160,14 @@ Progress: [███████████████████████
 - Auto-generate invoice number from latest invoice + increment (INV-NNNN padded format)
 - Include inactive driver in payroll edit dropdown if record was created for them (backwards compatibility)
 
+**Quick-8 decisions:**
+- Auto-generate loadNumber from latest load + increment (LD-0001 format) inside createLoad action
+- Status transitions validated via explicit map: DISPATCHED->PICKED_UP->IN_TRANSIT->DELIVERED->INVOICED; CANCELLED available from any non-terminal status
+- Hard delete for loads (not financial records) — unlike invoices/expenses which use soft delete
+- Dispatch modal uses useActionState with bound server action (dispatchLoad.bind(null, id))
+- In Transit tab covers both PICKED_UP and IN_TRANSIT statuses for simpler dispatcher UX
+- Decimal.js (Prisma.Decimal) used for rate field to prevent floating-point errors
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -189,10 +198,11 @@ None blocking immediate progress.
 | 6 | Fix truck save/view errors and improve route driver dropdown | 2026-02-18 | ae7797b | [6-fix-truck-save-view-errors-improve-truck](./quick/6-fix-truck-save-view-errors-improve-truck/) |
 | 7 | Build Invoice/Billing UI and Payroll UI with migration and sidebar navigation | 2026-02-18 | 9e9a67f | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 | 7 | Build Invoice/Billing UI and Payroll UI | 2026-02-18 | 5bbef95 | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
+| 8 | Build Dispatch and Load Management with dispatch modal, status lifecycle, and sidebar | 2026-02-18 | d3e26fd | [8-build-dispatch-and-load-management-with-](./quick/8-build-dispatch-and-load-management-with-/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 7: Build Invoice/Billing UI and Payroll UI
+Stopped at: Completed quick task 8: Build Dispatch and Load Management
 Resume file: None
-Next action: Invoice and Payroll modules fully functional. Sidebar links for /invoices and /payroll are active. All money calculations use Decimal.js. Database migration applied with RLS on Customer, CustomerInteraction, Invoice, PayrollRecord tables.
+Next action: Load management system fully functional. Sidebar Loads link active. /loads, /loads/new, /loads/[id], /loads/[id]/edit all verified in production build. RLS on Load table. Dispatch modal, status lifecycle, and load number auto-generation working.
