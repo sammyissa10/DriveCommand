@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 9: Build Automated Customer Communications
+Last activity: 2026-02-18 — Completed quick task 11: Build Compliance Dashboard
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -52,6 +52,7 @@ Progress: [███████████████████████
 - Quick-8 (2026-02-18): Build Dispatch and Load Management — ~25min, 3 tasks, 14 files affected
 - Quick-9 (2026-02-18): Build Automated Customer Communications — 334s, 2 tasks, 8 files affected
 - Quick-10 (2026-02-18): Build Profit Per Lane Analysis — ~10min, 3 tasks, 6 files affected
+- Quick-11 (2026-02-18): Build Compliance Dashboard — ~6min, 2 tasks, 7 files affected
 
 ## Accumulated Context
 
@@ -185,6 +186,13 @@ Progress: [███████████████████████
 - Use -Infinity sentinel for null profitPerMile values during client-side table sort
 - Raw Recharts BarChart/Bar/Cell used directly (not ChartContainer) to support per-bar coloring and multi-field tooltips
 
+**Quick-11 decisions:**
+- Classify compliance items as OK/EXPIRING_SOON/EXPIRED using 30-day threshold (consistent with Phase 18-02)
+- Query driver documents, truck documentMetadata JSONB, and safety events in parallel with Promise.all
+- HIGH/CRITICAL safety events aggregated per driver over last 90 days for compliance scoring
+- Alerts panel sorted by priority: EXPIRED first, then soonest expiry date
+- Sidebar link under Intelligence section with ClipboardCheck icon (OWNER/MANAGER only)
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -218,10 +226,11 @@ None blocking immediate progress.
 | 8 | Build Dispatch and Load Management with dispatch modal, status lifecycle, and sidebar | 2026-02-18 | d3e26fd | [8-build-dispatch-and-load-management-with-](./quick/8-build-dispatch-and-load-management-with-/) |
 | 9 | Build Automated Customer Communications with load status emails and CRM interaction logging | 2026-02-18 | 41c0ba7 | [9-build-automated-customer-communications-](./quick/9-build-automated-customer-communications-/) |
 | 10 | Build Profit Per Lane Analysis with sortable table, bar chart, and summary cards | 2026-02-18 | 4cc3422 | [10-build-profit-per-lane-analysis](./quick/10-build-profit-per-lane-analysis/) |
+| 11 | Build compliance dashboard with driver/truck expiry tracking, safety events, and alerts | 2026-02-18 | 4fbb6b9 | [11-build-compliance-dashboard](./quick/11-build-compliance-dashboard/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 10: Build Profit Per Lane Analysis
+Stopped at: Completed quick task 11: Build Compliance Dashboard
 Resume file: None
-Next action: Lane profitability dashboard live at /lane-analytics. Aggregates completed routes by origin-destination pair using Decimal.js. Sortable table with 8 columns, bar chart (top 10 lanes, green/red), 4-card summary. Timeframe selector: 30/90/180/365 days. Sidebar link under Intelligence for OWNER/MANAGER.
+Next action: Compliance dashboard live at /compliance. Tracks driver document expiry, truck registration/insurance expiry, and safety events. Alerts panel with prioritized items. Sidebar link under Intelligence for OWNER/MANAGER.
