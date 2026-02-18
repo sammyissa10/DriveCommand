@@ -18,6 +18,7 @@ import {
   Receipt,
   DollarSign,
   Package,
+  TrendingUp,
 } from "lucide-react"
 import {
   Sidebar,
@@ -147,6 +148,18 @@ export function AppSidebar() {
                     <Link href="/fuel">
                       <Fuel />
                       <span>Fuel & Energy</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/lane-analytics")}
+                    tooltip="Lane Profitability"
+                  >
+                    <Link href="/lane-analytics">
+                      <TrendingUp />
+                      <span>Lane Profitability</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
