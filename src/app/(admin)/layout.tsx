@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { getSession } from "@/lib/auth/session";
 import { isSystemAdmin } from "@/lib/auth/server";
 import { UserMenu } from "@/components/navigation/user-menu";
 import Link from "next/link";
@@ -19,8 +19,8 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   // Check authentication
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     redirect("/sign-in");
   }
 

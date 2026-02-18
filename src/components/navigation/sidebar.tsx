@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useUser } from "@clerk/nextjs"
+import { useAuth } from "@/lib/auth/auth-context"
 import {
   LayoutDashboard,
   MapPin,
@@ -32,10 +32,10 @@ import { UserRole } from "@/lib/auth/roles"
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { user } = useUser()
+  const { user } = useAuth()
 
   // Check if user has OWNER or MANAGER role for Fleet Intelligence visibility
-  const userRole = user?.publicMetadata?.role as UserRole | undefined
+  const userRole = user?.role as UserRole | undefined
   const canViewFleetIntelligence =
     userRole === UserRole.OWNER || userRole === UserRole.MANAGER
 

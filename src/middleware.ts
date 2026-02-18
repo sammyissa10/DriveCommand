@@ -1,58 +1,58 @@
-import { clerkMiddleware, clerkClient, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
-
-const isPublicRoute = createRouteMatcher([
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)',
-]);
+import { decrypt } from '@/lib/auth/session';
 
 /**
- * Next.js middleware that resolves tenant context from Clerk session metadata
+ * Next.js middleware that resolves tenant context from the session cookie
  * and injects it as a request header for downstream API routes and server actions.
  *
  * Flow:
- * 1. Public routes pass through (sign-in, sign-up, webhooks)
+ * 1. Public routes pass through (sign-in, sign-up, auth API, webhooks)
  * 2. Unauthenticated requests on protected routes get redirected to sign-in
  * 3. Authenticated users without tenantId are redirected to /onboarding
  * 4. Authenticated users with tenantId get x-tenant-id header injected
  *
- * CRITICAL: Tenant is resolved from Clerk session metadata, NOT from URL/subdomain.
- * Falls back to Clerk API if session token doesn't contain privateMetadata.
+ * NOTE: Cannot use next/headers cookies() in middleware — must read from request directly.
  */
-export default clerkMiddleware(async (auth, request: NextRequest) => {
-  if (isPublicRoute(request)) {
+
+const PUBLIC_PATHS = [
+  '/sign-in',
+  '/sign-up',
+  '/api/auth/login',
+  '/api/auth/logout',
+  '/api/webhooks',
+  '/_next/static',
+  '/_next/image',
+  '/favicon.ico',
+  '/favicon.png',
+];
+
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+}
+
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Allow public paths without auth
+  if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
 
-  const { userId, sessionClaims } = await auth();
+  // Read session cookie directly from request (not next/headers)
+  const sessionToken = request.cookies.get('session')?.value;
+  const session = decrypt(sessionToken);
 
   // Unauthenticated on protected route - redirect to sign-in
-  if (!userId) {
+  if (!session) {
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect_url', request.url);
     return NextResponse.redirect(signInUrl);
   }
 
-  // Extract tenant ID from Clerk private metadata (session claims)
-  const privateMetadata = sessionClaims?.privateMetadata as { tenantId?: string } | undefined;
-  let tenantId = privateMetadata?.tenantId;
-
-  // Fallback: fetch directly from Clerk API if session token doesn't have tenantId
-  if (!tenantId) {
-    try {
-      const client = await clerkClient();
-      const user = await client.users.getUser(userId);
-      tenantId = (user.privateMetadata as { tenantId?: string })?.tenantId;
-    } catch {
-      // Clerk API failed - proceed without tenantId
-    }
-  }
-
   // User is authenticated but has no tenant assigned
-  if (!tenantId) {
-    const isOnboardingPath = request.nextUrl.pathname.startsWith('/onboarding');
-    const isApiPath = request.nextUrl.pathname.startsWith('/api');
+  if (!session.tenantId) {
+    const isOnboardingPath = pathname.startsWith('/onboarding');
+    const isApiPath = pathname.startsWith('/api');
 
     if (!isOnboardingPath && !isApiPath) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
@@ -63,14 +63,14 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 
   // User has tenant - inject tenant ID into request headers
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', tenantId);
+  requestHeaders.set('x-tenant-id', session.tenantId);
 
   return NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
-});
+}
 
 export const config = {
   matcher: [

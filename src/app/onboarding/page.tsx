@@ -1,68 +1,45 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { SignOutButton } from "@clerk/nextjs";
+import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import { Truck } from "lucide-react";
+import Link from "next/link";
 
 export default async function OnboardingPage() {
-  const { userId, sessionClaims } = await auth();
+  const session = await getSession();
 
   // Not authenticated - redirect to sign-in
-  if (!userId) {
+  if (!session) {
     redirect("/sign-in");
   }
 
-  // Check if tenant is provisioned (from session claims first)
-  const privateMetadata = sessionClaims?.privateMetadata as
-    | { tenantId?: string }
-    | undefined;
-  let tenantId = privateMetadata?.tenantId;
-
-  // Fallback: directly fetch user metadata from Clerk API
-  // (session token may not have updated claims yet)
-  if (!tenantId) {
-    try {
-      const client = await clerkClient();
-      const user = await client.users.getUser(userId);
-      tenantId = (user.privateMetadata as { tenantId?: string })?.tenantId;
-    } catch (e) {
-      console.error("Failed to fetch user metadata from Clerk:", e);
-    }
-  }
-
-  // Tenant is ready - onboarding complete, redirect to dashboard
-  if (tenantId) {
+  // Tenant is ready - redirect to dashboard
+  if (session.tenantId) {
     redirect("/dashboard");
   }
 
-  // Waiting for webhook to provision tenant
+  // No tenant assigned - show message
   return (
-    <html>
-      <head>
-        <meta httpEquiv="refresh" content="3" />
-      </head>
-      <body>
-        <div className="min-h-screen flex items-center justify-center bg-background">
-          <div className="text-center space-y-4">
-            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
-              <Truck className="h-6 w-6" />
-            </div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              Setting up your workspace...
-            </h1>
-            <p className="text-muted-foreground">This usually takes a few seconds.</p>
-            <div className="mt-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            </div>
-            <div className="mt-8">
-              <SignOutButton redirectUrl="/sign-in">
-                <button className="text-sm text-muted-foreground/60 hover:text-muted-foreground underline transition-colors">
-                  Sign out and try again
-                </button>
-              </SignOutButton>
-            </div>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center space-y-4 max-w-md px-6">
+        <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
+          <Truck className="h-6 w-6" />
         </div>
-      </body>
-    </html>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Account Setup Required
+        </h1>
+        <p className="text-muted-foreground">
+          Your account is being set up. Please contact your administrator to complete the process.
+        </p>
+        <div className="mt-8">
+          <form action="/api/auth/logout" method="POST">
+            <button
+              type="submit"
+              className="text-sm text-muted-foreground/60 hover:text-muted-foreground underline transition-colors"
+            >
+              Sign out and try again
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 /**
  * Dashboard page - Owner portal landing page
  *
- * This is the post-login destination (NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard).
+ * This is the post-login destination (/dashboard).
  * Shows fleet overview stat cards and alert widgets for upcoming maintenance and expiring documents.
  */
 

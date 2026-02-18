@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { getSession } from "@/lib/auth/session";
 import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { UserMenu } from "@/components/navigation/user-menu";
@@ -20,8 +20,8 @@ export default async function DriverLayout({
   children: React.ReactNode;
 }) {
   // Check authentication
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     redirect("/sign-in");
   }
 

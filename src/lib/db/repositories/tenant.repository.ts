@@ -3,13 +3,13 @@ import { prisma } from '../prisma';
 export class TenantProvisioningRepository {
   /**
    * Create a new tenant with an owner user.
-   * Used during signup provisioning (Clerk webhook).
+   * Used during administrative provisioning.
    * NOT scoped by RLS — this creates the tenant itself.
    */
   async provisionTenant(data: {
     companyName: string;
     timezone?: string;
-    ownerClerkUserId: string;
+    ownerId: string;
     ownerEmail: string;
   }) {
     return prisma.$transaction(async (tx) => {
@@ -22,7 +22,7 @@ export class TenantProvisioningRepository {
           timezone: data.timezone || 'UTC',
           users: {
             create: {
-              clerkUserId: data.ownerClerkUserId,
+              id: data.ownerId,
               email: data.ownerEmail,
               role: 'OWNER',
             },
@@ -36,15 +36,14 @@ export class TenantProvisioningRepository {
   }
 
   /**
-   * Find tenant by owner's Clerk user ID.
-   * Used for idempotent webhook handling and proxy.ts fallback.
+   * Find tenant by user ID (database UUID).
    */
-  async findTenantByClerkUserId(clerkUserId: string) {
+  async findTenantByUserId(userId: string) {
     return prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const user = await tx.user.findUnique({
-        where: { clerkUserId },
+        where: { id: userId },
         include: { tenant: true },
       });
 

@@ -10,10 +10,10 @@ import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@/lib/validations/driver.schemas';
 import { revalidatePath } from 'next/cache';
-import { clerkClient } from '@clerk/nextjs/server';
 
 /**
- * Invite a new driver via Clerk Invitations API.
+ * Invite a new driver.
+ * Creates a DriverInvitation record in the database with PENDING status.
  * Requires OWNER or MANAGER role.
  */
 export async function inviteDriver(prevState: any, formData: FormData) {
@@ -72,20 +72,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       },
     });
 
-    // Create Clerk invitation
-    const clerk = await clerkClient();
-    const invitation = await clerk.invitations.createInvitation({
-      emailAddress: email,
-      redirectUrl: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000') + '/sign-up',
-      publicMetadata: {
-        role: UserRole.DRIVER,
-        firstName,
-        lastName,
-        tenantId, // Pass tenantId in public metadata for webhook processing
-      },
-    });
-
-    // Store DriverInvitation record
+    // Create DriverInvitation record in the database
     await prisma.driverInvitation.create({
       data: {
         tenantId,
@@ -93,7 +80,6 @@ export async function inviteDriver(prevState: any, formData: FormData) {
         firstName,
         lastName,
         licenseNumber: licenseNumber || null,
-        clerkInvitationId: invitation.id,
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         status: 'PENDING',
       },
@@ -104,12 +90,12 @@ export async function inviteDriver(prevState: any, formData: FormData) {
 
     return {
       success: true,
-      message: `Invitation sent to ${email}`,
+      message: `Invitation created for ${email}`,
     };
   } catch (error) {
-    console.error('Failed to send driver invitation:', error);
+    console.error('Failed to create driver invitation:', error);
     return {
-      error: 'Failed to send invitation. Please try again.',
+      error: 'Failed to create invitation. Please try again.',
     };
   }
 }
@@ -195,7 +181,7 @@ export async function updateDriver(id: string, prevState: any, formData: FormDat
 
 /**
  * Deactivate a driver (soft delete).
- * Sets isActive=false and revokes all Clerk sessions.
+ * Sets isActive=false.
  * Requires OWNER or MANAGER role.
  */
 export async function deactivateDriver(id: string) {
@@ -204,24 +190,10 @@ export async function deactivateDriver(id: string) {
 
   // Update user via tenant-scoped Prisma client
   const prisma = await getTenantPrisma();
-  const user = await prisma.user.update({
+  await prisma.user.update({
     where: { id },
     data: { isActive: false },
   });
-
-  // Revoke all Clerk sessions for this user
-  try {
-    const clerk = await clerkClient();
-    const sessions = await clerk.sessions.getSessionList({ userId: user.clerkUserId });
-
-    // Revoke each session
-    for (const session of sessions.data) {
-      await clerk.sessions.revokeSession(session.id);
-    }
-  } catch (error) {
-    console.error('Failed to revoke Clerk sessions for driver:', error);
-    // Continue even if session revocation fails - user is already deactivated in DB
-  }
 
   // Revalidate
   revalidatePath('/drivers');

@@ -2,26 +2,23 @@
  * Server-side authentication and authorization helpers
  */
 
-import { auth } from '@clerk/nextjs/server';
+import { getSession } from './session';
 import { prisma } from '../db/prisma';
 import { UserRole } from './roles';
 
 /**
- * Get the current user's role from Clerk session publicMetadata.
- * Returns null if no session or no role set.
+ * Get the current user's role from the session cookie.
+ * Returns null if no session or no valid role.
  *
  * This is fast (no database call) and should be used for role checks in server actions.
  */
 export async function getRole(): Promise<UserRole | null> {
-  const { sessionClaims } = await auth();
-  if (!sessionClaims?.publicMetadata) {
+  const session = await getSession();
+  if (!session) {
     return null;
   }
 
-  // Type assertion needed until Clerk type augmentation is properly configured
-  const publicMetadata = sessionClaims.publicMetadata as { role?: string };
-  const role = publicMetadata.role;
-
+  const role = session.role;
   if (!role || !Object.values(UserRole).includes(role as UserRole)) {
     return null;
   }
@@ -32,14 +29,14 @@ export async function getRole(): Promise<UserRole | null> {
 /**
  * Require authentication.
  * Throws an error if the user is not authenticated.
- * Returns the Clerk user ID.
+ * Returns the database user ID (UUID).
  */
 export async function requireAuth(): Promise<string> {
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     throw new Error('Unauthorized: Authentication required');
   }
-  return userId;
+  return session.userId;
 }
 
 /**
@@ -65,14 +62,17 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<UserRole> {
  * For most role checks, use getRole() or requireRole() instead.
  */
 export async function isSystemAdmin(): Promise<boolean> {
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     return false;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { clerkUserId: userId },
-    select: { isSystemAdmin: true },
+  const user = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.user.findUnique({
+      where: { id: session.userId },
+      select: { isSystemAdmin: true },
+    });
   });
 
   return user?.isSystemAdmin ?? false;
@@ -83,15 +83,18 @@ export async function isSystemAdmin(): Promise<boolean> {
  * Returns null if not authenticated.
  *
  * This requires a database call, so use sparingly.
- * For role checks, prefer getRole() which reads from the session token.
+ * For role checks, prefer getRole() which reads from the session cookie.
  */
 export async function getCurrentUser() {
-  const { userId } = await auth();
-  if (!userId) {
+  const session = await getSession();
+  if (!session) {
     return null;
   }
 
-  return await prisma.user.findUnique({
-    where: { clerkUserId: userId },
+  return await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.user.findUnique({
+      where: { id: session.userId },
+    });
   });
 }

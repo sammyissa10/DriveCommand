@@ -7,8 +7,8 @@
  * All security must be enforced server-side in layouts, server actions, and API routes.
  */
 
-import { useUser } from "@clerk/nextjs";
-import { UserRole } from "@/lib/auth/roles";
+import { useAuth } from '@/lib/auth/auth-context';
+import { UserRole } from '@/lib/auth/roles';
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -33,16 +33,14 @@ export function RoleGuard({
   allowedRoles,
   fallback = null,
 }: RoleGuardProps) {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded } = useAuth();
 
-  // Prevent flash of content while Clerk loads
+  // Prevent flash of content while auth loads
   if (!isLoaded) {
     return null;
   }
 
-  // Type assertion needed until Clerk type augmentation is properly configured
-  const publicMetadata = user?.publicMetadata as { role?: string } | undefined;
-  const userRole = publicMetadata?.role as UserRole | undefined;
+  const userRole = user?.role as UserRole | undefined;
 
   // If user doesn't have an allowed role, show fallback
   if (!userRole || !allowedRoles.includes(userRole)) {
