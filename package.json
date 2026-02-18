@@ -15,6 +15,7 @@
     "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.77.0",
     "@aws-sdk/client-s3": "^3.990.0",
     "@aws-sdk/s3-request-presigner": "^3.990.0",
     "@prisma/adapter-pg": "^7.4.0",
