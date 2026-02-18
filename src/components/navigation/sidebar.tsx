@@ -19,6 +19,7 @@ import {
   DollarSign,
   Package,
   TrendingUp,
+  ClipboardCheck,
 } from "lucide-react"
 import {
   Sidebar,
@@ -160,6 +161,18 @@ export function AppSidebar() {
                     <Link href="/lane-analytics">
                       <TrendingUp />
                       <span>Lane Profitability</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/compliance")}
+                    tooltip="Compliance"
+                  >
+                    <Link href="/compliance">
+                      <ClipboardCheck />
+                      <span>Compliance</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
