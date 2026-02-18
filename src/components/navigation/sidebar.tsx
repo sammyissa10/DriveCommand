@@ -20,6 +20,7 @@ import {
   Package,
   TrendingUp,
   ClipboardCheck,
+  FileSearch,
 } from "lucide-react"
 import {
   Sidebar,
@@ -234,6 +235,18 @@ export function AppSidebar() {
                     <Link href="/payroll">
                       <DollarSign />
                       <span>Payroll</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/ai-documents")}
+                    tooltip="AI Documents"
+                  >
+                    <Link href="/ai-documents">
+                      <FileSearch />
+                      <span>AI Documents</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
