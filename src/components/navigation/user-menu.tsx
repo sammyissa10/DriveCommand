@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
-import { LogOut, User } from "lucide-react";
+import { LogOut, ChevronsUpDown } from "lucide-react";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
 function getInitials(firstName?: string, lastName?: string, email?: string): string {
   if (firstName && lastName) {
@@ -34,7 +35,13 @@ export function UserMenu() {
 
   if (!isLoaded) {
     return (
-      <div className="h-9 w-9 rounded-full bg-muted animate-pulse" />
+      <SidebarMenuButton size="lg" className="pointer-events-none">
+        <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
+        <div className="flex-1 space-y-1">
+          <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+          <div className="h-2.5 w-28 rounded bg-muted animate-pulse" />
+        </div>
+      </SidebarMenuButton>
     );
   }
 
@@ -45,38 +52,28 @@ export function UserMenu() {
 
   return (
     <div className="relative">
-      <button
+      <SidebarMenuButton
+        size="lg"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-        aria-label="User menu"
+        className="w-full"
       >
-        {initials}
-      </button>
+        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white text-xs font-semibold shadow-sm">
+          {initials}
+        </div>
+        <div className="grid flex-1 text-left text-sm leading-tight">
+          <span className="truncate font-semibold">{displayName}</span>
+          <span className="truncate text-xs text-sidebar-foreground/60">{user?.email}</span>
+        </div>
+        <ChevronsUpDown className="ml-auto size-4" />
+      </SidebarMenuButton>
 
       {isOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-
-          {/* Dropdown */}
-          <div className="absolute bottom-full mb-2 right-0 z-50 w-56 rounded-lg border border-border bg-card shadow-lg p-1">
-            {/* User info */}
-            <div className="px-3 py-2 border-b border-border mb-1">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white text-xs font-semibold">
-                  {initials}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Sign out */}
+          <div className="absolute bottom-full mb-2 left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1">
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
