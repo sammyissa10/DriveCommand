@@ -74,6 +74,23 @@ enum DocumentType {
   GENERAL
 }
 
+enum IntegrationProvider {
+  QUICKBOOKS
+  SAMSARA
+  KEEP_TRUCKIN
+  TRIUMPH_FACTORING
+  OTR_SOLUTIONS
+  SENDGRID
+  MAILGUN
+}
+
+enum IntegrationCategory {
+  ACCOUNTING
+  ELD
+  FACTORING
+  EMAIL
+}
+
 // Models
 model Tenant {
   id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -107,6 +124,7 @@ model Tenant {
   invoices             Invoice[]
   payrollRecords       PayrollRecord[]
   loads                Load[]
+  tenantIntegrations   TenantIntegration[]
 }
 
 model User {
@@ -727,4 +745,22 @@ model Load {
   @@index([truckId])
   @@index([status])
   @@index([pickupDate])
+}
+
+// ─── Integration Models ──────────────────────────────────────
+
+model TenantIntegration {
+  id         String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String              @db.Uuid
+  provider   IntegrationProvider
+  category   IntegrationCategory
+  enabled    Boolean             @default(false)
+  configJson Json?               // JSONB: future API keys, webhook URLs, etc.
+  createdAt  DateTime            @default(now()) @db.Timestamptz
+  updatedAt  DateTime            @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, provider])
+  @@index([tenantId])
 }
