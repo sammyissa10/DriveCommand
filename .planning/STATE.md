@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 8: Build Dispatch and Load Management
+Last activity: 2026-02-18 — Completed quick task 9: Build Automated Customer Communications
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -50,6 +50,7 @@ Progress: [███████████████████████
 - Quick-6 (2026-02-18): Fix truck save/view errors and route driver dropdown — 133s, 2 tasks, 4 files affected
 - Quick-7 (2026-02-18): Build Invoice/Billing UI and Payroll UI — ~900s, 3 tasks, 20 files affected
 - Quick-8 (2026-02-18): Build Dispatch and Load Management — ~25min, 3 tasks, 14 files affected
+- Quick-9 (2026-02-18): Build Automated Customer Communications — 334s, 2 tasks, 8 files affected
 
 ## Accumulated Context
 
@@ -168,6 +169,14 @@ Progress: [███████████████████████
 - In Transit tab covers both PICKED_UP and IN_TRANSIT statuses for simpler dispatcher UX
 - Decimal.js (Prisma.Decimal) used for rate field to prevent floating-point errors
 
+**Quick-9 decisions:**
+- Fire-and-forget pattern for email sends: do NOT await sendNotificationAndLogInteraction so load status changes are never delayed by email latency
+- Email failures caught inside helper with console.error — never propagate to block load operations
+- Only send notifications for PICKED_UP, IN_TRANSIT, DELIVERED from updateLoadStatus; DISPATCHED handled separately in dispatchLoad
+- INVOICED and CANCELLED skipped — not customer-facing milestones
+- z.preprocess to convert FormData checkbox string 'true' to boolean in Zod schema
+- Prisma client regenerated with prisma generate after schema change to fix TypeScript types
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -199,10 +208,11 @@ None blocking immediate progress.
 | 7 | Build Invoice/Billing UI and Payroll UI with migration and sidebar navigation | 2026-02-18 | 9e9a67f | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 | 7 | Build Invoice/Billing UI and Payroll UI | 2026-02-18 | 5bbef95 | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 | 8 | Build Dispatch and Load Management with dispatch modal, status lifecycle, and sidebar | 2026-02-18 | d3e26fd | [8-build-dispatch-and-load-management-with-](./quick/8-build-dispatch-and-load-management-with-/) |
+| 9 | Build Automated Customer Communications with load status emails and CRM interaction logging | 2026-02-18 | 41c0ba7 | [9-build-automated-customer-communications-](./quick/9-build-automated-customer-communications-/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 8: Build Dispatch and Load Management
+Stopped at: Completed quick task 9: Build Automated Customer Communications
 Resume file: None
-Next action: Load management system fully functional. Sidebar Loads link active. /loads, /loads/new, /loads/[id], /loads/[id]/edit all verified in production build. RLS on Load table. Dispatch modal, status lifecycle, and load number auto-generation working.
+Next action: Automated customer communications live. Load status emails sent on dispatch and status transitions (PICKED_UP, IN_TRANSIT, DELIVERED). CRM interaction auto-logged with isAutomated=true. Customer form includes email notification preference toggle. emailNotifications Boolean field on Customer model.
