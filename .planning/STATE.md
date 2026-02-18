@@ -51,6 +51,7 @@ Progress: [███████████████████████
 - Quick-7 (2026-02-18): Build Invoice/Billing UI and Payroll UI — ~900s, 3 tasks, 20 files affected
 - Quick-8 (2026-02-18): Build Dispatch and Load Management — ~25min, 3 tasks, 14 files affected
 - Quick-9 (2026-02-18): Build Automated Customer Communications — 334s, 2 tasks, 8 files affected
+- Quick-10 (2026-02-18): Build Profit Per Lane Analysis — ~10min, 3 tasks, 6 files affected
 
 ## Accumulated Context
 
@@ -177,6 +178,13 @@ Progress: [███████████████████████
 - z.preprocess to convert FormData checkbox string 'true' to boolean in Zod schema
 - Prisma client regenerated with prisma generate after schema change to fix TypeScript types
 
+**Quick-10 decisions:**
+- Normalize lane keys with trim+toUpperCase so "Chicago, IL" and "CHICAGO, IL" aggregate to the same lane
+- Sort lanes by profit using Decimal.comparedTo (not parseFloat) to preserve precision in sort
+- Display only top 10 lanes in bar chart to avoid overcrowding; full detail available in table
+- Use -Infinity sentinel for null profitPerMile values during client-side table sort
+- Raw Recharts BarChart/Bar/Cell used directly (not ChartContainer) to support per-bar coloring and multi-field tooltips
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -209,10 +217,11 @@ None blocking immediate progress.
 | 7 | Build Invoice/Billing UI and Payroll UI | 2026-02-18 | 5bbef95 | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 | 8 | Build Dispatch and Load Management with dispatch modal, status lifecycle, and sidebar | 2026-02-18 | d3e26fd | [8-build-dispatch-and-load-management-with-](./quick/8-build-dispatch-and-load-management-with-/) |
 | 9 | Build Automated Customer Communications with load status emails and CRM interaction logging | 2026-02-18 | 41c0ba7 | [9-build-automated-customer-communications-](./quick/9-build-automated-customer-communications-/) |
+| 10 | Build Profit Per Lane Analysis with sortable table, bar chart, and summary cards | 2026-02-18 | 4cc3422 | [10-build-profit-per-lane-analysis](./quick/10-build-profit-per-lane-analysis/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 9: Build Automated Customer Communications
+Stopped at: Completed quick task 10: Build Profit Per Lane Analysis
 Resume file: None
-Next action: Automated customer communications live. Load status emails sent on dispatch and status transitions (PICKED_UP, IN_TRANSIT, DELIVERED). CRM interaction auto-logged with isAutomated=true. Customer form includes email notification preference toggle. emailNotifications Boolean field on Customer model.
+Next action: Lane profitability dashboard live at /lane-analytics. Aggregates completed routes by origin-destination pair using Decimal.js. Sortable table with 8 columns, bar chart (top 10 lanes, green/red), 4-card summary. Timeframe selector: 30/90/180/365 days. Sidebar link under Intelligence for OWNER/MANAGER.
