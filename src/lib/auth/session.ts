@@ -1,11 +1,13 @@
 /**
  * Cookie-based session management using AES-256-GCM encryption.
- * No external JWT library required — uses Node.js built-in crypto.
+ *
+ * Uses the Web Crypto API (available in both Edge Runtime and Node.js environments)
+ * so the same encryption/decryption works in both middleware and server components.
+ *
+ * Token format: base64url(iv) : base64url(authTag) : base64url(ciphertext)
  */
 
-import crypto from 'crypto';
 import { cookies } from 'next/headers';
-import { UserRole } from './roles';
 
 export interface SessionData {
   userId: string;
@@ -19,63 +21,107 @@ export interface SessionData {
 const SESSION_COOKIE_NAME = 'session';
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
-/**
- * Derive a 32-byte key from the AUTH_SECRET env var.
- */
-function getDerivedKey(): Buffer {
+// ============================================================
+// Web Crypto helpers (work in Edge Runtime and Node.js >= 18)
+// ============================================================
+
+async function getWebCryptoKey(): Promise<CryptoKey> {
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.length < 32) {
     throw new Error('AUTH_SECRET environment variable must be set and at least 32 characters long');
   }
-  return crypto.createHash('sha256').update(secret).digest();
+  const secretBytes = new TextEncoder().encode(secret);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', secretBytes);
+
+  return crypto.subtle.importKey(
+    'raw',
+    hashBuffer,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+function base64urlEncode(buf: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+function base64urlDecode(str: string): Uint8Array<ArrayBuffer> {
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+  const bytes = atob(padded).split('').map((c) => c.charCodeAt(0));
+  return new Uint8Array(bytes) as Uint8Array<ArrayBuffer>;
 }
 
 /**
- * Encrypt a session payload using AES-256-GCM.
- * Returns a base64url-encoded string: iv:authTag:ciphertext
+ * Encrypt a session payload using AES-256-GCM (Web Crypto API).
+ * Compatible with both Edge Runtime (middleware) and Node.js (server components).
  */
-export function encrypt(payload: SessionData): string {
-  const key = getDerivedKey();
-  const iv = crypto.randomBytes(12); // 96-bit IV for GCM
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-
+export async function encrypt(payload: SessionData): Promise<string> {
+  const key = await getWebCryptoKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
   const json = JSON.stringify(payload);
-  const encrypted = Buffer.concat([cipher.update(json, 'utf8'), cipher.final()]);
-  const authTag = cipher.getAuthTag();
+  const encoded = new TextEncoder().encode(json);
 
-  // Encode all parts as base64url and join with ':'
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    encoded
+  );
+
+  // AES-GCM in Web Crypto appends the 16-byte auth tag to the ciphertext
+  const ciphertextBytes = new Uint8Array(ciphertext);
+  const data = ciphertextBytes.slice(0, -16);
+  const tag = ciphertextBytes.slice(-16);
+
   return [
-    iv.toString('base64url'),
-    authTag.toString('base64url'),
-    encrypted.toString('base64url'),
+    base64urlEncode(iv.buffer),
+    base64urlEncode(tag.buffer),
+    base64urlEncode(data.buffer),
   ].join(':');
 }
 
 /**
- * Decrypt a session token. Returns null on any failure (expired, tampered, invalid).
+ * Decrypt a session token. Returns null on any failure (tampered, invalid, etc.)
+ * Compatible with both Edge Runtime (middleware) and Node.js (server components).
  */
-export function decrypt(token: string | undefined): SessionData | null {
+export async function decrypt(token: string | undefined): Promise<SessionData | null> {
   if (!token) return null;
 
   try {
-    const key = getDerivedKey();
+    const key = await getWebCryptoKey();
     const parts = token.split(':');
     if (parts.length !== 3) return null;
 
     const [ivB64, authTagB64, encryptedB64] = parts;
-    const iv = Buffer.from(ivB64, 'base64url');
-    const authTag = Buffer.from(authTagB64, 'base64url');
-    const encrypted = Buffer.from(encryptedB64, 'base64url');
+    const iv = base64urlDecode(ivB64);
+    const authTag = base64urlDecode(authTagB64);
+    const data = base64urlDecode(encryptedB64);
 
-    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-    decipher.setAuthTag(authTag);
+    // Reconstruct full ciphertext (data + authTag for Web Crypto AES-GCM)
+    const combined = new Uint8Array(data.length + authTag.length);
+    combined.set(data);
+    combined.set(authTag, data.length);
 
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-    return JSON.parse(decrypted.toString('utf8')) as SessionData;
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      key,
+      combined
+    );
+
+    const json = new TextDecoder().decode(decrypted);
+    return JSON.parse(json) as SessionData;
   } catch {
     return null;
   }
 }
+
+// ============================================================
+// Server Component helpers (uses next/headers cookies())
+// ============================================================
 
 /**
  * Read and decrypt the session cookie from next/headers.
@@ -91,7 +137,7 @@ export async function getSession(): Promise<SessionData | null> {
  * Encrypt and set the session cookie.
  */
 export async function setSession(data: SessionData): Promise<void> {
-  const token = encrypt(data);
+  const token = await encrypt(data);
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,

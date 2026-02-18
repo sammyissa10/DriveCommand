@@ -2,6 +2,7 @@
  * Main Seed Script
  *
  * Generates production-realistic dummy data for:
+ * - Demo owner user (demo@drivecommand.com / demo1234)
  * - Drivers (active users with DRIVER role)
  * - Trucks (with realistic specs and license plates)
  * - Routes (between real US cities with proper status)
@@ -17,6 +18,7 @@ import { PrismaClient } from '../src/generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcryptjs';
 
 // Create PostgreSQL connection pool
 const pool = new Pool({
@@ -103,10 +105,10 @@ async function main() {
       const routeCount = await tx.route.deleteMany({});
       const invitationCount = await tx.driverInvitation.deleteMany({});
       const truckCount = await tx.truck.deleteMany({});
-      // Don't delete all users - only delete DRIVER users (keep owners)
-      const driverCount = await tx.user.deleteMany({
-        where: { role: 'DRIVER' },
-      });
+      // Delete all users including owner (we'll recreate with proper password)
+      const userCount = await tx.user.deleteMany({});
+      // Delete all tenants
+      const tenantCount = await tx.tenant.deleteMany({});
 
       console.log(`   Deleted ${paymentCount} route payments`);
       console.log(`   Deleted ${expenseCount} route expenses`);
@@ -116,7 +118,8 @@ async function main() {
       console.log(`   Deleted ${routeCount.count} routes`);
       console.log(`   Deleted ${invitationCount.count} driver invitations`);
       console.log(`   Deleted ${truckCount.count} trucks`);
-      console.log(`   Deleted ${driverCount.count} drivers\n`);
+      console.log(`   Deleted ${userCount.count} users`);
+      console.log(`   Deleted ${tenantCount.count} tenants\n`);
     });
   }
 
@@ -132,6 +135,12 @@ async function main() {
     return;
   }
 
+  // Hash passwords
+  console.log('🔐 Hashing passwords...');
+  const ownerPasswordHash = await bcrypt.hash('demo1234', 12);
+  const driverPasswordHash = await bcrypt.hash('driver1234', 12);
+  console.log('   ✅ Passwords hashed\n');
+
   // Fetch or create tenant (bypass RLS for seed operations)
   let tenant = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -141,9 +150,11 @@ async function main() {
     });
   });
 
+  let ownerUser;
+
   if (!tenant) {
     console.log('📋 No tenant found — creating demo tenant and owner...');
-    tenant = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       const t = await tx.tenant.create({
         data: {
@@ -152,20 +163,50 @@ async function main() {
           isActive: true,
         },
       });
-      // Create an owner user for the tenant
-      await tx.user.create({
+      // Create demo owner user with bcrypt password
+      const owner = await tx.user.create({
         data: {
           tenantId: t.id,
-          clerkUserId: `demo_owner_${faker.string.alphanumeric(16)}`,
-          email: 'owner@drivecommand.demo',
+          email: 'demo@drivecommand.com',
+          passwordHash: ownerPasswordHash,
           role: 'OWNER',
           firstName: 'Demo',
           lastName: 'Owner',
           isActive: true,
         },
       });
-      return t;
+      return { tenant: t, owner };
     });
+    tenant = result.tenant;
+    ownerUser = result.owner;
+    console.log('   ✅ Created demo tenant and owner (demo@drivecommand.com / demo1234)\n');
+  } else {
+    // Check if existing owner needs password hash
+    const existingOwner = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.user.findFirst({
+        where: { tenantId: tenant!.id, role: 'OWNER' },
+      });
+    });
+
+    if (existingOwner && !existingOwner.passwordHash) {
+      // Update existing owner with password hash and correct email
+      ownerUser = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.user.update({
+          where: { id: existingOwner.id },
+          data: {
+            email: 'demo@drivecommand.com',
+            passwordHash: ownerPasswordHash,
+            firstName: existingOwner.firstName || 'Demo',
+            lastName: existingOwner.lastName || 'Owner',
+          },
+        });
+      });
+      console.log('   ✅ Updated existing owner with password hash\n');
+    } else {
+      ownerUser = existingOwner;
+    }
   }
 
   console.log(`📦 Seeding for tenant: ${tenant.name} (${tenant.id})\n`);
@@ -214,9 +255,9 @@ async function main() {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.user.create({
         data: {
-          tenantId: tenant.id,
-          clerkUserId: `demo_driver_${faker.string.alphanumeric(16)}`, // Fake Clerk ID
+          tenantId: tenant!.id,
           email: data.email,
+          passwordHash: driverPasswordHash,
           role: 'DRIVER',
           firstName: data.firstName,
           lastName: data.lastName,
@@ -240,7 +281,7 @@ async function main() {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.truck.create({
         data: {
-          tenantId: tenant.id,
+          tenantId: tenant!.id,
           make: model.make,
           model: model.model,
           year: model.year,
@@ -288,7 +329,7 @@ async function main() {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.route.create({
         data: {
-          tenantId: tenant.id,
+          tenantId: tenant!.id,
           origin: pair.origin,
           destination: pair.destination,
           scheduledDate,
@@ -324,7 +365,7 @@ async function main() {
       // Use raw SQL to avoid Prisma client caching issues
       const result: any[] = await tx.$queryRaw`
         INSERT INTO "ExpenseCategory" ("tenantId", "name", "isSystemDefault", "createdAt", "updatedAt")
-        VALUES (${tenant.id}::uuid, ${name}, true, NOW(), NOW())
+        VALUES (${tenant!.id}::uuid, ${name}, true, NOW(), NOW())
         ON CONFLICT ("tenantId", "name") DO UPDATE SET "updatedAt" = NOW()
         RETURNING *
       `;
@@ -346,7 +387,7 @@ async function main() {
     // Insert template using raw SQL
     const templateResult: any[] = await tx.$queryRaw`
       INSERT INTO "ExpenseTemplate" ("tenantId", "name", "createdAt", "updatedAt")
-      VALUES (${tenant.id}::uuid, 'Standard Route', NOW(), NOW())
+      VALUES (${tenant!.id}::uuid, 'Standard Route', NOW(), NOW())
       ON CONFLICT ("tenantId", "name") DO UPDATE SET "updatedAt" = NOW()
       RETURNING *
     `;
@@ -413,7 +454,7 @@ async function main() {
         const notes = faker.datatype.boolean() ? faker.lorem.sentence() : null;
         await tx.$executeRaw`
           INSERT INTO "RouteExpense" ("tenantId", "routeId", "categoryId", "amount", "description", "notes", "createdAt", "updatedAt")
-          VALUES (${tenant.id}::uuid, ${route.id}::uuid, ${category.id}::uuid, ${amount}, ${description}, ${notes}, NOW(), NOW())
+          VALUES (${tenant!.id}::uuid, ${route.id}::uuid, ${category.id}::uuid, ${amount}, ${description}, ${notes}, NOW(), NOW())
         `;
       });
       expenseCount++;
@@ -436,7 +477,7 @@ async function main() {
       const notes = faker.datatype.boolean() ? 'Payment processed' : null;
       await tx.$executeRaw`
         INSERT INTO "RoutePayment" ("tenantId", "routeId", "amount", "status", "paidAt", "notes", "createdAt", "updatedAt")
-        VALUES (${tenant.id}::uuid, ${route.id}::uuid, ${amount}, ${status}::"PaymentStatus", ${paidAt}, ${notes}, NOW(), NOW())
+        VALUES (${tenant!.id}::uuid, ${route.id}::uuid, ${amount}, ${status}::"PaymentStatus", ${paidAt}, ${notes}, NOW(), NOW())
       `;
     });
     paymentCount++;
@@ -493,12 +534,11 @@ async function main() {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.driverInvitation.create({
         data: {
-          tenantId: tenant.id,
+          tenantId: tenant!.id,
           email: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
           licenseNumber: data.licenseNumber,
-          clerkInvitationId: `demo_invite_${faker.string.alphanumeric(24)}`, // Fake Clerk invitation ID
           status: 'PENDING',
           expiresAt: faker.date.future({ years: 0.1 }), // ~1 month
         },
@@ -513,14 +553,15 @@ async function main() {
   // ===================================
   console.log('============================');
   console.log('✅ Seeding Complete!\n');
-  console.log(`   Drivers:           ${drivers.length}`);
-  console.log(`   Trucks:            ${trucks.length}`);
-  console.log(`   Routes:            ${routes.length}`);
+  console.log(`   Demo Owner:         demo@drivecommand.com / demo1234`);
+  console.log(`   Drivers:            ${drivers.length} (password: driver1234)`);
+  console.log(`   Trucks:             ${trucks.length}`);
+  console.log(`   Routes:             ${routes.length}`);
   console.log(`   Expense Categories: ${categories.length}`);
   console.log(`   Expense Templates:  1`);
-  console.log(`   Route Expenses:    ${expenseCount}`);
-  console.log(`   Route Payments:    ${paymentCount}`);
-  console.log(`   Invitations:       ${invitations.length}\n`);
+  console.log(`   Route Expenses:     ${expenseCount}`);
+  console.log(`   Route Payments:     ${paymentCount}`);
+  console.log(`   Invitations:        ${invitations.length}\n`);
   console.log('💡 To seed fleet intelligence data (GPS, safety, fuel), run:');
   console.log('   npm run seed:fleet\n');
 }

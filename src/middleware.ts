@@ -11,7 +11,8 @@ import { decrypt } from '@/lib/auth/session';
  * 3. Authenticated users without tenantId are redirected to /onboarding
  * 4. Authenticated users with tenantId get x-tenant-id header injected
  *
- * NOTE: Cannot use next/headers cookies() in middleware — must read from request directly.
+ * Uses Web Crypto API (via session.ts decrypt) which is compatible with Edge Runtime.
+ * Cannot use next/headers cookies() in middleware — reads from request directly.
  */
 
 const PUBLIC_PATHS = [
@@ -40,7 +41,7 @@ export default async function middleware(request: NextRequest) {
 
   // Read session cookie directly from request (not next/headers)
   const sessionToken = request.cookies.get('session')?.value;
-  const session = decrypt(sessionToken);
+  const session = await decrypt(sessionToken);
 
   // Unauthenticated on protected route - redirect to sign-in
   if (!session) {
