@@ -22,6 +22,7 @@ import {
   ClipboardCheck,
   FileSearch,
   Calculator,
+  Settings,
 } from "lucide-react"
 import {
   Sidebar,
@@ -341,6 +342,30 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {/* Settings - OWNER only */}
+        {userRole === UserRole.OWNER && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Settings
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/integrations')}
+                    tooltip="Integrations"
+                  >
+                    <Link href="/settings/integrations">
+                      <Settings />
+                      <span>Integrations</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       {/* Footer with user menu */}
