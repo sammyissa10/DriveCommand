@@ -4,28 +4,24 @@ import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { UserMenu } from "@/components/navigation/user-menu";
 import { Truck } from "lucide-react";
+import { DriverNav } from "@/components/driver/driver-nav";
 
 /**
  * Driver portal layout
  *
  * Accessible by DRIVER role only.
  * Unauthorized users are redirected to /unauthorized.
- *
- * IMPORTANT: Layout auth checks run on initial access only (Next.js optimization).
- * For security, ALWAYS enforce authorization in server actions too.
  */
 export default async function DriverLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Check authentication
   const session = await getSession();
   if (!session) {
     redirect("/sign-in");
   }
 
-  // Check driver authorization
   const role = await getRole();
   if (role !== UserRole.DRIVER) {
     redirect("/unauthorized");
@@ -43,6 +39,7 @@ export default async function DriverLayout({
           </div>
           <UserMenu />
         </div>
+        <DriverNav />
       </header>
       <main className="p-6">{children}</main>
     </div>
