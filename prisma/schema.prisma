@@ -107,8 +107,8 @@ model Tenant {
 model User {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String   @db.Uuid
-  clerkUserId   String   @unique
   email         String
+  passwordHash  String?
   role          UserRole
   isSystemAdmin Boolean  @default(false)
   firstName     String?
@@ -125,8 +125,8 @@ model User {
   safetyEvents      SafetyEvent[]
   tagAssignments    TagAssignment[]
 
+  @@unique([email, tenantId])
   @@index([tenantId])
-  @@index([clerkUserId])
   @@index([email])
 }
 
@@ -158,25 +158,23 @@ model Truck {
 }
 
 model DriverInvitation {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId           String           @db.Uuid
-  email              String
-  firstName          String
-  lastName           String
-  licenseNumber      String?
-  clerkInvitationId  String           @unique
-  expiresAt          DateTime         @db.Timestamptz
-  status             InvitationStatus @default(PENDING)
-  acceptedAt         DateTime?        @db.Timestamptz
-  userId             String?          @db.Uuid
-  createdAt          DateTime         @default(now()) @db.Timestamptz
-  updatedAt          DateTime         @updatedAt @db.Timestamptz
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String           @db.Uuid
+  email         String
+  firstName     String
+  lastName      String
+  licenseNumber String?
+  expiresAt     DateTime         @db.Timestamptz
+  status        InvitationStatus @default(PENDING)
+  acceptedAt    DateTime?        @db.Timestamptz
+  userId        String?          @db.Uuid
+  createdAt     DateTime         @default(now()) @db.Timestamptz
+  updatedAt     DateTime         @updatedAt @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@index([email])
-  @@index([clerkInvitationId])
 }
 
 model Route {
