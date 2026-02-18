@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 5: Remove Clerk and replace with custom email/password auth
+Last activity: 2026-02-18 — Completed quick task 6: Fix truck save/view errors and improve route driver dropdown
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -47,6 +47,7 @@ Progress: [███████████████████████
 
 **Quick tasks:**
 - Quick-1 (2026-02-16): Management pages bugs + seed data — 457s, 3 tasks, 7 files affected
+- Quick-6 (2026-02-18): Fix truck save/view errors and route driver dropdown — 133s, 2 tasks, 4 files affected
 
 ## Accumulated Context
 
@@ -143,6 +144,12 @@ Progress: [███████████████████████
 - Prisma P2025 error code indicates version mismatch (optimistic locking conflict) — return user-friendly error message
 - Keep old /routes/[id]/edit page as redirect rather than removing (preserves bookmarks and existing links)
 
+**Quick-6 decisions:**
+- Keep revalidatePath/redirect outside try/catch blocks — Next.js redirect throws NEXT_REDIRECT internally and must not be caught
+- Handle Prisma P2002 unique constraint violation with field-level error for VIN duplicates (vin: ['A truck with this VIN already exists'])
+- Use .catch on listDocuments within Promise.all to isolate S3 failures without breaking other data fetches
+- Wrap edit-mode driver/truck queries in try/catch so route edit renders with empty dropdowns if DB query fails
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -170,10 +177,11 @@ None blocking immediate progress.
 | 2 | Change login method - remove Google, create owner login | 2026-02-17 | a6d016f | [2-change-login-method-remove-google-create](./quick/2-change-login-method-remove-google-create/) |
 | 3 | Investigate and fix all broken pages in the app | 2026-02-18 | 3f30f62 | [3-investigate-and-fix-all-broken-pages-in-](./quick/3-investigate-and-fix-all-broken-pages-in-/) |
 | 5 | Remove Clerk and replace with custom email/password auth | 2026-02-18 | 886f262 | [5-remove-clerk-and-replace-with-custom-ema](./quick/5-remove-clerk-and-replace-with-custom-ema/) |
+| 6 | Fix truck save/view errors and improve route driver dropdown | 2026-02-18 | ae7797b | [6-fix-truck-save-view-errors-improve-truck](./quick/6-fix-truck-save-view-errors-improve-truck/) |
 
 ## Session Continuity
 
-Last session: 2026-02-17
-Stopped at: Completed quick task 5: Remove Clerk and replace with custom email/password auth
+Last session: 2026-02-18
+Stopped at: Completed quick task 6: Fix truck save/view errors and improve route driver dropdown
 Resume file: None
-Next action: Custom auth is live. Sign in with demo@drivecommand.com / demo1234. All Clerk references removed.
+Next action: Truck CRUD and route forms are now error-safe. No unhandled DB exceptions on truck save/update. Route driver dropdowns degrade gracefully.
