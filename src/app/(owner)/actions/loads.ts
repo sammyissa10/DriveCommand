@@ -7,8 +7,84 @@ import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@/lib/va
 import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { sendLoadStatusEmail } from '@/lib/email/customer-notifications';
 
 const Decimal = Prisma.Decimal;
+
+/**
+ * Map load status enum values to human-readable labels.
+ */
+function formatStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    DISPATCHED: 'Dispatched',
+    PICKED_UP: 'Picked Up',
+    IN_TRANSIT: 'In Transit',
+    DELIVERED: 'Delivered',
+    INVOICED: 'Invoiced',
+    CANCELLED: 'Cancelled',
+  };
+  return labels[status] || status;
+}
+
+/**
+ * Send a load status notification email to the customer and log a CRM interaction.
+ * Errors are caught and logged but never thrown — email failure must not block load status changes.
+ */
+async function sendNotificationAndLogInteraction(
+  prisma: any,
+  tenantId: string,
+  loadId: string,
+  newStatus: string
+): Promise<void> {
+  try {
+    const load = await prisma.load.findUnique({
+      where: { id: loadId },
+      include: {
+        customer: true,
+        driver: { select: { firstName: true, lastName: true } },
+        truck: { select: { make: true, model: true, licensePlate: true } },
+      },
+    });
+
+    if (!load?.customer?.email || !load.customer.emailNotifications) return;
+
+    const driverName = load.driver
+      ? `${load.driver.firstName || ''} ${load.driver.lastName || ''}`.trim() || 'Assigned Driver'
+      : 'TBD';
+    const truckInfo = load.truck
+      ? `${load.truck.make} ${load.truck.model} (${load.truck.licensePlate})`
+      : 'TBD';
+    const trackingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.drivecommand.com'}/loads/${loadId}`;
+
+    await sendLoadStatusEmail(load.customer.email, {
+      customerName: load.customer.contactName || load.customer.companyName,
+      loadNumber: load.loadNumber,
+      status: newStatus,
+      origin: load.origin,
+      destination: load.destination,
+      driverName,
+      truckInfo,
+      estimatedDelivery: load.deliveryDate
+        ? load.deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : undefined,
+      trackingUrl,
+    });
+
+    await prisma.customerInteraction.create({
+      data: {
+        tenantId,
+        customerId: load.customer.id,
+        type: 'LOAD_UPDATE',
+        subject: `Load ${load.loadNumber} \u2014 ${formatStatusLabel(newStatus)}`,
+        description: `Automated email sent: Load ${load.loadNumber} status changed to ${formatStatusLabel(newStatus)}. Route: ${load.origin} -> ${load.destination}.`,
+        isAutomated: true,
+      },
+    });
+  } catch (error) {
+    // Log but do NOT throw — email failure should not block load status change
+    console.error('Failed to send customer notification:', error);
+  }
+}
 
 /**
  * Generate the next load number (LD-NNNN format).
@@ -205,6 +281,10 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
         status: 'DISPATCHED',
       },
     });
+
+    // Fire-and-forget notification (non-blocking)
+    const tId = await requireTenantId();
+    sendNotificationAndLogInteraction(prisma, tId, id, 'DISPATCHED');
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
@@ -247,6 +327,12 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       where: { id },
       data: { status: newStatus as any },
     });
+
+    // Only send for customer-relevant statuses
+    if (['PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(newStatus)) {
+      const tId = await requireTenantId();
+      sendNotificationAndLogInteraction(prisma, tId, id, newStatus);
+    }
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
