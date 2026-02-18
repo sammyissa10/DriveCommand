@@ -187,6 +187,7 @@ None blocking immediate progress.
 | 3 | Investigate and fix all broken pages in the app | 2026-02-18 | 3f30f62 | [3-investigate-and-fix-all-broken-pages-in-](./quick/3-investigate-and-fix-all-broken-pages-in-/) |
 | 5 | Remove Clerk and replace with custom email/password auth | 2026-02-18 | 886f262 | [5-remove-clerk-and-replace-with-custom-ema](./quick/5-remove-clerk-and-replace-with-custom-ema/) |
 | 6 | Fix truck save/view errors and improve route driver dropdown | 2026-02-18 | ae7797b | [6-fix-truck-save-view-errors-improve-truck](./quick/6-fix-truck-save-view-errors-improve-truck/) |
+| 7 | Build Invoice/Billing UI and Payroll UI with migration and sidebar navigation | 2026-02-18 | 9e9a67f | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 | 7 | Build Invoice/Billing UI and Payroll UI | 2026-02-18 | 5bbef95 | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 
 ## Session Continuity
