@@ -14,6 +14,10 @@ import {
   Wrench,
   Tag,
   Plus,
+  Building2,
+  Receipt,
+  DollarSign,
+  Package,
 } from "lucide-react"
 import {
   Sidebar,
@@ -143,6 +147,67 @@ export function AppSidebar() {
                     <Link href="/fuel">
                       <Fuel />
                       <span>Fuel & Energy</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Business */}
+        {canViewFleetIntelligence && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Business
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/loads")}
+                    tooltip="Loads"
+                  >
+                    <Link href="/loads">
+                      <Package />
+                      <span>Loads</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/crm")}
+                    tooltip="CRM"
+                  >
+                    <Link href="/crm">
+                      <Building2 />
+                      <span>CRM</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/invoices")}
+                    tooltip="Invoices"
+                  >
+                    <Link href="/invoices">
+                      <Receipt />
+                      <span>Invoices</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/payroll")}
+                    tooltip="Payroll"
+                  >
+                    <Link href="/payroll">
+                      <DollarSign />
+                      <span>Payroll</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
