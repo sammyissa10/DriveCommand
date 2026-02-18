@@ -12,6 +12,7 @@ export const customerCreateSchema = z.object({
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'VIP']).default('MEDIUM'),
   status: z.enum(['ACTIVE', 'INACTIVE', 'PROSPECT']).default('ACTIVE'),
   notes: z.string().max(2000).optional().or(z.literal('')),
+  emailNotifications: z.preprocess((val) => val === 'true' || val === true, z.boolean()).default(true),
 });
 
 export const customerUpdateSchema = customerCreateSchema.partial();

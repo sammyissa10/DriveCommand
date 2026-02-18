@@ -46,6 +46,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
           priority: customer.priority,
           status: customer.status,
           notes: customer.notes || '',
+          emailNotifications: customer.emailNotifications,
         }}
         submitLabel="Update Customer"
       />

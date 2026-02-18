@@ -16,6 +16,7 @@ interface CustomerFormProps {
     priority?: string;
     status?: string;
     notes?: string;
+    emailNotifications?: boolean;
   };
   submitLabel: string;
 }
@@ -201,6 +202,27 @@ export function CustomerForm({ action, initialData, submitLabel }: CustomerFormP
               className={inputClass}
             />
           </div>
+        </div>
+      </div>
+
+      {/* Communication Preferences */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Communication Preferences
+        </h3>
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="emailNotifications"
+            name="emailNotifications"
+            value="true"
+            defaultChecked={initialData?.emailNotifications !== false}
+            disabled={isPending}
+            className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-ring"
+          />
+          <label htmlFor="emailNotifications" className="text-sm text-foreground">
+            Send automated load status emails to this customer
+          </label>
         </div>
       </div>
 

@@ -26,6 +26,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
     priority: (formData.get('priority') as string) || 'MEDIUM',
     status: (formData.get('status') as string) || 'ACTIVE',
     notes: (formData.get('notes') as string) || undefined,
+    emailNotifications: formData.get('emailNotifications') as string | null,
   };
 
   const result = customerCreateSchema.safeParse(rawData);
@@ -83,6 +84,7 @@ export async function updateCustomer(id: string, prevState: any, formData: FormD
     priority: (formData.get('priority') as string) || 'MEDIUM',
     status: (formData.get('status') as string) || 'ACTIVE',
     notes: (formData.get('notes') as string) || undefined,
+    emailNotifications: formData.get('emailNotifications') as string | null,
   };
 
   const result = customerUpdateSchema.safeParse(rawData);

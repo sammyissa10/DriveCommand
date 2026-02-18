@@ -558,9 +558,10 @@ model Customer {
   city         String?
   state        String?
   zipCode      String?
-  priority     CustomerPriority @default(MEDIUM)
-  status       CustomerStatus   @default(ACTIVE)
-  notes        String?
+  priority              CustomerPriority @default(MEDIUM)
+  status                CustomerStatus   @default(ACTIVE)
+  notes                 String?
+  emailNotifications    Boolean          @default(true)
   totalLoads   Int              @default(0)
   totalRevenue Decimal          @default(0) @db.Decimal(12, 2)
   lastLoadDate DateTime?        @db.Timestamptz
