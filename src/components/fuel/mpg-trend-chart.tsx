@@ -52,7 +52,7 @@ export function MPGTrendChart({ data }: MPGTrendChartProps) {
         <CardDescription>Daily average MPG</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[300px] w-full aspect-auto">
           <LineChart data={formattedData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis

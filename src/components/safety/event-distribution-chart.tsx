@@ -67,10 +67,10 @@ export function EventDistributionChart({ byType, bySeverity }: EventDistribution
           {byType.length > 0 && (
             <div>
               <h4 className="text-sm font-medium mb-2">By Event Type</h4>
-              <ChartContainer config={typeChartConfig} className="min-h-[300px] w-full">
+              <ChartContainer config={typeChartConfig} className="h-[300px] w-full aspect-auto">
                 <BarChart data={byType} layout="vertical">
                   <XAxis type="number" />
-                  <YAxis dataKey="label" type="category" width={140} />
+                  <YAxis dataKey="label" type="category" width={100} tick={{ fontSize: 11 }} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="count" fill="var(--color-count)" radius={4} />
                 </BarChart>
@@ -82,7 +82,7 @@ export function EventDistributionChart({ byType, bySeverity }: EventDistribution
           {bySeverity.length > 0 && (
             <div>
               <h4 className="text-sm font-medium mb-2">By Severity</h4>
-              <ChartContainer config={severityChartConfig} className="min-h-[300px] w-full">
+              <ChartContainer config={severityChartConfig} className="h-[300px] w-full aspect-auto">
                 <PieChart>
                   <ChartTooltip content={<ChartTooltipContent hideLabel />} />
                   <Pie

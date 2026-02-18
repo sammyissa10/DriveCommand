@@ -47,9 +47,11 @@ test.describe('Driver Management', () => {
       test.skip(true, 'Authentication required - skipping test');
     }
 
-    // Click Invite Driver button
-    await page.getByRole('link', { name: /Invite Driver/i }).click();
-    await page.waitForLoadState('networkidle');
+    // Click Invite Driver button and wait for navigation
+    await Promise.all([
+      page.waitForURL('**/drivers/invite'),
+      page.getByRole('link', { name: /Invite Driver/i }).click(),
+    ]);
 
     // Verify navigation to invite page
     expect(page.url()).toContain('/drivers/invite');
@@ -144,9 +146,11 @@ test.describe('Route Management', () => {
       test.skip(true, 'Authentication required - skipping test');
     }
 
-    // Click Create Route button
-    await page.getByRole('link', { name: /Create Route/i }).click();
-    await page.waitForLoadState('networkidle');
+    // Click Create Route button and wait for navigation
+    await Promise.all([
+      page.waitForURL('**/routes/new'),
+      page.getByRole('link', { name: /Create Route/i }).click(),
+    ]);
 
     // Verify navigation to new route page
     expect(page.url()).toContain('/routes/new');
@@ -193,13 +197,18 @@ test.describe('Route Management', () => {
       test.skip(true, 'Authentication required - skipping test');
     }
 
-    // Verify status filter select exists
-    const statusFilter = page.getByRole('combobox', { name: /status/i }).or(page.locator('select[name="status"]'));
-    await expect(statusFilter.first()).toBeVisible();
+    // The status filter is a plain <select> element (not a shadcn combobox)
+    const selects = page.locator('select');
+    const count = await selects.count();
+    expect(count).toBeGreaterThanOrEqual(1);
 
-    // Verify it has status options
-    const options = await statusFilter.first().locator('option').allTextContents();
-    expect(options.some(opt => opt.includes('All') || opt.includes('Planned') || opt.includes('Progress') || opt.includes('Completed'))).toBeTruthy();
+    // Find the select that contains "All Statuses" option
+    const statusFilter = page.locator('select').filter({ has: page.locator('option', { hasText: 'All Statuses' }) });
+    await expect(statusFilter).toBeVisible();
+
+    const options = await statusFilter.locator('option').allTextContents();
+    expect(options).toContain('All Statuses');
+    expect(options).toContain('Planned');
   });
 
   test('should navigate to route detail page if routes exist', async ({ page }) => {

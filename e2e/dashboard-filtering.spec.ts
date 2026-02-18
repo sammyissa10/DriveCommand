@@ -72,25 +72,32 @@ test.describe('Safety Dashboard Filtering', () => {
   });
 
   test('should remove tagId param when "All Vehicles" selected', async ({ page }) => {
-    // Start with a tagId in URL
-    await page.goto('/safety?tagId=test-id');
+    // Start at /safety, then select a real tag to get a valid tagId in URL
+    await page.goto('/safety');
     await page.waitForLoadState('networkidle');
 
     if (page.url().includes('sign-in')) {
       test.skip(true, 'Authentication required');
     }
 
-    // Open dropdown
     const filterDropdown = page.locator('[role="combobox"]').first();
     await filterDropdown.click();
+    await page.waitForSelector('[role="option"]');
 
-    // Select "All Vehicles"
+    const options = await page.locator('[role="option"]').all();
+    if (options.length <= 1) {
+      test.skip(true, 'No tags available to test filter removal');
+    }
+
+    // Select first real tag to add tagId to URL
+    await options[1].click();
+    await page.waitForURL(/tagId=/);
+
+    // Now select "All Vehicles" to remove it
+    await filterDropdown.click();
     await page.getByRole('option', { name: 'All Vehicles' }).click();
-
-    // Wait for URL change
     await page.waitForTimeout(500);
 
-    // Verify tagId is removed from URL
     expect(page.url()).not.toContain('tagId=');
   });
 });

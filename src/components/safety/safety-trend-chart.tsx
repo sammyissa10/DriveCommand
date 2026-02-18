@@ -45,7 +45,7 @@ export function SafetyTrendChart({ data }: SafetyTrendChartProps) {
         <CardDescription>Daily fleet safety score over the last 30 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[300px] w-full aspect-auto">
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis

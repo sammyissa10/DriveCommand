@@ -97,7 +97,8 @@ test.describe('Tag CRUD Operations', () => {
     }
 
     // Check for color picker buttons (8 preset colors)
-    const colorButtons = page.locator('button[type="button"][style*="backgroundColor"]');
+    // HTML converts camelCase backgroundColor to kebab-case background-color
+    const colorButtons = page.locator('button[type="button"][style*="background-color"]');
     const count = await colorButtons.count();
 
     expect(count).toBeGreaterThanOrEqual(8);

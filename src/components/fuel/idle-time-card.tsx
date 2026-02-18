@@ -51,7 +51,7 @@ export function IdleTimeCard({ data }: IdleTimeCardProps) {
         <CardDescription>Time spent idling vs. moving</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+        <ChartContainer config={chartConfig} className="h-[300px] w-full aspect-auto">
           <BarChart data={data} layout="vertical">
             <XAxis
               type="number"
@@ -61,8 +61,8 @@ export function IdleTimeCard({ data }: IdleTimeCardProps) {
             <YAxis
               type="category"
               dataKey="name"
-              width={120}
-              tick={{ fontSize: 12 }}
+              width={80}
+              tick={{ fontSize: 11 }}
             />
             <ChartTooltip
               content={({ active, payload }) => {
