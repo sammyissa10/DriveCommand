@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 13: Build AI Profit Predictor
+Last activity: 2026-02-18 — Completed quick task 14: Build Third-Party Integrations Framework
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -55,6 +55,7 @@ Progress: [███████████████████████
 - Quick-11 (2026-02-18): Build Compliance Dashboard — ~6min, 2 tasks, 7 files affected
 - Quick-12 (2026-02-18): Build AI Document Reading — ~8min, 2 tasks, 6 files affected
 - Quick-13 (2026-02-18): Build AI Profit Predictor — ~6min, 2 tasks, 4 files affected
+- Quick-14 (2026-02-18): Build Third-Party Integrations Framework — ~8min, 2 tasks, 8 files affected
 
 ## Accumulated Context
 
@@ -208,6 +209,13 @@ Progress: [███████████████████████
 - State variables used in lane data source label (not echoed from server) to keep PredictionResult interface minimal
 - Calculator icon chosen for Profit Predictor sidebar link to distinguish from TrendingUp (Lane Profitability)
 
+**Quick-14 decisions:**
+- Use db push (not migrate dev) to handle drift — consistent with quick-7 pattern for this project
+- Fire-and-forget toggle (no loading state) with optimistic UI revert on error for v1 simplicity
+- comingSoon cards show toast on entire card click; Switch uses stopPropagation to avoid conflict
+- Sonner Toaster added to root layout so toasts are available across all pages globally
+- Settings section in sidebar gated to OWNER only (not MANAGER) per plan spec — settings are owner-only
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -244,10 +252,11 @@ None blocking immediate progress.
 | 11 | Build compliance dashboard with driver/truck expiry tracking, safety events, and alerts | 2026-02-18 | 4fbb6b9 | [11-build-compliance-dashboard](./quick/11-build-compliance-dashboard/) |
 | 12 | Build AI document reading with Claude-powered freight data extraction | 2026-02-18 | 30d354d | [12-build-ai-document-reading](./quick/12-build-ai-document-reading/) |
 | 13 | Build AI profit predictor with lane-based and fleet-average cost estimation | 2026-02-18 | eee9707 | [13-build-ai-profit-predictor](./quick/13-build-ai-profit-predictor/) |
+| 14 | Build third-party integrations framework with settings UI and TenantIntegration model | 2026-02-18 | 7462229 | [14-build-third-party-integrations-framework](./quick/14-build-third-party-integrations-framework/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 13: Build AI Profit Predictor
+Stopped at: Completed quick task 14: Build Third-Party Integrations Framework
 Resume file: None
-Next action: Profit Predictor live at /profit-predictor. Enter origin, destination, distance, and offered rate to get predicted expenses, profit, margin, and accept/caution/reject recommendation using lane history or fleet average cost-per-mile. Sidebar link under Intelligence for OWNER/MANAGER.
+Next action: Integrations page live at /settings/integrations. 7 integration cards across 4 categories (ELD, Accounting, Factoring, Email). SendGrid and Mailgun have functional Switch toggles backed by TenantIntegration upsert. Coming Soon integrations (QuickBooks, Samsara, KeepTruckin, Triumph, OTR) show badge and sonner toast on click. Settings section in sidebar for OWNER role only.
