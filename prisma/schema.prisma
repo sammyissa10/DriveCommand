@@ -85,23 +85,28 @@ model Tenant {
   createdAt             DateTime @default(now()) @db.Timestamptz
   updatedAt             DateTime @updatedAt @db.Timestamptz
 
-  users              User[]
-  trucks             Truck[]
-  driverInvitations  DriverInvitation[]
-  routes             Route[]
-  documents          Document[]
-  maintenanceEvents  MaintenanceEvent[]
-  scheduledServices  ScheduledService[]
-  notificationLogs   NotificationLog[]
-  gpsLocations       GPSLocation[]
-  safetyEvents       SafetyEvent[]
-  fuelRecords        FuelRecord[]
-  tags               Tag[]
-  tagAssignments     TagAssignment[]
-  expenseCategories  ExpenseCategory[]
-  expenseTemplates   ExpenseTemplate[]
-  routeExpenses      RouteExpense[]
-  routePayments      RoutePayment[]
+  users                User[]
+  trucks               Truck[]
+  driverInvitations    DriverInvitation[]
+  routes               Route[]
+  documents            Document[]
+  maintenanceEvents    MaintenanceEvent[]
+  scheduledServices    ScheduledService[]
+  notificationLogs     NotificationLog[]
+  gpsLocations         GPSLocation[]
+  safetyEvents         SafetyEvent[]
+  fuelRecords          FuelRecord[]
+  tags                 Tag[]
+  tagAssignments       TagAssignment[]
+  expenseCategories    ExpenseCategory[]
+  expenseTemplates     ExpenseTemplate[]
+  routeExpenses        RouteExpense[]
+  routePayments        RoutePayment[]
+  customers            Customer[]
+  customerInteractions CustomerInteraction[]
+  invoices             Invoice[]
+  payrollRecords       PayrollRecord[]
+  loads                Load[]
 }
 
 model User {
@@ -124,6 +129,8 @@ model User {
   driverDocuments   Document[]      @relation(name: "DriverDocuments")
   safetyEvents      SafetyEvent[]
   tagAssignments    TagAssignment[]
+  payrollRecords    PayrollRecord[]
+  driverLoads       Load[]          @relation(name: "DriverLoads")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -152,6 +159,7 @@ model Truck {
   safetyEvents       SafetyEvent[]
   fuelRecords        FuelRecord[]
   tagAssignments     TagAssignment[]
+  loads              Load[]
 
   @@unique([tenantId, vin])
   @@index([tenantId])
@@ -201,6 +209,7 @@ model Route {
   safetyEvents SafetyEvent[]
   expenses     RouteExpense[]
   payments     RoutePayment[]
+  loads        Load[]
 
   @@index([tenantId])
   @@index([driverId])
@@ -512,4 +521,209 @@ model RoutePayment {
   @@index([routeId])
   @@index([status])
   @@index([deletedAt])
+}
+
+// ─── CRM Models ─────────────────────────────────────────────
+
+enum CustomerPriority {
+  LOW
+  MEDIUM
+  HIGH
+  VIP
+}
+
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  PROSPECT
+}
+
+enum InteractionType {
+  EMAIL
+  PHONE
+  MEETING
+  NOTE
+  LOAD_UPDATE
+  ETA_NOTIFICATION
+}
+
+model Customer {
+  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String           @db.Uuid
+  companyName  String
+  contactName  String?
+  email        String?
+  phone        String?
+  address      String?
+  city         String?
+  state        String?
+  zipCode      String?
+  priority     CustomerPriority @default(MEDIUM)
+  status       CustomerStatus   @default(ACTIVE)
+  notes        String?
+  totalLoads   Int              @default(0)
+  totalRevenue Decimal          @default(0) @db.Decimal(12, 2)
+  lastLoadDate DateTime?        @db.Timestamptz
+  createdAt    DateTime         @default(now()) @db.Timestamptz
+  updatedAt    DateTime         @updatedAt @db.Timestamptz
+
+  tenant       Tenant              @relation(fields: [tenantId], references: [id])
+  interactions CustomerInteraction[]
+  loads        Load[]
+
+  @@unique([tenantId, companyName])
+  @@index([tenantId])
+  @@index([priority])
+  @@index([status])
+}
+
+model CustomerInteraction {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String          @db.Uuid
+  customerId    String          @db.Uuid
+  type          InteractionType
+  subject       String
+  description   String?
+  isAutomated   Boolean         @default(false)
+  createdBy     String?         @db.Uuid
+  createdAt     DateTime        @default(now()) @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ─── Invoice & Billing Models ───────────────────────────────
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String        @db.Uuid
+  customerId   String?       @db.Uuid
+  routeId      String?       @db.Uuid
+  invoiceNumber String
+  amount       Decimal       @db.Decimal(12, 2)
+  tax          Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount  Decimal       @db.Decimal(12, 2)
+  status       InvoiceStatus @default(DRAFT)
+  issueDate    DateTime      @db.Timestamptz
+  dueDate      DateTime      @db.Timestamptz
+  paidDate     DateTime?     @db.Timestamptz
+  notes        String?
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @db.Timestamptz
+
+  tenant   Tenant        @relation(fields: [tenantId], references: [id])
+  items    InvoiceItem[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model InvoiceItem {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId   String  @db.Uuid
+  description String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  amount      Decimal @db.Decimal(12, 2)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+// ─── Payroll Models ─────────────────────────────────────────
+
+enum PayrollStatus {
+  DRAFT
+  APPROVED
+  PAID
+}
+
+enum LoadStatus {
+  PENDING
+  DISPATCHED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  INVOICED
+  CANCELLED
+}
+
+model PayrollRecord {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String        @db.Uuid
+  driverId     String        @db.Uuid
+  periodStart  DateTime      @db.Timestamptz
+  periodEnd    DateTime      @db.Timestamptz
+  basePay      Decimal       @db.Decimal(10, 2)
+  bonuses      Decimal       @default(0) @db.Decimal(10, 2)
+  deductions   Decimal       @default(0) @db.Decimal(10, 2)
+  totalPay     Decimal       @db.Decimal(10, 2)
+  milesLogged  Int           @default(0)
+  loadsCompleted Int         @default(0)
+  status       PayrollStatus @default(DRAFT)
+  paidAt       DateTime?     @db.Timestamptz
+  notes        String?
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  driver User   @relation(fields: [driverId], references: [id])
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([status])
+  @@index([periodStart])
+}
+
+// ─── Load / Dispatch Models ──────────────────────────────────
+
+model Load {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String     @db.Uuid
+  loadNumber   String
+  customerId   String     @db.Uuid
+  routeId      String?    @db.Uuid
+  driverId     String?    @db.Uuid
+  truckId      String?    @db.Uuid
+  origin       String
+  destination  String
+  pickupDate   DateTime   @db.Timestamptz
+  deliveryDate DateTime?  @db.Timestamptz
+  weight       Int?
+  commodity    String?
+  rate         Decimal    @db.Decimal(12, 2)
+  status       LoadStatus @default(PENDING)
+  notes        String?
+  createdAt    DateTime   @default(now()) @db.Timestamptz
+  updatedAt    DateTime   @updatedAt @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id])
+  customer Customer  @relation(fields: [customerId], references: [id])
+  route    Route?    @relation(fields: [routeId], references: [id])
+  driver   User?     @relation(name: "DriverLoads", fields: [driverId], references: [id])
+  truck    Truck?    @relation(fields: [truckId], references: [id])
+
+  @@unique([tenantId, loadNumber])
+  @@index([tenantId])
+  @@index([customerId])
+  @@index([driverId])
+  @@index([truckId])
+  @@index([status])
+  @@index([pickupDate])
 }
