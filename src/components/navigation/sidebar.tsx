@@ -21,6 +21,7 @@ import {
   TrendingUp,
   ClipboardCheck,
   FileSearch,
+  Calculator,
 } from "lucide-react"
 import {
   Sidebar,
@@ -162,6 +163,18 @@ export function AppSidebar() {
                     <Link href="/lane-analytics">
                       <TrendingUp />
                       <span>Lane Profitability</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/profit-predictor")}
+                    tooltip="Profit Predictor"
+                  >
+                    <Link href="/profit-predictor">
+                      <Calculator />
+                      <span>Profit Predictor</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
