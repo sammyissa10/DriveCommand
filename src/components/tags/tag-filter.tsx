@@ -31,7 +31,7 @@ export function TagFilter({ tags, selectedTagId }: TagFilterProps) {
   const pathname = usePathname();
 
   const handleValueChange = (value: string) => {
-    if (value === '') {
+    if (value === 'all') {
       // "All Vehicles" selected - remove tagId param
       router.push(pathname);
     } else {
@@ -42,12 +42,12 @@ export function TagFilter({ tags, selectedTagId }: TagFilterProps) {
 
   return (
     <div className="w-[200px]">
-      <Select value={selectedTagId || ''} onValueChange={handleValueChange}>
+      <Select value={selectedTagId || 'all'} onValueChange={handleValueChange}>
         <SelectTrigger>
           <SelectValue placeholder="Filter by tag" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Vehicles</SelectItem>
+          <SelectItem value="all">All Vehicles</SelectItem>
           {tags.map((tag) => (
             <SelectItem key={tag.id} value={tag.id}>
               <div className="flex items-center gap-2">
