@@ -18,8 +18,13 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
     notFound();
   }
 
-  // Fetch documents for this truck
-  const documents = await listDocuments('truck', id);
+  // Fetch documents for this truck (non-blocking - page renders even if this fails)
+  let documents: any[] = [];
+  try {
+    documents = await listDocuments('truck', id);
+  } catch (error) {
+    console.error('Failed to load truck documents:', error);
+  }
 
   // Parse and validate document metadata
   let documentMetadata = null;

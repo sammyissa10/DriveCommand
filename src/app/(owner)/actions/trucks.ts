@@ -63,18 +63,33 @@ export async function createTruck(prevState: any, formData: FormData) {
   }
 
   // Get tenant ID and create truck via tenant-scoped Prisma client
-  const tenantId = await requireTenantId();
-  const prisma = await getTenantPrisma();
-  const truck = await prisma.truck.create({
-    data: {
-      ...result.data,
-      tenantId,
-    },
-  });
+  let truckId: string;
+  try {
+    const tenantId = await requireTenantId();
+    const prisma = await getTenantPrisma();
+    const truck = await prisma.truck.create({
+      data: {
+        ...result.data,
+        tenantId,
+      },
+    });
+    truckId = truck.id;
+  } catch (error: any) {
+    // Handle Prisma unique constraint violation (P2002) for VIN
+    if (error?.code === 'P2002') {
+      const target = error?.meta?.target;
+      if (Array.isArray(target) && target.includes('vin')) {
+        return { error: { vin: ['A truck with this VIN already exists'] } };
+      }
+      return { error: 'A truck with these details already exists. Please check for duplicates.' };
+    }
+    console.error('Failed to create truck:', error);
+    return { error: 'Failed to create truck. Please try again.' };
+  }
 
-  // Revalidate and redirect
+  // Revalidate and redirect OUTSIDE try/catch (Next.js redirect throws NEXT_REDIRECT internally)
   revalidatePath('/trucks');
-  redirect(`/trucks/${truck.id}`);
+  redirect(`/trucks/${truckId}`);
 }
 
 /**
@@ -131,16 +146,30 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   }
 
   // Update truck via tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
-  const truck = await prisma.truck.update({
-    where: { id },
-    data: result.data,
-  });
+  let updatedTruckId: string;
+  try {
+    const prisma = await getTenantPrisma();
+    const truck = await prisma.truck.update({
+      where: { id },
+      data: result.data,
+    });
+    updatedTruckId = truck.id;
+  } catch (error: any) {
+    if (error?.code === 'P2002') {
+      const target = error?.meta?.target;
+      if (Array.isArray(target) && target.includes('vin')) {
+        return { error: { vin: ['A truck with this VIN already exists'] } };
+      }
+      return { error: 'A truck with these details already exists. Please check for duplicates.' };
+    }
+    console.error('Failed to update truck:', error);
+    return { error: 'Failed to update truck. Please try again.' };
+  }
 
-  // Revalidate and redirect
+  // Revalidate and redirect OUTSIDE try/catch (Next.js redirect throws NEXT_REDIRECT internally)
   revalidatePath('/trucks');
   revalidatePath(`/trucks/${id}`);
-  redirect(`/trucks/${truck.id}`);
+  redirect(`/trucks/${updatedTruckId}`);
 }
 
 /**
