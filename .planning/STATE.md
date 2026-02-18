@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 12: Build AI Document Reading
+Last activity: 2026-02-18 — Completed quick task 13: Build AI Profit Predictor
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -54,6 +54,7 @@ Progress: [███████████████████████
 - Quick-10 (2026-02-18): Build Profit Per Lane Analysis — ~10min, 3 tasks, 6 files affected
 - Quick-11 (2026-02-18): Build Compliance Dashboard — ~6min, 2 tasks, 7 files affected
 - Quick-12 (2026-02-18): Build AI Document Reading — ~8min, 2 tasks, 6 files affected
+- Quick-13 (2026-02-18): Build AI Profit Predictor — ~6min, 2 tasks, 4 files affected
 
 ## Accumulated Context
 
@@ -200,6 +201,13 @@ Progress: [███████████████████████
 - Magic-byte file validation before Claude call — prevents spoofed MIME type attacks and invalid API calls
 - Return ExtractedFreightData as typed interface — enables future load form pre-fill without raw JSON
 
+**Quick-13 decisions:**
+- Use 365-day window for getLaneAnalytics (vs 90-day default) to maximize lane coverage for prediction accuracy
+- accept>=15%, caution 0-14.9%, reject<0% — thresholds match freight dispatcher decision-making standards
+- dataSource=none returns caution (not reject) — no historical data is uncertain, not inherently bad
+- State variables used in lane data source label (not echoed from server) to keep PredictionResult interface minimal
+- Calculator icon chosen for Profit Predictor sidebar link to distinguish from TrendingUp (Lane Profitability)
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -235,10 +243,11 @@ None blocking immediate progress.
 | 10 | Build Profit Per Lane Analysis with sortable table, bar chart, and summary cards | 2026-02-18 | 4cc3422 | [10-build-profit-per-lane-analysis](./quick/10-build-profit-per-lane-analysis/) |
 | 11 | Build compliance dashboard with driver/truck expiry tracking, safety events, and alerts | 2026-02-18 | 4fbb6b9 | [11-build-compliance-dashboard](./quick/11-build-compliance-dashboard/) |
 | 12 | Build AI document reading with Claude-powered freight data extraction | 2026-02-18 | 30d354d | [12-build-ai-document-reading](./quick/12-build-ai-document-reading/) |
+| 13 | Build AI profit predictor with lane-based and fleet-average cost estimation | 2026-02-18 | eee9707 | [13-build-ai-profit-predictor](./quick/13-build-ai-profit-predictor/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 12: Build AI Document Reading
+Stopped at: Completed quick task 13: Build AI Profit Predictor
 Resume file: None
-Next action: AI Document Reading live at /ai-documents. Upload rate confirmations, invoices, or load tenders (PDF/JPEG/PNG) for Claude extraction of 12 freight fields. Requires ANTHROPIC_API_KEY in .env.local. Sidebar link under Business for OWNER/MANAGER.
+Next action: Profit Predictor live at /profit-predictor. Enter origin, destination, distance, and offered rate to get predicted expenses, profit, margin, and accept/caution/reject recommendation using lane history or fleet average cost-per-mile. Sidebar link under Intelligence for OWNER/MANAGER.
