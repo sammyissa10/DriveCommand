@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-18 — Completed quick task 6: Fix truck save/view errors and improve route driver dropdown
+Last activity: 2026-02-18 — Completed quick task 7: Build Invoice/Billing UI and Payroll UI
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -48,6 +48,7 @@ Progress: [███████████████████████
 **Quick tasks:**
 - Quick-1 (2026-02-16): Management pages bugs + seed data — 457s, 3 tasks, 7 files affected
 - Quick-6 (2026-02-18): Fix truck save/view errors and route driver dropdown — 133s, 2 tasks, 4 files affected
+- Quick-7 (2026-02-18): Build Invoice/Billing UI and Payroll UI — ~900s, 3 tasks, 20 files affected
 
 ## Accumulated Context
 
@@ -150,6 +151,14 @@ Progress: [███████████████████████
 - Use .catch on listDocuments within Promise.all to isolate S3 failures without breaking other data fetches
 - Wrap edit-mode driver/truck queries in try/catch so route edit renders with empty dropdowns if DB query fails
 
+**Quick-7 decisions:**
+- Used prisma db push + migrate resolve --applied due to drift detection from modified migration file (safer than reset on production DB)
+- JSON hidden field (itemsJson) for invoice line items serialization — matches expense-templates pattern from Phase 16-04
+- InvoiceItem has no direct RLS — inherits through Invoice cascade delete (same pattern as ExpenseTemplateItem)
+- Status-gated deletion: only DRAFT invoices/payroll records deletable — enforced in both server action and UI (conditional render)
+- Auto-generate invoice number from latest invoice + increment (INV-NNNN padded format)
+- Include inactive driver in payroll edit dropdown if record was created for them (backwards compatibility)
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -178,10 +187,11 @@ None blocking immediate progress.
 | 3 | Investigate and fix all broken pages in the app | 2026-02-18 | 3f30f62 | [3-investigate-and-fix-all-broken-pages-in-](./quick/3-investigate-and-fix-all-broken-pages-in-/) |
 | 5 | Remove Clerk and replace with custom email/password auth | 2026-02-18 | 886f262 | [5-remove-clerk-and-replace-with-custom-ema](./quick/5-remove-clerk-and-replace-with-custom-ema/) |
 | 6 | Fix truck save/view errors and improve route driver dropdown | 2026-02-18 | ae7797b | [6-fix-truck-save-view-errors-improve-truck](./quick/6-fix-truck-save-view-errors-improve-truck/) |
+| 7 | Build Invoice/Billing UI and Payroll UI | 2026-02-18 | 5bbef95 | [7-build-invoice-billing-ui-and-payroll-ui-](./quick/7-build-invoice-billing-ui-and-payroll-ui-/) |
 
 ## Session Continuity
 
 Last session: 2026-02-18
-Stopped at: Completed quick task 6: Fix truck save/view errors and improve route driver dropdown
+Stopped at: Completed quick task 7: Build Invoice/Billing UI and Payroll UI
 Resume file: None
-Next action: Truck CRUD and route forms are now error-safe. No unhandled DB exceptions on truck save/update. Route driver dropdowns degrade gracefully.
+Next action: Invoice and Payroll modules fully functional. Sidebar links for /invoices and /payroll are active. All money calculations use Decimal.js. Database migration applied with RLS on Customer, CustomerInteraction, Invoice, PayrollRecord tables.
