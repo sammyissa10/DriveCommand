@@ -169,10 +169,11 @@ None blocking immediate progress.
 | 1 | Audit and fix all Management pages with Playwright tests | 2026-02-16 | f543014 | [1-audit-and-fix-all-management-pages-with-](./quick/1-audit-and-fix-all-management-pages-with-/) |
 | 2 | Change login method - remove Google, create owner login | 2026-02-17 | a6d016f | [2-change-login-method-remove-google-create](./quick/2-change-login-method-remove-google-create/) |
 | 3 | Investigate and fix all broken pages in the app | 2026-02-18 | 3f30f62 | [3-investigate-and-fix-all-broken-pages-in-](./quick/3-investigate-and-fix-all-broken-pages-in-/) |
+| 5 | Remove Clerk and replace with custom email/password auth | 2026-02-17 | dba70a4 | [5-remove-clerk-and-replace-with-custom-ema](./quick/5-remove-clerk-and-replace-with-custom-ema/) |
 
 ## Session Continuity
 
 Last session: 2026-02-17
-Stopped at: Completed 18-03-PLAN.md: Driver Document Expiry Notifications
+Stopped at: Completed quick task 5: Remove Clerk and replace with custom email/password auth
 Resume file: None
-Next action: All 18 phases complete. Project finished! Run `/gsd:verify-work` to validate final state or `/gsd:progress` to review accomplishments.
+Next action: Custom auth is live. Sign in with demo@drivecommand.com / demo1234. All Clerk references removed.
