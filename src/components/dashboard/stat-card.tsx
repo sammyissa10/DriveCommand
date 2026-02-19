@@ -19,20 +19,20 @@ const iconMap: Record<string, LucideIcon> = {
 
 const colorMap: Record<string, { bg: string; icon: string }> = {
   'Total Trucks': {
-    bg: 'bg-blue-50',
-    icon: 'text-blue-600',
+    bg: 'bg-status-info-bg',
+    icon: 'text-status-info-foreground',
   },
   'Active Drivers': {
-    bg: 'bg-emerald-50',
-    icon: 'text-emerald-600',
+    bg: 'bg-status-success-bg',
+    icon: 'text-status-success-foreground',
   },
   'Active Routes': {
-    bg: 'bg-violet-50',
-    icon: 'text-violet-600',
+    bg: 'bg-status-purple-bg',
+    icon: 'text-status-purple-foreground',
   },
   'Maintenance Alerts': {
-    bg: 'bg-amber-50',
-    icon: 'text-amber-600',
+    bg: 'bg-status-warning-bg',
+    icon: 'text-status-warning-foreground',
   },
 };
 
@@ -43,8 +43,8 @@ export function StatCard({ label, value, href, variant = 'default' }: StatCardPr
   return (
     <Link
       href={href}
-      className={`group block rounded-xl border bg-card p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5 ${
-        variant === 'warning' ? 'border-amber-200 ring-1 ring-amber-100' : 'border-border'
+      className={`group block rounded-xl border bg-card p-6 shadow-sm card-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+        variant === 'warning' ? 'border-status-warning/30 ring-1 ring-status-warning/10' : 'border-border'
       }`}
     >
       <div className="flex items-center justify-between">

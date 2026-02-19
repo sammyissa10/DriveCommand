@@ -73,4 +73,10 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+/** Utility class sets for card variants */
+const cardVariants = {
+  interactive: "card-interactive cursor-pointer hover:border-primary/20",
+  glass: "glass",
+} as const;
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants }
