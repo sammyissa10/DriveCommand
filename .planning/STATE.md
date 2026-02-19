@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-19 — Completed quick task 15: Comprehensive UI/UX Redesign
+Last activity: 2026-02-19 — Completed quick task 16: Wire up driver invitation flow
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -56,6 +56,7 @@ Progress: [███████████████████████
 - Quick-12 (2026-02-18): Build AI Document Reading — ~8min, 2 tasks, 6 files affected
 - Quick-13 (2026-02-18): Build AI Profit Predictor — ~6min, 2 tasks, 4 files affected
 - Quick-14 (2026-02-18): Build Third-Party Integrations Framework — ~8min, 2 tasks, 8 files affected
+- Quick-16 (2026-02-19): Wire up driver invitation flow — 475s, 3 tasks, 5 files affected
 
 ## Accumulated Context
 
@@ -216,6 +217,13 @@ Progress: [███████████████████████
 - Sonner Toaster added to root layout so toasts are available across all pages globally
 - Settings section in sidebar gated to OWNER only (not MANAGER) per plan spec — settings are owner-only
 
+**Quick-16 decisions:**
+- Email send failure does not roll back invitation record (inner try/catch pattern for non-critical side effects)
+- RLS bypassed for accept-invitation API since driver has no session yet (same set_config pattern as login route)
+- Auto-login after accepting invitation via setSession (driver does not need to sign in separately)
+- Skipped GET-based invitation pre-validation on page load for simplicity; POST validates everything
+- Used EMAIL_CONFLICT throw/catch pattern to return 409 status when email already exists in tenant
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -254,10 +262,11 @@ None blocking immediate progress.
 | 13 | Build AI profit predictor with lane-based and fleet-average cost estimation | 2026-02-18 | eee9707 | [13-build-ai-profit-predictor](./quick/13-build-ai-profit-predictor/) |
 | 14 | Build third-party integrations framework with settings UI and TenantIntegration model | 2026-02-18 | 7462229 | [14-build-third-party-integrations-framework](./quick/14-build-third-party-integrations-framework/) |
 | 15 | Comprehensive UI/UX redesign — semantic status tokens, glassmorphism, dark mode fixes across 17 files | 2026-02-19 | 4bacefd | [15-comprehensive-ui-ux-redesign](./quick/15-comprehensive-ui-ux-redesign/) |
+| 16 | Wire up driver invitation flow to send email and accept-invitation page | 2026-02-19 | 65c9274 | [16-wire-up-driver-invitation-flow-to-send-e](./quick/16-wire-up-driver-invitation-flow-to-send-e/) |
 
 ## Session Continuity
 
 Last session: 2026-02-19
-Stopped at: Completed quick task 15: Comprehensive UI/UX Redesign
+Stopped at: Completed quick task 16: Wire up driver invitation flow
 Resume file: None
-Next action: Design system is now in place. Semantic status color tokens (success/warning/danger/info/purple) work in both light and dark mode via CSS variables. All hardcoded color classes removed from dashboard widgets, stat cards, auth pages, and list pages. EmptyState component available for reuse. Glassmorphism card-interactive class available for future use.
+Next action: Driver invitation flow is complete end-to-end. Inviting a driver sends a Resend email with accept link. Clicking the link takes the driver to /accept-invitation where they set a password and their DRIVER account is created, session set, and they are redirected to /dashboard. Future enhancements: resend invitation button, tenant name lookup for organizationName.
