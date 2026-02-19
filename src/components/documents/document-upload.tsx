@@ -135,6 +135,7 @@ export function DocumentUpload({
   const resetState = () => {
     setUploading(false);
     setProgress('idle');
+    setError(null);
   };
 
   const getProgressText = () => {

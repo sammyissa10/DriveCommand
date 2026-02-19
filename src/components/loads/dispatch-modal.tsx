@@ -5,7 +5,7 @@ import { X, Truck } from 'lucide-react';
 
 interface DispatchModalProps {
   loadId: string;
-  dispatchAction: (id: string, prevState: any, formData: FormData) => Promise<any>;
+  dispatchAction: (prevState: any, formData: FormData) => Promise<any>;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{ id: string; make: string; model: string; licensePlate: string }>;
 }
@@ -17,8 +17,7 @@ const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 export function DispatchModal({ loadId, dispatchAction, drivers, trucks }: DispatchModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const boundAction = dispatchAction.bind(null, loadId);
-  const [state, formAction, isPending] = useActionState(boundAction, null);
+  const [state, formAction, isPending] = useActionState(dispatchAction, null);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -62,8 +61,8 @@ export function DispatchModal({ loadId, dispatchAction, drivers, trucks }: Dispa
             </div>
 
             {state?.error && typeof state.error === 'string' && (
-              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3">
-                <p className="text-sm text-red-800">{state.error}</p>
+              <div className="mb-4 rounded-lg bg-status-danger-bg border border-status-danger/30 p-3">
+                <p className="text-sm text-status-danger-foreground">{state.error}</p>
               </div>
             )}
 
