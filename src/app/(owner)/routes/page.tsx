@@ -10,7 +10,7 @@ export default async function RoutesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Routes</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Routes</h1>
           <p className="mt-1 text-muted-foreground">{routes.length} route{routes.length !== 1 ? 's' : ''} configured</p>
         </div>
         <Link

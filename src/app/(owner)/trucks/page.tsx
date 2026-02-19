@@ -10,7 +10,7 @@ export default async function TrucksPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Trucks</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Trucks</h1>
           <p className="mt-1 text-muted-foreground">{trucks.length} vehicle{trucks.length !== 1 ? 's' : ''} in your fleet</p>
         </div>
         <Link

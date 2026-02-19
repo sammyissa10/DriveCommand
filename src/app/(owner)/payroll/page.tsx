@@ -28,7 +28,7 @@ export default async function PayrollPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Payroll</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Payroll</h1>
           <p className="mt-1 text-muted-foreground">
             {stats.total} record{stats.total !== 1 ? 's' : ''}
             {stats.approved > 0 ? ` \u00b7 ${stats.approved} pending approval` : ''}
@@ -45,21 +45,21 @@ export default async function PayrollPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Records</div>
           <div className="mt-1 text-2xl font-bold">{stats.total}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Draft</div>
           <div className="mt-1 text-2xl font-bold text-muted-foreground">{stats.draft}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Approved</div>
-          <div className="mt-1 text-2xl font-bold text-blue-600">{stats.approved}</div>
+          <div className="mt-1 text-2xl font-bold text-status-info-foreground">{stats.approved}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Paid</div>
-          <div className="mt-1 text-2xl font-bold text-green-600">
+          <div className="mt-1 text-2xl font-bold text-status-success-foreground">
             ${stats.totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>

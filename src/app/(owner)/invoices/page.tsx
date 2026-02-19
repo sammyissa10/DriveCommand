@@ -27,7 +27,7 @@ export default async function InvoicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Invoices</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Invoices</h1>
           <p className="mt-1 text-muted-foreground">
             {stats.total} invoice{stats.total !== 1 ? 's' : ''}
             {stats.overdue > 0 ? ` \u00b7 ${stats.overdue} overdue` : ''}
@@ -44,23 +44,23 @@ export default async function InvoicesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Invoices</div>
           <div className="mt-1 text-2xl font-bold">{stats.total}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Draft</div>
           <div className="mt-1 text-2xl font-bold text-muted-foreground">{stats.draft}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Outstanding</div>
-          <div className="mt-1 text-2xl font-bold text-amber-600">
+          <div className="mt-1 text-2xl font-bold text-status-warning-foreground">
             ${stats.outstandingAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Paid</div>
-          <div className="mt-1 text-2xl font-bold text-green-600">
+          <div className="mt-1 text-2xl font-bold text-status-success-foreground">
             ${stats.paidAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>

@@ -26,7 +26,7 @@ export default async function CRMPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">CRM</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
           <p className="mt-1 text-muted-foreground">
             {stats.total} customer{stats.total !== 1 ? 's' : ''} &middot; {stats.active} active &middot; {stats.vip} VIP
           </p>
@@ -42,19 +42,19 @@ export default async function CRMPage() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Customers</div>
           <div className="mt-1 text-2xl font-bold">{stats.total}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Active</div>
-          <div className="mt-1 text-2xl font-bold text-green-600">{stats.active}</div>
+          <div className="mt-1 text-2xl font-bold text-status-success-foreground">{stats.active}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">VIP Customers</div>
-          <div className="mt-1 text-2xl font-bold text-amber-600">{stats.vip}</div>
+          <div className="mt-1 text-2xl font-bold text-status-warning-foreground">{stats.vip}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="text-sm text-muted-foreground">Total Revenue</div>
           <div className="mt-1 text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
         </div>

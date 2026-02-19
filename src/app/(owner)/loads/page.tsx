@@ -31,7 +31,7 @@ export default async function LoadsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Loads</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Loads</h1>
           <p className="mt-1 text-muted-foreground">
             {stats.total} load{stats.total !== 1 ? 's' : ''} &middot; {stats.pending} pending &middot; {stats.inTransit} in transit
           </p>
@@ -47,33 +47,33 @@ export default async function LoadsPage() {
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Package className="h-4 w-4" />
             Total Loads
           </div>
           <div className="mt-1 text-2xl font-bold">{stats.total}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
             Pending
           </div>
-          <div className="mt-1 text-2xl font-bold text-yellow-600">{stats.pending}</div>
+          <div className="mt-1 text-2xl font-bold text-status-warning-foreground">{stats.pending}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <TrendingUp className="h-4 w-4" />
             In Transit
           </div>
-          <div className="mt-1 text-2xl font-bold text-purple-600">{stats.inTransit}</div>
+          <div className="mt-1 text-2xl font-bold text-status-purple-foreground">{stats.inTransit}</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-lg border border-border bg-card p-4 card-interactive">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <DollarSign className="h-4 w-4" />
             Total Revenue
           </div>
-          <div className="mt-1 text-2xl font-bold text-green-600">
+          <div className="mt-1 text-2xl font-bold text-status-success-foreground">
             ${stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
         </div>
