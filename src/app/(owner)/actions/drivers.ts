@@ -10,6 +10,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@/lib/validations/driver.schemas';
 import { revalidatePath } from 'next/cache';
+import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 
 /**
  * Invite a new driver.
@@ -73,7 +74,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
     });
 
     // Create DriverInvitation record in the database
-    await prisma.driverInvitation.create({
+    const invitation = await prisma.driverInvitation.create({
       data: {
         tenantId,
         email,
@@ -85,12 +86,33 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       },
     });
 
+    // Send invitation email (failure does NOT roll back the invitation record)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
+
+    try {
+      await sendDriverInvitation(email, {
+        firstName,
+        lastName,
+        organizationName: 'your fleet',
+        acceptUrl,
+        expiresAt: invitation.expiresAt.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+      });
+    } catch (emailError) {
+      console.error('Failed to send invitation email:', emailError);
+      // Invitation record exists; email can be resent later
+    }
+
     // Revalidate
     revalidatePath('/drivers');
 
     return {
       success: true,
-      message: `Invitation created for ${email}`,
+      message: `Invitation sent to ${email}`,
     };
   } catch (error) {
     console.error('Failed to create driver invitation:', error);
