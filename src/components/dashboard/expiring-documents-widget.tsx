@@ -22,8 +22,8 @@ export function ExpiringDocumentsWidget({ items }: ExpiringDocumentsWidgetProps)
       {/* Header */}
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-            <FileText className="h-4 w-4 text-blue-600" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-status-info-bg">
+            <FileText className="h-4 w-4 text-status-info-foreground" />
           </div>
           <h2 className="text-lg font-semibold text-card-foreground">Expiring Documents</h2>
         </div>
@@ -31,7 +31,7 @@ export function ExpiringDocumentsWidget({ items }: ExpiringDocumentsWidgetProps)
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
               expiredCount > 0
-                ? 'bg-red-100 text-red-700'
+                ? 'bg-status-danger-bg text-status-danger-foreground'
                 : 'bg-muted text-muted-foreground'
             }`}
           >
@@ -51,9 +51,9 @@ export function ExpiringDocumentsWidget({ items }: ExpiringDocumentsWidgetProps)
           {displayItems.map((item, index) => {
             let urgencyClass = 'border-border bg-card';
             if (item.isExpired) {
-              urgencyClass = 'border-red-200 bg-red-50';
+              urgencyClass = 'border-status-danger/30 bg-status-danger-bg';
             } else if (item.daysUntilExpiry <= 14) {
-              urgencyClass = 'border-amber-200 bg-amber-50';
+              urgencyClass = 'border-status-warning/30 bg-status-warning-bg';
             }
 
             const expiryDate = new Date(item.expiryDate);
@@ -75,7 +75,7 @@ export function ExpiringDocumentsWidget({ items }: ExpiringDocumentsWidgetProps)
                   </div>
                   <div className="text-right">
                     {item.isExpired ? (
-                      <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                      <span className="inline-flex items-center rounded-full bg-status-danger-bg px-2 py-0.5 text-xs font-bold text-status-danger-foreground">
                         EXPIRED
                       </span>
                     ) : (

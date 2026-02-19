@@ -22,8 +22,8 @@ export function UpcomingMaintenanceWidget({ items }: UpcomingMaintenanceWidgetPr
       {/* Header */}
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50">
-            <Wrench className="h-4 w-4 text-amber-600" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-status-warning-bg">
+            <Wrench className="h-4 w-4 text-status-warning-foreground" />
           </div>
           <h2 className="text-lg font-semibold text-card-foreground">Upcoming Maintenance</h2>
         </div>
@@ -31,7 +31,7 @@ export function UpcomingMaintenanceWidget({ items }: UpcomingMaintenanceWidgetPr
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
               overdueCount > 0
-                ? 'bg-red-100 text-red-700'
+                ? 'bg-status-danger-bg text-status-danger-foreground'
                 : 'bg-muted text-muted-foreground'
             }`}
           >
@@ -51,12 +51,12 @@ export function UpcomingMaintenanceWidget({ items }: UpcomingMaintenanceWidgetPr
           {displayItems.map((item, index) => {
             let urgencyClass = 'border-border bg-card';
             if (item.isDue) {
-              urgencyClass = 'border-red-200 bg-red-50';
+              urgencyClass = 'border-status-danger/30 bg-status-danger-bg';
             } else if (
               (item.daysUntilDue !== null && item.daysUntilDue <= 14) ||
               (item.milesUntilDue !== null && item.milesUntilDue <= 500)
             ) {
-              urgencyClass = 'border-amber-200 bg-amber-50';
+              urgencyClass = 'border-status-warning/30 bg-status-warning-bg';
             }
 
             return (
@@ -71,7 +71,7 @@ export function UpcomingMaintenanceWidget({ items }: UpcomingMaintenanceWidgetPr
                   </div>
                   <div className="text-right">
                     {item.isDue ? (
-                      <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">
+                      <span className="inline-flex items-center rounded-full bg-status-danger-bg px-2 py-0.5 text-xs font-bold text-status-danger-foreground">
                         OVERDUE
                       </span>
                     ) : (

@@ -28,17 +28,17 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="mt-1 text-muted-foreground">
           Your fleet at a glance
         </p>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <StatCard label="Total Trucks" value={stats.totalTrucks} href="/trucks" />
         <StatCard label="Active Drivers" value={stats.activeDrivers} href="/drivers" />
         <StatCard label="Active Routes" value={stats.activeRoutes} href="/routes" />

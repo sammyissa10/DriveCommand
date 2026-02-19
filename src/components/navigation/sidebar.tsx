@@ -49,7 +49,7 @@ export function AppSidebar() {
     userRole === UserRole.OWNER || userRole === UserRole.MANAGER
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="[&_[data-sidebar=menu-button]]:transition-all [&_[data-sidebar=menu-button]]:duration-150 [&_[data-sidebar=menu-button]]:focus-visible:ring-2 [&_[data-sidebar=menu-button]]:focus-visible:ring-sidebar-ring [&_[data-sidebar=menu-button]]:focus-visible:ring-offset-1 [&_[data-sidebar=menu-button]]:focus-visible:outline-none">
       {/* Header with company branding */}
       <SidebarHeader className="border-b border-sidebar-border pb-4">
         <SidebarMenu>

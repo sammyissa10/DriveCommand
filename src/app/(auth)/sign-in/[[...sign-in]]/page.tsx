@@ -99,12 +99,12 @@ export default function SignInPage() {
       </div>
 
       {/* Demo credentials box */}
-      <div className="w-full rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm">
-        <p className="mb-2 font-semibold text-blue-800">Demo Credentials</p>
-        <p className="text-blue-700">
+      <div className="w-full rounded-lg border border-status-info/30 bg-status-info-bg p-4 text-sm">
+        <p className="mb-2 font-semibold text-status-info-foreground">Demo Credentials</p>
+        <p className="text-status-info-foreground/80">
           <span className="font-medium">Email:</span> demo@drivecommand.com
         </p>
-        <p className="text-blue-700">
+        <p className="text-status-info-foreground/80">
           <span className="font-medium">Password:</span> demo1234
         </p>
       </div>
