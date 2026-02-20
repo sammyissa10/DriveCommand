@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-19 — Completed quick task 16: Wire up driver invitation flow
+Last activity: 2026-02-20 — Completed quick task 17: Wire up real Samsara GPS provider integration
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -57,6 +57,7 @@ Progress: [███████████████████████
 - Quick-13 (2026-02-18): Build AI Profit Predictor — ~6min, 2 tasks, 4 files affected
 - Quick-14 (2026-02-18): Build Third-Party Integrations Framework — ~8min, 2 tasks, 8 files affected
 - Quick-16 (2026-02-19): Wire up driver invitation flow — 475s, 3 tasks, 5 files affected
+- Quick-17 (2026-02-20): Wire up real Samsara GPS provider integration — ~194s, 2 tasks, 5 files affected
 
 ## Accumulated Context
 
@@ -224,6 +225,13 @@ Progress: [███████████████████████
 - Skipped GET-based invitation pre-validation on page load for simplicity; POST validates everything
 - Used EMAIL_CONFLICT throw/catch pattern to return 409 status when email already exists in tenant
 
+**Quick-17 decisions:**
+- Direct fetch() for Samsara API — no external SDK needed for simple REST calls
+- VIN normalization (trim + uppercase) for reliable vehicle matching across systems
+- Dual auth on sync endpoint: CRON_SECRET for automation, OWNER session for manual UI trigger
+- saveIntegrationConfig restricted to OWNER role only (not MANAGER) — API keys are sensitive
+- configMap passed from server page to client component to display masked existing tokens
+
 All milestone decisions logged in PROJECT.md Key Decisions table.
 
 ### Pending Todos
@@ -263,10 +271,11 @@ None blocking immediate progress.
 | 14 | Build third-party integrations framework with settings UI and TenantIntegration model | 2026-02-18 | 7462229 | [14-build-third-party-integrations-framework](./quick/14-build-third-party-integrations-framework/) |
 | 15 | Comprehensive UI/UX redesign — semantic status tokens, glassmorphism, dark mode fixes across 17 files | 2026-02-19 | 4bacefd | [15-comprehensive-ui-ux-redesign](./quick/15-comprehensive-ui-ux-redesign/) |
 | 16 | Wire up driver invitation flow to send email and accept-invitation page | 2026-02-19 | 65c9274 | [16-wire-up-driver-invitation-flow-to-send-e](./quick/16-wire-up-driver-invitation-flow-to-send-e/) |
+| 17 | Wire up real Samsara GPS provider integration | 2026-02-20 | 907bdf5 | [17-wire-up-real-gps-provider-integration-to](./quick/17-wire-up-real-gps-provider-integration-to/) |
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Stopped at: Completed quick task 16: Wire up driver invitation flow
+Last session: 2026-02-20
+Stopped at: Completed quick-17: Wire up real Samsara GPS provider integration
 Resume file: None
-Next action: Driver invitation flow is complete end-to-end. Inviting a driver sends a Resend email with accept link. Clicking the link takes the driver to /accept-invitation where they set a password and their DRIVER account is created, session set, and they are redirected to /dashboard. Future enhancements: resend invitation button, tenant name lookup for organizationName.
+Next action: Samsara GPS integration is wired up. Owner can enter API token in settings, trigger manual sync, and live map displays real telematics data. Future: add cron-based auto-sync, KeepTruckin integration following same pattern.
