@@ -65,3 +65,59 @@ export async function toggleIntegration(
     return { error: 'Failed to update integration. Please try again.' };
   }
 }
+
+// Provider -> Category mapping for saveIntegrationConfig upsert
+const PROVIDER_CATEGORY_MAP: Record<IntegrationProvider, IntegrationCategory> = {
+  QUICKBOOKS: 'ACCOUNTING',
+  SAMSARA: 'ELD',
+  KEEP_TRUCKIN: 'ELD',
+  TRIUMPH_FACTORING: 'FACTORING',
+  OTR_SOLUTIONS: 'FACTORING',
+  SENDGRID: 'EMAIL',
+  MAILGUN: 'EMAIL',
+};
+
+/**
+ * Save integration configuration (e.g., API tokens) for a provider.
+ * Requires OWNER role only (not MANAGER — API keys are sensitive).
+ * Upserts the TenantIntegration row, sets configJson and enables the integration.
+ */
+export async function saveIntegrationConfig(
+  provider: IntegrationProvider,
+  configJson: Record<string, string>
+) {
+  await requireRole([UserRole.OWNER]);
+
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+  const category = PROVIDER_CATEGORY_MAP[provider];
+
+  if (!category) {
+    return { error: 'Unknown integration provider.' };
+  }
+
+  try {
+    await prisma.tenantIntegration.upsert({
+      where: {
+        tenantId_provider: { tenantId, provider },
+      },
+      update: {
+        configJson,
+        enabled: true,
+      },
+      create: {
+        tenantId,
+        provider,
+        category,
+        enabled: true,
+        configJson,
+      },
+    });
+
+    revalidatePath('/settings/integrations');
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to save integration config:', error);
+    return { error: 'Failed to save configuration. Please try again.' };
+  }
+}

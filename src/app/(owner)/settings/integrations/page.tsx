@@ -3,6 +3,15 @@ import { IntegrationsManager } from './integrations-manager';
 
 export default async function IntegrationsPage() {
   const integrations = await listIntegrations();
+
+  // Build configMap: provider -> configJson for passing API token data to client
+  const configMap: Record<string, Record<string, string>> = {};
+  for (const integration of integrations) {
+    if (integration.configJson && typeof integration.configJson === 'object') {
+      configMap[integration.provider] = integration.configJson as Record<string, string>;
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -11,7 +20,7 @@ export default async function IntegrationsPage() {
           Connect DriveCommand to external services like ELDs, accounting software, and factoring companies.
         </p>
       </div>
-      <IntegrationsManager initialIntegrations={integrations} />
+      <IntegrationsManager initialIntegrations={integrations} configMap={configMap} />
     </div>
   );
 }
