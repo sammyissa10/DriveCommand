@@ -5,6 +5,8 @@ import { UserRole } from "@/lib/auth/roles";
 import { UserMenu } from "@/components/navigation/user-menu";
 import { Truck } from "lucide-react";
 import { DriverNav } from "@/components/driver/driver-nav";
+import { GpsTracker } from "@/components/driver/gps-tracker";
+import { prisma } from "@/lib/db/prisma";
 
 /**
  * Driver portal layout
@@ -27,6 +29,25 @@ export default async function DriverLayout({
     redirect("/unauthorized");
   }
 
+  // Look up driver's active route to get truckId for GPS tracking
+  let truckId: string | null = null;
+  try {
+    const activeRoute = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.route.findFirst({
+        where: {
+          driverId: session.userId,
+          tenantId: session.tenantId,
+          status: { in: ["PLANNED", "IN_PROGRESS"] },
+        },
+        select: { truckId: true },
+      });
+    });
+    truckId = activeRoute?.truckId ?? null;
+  } catch {
+    // GPS tracking gracefully degrades if route lookup fails
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
@@ -40,6 +61,7 @@ export default async function DriverLayout({
           <UserMenu />
         </div>
         <DriverNav />
+        <GpsTracker truckId={truckId} />
       </header>
       <main className="p-6">{children}</main>
     </div>
