@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-20 — Completed quick task 17: Wire up real Samsara GPS provider integration
+Last activity: 2026-02-20 — Completed quick task 18: Add driver app GPS tracking with browser geolocation
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -58,6 +58,7 @@ Progress: [███████████████████████
 - Quick-14 (2026-02-18): Build Third-Party Integrations Framework — ~8min, 2 tasks, 8 files affected
 - Quick-16 (2026-02-19): Wire up driver invitation flow — 475s, 3 tasks, 5 files affected
 - Quick-17 (2026-02-20): Wire up real Samsara GPS provider integration — ~194s, 2 tasks, 5 files affected
+- Quick-18 (2026-02-20): Add driver app GPS tracking with browser geolocation — ~136s, 2 tasks, 3 files affected
 
 ## Accumulated Context
 
@@ -233,6 +234,7 @@ Progress: [███████████████████████
 - configMap passed from server page to client component to display masked existing tokens
 
 All milestone decisions logged in PROJECT.md Key Decisions table.
+- [Phase quick-18]: Server-side timestamp for GPS records to prevent tampering; RLS bypass in API route; auto-disable tracking on no active route
 
 ### Pending Todos
 
@@ -272,10 +274,11 @@ None blocking immediate progress.
 | 15 | Comprehensive UI/UX redesign — semantic status tokens, glassmorphism, dark mode fixes across 17 files | 2026-02-19 | 4bacefd | [15-comprehensive-ui-ux-redesign](./quick/15-comprehensive-ui-ux-redesign/) |
 | 16 | Wire up driver invitation flow to send email and accept-invitation page | 2026-02-19 | 65c9274 | [16-wire-up-driver-invitation-flow-to-send-e](./quick/16-wire-up-driver-invitation-flow-to-send-e/) |
 | 17 | Wire up real Samsara GPS provider integration | 2026-02-20 | 907bdf5 | [17-wire-up-real-gps-provider-integration-to](./quick/17-wire-up-real-gps-provider-integration-to/) |
+| 18 | Add driver app GPS tracking with browser geolocation | 2026-02-20 | a069193 | [18-add-driver-app-gps-tracking-with-browser](./quick/18-add-driver-app-gps-tracking-with-browser/) |
 
 ## Session Continuity
 
 Last session: 2026-02-20
-Stopped at: Completed quick-17: Wire up real Samsara GPS provider integration
+Stopped at: Completed quick-18: Add driver app GPS tracking with browser geolocation
 Resume file: None
-Next action: Samsara GPS integration is wired up. Owner can enter API token in settings, trigger manual sync, and live map displays real telematics data. Future: add cron-based auto-sync, KeepTruckin integration following same pattern.
+Next action: Browser GPS tracking is live. Drivers with active routes can toggle GPS in portal header, positions auto-appear on owner's live map. Future: Service Worker for background tracking, battery optimization.
