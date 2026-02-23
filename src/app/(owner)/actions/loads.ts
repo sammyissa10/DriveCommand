@@ -341,5 +341,6 @@ export async function updateLoadStatus(id: string, newStatus: string) {
   }
 
   revalidatePath('/loads');
-  redirect(`/loads/${id}`);
+  revalidatePath(`/loads/${id}`);
+  return { success: true };
 }

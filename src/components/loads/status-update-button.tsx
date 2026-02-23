@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface StatusUpdateButtonProps {
   loadId: string;
@@ -18,6 +19,7 @@ const NEXT_STATUS: Record<string, { status: string; label: string }> = {
 const NON_CANCELLABLE = new Set(['DELIVERED', 'INVOICED', 'CANCELLED', 'PENDING']);
 
 export function StatusUpdateButton({ loadId, currentStatus, updateStatusAction }: StatusUpdateButtonProps) {
+  const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,9 +30,16 @@ export function StatusUpdateButton({ loadId, currentStatus, updateStatusAction }
     if (!next) return;
     setIsPending(true);
     setError(null);
-    const result = await updateStatusAction(loadId, next.status);
-    if (result?.error) {
-      setError(typeof result.error === 'string' ? result.error : 'Failed to update status.');
+    try {
+      const result = await updateStatusAction(loadId, next.status);
+      if (result?.error) {
+        setError(typeof result.error === 'string' ? result.error : 'Failed to update status.');
+        setIsPending(false);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Failed to update status.');
     }
     setIsPending(false);
   }
@@ -39,9 +48,16 @@ export function StatusUpdateButton({ loadId, currentStatus, updateStatusAction }
     if (!window.confirm('Are you sure you want to cancel this load?')) return;
     setIsPending(true);
     setError(null);
-    const result = await updateStatusAction(loadId, 'CANCELLED');
-    if (result?.error) {
-      setError(typeof result.error === 'string' ? result.error : 'Failed to cancel load.');
+    try {
+      const result = await updateStatusAction(loadId, 'CANCELLED');
+      if (result?.error) {
+        setError(typeof result.error === 'string' ? result.error : 'Failed to cancel load.');
+        setIsPending(false);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError('Failed to cancel load.');
     }
     setIsPending(false);
   }
