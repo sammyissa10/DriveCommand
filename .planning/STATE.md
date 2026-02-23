@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-23 — Completed quick task 21: IFTA fuel tax reporting — automated quarterly miles/fuel per state with CSV export
+Last activity: 2026-02-23 — Completed quick task 22: Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, and generalized integrations UI
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -62,6 +62,7 @@ Progress: [███████████████████████
 - Quick-19 (2026-02-23): Add license plate label below each vehicle marker — ~41s, 1 task, 1 file affected
 - Quick-20 (2026-02-23): Geofencing alerts — auto-detect truck arrival at stops — ~8min, 2 tasks, 5 files affected
 - Quick-21 (2026-02-23): IFTA fuel tax reporting — automated quarterly miles/fuel by state from GPS+FuelRecord — 291s, 2 tasks, 6 files affected
+- Quick-22 (2026-02-23): Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized UI — 149s, 2 tasks, 3 files affected
 
 ## Accumulated Context
 
@@ -241,6 +242,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-19]: pointer-events:none on plate label to preserve marker clicks; iconSize height 40->56px for label room; iconAnchor kept [20,20] so circle center stays on GPS coordinate; top:100%+translate-x-1/2 for centered sub-icon label
 - [Phase quick-20]: Nominatim (OSM) for geocoding — free, no API key, lazy geocode on first ping then cache on Load; geofenceFlags JSONB on Load (not separate table) for lightweight idempotency; fire-and-forget geofence check after GPS save — endpoint never delayed; dynamic import for sendLoadStatusEmail avoids circular dependency; dispatcher alert targets ALL OWNER+MANAGER users in tenant
 - [Phase quick-21]: Bounding-box state detection (not polygon) — intentionally approximate for IFTA, avoids complex dependency; states ordered by area ascending so smaller states win border overlaps; generateIFTACSV made async (use server constraint); native HTML table used (no shadcn table component in project); GPS segment mileage attributed to starting-ping state (standard IFTA convention); UNKNOWN bucket for unresolvable fuel records
+- [Phase quick-22]: Motive API uses lat/lon/bearing/located_at fields (vs Samsara lat/longitude/heading/time); per-provider EldProviderState record replaces single-Samsara state — scales to future ELD providers; KEEP_TRUCKIN enum preserved (no migration needed); generic ELD config panel driven by ELD_PROVIDERS array — adding third provider requires only array entry + catalog + route
 
 ### Pending Todos
 
@@ -285,10 +287,11 @@ None blocking immediate progress.
 | 19 | Add license plate label below each vehicle marker on live map | 2026-02-23 | dee78b1 | [19-add-license-plate-label-under-each-vehic](./quick/19-add-license-plate-label-under-each-vehic/) |
 | 20 | Geofencing alerts — auto-detect truck arrival at pickup and delivery stops | 2026-02-23 | 92c69f0 | [20-geofencing-alerts-auto-detect-truck-arri](./quick/20-geofencing-alerts-auto-detect-truck-arri/) |
 | 21 | IFTA fuel tax reporting — automated quarterly miles/fuel per state with CSV export | 2026-02-23 | a06caf8 | [21-ifta-fuel-tax-reporting-automate-quarter](./quick/21-ifta-fuel-tax-reporting-automate-quarter/) |
+| 22 | Motive (KeepTruckin) ELD integration — GPS sync, API endpoint, generalized integrations UI | 2026-02-23 | 1344a36 | [22-motive-keeptruckin-eld-integration-secon](./quick/22-motive-keeptruckin-eld-integration-secon/) |
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed quick-21: IFTA fuel tax reporting — automated quarterly IFTA reports from GPS+fuel data
+Stopped at: Completed quick-22: Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized integrations UI
 Resume file: None
-Next action: IFTA reporting is live. Fleet owners can visit /ifta, select any quarter/year, see miles driven per state and fuel purchased per state, and download CSV for IFTA tax filing.
+Next action: Motive integration is live. Fleet owners using Motive/KeepTruckin hardware can configure their API token at /settings/integrations and trigger GPS location sync. Both Samsara and Motive are fully configurable ELD providers.
