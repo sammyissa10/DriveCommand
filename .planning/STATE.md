@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-23 — Completed quick task 20: Geofencing alerts — auto-detect truck arrival at pickup and delivery stops
+Last activity: 2026-02-23 — Completed quick task 21: IFTA fuel tax reporting — automated quarterly miles/fuel per state with CSV export
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
