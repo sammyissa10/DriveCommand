@@ -7,6 +7,7 @@ import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { DispatchModal } from '@/components/loads/dispatch-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
 import { DeleteLoadButton } from '@/components/loads/delete-load-button';
+import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
 
 const STATUS_LIFECYCLE = [
   'PENDING',
@@ -111,6 +112,9 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
               currentStatus={load.status}
               updateStatusAction={updateLoadStatus}
             />
+          )}
+          {load.trackingToken && (
+            <CopyTrackingLinkButton token={load.trackingToken} />
           )}
           {canEdit && (
             <Link
