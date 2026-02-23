@@ -8,6 +8,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { TX_OPTIONS } from '@/lib/db/prisma';
 import { templateCreateSchema } from '@/lib/validations/expense-template.schemas';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
@@ -76,7 +77,7 @@ export async function createTemplate(prevState: any, formData: FormData) {
           description: item.description,
         })),
       });
-    });
+    }, TX_OPTIONS);
   } catch (error: any) {
     console.error('Failed to create template:', error);
 
@@ -213,7 +214,7 @@ export async function applyTemplate(routeId: string, templateId: string) {
       });
 
       return { count: template.items.length };
-    });
+    }, TX_OPTIONS);
 
     // Revalidate paths
     revalidatePath(`/routes/${routeId}`);

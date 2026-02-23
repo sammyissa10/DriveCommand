@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { setSession } from '@/lib/auth/session';
 
 /**
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
           isActive: true,
         },
       });
-    });
+    }, TX_OPTIONS);
 
     if (!user || !user.passwordHash) {
       return NextResponse.json(

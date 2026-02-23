@@ -3,6 +3,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { TX_OPTIONS } from '@/lib/db/prisma';
 import { invoiceCreateSchema, invoiceUpdateSchema } from '@/lib/validations/invoice.schemas';
 import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
@@ -175,7 +176,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
           },
         },
       });
-    });
+    }, TX_OPTIONS);
   } catch (error: any) {
     if (error?.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };

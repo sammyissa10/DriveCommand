@@ -1,4 +1,4 @@
-import { prisma } from '../prisma';
+import { prisma, TX_OPTIONS } from '../prisma';
 
 export class TenantProvisioningRepository {
   /**
@@ -32,7 +32,7 @@ export class TenantProvisioningRepository {
       });
 
       return tenant;
-    });
+    }, TX_OPTIONS);
   }
 
   /**
@@ -48,7 +48,7 @@ export class TenantProvisioningRepository {
       });
 
       return user?.tenant || null;
-    });
+    }, TX_OPTIONS);
   }
 
   /**
@@ -60,6 +60,6 @@ export class TenantProvisioningRepository {
       return tx.tenant.findMany({
         orderBy: { createdAt: 'desc' },
       });
-    });
+    }, TX_OPTIONS);
   }
 }

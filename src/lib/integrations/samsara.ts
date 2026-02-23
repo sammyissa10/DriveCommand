@@ -6,7 +6,7 @@
  * matched by VIN to Truck records.
  */
 
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -110,7 +110,7 @@ export async function syncSamsaraLocations(
       where: { tenantId },
       select: { id: true, vin: true },
     });
-  });
+  }, TX_OPTIONS);
 
   // 3. Build VIN -> truckId lookup (normalized)
   const vinToTruckId = new Map<string, string>();
@@ -168,7 +168,7 @@ export async function syncSamsaraLocations(
       await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
       // @ts-ignore - Prisma 7 extension type issue
       await tx.gPSLocation.createMany({ data: gpsRecords });
-    });
+    }, TX_OPTIONS);
   }
 
   return {

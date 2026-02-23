@@ -9,7 +9,7 @@
  */
 
 import { distance, point } from '@turf/turf';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendGeofenceAlert } from '@/lib/email/send-geofence-alert';
 
 const GEOFENCE_RADIUS_KM = 0.5; // 500 metres
@@ -66,7 +66,7 @@ export async function checkGeofenceAndAlert(params: {
           truck: { select: { make: true, model: true, licensePlate: true } },
         },
       });
-    });
+    }, TX_OPTIONS);
 
     if (!load) return;
 
@@ -92,7 +92,7 @@ export async function checkGeofenceAndAlert(params: {
               where: { id: load.id },
               data: { pickupLat: pickupLat!, pickupLng: pickupLng! },
             });
-          });
+          }, TX_OPTIONS);
         }
       }
 
@@ -111,7 +111,7 @@ export async function checkGeofenceAndAlert(params: {
                 geofenceFlags: { ...flags, pickupAlerted: true },
               },
             });
-          });
+          }, TX_OPTIONS);
 
           // Notify dispatcher (non-blocking)
           sendGeofenceAlert({
@@ -149,7 +149,7 @@ export async function checkGeofenceAndAlert(params: {
               where: { id: load.id },
               data: { deliveryLat: deliveryLat!, deliveryLng: deliveryLng! },
             });
-          });
+          }, TX_OPTIONS);
         }
       }
 
@@ -167,7 +167,7 @@ export async function checkGeofenceAndAlert(params: {
                 geofenceFlags: { ...flags, deliveryAlerted: true },
               },
             });
-          });
+          }, TX_OPTIONS);
 
           sendGeofenceAlert({
             tenantId,

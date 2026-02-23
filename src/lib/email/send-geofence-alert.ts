@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { resend, FROM_EMAIL } from './resend-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
 
@@ -28,7 +28,7 @@ export async function sendGeofenceAlert(data: GeofenceAlertData): Promise<void> 
       },
       select: { email: true },
     });
-  });
+  }, TX_OPTIONS);
 
   if (!dispatchers.length) return;
 

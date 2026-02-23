@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { syncSamsaraLocations } from '@/lib/integrations/samsara';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { getSession } from '@/lib/auth/session';
 
 export async function POST(request: NextRequest) {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
           enabled: true,
         },
       });
-    });
+    }, TX_OPTIONS);
 
     if (!integration) {
       return NextResponse.json(

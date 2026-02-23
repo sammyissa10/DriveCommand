@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { prisma } from '../db/prisma';
+import { prisma, TX_OPTIONS } from '../db/prisma';
 import { withTenantRLS } from '../db/extensions/tenant-rls';
 
 /**
@@ -50,5 +50,5 @@ export async function tenantRawQuery<T>(fn: (tx: any) => Promise<T>): Promise<T>
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
     return fn(tx);
-  });
+  }, TX_OPTIONS);
 }

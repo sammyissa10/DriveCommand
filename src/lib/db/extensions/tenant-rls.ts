@@ -1,4 +1,5 @@
 import { Prisma } from '../../../generated/prisma/client';
+import { TX_OPTIONS } from '../prisma';
 
 /**
  * Prisma Client Extension for Row-Level Security
@@ -16,7 +17,9 @@ export function withTenantRLS(tenantId: string) {
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {
-            // Wrap the operation in a transaction that sets the tenant context
+            // Wrap the operation in a transaction that sets the tenant context.
+            // maxWait/timeout raised to handle bursts of concurrent queries (e.g. parallel tests,
+            // dashboard pages loading 6+ queries simultaneously).
             return client.$transaction(async (tx) => {
               // Set transaction-local session variable for RLS
               // The TRUE parameter makes it local to this transaction only
@@ -24,7 +27,7 @@ export function withTenantRLS(tenantId: string) {
 
               // Execute the actual query with tenant context set
               return query(args);
-            });
+            }, TX_OPTIONS);
           },
         },
       },

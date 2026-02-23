@@ -16,7 +16,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
 import { findExpiringDocuments } from '@/lib/notifications/check-expiring-documents';
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         where: { isActive: true },
         select: { id: true, name: true },
       });
-    });
+    }, TX_OPTIONS);
 
     console.log(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
   } catch (error) {

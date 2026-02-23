@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/navigation/user-menu";
 import { Truck } from "lucide-react";
 import { DriverNav } from "@/components/driver/driver-nav";
 import { GpsTracker } from "@/components/driver/gps-tracker";
-import { prisma } from "@/lib/db/prisma";
+import { prisma, TX_OPTIONS } from "@/lib/db/prisma";
 
 /**
  * Driver portal layout
@@ -42,7 +42,7 @@ export default async function DriverLayout({
         },
         select: { truckId: true },
       });
-    });
+    }, TX_OPTIONS);
     truckId = activeRoute?.truckId ?? null;
   } catch {
     // GPS tracking gracefully degrades if route lookup fails

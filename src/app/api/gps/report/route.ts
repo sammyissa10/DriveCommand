@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { checkGeofenceAndAlert } from '@/lib/geofencing/geofence-check';
 
 /**
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
         },
         select: { truckId: true },
       });
-    });
+    }, TX_OPTIONS);
 
     if (!route) {
       return NextResponse.json({ error: 'No active route' }, { status: 404 });
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
           timestamp: new Date(),
         },
       });
-    });
+    }, TX_OPTIONS);
 
     // 7. Fire geofence check — fire-and-forget, never blocks GPS response
     checkGeofenceAndAlert({

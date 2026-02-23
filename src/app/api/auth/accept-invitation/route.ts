@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { setSession } from '@/lib/auth/session';
 
 /**
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       return tx.driverInvitation.findUnique({
         where: { id: invitationId },
       });
-    });
+    }, TX_OPTIONS);
 
     if (!invitation) {
       return NextResponse.json(
@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       });
 
       return newUser;
-    });
+    }, TX_OPTIONS);
 
     // Set session for the new driver
     await setSession({

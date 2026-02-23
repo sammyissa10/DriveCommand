@@ -3,7 +3,7 @@
  */
 
 import { getSession } from './session';
-import { prisma } from '../db/prisma';
+import { prisma, TX_OPTIONS } from '../db/prisma';
 import { UserRole } from './roles';
 
 /**
@@ -73,7 +73,7 @@ export async function isSystemAdmin(): Promise<boolean> {
       where: { id: session.userId },
       select: { isSystemAdmin: true },
     });
-  });
+  }, TX_OPTIONS);
 
   return user?.isSystemAdmin ?? false;
 }
@@ -96,5 +96,5 @@ export async function getCurrentUser() {
     return tx.user.findUnique({
       where: { id: session.userId },
     });
-  });
+  }, TX_OPTIONS);
 }
