@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-23 — Completed quick task 22: Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, and generalized integrations UI
+Last activity: 2026-02-23 — Completed quick task 23: Customer shipment tracking page (public) — /track/[token] page, public API, trackingToken on dispatch, Copy Tracking Link button
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -63,6 +63,7 @@ Progress: [███████████████████████
 - Quick-20 (2026-02-23): Geofencing alerts — auto-detect truck arrival at stops — ~8min, 2 tasks, 5 files affected
 - Quick-21 (2026-02-23): IFTA fuel tax reporting — automated quarterly miles/fuel by state from GPS+FuelRecord — 291s, 2 tasks, 6 files affected
 - Quick-22 (2026-02-23): Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized UI — 149s, 2 tasks, 3 files affected
+- Quick-23 (2026-02-23): Customer shipment tracking page (public) — /track/[token], public API, trackingToken on dispatch — 196s, 3 tasks, 7 files affected
 
 ## Accumulated Context
 
@@ -243,6 +244,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-20]: Nominatim (OSM) for geocoding — free, no API key, lazy geocode on first ping then cache on Load; geofenceFlags JSONB on Load (not separate table) for lightweight idempotency; fire-and-forget geofence check after GPS save — endpoint never delayed; dynamic import for sendLoadStatusEmail avoids circular dependency; dispatcher alert targets ALL OWNER+MANAGER users in tenant
 - [Phase quick-21]: Bounding-box state detection (not polygon) — intentionally approximate for IFTA, avoids complex dependency; states ordered by area ascending so smaller states win border overlaps; generateIFTACSV made async (use server constraint); native HTML table used (no shadcn table component in project); GPS segment mileage attributed to starting-ping state (standard IFTA convention); UNKNOWN bucket for unresolvable fuel records
 - [Phase quick-22]: Motive API uses lat/lon/bearing/located_at fields (vs Samsara lat/longitude/heading/time); per-provider EldProviderState record replaces single-Samsara state — scales to future ELD providers; KEEP_TRUCKIN enum preserved (no migration needed); generic ELD config panel driven by ELD_PROVIDERS array — adding third provider requires only array entry + catalog + route
+- [Phase quick-23]: Public tracking page queries prisma directly (no auth/RLS) — intentional for public access; --accept-data-loss safe for nullable unique field; globalThis.crypto.randomUUID() for token generation (no import needed); dynamic import ssr:false for Leaflet (requires browser APIs); customer stepper shows only 4 statuses (DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED) — internal statuses excluded; no financial data on public page/API
 
 ### Pending Todos
 
@@ -288,10 +290,11 @@ None blocking immediate progress.
 | 20 | Geofencing alerts — auto-detect truck arrival at pickup and delivery stops | 2026-02-23 | 92c69f0 | [20-geofencing-alerts-auto-detect-truck-arri](./quick/20-geofencing-alerts-auto-detect-truck-arri/) |
 | 21 | IFTA fuel tax reporting — automated quarterly miles/fuel per state with CSV export | 2026-02-23 | a06caf8 | [21-ifta-fuel-tax-reporting-automate-quarter](./quick/21-ifta-fuel-tax-reporting-automate-quarter/) |
 | 22 | Motive (KeepTruckin) ELD integration — GPS sync, API endpoint, generalized integrations UI | 2026-02-23 | 1344a36 | [22-motive-keeptruckin-eld-integration-secon](./quick/22-motive-keeptruckin-eld-integration-secon/) |
+| 23 | Customer shipment tracking page — public /track/[token] with GPS map, status timeline, Copy Link | 2026-02-23 | 50c360e | [23-customer-shipment-tracking-page-public-t](./quick/23-customer-shipment-tracking-page-public-t/) |
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed quick-22: Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized integrations UI
+Stopped at: Completed quick-23: Customer shipment tracking page (public) — /track/[token] with GPS map, status timeline, and Copy Tracking Link button on load detail page
 Resume file: None
-Next action: Motive integration is live. Fleet owners using Motive/KeepTruckin hardware can configure their API token at /settings/integrations and trigger GPS location sync. Both Samsara and Motive are fully configurable ELD providers.
+Next action: Public tracking is live. Customers receive a /track/[token] link after load dispatch and can see real-time truck location, status timeline, and shipment details without logging in.
