@@ -279,6 +279,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
         driverId: result.data.driverId,
         truckId: result.data.truckId,
         status: 'DISPATCHED',
+        trackingToken: globalThis.crypto.randomUUID(),
       },
     });
 

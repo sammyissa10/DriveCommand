@@ -735,6 +735,7 @@ model Load {
   deliveryLng  Decimal?   @db.Decimal(11, 8)
   geofenceFlags Json?                           // JSONB: tracks which alerts have fired
                                                // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
+  trackingToken String?    @unique              // Public token for customer shipment tracking
   createdAt    DateTime   @default(now()) @db.Timestamptz
   updatedAt    DateTime   @updatedAt @db.Timestamptz
 
@@ -751,6 +752,7 @@ model Load {
   @@index([truckId])
   @@index([status])
   @@index([pickupDate])
+  @@index([trackingToken])
 }
 
 // ─── Integration Models ──────────────────────────────────────
