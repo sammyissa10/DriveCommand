@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { prisma } from '@/lib/db/prisma';
+import { checkGeofenceAndAlert } from '@/lib/geofencing/geofence-check';
 
 /**
  * POST /api/gps/report
@@ -94,7 +95,16 @@ export async function POST(req: NextRequest) {
       });
     });
 
-    // 7. Return success
+    // 7. Fire geofence check — fire-and-forget, never blocks GPS response
+    checkGeofenceAndAlert({
+      tenantId: session.tenantId,
+      driverId: session.userId,
+      truckId: route.truckId,
+      latitude,
+      longitude,
+    }).catch((e) => console.error('Geofence check error:', e));
+
+    // 8. Return success
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
     console.error('GPS report error:', error);
