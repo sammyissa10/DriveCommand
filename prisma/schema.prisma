@@ -729,6 +729,12 @@ model Load {
   rate         Decimal    @db.Decimal(12, 2)
   status       LoadStatus @default(PENDING)
   notes        String?
+  pickupLat    Decimal?   @db.Decimal(10, 8)   // Geocoded from origin address
+  pickupLng    Decimal?   @db.Decimal(11, 8)
+  deliveryLat  Decimal?   @db.Decimal(10, 8)   // Geocoded from destination address
+  deliveryLng  Decimal?   @db.Decimal(11, 8)
+  geofenceFlags Json?                           // JSONB: tracks which alerts have fired
+                                               // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
   createdAt    DateTime   @default(now()) @db.Timestamptz
   updatedAt    DateTime   @updatedAt @db.Timestamptz
 
