@@ -222,12 +222,12 @@ export async function getIFTAReport(
  * Generate a CSV string from IFTA report data.
  * Suitable for download as `ifta-{year}-q{quarter}.csv`.
  */
-export function generateIFTACSV(
+export async function generateIFTACSV(
   rows: IFTAReportRow[],
   totals: IFTAReportData['totals'],
   quarter: 1 | 2 | 3 | 4,
   year: number
-): string {
+): Promise<string> {
   const lines: string[] = [];
 
   // Header

@@ -22,6 +22,7 @@ import {
   ClipboardCheck,
   FileSearch,
   Calculator,
+  FileSpreadsheet,
   Settings,
 } from "lucide-react"
 import {
@@ -188,6 +189,18 @@ export function AppSidebar() {
                     <Link href="/compliance">
                       <ClipboardCheck />
                       <span>Compliance</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/ifta")}
+                    tooltip="IFTA Reports"
+                  >
+                    <Link href="/ifta">
+                      <FileSpreadsheet />
+                      <span>IFTA Reports</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
