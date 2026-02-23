@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-20 — Completed quick task 18: Add driver app GPS tracking with browser geolocation
+Last activity: 2026-02-23 — Completed quick task 19: Add license plate label under each vehicle marker on the live map
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -277,6 +277,7 @@ None blocking immediate progress.
 | 16 | Wire up driver invitation flow to send email and accept-invitation page | 2026-02-19 | 65c9274 | [16-wire-up-driver-invitation-flow-to-send-e](./quick/16-wire-up-driver-invitation-flow-to-send-e/) |
 | 17 | Wire up real Samsara GPS provider integration | 2026-02-20 | 907bdf5 | [17-wire-up-real-gps-provider-integration-to](./quick/17-wire-up-real-gps-provider-integration-to/) |
 | 18 | Add driver app GPS tracking with browser geolocation | 2026-02-20 | a069193 | [18-add-driver-app-gps-tracking-with-browser](./quick/18-add-driver-app-gps-tracking-with-browser/) |
+| 19 | Add license plate label under each vehicle marker on the live map | 2026-02-23 | dee78b1 | [19-add-license-plate-label-under-each-vehic](./quick/19-add-license-plate-label-under-each-vehic/) |
 | 19 | Add license plate label below each vehicle marker on live map | 2026-02-23 | dee78b1 | [19-add-license-plate-label-under-each-vehic](./quick/19-add-license-plate-label-under-each-vehic/) |
 
 ## Session Continuity
