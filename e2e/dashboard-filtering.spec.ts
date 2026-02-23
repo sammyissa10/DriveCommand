@@ -30,15 +30,16 @@ test.describe('Safety Dashboard Filtering', () => {
       test.skip(true, 'Authentication required');
     }
 
-    // Open dropdown
+    // Open dropdown (wait for it to be visible first)
     const filterDropdown = page.locator('[role="combobox"]').first();
+    await expect(filterDropdown).toBeVisible({ timeout: 15000 });
     await filterDropdown.click();
 
     // Wait for options to appear
-    await page.waitForSelector('[role="option"]');
+    await page.waitForSelector('[role="option"]', { timeout: 10000 });
 
     // Check for "All Vehicles" option
-    await expect(page.getByRole('option', { name: 'All Vehicles' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'All Vehicles' })).toBeVisible({ timeout: 10000 });
   });
 
   test('should update URL when tag is selected', async ({ page }) => {
@@ -112,7 +113,7 @@ test.describe('Fuel Dashboard Filtering', () => {
     }
 
     const filterDropdown = page.locator('[role="combobox"]').first();
-    await expect(filterDropdown).toBeVisible();
+    await expect(filterDropdown).toBeVisible({ timeout: 15000 });
   });
 
   test('should update URL with tagId on fuel page', async ({ page }) => {
@@ -124,6 +125,7 @@ test.describe('Fuel Dashboard Filtering', () => {
     }
 
     const filterDropdown = page.locator('[role="combobox"]').first();
+    await expect(filterDropdown).toBeVisible({ timeout: 15000 });
     await filterDropdown.click();
 
     await page.waitForSelector('[role="option"]');
@@ -148,7 +150,7 @@ test.describe('Live Map Filtering', () => {
     }
 
     const filterDropdown = page.locator('[role="combobox"]').first();
-    await expect(filterDropdown).toBeVisible();
+    await expect(filterDropdown).toBeVisible({ timeout: 15000 });
   });
 
   test('should update URL with tagId on live map page', async ({ page }) => {

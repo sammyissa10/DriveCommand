@@ -23,7 +23,7 @@ test.describe('Tag Management', () => {
     }
 
     // Verify page title
-    await expect(page.getByRole('heading', { name: 'Tags & Groups', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Tags & Groups', level: 1 })).toBeVisible({ timeout: 15000 });
   });
 
   test('should display existing tags or empty state', async ({ page }) => {

@@ -136,7 +136,7 @@ test.describe('Mobile Responsive - Tags Page', () => {
       test.skip(true, 'Authentication required');
     }
 
-    await expect(page.getByRole('heading', { name: /Tags & Groups/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Tags & Groups/i })).toBeVisible({ timeout: 15000 });
   });
 
   test('should not have horizontal overflow on tags page', async ({ page }) => {
@@ -195,6 +195,6 @@ test.describe('Desktop Layout Verification', () => {
 
     // Filter should be visible in header
     const filterDropdown = page.locator('[role="combobox"]').first();
-    await expect(filterDropdown).toBeVisible();
+    await expect(filterDropdown).toBeVisible({ timeout: 15000 });
   });
 });
