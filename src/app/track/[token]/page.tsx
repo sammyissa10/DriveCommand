@@ -1,21 +1,11 @@
 import { notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/db/prisma';
+import TrackingMapWrapper from '@/components/tracking/tracking-map-wrapper';
 
 export const metadata: Metadata = {
   title: 'Track Shipment | DriveCommand',
 };
-
-const TrackingMap = dynamic(
-  () => import('@/components/tracking/tracking-map'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[300px] bg-muted rounded-lg animate-pulse" />
-    ),
-  }
-);
 
 // Customer-facing status steps (not all internal statuses)
 const TRACKING_STEPS = [
@@ -251,7 +241,7 @@ export default async function TrackShipmentPage({
             </h2>
             {latestGPS ? (
               <div className="space-y-2">
-                <TrackingMap
+                <TrackingMapWrapper
                   latitude={latestGPS.latitude}
                   longitude={latestGPS.longitude}
                   truckLabel={load.truck?.licensePlate ?? 'Truck'}
