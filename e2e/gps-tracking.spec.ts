@@ -35,11 +35,13 @@ test.describe('Samsara Integration Settings', () => {
     await expect(switchEl).toBeVisible();
   });
 
-  test('KeepTruckin shows Coming Soon badge', async ({ page }) => {
-    // Find the card with KeepTruckin name text, then check for badge within it
-    const keepTruckinCard = page.locator('[class*="rounded-xl border"]').filter({ hasText: 'KeepTruckin' });
-    await expect(keepTruckinCard).toBeVisible();
-    await expect(keepTruckinCard.getByText('Coming Soon')).toBeVisible();
+  test('Motive (KeepTruckin) card is interactive (not Coming Soon)', async ({ page }) => {
+    // Motive is now a full provider — it should have a switch, not a Coming Soon badge
+    const motiveCard = page.locator('[class*="rounded-xl border"]').filter({ hasText: 'KeepTruckin' });
+    await expect(motiveCard).toBeVisible();
+    await expect(motiveCard.getByText('Coming Soon')).not.toBeVisible();
+    // Should have a switch toggle
+    await expect(motiveCard.locator('[role="switch"]')).toBeVisible();
   });
 
   test('toggling Samsara on reveals config panel', async ({ page }) => {
