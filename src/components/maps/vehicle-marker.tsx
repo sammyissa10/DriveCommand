@@ -40,10 +40,16 @@ export default function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) 
         `
             : ''
         }
+        <div class="absolute left-1/2 -translate-x-1/2 whitespace-nowrap mt-0.5"
+             style="top: 100%; pointer-events: none;">
+          <span class="inline-block px-1.5 py-0 text-[10px] font-semibold leading-tight bg-gray-900/80 text-white rounded-sm shadow-sm backdrop-blur-sm">
+            ${vehicle.truck.licensePlate || ''}
+          </span>
+        </div>
       </div>
     `,
     className: 'vehicle-marker-icon',
-    iconSize: [40, 40],
+    iconSize: [40, 56],
     iconAnchor: [20, 20],
     popupAnchor: [0, -20],
   });
