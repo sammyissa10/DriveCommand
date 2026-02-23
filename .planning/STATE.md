@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-23 — Completed quick task 19: Add license plate label under each vehicle marker on the live map
+Last activity: 2026-02-23 — Completed quick task 20: Geofencing alerts — auto-detect truck arrival at pickup and delivery stops
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -60,6 +60,7 @@ Progress: [███████████████████████
 - Quick-17 (2026-02-20): Wire up real Samsara GPS provider integration — ~194s, 2 tasks, 5 files affected
 - Quick-18 (2026-02-20): Add driver app GPS tracking with browser geolocation — ~136s, 2 tasks, 3 files affected
 - Quick-19 (2026-02-23): Add license plate label below each vehicle marker — ~41s, 1 task, 1 file affected
+- Quick-20 (2026-02-23): Geofencing alerts — auto-detect truck arrival at stops — ~8min, 2 tasks, 5 files affected
 
 ## Accumulated Context
 
@@ -237,6 +238,7 @@ Progress: [███████████████████████
 All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-18]: Server-side timestamp for GPS records to prevent tampering; RLS bypass in API route; auto-disable tracking on no active route
 - [Phase quick-19]: pointer-events:none on plate label to preserve marker clicks; iconSize height 40->56px for label room; iconAnchor kept [20,20] so circle center stays on GPS coordinate; top:100%+translate-x-1/2 for centered sub-icon label
+- [Phase quick-20]: Nominatim (OSM) for geocoding — free, no API key, lazy geocode on first ping then cache on Load; geofenceFlags JSONB on Load (not separate table) for lightweight idempotency; fire-and-forget geofence check after GPS save — endpoint never delayed; dynamic import for sendLoadStatusEmail avoids circular dependency; dispatcher alert targets ALL OWNER+MANAGER users in tenant
 
 ### Pending Todos
 
@@ -279,10 +281,11 @@ None blocking immediate progress.
 | 18 | Add driver app GPS tracking with browser geolocation | 2026-02-20 | a069193 | [18-add-driver-app-gps-tracking-with-browser](./quick/18-add-driver-app-gps-tracking-with-browser/) |
 | 19 | Add license plate label under each vehicle marker on the live map | 2026-02-23 | dee78b1 | [19-add-license-plate-label-under-each-vehic](./quick/19-add-license-plate-label-under-each-vehic/) |
 | 19 | Add license plate label below each vehicle marker on live map | 2026-02-23 | dee78b1 | [19-add-license-plate-label-under-each-vehic](./quick/19-add-license-plate-label-under-each-vehic/) |
+| 20 | Geofencing alerts — auto-detect truck arrival at pickup and delivery stops | 2026-02-23 | 92c69f0 | [20-geofencing-alerts-auto-detect-truck-arri](./quick/20-geofencing-alerts-auto-detect-truck-arri/) |
 
 ## Session Continuity
 
 Last session: 2026-02-23
-Stopped at: Completed quick-19: Add license plate label below each vehicle marker on live map
+Stopped at: Completed quick-20: Geofencing alerts — auto-detect truck arrival at pickup and delivery stops
 Resume file: None
-Next action: Vehicle markers now show license plate labels. Live map owners can identify trucks at a glance without clicking.
+Next action: GPS geofencing is live. Truck arrival within 500m of a stop auto-advances load status and emails dispatcher + customer.
