@@ -21,17 +21,23 @@ export default async function DashboardPage() {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Fetch all dashboard data in parallel
+  // Fetch all dashboard data in parallel — individual fallbacks so one failure doesn't crash the page
   const [metrics, upcomingMaintenance, expiringDocuments, notificationAlerts] = await Promise.all([
-    getDashboardMetrics(),
-    getUpcomingMaintenance(),
-    getExpiringDocuments(),
-    getNotificationAlerts(),
+    getDashboardMetrics().catch((e) => { console.error('[dashboard] getDashboardMetrics failed:', e); return null; }),
+    getUpcomingMaintenance().catch((e) => { console.error('[dashboard] getUpcomingMaintenance failed:', e); return []; }),
+    getExpiringDocuments().catch((e) => { console.error('[dashboard] getExpiringDocuments failed:', e); return []; }),
+    getNotificationAlerts().catch((e) => { console.error('[dashboard] getNotificationAlerts failed:', e); return []; }),
   ]);
 
+  // Safe metrics with fallbacks if getDashboardMetrics failed
+  const m = metrics ?? {
+    totalTrucks: 0, activeDrivers: 0, activeRoutes: 0, maintenanceAlerts: 0,
+    activeLoads: 0, unpaidTotal: '$0.00', overdueTotal: '$0.00', revenuePerMile: 'N/A',
+  };
+
   // Build overdue subtitle for Unpaid Invoices card (shown in red when overdue > $0)
-  const hasOverdue = metrics.overdueTotal !== '$0.00';
-  const overdueSubtitle = hasOverdue ? `(${metrics.overdueTotal} overdue)` : undefined;
+  const hasOverdue = m.overdueTotal !== '$0.00';
+  const overdueSubtitle = hasOverdue ? `(${m.overdueTotal} overdue)` : undefined;
 
   return (
     <div className="space-y-6">
@@ -45,39 +51,23 @@ export default async function DashboardPage() {
 
       {/* Stat Cards — 6 cards in a responsive 2/3/6-column grid */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <StatCard
-          label="Total Trucks"
-          value={metrics.totalTrucks}
-          href="/trucks"
-        />
-        <StatCard
-          label="Active Drivers"
-          value={metrics.activeDrivers}
-          href="/drivers"
-        />
-        <StatCard
-          label="Active Loads"
-          value={metrics.activeLoads}
-          href="/loads"
-        />
+        <StatCard label="Total Trucks" value={m.totalTrucks} href="/trucks" />
+        <StatCard label="Active Drivers" value={m.activeDrivers} href="/drivers" />
+        <StatCard label="Active Loads" value={m.activeLoads} href="/loads" />
         <StatCard
           label="Maintenance Alerts"
-          value={metrics.maintenanceAlerts}
+          value={m.maintenanceAlerts}
           href="/trucks"
-          variant={metrics.maintenanceAlerts > 0 ? 'warning' : 'default'}
+          variant={m.maintenanceAlerts > 0 ? 'warning' : 'default'}
         />
         <StatCard
           label="Unpaid Invoices"
-          value={metrics.unpaidTotal}
+          value={m.unpaidTotal}
           href="/invoices"
           variant={hasOverdue ? 'danger' : 'default'}
           subtitle={overdueSubtitle}
         />
-        <StatCard
-          label="Revenue / Mile"
-          value={metrics.revenuePerMile}
-          href="/routes"
-        />
+        <StatCard label="Revenue / Mile" value={m.revenuePerMile} href="/routes" />
       </div>
 
       {/* Bottom section — 3-column grid with notifications, maintenance, and documents */}
