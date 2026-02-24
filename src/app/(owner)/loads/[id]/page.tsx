@@ -8,6 +8,7 @@ import { DispatchModal } from '@/components/loads/dispatch-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
 import { DeleteLoadButton } from '@/components/loads/delete-load-button';
 import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
+import { DownloadRateConfirmationButton } from '@/components/loads/download-rate-confirmation-button';
 
 const STATUS_LIFECYCLE = [
   'PENDING',
@@ -115,6 +116,9 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
           )}
           {load.trackingToken && (
             <CopyTrackingLinkButton token={load.trackingToken} />
+          )}
+          {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(load.status) && (
+            <DownloadRateConfirmationButton loadId={id} />
           )}
           {canEdit && (
             <Link
