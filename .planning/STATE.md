@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 26: Revert status button on load detail page — REVERSE_STATUS_TRANSITIONS server action, muted/outline revert button with Undo2 icon, clears assignment on DISPATCHED->PENDING revert
+Last activity: 2026-02-24 — Completed quick task 27: Dashboard upgrade — 6 stat cards (active loads, unpaid invoices + overdue, revenue/mile) and unified notifications panel
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
