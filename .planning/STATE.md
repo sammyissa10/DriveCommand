@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 25: Rate confirmation PDF generator — @react-pdf/renderer server action + download button on load detail page for DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED loads
+Last activity: 2026-02-24 — Completed quick task 26: Revert status button on load detail page — REVERSE_STATUS_TRANSITIONS server action, muted/outline revert button with Undo2 icon, clears assignment on DISPATCHED->PENDING revert
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -66,6 +66,7 @@ Progress: [███████████████████████
 - Quick-23 (2026-02-23): Customer shipment tracking page (public) — /track/[token], public API, trackingToken on dispatch — 196s, 3 tasks, 7 files affected
 - Quick-24 (2026-02-24): Real-time GPS polling on live map and customer tracking page — 256s, 2 tasks, 6 files affected
 - Quick-25 (2026-02-24): Rate confirmation PDF generator — @react-pdf/renderer server-side PDF, download button on load detail page — ~360s, 2 tasks, 6 files affected
+- Quick-26 (2026-02-24): Revert status button — REVERSE_STATUS_TRANSITIONS server action + Undo2 revert button on load detail page — 122s, 2 tasks, 3 files affected
 
 ## Accumulated Context
 
@@ -249,6 +250,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-23]: Public tracking page queries prisma directly (no auth/RLS) — intentional for public access; --accept-data-loss safe for nullable unique field; globalThis.crypto.randomUUID() for token generation (no import needed); dynamic import ssr:false for Leaflet (requires browser APIs); customer stepper shows only 4 statuses (DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED) — internal statuses excluded; no financial data on public page/API
 - [Phase quick-24]: Skip fetch inside setInterval when visibilityState=hidden (simpler than pause/resume interval); visibilitychange listener for immediate catch-up on tab focus; useRef for tagId in closure (avoids stale ref without adding to interval deps); reuse existing /api/track/[token] for tracking page polling (no new endpoint needed); server component keeps initial fetch for SEO/first paint
 - [Phase quick-25]: Server action file uses .tsx extension (not .ts) to allow JSX syntax for react-pdf element creation; cast renderToBuffer argument `as any` to satisfy ReactElement<DocumentProps> generic constraint; status validation in server action as defense-in-depth (not just UI gating); Helvetica font chosen (built-in, no download needed for server-side PDF rendering)
+- [Phase quick-26]: Revert DISPATCHED->PENDING clears driverId/truckId/trackingToken (symmetric with dispatchLoad); no customer email on revert (dispatcher correction only); INVOICED status included in StatusUpdateButton render condition (revert-only state, no advance); Undo2 icon + muted/outline style distinguishes revert from primary advance button
 
 ### Pending Todos
 
@@ -297,10 +299,11 @@ None blocking immediate progress.
 | 23 | Customer shipment tracking page — public /track/[token] with GPS map, status timeline, Copy Link | 2026-02-23 | 50c360e | [23-customer-shipment-tracking-page-public-t](./quick/23-customer-shipment-tracking-page-public-t/) |
 | 24 | Real-time GPS polling on live map and customer tracking — 30s polling, visibility-aware, "Updated Xs ago" | 2026-02-24 | 8b8be7c | [24-real-time-gps-polling-on-live-map-and-cu](./quick/24-real-time-gps-polling-on-live-map-and-cu/) |
 | 25 | Rate confirmation PDF generator — @react-pdf/renderer server action, download button on load detail page | 2026-02-24 | 7bdf210 | [25-rate-confirmation-pdf-generator-for-disp](./quick/25-rate-confirmation-pdf-generator-for-disp/) |
+| 26 | Revert status button on load detail page — step load back one lifecycle stage with confirmation dialog | 2026-02-24 | d63c9dd | [26-add-revert-status-button-on-load-detail-](./quick/26-add-revert-status-button-on-load-detail-/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-25: Rate confirmation PDF generator — @react-pdf/renderer server action renders PDF from load data; download button on /loads/[id] for DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED statuses
+Stopped at: Completed quick-26: Revert status button — dispatchers can now step load status back one stage with confirmation dialog; DISPATCHED->PENDING revert clears driver/truck assignment
 Resume file: None
-Next action: Carriers can now download professional rate confirmation PDFs from dispatched load detail pages. PDF includes all required sections: header, load details, rate, carrier info, customer/shipper info, terms, and signature lines.
+Next action: Dispatchers can now correct accidental status advances without cancelling loads. Revert button appears for all statuses DISPATCHED through INVOICED with muted/outline styling to distinguish from advance button.
