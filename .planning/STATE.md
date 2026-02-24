@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 24: Real-time GPS polling on live map and customer tracking page — 30s polling with visibility-aware pause, "Updated Xs ago" indicator
+Last activity: 2026-02-24 — Completed quick task 25: Rate confirmation PDF generator — @react-pdf/renderer server action + download button on load detail page for DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED loads
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -65,6 +65,7 @@ Progress: [███████████████████████
 - Quick-22 (2026-02-23): Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized UI — 149s, 2 tasks, 3 files affected
 - Quick-23 (2026-02-23): Customer shipment tracking page (public) — /track/[token], public API, trackingToken on dispatch — 196s, 3 tasks, 7 files affected
 - Quick-24 (2026-02-24): Real-time GPS polling on live map and customer tracking page — 256s, 2 tasks, 6 files affected
+- Quick-25 (2026-02-24): Rate confirmation PDF generator — @react-pdf/renderer server-side PDF, download button on load detail page — ~360s, 2 tasks, 6 files affected
 
 ## Accumulated Context
 
@@ -247,6 +248,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-22]: Motive API uses lat/lon/bearing/located_at fields (vs Samsara lat/longitude/heading/time); per-provider EldProviderState record replaces single-Samsara state — scales to future ELD providers; KEEP_TRUCKIN enum preserved (no migration needed); generic ELD config panel driven by ELD_PROVIDERS array — adding third provider requires only array entry + catalog + route
 - [Phase quick-23]: Public tracking page queries prisma directly (no auth/RLS) — intentional for public access; --accept-data-loss safe for nullable unique field; globalThis.crypto.randomUUID() for token generation (no import needed); dynamic import ssr:false for Leaflet (requires browser APIs); customer stepper shows only 4 statuses (DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED) — internal statuses excluded; no financial data on public page/API
 - [Phase quick-24]: Skip fetch inside setInterval when visibilityState=hidden (simpler than pause/resume interval); visibilitychange listener for immediate catch-up on tab focus; useRef for tagId in closure (avoids stale ref without adding to interval deps); reuse existing /api/track/[token] for tracking page polling (no new endpoint needed); server component keeps initial fetch for SEO/first paint
+- [Phase quick-25]: Server action file uses .tsx extension (not .ts) to allow JSX syntax for react-pdf element creation; cast renderToBuffer argument `as any` to satisfy ReactElement<DocumentProps> generic constraint; status validation in server action as defense-in-depth (not just UI gating); Helvetica font chosen (built-in, no download needed for server-side PDF rendering)
 
 ### Pending Todos
 
@@ -294,10 +296,11 @@ None blocking immediate progress.
 | 22 | Motive (KeepTruckin) ELD integration — GPS sync, API endpoint, generalized integrations UI | 2026-02-23 | 1344a36 | [22-motive-keeptruckin-eld-integration-secon](./quick/22-motive-keeptruckin-eld-integration-secon/) |
 | 23 | Customer shipment tracking page — public /track/[token] with GPS map, status timeline, Copy Link | 2026-02-23 | 50c360e | [23-customer-shipment-tracking-page-public-t](./quick/23-customer-shipment-tracking-page-public-t/) |
 | 24 | Real-time GPS polling on live map and customer tracking — 30s polling, visibility-aware, "Updated Xs ago" | 2026-02-24 | 8b8be7c | [24-real-time-gps-polling-on-live-map-and-cu](./quick/24-real-time-gps-polling-on-live-map-and-cu/) |
+| 25 | Rate confirmation PDF generator — @react-pdf/renderer server action, download button on load detail page | 2026-02-24 | 7bdf210 | [25-rate-confirmation-pdf-generator-for-disp](./quick/25-rate-confirmation-pdf-generator-for-disp/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-24: Real-time GPS polling — live map polls /api/gps/locations every 30s; customer tracking page polls /api/track/[token] every 30s; both visibility-aware with "Updated Xs ago" indicator
+Stopped at: Completed quick-25: Rate confirmation PDF generator — @react-pdf/renderer server action renders PDF from load data; download button on /loads/[id] for DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED statuses
 Resume file: None
-Next action: Both fleet map and customer tracking pages now update vehicle positions in real-time without manual refresh. Polling pauses when the browser tab is hidden and resumes with an immediate catch-up fetch.
+Next action: Carriers can now download professional rate confirmation PDFs from dispatched load detail pages. PDF includes all required sections: header, load details, rate, carrier info, customer/shipper info, terms, and signature lines.
