@@ -18,14 +18,13 @@ export default async function OwnerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Check authentication
-  const session = await getSession();
+  // Run auth checks in parallel — both are fast JWT decrypts, no DB calls
+  const [session, role] = await Promise.all([getSession(), getRole()]);
+
   if (!session) {
     redirect("/sign-in");
   }
 
-  // Check owner/manager authorization
-  const role = await getRole();
   if (role !== UserRole.OWNER && role !== UserRole.MANAGER) {
     redirect("/unauthorized");
   }
