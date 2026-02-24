@@ -5,6 +5,8 @@
  * Shows fleet overview stat cards (including financial metrics) and alert widgets.
  */
 
+export const revalidate = 60; // Cache dashboard data for 60 seconds
+
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getDashboardMetrics, getNotificationAlerts } from '@/app/(owner)/actions/dashboard';

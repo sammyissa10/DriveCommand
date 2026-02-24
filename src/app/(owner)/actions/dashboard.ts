@@ -65,12 +65,15 @@ export async function getNotificationAlerts(): Promise<NotificationAlert[]> {
       documentMetadata: unknown;
     }>>),
 
-    // --- Driver documents with expiryDate within 60 days ---
+    // --- Driver documents expiring within 60 days (or already expired) ---
     // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     (db.document.findMany({
       where: {
         driverId: { not: null },
-        expiryDate: { not: null },
+        expiryDate: {
+          not: null,
+          lte: new Date(now.getTime() + 60 * msPerDay),
+        },
       },
       select: {
         id: true,
@@ -404,13 +407,14 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
     }) as Promise<number>,
 
-    // Completed routes with odometer data for revenue per mile calculation
+    // Completed routes with odometer data for revenue per mile calculation — last 90 days only
     // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     db.route.findMany({
       where: {
         status: 'COMPLETED',
         startOdometer: { not: null },
         endOdometer: { not: null },
+        completedAt: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
       },
       select: {
         startOdometer: true,
@@ -420,6 +424,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
           select: { amount: true },
         },
       },
+      take: 200,
     }) as Promise<Array<{
       startOdometer: number | null;
       endOdometer: number | null;
