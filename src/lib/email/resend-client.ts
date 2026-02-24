@@ -16,7 +16,7 @@ export const resend = new Proxy({} as Resend, {
     if (!_resendClient) {
       const apiKey = process.env.RESEND_API_KEY;
       if (!apiKey) {
-        throw new Error('RESEND_API_KEY environment variable is required');
+        throw new Error('RESEND_API_KEY environment variable is required. Add it to .env.local — get your key from https://resend.com/api-keys');
       }
       _resendClient = new Resend(apiKey);
     }

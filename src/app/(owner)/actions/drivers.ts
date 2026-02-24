@@ -86,15 +86,28 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       },
     });
 
+    // Fetch tenant name for the invitation email
+    let organizationName = 'your fleet';
+    try {
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true },
+      });
+      organizationName = tenant?.name || 'your fleet';
+    } catch {
+      // Fall back to generic name — non-critical
+    }
+
     // Send invitation email (failure does NOT roll back the invitation record)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
+    let emailSent = false;
     try {
       await sendDriverInvitation(email, {
         firstName,
         lastName,
-        organizationName: 'your fleet',
+        organizationName,
         acceptUrl,
         expiresAt: invitation.expiresAt.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -102,6 +115,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
           day: 'numeric',
         }),
       });
+      emailSent = true;
     } catch (emailError) {
       console.error('Failed to send invitation email:', emailError);
       // Invitation record exists; email can be resent later
@@ -109,6 +123,13 @@ export async function inviteDriver(prevState: any, formData: FormData) {
 
     // Revalidate
     revalidatePath('/drivers');
+
+    if (!emailSent) {
+      return {
+        success: true,
+        warning: `Invitation created for ${email}, but the email could not be sent. Check that RESEND_API_KEY is configured in your environment variables.`,
+      };
+    }
 
     return {
       success: true,

@@ -31,6 +31,13 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
         </div>
       )}
 
+      {/* Warning message — invitation created but email not sent */}
+      {state?.warning && (
+        <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+          <p className="text-sm text-amber-800">{state.warning}</p>
+        </div>
+      )}
+
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
