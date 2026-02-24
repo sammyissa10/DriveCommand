@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-23 — Completed quick task 23: Customer shipment tracking page (public) — /track/[token] page, public API, trackingToken on dispatch, Copy Tracking Link button
+Last activity: 2026-02-24 — Completed quick task 24: Real-time GPS polling on live map and customer tracking page — 30s polling with visibility-aware pause, "Updated Xs ago" indicator
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -64,6 +64,7 @@ Progress: [███████████████████████
 - Quick-21 (2026-02-23): IFTA fuel tax reporting — automated quarterly miles/fuel by state from GPS+FuelRecord — 291s, 2 tasks, 6 files affected
 - Quick-22 (2026-02-23): Motive (KeepTruckin) ELD integration — GPS sync library, API endpoint, generalized UI — 149s, 2 tasks, 3 files affected
 - Quick-23 (2026-02-23): Customer shipment tracking page (public) — /track/[token], public API, trackingToken on dispatch — 196s, 3 tasks, 7 files affected
+- Quick-24 (2026-02-24): Real-time GPS polling on live map and customer tracking page — 256s, 2 tasks, 6 files affected
 
 ## Accumulated Context
 
@@ -245,6 +246,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-21]: Bounding-box state detection (not polygon) — intentionally approximate for IFTA, avoids complex dependency; states ordered by area ascending so smaller states win border overlaps; generateIFTACSV made async (use server constraint); native HTML table used (no shadcn table component in project); GPS segment mileage attributed to starting-ping state (standard IFTA convention); UNKNOWN bucket for unresolvable fuel records
 - [Phase quick-22]: Motive API uses lat/lon/bearing/located_at fields (vs Samsara lat/longitude/heading/time); per-provider EldProviderState record replaces single-Samsara state — scales to future ELD providers; KEEP_TRUCKIN enum preserved (no migration needed); generic ELD config panel driven by ELD_PROVIDERS array — adding third provider requires only array entry + catalog + route
 - [Phase quick-23]: Public tracking page queries prisma directly (no auth/RLS) — intentional for public access; --accept-data-loss safe for nullable unique field; globalThis.crypto.randomUUID() for token generation (no import needed); dynamic import ssr:false for Leaflet (requires browser APIs); customer stepper shows only 4 statuses (DISPATCHED/PICKED_UP/IN_TRANSIT/DELIVERED) — internal statuses excluded; no financial data on public page/API
+- [Phase quick-24]: Skip fetch inside setInterval when visibilityState=hidden (simpler than pause/resume interval); visibilitychange listener for immediate catch-up on tab focus; useRef for tagId in closure (avoids stale ref without adding to interval deps); reuse existing /api/track/[token] for tracking page polling (no new endpoint needed); server component keeps initial fetch for SEO/first paint
 
 ### Pending Todos
 
@@ -291,10 +293,11 @@ None blocking immediate progress.
 | 21 | IFTA fuel tax reporting — automated quarterly miles/fuel per state with CSV export | 2026-02-23 | a06caf8 | [21-ifta-fuel-tax-reporting-automate-quarter](./quick/21-ifta-fuel-tax-reporting-automate-quarter/) |
 | 22 | Motive (KeepTruckin) ELD integration — GPS sync, API endpoint, generalized integrations UI | 2026-02-23 | 1344a36 | [22-motive-keeptruckin-eld-integration-secon](./quick/22-motive-keeptruckin-eld-integration-secon/) |
 | 23 | Customer shipment tracking page — public /track/[token] with GPS map, status timeline, Copy Link | 2026-02-23 | 50c360e | [23-customer-shipment-tracking-page-public-t](./quick/23-customer-shipment-tracking-page-public-t/) |
+| 24 | Real-time GPS polling on live map and customer tracking — 30s polling, visibility-aware, "Updated Xs ago" | 2026-02-24 | 8b8be7c | [24-real-time-gps-polling-on-live-map-and-cu](./quick/24-real-time-gps-polling-on-live-map-and-cu/) |
 
 ## Session Continuity
 
-Last session: 2026-02-23
-Stopped at: Completed quick-23: Customer shipment tracking page (public) — /track/[token] with GPS map, status timeline, and Copy Tracking Link button on load detail page
+Last session: 2026-02-24
+Stopped at: Completed quick-24: Real-time GPS polling — live map polls /api/gps/locations every 30s; customer tracking page polls /api/track/[token] every 30s; both visibility-aware with "Updated Xs ago" indicator
 Resume file: None
-Next action: Public tracking is live. Customers receive a /track/[token] link after load dispatch and can see real-time truck location, status timeline, and shipment details without logging in.
+Next action: Both fleet map and customer tracking pages now update vehicle positions in real-time without manual refresh. Polling pauses when the browser tab is hidden and resumes with an immediate catch-up fetch.
