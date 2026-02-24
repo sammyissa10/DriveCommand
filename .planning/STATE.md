@@ -254,6 +254,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-25]: Server action file uses .tsx extension (not .ts) to allow JSX syntax for react-pdf element creation; cast renderToBuffer argument `as any` to satisfy ReactElement<DocumentProps> generic constraint; status validation in server action as defense-in-depth (not just UI gating); Helvetica font chosen (built-in, no download needed for server-side PDF rendering)
 - [Phase quick-26]: Revert DISPATCHED->PENDING clears driverId/truckId/trackingToken (symmetric with dispatchLoad); no customer email on revert (dispatcher correction only); INVOICED status included in StatusUpdateButton render condition (revert-only state, no advance); Undo2 icon + muted/outline style distinguishes revert from primary advance button
 - [Phase quick-29]: Remove page-level requireRole() from DashboardPage — layout enforces auth, page-level call blocked all Suspense boundaries causing blank white screen; make DashboardPage synchronous; getAuthContext() combines role+tenantId into single getSession() call per data function, reducing dashboard session decrypts from ~9 to ~4
+- [Phase quick-30]: emailSent boolean tracks email outcome inside try/catch; warning field returned (not error) when email fails so invitation record persists and user gets actionable amber banner; tenant name fetched in separate try/catch — falls back to 'your fleet' if DB fails; resend-client.ts error message links to https://resend.com/api-keys
 
 ### Pending Todos
 
@@ -306,10 +307,11 @@ None blocking immediate progress.
 | 27 | Upgrade dashboard with financial metrics — 6 stat cards (active loads, unpaid invoices, revenue/mile) and unified notifications panel | 2026-02-24 | 244af36 | [27-upgrade-dashboard-with-financial-metrics](./quick/27-upgrade-dashboard-with-financial-metrics/) |
 | 28 | Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header | 2026-02-24 | b580e72 | [28-dashboard-ui-polish-premium-stat-cards-w](./quick/28-dashboard-ui-polish-premium-stat-cards-w/) |
 | 29 | Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, synchronous DashboardPage for instant skeletons | 2026-02-24 | c92341b | [29-fix-dashboard-slow-loading-performance-i](./quick/29-fix-dashboard-slow-loading-performance-i/) |
+| 30 | Fix driver invitation email not being sent — surface email failures with amber warning, fetch tenant name from DB, document RESEND env vars | 2026-02-24 | 062a260 | [30-fix-driver-invitation-email-not-being-se](./quick/30-fix-driver-invitation-email-not-being-se/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-29: Fix dashboard slow loading — session decrypt reduction + synchronous page component for instant skeleton render
+Stopped at: Completed quick-30: Fix driver invitation email not being sent — email failures now surface amber warning banner; tenant name used in email; RESEND_API_KEY documented
 Resume file: None
-Next action: Dashboard now renders header + skeletons instantly on navigation. Session cookie is decrypted ~4 times per load instead of ~9 (AES-256-GCM), and the page component is synchronous so Suspense boundaries activate before any DB query completes.
+Next action: Driver invitation flow fully operational when RESEND_API_KEY is present. When key is missing, user sees actionable amber warning instead of silent green success.
