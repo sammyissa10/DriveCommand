@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 27: Dashboard upgrade — 6 stat cards (active loads, unpaid invoices + overdue, revenue/mile) and unified notifications panel
+Last activity: 2026-02-24 — Completed quick task 28: Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
