@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 29: Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, make DashboardPage synchronous for instant skeleton render
+Last activity: 2026-02-24 — Completed quick task 30: Fix driver invitation email not being sent — surface email failures to user, fetch tenant name, document RESEND env vars
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
