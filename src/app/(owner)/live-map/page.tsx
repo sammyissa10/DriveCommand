@@ -53,7 +53,7 @@ export default async function LiveMapPage({
 
       {/* Map container */}
       <div className="flex-1 relative rounded-lg overflow-hidden border">
-        <LiveMapWrapper initialVehicles={vehicles} />
+        <LiveMapWrapper initialVehicles={vehicles} tagId={tagId} />
       </div>
     </div>
   );

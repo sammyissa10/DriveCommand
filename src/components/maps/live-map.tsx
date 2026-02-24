@@ -6,7 +6,6 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { useRouter } from 'next/navigation';
 import VehicleMarker from './vehicle-marker';
 import RouteHistoryLayer from './route-history-layer';
 import VehicleDetailsSheet from '@/components/vehicle/vehicle-details-sheet';
@@ -41,26 +40,15 @@ function FitBoundsOnMount({ vehicles }: { vehicles: VehicleLocation[] }) {
 }
 
 export default function LiveMap({ initialVehicles }: LiveMapProps) {
-  const router = useRouter();
   const [vehicles, setVehicles] = useState(initialVehicles);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(
     null
   );
 
-  // Update vehicles when server refresh occurs
+  // Update vehicles when polled data flows in from wrapper
   useEffect(() => {
     setVehicles(initialVehicles);
   }, [initialVehicles]);
-
-  // Polling for real-time updates (30 second interval)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Trigger re-fetch via router refresh (Next.js 15 pattern)
-      router.refresh();
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(interval);
-  }, [router]);
 
   // Determine initial map center
   const center =
