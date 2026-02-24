@@ -21,9 +21,10 @@ interface NotificationsPanelProps {
 }
 
 /** Format a timestamp as relative time (e.g. "2d ago", "3h ago") */
-function relativeTime(date: Date): string {
+function relativeTime(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
+  const diffMs = now.getTime() - d.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -104,7 +105,7 @@ export function NotificationsPanel({ alerts }: NotificationsPanelProps) {
                 <p className="truncate text-xs text-muted-foreground">{alert.description}</p>
               </div>
               <span className="flex-shrink-0 text-xs text-muted-foreground">
-                {relativeTime(alert.timestamp)}
+                {relativeTime(alert.timestamp as Date | string)}
               </span>
             </Link>
           ))}
