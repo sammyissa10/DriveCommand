@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Pencil, Package, MapPin, Calendar, Weight, Truck, User } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { dispatchLoad, deleteLoad, updateLoadStatus } from '@/app/(owner)/actions/loads';
+import { dispatchLoad, deleteLoad, updateLoadStatus, revertLoadStatus } from '@/app/(owner)/actions/loads';
 import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { DispatchModal } from '@/components/loads/dispatch-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
@@ -107,11 +107,12 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
               trucks={availableTrucks}
             />
           )}
-          {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(load.status) && (
+          {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'INVOICED'].includes(load.status) && (
             <StatusUpdateButton
               loadId={id}
               currentStatus={load.status}
               updateStatusAction={updateLoadStatus}
+              revertStatusAction={revertLoadStatus}
             />
           )}
           {load.trackingToken && (
