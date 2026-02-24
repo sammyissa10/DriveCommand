@@ -4,11 +4,17 @@
  * Uses React Suspense streaming so the header renders instantly and each
  * data section streams in independently as its DB query resolves.
  * No single Promise.all blocks the full page render.
+ *
+ * Auth is enforced at two levels:
+ *   1. Layout (OwnerShell) — redirects unauthenticated users before this renders
+ *   2. Each data-fetching server action — defense in depth per function
+ *
+ * The page component itself is synchronous so it returns JSX immediately,
+ * allowing all four Suspense boundaries to activate and show skeletons
+ * without waiting for any session decrypt.
  */
 
 import { Suspense } from 'react';
-import { requireRole } from '@/lib/auth/server';
-import { UserRole } from '@/lib/auth/roles';
 import { getDashboardMetrics, getNotificationAlerts } from '@/app/(owner)/actions/dashboard';
 import {
   getUpcomingMaintenance,
@@ -122,12 +128,12 @@ function PanelSkeleton() {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+// Synchronous — no awaits here. Auth is enforced by layout + each data action.
+// This allows the page to return JSX immediately so all Suspense boundaries
+// activate and show skeletons before any DB query completes.
 
-export default async function DashboardPage() {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-
-  // Current date has no DB dependency — renders immediately
+export default function DashboardPage() {
+  // Synchronous date formatting — no DB dependency
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',

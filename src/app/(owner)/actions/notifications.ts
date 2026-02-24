@@ -9,10 +9,28 @@ import { unstable_cache } from 'next/cache';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { getSession } from '@/lib/auth/session';
 import { prisma as globalPrisma } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';
 import { revalidatePath } from 'next/cache';
+
+// ─── Auth helper ──────────────────────────────────────────────
+// Validates role and extracts tenantId in a single getSession() call,
+// reducing session decrypts from 2 (requireRole + requireTenantId) to 1.
+
+async function getAuthContext(): Promise<{ tenantId: string }> {
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized: Authentication required');
+  const role = session.role as UserRole;
+  if (role !== UserRole.OWNER && role !== UserRole.MANAGER) {
+    throw new Error('Unauthorized: Required roles: OWNER, MANAGER');
+  }
+  if (!session.tenantId) {
+    throw new Error('Tenant context is required');
+  }
+  return { tenantId: session.tenantId };
+}
 
 /**
  * Upcoming maintenance item for dashboard widget.
@@ -191,10 +209,10 @@ const _fetchExpiringDocuments = unstable_cache(
  * Get upcoming maintenance for dashboard.
  * Results cached per tenant for 60 seconds via unstable_cache.
  * Requires OWNER or MANAGER role.
+ * Auth enforced via getAuthContext() — single session decrypt (down from 2).
  */
 export async function getUpcomingMaintenance(): Promise<UpcomingMaintenanceItem[]> {
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  const tenantId = await requireTenantId();
+  const { tenantId } = await getAuthContext();
   return _fetchUpcomingMaintenance(tenantId);
 }
 
@@ -202,10 +220,10 @@ export async function getUpcomingMaintenance(): Promise<UpcomingMaintenanceItem[
  * Get expiring documents for dashboard.
  * Results cached per tenant for 60 seconds via unstable_cache.
  * Requires OWNER or MANAGER role.
+ * Auth enforced via getAuthContext() — single session decrypt (down from 2).
  */
 export async function getExpiringDocuments(): Promise<ExpiringDocumentItem[]> {
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  const tenantId = await requireTenantId();
+  const { tenantId } = await getAuthContext();
   return _fetchExpiringDocuments(tenantId);
 }
 
