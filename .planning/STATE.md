@@ -67,6 +67,7 @@ Progress: [███████████████████████
 - Quick-24 (2026-02-24): Real-time GPS polling on live map and customer tracking page — 256s, 2 tasks, 6 files affected
 - Quick-25 (2026-02-24): Rate confirmation PDF generator — @react-pdf/renderer server-side PDF, download button on load detail page — ~360s, 2 tasks, 6 files affected
 - Quick-26 (2026-02-24): Revert status button — REVERSE_STATUS_TRANSITIONS server action + Undo2 revert button on load detail page — 122s, 2 tasks, 3 files affected
+- Quick-27 (2026-02-24): Dashboard financial metrics upgrade — getDashboardMetrics, getNotificationAlerts, NotificationsPanel, 6-card grid — 189s, 2 tasks, 5 files affected
 
 ## Accumulated Context
 
@@ -300,10 +301,11 @@ None blocking immediate progress.
 | 24 | Real-time GPS polling on live map and customer tracking — 30s polling, visibility-aware, "Updated Xs ago" | 2026-02-24 | 8b8be7c | [24-real-time-gps-polling-on-live-map-and-cu](./quick/24-real-time-gps-polling-on-live-map-and-cu/) |
 | 25 | Rate confirmation PDF generator — @react-pdf/renderer server action, download button on load detail page | 2026-02-24 | 7bdf210 | [25-rate-confirmation-pdf-generator-for-disp](./quick/25-rate-confirmation-pdf-generator-for-disp/) |
 | 26 | Revert status button on load detail page — step load back one lifecycle stage with confirmation dialog | 2026-02-24 | d63c9dd | [26-add-revert-status-button-on-load-detail-](./quick/26-add-revert-status-button-on-load-detail-/) |
+| 27 | Upgrade dashboard with financial metrics — 6 stat cards (active loads, unpaid invoices, revenue/mile) and unified notifications panel | 2026-02-24 | 244af36 | [27-upgrade-dashboard-with-financial-metrics](./quick/27-upgrade-dashboard-with-financial-metrics/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-26: Revert status button — dispatchers can now step load status back one stage with confirmation dialog; DISPATCHED->PENDING revert clears driver/truck assignment
+Stopped at: Completed quick-27: Dashboard upgraded with 6 financial stat cards (active loads, unpaid invoices with overdue highlight, revenue per mile) and unified notifications panel aggregating expiring docs, overdue invoices, and safety events
 Resume file: None
-Next action: Dispatchers can now correct accidental status advances without cancelling loads. Revert button appears for all statuses DISPATCHED through INVOICED with muted/outline styling to distinguish from advance button.
+Next action: Fleet owners now see financial health and actionable alerts on dashboard load. All 6 cards link to their respective detail pages. Notifications panel shows severity-sorted alerts from documents, invoices, and safety events.
