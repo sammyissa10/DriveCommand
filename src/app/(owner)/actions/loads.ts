@@ -305,6 +305,15 @@ const STATUS_TRANSITIONS: Record<string, string[]> = {
   DELIVERED: ['INVOICED', 'CANCELLED'],
 };
 
+// Reverse status transitions — used by revertLoadStatus
+const REVERSE_STATUS_TRANSITIONS: Record<string, string> = {
+  DISPATCHED: 'PENDING',
+  PICKED_UP: 'DISPATCHED',
+  IN_TRANSIT: 'PICKED_UP',
+  DELIVERED: 'IN_TRANSIT',
+  INVOICED: 'DELIVERED',
+};
+
 /**
  * Progress a load's status through the lifecycle.
  */
@@ -339,6 +348,51 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load status. Please try again.' };
+  }
+
+  revalidatePath('/loads');
+  revalidatePath(`/loads/${id}`);
+  return { success: true };
+}
+
+/**
+ * Revert a load's status one step back in the lifecycle.
+ * Does NOT send customer notifications — this is a dispatcher correction, not a customer-facing event.
+ * When reverting from DISPATCHED back to PENDING, clears driverId, truckId, and trackingToken.
+ */
+export async function revertLoadStatus(id: string) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+
+  try {
+    const load = await prisma.load.findUnique({ where: { id }, select: { status: true } });
+    if (!load) {
+      return { error: 'Load not found.' };
+    }
+
+    const prevStatus = REVERSE_STATUS_TRANSITIONS[load.status];
+    if (!prevStatus) {
+      return { error: `Cannot revert from ${load.status}.` };
+    }
+
+    // When reverting from DISPATCHED back to PENDING, clear assignment fields
+    const updateData: any = { status: prevStatus };
+    if (load.status === 'DISPATCHED') {
+      updateData.driverId = null;
+      updateData.truckId = null;
+      updateData.trackingToken = null;
+    }
+
+    await prisma.load.update({
+      where: { id },
+      data: updateData,
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return { error: 'Load not found.' };
+    }
+    return { error: 'Failed to revert load status. Please try again.' };
   }
 
   revalidatePath('/loads');
