@@ -1,10 +1,12 @@
 /**
  * Dashboard page - Owner portal landing page
  *
- * This is the post-login destination (/dashboard).
- * Shows fleet overview stat cards (including financial metrics) and alert widgets.
+ * Uses React Suspense streaming so the header renders instantly and each
+ * data section streams in independently as its DB query resolves.
+ * No single Promise.all blocks the full page render.
  */
 
+import { Suspense } from 'react';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getDashboardMetrics, getNotificationAlerts } from '@/app/(owner)/actions/dashboard';
@@ -17,47 +19,115 @@ import { UpcomingMaintenanceWidget } from '@/components/dashboard/upcoming-maint
 import { ExpiringDocumentsWidget } from '@/components/dashboard/expiring-documents-widget';
 import { NotificationsPanel } from '@/components/dashboard/notifications-panel';
 
-export default async function DashboardPage() {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+// ─── Async data sections (each runs independently inside Suspense) ────────────
 
-  // Fetch all dashboard data in parallel — individual fallbacks so one failure doesn't crash the page
-  const [metrics, upcomingMaintenance, expiringDocuments, notificationAlerts] = await Promise.all([
-    getDashboardMetrics().catch((e) => { console.error('[dashboard] getDashboardMetrics failed:', e); return null; }),
-    getUpcomingMaintenance().catch((e) => { console.error('[dashboard] getUpcomingMaintenance failed:', e); return []; }),
-    getExpiringDocuments().catch((e) => { console.error('[dashboard] getExpiringDocuments failed:', e); return []; }),
-    getNotificationAlerts().catch((e) => { console.error('[dashboard] getNotificationAlerts failed:', e); return []; }),
-  ]);
+async function StatCardsSection() {
+  const metrics = await getDashboardMetrics().catch((e) => {
+    console.error('[dashboard] getDashboardMetrics failed:', e);
+    return null;
+  });
 
-  // Safe metrics with fallbacks if getDashboardMetrics failed
   const m = metrics ?? {
     totalTrucks: 0, activeDrivers: 0, activeRoutes: 0, maintenanceAlerts: 0,
     activeLoads: 0, unpaidTotal: '$0.00', overdueTotal: '$0.00', revenuePerMile: 'N/A',
   };
 
-  // Build overdue subtitle for Unpaid Invoices card (shown in red when overdue > $0)
   const hasOverdue = m.overdueTotal !== '$0.00';
   const overdueSubtitle = hasOverdue ? `(${m.overdueTotal} overdue)` : undefined;
 
-  // Fleet health badge — computed from notification alerts
-  const criticalCount = notificationAlerts.filter((a) => a.severity === 'critical').length;
-  const fleetHealthBadge =
-    criticalCount > 0
-      ? {
-          cls: 'bg-status-danger-bg text-status-danger-foreground',
-          label: `${criticalCount} critical alert${criticalCount > 1 ? 's' : ''}`,
-        }
-      : notificationAlerts.length > 0
-        ? {
-            cls: 'bg-status-warning-bg text-status-warning-foreground',
-            label: `${notificationAlerts.length} active alert${notificationAlerts.length > 1 ? 's' : ''}`,
-          }
-        : {
-            cls: 'bg-status-success-bg text-status-success-foreground',
-            label: 'All systems clear',
-          };
+  return (
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      <StatCard label="Total Trucks" value={m.totalTrucks} href="/trucks" />
+      <StatCard label="Active Drivers" value={m.activeDrivers} href="/drivers" />
+      <StatCard label="Active Loads" value={m.activeLoads} href="/loads" />
+      <StatCard
+        label="Maintenance Alerts"
+        value={m.maintenanceAlerts}
+        href="/trucks"
+        variant={m.maintenanceAlerts > 0 ? 'warning' : 'default'}
+      />
+      <StatCard
+        label="Unpaid Invoices"
+        value={m.unpaidTotal}
+        href="/invoices"
+        variant={hasOverdue ? 'danger' : 'default'}
+        subtitle={overdueSubtitle}
+      />
+      <StatCard label="Revenue / Mile" value={m.revenuePerMile} href="/routes" />
+    </div>
+  );
+}
 
-  // Current date formatted for page header (server-side render)
+async function NotificationsPanelSection() {
+  const alerts = await getNotificationAlerts().catch((e) => {
+    console.error('[dashboard] getNotificationAlerts failed:', e);
+    return [];
+  });
+  return <NotificationsPanel alerts={alerts} />;
+}
+
+async function MaintenanceSection() {
+  const items = await getUpcomingMaintenance().catch((e) => {
+    console.error('[dashboard] getUpcomingMaintenance failed:', e);
+    return [];
+  });
+  return <UpcomingMaintenanceWidget items={items} />;
+}
+
+async function DocumentsSection() {
+  const items = await getExpiringDocuments().catch((e) => {
+    console.error('[dashboard] getExpiringDocuments failed:', e);
+    return [];
+  });
+  return <ExpiringDocumentsWidget items={items} />;
+}
+
+// ─── Skeleton fallbacks ───────────────────────────────────────────────────────
+
+function StatCardsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="rounded-xl border border-border bg-card p-6 shadow-sm animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 space-y-3">
+              <div className="h-3 w-20 rounded bg-muted" />
+              <div className="h-8 w-14 rounded bg-muted" />
+            </div>
+            <div className="ml-4 h-12 w-12 flex-shrink-0 rounded-xl bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PanelSkeleton() {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-sm animate-pulse">
+      <div className="mb-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-muted" />
+          <div className="h-5 w-32 rounded bg-muted" />
+        </div>
+        <div className="h-6 w-8 rounded-full bg-muted" />
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-14 w-full rounded-lg bg-muted" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function DashboardPage() {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  // Current date has no DB dependency — renders immediately
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -67,46 +137,28 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Page Header — no data dependency, renders instantly */}
       <div className="flex flex-col gap-1">
         <p className="text-sm text-muted-foreground">{currentDate}</p>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-        <div>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${fleetHealthBadge.cls}`}
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-current" />
-            {fleetHealthBadge.label}
-          </span>
-        </div>
       </div>
 
-      {/* Stat Cards — 6 cards in a responsive 2/3/6-column grid */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <StatCard label="Total Trucks" value={m.totalTrucks} href="/trucks" />
-        <StatCard label="Active Drivers" value={m.activeDrivers} href="/drivers" />
-        <StatCard label="Active Loads" value={m.activeLoads} href="/loads" />
-        <StatCard
-          label="Maintenance Alerts"
-          value={m.maintenanceAlerts}
-          href="/trucks"
-          variant={m.maintenanceAlerts > 0 ? 'warning' : 'default'}
-        />
-        <StatCard
-          label="Unpaid Invoices"
-          value={m.unpaidTotal}
-          href="/invoices"
-          variant={hasOverdue ? 'danger' : 'default'}
-          subtitle={overdueSubtitle}
-        />
-        <StatCard label="Revenue / Mile" value={m.revenuePerMile} href="/routes" />
-      </div>
+      {/* Stat Cards — streams in as getDashboardMetrics resolves */}
+      <Suspense fallback={<StatCardsSkeleton />}>
+        <StatCardsSection />
+      </Suspense>
 
-      {/* Bottom section — 3-column grid with notifications, maintenance, and documents */}
+      {/* Bottom widgets — each streams in independently */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <NotificationsPanel alerts={notificationAlerts} />
-        <UpcomingMaintenanceWidget items={upcomingMaintenance} />
-        <ExpiringDocumentsWidget items={expiringDocuments} />
+        <Suspense fallback={<PanelSkeleton />}>
+          <NotificationsPanelSection />
+        </Suspense>
+        <Suspense fallback={<PanelSkeleton />}>
+          <MaintenanceSection />
+        </Suspense>
+        <Suspense fallback={<PanelSkeleton />}>
+          <DocumentsSection />
+        </Suspense>
       </div>
     </div>
   );
