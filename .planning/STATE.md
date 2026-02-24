@@ -302,10 +302,11 @@ None blocking immediate progress.
 | 25 | Rate confirmation PDF generator — @react-pdf/renderer server action, download button on load detail page | 2026-02-24 | 7bdf210 | [25-rate-confirmation-pdf-generator-for-disp](./quick/25-rate-confirmation-pdf-generator-for-disp/) |
 | 26 | Revert status button on load detail page — step load back one lifecycle stage with confirmation dialog | 2026-02-24 | d63c9dd | [26-add-revert-status-button-on-load-detail-](./quick/26-add-revert-status-button-on-load-detail-/) |
 | 27 | Upgrade dashboard with financial metrics — 6 stat cards (active loads, unpaid invoices, revenue/mile) and unified notifications panel | 2026-02-24 | 244af36 | [27-upgrade-dashboard-with-financial-metrics](./quick/27-upgrade-dashboard-with-financial-metrics/) |
+| 28 | Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header | 2026-02-24 | b580e72 | [28-dashboard-ui-polish-premium-stat-cards-w](./quick/28-dashboard-ui-polish-premium-stat-cards-w/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-27: Dashboard upgraded with 6 financial stat cards (active loads, unpaid invoices with overdue highlight, revenue per mile) and unified notifications panel aggregating expiring docs, overdue invoices, and safety events
+Stopped at: Completed quick-28: Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity-coded alert rows, and fleet health badge header
 Resume file: None
-Next action: Fleet owners now see financial health and actionable alerts on dashboard load. All 6 cards link to their respective detail pages. Notifications panel shows severity-sorted alerts from documents, invoices, and safety events.
+Next action: Dashboard now has premium visual polish — each stat card has a colored top border matching its identity, icon areas have subtle depth treatment, alert rows are scannable via red/amber/blue left accents, and the page header shows the current date with a dynamic fleet health badge.
