@@ -46,6 +46,13 @@ function SeverityIcon({ severity }: { severity: NotificationAlert['severity'] })
   return <Info className="h-4 w-4 flex-shrink-0 text-status-info-foreground" />;
 }
 
+/** Left-border accent class per severity */
+const severityBorderMap: Record<NotificationAlert['severity'], string> = {
+  critical: 'border-l-status-danger-foreground',
+  warning: 'border-l-status-warning-foreground',
+  info: 'border-l-status-info-foreground',
+};
+
 const INITIAL_SHOW = 10;
 
 export function NotificationsPanel({ alerts }: NotificationsPanelProps) {
@@ -90,19 +97,19 @@ export function NotificationsPanel({ alerts }: NotificationsPanelProps) {
           <p className="text-sm text-muted-foreground">No active alerts</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {displayAlerts.map((alert) => (
             <Link
               key={alert.id}
               href={alert.href}
-              className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
+              className={`flex items-start gap-3 rounded-lg border-l-[3px] bg-muted/30 p-3 transition-colors hover:bg-muted/50 ${severityBorderMap[alert.severity]}`}
             >
               <div className="mt-0.5">
                 <SeverityIcon severity={alert.severity} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-card-foreground">{alert.title}</p>
-                <p className="truncate text-xs text-muted-foreground">{alert.description}</p>
+                <p className="truncate text-[13px] text-muted-foreground">{alert.description}</p>
               </div>
               <span className="flex-shrink-0 text-xs text-muted-foreground">
                 {relativeTime(alert.timestamp as Date | string)}

@@ -41,14 +41,46 @@ export default async function DashboardPage() {
   const hasOverdue = m.overdueTotal !== '$0.00';
   const overdueSubtitle = hasOverdue ? `(${m.overdueTotal} overdue)` : undefined;
 
+  // Fleet health badge — computed from notification alerts
+  const criticalCount = notificationAlerts.filter((a) => a.severity === 'critical').length;
+  const fleetHealthBadge =
+    criticalCount > 0
+      ? {
+          cls: 'bg-status-danger-bg text-status-danger-foreground',
+          label: `${criticalCount} critical alert${criticalCount > 1 ? 's' : ''}`,
+        }
+      : notificationAlerts.length > 0
+        ? {
+            cls: 'bg-status-warning-bg text-status-warning-foreground',
+            label: `${notificationAlerts.length} active alert${notificationAlerts.length > 1 ? 's' : ''}`,
+          }
+        : {
+            cls: 'bg-status-success-bg text-status-success-foreground',
+            label: 'All systems clear',
+          };
+
+  // Current date formatted for page header (server-side render)
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
+      <div className="flex flex-col gap-1">
+        <p className="text-sm text-muted-foreground">{currentDate}</p>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
-          Your fleet at a glance
-        </p>
+        <div>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${fleetHealthBadge.cls}`}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+            {fleetHealthBadge.label}
+          </span>
+        </div>
       </div>
 
       {/* Stat Cards — 6 cards in a responsive 2/3/6-column grid */}
