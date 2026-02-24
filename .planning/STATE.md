@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 28: Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header
+Last activity: 2026-02-24 — Completed quick task 29: Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, make DashboardPage synchronous for instant skeleton render
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -68,6 +68,7 @@ Progress: [███████████████████████
 - Quick-25 (2026-02-24): Rate confirmation PDF generator — @react-pdf/renderer server-side PDF, download button on load detail page — ~360s, 2 tasks, 6 files affected
 - Quick-26 (2026-02-24): Revert status button — REVERSE_STATUS_TRANSITIONS server action + Undo2 revert button on load detail page — 122s, 2 tasks, 3 files affected
 - Quick-27 (2026-02-24): Dashboard financial metrics upgrade — getDashboardMetrics, getNotificationAlerts, NotificationsPanel, 6-card grid — 189s, 2 tasks, 5 files affected
+- Quick-29 (2026-02-24): Fix dashboard slow loading — synchronous DashboardPage + getAuthContext() helper, session decrypts ~9→4 — 231s, 2 tasks, 3 files affected
 
 ## Accumulated Context
 
@@ -252,6 +253,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-24]: Skip fetch inside setInterval when visibilityState=hidden (simpler than pause/resume interval); visibilitychange listener for immediate catch-up on tab focus; useRef for tagId in closure (avoids stale ref without adding to interval deps); reuse existing /api/track/[token] for tracking page polling (no new endpoint needed); server component keeps initial fetch for SEO/first paint
 - [Phase quick-25]: Server action file uses .tsx extension (not .ts) to allow JSX syntax for react-pdf element creation; cast renderToBuffer argument `as any` to satisfy ReactElement<DocumentProps> generic constraint; status validation in server action as defense-in-depth (not just UI gating); Helvetica font chosen (built-in, no download needed for server-side PDF rendering)
 - [Phase quick-26]: Revert DISPATCHED->PENDING clears driverId/truckId/trackingToken (symmetric with dispatchLoad); no customer email on revert (dispatcher correction only); INVOICED status included in StatusUpdateButton render condition (revert-only state, no advance); Undo2 icon + muted/outline style distinguishes revert from primary advance button
+- [Phase quick-29]: Remove page-level requireRole() from DashboardPage — layout enforces auth, page-level call blocked all Suspense boundaries causing blank white screen; make DashboardPage synchronous; getAuthContext() combines role+tenantId into single getSession() call per data function, reducing dashboard session decrypts from ~9 to ~4
 
 ### Pending Todos
 
@@ -303,10 +305,11 @@ None blocking immediate progress.
 | 26 | Revert status button on load detail page — step load back one lifecycle stage with confirmation dialog | 2026-02-24 | d63c9dd | [26-add-revert-status-button-on-load-detail-](./quick/26-add-revert-status-button-on-load-detail-/) |
 | 27 | Upgrade dashboard with financial metrics — 6 stat cards (active loads, unpaid invoices, revenue/mile) and unified notifications panel | 2026-02-24 | 244af36 | [27-upgrade-dashboard-with-financial-metrics](./quick/27-upgrade-dashboard-with-financial-metrics/) |
 | 28 | Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header | 2026-02-24 | b580e72 | [28-dashboard-ui-polish-premium-stat-cards-w](./quick/28-dashboard-ui-polish-premium-stat-cards-w/) |
+| 29 | Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, synchronous DashboardPage for instant skeletons | 2026-02-24 | c92341b | [29-fix-dashboard-slow-loading-performance-i](./quick/29-fix-dashboard-slow-loading-performance-i/) |
 
 ## Session Continuity
 
 Last session: 2026-02-24
-Stopped at: Completed quick-28: Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity-coded alert rows, and fleet health badge header
+Stopped at: Completed quick-29: Fix dashboard slow loading — session decrypt reduction + synchronous page component for instant skeleton render
 Resume file: None
-Next action: Dashboard now has premium visual polish — each stat card has a colored top border matching its identity, icon areas have subtle depth treatment, alert rows are scannable via red/amber/blue left accents, and the page header shows the current date with a dynamic fleet health badge.
+Next action: Dashboard now renders header + skeletons instantly on navigation. Session cookie is decrypted ~4 times per load instead of ~9 (AES-256-GCM), and the page component is synchronous so Suspense boundaries activate before any DB query completes.
