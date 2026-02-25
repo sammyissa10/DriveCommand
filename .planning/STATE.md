@@ -257,6 +257,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-30]: emailSent boolean tracks email outcome inside try/catch; warning field returned (not error) when email fails so invitation record persists and user gets actionable amber banner; tenant name fetched in separate try/catch — falls back to 'your fleet' if DB fails; resend-client.ts error message links to https://resend.com/api-keys
 - [Phase quick-32]: Use custom scripts/migrate.mjs (not prisma migrate deploy) — project uses manual SQL runner with atomic transactions and retry; buildCommand chains with && so Vercel build fails fast if migration fails
 - [Phase quick-33]: accept-invitation hardcodes /my-route (DRIVER-only endpoint); login route uses role conditional; OWNER_PATHS array in middleware guards all owner-portal paths as safety net for direct navigation/bookmarks
+- [Phase quick-34]: Use prisma.$queryRaw SELECT 1 for warmup DB check — minimal round-trip without RLS/tenant context; schedule */5 every 5 min to prevent Vercel cold starts; add /api/warmup to PUBLIC_PATHS so Vercel cron caller bypasses session auth redirect
 
 ### Pending Todos
 
@@ -312,10 +313,11 @@ None blocking immediate progress.
 | 30 | Fix driver invitation email not being sent — surface email failures with amber warning, fetch tenant name from DB, document RESEND env vars | 2026-02-24 | 062a260 | [30-fix-driver-invitation-email-not-being-se](./quick/30-fix-driver-invitation-email-not-being-se/) |
 | 32 | Fix Vercel deployment — add buildCommand to vercel.json (migrate.mjs + prisma generate + next build), comprehensive .env.example with all 13 env vars | 2026-02-25 | d8bf617 | [32-fix-vercel-deployment-add-vercel-json-bu](./quick/32-fix-vercel-deployment-add-vercel-json-bu/) |
 | 33 | Fix driver onboarding Access Denied bug — role-aware redirects in accept-invitation, login, root page, onboarding page; OWNER_PATHS middleware guard | 2026-02-25 | ac87ccf | [33-fix-driver-onboarding-access-denied-bug-](./quick/33-fix-driver-onboarding-access-denied-bug-/) |
+| 34 | Add warmup cron job — /api/warmup with CRON_SECRET auth and SELECT 1 DB check, vercel.json cron every 5 min, middleware PUBLIC_PATHS bypass | 2026-02-25 | fdf3f06 | [34-add-warmup-cron-job-that-pings-api-warmu](./quick/34-add-warmup-cron-job-that-pings-api-warmu/) |
 
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed quick-33: Fix driver onboarding Access Denied bug — role-aware redirects across 5 auth touchpoints (accept-invitation, login, root page, onboarding, middleware)
+Stopped at: Completed quick-34: Add warmup cron job — /api/warmup route with CRON_SECRET auth, vercel.json cron at */5, middleware PUBLIC_PATHS bypass
 Resume file: None
-Next action: Drivers can now accept invitations and log in without hitting Access Denied.
+Next action: Vercel will ping /api/warmup every 5 minutes to prevent serverless cold starts.
