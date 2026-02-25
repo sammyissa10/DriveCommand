@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
       lastName: user.lastName ?? undefined,
     });
 
-    return NextResponse.json({ success: true, redirectUrl: '/dashboard' });
+    const redirectUrl = user.role === 'DRIVER' ? '/my-route' : '/dashboard';
+    return NextResponse.json({ success: true, redirectUrl });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

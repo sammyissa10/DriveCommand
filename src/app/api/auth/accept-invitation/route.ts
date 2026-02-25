@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      redirectUrl: '/dashboard',
+      redirectUrl: '/my-route',
     });
   } catch (error: any) {
     if (error?.message === 'EMAIL_CONFLICT') {
