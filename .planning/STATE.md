@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-25 — Completed quick task 33: Fix driver onboarding Access Denied bug — role-aware redirects across 5 auth touchpoints; OWNER_PATHS middleware guard prevents drivers from reaching owner portal
+Last activity: 2026-02-25 — Completed quick task 35: Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -258,6 +258,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-32]: Use custom scripts/migrate.mjs (not prisma migrate deploy) — project uses manual SQL runner with atomic transactions and retry; buildCommand chains with && so Vercel build fails fast if migration fails
 - [Phase quick-33]: accept-invitation hardcodes /my-route (DRIVER-only endpoint); login route uses role conditional; OWNER_PATHS array in middleware guards all owner-portal paths as safety net for direct navigation/bookmarks
 - [Phase quick-34]: Use prisma.$queryRaw SELECT 1 for warmup DB check — minimal round-trip without RLS/tenant context; schedule */5 every 5 min to prevent Vercel cold starts; add /api/warmup to PUBLIC_PATHS so Vercel cron caller bypasses session auth redirect
+- [Phase quick-35]: Controlled AlertDialog open state (!!pendingDeactivate) instead of AlertDialogTrigger — avoids table nesting complexity
 
 ### Pending Todos
 
@@ -314,10 +315,11 @@ None blocking immediate progress.
 | 32 | Fix Vercel deployment — add buildCommand to vercel.json (migrate.mjs + prisma generate + next build), comprehensive .env.example with all 13 env vars | 2026-02-25 | d8bf617 | [32-fix-vercel-deployment-add-vercel-json-bu](./quick/32-fix-vercel-deployment-add-vercel-json-bu/) |
 | 33 | Fix driver onboarding Access Denied bug — role-aware redirects in accept-invitation, login, root page, onboarding page; OWNER_PATHS middleware guard | 2026-02-25 | ac87ccf | [33-fix-driver-onboarding-access-denied-bug-](./quick/33-fix-driver-onboarding-access-denied-bug-/) |
 | 34 | Add warmup cron job — /api/warmup with CRON_SECRET auth and SELECT 1 DB check, vercel.json cron every 5 min, middleware PUBLIC_PATHS bypass | 2026-02-25 | fdf3f06 | [34-add-warmup-cron-job-that-pings-api-warmu](./quick/34-add-warmup-cron-job-that-pings-api-warmu/) |
+| 35 | Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals | 2026-02-25 | a996df9 | [35-add-remove-deactivate-driver-functionali](./quick/35-add-remove-deactivate-driver-functionali/) |
 
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed quick-34: Add warmup cron job — /api/warmup route with CRON_SECRET auth, vercel.json cron at */5, middleware PUBLIC_PATHS bypass
+Stopped at: Completed quick-35: Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations in driver-list.tsx
 Resume file: None
-Next action: Vercel will ping /api/warmup every 5 minutes to prevent serverless cold starts.
+Next action: Driver list confirmations now use polished AlertDialog modals instead of native browser confirm.
