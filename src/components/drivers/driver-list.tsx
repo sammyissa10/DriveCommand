@@ -13,6 +13,16 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 import type { User } from '@/generated/prisma/client';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
 
 interface DriverListProps {
   drivers: User[];
@@ -20,21 +30,17 @@ interface DriverListProps {
   onReactivate: (id: string) => void;
 }
 
+interface PendingDriver {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
 export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
-
-  const handleDeactivate = (id: string, firstName: string, lastName: string) => {
-    if (window.confirm(`Deactivate driver ${firstName} ${lastName}? They will be logged out immediately.`)) {
-      onDeactivate(id);
-    }
-  };
-
-  const handleReactivate = (id: string, firstName: string, lastName: string) => {
-    if (window.confirm(`Reactivate driver ${firstName} ${lastName}?`)) {
-      onReactivate(id);
-    }
-  };
+  const [pendingDeactivate, setPendingDeactivate] = useState<PendingDriver | null>(null);
+  const [pendingReactivate, setPendingReactivate] = useState<PendingDriver | null>(null);
 
   const columns: ColumnDef<User>[] = [
     {
@@ -105,15 +111,27 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
             </Link>
             {driver.isActive ? (
               <button
-                onClick={() => handleDeactivate(driver.id, driver.firstName || '', driver.lastName || '')}
+                onClick={() =>
+                  setPendingDeactivate({
+                    id: driver.id,
+                    firstName: driver.firstName || '',
+                    lastName: driver.lastName || '',
+                  })
+                }
                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-red-600 hover:bg-red-50 transition-colors"
               >
                 <UserX className="h-3.5 w-3.5" />
-                Deactivate
+                Remove
               </button>
             ) : (
               <button
-                onClick={() => handleReactivate(driver.id, driver.firstName || '', driver.lastName || '')}
+                onClick={() =>
+                  setPendingReactivate({
+                    id: driver.id,
+                    firstName: driver.firstName || '',
+                    lastName: driver.lastName || '',
+                  })
+                }
                 className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
               >
                 <UserCheck className="h-3.5 w-3.5" />
@@ -155,62 +173,128 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
   }
 
   return (
-    <div className="space-y-4">
-      {/* Search Input */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          value={globalFilter ?? ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search drivers..."
-          className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
-        />
+    <>
+      <div className="space-y-4">
+        {/* Search Input */}
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder="Search drivers..."
+            className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
+          />
+        </div>
+
+        {/* Table */}
+        <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-border bg-muted/50">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground px-6 py-3.5"
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={
+                            header.column.getCanSort()
+                              ? 'cursor-pointer select-none flex items-center gap-1.5 hover:text-foreground transition-colors'
+                              : ''
+                          }
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {header.column.getIsSorted() === 'asc' ? ' ↑' : ''}
+                          {header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="divide-y divide-border">
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="hover:bg-muted/30 transition-colors">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-6 py-4 text-sm">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b border-border bg-muted/50">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground px-6 py-3.5"
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={
-                          header.column.getCanSort()
-                            ? 'cursor-pointer select-none flex items-center gap-1.5 hover:text-foreground transition-colors'
-                            : ''
-                        }
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' ? ' ↑' : ''}
-                        {header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="divide-y divide-border">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-muted/30 transition-colors">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-6 py-4 text-sm">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+      {/* Deactivate (Remove) Confirmation Dialog */}
+      <AlertDialog
+        open={!!pendingDeactivate}
+        onOpenChange={(open) => !open && setPendingDeactivate(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove Driver</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to remove {pendingDeactivate?.firstName}{' '}
+              {pendingDeactivate?.lastName}? They will lose access immediately. You can reactivate
+              them at any time.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingDeactivate(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (pendingDeactivate) {
+                  onDeactivate(pendingDeactivate.id);
+                  setPendingDeactivate(null);
+                }
+              }}
+            >
+              Remove Driver
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reactivate Confirmation Dialog */}
+      <AlertDialog
+        open={!!pendingReactivate}
+        onOpenChange={(open) => !open && setPendingReactivate(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reactivate Driver</AlertDialogTitle>
+            <AlertDialogDescription>
+              Reactivate {pendingReactivate?.firstName} {pendingReactivate?.lastName}? They will
+              regain access to the driver app.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingReactivate(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingReactivate) {
+                  onReactivate(pendingReactivate.id);
+                  setPendingReactivate(null);
+                }
+              }}
+            >
+              Reactivate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
