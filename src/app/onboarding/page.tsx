@@ -11,9 +11,9 @@ export default async function OnboardingPage() {
     redirect("/sign-in");
   }
 
-  // Tenant is ready - redirect to dashboard
+  // Tenant is ready - redirect to appropriate portal based on role
   if (session.tenantId) {
-    redirect("/dashboard");
+    redirect(session.role === 'DRIVER' ? '/my-route' : '/dashboard');
   }
 
   // No tenant assigned - show message

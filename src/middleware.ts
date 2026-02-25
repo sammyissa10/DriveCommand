@@ -27,6 +27,28 @@ const PUBLIC_PATHS = [
   '/favicon.png',
 ];
 
+// Paths that belong to the owner portal — drivers navigating here get redirected to /my-route
+const OWNER_PATHS = [
+  '/dashboard',
+  '/trucks',
+  '/drivers',
+  '/routes',
+  '/loads',
+  '/invoices',
+  '/payroll',
+  '/crm',
+  '/settings',
+  '/compliance',
+  '/ai-documents',
+  '/profit-predictor',
+  '/lane-analytics',
+  '/ifta',
+  '/live-map',
+  '/fuel',
+  '/safety',
+  '/tags',
+];
+
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 }
@@ -60,6 +82,11 @@ export default async function middleware(request: NextRequest) {
     }
 
     return NextResponse.next();
+  }
+
+  // Driver guard: redirect DRIVER role away from owner-only paths
+  if (session.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
+    return NextResponse.redirect(new URL('/my-route', request.url));
   }
 
   // User has tenant - inject tenant ID into request headers
