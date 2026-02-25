@@ -18,9 +18,12 @@ import { decrypt } from '@/lib/auth/session';
 const PUBLIC_PATHS = [
   '/sign-in',
   '/sign-up',
+  '/accept-invitation',
   '/api/auth/login',
   '/api/auth/logout',
+  '/api/auth/accept-invitation',
   '/api/webhooks',
+  '/track',
   '/_next/static',
   '/_next/image',
   '/favicon.ico',
