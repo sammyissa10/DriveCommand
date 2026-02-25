@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-24 — Completed quick task 30: Fix driver invitation email not being sent — surface email failures to user, fetch tenant name, document RESEND env vars
+Last activity: 2026-02-25 — Completed quick task 32: Fix Vercel deployment — added buildCommand to vercel.json (migrate.mjs + prisma generate + next build) and comprehensive .env.example with all 13 env vars
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -255,6 +255,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-26]: Revert DISPATCHED->PENDING clears driverId/truckId/trackingToken (symmetric with dispatchLoad); no customer email on revert (dispatcher correction only); INVOICED status included in StatusUpdateButton render condition (revert-only state, no advance); Undo2 icon + muted/outline style distinguishes revert from primary advance button
 - [Phase quick-29]: Remove page-level requireRole() from DashboardPage — layout enforces auth, page-level call blocked all Suspense boundaries causing blank white screen; make DashboardPage synchronous; getAuthContext() combines role+tenantId into single getSession() call per data function, reducing dashboard session decrypts from ~9 to ~4
 - [Phase quick-30]: emailSent boolean tracks email outcome inside try/catch; warning field returned (not error) when email fails so invitation record persists and user gets actionable amber banner; tenant name fetched in separate try/catch — falls back to 'your fleet' if DB fails; resend-client.ts error message links to https://resend.com/api-keys
+- [Phase quick-32]: Use custom scripts/migrate.mjs (not prisma migrate deploy) — project uses manual SQL runner with atomic transactions and retry; buildCommand chains with && so Vercel build fails fast if migration fails
 
 ### Pending Todos
 
@@ -308,10 +309,11 @@ None blocking immediate progress.
 | 28 | Dashboard UI polish — premium stat cards with colored top-border accents, left-accent severity alert rows, fleet health badge header | 2026-02-24 | b580e72 | [28-dashboard-ui-polish-premium-stat-cards-w](./quick/28-dashboard-ui-polish-premium-stat-cards-w/) |
 | 29 | Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, synchronous DashboardPage for instant skeletons | 2026-02-24 | c92341b | [29-fix-dashboard-slow-loading-performance-i](./quick/29-fix-dashboard-slow-loading-performance-i/) |
 | 30 | Fix driver invitation email not being sent — surface email failures with amber warning, fetch tenant name from DB, document RESEND env vars | 2026-02-24 | 062a260 | [30-fix-driver-invitation-email-not-being-se](./quick/30-fix-driver-invitation-email-not-being-se/) |
+| 32 | Fix Vercel deployment — add buildCommand to vercel.json (migrate.mjs + prisma generate + next build), comprehensive .env.example with all 13 env vars | 2026-02-25 | d8bf617 | [32-fix-vercel-deployment-add-vercel-json-bu](./quick/32-fix-vercel-deployment-add-vercel-json-bu/) |
 
 ## Session Continuity
 
-Last session: 2026-02-24
-Stopped at: Completed quick-30: Fix driver invitation email not being sent — email failures now surface amber warning banner; tenant name used in email; RESEND_API_KEY documented
+Last session: 2026-02-25
+Stopped at: Completed quick-32: Fix Vercel deployment — buildCommand in vercel.json runs migrate.mjs + prisma generate + next build; .env.example updated with all 13 vars
 Resume file: None
-Next action: Driver invitation flow fully operational when RESEND_API_KEY is present. When key is missing, user sees actionable amber warning instead of silent green success.
+Next action: Vercel deployment is now self-contained — push to main auto-runs migrations. Configure all required env vars in Vercel dashboard using .env.example as reference.
