@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
 Phase: 18 of 18 (all complete)
 Status: Between milestones
-Last activity: 2026-02-25 — Completed quick task 32: Fix Vercel deployment — added buildCommand to vercel.json (migrate.mjs + prisma generate + next build) and comprehensive .env.example with all 13 env vars
+Last activity: 2026-02-25 — Completed quick task 33: Fix driver onboarding Access Denied bug — role-aware redirects across 5 auth touchpoints; OWNER_PATHS middleware guard prevents drivers from reaching owner portal
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -256,6 +256,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-29]: Remove page-level requireRole() from DashboardPage — layout enforces auth, page-level call blocked all Suspense boundaries causing blank white screen; make DashboardPage synchronous; getAuthContext() combines role+tenantId into single getSession() call per data function, reducing dashboard session decrypts from ~9 to ~4
 - [Phase quick-30]: emailSent boolean tracks email outcome inside try/catch; warning field returned (not error) when email fails so invitation record persists and user gets actionable amber banner; tenant name fetched in separate try/catch — falls back to 'your fleet' if DB fails; resend-client.ts error message links to https://resend.com/api-keys
 - [Phase quick-32]: Use custom scripts/migrate.mjs (not prisma migrate deploy) — project uses manual SQL runner with atomic transactions and retry; buildCommand chains with && so Vercel build fails fast if migration fails
+- [Phase quick-33]: accept-invitation hardcodes /my-route (DRIVER-only endpoint); login route uses role conditional; OWNER_PATHS array in middleware guards all owner-portal paths as safety net for direct navigation/bookmarks
 
 ### Pending Todos
 
@@ -310,10 +311,11 @@ None blocking immediate progress.
 | 29 | Fix dashboard slow loading — eliminate ~9→4 session decrypts, remove blocking page-level auth, synchronous DashboardPage for instant skeletons | 2026-02-24 | c92341b | [29-fix-dashboard-slow-loading-performance-i](./quick/29-fix-dashboard-slow-loading-performance-i/) |
 | 30 | Fix driver invitation email not being sent — surface email failures with amber warning, fetch tenant name from DB, document RESEND env vars | 2026-02-24 | 062a260 | [30-fix-driver-invitation-email-not-being-se](./quick/30-fix-driver-invitation-email-not-being-se/) |
 | 32 | Fix Vercel deployment — add buildCommand to vercel.json (migrate.mjs + prisma generate + next build), comprehensive .env.example with all 13 env vars | 2026-02-25 | d8bf617 | [32-fix-vercel-deployment-add-vercel-json-bu](./quick/32-fix-vercel-deployment-add-vercel-json-bu/) |
+| 33 | Fix driver onboarding Access Denied bug — role-aware redirects in accept-invitation, login, root page, onboarding page; OWNER_PATHS middleware guard | 2026-02-25 | ac87ccf | [33-fix-driver-onboarding-access-denied-bug-](./quick/33-fix-driver-onboarding-access-denied-bug-/) |
 
 ## Session Continuity
 
 Last session: 2026-02-25
-Stopped at: Completed quick-32: Fix Vercel deployment — buildCommand in vercel.json runs migrate.mjs + prisma generate + next build; .env.example updated with all 13 vars
+Stopped at: Completed quick-33: Fix driver onboarding Access Denied bug — role-aware redirects across 5 auth touchpoints (accept-invitation, login, root page, onboarding, middleware)
 Resume file: None
-Next action: Vercel deployment is now self-contained — push to main auto-runs migrations. Configure all required env vars in Vercel dashboard using .env.example as reference.
+Next action: Drivers can now accept invitations and log in without hitting Access Denied.
