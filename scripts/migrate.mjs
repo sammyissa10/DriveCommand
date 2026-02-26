@@ -78,7 +78,7 @@ try {
   console.log(ranCount > 0 ? `Migrations complete (${ranCount} applied)` : 'Database up to date');
 } catch (e) {
   console.error('Migration error:', e.message);
-  console.log('Starting app anyway...');
+  process.exit(1);
 } finally {
   await client.end();
 }
