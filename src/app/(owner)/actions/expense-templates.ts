@@ -68,11 +68,12 @@ export async function createTemplate(prevState: any, formData: FormData) {
         },
       });
 
-      // Create all items
+      // Create all items (tenantId required for RLS — propagated from parent template)
       await tx.expenseTemplateItem.createMany({
         data: validatedData.items.map((item) => ({
           templateId: template.id,
           categoryId: item.categoryId,
+          tenantId,
           amount: new Decimal(item.amount),
           description: item.description,
         })),

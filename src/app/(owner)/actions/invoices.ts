@@ -80,6 +80,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
         notes: result.data.notes || null,
         items: {
           create: itemsWithAmounts.map((item) => ({
+            tenantId,
             description: item.description,
             quantity: new Decimal(item.quantity),
             unitPrice: new Decimal(item.unitPrice),
@@ -131,6 +132,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
     return { error: result.error.flatten().fieldErrors };
   }
 
+  const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
 
   const itemsWithAmounts = result.data.items.map((item) => {
@@ -168,6 +170,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
           notes: result.data.notes || null,
           items: {
             create: itemsWithAmounts.map((item) => ({
+              tenantId,
               description: item.description,
               quantity: new Decimal(item.quantity),
               unitPrice: new Decimal(item.unitPrice),
