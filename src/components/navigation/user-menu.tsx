@@ -71,7 +71,7 @@ export function UserMenu() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute bottom-full mb-2 left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1">
+          <div className="absolute top-full mt-2 left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1">
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
