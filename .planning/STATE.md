@@ -76,6 +76,7 @@ Progress: [███████████████████████
 
 - Phase 19 added: Database Integrity Hardening — missing RLS policies, missing migration SQL for Load/TenantIntegration, migration script error handling
 - Phase 01 Plan 01 complete: RLS policies on 5 tables, tenantId on InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load/TenantIntegration
+- Phase 01 Plan 02 complete: migrate.mjs exits with code 1 on failure (fail-fast deployment guard), TypeScript clean build confirmed — Phase 01 fully complete
 
 ### Decisions
 
@@ -267,6 +268,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 01-database-integrity-hardening]: InvoiceItem and ExpenseTemplateItem get direct tenantId for RLS — enables row filtering without JOIN via current_tenant_id() policy evaluation
 - [Phase 01-database-integrity-hardening]: CREATE TABLE IF NOT EXISTS used for Load and TenantIntegration — these tables exist in prod via db push so migration must be idempotent; same for enum DO/EXCEPTION blocks
 - [Phase 01-database-integrity-hardening]: Backfill pattern (nullable ADD COLUMN -> UPDATE -> SET NOT NULL) chosen to safely add tenantId to existing rows
+- [Phase 01-database-integrity-hardening]: process.exit(1) in outer catch of migrate.mjs replaces 'Starting app anyway...' — migration failures now terminate with non-zero exit code so Vercel buildCommand fails fast
 
 ### Pending Todos
 
@@ -327,10 +329,11 @@ None blocking immediate progress.
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
+- Phase 01-02 (2026-02-26): migrate.mjs fail-hard error handling + TypeScript type check — 85s, 2 tasks, 1 file affected
 
 ## Session Continuity
 
 Last session: 2026-02-26
-Stopped at: Completed phase 01-database-integrity-hardening plan 01 — migration SQL with RLS policies for 5 tables, tenantId added to InvoiceItem and ExpenseTemplateItem, schema.prisma updated, Prisma client regenerated
+Stopped at: Completed phase 01-database-integrity-hardening plan 02 — migrate.mjs now exits with code 1 on migration failure, TypeScript clean build confirmed, Phase 01 fully complete
 Resume file: None
-Next action: Phase 01 plan 02 (migrate.mjs error handling hardening) ready to execute.
+Next action: Phase 01 complete. Ready for next milestone planning.
