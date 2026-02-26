@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { LogOut, ChevronsUpDown } from "lucide-react";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
 
 function getInitials(firstName?: string, lastName?: string, email?: string): string {
   if (firstName && lastName) {
@@ -35,13 +34,13 @@ export function UserMenu() {
 
   if (!isLoaded) {
     return (
-      <SidebarMenuButton size="lg" className="pointer-events-none">
+      <div className="flex items-center gap-3 px-2 py-1.5 pointer-events-none">
         <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
         <div className="flex-1 space-y-1">
           <div className="h-3 w-20 rounded bg-muted animate-pulse" />
           <div className="h-2.5 w-28 rounded bg-muted animate-pulse" />
         </div>
-      </SidebarMenuButton>
+      </div>
     );
   }
 
@@ -52,20 +51,19 @@ export function UserMenu() {
 
   return (
     <div className="relative">
-      <SidebarMenuButton
-        size="lg"
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full"
+        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted transition-colors text-left"
       >
         <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white text-xs font-semibold shadow-sm">
           {initials}
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
           <span className="truncate font-semibold">{displayName}</span>
-          <span className="truncate text-xs text-sidebar-foreground/60">{user?.email}</span>
+          <span className="truncate text-xs text-muted-foreground">{user?.email}</span>
         </div>
         <ChevronsUpDown className="ml-auto size-4" />
-      </SidebarMenuButton>
+      </button>
 
       {isOpen && (
         <>
