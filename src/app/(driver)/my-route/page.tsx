@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import {
   getMyAssignedRoute,
 } from '@/app/(driver)/actions/driver-routes';
@@ -10,6 +9,7 @@ import {
 import { RouteDetailReadOnly } from '@/components/driver/route-detail-readonly';
 import { DocumentListReadOnly } from '@/components/driver/document-list-readonly';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
+import { MapPin } from 'lucide-react';
 
 /**
  * Driver route detail page.
@@ -26,9 +26,19 @@ export default async function MyRoutePage() {
   // Get the driver's assigned route
   const route = await getMyAssignedRoute();
 
-  // No route assigned - redirect to landing page (which shows empty state)
+  // No route assigned - show empty state
   if (!route) {
-    redirect('/');
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+          <MapPin className="h-7 w-7 text-muted-foreground" />
+        </div>
+        <h2 className="text-lg font-semibold text-foreground">No route assigned</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          You don&apos;t have an active route right now. Check back later or contact your dispatcher.
+        </p>
+      </div>
+    );
   }
 
   // Get route and truck documents
