@@ -72,6 +72,11 @@ Progress: [███████████████████████
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 19 added: Database Integrity Hardening — missing RLS policies, missing migration SQL for Load/TenantIntegration, migration script error handling
+- Phase 01 Plan 01 complete: RLS policies on 5 tables, tenantId on InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load/TenantIntegration
+
 ### Decisions
 
 **v3.0 architectural decisions (from research):**
@@ -259,6 +264,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-33]: accept-invitation hardcodes /my-route (DRIVER-only endpoint); login route uses role conditional; OWNER_PATHS array in middleware guards all owner-portal paths as safety net for direct navigation/bookmarks
 - [Phase quick-34]: Use prisma.$queryRaw SELECT 1 for warmup DB check — minimal round-trip without RLS/tenant context; schedule */5 every 5 min to prevent Vercel cold starts; add /api/warmup to PUBLIC_PATHS so Vercel cron caller bypasses session auth redirect
 - [Phase quick-35]: Controlled AlertDialog open state (!!pendingDeactivate) instead of AlertDialogTrigger — avoids table nesting complexity
+- [Phase 01-database-integrity-hardening]: InvoiceItem and ExpenseTemplateItem get direct tenantId for RLS — enables row filtering without JOIN via current_tenant_id() policy evaluation
+- [Phase 01-database-integrity-hardening]: CREATE TABLE IF NOT EXISTS used for Load and TenantIntegration — these tables exist in prod via db push so migration must be idempotent; same for enum DO/EXCEPTION blocks
+- [Phase 01-database-integrity-hardening]: Backfill pattern (nullable ADD COLUMN -> UPDATE -> SET NOT NULL) chosen to safely add tenantId to existing rows
 
 ### Pending Todos
 
@@ -317,9 +325,12 @@ None blocking immediate progress.
 | 34 | Add warmup cron job — /api/warmup with CRON_SECRET auth and SELECT 1 DB check, vercel.json cron every 5 min, middleware PUBLIC_PATHS bypass | 2026-02-25 | fdf3f06 | [34-add-warmup-cron-job-that-pings-api-warmu](./quick/34-add-warmup-cron-job-that-pings-api-warmu/) |
 | 35 | Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals | 2026-02-25 | a996df9 | [35-add-remove-deactivate-driver-functionali](./quick/35-add-remove-deactivate-driver-functionali/) |
 
+**Phase 01 metrics:**
+- Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
+
 ## Session Continuity
 
-Last session: 2026-02-25
-Stopped at: Completed quick-35: Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations in driver-list.tsx
+Last session: 2026-02-26
+Stopped at: Completed phase 01-database-integrity-hardening plan 01 — migration SQL with RLS policies for 5 tables, tenantId added to InvoiceItem and ExpenseTemplateItem, schema.prisma updated, Prisma client regenerated
 Resume file: None
-Next action: Driver list confirmations now use polished AlertDialog modals instead of native browser confirm.
+Next action: Phase 01 plan 02 (migrate.mjs error handling hardening) ready to execute.
