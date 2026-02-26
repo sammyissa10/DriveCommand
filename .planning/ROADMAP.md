@@ -82,3 +82,13 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 16. Route Finance Foundation | v3.0 | 5/5 | ✓ Complete | 2026-02-16 |
 | 17. Unified Route View/Edit Page | v3.0 | 2/2 | ✓ Complete | 2026-02-16 |
 | 18. Driver Document Uploads | v3.0 | 3/3 | ✓ Complete | 2026-02-17 |
+
+### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
+
+**Goal:** Close all database security and deployment gaps — add RLS to tables missing tenant isolation policies, create tracked migration SQL for tables that were added via db push, and make the migration runner fail-fast so broken deploys surface immediately.
+**Depends on:** None (infrastructure hardening, independent)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Create migration SQL (enum types, tenantId columns + backfill + RLS for NotificationLog/InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration with full RLS) and update schema.prisma
+- [ ] 01-02-PLAN.md — Fix migrate.mjs outer catch to process.exit(1) instead of swallowing error; TypeScript type check
