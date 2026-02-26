@@ -16,6 +16,7 @@ interface RouteEditSectionProps {
     status: string;
     notes: string | null;
     version: number;
+    distanceMiles: number | null;
     driver: { id: string; firstName: string | null; lastName: string | null; email: string; licenseNumber: string | null };
     truck: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string };
   };
@@ -74,6 +75,7 @@ export function RouteEditSection({
     driverId: route.driver.id,
     truckId: route.truck.id,
     notes: route.notes || '',
+    distanceMiles: route.distanceMiles,
   };
 
   // Bind the update action with the route ID

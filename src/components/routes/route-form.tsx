@@ -1,7 +1,13 @@
 'use client';
 
-import { useActionState } from 'react';
-import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { useActionState, useState } from 'react';
+import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
+import { Navigation } from 'lucide-react';
+
+interface Coords {
+  lat: number;
+  lng: number;
+}
 
 interface RouteFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -12,6 +18,7 @@ interface RouteFormProps {
     driverId: string;
     truckId: string;
     notes?: string;
+    distanceMiles?: number | null;
   };
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{
@@ -40,12 +47,27 @@ export function RouteForm({
     success: false,
   });
 
+  const [originCoords, setOriginCoords] = useState<Coords | null>(null);
+  const [destCoords, setDestCoords] = useState<Coords | null>(null);
+
+  const distance =
+    originCoords && destCoords
+      ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      : null;
+
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {/* Extra hidden fields (e.g., version for optimistic locking) */}
       {extraHiddenFields && Object.entries(extraHiddenFields).map(([name, value]) => (
         <input key={name} type="hidden" name={name} value={String(value)} />
       ))}
+
+      {/* Hidden distanceMiles field — submitted with form */}
+      <input
+        type="hidden"
+        name="distanceMiles"
+        value={distance !== null ? String(Math.round(distance)) : (initialData?.distanceMiles ?? '')}
+      />
 
       {/* Origin & Destination */}
       <div className="space-y-4">
@@ -61,6 +83,7 @@ export function RouteForm({
             disabled={isPending}
             placeholder="Enter origin address..."
             className={inputClass}
+            onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
           />
           {state?.error?.origin && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
@@ -77,11 +100,32 @@ export function RouteForm({
             disabled={isPending}
             placeholder="Enter destination address..."
             className={inputClass}
+            onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
           />
           {state?.error?.destination && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
           )}
         </div>
+
+        {/* Distance badge — shown once both locations are selected */}
+        {distance !== null && (
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
+            <Navigation className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+              Estimated distance: <strong>{Math.round(distance).toLocaleString()} miles</strong>
+            </span>
+            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">straight-line est.</span>
+          </div>
+        )}
+        {/* Show saved distance when editing (no new selection yet) */}
+        {distance === null && initialData?.distanceMiles && (
+          <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-4 py-2.5">
+            <Navigation className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-sm text-muted-foreground">
+              Saved distance: <strong className="text-foreground">{initialData.distanceMiles.toLocaleString()} miles</strong>
+            </span>
+          </div>
+        )}
 
         <div>
           <label htmlFor="scheduledDate" className={labelClass}>Scheduled Date</label>

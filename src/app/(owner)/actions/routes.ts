@@ -32,6 +32,9 @@ export async function createRoute(prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   // Parse FormData fields
+  const distanceMilesRaw = formData.get('distanceMiles') as string;
+  const distanceMiles = distanceMilesRaw ? parseFloat(distanceMilesRaw) : undefined;
+
   const rawData = {
     origin: formData.get('origin') as string,
     destination: formData.get('destination') as string,
@@ -111,6 +114,7 @@ export async function createRoute(prevState: any, formData: FormData) {
         driverId,
         truckId,
         notes,
+        distanceMiles: distanceMiles && !isNaN(distanceMiles) ? distanceMiles : null,
       },
     });
 
@@ -154,6 +158,9 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
 
   const notes = formData.get('notes') as string;
   if (notes !== null && notes !== undefined) rawData.notes = notes;
+
+  const distanceMilesRaw = formData.get('distanceMiles') as string;
+  const distanceMiles = distanceMilesRaw ? parseFloat(distanceMilesRaw) : undefined;
 
   // Parse version field for optimistic locking
   const versionStr = formData.get('version') as string;
@@ -226,6 +233,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
     if (result.data.driverId) updateData.driverId = result.data.driverId;
     if (result.data.truckId) updateData.truckId = result.data.truckId;
     if (result.data.notes !== undefined) updateData.notes = result.data.notes;
+    if (distanceMiles !== undefined && !isNaN(distanceMiles)) updateData.distanceMiles = distanceMiles;
 
     // If version field is provided, use optimistic locking
     if (versionStr) {

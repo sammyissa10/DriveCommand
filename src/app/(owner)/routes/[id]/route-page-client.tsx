@@ -25,6 +25,7 @@ interface RoutePageClientProps {
     status: string;
     notes: string | null;
     version: number;
+    distanceMiles: number | null;
     driver: {
       id: string;
       firstName: string | null;
