@@ -11,6 +11,7 @@
 --
 -- NOTE: Do NOT wrap in BEGIN/COMMIT — migrate.mjs wraps each migration
 --       in its own transaction.
+-- NOTE: All statements are idempotent (IF NOT EXISTS / DO-EXCEPTION blocks)
 -- ============================================================
 
 
@@ -43,14 +44,20 @@ ALTER TABLE "InvoiceItem" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
 
 -- Backfill InvoiceItem.tenantId from parent Invoice
 UPDATE "InvoiceItem" SET "tenantId" = i."tenantId"
-FROM "Invoice" i WHERE "InvoiceItem"."invoiceId" = i.id;
+FROM "Invoice" i WHERE "InvoiceItem"."invoiceId" = i.id AND "InvoiceItem"."tenantId" IS NULL;
 
--- Set NOT NULL constraint (intentionally fails if any rows were not backfilled)
-ALTER TABLE "InvoiceItem" ALTER COLUMN "tenantId" SET NOT NULL;
+-- Set NOT NULL constraint (idempotent — no-op if already NOT NULL)
+DO $$ BEGIN
+  ALTER TABLE "InvoiceItem" ALTER COLUMN "tenantId" SET NOT NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
--- FK constraint to Tenant
-ALTER TABLE "InvoiceItem" ADD CONSTRAINT "InvoiceItem_tenantId_fkey"
-  FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- FK constraint to Tenant (idempotent)
+DO $$ BEGIN
+  ALTER TABLE "InvoiceItem" ADD CONSTRAINT "InvoiceItem_tenantId_fkey"
+    FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Index on tenantId
 CREATE INDEX IF NOT EXISTS "InvoiceItem_tenantId_idx" ON "InvoiceItem"("tenantId");
@@ -65,14 +72,20 @@ ALTER TABLE "ExpenseTemplateItem" ADD COLUMN IF NOT EXISTS "tenantId" UUID;
 
 -- Backfill ExpenseTemplateItem.tenantId from parent ExpenseTemplate
 UPDATE "ExpenseTemplateItem" SET "tenantId" = t."tenantId"
-FROM "ExpenseTemplate" t WHERE "ExpenseTemplateItem"."templateId" = t.id;
+FROM "ExpenseTemplate" t WHERE "ExpenseTemplateItem"."templateId" = t.id AND "ExpenseTemplateItem"."tenantId" IS NULL;
 
--- Set NOT NULL constraint (intentionally fails if any rows were not backfilled)
-ALTER TABLE "ExpenseTemplateItem" ALTER COLUMN "tenantId" SET NOT NULL;
+-- Set NOT NULL constraint (idempotent — no-op if already NOT NULL)
+DO $$ BEGIN
+  ALTER TABLE "ExpenseTemplateItem" ALTER COLUMN "tenantId" SET NOT NULL;
+EXCEPTION WHEN others THEN NULL;
+END $$;
 
--- FK constraint to Tenant
-ALTER TABLE "ExpenseTemplateItem" ADD CONSTRAINT "ExpenseTemplateItem_tenantId_fkey"
-  FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- FK constraint to Tenant (idempotent)
+DO $$ BEGIN
+  ALTER TABLE "ExpenseTemplateItem" ADD CONSTRAINT "ExpenseTemplateItem_tenantId_fkey"
+    FOREIGN KEY ("tenantId") REFERENCES "Tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- Index on tenantId
 CREATE INDEX IF NOT EXISTS "ExpenseTemplateItem_tenantId_idx" ON "ExpenseTemplateItem"("tenantId");
@@ -85,14 +98,20 @@ CREATE INDEX IF NOT EXISTS "ExpenseTemplateItem_tenantId_idx" ON "ExpenseTemplat
 ALTER TABLE "NotificationLog" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "NotificationLog" FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY tenant_isolation_policy ON "NotificationLog"
-  FOR ALL
-  USING ("tenantId" = current_tenant_id())
-  WITH CHECK ("tenantId" = current_tenant_id());
+DO $$ BEGIN
+  CREATE POLICY tenant_isolation_policy ON "NotificationLog"
+    FOR ALL
+    USING ("tenantId" = current_tenant_id())
+    WITH CHECK ("tenantId" = current_tenant_id());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE POLICY bypass_rls_policy ON "NotificationLog"
-  FOR ALL
-  USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+DO $$ BEGIN
+  CREATE POLICY bypass_rls_policy ON "NotificationLog"
+    FOR ALL
+    USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -102,14 +121,20 @@ CREATE POLICY bypass_rls_policy ON "NotificationLog"
 ALTER TABLE "InvoiceItem" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "InvoiceItem" FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY tenant_isolation_policy ON "InvoiceItem"
-  FOR ALL
-  USING ("tenantId" = current_tenant_id())
-  WITH CHECK ("tenantId" = current_tenant_id());
+DO $$ BEGIN
+  CREATE POLICY tenant_isolation_policy ON "InvoiceItem"
+    FOR ALL
+    USING ("tenantId" = current_tenant_id())
+    WITH CHECK ("tenantId" = current_tenant_id());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE POLICY bypass_rls_policy ON "InvoiceItem"
-  FOR ALL
-  USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+DO $$ BEGIN
+  CREATE POLICY bypass_rls_policy ON "InvoiceItem"
+    FOR ALL
+    USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -119,14 +144,20 @@ CREATE POLICY bypass_rls_policy ON "InvoiceItem"
 ALTER TABLE "ExpenseTemplateItem" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ExpenseTemplateItem" FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY tenant_isolation_policy ON "ExpenseTemplateItem"
-  FOR ALL
-  USING ("tenantId" = current_tenant_id())
-  WITH CHECK ("tenantId" = current_tenant_id());
+DO $$ BEGIN
+  CREATE POLICY tenant_isolation_policy ON "ExpenseTemplateItem"
+    FOR ALL
+    USING ("tenantId" = current_tenant_id())
+    WITH CHECK ("tenantId" = current_tenant_id());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE POLICY bypass_rls_policy ON "ExpenseTemplateItem"
-  FOR ALL
-  USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+DO $$ BEGIN
+  CREATE POLICY bypass_rls_policy ON "ExpenseTemplateItem"
+    FOR ALL
+    USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -212,14 +243,20 @@ END $$;
 ALTER TABLE "Load" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "Load" FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY tenant_isolation_policy ON "Load"
-  FOR ALL
-  USING ("tenantId" = current_tenant_id())
-  WITH CHECK ("tenantId" = current_tenant_id());
+DO $$ BEGIN
+  CREATE POLICY tenant_isolation_policy ON "Load"
+    FOR ALL
+    USING ("tenantId" = current_tenant_id())
+    WITH CHECK ("tenantId" = current_tenant_id());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE POLICY bypass_rls_policy ON "Load"
-  FOR ALL
-  USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+DO $$ BEGIN
+  CREATE POLICY bypass_rls_policy ON "Load"
+    FOR ALL
+    USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 
 -- ============================================================
@@ -256,11 +293,17 @@ END $$;
 ALTER TABLE "TenantIntegration" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "TenantIntegration" FORCE ROW LEVEL SECURITY;
 
-CREATE POLICY tenant_isolation_policy ON "TenantIntegration"
-  FOR ALL
-  USING ("tenantId" = current_tenant_id())
-  WITH CHECK ("tenantId" = current_tenant_id());
+DO $$ BEGIN
+  CREATE POLICY tenant_isolation_policy ON "TenantIntegration"
+    FOR ALL
+    USING ("tenantId" = current_tenant_id())
+    WITH CHECK ("tenantId" = current_tenant_id());
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE POLICY bypass_rls_policy ON "TenantIntegration"
-  FOR ALL
-  USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+DO $$ BEGIN
+  CREATE POLICY bypass_rls_policy ON "TenantIntegration"
+    FOR ALL
+    USING (current_setting('app.bypass_rls', TRUE)::text = 'on');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
