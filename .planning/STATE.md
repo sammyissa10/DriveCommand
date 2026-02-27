@@ -74,9 +74,12 @@ Progress: [███████████████████████
 
 ### Roadmap Evolution
 
-- Phase 19 added: Database Integrity Hardening — missing RLS policies, missing migration SQL for Load/TenantIntegration, migration script error handling
-- Phase 01 Plan 01 complete: RLS policies on 5 tables, tenantId on InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load/TenantIntegration
-- Phase 01 Plan 02 complete: migrate.mjs exits with code 1 on failure (fail-fast deployment guard), TypeScript clean build confirmed — Phase 01 fully complete
+- Phase 01 added + COMPLETE: Database Integrity Hardening — RLS on 5 tables, tenantId backfill on InvoiceItem/ExpenseTemplateItem, Load/TenantIntegration migration SQL, migrate.mjs fail-fast
+- Phase 02 added: Multi-Stop Routes — ordered RouteStop model, dispatcher stop editor, driver app active-stop view, geofence auto-arrival
+- Phase 03 added: Driver Pay Settlement — DriverPayConfig, DriverSettlement, SettlementLine models, pay calculation engine, PDF statement
+- Phase 04 added: QuickBooks Online Integration — OAuth2 connect flow, invoice/expense/settlement sync to QBO
+- Phase 05 added: Support Ticket System — in-owner-portal ticket submission and threaded replies, DriveCommand team manages via admin portal
+- Phase 06 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
 

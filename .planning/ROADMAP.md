@@ -92,3 +92,68 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 Plans:
 - [x] 01-01-PLAN.md — Create migration SQL (enum types, tenantId columns + backfill + RLS for NotificationLog/InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration with full RLS) and update schema.prisma
 - [x] 01-02-PLAN.md — Fix migrate.mjs outer catch to process.exit(1) instead of swallowing error; TypeScript type check
+
+---
+
+### Phase 2: Multi-Stop Routes — Extend routes to support ordered multi-stop itineraries with per-stop status tracking and geofence arrival detection
+
+**Goal:** Allow dispatchers to build routes with multiple pickup and delivery stops in a defined sequence. Each stop tracks its own status (pending → arrived → departed), scheduled time, and coordinates. Geofencing auto-marks arrival when a driver's GPS ping falls within the stop radius. The driver app shows the active stop with navigation context.
+**Depends on:** None (extends existing Route model)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — RouteStop model: migration SQL (id, routeId, tenantId, position, type PICKUP/DELIVERY, address, lat/lng, scheduledAt, arrivedAt, departedAt, notes, status enum), RLS, schema.prisma update, Prisma client regenerate
+- [ ] 02-02-PLAN.md — Dispatcher UI: multi-stop editor on route create/edit (add/remove/reorder stops with drag or up-down arrows, geocode address via Nominatim, show stop sequence on map), route detail stop timeline with per-stop status badges and actual vs scheduled times
+- [ ] 02-03-PLAN.md — Driver app integration: driver portal shows current active stop with address and stop type, geofence ping endpoint checks all active RouteStops for the driver's current load and auto-sets arrivedAt when within 200m radius, dispatcher sees live stop-by-stop progress
+
+---
+
+### Phase 3: Driver Pay Settlement — Automated driver compensation calculation from completed loads with settlement statements
+
+**Goal:** Calculate driver pay automatically from completed loads based on configurable pay structures (per-mile, percentage of load rate, or flat per-load), generate itemized settlement statements covering a pay period, and link settlements to the payroll module. Eliminates manual pay calculation — dispatcher marks loads delivered, system computes what each driver is owed.
+**Depends on:** Phase 2 (multi-stop loads have more complex mileage), but can run independently
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Data model: DriverPayConfig model (driverId, payType enum PER_MILE/PERCENTAGE/FLAT, rateValue, effectiveFrom), DriverSettlement model (driverId, tenantId, periodStart, periodEnd, status DRAFT/APPROVED/PAID, totalPay Decimal), SettlementLine model (settlementId, loadId, description, miles, grossRate, payAmount), migration SQL, RLS, schema.prisma update
+- [ ] 03-02-PLAN.md — Settlement engine: calculateSettlement server action (pull DELIVERED loads in period for driver, apply pay config, compute per-line pay amounts using Decimal.js, create SettlementLine records), settlement list page at /payroll/settlements, settlement detail with line-item breakdown and approve/mark-paid actions
+- [ ] 03-03-PLAN.md — Settlement statement PDF: react-pdf statement with driver info, pay period, itemized load table (load number, origin→destination, miles, gross rate, pay amount), total, signature line; download button on settlement detail page; link Payroll records to settlement via settlementId FK
+
+---
+
+### Phase 4: QuickBooks Online Integration — OAuth2 connection and two-way sync for invoices, expenses, and settlements
+
+**Goal:** Connect a tenant's QuickBooks Online account via OAuth2, then automatically sync DriveCommand financial records to QBO: invoices become QBO invoices (with line items and customer mapping), route expenses sync as QBO expenses, and driver settlements sync as vendor bills or journal entries. Eliminates double-entry for bookkeeping. The integration framework and TenantIntegration model already exist — this wires in the actual QBO API.
+**Depends on:** Phase 3 (settlements), existing invoice/expense modules
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — OAuth2 connect flow: QBO app credentials in env vars, /api/integrations/qbo/connect initiates OAuth2 code flow (redirect to Intuit), /api/integrations/qbo/callback exchanges code for access+refresh tokens, stores encrypted tokens in TenantIntegration.configJson, connect/disconnect UI on integrations settings page with connection status badge
+- [ ] 04-02-PLAN.md — Invoice sync: syncInvoiceToQBO server action (find or create QBO Customer by tenant customer name, create/update QBO Invoice with line items, store qboInvoiceId on Invoice record for idempotent re-sync), sync button on invoice detail page, sync status badge (synced / not synced / error), auto-sync trigger when invoice status changes to SENT
+- [ ] 04-03-PLAN.md — Expense and settlement sync: syncExpenseToQBO (map RouteExpense to QBO Expense with category mapping), syncSettlementToQBO (map DriverSettlement to QBO Vendor Bill), token refresh middleware (auto-refresh expired access token using refresh token before any QBO API call), sync error logging to TenantIntegration.configJson.lastSyncError
+
+---
+
+### Phase 5: Support Ticket System — In-app support tickets for tenant owners with threaded replies and status tracking
+
+**Goal:** Tenant owners can submit support tickets from within the owner portal (subject, description, category, priority), view ticket history, and receive replies in-thread. The DriveCommand team manages all tickets from the super-admin portal (Phase 6). Email notifications alert the owner on reply and the DriveCommand team on new ticket submission. Replaces ad-hoc email support with a trackable, in-product support channel.
+**Depends on:** None (standalone module)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Data model: SupportTicket model (id, tenantId, createdByUserId, subject, description, category enum BILLING/BUG/FEATURE/GENERAL, priority enum LOW/NORMAL/HIGH/URGENT, status enum OPEN/IN_PROGRESS/WAITING_ON_CUSTOMER/RESOLVED/CLOSED, closedAt), TicketMessage model (ticketId, senderType OWNER/ADMIN, senderLabel, body, createdAt), migration SQL, RLS (tenant-scoped read/write for SupportTicket and TicketMessage; bypass_rls for admin reads across all tenants), schema.prisma update
+- [ ] 05-02-PLAN.md — Owner portal UI: /support page with ticket list (status badge, priority, last updated), new ticket form (subject, category, priority, description), ticket detail page with threaded message timeline, reply form (owner can reply, auto-sets status to WAITING_ON_CUSTOMER), email notification to DriveCommand team inbox on new ticket via Resend
+- [ ] 05-03-PLAN.md — Ticket status lifecycle and notifications: admin reply triggers email to ticket creator (owner) with message preview and link, owner reply triggers admin email alert, auto-close RESOLVED tickets after 7 days of no owner reply (cron job), ticket sidebar link under Help section in owner portal nav (chat-bubble icon, unread reply badge count)
+
+---
+
+### Phase 6: System Admin Portal — Super-admin interface for the DriveCommand team to manage all tenants
+
+**Goal:** A fully separate super-admin portal at /admin/* accessible only to DriveCommand team members via a hardcoded ADMIN_SECRET_KEY environment variable (not the tenant session system). Provides tenant list with key metrics, ability to create new tenants directly (bypassing the self-signup flow), suspend/reactivate tenants, view tenant details, and manage support tickets (Phase 5) across all tenants. This is the internal operations tool for running DriveCommand as a business.
+**Depends on:** Phase 5 (support ticket management is the primary admin workflow)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Admin auth layer: ADMIN_SECRET_KEY env var, /admin/login page with password form (hash comparison, no rate-limit bypass — brute-force resistant), admin session stored as separate signed cookie (admin_session, 8-hour expiry), adminMiddleware guards all /admin/* routes and redirects to /admin/login if not authenticated, admin session has no tenantId (reads across all tenants using bypass_rls pattern), logout endpoint clears cookie
+- [ ] 06-02-PLAN.md — Tenant management: /admin/tenants list (company name, owner email, plan, created date, truck count, driver count, active load count, status badge), tenant detail page (/admin/tenants/[id]) with all stats + recent activity + suspension controls, createTenant admin action (name, owner email, auto-generate initial Owner User, send welcome email), suspendTenant/reactivateTenant actions (set Tenant.suspended boolean, middleware blocks suspended tenant sessions), /admin/tenants/new form
+- [ ] 06-03-PLAN.md — Admin dashboard and support queue: /admin home with system metrics (total tenants, total active loads today, new signups this week, open support tickets), /admin/support ticket queue showing all SupportTicket records across tenants (filterable by status/priority/tenant), ticket detail with admin reply form (creates TicketMessage with senderType=ADMIN, triggers owner email), ticket status update controls (assign priority, change status, close ticket)
