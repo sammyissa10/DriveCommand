@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 19 Multi-Stop Routes — IN PROGRESS (Plan 01 of 03 complete)
+Phase: Phase 19 Multi-Stop Routes — IN PROGRESS (Plan 02 of 03 complete)
 Status: Executing Phase 19
-Last activity: 2026-02-27 — Completed Phase 19 Plan 01: RouteStop migration SQL with RLS, Prisma schema with RouteStop model, routeStopSchema Zod validation, stop CRUD integration in createRoute/updateRoute/getRoute/listRoutes server actions
+Last activity: 2026-02-27 — Completed Phase 19 Plan 02: Stop editor in route-form.tsx (add/remove/reorder with AddressAutocomplete), stop timeline in route-detail.tsx (position badges, StopStatusBadge), initialStops data plumbing through route-page-client.tsx and route-edit-section.tsx
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -276,6 +276,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 19-01]: Flat FormData keys (stops_N_address, stops_N_type) not JSON blob — idiomatic with Next.js useActionState + FormData; server action loops i=0..N until no stops_i_address
 - [Phase 19-01]: stops_submitted=true hidden field distinguishes "no stops section in form" from "stops cleared to zero" in updateRoute
 - [Phase 19-01]: Atomic stop replacement in updateRoute (deleteMany + createMany in same try block) — position gaps cannot occur, positions always 1-based sequential
+- [Phase 19]: Address field uses name=stops_N_address on AddressAutocomplete so typed values submit without requiring map selection
+- [Phase 19]: StopStatusBadge defined inline in route-detail.tsx — colocated helper, not exported, no separate file
+- [Phase 19]: stops? optional on all route interfaces so routes without stops render correctly (timeline section conditionally hidden)
 
 ### Pending Todos
 
@@ -340,10 +343,12 @@ None blocking immediate progress.
 
 **Phase 19 metrics:**
 - Phase 19-01 (2026-02-27): RouteStop migration SQL, Prisma schema, routeStopSchema, stop CRUD in server actions — 185s, 2 tasks, 4 files affected
+- Phase 19-02 (2026-02-27): Stop editor in route-form.tsx, stop timeline in route-detail.tsx, initialStops data plumbing — 108s, 2 tasks, 4 files affected
+| Phase 19 P02 | 108 | 2 tasks | 4 files |
 
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed phase 19-multi-stop-routes plan 01 — RouteStop migration SQL with RLS, Prisma schema with RouteStop model/enums/relations, routeStopSchema Zod validation, stop CRUD wired into all four server actions (createRoute/updateRoute/getRoute/listRoutes), TypeScript clean build confirmed
+Stopped at: Completed phase 19-multi-stop-routes plan 02 — stop editor in route-form.tsx (add/remove/reorder, AddressAutocomplete, flat FormData keys), stop timeline in route-detail.tsx (position badges, StopStatusBadge PENDING/ARRIVED/DEPARTED), initialStops wired through route-page-client.tsx and route-edit-section.tsx to route-form.tsx for edit-mode pre-population, TypeScript clean build confirmed
 Resume file: None
-Next action: Execute Phase 19 Plan 02 — Dispatcher UI (stop editor in route-form.tsx, stop timeline in route-detail.tsx)
+Next action: Execute Phase 19 Plan 03 — Driver App Active-Stop View (driver sees current stop, can mark arrived/departed)
