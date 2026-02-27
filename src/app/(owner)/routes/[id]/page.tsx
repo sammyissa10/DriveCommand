@@ -83,7 +83,7 @@ export default async function RouteDetailPage({
         return [] as any[];
       }),
     ]);
-    drivers = allDrivers.filter((d: { isActive: boolean }) => d.isActive);
+    drivers = allDrivers;
     trucks = allTrucks;
   }
 

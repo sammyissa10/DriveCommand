@@ -16,8 +16,7 @@ export default async function NewRoutePage() {
     }),
   ]);
 
-  // Only offer active drivers for route assignment
-  const drivers = allDrivers.filter((d: { isActive: boolean }) => d.isActive);
+  const drivers = allDrivers;
 
   return (
     <div className="space-y-6">
