@@ -195,6 +195,40 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
 }
 
 /**
+ * Mark a SENT invoice as PAID.
+ */
+export async function markInvoicePaid(id: string) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+
+  try {
+    const invoice = await prisma.invoice.findUnique({ where: { id }, select: { status: true } });
+    if (!invoice) {
+      return { error: 'Invoice not found.' };
+    }
+    if (invoice.status !== 'SENT') {
+      return { error: 'Only SENT invoices can be marked as paid.' };
+    }
+    await prisma.invoice.update({
+      where: { id },
+      data: {
+        status: 'PAID' as any,
+        paidDate: new Date(),
+      },
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return { error: 'Invoice not found.' };
+    }
+    return { error: 'Failed to mark invoice as paid.' };
+  }
+
+  revalidatePath('/invoices');
+  redirect(`/invoices/${id}`);
+}
+
+/**
  * Delete a draft invoice.
  */
 export async function deleteInvoice(id: string) {

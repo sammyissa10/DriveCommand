@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { deleteInvoice } from '@/app/(owner)/actions/invoices';
+import { deleteInvoice, markInvoicePaid } from '@/app/(owner)/actions/invoices';
 import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
+import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -73,13 +74,21 @@ export default async function InvoiceDetailPage({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            href={`/invoices/${id}/edit`}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent transition-colors"
-          >
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Link>
+          {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
+            <Link
+              href={`/invoices/${id}/edit`}
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent transition-colors"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </Link>
+          )}
+          {invoice.status === 'SENT' && (
+            <MarkAsPaidButton
+              invoiceId={id}
+              markPaidAction={markInvoicePaid}
+            />
+          )}
           <DeleteInvoiceButton
             invoiceId={id}
             status={invoice.status}
