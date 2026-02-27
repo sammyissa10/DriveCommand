@@ -20,6 +20,18 @@ interface Truck {
   vin: string;
 }
 
+interface RouteStop {
+  id: string;
+  position: number;
+  type: string;
+  address: string;
+  status: string;
+  scheduledAt: Date | null;
+  arrivedAt: Date | null;
+  departedAt: Date | null;
+  notes: string | null;
+}
+
 interface Route {
   id: string;
   origin: string;
@@ -30,6 +42,18 @@ interface Route {
   notes: string | null;
   driver: Driver;
   truck: Truck;
+  stops?: RouteStop[];
+}
+
+function StopStatusBadge({ status }: { status: string }) {
+  let cls = 'bg-muted text-muted-foreground';
+  if (status === 'ARRIVED') cls = 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
+  if (status === 'DEPARTED') cls = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${cls}`}>
+      {status}
+    </span>
+  );
 }
 
 interface RouteDetailProps {
@@ -108,7 +132,48 @@ export function RouteDetail({
         <div className="mt-6">{statusActions}</div>
       </div>
 
-      {/* Section 2: Assigned Driver */}
+      {/* Section 2: Stops Timeline */}
+      {route.stops && route.stops.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-card-foreground">Stops</h2>
+          <ol className="space-y-3">
+            {route.stops.map((stop) => (
+              <li key={stop.id} className="flex gap-3 items-start">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
+                  {stop.position}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-card-foreground">{stop.address}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">{stop.type}</span>
+                    <StopStatusBadge status={stop.status} />
+                    {stop.scheduledAt && (
+                      <span className="text-xs text-muted-foreground">
+                        Sched: {new Date(stop.scheduledAt).toLocaleString()}
+                      </span>
+                    )}
+                    {stop.arrivedAt && (
+                      <span className="text-xs text-emerald-600">
+                        Arrived: {new Date(stop.arrivedAt).toLocaleString()}
+                      </span>
+                    )}
+                    {stop.departedAt && (
+                      <span className="text-xs text-blue-600">
+                        Departed: {new Date(stop.departedAt).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  {stop.notes && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{stop.notes}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {/* Section 3: Assigned Driver */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-card-foreground">Assigned Driver</h2>
 

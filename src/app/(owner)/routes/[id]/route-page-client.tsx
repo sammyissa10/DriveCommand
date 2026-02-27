@@ -43,6 +43,17 @@ interface RoutePageClientProps {
       odometer: number | null;
       documentMetadata: any
     };
+    stops?: Array<{
+      id: string;
+      position: number;
+      type: string;
+      address: string;
+      status: string;
+      scheduledAt: Date | null;
+      arrivedAt: Date | null;
+      departedAt: Date | null;
+      notes: string | null;
+    }>;
   };
   initialEditMode: boolean;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;

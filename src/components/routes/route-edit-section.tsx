@@ -19,6 +19,17 @@ interface RouteEditSectionProps {
     distanceMiles: number | null;
     driver: { id: string; firstName: string | null; lastName: string | null; email: string; licenseNumber: string | null };
     truck: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string };
+    stops?: Array<{
+      id: string;
+      position: number;
+      type: string;
+      address: string;
+      status: string;
+      scheduledAt: Date | null;
+      arrivedAt: Date | null;
+      departedAt: Date | null;
+      notes: string | null;
+    }>;
   };
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }>;
@@ -86,6 +97,7 @@ export function RouteEditSection({
       <RouteForm
         action={boundUpdateRoute}
         initialData={initialData}
+        initialStops={route.stops}
         drivers={drivers}
         trucks={trucks}
         submitLabel="Update Route"
