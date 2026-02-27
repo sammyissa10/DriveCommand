@@ -91,6 +91,17 @@ enum IntegrationCategory {
   EMAIL
 }
 
+enum RouteStopType {
+  PICKUP
+  DELIVERY
+}
+
+enum RouteStopStatus {
+  PENDING
+  ARRIVED
+  DEPARTED
+}
+
 // Models
 model Tenant {
   id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -127,6 +138,7 @@ model Tenant {
   expenseTemplateItems  ExpenseTemplateItem[]
   loads                 Load[]
   tenantIntegrations    TenantIntegration[]
+  routeStops            RouteStop[]
 }
 
 model User {
@@ -231,6 +243,7 @@ model Route {
   expenses     RouteExpense[]
   payments     RoutePayment[]
   loads        Load[]
+  stops        RouteStop[]
 
   @@index([tenantId])
   @@index([driverId])
@@ -780,4 +793,33 @@ model TenantIntegration {
 
   @@unique([tenantId, provider])
   @@index([tenantId])
+}
+
+// ─── Multi-Stop Route Models ─────────────────────────────────
+
+model RouteStop {
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId     String          @db.Uuid
+  tenantId    String          @db.Uuid
+  position    Int             // 1-based ordering
+  type        RouteStopType
+  address     String
+  lat         Decimal?        @db.Decimal(10, 8)
+  lng         Decimal?        @db.Decimal(11, 8)
+  scheduledAt DateTime?       @db.Timestamptz
+  arrivedAt   DateTime?       @db.Timestamptz
+  departedAt  DateTime?       @db.Timestamptz
+  notes       String?
+  status      RouteStopStatus @default(PENDING)
+  geofenceHit Boolean         @default(false)
+  createdAt   DateTime        @default(now()) @db.Timestamptz
+  updatedAt   DateTime        @updatedAt @db.Timestamptz
+
+  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([routeId])
+  @@index([tenantId])
+  @@index([routeId, position])
+  @@index([status])
 }
