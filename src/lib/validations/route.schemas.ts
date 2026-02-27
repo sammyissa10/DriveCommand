@@ -25,6 +25,19 @@ export const routeCreateSchema = z.object({
  */
 export const routeUpdateSchema = routeCreateSchema.partial();
 
+/**
+ * Schema for a single route stop.
+ * Used to validate stop data submitted via flat FormData keys
+ * (stops_0_address, stops_0_type, etc.) in createRoute and updateRoute.
+ */
+export const routeStopSchema = z.object({
+  type: z.enum(['PICKUP', 'DELIVERY']),
+  address: z.string().min(1, 'Address is required').max(500),
+  scheduledAt: z.string().optional(),
+  notes: z.string().max(1000).optional(),
+});
+
 // Inferred types
 export type RouteCreate = z.infer<typeof routeCreateSchema>;
 export type RouteUpdate = z.infer<typeof routeUpdateSchema>;
+export type RouteStopInput = z.infer<typeof routeStopSchema>;

@@ -8,7 +8,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { routeCreateSchema, routeUpdateSchema } from '@/lib/validations/route.schemas';
+import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@/lib/validations/route.schemas';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -54,6 +54,27 @@ export async function createRoute(prevState: any, formData: FormData) {
   }
 
   const { origin, destination, scheduledDate, driverId, truckId, notes } = result.data;
+
+  // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  let si = 0;
+  while (formData.get(`stops_${si}_address`)) {
+    stopInputs.push({
+      type: (formData.get(`stops_${si}_type`) as string) || 'PICKUP',
+      address: formData.get(`stops_${si}_address`) as string,
+      scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
+      notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+    });
+    si++;
+  }
+
+  // Validate each stop with routeStopSchema
+  for (let idx = 0; idx < stopInputs.length; idx++) {
+    const stopResult = routeStopSchema.safeParse(stopInputs[idx]);
+    if (!stopResult.success) {
+      return { error: `Invalid stop data at position ${idx + 1}` };
+    }
+  }
 
   // Get tenant ID and Prisma client
   const tenantId = await requireTenantId();
@@ -104,7 +125,7 @@ export async function createRoute(prevState: any, formData: FormData) {
       };
     }
 
-    // Create route with PLANNED status (default)
+    // Create route with PLANNED status (default), including nested stops
     const route = await prisma.route.create({
       data: {
         tenantId,
@@ -115,6 +136,16 @@ export async function createRoute(prevState: any, formData: FormData) {
         truckId,
         notes,
         distanceMiles: distanceMiles && !isNaN(distanceMiles) ? distanceMiles : null,
+        stops: {
+          create: stopInputs.map((stop, idx) => ({
+            tenantId,
+            position: idx + 1,
+            type: stop.type as 'PICKUP' | 'DELIVERY',
+            address: stop.address,
+            scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
+            notes: stop.notes || null,
+          })),
+        },
       },
     });
 
@@ -165,6 +196,31 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   // Parse version field for optimistic locking
   const versionStr = formData.get('version') as string;
 
+  // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
+  // Use hidden field stops_submitted=true to distinguish "no stops section" from "stops cleared"
+  const stopsSubmitted = formData.get('stops_submitted') === 'true';
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  let si = 0;
+  while (formData.get(`stops_${si}_address`)) {
+    stopInputs.push({
+      type: (formData.get(`stops_${si}_type`) as string) || 'PICKUP',
+      address: formData.get(`stops_${si}_address`) as string,
+      scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
+      notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+    });
+    si++;
+  }
+
+  // Validate each stop with routeStopSchema if stops section was submitted
+  if (stopsSubmitted) {
+    for (let idx = 0; idx < stopInputs.length; idx++) {
+      const stopResult = routeStopSchema.safeParse(stopInputs[idx]);
+      if (!stopResult.success) {
+        return { error: `Invalid stop data at position ${idx + 1}` };
+      }
+    }
+  }
+
   // Validate with Zod schema
   const result = routeUpdateSchema.safeParse(rawData);
 
@@ -174,6 +230,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
     };
   }
 
+  const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
 
   let updatedRouteId: string;
@@ -267,6 +324,27 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
         data: updateData,
       });
       updatedRouteId = route.id;
+    }
+
+    // Handle stop updates atomically if stops section was submitted
+    if (stopsSubmitted) {
+      // Delete all existing stops for this route
+      await prisma.routeStop.deleteMany({ where: { routeId: id } });
+
+      // Create new stops if any were provided
+      if (stopInputs.length > 0) {
+        await prisma.routeStop.createMany({
+          data: stopInputs.map((stop, idx) => ({
+            routeId: id,
+            tenantId,
+            position: idx + 1,
+            type: stop.type as 'PICKUP' | 'DELIVERY',
+            address: stop.address,
+            scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
+            notes: stop.notes || null,
+          })),
+        });
+      }
     }
   } catch (error) {
     console.error('Failed to update route:', error);
@@ -377,6 +455,9 @@ export async function listRoutes() {
           licensePlate: true,
         },
       },
+      _count: {
+        select: { stops: true },
+      },
     },
     orderBy: {
       scheduledDate: 'desc',
@@ -418,6 +499,9 @@ export async function getRoute(id: string) {
           odometer: true,
           documentMetadata: true,
         },
+      },
+      stops: {
+        orderBy: { position: 'asc' },
       },
     },
   });
