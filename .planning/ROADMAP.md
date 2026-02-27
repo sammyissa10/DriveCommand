@@ -102,9 +102,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 19-01-PLAN.md — RouteStop model: migration SQL (id, routeId, tenantId, position, type PICKUP/DELIVERY, address, lat/lng, scheduledAt, arrivedAt, departedAt, notes, status enum), RLS, schema.prisma update, Prisma client regenerate
-- [ ] 19-02-PLAN.md — Dispatcher UI: multi-stop editor on route create/edit (add/remove/reorder stops with drag or up-down arrows, geocode address via Nominatim, show stop sequence on map), route detail stop timeline with per-stop status badges and actual vs scheduled times
-- [ ] 19-03-PLAN.md — Driver app integration: driver portal shows current active stop with address and stop type, geofence ping endpoint checks all active RouteStops for the driver's current load and auto-sets arrivedAt when within 200m radius, dispatcher sees live stop-by-stop progress
+- [ ] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
+- [ ] 19-02-PLAN.md — Dispatcher UI: multi-stop editor in route form (add/remove/reorder with up/down buttons, AddressAutocomplete per stop), route detail stop timeline with status badges
+- [ ] 19-03-PLAN.md — Driver integration: geofence auto-arrive at next pending stop (500m radius), driver portal active stop panel, manual Mark Departed button
 
 ---
 
