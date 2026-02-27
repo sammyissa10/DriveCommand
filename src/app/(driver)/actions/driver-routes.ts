@@ -9,6 +9,7 @@
 import { requireRole, getCurrentUser } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { revalidatePath } from 'next/cache';
 
 /**
  * Get the route assigned to the authenticated driver.
@@ -59,6 +60,7 @@ export async function getMyAssignedRoute() {
         },
       },
       documents: true,
+      stops: { orderBy: { position: 'asc' } },
     },
     orderBy: {
       scheduledDate: 'asc', // Earliest active route first
@@ -66,4 +68,47 @@ export async function getMyAssignedRoute() {
   });
 
   return route;
+}
+
+/**
+ * Mark a route stop as DEPARTED (manual only — geofence exit does NOT trigger this).
+ * Stop must be in ARRIVED status and belong to the authenticated driver's active route.
+ * SECURITY: Validates stop ownership via route.driverId = user.id.
+ */
+export async function markStopDeparted(stopId: string) {
+  await requireRole([UserRole.DRIVER]);
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not found');
+
+  const prisma = await getTenantPrisma();
+
+  // Verify the stop belongs to the driver's route
+  const stop = await prisma.routeStop.findFirst({
+    where: {
+      id: stopId,
+      route: {
+        driverId: user.id,
+        status: { in: ['PLANNED', 'IN_PROGRESS'] },
+      },
+    },
+  });
+
+  if (!stop) {
+    return { error: 'Stop not found or not assigned to you' };
+  }
+
+  if (stop.status !== 'ARRIVED') {
+    return { error: 'Stop must be in ARRIVED status to mark as departed' };
+  }
+
+  await prisma.routeStop.update({
+    where: { id: stopId },
+    data: {
+      status: 'DEPARTED',
+      departedAt: new Date(),
+    },
+  });
+
+  revalidatePath('/my-route');
+  return { success: true };
 }
