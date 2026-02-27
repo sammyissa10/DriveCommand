@@ -268,6 +268,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-33]: accept-invitation hardcodes /my-route (DRIVER-only endpoint); login route uses role conditional; OWNER_PATHS array in middleware guards all owner-portal paths as safety net for direct navigation/bookmarks
 - [Phase quick-34]: Use prisma.$queryRaw SELECT 1 for warmup DB check — minimal round-trip without RLS/tenant context; schedule */5 every 5 min to prevent Vercel cold starts; add /api/warmup to PUBLIC_PATHS so Vercel cron caller bypasses session auth redirect
 - [Phase quick-35]: Controlled AlertDialog open state (!!pendingDeactivate) instead of AlertDialogTrigger — avoids table nesting complexity
+- [Phase quick-37]: Edit hidden on PAID and CANCELLED (both terminal statuses — no further editing needed); Mark as Paid only on SENT; markInvoicePaid validates status server-side as defense-in-depth; useTransition over useState for pending state (idiomatic React 18)
 - [Phase 01-database-integrity-hardening]: InvoiceItem and ExpenseTemplateItem get direct tenantId for RLS — enables row filtering without JOIN via current_tenant_id() policy evaluation
 - [Phase 01-database-integrity-hardening]: CREATE TABLE IF NOT EXISTS used for Load and TenantIntegration — these tables exist in prod via db push so migration must be idempotent; same for enum DO/EXCEPTION blocks
 - [Phase 01-database-integrity-hardening]: Backfill pattern (nullable ADD COLUMN -> UPDATE -> SET NOT NULL) chosen to safely add tenantId to existing rows
@@ -340,6 +341,7 @@ None blocking immediate progress.
 | 34 | Add warmup cron job — /api/warmup with CRON_SECRET auth and SELECT 1 DB check, vercel.json cron every 5 min, middleware PUBLIC_PATHS bypass | 2026-02-25 | fdf3f06 | [34-add-warmup-cron-job-that-pings-api-warmu](./quick/34-add-warmup-cron-job-that-pings-api-warmu/) |
 | 35 | Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals | 2026-02-25 | a996df9 | [35-add-remove-deactivate-driver-functionali](./quick/35-add-remove-deactivate-driver-functionali/) |
 | 36 | Mobile responsiveness audit and fix — flex stop badges, 44px touch targets, overflow-x-auto routes table, dark mode tokens in driver portal | 2026-02-27 | fbcafa5 | [36-audit-and-fix-mobile-responsiveness-for-](./quick/36-audit-and-fix-mobile-responsiveness-for-/) |
+| 37 | Fix audit issues — sidebar Expense Categories/Templates links, remove Maintenance duplicate, invoice conditional Edit + Mark as Paid button | 2026-02-27 | 02676cd | [37-fix-audit-issues-sidebar-links-for-expen](./quick/37-fix-audit-issues-sidebar-links-for-expen/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -353,9 +355,12 @@ None blocking immediate progress.
 **Quick-36 metrics:**
 - Quick-36 (2026-02-27): Mobile responsiveness audit — flex stop badges, 44px touch targets, overflow-x-auto table, dark mode design tokens — 212s, 3 tasks, 5 files affected
 
+**Quick-37 metrics:**
+- Quick-37 (2026-02-27): Sidebar expense settings links, remove Maintenance duplicate, invoice conditional Edit + Mark as Paid — 93s, 2 tasks, 4 files affected
+
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed Quick-36 — mobile responsiveness audit (flex stop badges in route-form, overflow-x-auto routes table, stacked filter bar, 44px touch targets on reorder/remove/Add Stop/Mark Departed buttons, flex-wrap active stop panel, design tokens replacing gray-* throughout driver portal)
+Stopped at: Completed Quick-37 — sidebar expense settings links (Expense Categories + Expense Templates added to OWNER Settings section), removed duplicate Maintenance nav item from Management, invoice detail page conditional Edit button (hidden on PAID/CANCELLED), MarkAsPaidButton client component (green, useTransition), markInvoicePaid server action (SENT->PAID with paidDate)
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
