@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
-Phase: 18 of 18 (all complete)
+Phase: Phase 01 Database Integrity Hardening — COMPLETE
 Status: Between milestones
-Last activity: 2026-02-25 — Completed quick task 35: Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals
+Last activity: 2026-02-26 — Completed Phase 01 Database Integrity Hardening: migration SQL for RLS on 5 tables (NotificationLog, InvoiceItem, ExpenseTemplateItem, Load, TenantIntegration), tenantId backfill on InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration, and migrate.mjs fail-fast fix (process.exit(1))
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 

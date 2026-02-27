@@ -90,5 +90,5 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 **Plans:** 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Create migration SQL (enum types, tenantId columns + backfill + RLS for NotificationLog/InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration with full RLS) and update schema.prisma
-- [ ] 01-02-PLAN.md — Fix migrate.mjs outer catch to process.exit(1) instead of swallowing error; TypeScript type check
+- [x] 01-01-PLAN.md — Create migration SQL (enum types, tenantId columns + backfill + RLS for NotificationLog/InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration with full RLS) and update schema.prisma
+- [x] 01-02-PLAN.md — Fix migrate.mjs outer catch to process.exit(1) instead of swallowing error; TypeScript type check
