@@ -11,7 +11,6 @@ import {
   Truck,
   Users,
   Route as RouteIcon,
-  Wrench,
   Tag,
   Plus,
   Building2,
@@ -292,7 +291,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith("/trucks") && !pathname.includes("/maintenance")}
+                  isActive={pathname.startsWith("/trucks")}
                   tooltip="Trucks"
                 >
                   <Link href="/trucks">
@@ -337,21 +336,6 @@ export function AppSidebar() {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={
-                    pathname.startsWith("/trucks") &&
-                    pathname.includes("/maintenance")
-                  }
-                  tooltip="Maintenance"
-                >
-                  <Link href="/trucks">
-                    <Wrench />
-                    <span>Maintenance</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -363,6 +347,30 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/expense-categories')}
+                    tooltip="Expense Categories"
+                  >
+                    <Link href="/settings/expense-categories">
+                      <Tag />
+                      <span>Expense Categories</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/settings/expense-templates')}
+                    tooltip="Expense Templates"
+                  >
+                    <Link href="/settings/expense-templates">
+                      <FileSpreadsheet />
+                      <span>Expense Templates</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
