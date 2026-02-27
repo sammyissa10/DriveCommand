@@ -75,11 +75,11 @@ Progress: [███████████████████████
 ### Roadmap Evolution
 
 - Phase 01 added + COMPLETE: Database Integrity Hardening — RLS on 5 tables, tenantId backfill on InvoiceItem/ExpenseTemplateItem, Load/TenantIntegration migration SQL, migrate.mjs fail-fast
-- Phase 02 added: Multi-Stop Routes — ordered RouteStop model, dispatcher stop editor, driver app active-stop view, geofence auto-arrival
-- Phase 03 added: Driver Pay Settlement — DriverPayConfig, DriverSettlement, SettlementLine models, pay calculation engine, PDF statement
-- Phase 04 added: QuickBooks Online Integration — OAuth2 connect flow, invoice/expense/settlement sync to QBO
-- Phase 05 added: Support Ticket System — in-owner-portal ticket submission and threaded replies, DriveCommand team manages via admin portal
-- Phase 06 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
+- Phase 19 added: Multi-Stop Routes — ordered RouteStop model, dispatcher stop editor, driver app active-stop view, geofence auto-arrival
+- Phase 20 added: Driver Pay Settlement — DriverPayConfig, DriverSettlement, SettlementLine models, pay calculation engine, PDF statement
+- Phase 21 added: QuickBooks Online Integration — OAuth2 connect flow, invoice/expense/settlement sync to QBO
+- Phase 22 added: Support Ticket System — in-owner-portal ticket submission and threaded replies, DriveCommand team manages via admin portal
+- Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
 
