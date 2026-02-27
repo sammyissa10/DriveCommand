@@ -187,6 +187,68 @@ export async function checkGeofenceAndAlert(params: {
         }
       }
     }
+
+    // ── RouteStop geofence (auto-arrive at next pending stop) ──────────
+    const route = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.route.findFirst({
+        where: {
+          driverId,
+          tenantId,
+          status: { in: ['PLANNED', 'IN_PROGRESS'] },
+        },
+        include: {
+          stops: {
+            where: { status: 'PENDING', geofenceHit: false },
+            orderBy: { position: 'asc' },
+            take: 1, // Only the NEXT pending stop
+          },
+        },
+      });
+    }, TX_OPTIONS);
+
+    if (route?.stops[0]) {
+      const nextStop = route.stops[0];
+
+      // Lazy geocode if lat/lng not cached
+      let stopLat = nextStop.lat ? Number(nextStop.lat) : null;
+      let stopLng = nextStop.lng ? Number(nextStop.lng) : null;
+
+      if (stopLat === null || stopLng === null) {
+        const coords = await geocodeAddress(nextStop.address);
+        if (coords) {
+          [stopLat, stopLng] = coords;
+          // Cache geocoded coordinates on RouteStop row
+          await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            await tx.routeStop.update({
+              where: { id: nextStop.id },
+              data: { lat: stopLat!, lng: stopLng! },
+            });
+          }, TX_OPTIONS);
+        }
+      }
+
+      if (stopLat !== null && stopLng !== null) {
+        const stopPoint = point([stopLng, stopLat]);
+        const stopTruckPoint = point([longitude, latitude]);
+        const distKm = distance(stopTruckPoint, stopPoint, { units: 'kilometers' });
+
+        if (distKm <= GEOFENCE_RADIUS_KM) {
+          await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            await tx.routeStop.update({
+              where: { id: nextStop.id },
+              data: {
+                status: 'ARRIVED',
+                arrivedAt: new Date(),
+                geofenceHit: true,
+              },
+            });
+          }, TX_OPTIONS);
+        }
+      }
+    }
   } catch (error) {
     console.error('Geofence check error:', error);
   }
