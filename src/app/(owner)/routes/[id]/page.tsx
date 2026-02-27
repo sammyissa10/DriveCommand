@@ -35,17 +35,37 @@ export default async function RouteDetailPage({
         console.error('Failed to load route documents:', err);
         return [] as any[];
       }),
-      listExpenses(id),
-      listPayments(id),
-      listExpenseCategories(),
-      listTemplates(),
-      getRouteFinancialAnalytics(id),
+      listExpenses(id).catch((err) => {
+        console.error('Failed to load route expenses:', err);
+        return [] as any[];
+      }),
+      listPayments(id).catch((err) => {
+        console.error('Failed to load route payments:', err);
+        return [] as any[];
+      }),
+      listExpenseCategories().catch(() => [] as any[]),
+      listTemplates().catch(() => [] as any[]),
+      getRouteFinancialAnalytics(id).catch((err) => {
+        console.error('Failed to load route analytics:', err);
+        return null;
+      }),
     ]);
 
-  // If analytics failed to load, return not found
-  if (!analytics) {
-    notFound();
-  }
+  const safeAnalytics = analytics ?? {
+    financials: {
+      totalExpenses: '0.00',
+      totalRevenue: '0.00',
+      totalPaidRevenue: '0.00',
+      totalPendingRevenue: '0.00',
+      profit: '0.00',
+      marginPercent: 0,
+      isLowMargin: false,
+    },
+    costPerMile: { costPerMile: null, miles: null },
+    fleetAverage: { costPerMile: null, routeCount: 0 },
+    comparison: { comparison: 'unknown' as const, difference: null, differencePercent: null },
+    profitMarginThreshold: 10,
+  };
 
   // Fetch drivers and trucks for edit mode (only when in edit mode, for performance)
   let drivers: Array<{ id: string; firstName: string | null; lastName: string | null }> = [];
@@ -87,7 +107,7 @@ export default async function RouteDetailPage({
       trucks={trucks}
       formattedScheduledDate={formattedScheduledDate}
       formattedCompletedAt={formattedCompletedAt}
-      analytics={analytics}
+      analytics={safeAnalytics}
       expenses={expenses}
       payments={payments}
       categories={categories}
