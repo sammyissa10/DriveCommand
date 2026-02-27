@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 19 Multi-Stop Routes — IN PROGRESS (Plan 02 of 03 complete)
-Status: Executing Phase 19
-Last activity: 2026-02-27 — Completed Phase 19 Plan 02: Stop editor in route-form.tsx (add/remove/reorder with AddressAutocomplete), stop timeline in route-detail.tsx (position badges, StopStatusBadge), initialStops data plumbing through route-page-client.tsx and route-edit-section.tsx
+Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
+Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
+Last activity: 2026-02-27 — Completed Phase 19 Plan 03: geofence RouteStop auto-arrival (500m, lazy geocode, ARRIVED status atomic), driver portal active stop blue card, Mark Departed button (ARRIVED->DEPARTED manual only), full stop list with status badges
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -279,6 +279,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 19]: Address field uses name=stops_N_address on AddressAutocomplete so typed values submit without requiring map selection
 - [Phase 19]: StopStatusBadge defined inline in route-detail.tsx — colocated helper, not exported, no separate file
 - [Phase 19]: stops? optional on all route interfaces so routes without stops render correctly (timeline section conditionally hidden)
+- [Phase 19]: DEPARTED is manual-only: geofence exit does NOT trigger departed status — driver must press button
+- [Phase 19]: MarkDepartedButton uses dynamic import for markStopDeparted to avoid server action in use-client module boundary
+- [Phase 19]: No dispatcher alert for RouteStop arrival: stop-level tracking only, not load-level status change
 
 ### Pending Todos
 
@@ -344,11 +347,11 @@ None blocking immediate progress.
 **Phase 19 metrics:**
 - Phase 19-01 (2026-02-27): RouteStop migration SQL, Prisma schema, routeStopSchema, stop CRUD in server actions — 185s, 2 tasks, 4 files affected
 - Phase 19-02 (2026-02-27): Stop editor in route-form.tsx, stop timeline in route-detail.tsx, initialStops data plumbing — 108s, 2 tasks, 4 files affected
-| Phase 19 P02 | 108 | 2 tasks | 4 files |
+- Phase 19-03 (2026-02-27): Geofence RouteStop auto-arrival, driver portal active stop panel + Mark Departed — 113s, 2 tasks, 3 files affected
 
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed phase 19-multi-stop-routes plan 02 — stop editor in route-form.tsx (add/remove/reorder, AddressAutocomplete, flat FormData keys), stop timeline in route-detail.tsx (position badges, StopStatusBadge PENDING/ARRIVED/DEPARTED), initialStops wired through route-page-client.tsx and route-edit-section.tsx to route-form.tsx for edit-mode pre-population, TypeScript clean build confirmed
+Stopped at: Completed Phase 19 Plan 03 — geofence RouteStop auto-arrival in geofence-check.ts (next PENDING stop, 500m, lazy geocode cached on RouteStop row, ARRIVED+arrivedAt+geofenceHit atomic), markStopDeparted server action (ownership validation, ARRIVED->DEPARTED only, revalidatePath), route-detail-readonly.tsx converted to use client with active stop panel + MarkDepartedButton + All Stops list, TypeScript clean build confirmed
 Resume file: None
-Next action: Execute Phase 19 Plan 03 — Driver App Active-Stop View (driver sees current stop, can mark arrived/departed)
+Next action: Execute Phase 20 — Driver Pay Settlement
