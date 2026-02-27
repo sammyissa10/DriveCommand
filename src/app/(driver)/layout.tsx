@@ -51,7 +51,7 @@ export default async function DriverLayout({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white">
               <Truck className="h-4 w-4" />
@@ -63,7 +63,7 @@ export default async function DriverLayout({
         <DriverNav />
         <GpsTracker truckId={truckId} />
       </header>
-      <main className="p-6">{children}</main>
+      <main className="p-4 sm:p-6">{children}</main>
     </div>
   );
 }

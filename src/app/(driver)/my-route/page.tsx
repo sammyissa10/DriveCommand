@@ -60,8 +60,8 @@ export default async function MyRoutePage() {
     <div className="space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Route</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-2xl font-bold text-foreground">My Route</h1>
+        <p className="mt-1 text-muted-foreground">
           {route.origin} to {route.destination}
         </p>
       </div>
@@ -74,8 +74,8 @@ export default async function MyRoutePage() {
       />
 
       {/* Route Documents section */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Route Documents</h2>
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Route Documents</h2>
         <DocumentListReadOnly
           documents={routeDocuments}
           downloadAction={getDriverDownloadUrl}
@@ -83,8 +83,8 @@ export default async function MyRoutePage() {
       </div>
 
       {/* Truck Documents section */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Truck Documents</h2>
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Truck Documents</h2>
         <DocumentListReadOnly
           documents={truckDocuments}
           downloadAction={getDriverDownloadUrl}

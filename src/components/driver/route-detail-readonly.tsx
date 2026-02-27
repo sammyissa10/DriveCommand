@@ -76,7 +76,7 @@ function MarkDepartedButton({ stopId }: { stopId: string }) {
     <button
       onClick={handleClick}
       disabled={pending}
-      className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+      className="rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white min-h-[44px] hover:bg-blue-700 disabled:opacity-50 transition-colors"
     >
       {pending ? 'Marking...' : 'Mark Departed'}
     </button>
@@ -89,8 +89,8 @@ export function RouteDetailReadOnly({
   formattedCompletedAt,
 }: RouteDetailReadOnlyProps) {
   // Status badge colors
-  let statusBgColor = 'bg-gray-100';
-  let statusTextColor = 'text-gray-800';
+  let statusBgColor = 'bg-muted';
+  let statusTextColor = 'text-muted-foreground';
 
   if (route.status === 'IN_PROGRESS') {
     statusBgColor = 'bg-blue-100';
@@ -126,12 +126,12 @@ export function RouteDetailReadOnly({
               Scheduled: {new Date(activeStop.scheduledAt).toLocaleString()}
             </p>
           )}
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                 activeStop.status === 'ARRIVED'
                   ? 'bg-blue-200 text-blue-800'
-                  : 'bg-gray-200 text-gray-700'
+                  : 'bg-muted text-muted-foreground'
               }`}
             >
               {activeStop.status}
@@ -144,27 +144,27 @@ export function RouteDetailReadOnly({
       )}
 
       {/* Section 1: Route Details */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Route Details</h2>
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Route Details</h2>
 
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Origin</dt>
-            <dd className="mt-1 text-sm text-gray-900">{route.origin}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">Origin</dt>
+            <dd className="mt-1 text-sm text-foreground">{route.origin}</dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Destination</dt>
-            <dd className="mt-1 text-sm text-gray-900">{route.destination}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">Destination</dt>
+            <dd className="mt-1 text-sm text-foreground">{route.destination}</dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Scheduled Date</dt>
-            <dd className="mt-1 text-sm text-gray-900">{formattedScheduledDate}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">Scheduled Date</dt>
+            <dd className="mt-1 text-sm text-foreground">{formattedScheduledDate}</dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Status</dt>
+            <dt className="text-sm font-medium text-muted-foreground">Status</dt>
             <dd className="mt-1">
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBgColor} ${statusTextColor}`}
@@ -176,16 +176,16 @@ export function RouteDetailReadOnly({
 
           {formattedCompletedAt && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Completed At</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formattedCompletedAt}</dd>
+              <dt className="text-sm font-medium text-muted-foreground">Completed At</dt>
+              <dd className="mt-1 text-sm text-foreground">{formattedCompletedAt}</dd>
             </div>
           )}
         </dl>
 
         {route.notes && (
           <div className="mt-4">
-            <dt className="text-sm font-medium text-gray-500">Notes</dt>
-            <dd className="mt-1 text-sm text-gray-900 whitespace-pre-wrap">
+            <dt className="text-sm font-medium text-muted-foreground">Notes</dt>
+            <dd className="mt-1 text-sm text-foreground whitespace-pre-wrap">
               {route.notes}
             </dd>
           </div>
@@ -194,8 +194,8 @@ export function RouteDetailReadOnly({
 
       {/* All Stops list — shown when route has stops */}
       {route.stops && route.stops.length > 0 && (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold text-gray-900">All Stops</h2>
+        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <h2 className="mb-4 text-xl font-semibold text-foreground">All Stops</h2>
           <ol className="space-y-3">
             {route.stops
               .slice()
@@ -208,14 +208,14 @@ export function RouteDetailReadOnly({
                         ? 'bg-green-100 text-green-800'
                         : stop.status === 'ARRIVED'
                           ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-muted text-muted-foreground'
                     }`}
                   >
                     {stop.position}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900">{stop.address}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-foreground">{stop.address}</p>
+                    <p className="text-xs text-muted-foreground">
                       {stop.type} — {stop.status}
                     </p>
                   </div>
@@ -226,30 +226,30 @@ export function RouteDetailReadOnly({
       )}
 
       {/* Section 2: Assigned Truck */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Assigned Truck</h2>
+      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Assigned Truck</h2>
 
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Vehicle</dt>
-            <dd className="mt-1 text-sm text-gray-900">
+            <dt className="text-sm font-medium text-muted-foreground">Vehicle</dt>
+            <dd className="mt-1 text-sm text-foreground">
               {route.truck.year} {route.truck.make} {route.truck.model}
             </dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">License Plate</dt>
-            <dd className="mt-1 text-sm text-gray-900">{route.truck.licensePlate}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">License Plate</dt>
+            <dd className="mt-1 text-sm text-foreground">{route.truck.licensePlate}</dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">VIN</dt>
-            <dd className="mt-1 text-sm text-gray-900">{route.truck.vin}</dd>
+            <dt className="text-sm font-medium text-muted-foreground">VIN</dt>
+            <dd className="mt-1 text-sm text-foreground">{route.truck.vin}</dd>
           </div>
 
           <div>
-            <dt className="text-sm font-medium text-gray-500">Odometer</dt>
-            <dd className="mt-1 text-sm text-gray-900">{formattedOdometer} miles</dd>
+            <dt className="text-sm font-medium text-muted-foreground">Odometer</dt>
+            <dd className="mt-1 text-sm text-foreground">{formattedOdometer} miles</dd>
           </div>
         </dl>
       </div>
