@@ -6,7 +6,8 @@ import { listPayments } from '@/app/(owner)/actions/payments';
 import { listTemplates } from '@/app/(owner)/actions/expense-templates';
 import { getRouteFinancialAnalytics } from '@/app/(owner)/actions/route-analytics';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { listDrivers } from '@/app/(owner)/actions/drivers';
+import { listTrucks } from '@/app/(owner)/actions/trucks';
 import { RoutePageClient } from './route-page-client';
 
 interface RouteDetailPageProps {
@@ -72,22 +73,18 @@ export default async function RouteDetailPage({
   let trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }> = [];
 
   if (isEditMode) {
-    try {
-      const prisma = await getTenantPrisma();
-      [drivers, trucks] = await Promise.all([
-        prisma.user.findMany({
-          where: { role: 'DRIVER', isActive: true },
-          select: { id: true, firstName: true, lastName: true },
-          orderBy: { firstName: 'asc' },
-        }),
-        prisma.truck.findMany({
-          select: { id: true, make: true, model: true, year: true, licensePlate: true },
-          orderBy: { year: 'desc' },
-        }),
-      ]);
-    } catch (error) {
-      console.error('Failed to load drivers/trucks for route edit:', error);
-    }
+    const [allDrivers, allTrucks] = await Promise.all([
+      listDrivers().catch((err) => {
+        console.error('Failed to load drivers for route edit:', err);
+        return [] as any[];
+      }),
+      listTrucks().catch((err) => {
+        console.error('Failed to load trucks for route edit:', err);
+        return [] as any[];
+      }),
+    ]);
+    drivers = allDrivers.filter((d: { isActive: boolean }) => d.isActive);
+    trucks = allTrucks;
   }
 
   // Format dates in tenant timezone (hardcode UTC for v1)

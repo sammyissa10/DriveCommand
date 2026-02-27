@@ -1,43 +1,23 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { listDrivers } from '@/app/(owner)/actions/drivers';
+import { listTrucks } from '@/app/(owner)/actions/trucks';
 import { NewRouteClient } from './new-route-client';
 
 export default async function NewRoutePage() {
-  const prisma = await getTenantPrisma();
+  const [allDrivers, trucks] = await Promise.all([
+    listDrivers().catch((err) => {
+      console.error('Failed to load drivers for route form:', err);
+      return [] as any[];
+    }),
+    listTrucks().catch((err) => {
+      console.error('Failed to load trucks for route form:', err);
+      return [] as any[];
+    }),
+  ]);
 
-  let drivers: Array<{ id: string; firstName: string | null; lastName: string | null }> = [];
-  let trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }> = [];
-
-  try {
-    [drivers, trucks] = await Promise.all([
-      prisma.user.findMany({
-        where: {
-          role: 'DRIVER',
-          isActive: true,
-        },
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-        orderBy: { firstName: 'asc' },
-      }),
-      prisma.truck.findMany({
-        select: {
-          id: true,
-          make: true,
-          model: true,
-          year: true,
-          licensePlate: true,
-        },
-        orderBy: { year: 'desc' },
-      }),
-    ]);
-  } catch (error) {
-    console.error('Failed to load drivers/trucks for route form:', error);
-    // Continue with empty arrays - form will show "No drivers available" / "No trucks available"
-  }
+  // Only offer active drivers for route assignment
+  const drivers = allDrivers.filter((d: { isActive: boolean }) => d.isActive);
 
   return (
     <div className="space-y-6">
