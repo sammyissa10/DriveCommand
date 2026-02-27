@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v3.0 Route Finance & Driver Documents — SHIPPED
-Phase: Phase 01 Database Integrity Hardening — COMPLETE
-Status: Between milestones
-Last activity: 2026-02-26 — Completed Phase 01 Database Integrity Hardening: migration SQL for RLS on 5 tables (NotificationLog, InvoiceItem, ExpenseTemplateItem, Load, TenantIntegration), tenantId backfill on InvoiceItem/ExpenseTemplateItem, CREATE TABLE IF NOT EXISTS for Load and TenantIntegration, and migrate.mjs fail-fast fix (process.exit(1))
+Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
+Phase: Phase 19 Multi-Stop Routes — IN PROGRESS (Plan 01 of 03 complete)
+Status: Executing Phase 19
+Last activity: 2026-02-27 — Completed Phase 19 Plan 01: RouteStop migration SQL with RLS, Prisma schema with RouteStop model, routeStopSchema Zod validation, stop CRUD integration in createRoute/updateRoute/getRoute/listRoutes server actions
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -272,6 +272,10 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 01-database-integrity-hardening]: CREATE TABLE IF NOT EXISTS used for Load and TenantIntegration — these tables exist in prod via db push so migration must be idempotent; same for enum DO/EXCEPTION blocks
 - [Phase 01-database-integrity-hardening]: Backfill pattern (nullable ADD COLUMN -> UPDATE -> SET NOT NULL) chosen to safely add tenantId to existing rows
 - [Phase 01-database-integrity-hardening]: process.exit(1) in outer catch of migrate.mjs replaces 'Starting app anyway...' — migration failures now terminate with non-zero exit code so Vercel buildCommand fails fast
+- [Phase 19-01]: Keep Route.origin/destination unchanged — RouteStops are additive intermediate stops; avoids migrating existing data and breaking 10+ display components
+- [Phase 19-01]: Flat FormData keys (stops_N_address, stops_N_type) not JSON blob — idiomatic with Next.js useActionState + FormData; server action loops i=0..N until no stops_i_address
+- [Phase 19-01]: stops_submitted=true hidden field distinguishes "no stops section in form" from "stops cleared to zero" in updateRoute
+- [Phase 19-01]: Atomic stop replacement in updateRoute (deleteMany + createMany in same try block) — position gaps cannot occur, positions always 1-based sequential
 
 ### Pending Todos
 
@@ -334,9 +338,12 @@ None blocking immediate progress.
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
 - Phase 01-02 (2026-02-26): migrate.mjs fail-hard error handling + TypeScript type check — 85s, 2 tasks, 1 file affected
 
+**Phase 19 metrics:**
+- Phase 19-01 (2026-02-27): RouteStop migration SQL, Prisma schema, routeStopSchema, stop CRUD in server actions — 185s, 2 tasks, 4 files affected
+
 ## Session Continuity
 
-Last session: 2026-02-26
-Stopped at: Completed phase 01-database-integrity-hardening plan 02 — migrate.mjs now exits with code 1 on migration failure, TypeScript clean build confirmed, Phase 01 fully complete
+Last session: 2026-02-27
+Stopped at: Completed phase 19-multi-stop-routes plan 01 — RouteStop migration SQL with RLS, Prisma schema with RouteStop model/enums/relations, routeStopSchema Zod validation, stop CRUD wired into all four server actions (createRoute/updateRoute/getRoute/listRoutes), TypeScript clean build confirmed
 Resume file: None
-Next action: Phase 01 complete. Ready for next milestone planning.
+Next action: Execute Phase 19 Plan 02 — Dispatcher UI (stop editor in route-form.tsx, stop timeline in route-detail.tsx)
