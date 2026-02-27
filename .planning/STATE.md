@@ -339,6 +339,7 @@ None blocking immediate progress.
 | 33 | Fix driver onboarding Access Denied bug — role-aware redirects in accept-invitation, login, root page, onboarding page; OWNER_PATHS middleware guard | 2026-02-25 | ac87ccf | [33-fix-driver-onboarding-access-denied-bug-](./quick/33-fix-driver-onboarding-access-denied-bug-/) |
 | 34 | Add warmup cron job — /api/warmup with CRON_SECRET auth and SELECT 1 DB check, vercel.json cron every 5 min, middleware PUBLIC_PATHS bypass | 2026-02-25 | fdf3f06 | [34-add-warmup-cron-job-that-pings-api-warmu](./quick/34-add-warmup-cron-job-that-pings-api-warmu/) |
 | 35 | Replace window.confirm with AlertDialog for Remove/Reactivate driver confirmations — controlled dialog state, destructive button styling, accessible modals | 2026-02-25 | a996df9 | [35-add-remove-deactivate-driver-functionali](./quick/35-add-remove-deactivate-driver-functionali/) |
+| 36 | Mobile responsiveness audit and fix — flex stop badges, 44px touch targets, overflow-x-auto routes table, dark mode tokens in driver portal | 2026-02-27 | fbcafa5 | [36-audit-and-fix-mobile-responsiveness-for-](./quick/36-audit-and-fix-mobile-responsiveness-for-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -349,9 +350,12 @@ None blocking immediate progress.
 - Phase 19-02 (2026-02-27): Stop editor in route-form.tsx, stop timeline in route-detail.tsx, initialStops data plumbing — 108s, 2 tasks, 4 files affected
 - Phase 19-03 (2026-02-27): Geofence RouteStop auto-arrival, driver portal active stop panel + Mark Departed — 113s, 2 tasks, 3 files affected
 
+**Quick-36 metrics:**
+- Quick-36 (2026-02-27): Mobile responsiveness audit — flex stop badges, 44px touch targets, overflow-x-auto table, dark mode design tokens — 212s, 3 tasks, 5 files affected
+
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed Phase 19 Plan 03 — geofence RouteStop auto-arrival in geofence-check.ts (next PENDING stop, 500m, lazy geocode cached on RouteStop row, ARRIVED+arrivedAt+geofenceHit atomic), markStopDeparted server action (ownership validation, ARRIVED->DEPARTED only, revalidatePath), route-detail-readonly.tsx converted to use client with active stop panel + MarkDepartedButton + All Stops list, TypeScript clean build confirmed
+Stopped at: Completed Quick-36 — mobile responsiveness audit (flex stop badges in route-form, overflow-x-auto routes table, stacked filter bar, 44px touch targets on reorder/remove/Add Stop/Mark Departed buttons, flex-wrap active stop panel, design tokens replacing gray-* throughout driver portal)
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
