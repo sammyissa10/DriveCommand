@@ -82,6 +82,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 16. Route Finance Foundation | v3.0 | 5/5 | ✓ Complete | 2026-02-16 |
 | 17. Unified Route View/Edit Page | v3.0 | 2/2 | ✓ Complete | 2026-02-16 |
 | 18. Driver Document Uploads | v3.0 | 3/3 | ✓ Complete | 2026-02-17 |
+| 19. Multi-Stop Routes | v4.0 | 3/3 | ✓ Complete | 2026-02-26 |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -102,9 +103,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
-- [ ] 19-02-PLAN.md — Dispatcher UI: multi-stop editor in route form (add/remove/reorder with up/down buttons, AddressAutocomplete per stop), route detail stop timeline with status badges
-- [ ] 19-03-PLAN.md — Driver integration: geofence auto-arrive at next pending stop (500m radius), driver portal active stop panel, manual Mark Departed button
+- [x] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
+- [x] 19-02-PLAN.md — Dispatcher UI: multi-stop editor in route form (add/remove/reorder with up/down buttons, AddressAutocomplete per stop), route detail stop timeline with status badges
+- [x] 19-03-PLAN.md — Driver integration: geofence auto-arrive at next pending stop (500m radius), driver portal active stop panel, manual Mark Departed button
 
 ---
 
