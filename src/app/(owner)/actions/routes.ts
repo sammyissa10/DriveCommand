@@ -455,9 +455,6 @@ export async function listRoutes() {
           licensePlate: true,
         },
       },
-      _count: {
-        select: { stops: true },
-      },
     },
     orderBy: {
       scheduledDate: 'desc',
