@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function OwnerError({
@@ -9,6 +10,15 @@ export default function OwnerError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    // Log to browser console so it's visible in Vercel function logs and browser devtools
+    console.error('[owner-error-boundary] Server Component render error:', {
+      message: error.message,
+      digest: error.digest,
+      stack: error.stack,
+    });
+  }, [error]);
+
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-lg mx-auto text-center space-y-4">

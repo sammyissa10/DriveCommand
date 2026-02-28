@@ -2,7 +2,10 @@ import { listCategories } from '@/app/(owner)/actions/expense-categories';
 import { CategoryManager } from './category-manager';
 
 export default async function ExpenseCategoriesPage() {
-  const categories = await listCategories();
+  const categories = await listCategories().catch((err: unknown) => {
+    console.error('[expense-categories] listCategories failed:', err);
+    return [] as Awaited<ReturnType<typeof listCategories>>;
+  });
 
   return (
     <div className="space-y-6">

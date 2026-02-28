@@ -4,8 +4,14 @@ import { TemplateManager } from './template-manager';
 
 export default async function ExpenseTemplatesPage() {
   const [templates, categories] = await Promise.all([
-    listTemplates(),
-    listCategories(),
+    listTemplates().catch((err: unknown) => {
+      console.error('[expense-templates] listTemplates failed:', err);
+      return [] as Awaited<ReturnType<typeof listTemplates>>;
+    }),
+    listCategories().catch((err: unknown) => {
+      console.error('[expense-templates] listCategories failed:', err);
+      return [] as Awaited<ReturnType<typeof listCategories>>;
+    }),
   ]);
 
   return (

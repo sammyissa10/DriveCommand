@@ -23,7 +23,10 @@ export default async function RouteDetailPage({
   const { mode } = await searchParams;
   const isEditMode = mode === 'edit';
 
-  const route = await getRoute(id);
+  const route = await getRoute(id).catch((err: unknown) => {
+    console.error('[routes/[id]] getRoute failed:', err);
+    return null;
+  });
 
   if (!route) {
     notFound();
