@@ -1,3 +1,5 @@
+import { requireRole } from '@/lib/auth/server';
+import { UserRole } from '@/lib/auth/roles';
 import { getLatestVehicleLocations } from './actions';
 import { listTags } from '@/app/(owner)/actions/tags';
 import LiveMapWrapper from '@/components/maps/live-map-wrapper';
@@ -11,13 +13,15 @@ export default async function LiveMapPage({
 }: {
   searchParams: Promise<{ tagId?: string }>;
 }) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
   // Await searchParams (Next.js 16 requirement)
   const { tagId } = await searchParams;
 
   // Fetch tags and GPS data in parallel
   const [tags, vehicles] = await Promise.all([
-    listTags(),
-    getLatestVehicleLocations(tagId),
+    listTags().catch(() => []),
+    getLatestVehicleLocations(tagId).catch(() => []),
   ]);
 
   return (
