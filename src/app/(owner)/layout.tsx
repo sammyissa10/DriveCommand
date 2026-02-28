@@ -4,6 +4,10 @@ import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
 
+// All owner-portal pages require auth — force dynamic rendering so Next.js
+// never attempts static pre-rendering (which has no session context).
+export const dynamic = 'force-dynamic';
+
 /**
  * Owner portal layout
  *
