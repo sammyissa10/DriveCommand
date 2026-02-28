@@ -5,11 +5,17 @@ import { LoadForm } from '@/components/loads/load-form';
 export default async function NewLoadPage() {
   const prisma = await getTenantPrisma();
 
-  const customers = await prisma.customer.findMany({
-    where: { status: 'ACTIVE' },
-    select: { id: true, companyName: true },
-    orderBy: { companyName: 'asc' },
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let customers: any[] = [];
+  try {
+    customers = await prisma.customer.findMany({
+      where: { status: 'ACTIVE' },
+      select: { id: true, companyName: true },
+      orderBy: { companyName: 'asc' },
+    });
+  } catch {
+    // DB failure — render form with empty customer list
+  }
 
   return (
     <div className="space-y-6">

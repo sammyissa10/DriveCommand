@@ -4,7 +4,7 @@ import { listTrucks, deleteTruck } from '@/app/(owner)/actions/trucks';
 import { TruckListWrapper } from './truck-list-wrapper';
 
 export default async function TrucksPage() {
-  const trucks = await listTrucks();
+  const trucks = await listTrucks().catch(() => []);
 
   return (
     <div className="space-y-6">

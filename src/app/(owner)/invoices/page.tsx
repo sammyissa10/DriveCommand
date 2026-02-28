@@ -6,10 +6,16 @@ import { InvoiceList } from '@/components/invoices/invoice-list';
 export default async function InvoicesPage() {
   const prisma = await getTenantPrisma();
 
-  const invoices = await prisma.invoice.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: { items: true },
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let invoices: any[] = [];
+  try {
+    invoices = await prisma.invoice.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { items: true },
+    });
+  } catch {
+    // DB failure — render empty list
+  }
 
   const stats = {
     total: invoices.length,

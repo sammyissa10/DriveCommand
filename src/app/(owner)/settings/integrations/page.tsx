@@ -2,7 +2,7 @@ import { listIntegrations } from '@/app/(owner)/actions/integrations';
 import { IntegrationsManager } from './integrations-manager';
 
 export default async function IntegrationsPage() {
-  const integrations = await listIntegrations();
+  const integrations = await listIntegrations().catch(() => []);
 
   // Build configMap: provider -> configJson for passing API token data to client
   const configMap: Record<string, Record<string, string>> = {};

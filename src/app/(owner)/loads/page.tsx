@@ -6,14 +6,20 @@ import { LoadList } from '@/components/loads/load-list';
 export default async function LoadsPage() {
   const prisma = await getTenantPrisma();
 
-  const loads = await prisma.load.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      customer: { select: { companyName: true } },
-      driver: { select: { firstName: true, lastName: true } },
-      truck: { select: { make: true, model: true, licensePlate: true } },
-    },
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let loads: any[] = [];
+  try {
+    loads = await prisma.load.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        customer: { select: { companyName: true } },
+        driver: { select: { firstName: true, lastName: true } },
+        truck: { select: { make: true, model: true, licensePlate: true } },
+      },
+    });
+  } catch {
+    // DB failure — render empty list
+  }
 
   const nonCancelledLoads = loads.filter((l: any) => l.status !== 'CANCELLED');
 

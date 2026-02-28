@@ -23,13 +23,25 @@ export default async function SafetyPage({
   const { tagId } = await searchParams;
 
   // Parallel data fetching for all dashboard sections
-  const [tags, score, distribution, trends, rankings] = await Promise.all([
-    listTags(),
-    getFleetSafetyScore(30, tagId),
-    getEventDistribution(30, tagId),
-    getSafetyScoreTrend(30, tagId),
-    getDriverRankings(30, tagId),
-  ]);
+  let tags: Awaited<ReturnType<typeof listTags>> = [];
+  let score: Awaited<ReturnType<typeof getFleetSafetyScore>> = {
+    score: 100, totalEvents: 0, eventsBySeverity: { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 }, period: 30,
+  };
+  let distribution: Awaited<ReturnType<typeof getEventDistribution>> = { byType: [], bySeverity: [] };
+  let trends: Awaited<ReturnType<typeof getSafetyScoreTrend>> = [];
+  let rankings: Awaited<ReturnType<typeof getDriverRankings>> = [];
+
+  try {
+    [tags, score, distribution, trends, rankings] = await Promise.all([
+      listTags(),
+      getFleetSafetyScore(30, tagId),
+      getEventDistribution(30, tagId),
+      getSafetyScoreTrend(30, tagId),
+      getDriverRankings(30, tagId),
+    ]);
+  } catch {
+    // DB failure — render dashboard with zero-value defaults
+  }
 
   return (
     <div className="space-y-6">

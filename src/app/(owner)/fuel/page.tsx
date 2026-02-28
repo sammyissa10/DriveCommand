@@ -29,14 +29,29 @@ export default async function FuelPage({
   const { tagId } = await searchParams;
 
   // Parallel data fetching for all dashboard sections
-  const [tags, summary, trend, emissions, idleTime, rankings] = await Promise.all([
-    listTags(),
-    getFleetFuelSummary(30, tagId),
-    getFuelEfficiencyTrend(30, tagId),
-    getCO2Emissions(30, tagId),
-    getIdleTimeAnalysis(30, tagId),
-    getFuelEfficiencyRankings(30, tagId),
-  ]);
+  let tags: Awaited<ReturnType<typeof listTags>> = [];
+  let summary: Awaited<ReturnType<typeof getFleetFuelSummary>> = {
+    totalGallons: 0, totalCost: 0, totalMiles: 0, fillUpCount: 0, avgMPG: 0, costPerMile: 0, period: 30,
+  };
+  let trend: Awaited<ReturnType<typeof getFuelEfficiencyTrend>> = [];
+  let emissions: Awaited<ReturnType<typeof getCO2Emissions>> = {
+    trucks: [], fleetTotalCO2: 0, fleetTotalGallons: 0, methodology: 'EPA standard: 8.887 kg CO2 per gallon of diesel',
+  };
+  let idleTime: Awaited<ReturnType<typeof getIdleTimeAnalysis>> = [];
+  let rankings: Awaited<ReturnType<typeof getFuelEfficiencyRankings>> = [];
+
+  try {
+    [tags, summary, trend, emissions, idleTime, rankings] = await Promise.all([
+      listTags(),
+      getFleetFuelSummary(30, tagId),
+      getFuelEfficiencyTrend(30, tagId),
+      getCO2Emissions(30, tagId),
+      getIdleTimeAnalysis(30, tagId),
+      getFuelEfficiencyRankings(30, tagId),
+    ]);
+  } catch {
+    // DB failure — render dashboard with zero-value defaults
+  }
 
   return (
     <div className="space-y-6">

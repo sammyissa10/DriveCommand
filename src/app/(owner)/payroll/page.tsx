@@ -6,14 +6,20 @@ import { PayrollList } from '@/components/payroll/payroll-list';
 export default async function PayrollPage() {
   const prisma = await getTenantPrisma();
 
-  const records = await prisma.payrollRecord.findMany({
-    orderBy: { periodStart: 'desc' },
-    include: {
-      driver: {
-        select: { id: true, firstName: true, lastName: true, email: true },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let records: any[] = [];
+  try {
+    records = await prisma.payrollRecord.findMany({
+      orderBy: { periodStart: 'desc' },
+      include: {
+        driver: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    // DB failure — render empty list
+  }
 
   const stats = {
     total: records.length,

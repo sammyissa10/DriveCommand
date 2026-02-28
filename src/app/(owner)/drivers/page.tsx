@@ -4,7 +4,7 @@ import { listDrivers, deactivateDriver, reactivateDriver } from '@/app/(owner)/a
 import { DriverListWrapper } from './driver-list-wrapper';
 
 export default async function DriversPage() {
-  const drivers = await listDrivers();
+  const drivers = await listDrivers().catch(() => []);
 
   return (
     <div className="space-y-6">

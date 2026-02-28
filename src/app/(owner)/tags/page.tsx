@@ -18,9 +18,9 @@ export default async function TagsPage() {
 
   // Fetch data in parallel
   const [tagsWithAssignments, trucks, drivers] = await Promise.all([
-    listTagsWithAssignments(),
-    listTrucks(),
-    listDrivers(),
+    listTagsWithAssignments().catch(() => []),
+    listTrucks().catch(() => []),
+    listDrivers().catch(() => []),
   ]);
 
   return (

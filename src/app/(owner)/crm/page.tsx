@@ -6,14 +6,20 @@ import { CustomerList } from '@/components/crm/customer-list';
 export default async function CRMPage() {
   const prisma = await getTenantPrisma();
 
-  const customers = await prisma.customer.findMany({
-    orderBy: { updatedAt: 'desc' },
-    include: {
-      _count: {
-        select: { interactions: true },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let customers: any[] = [];
+  try {
+    customers = await prisma.customer.findMany({
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        _count: {
+          select: { interactions: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    // DB failure — render empty list
+  }
 
   const stats = {
     total: customers.length,
