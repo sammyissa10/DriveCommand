@@ -10,7 +10,12 @@ interface EditTruckPageProps {
 
 export default async function EditTruckPage({ params }: EditTruckPageProps) {
   const { id } = await params;
-  const truck = await getTruck(id);
+  let truck;
+  try {
+    truck = await getTruck(id);
+  } catch {
+    notFound();
+  }
 
   if (!truck) {
     notFound();

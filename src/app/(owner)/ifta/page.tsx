@@ -46,15 +46,30 @@ export default async function IFTAPage({
       : thisYear;
 
   // Compute IFTA data
-  const reportData = await getIFTAReport(quarter, year);
+  let reportData: Awaited<ReturnType<typeof getIFTAReport>> = {
+    rows: [],
+    totals: { totalMiles: 0, totalGallons: 0, stateCount: 0 },
+    quarter,
+    year,
+  };
+  try {
+    reportData = await getIFTAReport(quarter, year);
+  } catch {
+    // DB failure — render report with empty defaults
+  }
 
   // Generate CSV content on the server (passed to client for download)
-  const csvContent = await generateIFTACSV(
-    reportData.rows,
-    reportData.totals,
-    quarter,
-    year
-  );
+  let csvContent = '';
+  try {
+    csvContent = await generateIFTACSV(
+      reportData.rows,
+      reportData.totals,
+      quarter,
+      year
+    );
+  } catch {
+    // CSV generation failed — download button will have empty content
+  }
 
   return (
     <div className="space-y-6">

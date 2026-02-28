@@ -33,14 +33,19 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const load = await prisma.load.findUnique({
-    where: { id },
-    include: {
-      customer: true,
-      driver: { select: { id: true, firstName: true, lastName: true, email: true } },
-      truck: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
-    },
-  });
+  let load;
+  try {
+    load = await prisma.load.findUnique({
+      where: { id },
+      include: {
+        customer: true,
+        driver: { select: { id: true, firstName: true, lastName: true, email: true } },
+        truck: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+      },
+    });
+  } catch {
+    notFound();
+  }
 
   if (!load) {
     notFound();
@@ -56,11 +61,11 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
         where: { role: 'DRIVER', isActive: true },
         select: { id: true, firstName: true, lastName: true },
         orderBy: { firstName: 'asc' },
-      }),
+      }).catch(() => []),
       prisma.truck.findMany({
         select: { id: true, make: true, model: true, licensePlate: true },
         orderBy: { make: 'asc' },
-      }),
+      }).catch(() => []),
     ]);
   }
 

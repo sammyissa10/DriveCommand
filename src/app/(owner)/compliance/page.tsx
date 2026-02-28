@@ -12,7 +12,24 @@ export const fetchCache = 'force-no-store';
 export default async function CompliancePage() {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  const data = await getComplianceDashboard();
+  let data: Awaited<ReturnType<typeof getComplianceDashboard>> = {
+    drivers: [],
+    trucks: [],
+    alerts: [],
+    summary: {
+      expiredCount: 0,
+      expiringSoonCount: 0,
+      criticalSafetyCount: 0,
+      highSafetyCount: 0,
+      totalDriversTracked: 0,
+      totalTrucksTracked: 0,
+    },
+  };
+  try {
+    data = await getComplianceDashboard();
+  } catch {
+    // DB failure — render dashboard with zero-value defaults
+  }
 
   return (
     <div className="space-y-6">

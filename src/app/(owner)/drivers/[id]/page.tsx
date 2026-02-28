@@ -19,7 +19,7 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
   }
 
   // Fetch driver documents
-  const documents = await listDriverDocuments(id);
+  const documents = await listDriverDocuments(id).catch(() => []);
 
   return (
     <div className="space-y-6">

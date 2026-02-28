@@ -9,14 +9,21 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const [load, customers] = await Promise.all([
-    prisma.load.findUnique({ where: { id } }),
-    prisma.customer.findMany({
-      where: { status: 'ACTIVE' },
-      select: { id: true, companyName: true },
-      orderBy: { companyName: 'asc' },
-    }),
-  ]);
+  let load: Awaited<ReturnType<typeof prisma.load.findUnique>> | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let customers: any[] = [];
+  try {
+    [load, customers] = await Promise.all([
+      prisma.load.findUnique({ where: { id } }),
+      prisma.customer.findMany({
+        where: { status: 'ACTIVE' },
+        select: { id: true, companyName: true },
+        orderBy: { companyName: 'asc' },
+      }),
+    ]);
+  } catch {
+    notFound();
+  }
 
   if (!load) {
     notFound();

@@ -19,14 +19,19 @@ export default async function PayrollDetailPage({
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const record = await prisma.payrollRecord.findUnique({
-    where: { id },
-    include: {
-      driver: {
-        select: { id: true, firstName: true, lastName: true, email: true },
+  let record;
+  try {
+    record = await prisma.payrollRecord.findUnique({
+      where: { id },
+      include: {
+        driver: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    notFound();
+  }
 
   if (!record) {
     notFound();
@@ -47,7 +52,7 @@ export default async function PayrollDetailPage({
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {record.driver.firstName} {record.driver.lastName}
+            {record.driver.firstName ?? ''} {record.driver.lastName ?? ''}
           </h1>
           <div className="mt-2 flex items-center gap-2">
             <span className="text-sm text-muted-foreground">

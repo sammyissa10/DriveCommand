@@ -22,13 +22,18 @@ export default async function InvoiceDetailPage({
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const invoice = await prisma.invoice.findUnique({
-    where: { id },
-    include: {
-      items: true,
-      tenant: false,
-    },
-  });
+  let invoice;
+  try {
+    invoice = await prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        tenant: false,
+      },
+    });
+  } catch {
+    notFound();
+  }
 
   if (!invoice) {
     notFound();

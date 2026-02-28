@@ -28,7 +28,21 @@ export default async function LaneAnalyticsPage({
   const days = daysParam ? parseInt(daysParam, 10) : 90;
   const safeDays = isNaN(days) || days <= 0 ? 90 : days;
 
-  const data = await getLaneAnalytics(safeDays);
+  let data: Awaited<ReturnType<typeof getLaneAnalytics>> = {
+    lanes: [],
+    totalLanes: 0,
+    totalRoutes: 0,
+    overallRevenue: '0.00',
+    overallExpenses: '0.00',
+    overallProfit: '0.00',
+    overallMargin: 0,
+    timeframeDays: safeDays,
+  };
+  try {
+    data = await getLaneAnalytics(safeDays);
+  } catch {
+    // DB failure — render analytics with zero-value defaults
+  }
 
   return (
     <div className="space-y-6">

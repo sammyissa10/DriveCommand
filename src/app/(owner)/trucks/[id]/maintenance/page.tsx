@@ -16,7 +16,12 @@ interface MaintenancePageProps {
 
 export default async function MaintenancePage({ params }: MaintenancePageProps) {
   const { id } = await params;
-  const truck = await getTruck(id);
+  let truck;
+  try {
+    truck = await getTruck(id);
+  } catch {
+    notFound();
+  }
 
   if (!truck) {
     notFound();
@@ -24,8 +29,8 @@ export default async function MaintenancePage({ params }: MaintenancePageProps) 
 
   // Fetch both lists in parallel
   const [events, schedules] = await Promise.all([
-    listMaintenanceEvents(id),
-    listScheduledServices(id),
+    listMaintenanceEvents(id).catch(() => []),
+    listScheduledServices(id).catch(() => []),
   ]);
 
   return (

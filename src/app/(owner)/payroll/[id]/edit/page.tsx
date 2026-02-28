@@ -13,14 +13,19 @@ export default async function EditPayrollPage({
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const record = await prisma.payrollRecord.findUnique({
-    where: { id },
-    include: {
-      driver: {
-        select: { id: true, firstName: true, lastName: true },
+  let record;
+  try {
+    record = await prisma.payrollRecord.findUnique({
+      where: { id },
+      include: {
+        driver: {
+          select: { id: true, firstName: true, lastName: true },
+        },
       },
-    },
-  });
+    });
+  } catch {
+    notFound();
+  }
 
   if (!record) {
     notFound();

@@ -11,15 +11,20 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const customer = await prisma.customer.findUnique({
-    where: { id },
-    include: {
-      interactions: {
-        orderBy: { createdAt: 'desc' },
-        take: 50,
+  let customer;
+  try {
+    customer = await prisma.customer.findUnique({
+      where: { id },
+      include: {
+        interactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        },
       },
-    },
-  });
+    });
+  } catch {
+    notFound();
+  }
 
   if (!customer) {
     notFound();

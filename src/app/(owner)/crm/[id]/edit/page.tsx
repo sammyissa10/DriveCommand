@@ -9,7 +9,12 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const customer = await prisma.customer.findUnique({ where: { id } });
+  let customer;
+  try {
+    customer = await prisma.customer.findUnique({ where: { id } });
+  } catch {
+    notFound();
+  }
 
   if (!customer) {
     notFound();

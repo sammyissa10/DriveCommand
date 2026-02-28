@@ -13,10 +13,15 @@ export default async function EditInvoicePage({
   const { id } = await params;
   const prisma = await getTenantPrisma();
 
-  const invoice = await prisma.invoice.findUnique({
-    where: { id },
-    include: { items: true },
-  });
+  let invoice;
+  try {
+    invoice = await prisma.invoice.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+  } catch {
+    notFound();
+  }
 
   if (!invoice) {
     notFound();
