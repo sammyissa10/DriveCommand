@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
 Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
-Last activity: 2026-02-28 — Debug: all-pages-server-component-crash — fixed unguarded DB calls (added .catch() to routes/[id]/page.tsx getRoute, settings/expense-categories, settings/expense-templates), added console.error to error.tsx error boundary, renamed middleware.ts → proxy.ts per Next.js 16 convention
+Last activity: 2026-03-01 — Completed quick task 39: Fix all driver portal issues found in audit
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
