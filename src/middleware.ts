@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/lib/auth/session';
 
 /**
- * Next.js proxy (formerly middleware) that resolves tenant context from the
- * session cookie and injects it as a request header for downstream API routes
- * and server actions.
- *
- * Renamed from middleware.ts → proxy.ts per Next.js 16 convention.
+ * Next.js middleware that resolves tenant context from the session cookie
+ * and injects it as a request header for downstream API routes and server actions.
  *
  * Flow:
  * 1. Public routes pass through (sign-in, sign-up, auth API, webhooks)
@@ -15,7 +12,7 @@ import { decrypt } from '@/lib/auth/session';
  * 4. Authenticated users with tenantId get x-tenant-id header injected
  *
  * Uses Web Crypto API (via session.ts decrypt) which is compatible with Edge Runtime.
- * Cannot use next/headers cookies() in proxy — reads from request directly.
+ * Cannot use next/headers cookies() in middleware — reads from request directly.
  */
 
 const PUBLIC_PATHS = [
@@ -60,7 +57,7 @@ function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 }
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths without auth

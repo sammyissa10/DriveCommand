@@ -18,7 +18,7 @@ export async function getTenantId(): Promise<string | null> {
 export async function requireTenantId(): Promise<string> {
   const tenantId = await getTenantId();
   if (!tenantId) {
-    throw new Error('Tenant context is required but not found. Ensure proxy.ts is injecting x-tenant-id header.');
+    throw new Error('Tenant context is required but not found. Ensure middleware.ts is injecting x-tenant-id header.');
   }
   return tenantId;
 }
