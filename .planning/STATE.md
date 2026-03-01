@@ -344,6 +344,7 @@ None blocking immediate progress.
 | 36 | Mobile responsiveness audit and fix — flex stop badges, 44px touch targets, overflow-x-auto routes table, dark mode tokens in driver portal | 2026-02-27 | fbcafa5 | [36-audit-and-fix-mobile-responsiveness-for-](./quick/36-audit-and-fix-mobile-responsiveness-for-/) |
 | 37 | Fix audit issues — sidebar Expense Categories/Templates links, remove Maintenance duplicate, invoice conditional Edit + Mark as Paid button | 2026-02-27 | 02676cd | [37-fix-audit-issues-sidebar-links-for-expen](./quick/37-fix-audit-issues-sidebar-links-for-expen/) |
 | 38 | Fix all 35 audit issues — .catch/try-catch DB error handling on 29 pages, requireRole on live-map, null guards on payroll driver names, remove use client from trucks/new and drivers/invite | 2026-02-28 | cc48a9c | [38-fix-all-35-audit-issues-add-catch-error-](./quick/38-fix-all-35-audit-issues-add-catch-error-/) |
+| 39 | Fix all driver portal issues — force-dynamic on layout, hooks violation in gps-tracker, try/catch on 3 pages, null guard on truckId, dark mode tokens in document-list-readonly, dead imports removed, error boundary created | 2026-02-28 | 8ace0ae | [39-fix-all-driver-portal-issues-found-in-au](./quick/39-fix-all-driver-portal-issues-found-in-au/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -363,9 +364,12 @@ None blocking immediate progress.
 **Quick-38 metrics:**
 - Quick-38 (2026-02-28): DB error handling on 29 pages, requireRole on live-map, null guards on payroll driver names, remove use client from 2 pages — ~1080s, 3 tasks, 29 files affected
 
+**Quick-39 metrics:**
+- Quick-39 (2026-02-28): Driver portal force-dynamic, hooks violation fix, try/catch on 3 pages, null guard on truckId, dark mode design tokens, dead imports removed, error boundary — ~180s, 2 tasks, 10 files affected
+
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed Quick-38 — DB error handling (.catch / try-catch) added to 29 owner-portal pages, requireRole added to live-map, ?? '' null guards on payroll driver names, 'use client' removed from trucks/new and drivers/invite
+Stopped at: Completed Quick-39 — driver portal HIGH issues (force-dynamic, hooks violation, try/catch on 3 pages) + MEDIUM issues (null guard on truckId, dark mode design tokens in document-list-readonly, dead imports removed, error boundary created)
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
