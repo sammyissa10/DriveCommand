@@ -24,7 +24,12 @@ import { MapPin } from 'lucide-react';
  */
 export default async function MyRoutePage() {
   // Get the driver's assigned route
-  const route = await getMyAssignedRoute();
+  let route = null;
+  try {
+    route = await getMyAssignedRoute();
+  } catch (err) {
+    console.error('[MyRoutePage] Failed to fetch assigned route:', err);
+  }
 
   // No route assigned - show empty state
   if (!route) {
@@ -42,10 +47,16 @@ export default async function MyRoutePage() {
   }
 
   // Get route and truck documents
-  const [routeDocuments, truckDocuments] = await Promise.all([
-    getMyRouteDocuments(),
-    getMyTruckDocuments(),
-  ]);
+  let routeDocuments: Awaited<ReturnType<typeof getMyRouteDocuments>> = [];
+  let truckDocuments: Awaited<ReturnType<typeof getMyTruckDocuments>> = [];
+  try {
+    [routeDocuments, truckDocuments] = await Promise.all([
+      getMyRouteDocuments(),
+      getMyTruckDocuments(),
+    ]);
+  } catch (err) {
+    console.error('[MyRoutePage] Failed to fetch documents:', err);
+  }
 
   // Format dates in UTC timezone (tenant timezone would come from tenant settings in future)
   const formattedScheduledDate = formatDateInTenantTimezone(

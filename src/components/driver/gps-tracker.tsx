@@ -25,11 +25,7 @@ export function GpsTracker({ truckId }: GpsTrackerProps) {
   >(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Don't render if no active route / no truck assigned
-  if (!truckId) return null;
-
   // Check geolocation support and permission state on mount
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!navigator.geolocation) {
       setError('GPS not supported');
@@ -52,7 +48,6 @@ export function GpsTracker({ truckId }: GpsTrackerProps) {
   }, []);
 
   // Cleanup interval on unmount
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -144,6 +139,10 @@ export function GpsTracker({ truckId }: GpsTrackerProps) {
       stopTracking();
     }
   }
+
+  // Don't render if no active route / no truck assigned
+  // (placed after all hooks so Rules of Hooks are satisfied)
+  if (!truckId) return null;
 
   const relativeTime = lastUpdate
     ? getRelativeTime(lastUpdate)

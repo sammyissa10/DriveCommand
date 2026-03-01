@@ -8,6 +8,9 @@ import { DriverNav } from "@/components/driver/driver-nav";
 import { GpsTracker } from "@/components/driver/gps-tracker";
 import { prisma, TX_OPTIONS } from "@/lib/db/prisma";
 
+// Prevent static pre-rendering at build time — driver pages require auth context
+export const dynamic = 'force-dynamic';
+
 /**
  * Driver portal layout
  *

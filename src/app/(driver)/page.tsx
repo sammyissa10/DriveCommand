@@ -9,7 +9,12 @@ import { getMyAssignedRoute } from '@/app/(driver)/actions/driver-routes';
  * - If not assigned: show "No Route Assigned" message
  */
 export default async function DriverHomePage() {
-  const route = await getMyAssignedRoute();
+  let route = null;
+  try {
+    route = await getMyAssignedRoute();
+  } catch (err) {
+    console.error('[DriverHomePage] Failed to fetch assigned route:', err);
+  }
 
   // If driver has an assigned route, redirect to detail page
   if (route) {
