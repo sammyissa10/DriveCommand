@@ -1,9 +1,7 @@
 'use server';
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 
 /**
  * Fleet messaging - get messages for the current driver.

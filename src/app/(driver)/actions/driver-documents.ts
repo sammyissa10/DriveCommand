@@ -88,6 +88,11 @@ export async function getMyTruckDocuments() {
     return [];
   }
 
+  // No truck assigned to this route yet → no truck documents
+  if (!route.truckId) {
+    return [];
+  }
+
   // Use DocumentRepository to fetch documents for the driver's truck
   const repo = new DocumentRepository(tenantId);
   return repo.findByTruckId(route.truckId);

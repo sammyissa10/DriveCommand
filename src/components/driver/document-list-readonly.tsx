@@ -73,16 +73,16 @@ export function DocumentListReadOnly({
   };
 
   const getFileTypeBadgeColor = (contentType: string): string => {
-    if (contentType === 'application/pdf') return 'bg-red-100 text-red-800';
-    if (contentType.startsWith('image/')) return 'bg-blue-100 text-blue-800';
-    return 'bg-gray-100 text-gray-800';
+    if (contentType === 'application/pdf') return 'bg-red-500/10 text-red-500';
+    if (contentType.startsWith('image/')) return 'bg-blue-500/10 text-blue-500';
+    return 'bg-muted text-muted-foreground';
   };
 
   if (documents.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400"
+          className="mx-auto h-12 w-12 text-muted-foreground/40"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -94,14 +94,14 @@ export function DocumentListReadOnly({
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <p className="mt-2 text-sm text-gray-500">No documents available.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No documents available.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-      <ul className="divide-y divide-gray-200">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <ul className="divide-y divide-border">
         {documents.map((doc) => {
           const isDownloading = downloading === doc.id;
 
@@ -115,11 +115,11 @@ export function DocumentListReadOnly({
                     >
                       {getFileTypeBadge(doc.contentType)}
                     </span>
-                    <p className="truncate text-sm font-medium text-gray-900">
+                    <p className="truncate text-sm font-medium text-foreground">
                       {doc.fileName}
                     </p>
                   </div>
-                  <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
+                  <div className="mt-1 flex items-center gap-4 text-xs text-muted-foreground">
                     <span>{formatFileSize(doc.sizeBytes)}</span>
                     <span>•</span>
                     <span>{formatDate(doc.createdAt)}</span>
