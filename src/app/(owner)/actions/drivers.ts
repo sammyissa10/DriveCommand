@@ -9,7 +9,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@/lib/validations/driver.schemas';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 
 /**
@@ -123,6 +123,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
 
     // Revalidate
     revalidatePath('/drivers');
+    revalidateTag('dashboard-metrics', 'max');
 
     if (!emailSent) {
       return {
@@ -218,6 +219,7 @@ export async function updateDriver(id: string, prevState: any, formData: FormDat
   // Revalidate
   revalidatePath('/drivers');
   revalidatePath(`/drivers/${id}`);
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }
@@ -240,6 +242,7 @@ export async function deactivateDriver(id: string) {
 
   // Revalidate
   revalidatePath('/drivers');
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }
@@ -262,6 +265,7 @@ export async function reactivateDriver(id: string) {
 
   // Revalidate
   revalidatePath('/drivers');
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }

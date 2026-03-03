@@ -13,7 +13,7 @@ import {
   truckUpdateSchema,
   type DocumentMetadata,
 } from '@/lib/validations/truck.schemas';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 /**
@@ -89,6 +89,7 @@ export async function createTruck(prevState: any, formData: FormData) {
 
   // Revalidate and redirect OUTSIDE try/catch (Next.js redirect throws NEXT_REDIRECT internally)
   revalidatePath('/trucks');
+  revalidateTag('dashboard-metrics', 'max');
   redirect(`/trucks/${truckId}`);
 }
 
@@ -169,6 +170,7 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   // Revalidate and redirect OUTSIDE try/catch (Next.js redirect throws NEXT_REDIRECT internally)
   revalidatePath('/trucks');
   revalidatePath(`/trucks/${id}`);
+  revalidateTag('dashboard-metrics', 'max');
   redirect(`/trucks/${updatedTruckId}`);
 }
 
@@ -188,6 +190,7 @@ export async function deleteTruck(id: string) {
 
   // Revalidate
   revalidatePath('/trucks');
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }

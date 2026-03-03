@@ -9,7 +9,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@/lib/validations/route.schemas';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 /**
@@ -149,6 +149,7 @@ export async function createRoute(prevState: any, formData: FormData) {
 
   // Revalidate and redirect (outside try/catch to avoid catching NEXT_REDIRECT)
   revalidatePath('/routes');
+  revalidateTag('dashboard-metrics', 'max');
   redirect(`/routes/${createdRouteId}`);
 }
 
@@ -338,6 +339,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   // Revalidate and redirect (outside try/catch to avoid catching NEXT_REDIRECT)
   revalidatePath('/routes');
   revalidatePath(`/routes/${id}`);
+  revalidateTag('dashboard-metrics', 'max');
   redirect(`/routes/${updatedRouteId}`);
 }
 
@@ -388,6 +390,7 @@ export async function updateRouteStatus(routeId: string, newStatus: string) {
   // Revalidate
   revalidatePath('/routes');
   revalidatePath(`/routes/${routeId}`);
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }
@@ -407,6 +410,7 @@ export async function deleteRoute(id: string) {
 
   // Revalidate
   revalidatePath('/routes');
+  revalidateTag('dashboard-metrics', 'max');
 
   return { success: true };
 }

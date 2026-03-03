@@ -312,7 +312,7 @@ const _fetchNotificationAlerts = unstable_cache(
     return alerts.slice(0, 20);
   },
   ['dashboard-notification-alerts'],
-  { revalidate: 60 }
+  { revalidate: 60, tags: ['dashboard-metrics'] }
 );
 
 const _fetchDashboardMetrics = unstable_cache(
@@ -443,7 +443,7 @@ const _fetchDashboardMetrics = unstable_cache(
     };
   },
   ['dashboard-metrics'],
-  { revalidate: 60 }
+  { revalidate: 60, tags: ['dashboard-metrics'] }
 );
 
 // ─── Public Server Actions ────────────────────────────────────
