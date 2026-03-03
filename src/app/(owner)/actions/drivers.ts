@@ -154,6 +154,7 @@ export async function listDrivers() {
 
   const prisma = await getTenantPrisma();
   return prisma.user.findMany({
+    take: 100,
     where: {
       role: 'DRIVER',
     },

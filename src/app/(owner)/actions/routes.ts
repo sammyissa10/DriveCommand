@@ -426,6 +426,7 @@ export async function listRoutes() {
 
   const prisma = await getTenantPrisma();
   return prisma.route.findMany({
+    take: 100,
     include: {
       driver: {
         select: {

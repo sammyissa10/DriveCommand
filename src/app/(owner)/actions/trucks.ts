@@ -205,6 +205,7 @@ export async function listTrucks() {
 
   const prisma = await getTenantPrisma();
   return prisma.truck.findMany({
+    take: 100,
     orderBy: { createdAt: 'desc' },
   });
 }

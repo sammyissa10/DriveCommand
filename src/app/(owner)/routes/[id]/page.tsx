@@ -23,37 +23,58 @@ export default async function RouteDetailPage({
   const { mode } = await searchParams;
   const isEditMode = mode === 'edit';
 
-  const route = await getRoute(id).catch((err: unknown) => {
-    console.error('[routes/[id]] getRoute failed:', err);
-    return null;
-  });
+  // Run all fetches in parallel — every query only needs `id` from params,
+  // so there is no reason to await getRoute() first and then fan out.
+  // If the route is missing (null), notFound() is called after the parallel fetch.
+  const [
+    route,
+    documents,
+    expenses,
+    payments,
+    categories,
+    templates,
+    analytics,
+    drivers,
+    trucks,
+  ] = await Promise.all([
+    getRoute(id).catch((err: unknown) => {
+      console.error('[routes/[id]] getRoute failed:', err);
+      return null;
+    }),
+    listDocuments('route', id).catch((err) => {
+      console.error('Failed to load route documents:', err);
+      return [] as any[];
+    }),
+    listExpenses(id).catch((err) => {
+      console.error('Failed to load route expenses:', err);
+      return [] as any[];
+    }),
+    listPayments(id).catch((err) => {
+      console.error('Failed to load route payments:', err);
+      return [] as any[];
+    }),
+    listExpenseCategories().catch(() => [] as any[]),
+    listTemplates().catch(() => [] as any[]),
+    getRouteFinancialAnalytics(id).catch((err) => {
+      console.error('Failed to load route analytics:', err);
+      return null;
+    }),
+    // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
+    // so a conditional server fetch would leave the dropdowns empty when the user
+    // clicks "Edit Route" without a ?mode=edit in the initial URL.
+    listDrivers().catch((err) => {
+      console.error('Failed to load drivers for route edit:', err);
+      return [] as any[];
+    }),
+    listTrucks().catch((err) => {
+      console.error('Failed to load trucks for route edit:', err);
+      return [] as any[];
+    }),
+  ]);
 
   if (!route) {
     notFound();
   }
-
-  // Fetch documents, expenses, payments, categories, templates, and financial analytics
-  const [documents, expenses, payments, categories, templates, analytics] =
-    await Promise.all([
-      listDocuments('route', id).catch((err) => {
-        console.error('Failed to load route documents:', err);
-        return [] as any[];
-      }),
-      listExpenses(id).catch((err) => {
-        console.error('Failed to load route expenses:', err);
-        return [] as any[];
-      }),
-      listPayments(id).catch((err) => {
-        console.error('Failed to load route payments:', err);
-        return [] as any[];
-      }),
-      listExpenseCategories().catch(() => [] as any[]),
-      listTemplates().catch(() => [] as any[]),
-      getRouteFinancialAnalytics(id).catch((err) => {
-        console.error('Failed to load route analytics:', err);
-        return null;
-      }),
-    ]);
 
   const safeAnalytics = analytics ?? {
     financials: {
@@ -70,20 +91,6 @@ export default async function RouteDetailPage({
     comparison: { comparison: 'unknown' as const, difference: null, differencePercent: null },
     profitMarginThreshold: 10,
   };
-
-  // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
-  // so a conditional server fetch would leave the dropdowns empty when the user
-  // clicks "Edit Route" without a ?mode=edit in the initial URL.
-  const [drivers, trucks] = await Promise.all([
-    listDrivers().catch((err) => {
-      console.error('Failed to load drivers for route edit:', err);
-      return [] as any[];
-    }),
-    listTrucks().catch((err) => {
-      console.error('Failed to load trucks for route edit:', err);
-      return [] as any[];
-    }),
-  ]);
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(

@@ -7,6 +7,7 @@
  * Token format: base64url(iv) : base64url(authTag) : base64url(ciphertext)
  */
 
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 
 export interface SessionData {
@@ -126,12 +127,15 @@ export async function decrypt(token: string | undefined): Promise<SessionData | 
 /**
  * Read and decrypt the session cookie from next/headers.
  * For use in Server Components, Server Actions, and API Routes (not middleware).
+ *
+ * Wrapped with React.cache() so the AES-256-GCM decryption runs at most once
+ * per request — all callers within the same request share the same result.
  */
-export async function getSession(): Promise<SessionData | null> {
+export const getSession = cache(async function getSession(): Promise<SessionData | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   return decrypt(token);
-}
+});
 
 /**
  * Encrypt and set the session cookie.
