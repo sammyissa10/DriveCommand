@@ -71,24 +71,19 @@ export default async function RouteDetailPage({
     profitMarginThreshold: 10,
   };
 
-  // Fetch drivers and trucks for edit mode (only when in edit mode, for performance)
-  let drivers: Array<{ id: string; firstName: string | null; lastName: string | null }> = [];
-  let trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }> = [];
-
-  if (isEditMode) {
-    const [allDrivers, allTrucks] = await Promise.all([
-      listDrivers().catch((err) => {
-        console.error('Failed to load drivers for route edit:', err);
-        return [] as any[];
-      }),
-      listTrucks().catch((err) => {
-        console.error('Failed to load trucks for route edit:', err);
-        return [] as any[];
-      }),
-    ]);
-    drivers = allDrivers;
-    trucks = allTrucks;
-  }
+  // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
+  // so a conditional server fetch would leave the dropdowns empty when the user
+  // clicks "Edit Route" without a ?mode=edit in the initial URL.
+  const [drivers, trucks] = await Promise.all([
+    listDrivers().catch((err) => {
+      console.error('Failed to load drivers for route edit:', err);
+      return [] as any[];
+    }),
+    listTrucks().catch((err) => {
+      console.error('Failed to load trucks for route edit:', err);
+      return [] as any[];
+    }),
+  ]);
 
   // Format dates in tenant timezone (hardcode UTC for v1)
   const formattedScheduledDate = formatDateInTenantTimezone(
