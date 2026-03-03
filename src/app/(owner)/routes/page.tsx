@@ -4,7 +4,10 @@ import { listRoutes, deleteRoute } from '@/app/(owner)/actions/routes';
 import { RouteListWrapper } from './route-list-wrapper';
 
 export default async function RoutesPage() {
-  const routes = await listRoutes().catch(() => []);
+  const routes = await listRoutes().catch((e) => {
+    console.error('[routes] listRoutes failed:', e);
+    return [];
+  });
 
   return (
     <div className="space-y-6">
