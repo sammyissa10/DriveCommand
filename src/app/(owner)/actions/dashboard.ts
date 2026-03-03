@@ -1,6 +1,5 @@
 'use server';
 
-import { unstable_cache } from 'next/cache';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
@@ -83,13 +82,9 @@ function formatCurrency(amount: Prisma.Decimal | null): string {
   }).format(amount.toNumber());
 }
 
-// ─── Cached data fetchers ─────────────────────────────────────
-// Module-level constants — unstable_cache wraps the expensive DB queries
-// and caches results per tenantId for 60 seconds. Auth (cookie read) still
-// happens per-request in the exported functions below.
+// ─── Data fetchers ────────────────────────────────────────────
 
-const _fetchNotificationAlerts = unstable_cache(
-  async (tenantId: string): Promise<NotificationAlert[]> => {
+async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationAlert[]> {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
     const now = new Date();
@@ -310,13 +305,9 @@ const _fetchNotificationAlerts = unstable_cache(
     });
 
     return alerts.slice(0, 20);
-  },
-  ['dashboard-notification-alerts'],
-  { revalidate: 60, tags: ['dashboard-metrics'] }
-);
+}
 
-const _fetchDashboardMetrics = unstable_cache(
-  async (tenantId: string): Promise<DashboardMetrics> => {
+async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetrics> {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
     const [
@@ -441,17 +432,12 @@ const _fetchDashboardMetrics = unstable_cache(
       activeLoads: activeLoadsCount,
       revenuePerMile,
     };
-  },
-  ['dashboard-metrics'],
-  { revalidate: 60, tags: ['dashboard-metrics'] }
-);
+}
 
 // ─── Public Server Actions ────────────────────────────────────
 
 /**
  * Get unified notification alerts for dashboard panel.
- * Results cached per tenant for 60 seconds via unstable_cache.
- * Auth enforced via getAuthContext() — single session decrypt (down from 2).
  */
 export async function getNotificationAlerts(): Promise<NotificationAlert[]> {
   const { tenantId } = await getAuthContext();
@@ -460,9 +446,7 @@ export async function getNotificationAlerts(): Promise<NotificationAlert[]> {
 
 /**
  * Get full dashboard metrics including financial data.
- * Results cached per tenant for 60 seconds via unstable_cache.
  * Requires OWNER or MANAGER role.
- * Auth enforced via getAuthContext() — single session decrypt (down from 2).
  */
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const { tenantId } = await getAuthContext();
