@@ -17,7 +17,11 @@ function getInitials(firstName?: string, lastName?: string, email?: string): str
   return "??";
 }
 
-export function UserMenu() {
+interface UserMenuProps {
+  dropdownDirection?: "up" | "down";
+}
+
+export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
   const { user, isLoaded } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -71,7 +75,7 @@ export function UserMenu() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full mt-2 left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1">
+          <div className={`absolute left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1 ${dropdownDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"}`}>
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}

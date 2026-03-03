@@ -393,7 +393,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
-            <UserMenu />
+            <UserMenu dropdownDirection="up" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
