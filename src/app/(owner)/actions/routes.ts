@@ -83,7 +83,7 @@ export async function createRoute(prevState: any, formData: FormData) {
   let createdRouteId: string;
 
   try {
-    // Validate driver exists, is active, and has DRIVER role
+    // Validate driver exists and has DRIVER role (active status not required)
     const driver = await prisma.user.findUnique({
       where: { id: driverId },
     });
@@ -92,14 +92,6 @@ export async function createRoute(prevState: any, formData: FormData) {
       return {
         error: {
           driverId: ['Driver not found'],
-        },
-      };
-    }
-
-    if (!driver.isActive) {
-      return {
-        error: {
-          driverId: ['Driver is not active'],
         },
       };
     }
@@ -246,14 +238,6 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
         return {
           error: {
             driverId: ['Driver not found'],
-          },
-        };
-      }
-
-      if (!driver.isActive) {
-        return {
-          error: {
-            driverId: ['Driver is not active'],
           },
         };
       }
