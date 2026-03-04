@@ -88,6 +88,15 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // System admin guard: restrict to admin portal paths only
+  const ADMIN_ALLOWED_PATHS = ['/admin-support', '/tenants', '/unauthorized', '/onboarding', '/api'];
+  if (session.isSystemAdmin) {
+    const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
+    if (!isAdminPath) {
+      return NextResponse.redirect(new URL('/admin-support', request.url));
+    }
+  }
+
   // Driver guard: redirect DRIVER role away from owner-only paths
   if (session.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/my-route', request.url));

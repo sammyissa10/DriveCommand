@@ -57,9 +57,12 @@ export async function POST(req: NextRequest) {
       tenantId: user.tenantId,
       firstName: user.firstName ?? undefined,
       lastName: user.lastName ?? undefined,
+      isSystemAdmin: user.isSystemAdmin,
     });
 
-    const redirectUrl = user.role === 'DRIVER' ? '/my-route' : '/dashboard';
+    let redirectUrl = '/dashboard';
+    if (user.isSystemAdmin) redirectUrl = '/admin-support';
+    else if (user.role === 'DRIVER') redirectUrl = '/my-route';
     return NextResponse.json({ success: true, redirectUrl });
   } catch (error) {
     console.error('Login error:', error);

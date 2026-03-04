@@ -17,6 +17,7 @@ export interface SessionData {
   tenantId: string;
   firstName?: string;
   lastName?: string;
+  isSystemAdmin?: boolean;
 }
 
 const SESSION_COOKIE_NAME = 'session';
