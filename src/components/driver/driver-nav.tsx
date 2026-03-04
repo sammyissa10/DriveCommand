@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Route, Package, MessageSquare, Clock, AlertTriangle } from 'lucide-react';
+import { Route, Package, MessageSquare, Clock, AlertTriangle, LifeBuoy } from 'lucide-react';
 
 const navItems = [
   { href: '/my-route', label: 'My Route', icon: Route },
@@ -10,6 +10,7 @@ const navItems = [
   { href: '/messages', label: 'Messages', icon: MessageSquare },
   { href: '/hours', label: 'Hours', icon: Clock },
   { href: '/incidents', label: 'Report', icon: AlertTriangle },
+  { href: '/support', label: 'Support', icon: LifeBuoy },
 ];
 
 export function DriverNav() {

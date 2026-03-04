@@ -23,6 +23,7 @@ import {
   Calculator,
   FileSpreadsheet,
   Settings,
+  LifeBuoy,
 } from "lucide-react"
 import {
   Sidebar,
@@ -387,6 +388,28 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
+        {/* Support — all roles */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+            Support
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/support')}
+                  tooltip="My Tickets"
+                >
+                  <Link href="/support">
+                    <LifeBuoy />
+                    <span>My Tickets</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       {/* Footer with user menu */}
