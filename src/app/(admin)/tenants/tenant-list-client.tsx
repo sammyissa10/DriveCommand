@@ -21,6 +21,7 @@ type Tenant = {
   name: string;
   slug: string | null;
   isActive: boolean;
+  ownerSetupComplete: boolean;
   createdAt: Date;
   updatedAt: Date;
   _count: {
@@ -95,15 +96,25 @@ export function TenantListClient({ tenants }: TenantListClientProps) {
     {
       accessorKey: 'isActive',
       header: 'Status',
-      cell: (info) => {
-        const isActive = info.getValue() as boolean;
+      cell: ({ row }) => {
+        const tenant = row.original;
+        let label: string;
+        let classes: string;
+
+        if (!tenant.isActive) {
+          label = 'Suspended';
+          classes = 'bg-red-100 text-red-800';
+        } else if (!tenant.ownerSetupComplete) {
+          label = 'Pending';
+          classes = 'bg-yellow-100 text-yellow-800';
+        } else {
+          label = 'Active';
+          classes = 'bg-green-100 text-green-800';
+        }
+
         return (
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-              isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`}
-          >
-            {isActive ? 'Active' : 'Suspended'}
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${classes}`}>
+            {label}
           </span>
         );
       },
