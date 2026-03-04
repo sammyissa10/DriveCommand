@@ -86,10 +86,10 @@ export async function POST(req: NextRequest) {
           tenantId: invitation.tenantId,
           email: invitation.email.toLowerCase().trim(),
           passwordHash,
-          role: 'DRIVER',
+          role: invitation.role || 'DRIVER',
           firstName: invitation.firstName,
           lastName: invitation.lastName,
-          licenseNumber: invitation.licenseNumber,
+          licenseNumber: invitation.role === 'DRIVER' ? invitation.licenseNumber : null,
           isActive: true,
         },
       });
@@ -116,9 +116,11 @@ export async function POST(req: NextRequest) {
       lastName: user.lastName ?? undefined,
     });
 
+    const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/dashboard' : '/my-route';
+
     return NextResponse.json({
       success: true,
-      redirectUrl: '/my-route',
+      redirectUrl,
     });
   } catch (error: any) {
     if (error?.message === 'EMAIL_CONFLICT') {

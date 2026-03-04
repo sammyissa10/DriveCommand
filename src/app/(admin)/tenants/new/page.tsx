@@ -7,16 +7,18 @@ import { createTenant } from '@/app/(admin)/actions/tenants';
 
 /**
  * Create tenant form page (client component).
- * Handles form submission and validation errors.
+ * Handles form submission, validation errors, and email warning banners.
  */
 export default function NewTenantPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [emailWarning, setEmailWarning] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
+    setEmailWarning(null);
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
@@ -25,7 +27,12 @@ export default function NewTenantPage() {
       const result = await createTenant(formData);
 
       if (result.success) {
-        router.push('/tenants');
+        if ('emailWarning' in result && result.emailWarning) {
+          setEmailWarning(result.emailWarning);
+          // Stay on page so user sees the warning; they can navigate away manually
+        } else {
+          router.push('/tenants');
+        }
       } else if ('error' in result && result.error) {
         setError(result.error);
       }
@@ -56,6 +63,20 @@ export default function NewTenantPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
               {error}
+            </div>
+          )}
+
+          {/* Email Warning Banner */}
+          {emailWarning && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-md">
+              <p className="font-medium text-sm">Tenant created</p>
+              <p className="text-sm mt-1">{emailWarning}</p>
+              <Link
+                href="/tenants"
+                className="text-sm font-medium underline mt-2 inline-block"
+              >
+                View all tenants →
+              </Link>
             </div>
           )}
 
@@ -90,6 +111,61 @@ export default function NewTenantPage() {
             <p className="text-sm text-gray-500 mt-1">
               Lowercase letters, numbers, and hyphens only
             </p>
+          </div>
+
+          {/* Owner Information Section */}
+          <div className="border-t border-gray-200 pt-6">
+            <h2 className="text-base font-semibold text-gray-900 mb-1">Owner Information</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              The owner will receive an invitation email to set up their account.
+            </p>
+
+            <div className="space-y-4">
+              {/* Owner First Name */}
+              <div>
+                <label htmlFor="ownerFirstName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Owner First Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="ownerFirstName"
+                  name="ownerFirstName"
+                  required
+                  placeholder="Jane"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                />
+              </div>
+
+              {/* Owner Last Name */}
+              <div>
+                <label htmlFor="ownerLastName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Owner Last Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="ownerLastName"
+                  name="ownerLastName"
+                  required
+                  placeholder="Smith"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                />
+              </div>
+
+              {/* Owner Email */}
+              <div>
+                <label htmlFor="ownerEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                  Owner Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="ownerEmail"
+                  name="ownerEmail"
+                  required
+                  placeholder="jane@acmelogistics.com"
+                  className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-gray-500 focus:border-gray-500"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Form Actions */}

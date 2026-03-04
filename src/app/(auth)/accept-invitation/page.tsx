@@ -72,7 +72,7 @@ function AcceptInvitationForm() {
         Create Your Account
       </h2>
       <p className="text-sm text-muted-foreground mb-5">
-        Set a password to complete your driver registration.
+        Set a password to complete your account setup.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
