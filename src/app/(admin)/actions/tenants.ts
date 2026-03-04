@@ -40,13 +40,21 @@ export async function getAllTenants() {
           routes: true,
         },
       },
+      users: {
+        where: { role: 'OWNER' },
+        select: { id: true },
+        take: 1,
+      },
     },
     orderBy: {
       createdAt: 'desc',
     },
   });
 
-  return tenants;
+  return tenants.map(({ users: ownerUsers, ...rest }) => ({
+    ...rest,
+    ownerSetupComplete: ownerUsers.length > 0,
+  }));
 }
 
 /**
