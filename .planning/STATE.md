@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
 Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
-Last activity: 2026-03-03 — Completed quick task 40: Add driver load status page to driver portal
+Last activity: 2026-03-03 — Completed quick task 41: Implement global support ticketing system
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -285,6 +285,10 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 19]: DEPARTED is manual-only: geofence exit does NOT trigger departed status — driver must press button
 - [Phase 19]: MarkDepartedButton uses dynamic import for markStopDeparted to avoid server action in use-client module boundary
 - [Phase 19]: No dispatcher alert for RouteStop arrival: stop-level tracking only, not load-level status change
+- [Phase quick-41]: No RLS on SupportTicket — system admins need cross-tenant visibility; tenant-scoped queries use WHERE submittedBy/tenantId in server actions
+- [Phase quick-41]: bypass_rls transaction for ticket number generation — ensures cross-tenant uniqueness (TKT-NNNN format padded to 4 digits)
+- [Phase quick-41]: SupportTicketModal in root layout — single instance covers owner, driver, and admin portals; only renders if user is authenticated
+- [Phase quick-41]: No Prisma relations on SupportTicket to Tenant/User — avoids cluttering existing model relation arrays; FK constraints enforced at SQL level only
 
 ### Pending Todos
 
@@ -347,6 +351,7 @@ None blocking immediate progress.
 | 38 | Fix all 35 audit issues — .catch/try-catch DB error handling on 29 pages, requireRole on live-map, null guards on payroll driver names, remove use client from trucks/new and drivers/invite | 2026-02-28 | cc48a9c | [38-fix-all-35-audit-issues-add-catch-error-](./quick/38-fix-all-35-audit-issues-add-catch-error-/) |
 | 39 | Fix all driver portal issues — force-dynamic on layout, hooks violation in gps-tracker, try/catch on 3 pages, null guard on truckId, dark mode tokens in document-list-readonly, dead imports removed, error boundary created | 2026-02-28 | 8ace0ae | [39-fix-all-driver-portal-issues-found-in-au](./quick/39-fix-all-driver-portal-issues-found-in-au/) |
 | 40 | Add driver load status page to driver portal — My Load page with status timeline, forward-only status advancement, getMyActiveLoad and advanceLoadStatus server actions, nav link | 2026-03-03 | a218e8a | [40-add-driver-load-status-page-to-driver-po](./quick/40-add-driver-load-status-page-to-driver-po/) |
+| 41 | Implement global support ticketing system — SupportTicket table, TKT-NNNN auto-numbering, floating modal in root layout, My Tickets pages (owner+driver), admin cross-tenant dashboard | 2026-03-03 | a9cdab7 | [41-implement-a-global-support-ticketing-sys](./quick/41-implement-a-global-support-ticketing-sys/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -372,9 +377,12 @@ None blocking immediate progress.
 **Quick-40 metrics:**
 - Quick-40 (2026-03-03): Driver load status page — getMyActiveLoad/advanceLoadStatus server actions, My Load page with status timeline, LoadStatusButton client component, nav link — 325s, 2 tasks, 4 files affected
 
+**Quick-41 metrics:**
+- Quick-41 (2026-03-03): Support ticketing system — SupportTicket model, migration, 4 server actions, global floating modal, My Tickets pages (owner+driver), admin dashboard with inline status update — 321s, 3 tasks, 12 files affected
+
 ## Session Continuity
 
-Last session: 2026-02-28
-Stopped at: Completed Quick-40 — driver load status page (My Load) with server actions, status timeline, LoadStatusButton client component, nav link
+Last session: 2026-03-03
+Stopped at: Completed Quick-41 — global support ticketing system with SupportTicket table, floating modal, My Tickets pages, admin dashboard
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
