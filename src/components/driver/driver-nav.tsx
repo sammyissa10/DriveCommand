@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Route, MessageSquare, Clock, AlertTriangle } from 'lucide-react';
+import { Route, Package, MessageSquare, Clock, AlertTriangle } from 'lucide-react';
 
 const navItems = [
   { href: '/my-route', label: 'My Route', icon: Route },
+  { href: '/my-load', label: 'My Load', icon: Package },
   { href: '/messages', label: 'Messages', icon: MessageSquare },
   { href: '/hours', label: 'Hours', icon: Clock },
   { href: '/incidents', label: 'Report', icon: AlertTriangle },
