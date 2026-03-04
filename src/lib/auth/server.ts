@@ -75,7 +75,7 @@ export async function isSystemAdmin(): Promise<boolean> {
       where: { id: session.userId },
       select: { isSystemAdmin: true },
     }),
-  ], TX_OPTIONS) as [unknown, { isSystemAdmin: boolean } | null];
+  ]) as [unknown, { isSystemAdmin: boolean } | null];
 
   return user?.isSystemAdmin ?? false;
 }
@@ -96,6 +96,6 @@ export async function getCurrentUser() {
   const [, user] = await prisma.$transaction([
     prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
     prisma.user.findUnique({ where: { id: session.userId } }),
-  ], TX_OPTIONS) as [unknown, Awaited<ReturnType<typeof prisma.user.findUnique>> | null];
+  ]) as [unknown, Awaited<ReturnType<typeof prisma.user.findUnique>> | null];
   return user;
 }

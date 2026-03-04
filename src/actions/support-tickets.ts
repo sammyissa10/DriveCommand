@@ -136,7 +136,7 @@ export async function getAllTickets() {
   const [, tickets] = await prisma.$transaction([
     prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
     prisma.supportTicket.findMany({ orderBy: { createdAt: 'desc' } }),
-  ], TX_OPTIONS) as [unknown, Awaited<ReturnType<typeof prisma.supportTicket.findMany>>];
+  ]) as [unknown, Awaited<ReturnType<typeof prisma.supportTicket.findMany>>];
 
   if (tickets.length === 0) {
     return [];
@@ -156,7 +156,7 @@ export async function getAllTickets() {
       where: { id: { in: tenantIds } },
       select: { id: true, name: true },
     }),
-  ], TX_OPTIONS) as [unknown, { id: string; email: string; firstName: string | null; lastName: string | null }[], { id: string; name: string }[]];
+  ]) as [unknown, { id: string; email: string; firstName: string | null; lastName: string | null }[], { id: string; name: string }[]];
 
   const userMap = new Map(users.map((u) => [u.id, u]));
   const tenantMap = new Map(tenants.map((t) => [t.id, t]));
