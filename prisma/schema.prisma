@@ -204,6 +204,7 @@ model DriverInvitation {
   firstName     String
   lastName      String
   licenseNumber String?
+  role          UserRole         @default(DRIVER)
   expiresAt     DateTime         @db.Timestamptz
   status        InvitationStatus @default(PENDING)
   acceptedAt    DateTime?        @db.Timestamptz
