@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
 Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
-Last activity: 2026-03-01 — Completed quick task 39: Fix all driver portal issues found in audit
+Last activity: 2026-03-03 — Completed quick task 40: Add driver load status page to driver portal
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -270,6 +270,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-35]: Controlled AlertDialog open state (!!pendingDeactivate) instead of AlertDialogTrigger — avoids table nesting complexity
 - [Phase quick-37]: Edit hidden on PAID and CANCELLED (both terminal statuses — no further editing needed); Mark as Paid only on SENT; markInvoicePaid validates status server-side as defense-in-depth; useTransition over useState for pending state (idiomatic React 18)
 - [Phase quick-38]: Use any[] for prisma.findMany() empty default — Awaited<ReturnType<...>> returns base type without include fields causing TS2322; any[] is correct empty-fallback approach; try/catch preferred over per-item .catch for dashboard aggregates with complex return types; zero-value defaults preferred over notFound() for analytics dashboards
+- [Phase quick-40]: Forward-only status progression map (DISPATCHED->PICKED_UP->IN_TRANSIT->DELIVERED) enforced at server action level; driver ownership verified via driverId: user.id in findFirst before update; DELIVERED shows green checkmark (no button) — terminal state; LoadStatusButton in separate file to respect server/client module boundary; DRIVER_STATUS_LIFECYCLE excludes INVOICED (not a driver-visible status)
 - [Phase 01-database-integrity-hardening]: InvoiceItem and ExpenseTemplateItem get direct tenantId for RLS — enables row filtering without JOIN via current_tenant_id() policy evaluation
 - [Phase 01-database-integrity-hardening]: CREATE TABLE IF NOT EXISTS used for Load and TenantIntegration — these tables exist in prod via db push so migration must be idempotent; same for enum DO/EXCEPTION blocks
 - [Phase 01-database-integrity-hardening]: Backfill pattern (nullable ADD COLUMN -> UPDATE -> SET NOT NULL) chosen to safely add tenantId to existing rows
@@ -345,6 +346,7 @@ None blocking immediate progress.
 | 37 | Fix audit issues — sidebar Expense Categories/Templates links, remove Maintenance duplicate, invoice conditional Edit + Mark as Paid button | 2026-02-27 | 02676cd | [37-fix-audit-issues-sidebar-links-for-expen](./quick/37-fix-audit-issues-sidebar-links-for-expen/) |
 | 38 | Fix all 35 audit issues — .catch/try-catch DB error handling on 29 pages, requireRole on live-map, null guards on payroll driver names, remove use client from trucks/new and drivers/invite | 2026-02-28 | cc48a9c | [38-fix-all-35-audit-issues-add-catch-error-](./quick/38-fix-all-35-audit-issues-add-catch-error-/) |
 | 39 | Fix all driver portal issues — force-dynamic on layout, hooks violation in gps-tracker, try/catch on 3 pages, null guard on truckId, dark mode tokens in document-list-readonly, dead imports removed, error boundary created | 2026-02-28 | 8ace0ae | [39-fix-all-driver-portal-issues-found-in-au](./quick/39-fix-all-driver-portal-issues-found-in-au/) |
+| 40 | Add driver load status page to driver portal — My Load page with status timeline, forward-only status advancement, getMyActiveLoad and advanceLoadStatus server actions, nav link | 2026-03-03 | a218e8a | [40-add-driver-load-status-page-to-driver-po](./quick/40-add-driver-load-status-page-to-driver-po/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -367,9 +369,12 @@ None blocking immediate progress.
 **Quick-39 metrics:**
 - Quick-39 (2026-02-28): Driver portal force-dynamic, hooks violation fix, try/catch on 3 pages, null guard on truckId, dark mode design tokens, dead imports removed, error boundary — ~180s, 2 tasks, 10 files affected
 
+**Quick-40 metrics:**
+- Quick-40 (2026-03-03): Driver load status page — getMyActiveLoad/advanceLoadStatus server actions, My Load page with status timeline, LoadStatusButton client component, nav link — 325s, 2 tasks, 4 files affected
+
 ## Session Continuity
 
 Last session: 2026-02-28
-Stopped at: Completed Quick-39 — driver portal HIGH issues (force-dynamic, hooks violation, try/catch on 3 pages) + MEDIUM issues (null guard on truckId, dark mode design tokens in document-list-readonly, dead imports removed, error boundary created)
+Stopped at: Completed Quick-40 — driver load status page (My Load) with server actions, status timeline, LoadStatusButton client component, nav link
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
