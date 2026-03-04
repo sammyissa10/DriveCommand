@@ -44,7 +44,7 @@ export default async function AdminLayout({
                 Tenants
               </Link>
               <Link
-                href="/support"
+                href="/admin-support"
                 className="text-white hover:text-gray-300 font-medium"
               >
                 Support

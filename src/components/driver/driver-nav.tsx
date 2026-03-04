@@ -10,7 +10,7 @@ const navItems = [
   { href: '/messages', label: 'Messages', icon: MessageSquare },
   { href: '/hours', label: 'Hours', icon: Clock },
   { href: '/incidents', label: 'Report', icon: AlertTriangle },
-  { href: '/support', label: 'Support', icon: LifeBuoy },
+  { href: '/my-tickets', label: 'Support', icon: LifeBuoy },
 ];
 
 export function DriverNav() {
