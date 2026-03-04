@@ -795,6 +795,44 @@ model TenantIntegration {
   @@index([tenantId])
 }
 
+// ─── Support Ticket Models ───────────────────────────────────
+
+enum SupportTicketType {
+  BUG
+  FEATURE_REQUEST
+  QUESTION
+  ACCOUNT_ISSUE
+  OTHER
+}
+
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicket {
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketNumber String              @unique
+  tenantId     String              @db.Uuid
+  submittedBy  String              @db.Uuid
+  fromPage     String
+  type         SupportTicketType
+  title        String
+  description  String
+  status       SupportTicketStatus @default(OPEN)
+  resolution   String?
+  resolvedAt   DateTime?           @db.Timestamptz
+  createdAt    DateTime            @default(now()) @db.Timestamptz
+  updatedAt    DateTime            @updatedAt @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([submittedBy])
+  @@index([status])
+  @@index([createdAt])
+}
+
 // ─── Multi-Stop Route Models ─────────────────────────────────
 
 model RouteStop {
