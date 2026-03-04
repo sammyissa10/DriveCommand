@@ -6,6 +6,7 @@ interface LoadFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
   initialData?: {
     customerId?: string;
+    driverId?: string | null;
     origin?: string;
     destination?: string;
     pickupDate?: string;
@@ -17,13 +18,14 @@ interface LoadFormProps {
   };
   submitLabel: string;
   customers: Array<{ id: string; companyName: string }>;
+  drivers?: Array<{ id: string; firstName: string | null; lastName: string | null }>;
 }
 
 const inputClass =
   'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
-export function LoadForm({ action, initialData, submitLabel, customers }: LoadFormProps) {
+export function LoadForm({ action, initialData, submitLabel, customers, drivers = [] }: LoadFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
 
   return (
@@ -62,6 +64,26 @@ export function LoadForm({ action, initialData, submitLabel, customers }: LoadFo
           {state?.error?.customerId && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.customerId}</p>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="driverId" className={labelClass}>
+            Driver <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </label>
+          <select
+            id="driverId"
+            name="driverId"
+            defaultValue={initialData?.driverId || ''}
+            disabled={isPending}
+            className={inputClass}
+          >
+            <option value="">No driver assigned</option>
+            {drivers.map((d) => (
+              <option key={d.id} value={d.id}>
+                {[d.firstName, d.lastName].filter(Boolean).join(' ') || 'Unnamed Driver'}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

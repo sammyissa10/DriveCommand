@@ -12,13 +12,20 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
   let load: Awaited<ReturnType<typeof prisma.load.findUnique>> | undefined;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let customers: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let drivers: any[] = [];
   try {
-    [load, customers] = await Promise.all([
+    [load, customers, drivers] = await Promise.all([
       prisma.load.findUnique({ where: { id } }),
       prisma.customer.findMany({
         where: { status: 'ACTIVE' },
         select: { id: true, companyName: true },
         orderBy: { companyName: 'asc' },
+      }),
+      prisma.user.findMany({
+        where: { role: 'DRIVER', isActive: true },
+        select: { id: true, firstName: true, lastName: true },
+        orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
       }),
     ]);
   } catch {
@@ -55,9 +62,11 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
       <LoadForm
         action={boundUpdateLoad}
         customers={customers}
+        drivers={drivers}
         submitLabel="Save Changes"
         initialData={{
           customerId: load.customerId,
+          driverId: load.driverId,
           origin: load.origin,
           destination: load.destination,
           pickupDate: pickupDateStr,

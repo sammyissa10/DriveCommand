@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const loadCreateSchema = z.object({
   customerId: z.string().uuid('Select a customer'),
+  driverId: z.string().uuid().optional().or(z.literal('')),
   origin: z.string().min(1, 'Origin is required').max(200),
   destination: z.string().min(1, 'Destination is required').max(200),
   pickupDate: z.string().min(1, 'Pickup date is required'),
