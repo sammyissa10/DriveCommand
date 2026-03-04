@@ -133,12 +133,10 @@ export async function getAllTickets() {
     throw new Error('Unauthorized: System admin access required');
   }
 
-  const tickets = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.supportTicket.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-  }, TX_OPTIONS);
+  const [, tickets] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.supportTicket.findMany({ orderBy: { createdAt: 'desc' } }),
+  ], TX_OPTIONS) as [unknown, Awaited<ReturnType<typeof prisma.supportTicket.findMany>>];
 
   if (tickets.length === 0) {
     return [];
@@ -148,18 +146,17 @@ export async function getAllTickets() {
   const userIds = [...new Set(tickets.map((t) => t.submittedBy))];
   const tenantIds = [...new Set(tickets.map((t) => t.tenantId))];
 
-  const [users, tenants] = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    const u = await tx.user.findMany({
+  const [, users, tenants] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.user.findMany({
       where: { id: { in: userIds } },
       select: { id: true, email: true, firstName: true, lastName: true },
-    });
-    const t = await tx.tenant.findMany({
+    }),
+    prisma.tenant.findMany({
       where: { id: { in: tenantIds } },
       select: { id: true, name: true },
-    });
-    return [u, t];
-  }, TX_OPTIONS);
+    }),
+  ], TX_OPTIONS) as [unknown, { id: string; email: string; firstName: string | null; lastName: string | null }[], { id: string; name: string }[]];
 
   const userMap = new Map(users.map((u) => [u.id, u]));
   const tenantMap = new Map(tenants.map((t) => [t.id, t]));
@@ -215,7 +212,7 @@ export async function updateTicketStatus(
       });
     }, TX_OPTIONS);
 
-    revalidatePath('/support');
+    revalidatePath('/admin-support');
 
     return { success: true };
   } catch (error) {

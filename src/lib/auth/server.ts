@@ -67,13 +67,15 @@ export async function isSystemAdmin(): Promise<boolean> {
     return false;
   }
 
-  const user = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.user.findUnique({
+  // Sequential form: guarantees set_config and findUnique share the same DB connection.
+  // Interactive form ($transaction(async tx => {...})) does NOT guarantee this with PrismaPg.
+  const [, user] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.user.findUnique({
       where: { id: session.userId },
       select: { isSystemAdmin: true },
-    });
-  }, TX_OPTIONS);
+    }),
+  ], TX_OPTIONS) as [unknown, { isSystemAdmin: boolean } | null];
 
   return user?.isSystemAdmin ?? false;
 }
@@ -91,10 +93,9 @@ export async function getCurrentUser() {
     return null;
   }
 
-  return await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-    return tx.user.findUnique({
-      where: { id: session.userId },
-    });
-  }, TX_OPTIONS);
+  const [, user] = await prisma.$transaction([
+    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
+    prisma.user.findUnique({ where: { id: session.userId } }),
+  ], TX_OPTIONS) as [unknown, Awaited<ReturnType<typeof prisma.user.findUnique>> | null];
+  return user;
 }
