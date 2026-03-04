@@ -289,6 +289,10 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-41]: bypass_rls transaction for ticket number generation — ensures cross-tenant uniqueness (TKT-NNNN format padded to 4 digits)
 - [Phase quick-41]: SupportTicketModal in root layout — single instance covers owner, driver, and admin portals; only renders if user is authenticated
 - [Phase quick-41]: No Prisma relations on SupportTicket to Tenant/User — avoids cluttering existing model relation arrays; FK constraints enforced at SQL level only
+- [Phase quick-42]: role field defaults to DRIVER so all existing invitations remain driver invitations without data migration
+- [Phase quick-42]: Inner try/catch email pattern — invitation persists even if email fails; emailWarning returned so admin sees amber banner
+- [Phase quick-42]: licenseNumber conditionally null for non-DRIVER roles — owners don't have CDL license numbers
+- [Phase quick-42]: invitation.role fallback to 'DRIVER' in accept-invitation for backwards compatibility with pre-migration invitations
 
 ### Pending Todos
 
@@ -352,6 +356,7 @@ None blocking immediate progress.
 | 39 | Fix all driver portal issues — force-dynamic on layout, hooks violation in gps-tracker, try/catch on 3 pages, null guard on truckId, dark mode tokens in document-list-readonly, dead imports removed, error boundary created | 2026-02-28 | 8ace0ae | [39-fix-all-driver-portal-issues-found-in-au](./quick/39-fix-all-driver-portal-issues-found-in-au/) |
 | 40 | Add driver load status page to driver portal — My Load page with status timeline, forward-only status advancement, getMyActiveLoad and advanceLoadStatus server actions, nav link | 2026-03-03 | a218e8a | [40-add-driver-load-status-page-to-driver-po](./quick/40-add-driver-load-status-page-to-driver-po/) |
 | 41 | Implement global support ticketing system — SupportTicket table, TKT-NNNN auto-numbering, floating modal in root layout, My Tickets pages (owner+driver), admin cross-tenant dashboard | 2026-03-03 | a9cdab7 | [41-implement-a-global-support-ticketing-sys](./quick/41-implement-a-global-support-ticketing-sys/) |
+| 42 | Extend create tenant flow with owner invitation — role on DriverInvitation, OwnerInvitationEmail template, sendOwnerInvitation, owner fields on create-tenant form, role-aware accept-invitation (OWNER->dashboard, DRIVER->my-route) | 2026-03-04 | 8e92f1b | [42-extend-create-tenant-flow-with-owner-inv](./quick/42-extend-create-tenant-flow-with-owner-inv/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -380,9 +385,12 @@ None blocking immediate progress.
 **Quick-41 metrics:**
 - Quick-41 (2026-03-03): Support ticketing system — SupportTicket model, migration, 4 server actions, global floating modal, My Tickets pages (owner+driver), admin dashboard with inline status update — 321s, 3 tasks, 12 files affected
 
+**Quick-42 metrics:**
+- Quick-42 (2026-03-04): Extend create tenant flow with owner invitation — role on DriverInvitation, OwnerInvitationEmail template, sendOwnerInvitation, owner fields on create-tenant form, role-aware accept-invitation — 199s, 2 tasks, 8 files affected
+
 ## Session Continuity
 
-Last session: 2026-03-03
-Stopped at: Completed Quick-41 — global support ticketing system with SupportTicket table, floating modal, My Tickets pages, admin dashboard
+Last session: 2026-03-04
+Stopped at: Completed Quick-42 — extend create tenant flow with owner invitation (role on DriverInvitation, owner email template, role-aware accept flow)
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
