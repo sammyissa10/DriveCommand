@@ -2,7 +2,7 @@
  * Send load status notification emails to customers via Resend.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { LoadStatusNotificationEmail } from '@/emails/load-status-notification';
 
 export interface LoadStatusEmailData {
@@ -35,18 +35,9 @@ export async function sendLoadStatusEmail(
   const statusLabel = STATUS_LABELS[data.status] || data.status;
   const subject = `Load ${data.loadNumber} \u2014 ${statusLabel}`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: LoadStatusNotificationEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(
-      `Failed to send load status notification email: ${result.error?.message || 'Unknown error'}`
-    );
-  }
-
-  return { id: result.data.id };
 }

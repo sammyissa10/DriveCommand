@@ -1,8 +1,8 @@
 /**
- * Send driver document expiry reminder email via Resend.
+ * Send driver document expiry reminder email via Gmail SMTP.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { DriverDocumentExpiryReminderEmail } from '@/emails/driver-document-expiry-reminder';
 
 export interface DriverDocumentExpiryReminderProps {
@@ -44,16 +44,9 @@ export async function sendDriverDocumentExpiryReminder(
     : 'Expiring Soon';
   const subject = `${urgency}: Driver ${data.documentType} - ${data.driverName}`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: DriverDocumentExpiryReminderEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(`Failed to send driver document expiry reminder email: ${result.error?.message || 'Unknown error'}`);
-  }
-
-  return { id: result.data.id };
 }

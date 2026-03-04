@@ -1,8 +1,8 @@
 /**
- * Send owner invitation email via Resend.
+ * Send owner invitation email via Gmail SMTP.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { OwnerInvitationEmail } from '@/emails/owner-invitation';
 
 export interface OwnerInvitationEmailData {
@@ -23,18 +23,9 @@ export async function sendOwnerInvitation(
 ): Promise<{ id: string }> {
   const subject = `Set up your ${data.organizationName} account on DriveCommand`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: OwnerInvitationEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(
-      `Failed to send owner invitation email: ${result.error?.message || 'Unknown error'}`
-    );
-  }
-
-  return { id: result.data.id };
 }

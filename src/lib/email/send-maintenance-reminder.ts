@@ -1,8 +1,8 @@
 /**
- * Send maintenance reminder email via Resend.
+ * Send maintenance reminder email via Gmail SMTP.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { MaintenanceReminderEmail } from '@/emails/maintenance-reminder';
 
 export interface MaintenanceReminderProps {
@@ -25,16 +25,9 @@ export async function sendMaintenanceReminder(
 ): Promise<{ id: string }> {
   const subject = `Maintenance Due: ${data.serviceType} - ${data.truckName}`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: MaintenanceReminderEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(`Failed to send maintenance reminder email: ${result.error?.message || 'Unknown error'}`);
-  }
-
-  return { id: result.data.id };
 }

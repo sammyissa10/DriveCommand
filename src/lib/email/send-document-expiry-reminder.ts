@@ -1,8 +1,8 @@
 /**
- * Send document expiry reminder email via Resend.
+ * Send document expiry reminder email via Gmail SMTP.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { DocumentExpiryReminderEmail } from '@/emails/document-expiry-reminder';
 
 export interface DocumentExpiryReminderProps {
@@ -24,16 +24,9 @@ export async function sendDocumentExpiryReminder(
   const urgency = data.daysUntilExpiry < 0 ? 'EXPIRED' : data.daysUntilExpiry < 7 ? 'URGENT' : 'Expiring Soon';
   const subject = `${urgency}: ${data.documentType} - ${data.truckName}`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: DocumentExpiryReminderEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(`Failed to send document expiry reminder email: ${result.error?.message || 'Unknown error'}`);
-  }
-
-  return { id: result.data.id };
 }

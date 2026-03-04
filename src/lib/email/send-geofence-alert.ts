@@ -1,5 +1,5 @@
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { GeofenceArrivalAlert } from '@/emails/geofence-arrival-alert';
 
 export interface GeofenceAlertData {
@@ -38,8 +38,7 @@ export async function sendGeofenceAlert(data: GeofenceAlertData): Promise<void> 
 
   const emails = dispatchers.map((d) => d.email);
 
-  await resend.emails.send({
-    from: FROM_EMAIL,
+  await sendEmail({
     to: emails,
     subject,
     react: GeofenceArrivalAlert({

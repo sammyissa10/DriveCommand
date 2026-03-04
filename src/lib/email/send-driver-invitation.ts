@@ -1,8 +1,8 @@
 /**
- * Send driver invitation email via Resend.
+ * Send driver invitation email via Gmail SMTP.
  */
 
-import { resend, FROM_EMAIL } from './resend-client';
+import { sendEmail } from './gmail-client';
 import { DriverInvitationEmail } from '@/emails/driver-invitation';
 
 export interface DriverInvitationEmailData {
@@ -23,18 +23,9 @@ export async function sendDriverInvitation(
 ): Promise<{ id: string }> {
   const subject = `You're invited to join ${data.organizationName} on DriveCommand`;
 
-  const result = await resend.emails.send({
-    from: FROM_EMAIL,
-    to: [toEmail],
+  return sendEmail({
+    to: toEmail,
     subject,
     react: DriverInvitationEmail(data),
   });
-
-  if (!result.data?.id) {
-    throw new Error(
-      `Failed to send driver invitation email: ${result.error?.message || 'Unknown error'}`
-    );
-  }
-
-  return { id: result.data.id };
 }
