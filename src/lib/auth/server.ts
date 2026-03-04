@@ -67,17 +67,11 @@ export async function isSystemAdmin(): Promise<boolean> {
     return false;
   }
 
-  // Sequential form: guarantees set_config and findUnique share the same DB connection.
-  // Interactive form ($transaction(async tx => {...})) does NOT guarantee this with PrismaPg.
-  const [, user] = await prisma.$transaction([
-    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-    prisma.user.findUnique({
-      where: { id: session.userId },
-      select: { isSystemAdmin: true },
-    }),
-  ]) as [unknown, { isSystemAdmin: boolean } | null];
-
-  return user?.isSystemAdmin ?? false;
+  // $queryRaw bypasses RLS entirely — no set_config dance needed.
+  const rows = await prisma.$queryRaw<{ isSystemAdmin: boolean }[]>`
+    SELECT "isSystemAdmin" FROM "User" WHERE id = ${session.userId}::uuid LIMIT 1
+  `;
+  return rows[0]?.isSystemAdmin ?? false;
 }
 
 /**

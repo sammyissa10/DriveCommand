@@ -6,10 +6,12 @@ import { AdminTicketList } from './ticket-list';
 
 export default async function AdminSupportPage() {
   let tickets: Awaited<ReturnType<typeof getAllTickets>> = [];
+  let fetchError: string | null = null;
   try {
     tickets = await getAllTickets();
-  } catch {
-    // Auth verified at layout level; this is a safety fallback
+  } catch (err) {
+    console.error('[AdminSupportPage] getAllTickets error:', err);
+    fetchError = err instanceof Error ? err.message : 'Failed to load tickets';
   }
 
   // Derive stats
@@ -69,7 +71,11 @@ export default async function AdminSupportPage() {
       </div>
 
       {/* Tickets list */}
-      {tickets.length === 0 ? (
+      {fetchError ? (
+        <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          Error loading tickets: {fetchError}
+        </div>
+      ) : tickets.length === 0 ? (
         <EmptyState
           icon={LifeBuoy}
           title="No support tickets yet"

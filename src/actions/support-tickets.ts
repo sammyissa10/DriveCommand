@@ -133,30 +133,34 @@ export async function getAllTickets() {
     throw new Error('Unauthorized: System admin access required');
   }
 
-  const [, tickets] = await prisma.$transaction([
-    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-    prisma.supportTicket.findMany({ orderBy: { createdAt: 'desc' } }),
-  ]) as [unknown, Awaited<ReturnType<typeof prisma.supportTicket.findMany>>];
+  // Use $queryRaw — raw SQL bypasses RLS entirely, no set_config needed.
+  // SupportTicket has no RLS so this is safe for cross-tenant admin access.
+  type RawTicket = {
+    id: string; ticketNumber: string; tenantId: string; submittedBy: string;
+    fromPage: string; type: string; title: string; description: string;
+    status: string; resolution: string | null; resolvedAt: Date | null;
+    createdAt: Date; updatedAt: Date;
+  };
+  const tickets = await prisma.$queryRaw<RawTicket[]>`
+    SELECT * FROM "SupportTicket" ORDER BY "createdAt" DESC
+  `;
 
-  if (tickets.length === 0) {
-    return [];
-  }
+  if (tickets.length === 0) return [];
 
-  // Fetch user emails and tenant names in parallel
   const userIds = [...new Set(tickets.map((t) => t.submittedBy))];
   const tenantIds = [...new Set(tickets.map((t) => t.tenantId))];
 
-  const [, users, tenants] = await prisma.$transaction([
-    prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`,
-    prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: { id: true, email: true, firstName: true, lastName: true },
-    }),
-    prisma.tenant.findMany({
-      where: { id: { in: tenantIds } },
-      select: { id: true, name: true },
-    }),
-  ]) as [unknown, { id: string; email: string; firstName: string | null; lastName: string | null }[], { id: string; name: string }[]];
+  type RawUser = { id: string; email: string; firstName: string | null; lastName: string | null };
+  type RawTenant = { id: string; name: string };
+
+  const [users, tenants] = await Promise.all([
+    prisma.$queryRaw<RawUser[]>`
+      SELECT id, email, "firstName", "lastName" FROM "User" WHERE id = ANY(${userIds}::uuid[])
+    `,
+    prisma.$queryRaw<RawTenant[]>`
+      SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])
+    `,
+  ]);
 
   const userMap = new Map(users.map((u) => [u.id, u]));
   const tenantMap = new Map(tenants.map((t) => [t.id, t]));
