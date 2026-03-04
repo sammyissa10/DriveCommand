@@ -1,20 +1,49 @@
+/**
+ * Routes list page — uses Suspense streaming so the header/button render
+ * instantly and the list streams in as the DB query resolves.
+ */
+
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { listRoutes, deleteRoute } from '@/app/(owner)/actions/routes';
 import { RouteListWrapper } from './route-list-wrapper';
 
-export default async function RoutesPage() {
+// ─── Async data section ───────────────────────────────────────────────────────
+
+async function RouteListSection() {
   const routes = await listRoutes().catch((e) => {
     console.error('[routes] listRoutes failed:', e);
     return [];
   });
+  return <RouteListWrapper initialRoutes={routes} deleteAction={deleteRoute} />;
+}
 
+// ─── Skeleton fallback ────────────────────────────────────────────────────────
+
+function RouteListSkeleton() {
+  return (
+    <div className="rounded-xl border border-border bg-card shadow-sm animate-pulse">
+      <div className="p-4 space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-16 w-full rounded-lg bg-muted" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+// Synchronous — returns JSX immediately so the Suspense boundary activates
+// and the skeleton shows before the DB query completes.
+
+export default function RoutesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Routes</h1>
-          <p className="mt-1 text-muted-foreground">{routes.length} route{routes.length !== 1 ? 's' : ''} configured</p>
+          <p className="mt-1 text-muted-foreground">View and manage your routes</p>
         </div>
         <Link
           href="/routes/new"
@@ -25,7 +54,9 @@ export default async function RoutesPage() {
         </Link>
       </div>
 
-      <RouteListWrapper initialRoutes={routes} deleteAction={deleteRoute} />
+      <Suspense fallback={<RouteListSkeleton />}>
+        <RouteListSection />
+      </Suspense>
     </div>
   );
 }
