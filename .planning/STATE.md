@@ -361,6 +361,7 @@ None blocking immediate progress.
 | 41 | Implement global support ticketing system — SupportTicket table, TKT-NNNN auto-numbering, floating modal in root layout, My Tickets pages (owner+driver), admin cross-tenant dashboard | 2026-03-03 | a9cdab7 | [41-implement-a-global-support-ticketing-sys](./quick/41-implement-a-global-support-ticketing-sys/) |
 | 42 | Extend create tenant flow with owner invitation — role on DriverInvitation, OwnerInvitationEmail template, sendOwnerInvitation, owner fields on create-tenant form, role-aware accept-invitation (OWNER->dashboard, DRIVER->my-route) | 2026-03-04 | 8e92f1b | [42-extend-create-tenant-flow-with-owner-inv](./quick/42-extend-create-tenant-flow-with-owner-inv/) |
 | 43 | Change tenant status to Pending until owner accepts invitation — ownerSetupComplete via OWNER-role user check, three-state badge (Pending/Active/Suspended) in admin tenant list | 2026-03-04 | 7b3a6f1 | [43-change-tenant-status-to-pending-until-ow](./quick/43-change-tenant-status-to-pending-until-ow/) |
+| 44 | Add ticket status filtering to sysadmin support dashboard — All/Open/In Progress/Closed tab bar with per-tab counts, RESOLVED+CLOSED combined into Closed bucket | 2026-03-07 | f393887 | [44-add-ticket-status-filtering-to-sysadmin-](./quick/44-add-ticket-status-filtering-to-sysadmin-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -394,10 +395,11 @@ None blocking immediate progress.
 
 **Quick-43 metrics:**
 - Quick-43 (2026-03-04): Three-state tenant status (Pending/Active/Suspended) via ownerSetupComplete computed from OWNER-role user existence — 79s, 2 tasks, 2 files affected
+- Quick-44 (2026-03-07): Status tab filtering on admin support dashboard — All/Open/In Progress/Closed tabs with per-tab counts, RESOLVED+CLOSED combined — ~60s, 1 task, 1 file affected
 
 ## Session Continuity
 
-Last session: 2026-03-04
-Stopped at: Completed Quick-43 — change tenant status to Pending until owner accepts invitation (three-state badge, ownerSetupComplete via user role check)
+Last session: 2026-03-07
+Stopped at: Completed Quick-44 — add ticket status filtering to sysadmin support dashboard (All/Open/In Progress/Closed tabs with per-tab counts)
 Resume file: None
 Next action: Execute Phase 20 — Driver Pay Settlement
