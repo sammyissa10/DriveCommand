@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
 Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
-Last activity: 2026-03-04 — Completed quick task 43: Change tenant status to Pending until owner setup complete
+Last activity: 2026-03-07 - Completed quick task 44: Add ticket status filtering to sysadmin portal
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
