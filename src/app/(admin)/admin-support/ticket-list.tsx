@@ -194,22 +194,79 @@ function TicketRow({ ticket }: TicketRowProps) {
   );
 }
 
+type TabValue = 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
+
 interface AdminTicketListProps {
   tickets: TicketWithDetails[];
 }
 
 export function AdminTicketList({ tickets }: AdminTicketListProps) {
+  const [activeTab, setActiveTab] = useState<TabValue>('ALL');
+
+  // Pre-compute counts from the full unfiltered list
+  const counts = {
+    ALL: tickets.length,
+    OPEN: tickets.filter((t) => t.status === 'OPEN').length,
+    IN_PROGRESS: tickets.filter((t) => t.status === 'IN_PROGRESS').length,
+    CLOSED: tickets.filter((t) => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
+  };
+
+  // Derive filtered list based on active tab
+  const filteredTickets = tickets.filter((t) => {
+    if (activeTab === 'ALL') return true;
+    if (activeTab === 'OPEN') return t.status === 'OPEN';
+    if (activeTab === 'IN_PROGRESS') return t.status === 'IN_PROGRESS';
+    if (activeTab === 'CLOSED') return t.status === 'RESOLVED' || t.status === 'CLOSED';
+    return true;
+  });
+
+  const headingLabel =
+    activeTab === 'ALL' ? 'All Tickets' :
+    activeTab === 'OPEN' ? 'Open Tickets' :
+    activeTab === 'IN_PROGRESS' ? 'In Progress Tickets' :
+    'Closed Tickets';
+
+  const tabs: { value: TabValue; label: string }[] = [
+    { value: 'ALL', label: 'All' },
+    { value: 'OPEN', label: 'Open' },
+    { value: 'IN_PROGRESS', label: 'In Progress' },
+    { value: 'CLOSED', label: 'Closed' },
+  ];
+
+  const sharedTabClass = 'px-3 py-1.5 rounded-md text-sm transition-colors';
+  const activeTabClass = 'bg-white border border-gray-200 shadow-sm text-gray-900 font-semibold';
+  const inactiveTabClass = 'text-gray-500 hover:text-gray-700 hover:bg-gray-100';
+
   return (
     <div className="space-y-3">
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg w-fit">
+        {tabs.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setActiveTab(tab.value)}
+            className={`${sharedTabClass} ${activeTab === tab.value ? activeTabClass : inactiveTabClass}`}
+          >
+            {tab.label} ({counts[tab.value]})
+          </button>
+        ))}
+      </div>
+
+      {/* Count / hint row */}
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-700">
-          All Tickets ({tickets.length})
+          {headingLabel} ({filteredTickets.length})
         </h2>
         <p className="text-xs text-gray-400">Click a ticket to expand details and update status</p>
       </div>
-      {tickets.map((ticket) => (
-        <TicketRow key={ticket.id} ticket={ticket} />
-      ))}
+
+      {filteredTickets.length === 0 ? (
+        <p className="text-sm text-gray-400 py-4 text-center">No tickets in this category.</p>
+      ) : (
+        filteredTickets.map((ticket) => (
+          <TicketRow key={ticket.id} ticket={ticket} />
+        ))
+      )}
     </div>
   );
 }
