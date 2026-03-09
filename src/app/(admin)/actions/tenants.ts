@@ -200,6 +200,80 @@ export async function reactivateTenant(tenantId: string) {
 }
 
 /**
+ * Get platform-wide system metrics for the admin dashboard.
+ * Uses base Prisma client (NOT getTenantPrisma) for cross-tenant queries.
+ */
+export async function getSystemMetrics() {
+  await requireSystemAdmin();
+
+  const startOfDay = new Date(new Date().setUTCHours(0, 0, 0, 0));
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+  const [totalTenants, activeLoadsToday, newSignupsThisWeek, openTickets] = await Promise.all([
+    prisma.tenant.count(),
+    prisma.load.count({
+      where: {
+        status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
+        createdAt: { gte: startOfDay },
+      },
+    }),
+    prisma.tenant.count({
+      where: {
+        createdAt: { gte: sevenDaysAgo },
+      },
+    }),
+    prisma.supportTicket.count({
+      where: { status: 'OPEN' },
+    }),
+  ]);
+
+  return { totalTenants, activeLoadsToday, newSignupsThisWeek, openTickets };
+}
+
+/**
+ * Get a single tenant with full detail including owner info and resource counts.
+ */
+export async function getTenantById(tenantId: string) {
+  await requireSystemAdmin();
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: { select: { users: true, trucks: true, routes: true } },
+      users: {
+        where: { role: 'OWNER' },
+        select: { id: true, email: true, firstName: true, lastName: true, createdAt: true },
+        take: 1,
+      },
+      driverInvitations: {
+        where: { role: 'OWNER', status: 'PENDING' },
+        select: { id: true, email: true, firstName: true, lastName: true, createdAt: true, expiresAt: true },
+        take: 1,
+      },
+    },
+  });
+
+  if (!tenant) {
+    throw new Error('Tenant not found');
+  }
+
+  const { users, driverInvitations, ...rest } = tenant;
+
+  return {
+    ...rest,
+    ownerSetupComplete: users.length > 0,
+    ownerUser: users[0] ?? null,
+    pendingOwnerInvitation: driverInvitations[0] ?? null,
+  };
+}
+
+/**
  * Delete a tenant (hard delete).
  * Will fail if tenant has associated users, trucks, or routes.
  */
