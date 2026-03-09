@@ -1,20 +1,27 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 
 /**
- * Helper function to enforce system admin authorization.
- * All admin actions MUST call this before any operations.
+ * Helper function to enforce admin authorization.
+ * Checks the admin_session cookie first (ADMIN_SECRET_KEY auth), then falls back
+ * to the legacy requireAuth() + isSystemAdmin() DB check.
  */
-async function requireSystemAdmin() {
+async function requireAdminAccess() {
+  // Check ADMIN_SECRET_KEY cookie first (no DB hit)
+  const adminSession = await getAdminSession();
+  if (adminSession) return; // valid admin_session cookie — allow through
+
+  // Fall back to legacy isSystemAdmin DB check
   await requireAuth();
   const admin = await isSystemAdmin();
   if (!admin) {
-    throw new Error('Unauthorized: System admin access required');
+    throw new Error('Unauthorized: Admin access required');
   }
 }
 
@@ -23,7 +30,7 @@ async function requireSystemAdmin() {
  * Uses base Prisma client for cross-tenant access (NOT getTenantPrisma).
  */
 export async function getAllTenants() {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   const tenants = await prisma.tenant.findMany({
     select: {
@@ -62,7 +69,7 @@ export async function getAllTenants() {
  * Also creates a PENDING DriverInvitation with OWNER role and sends invitation email.
  */
 export async function createTenant(formData: FormData) {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   // Extract and validate input
   const name = formData.get('name');
@@ -163,7 +170,7 @@ export async function createTenant(formData: FormData) {
  * Suspend a tenant (set isActive to false).
  */
 export async function suspendTenant(tenantId: string) {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   if (!tenantId || tenantId.trim() === '') {
     throw new Error('Tenant ID is required');
@@ -183,7 +190,7 @@ export async function suspendTenant(tenantId: string) {
  * Reactivate a suspended tenant (set isActive to true).
  */
 export async function reactivateTenant(tenantId: string) {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   if (!tenantId || tenantId.trim() === '') {
     throw new Error('Tenant ID is required');
@@ -204,7 +211,7 @@ export async function reactivateTenant(tenantId: string) {
  * Uses base Prisma client (NOT getTenantPrisma) for cross-tenant queries.
  */
 export async function getSystemMetrics() {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   const startOfDay = new Date(new Date().setUTCHours(0, 0, 0, 0));
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -234,7 +241,7 @@ export async function getSystemMetrics() {
  * Get a single tenant with full detail including owner info and resource counts.
  */
 export async function getTenantById(tenantId: string) {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
@@ -278,7 +285,7 @@ export async function getTenantById(tenantId: string) {
  * Will fail if tenant has associated users, trucks, or routes.
  */
 export async function deleteTenant(tenantId: string) {
-  await requireSystemAdmin();
+  await requireAdminAccess();
 
   if (!tenantId || tenantId.trim() === '') {
     throw new Error('Tenant ID is required');

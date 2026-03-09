@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { getAdminSession } from '@/lib/auth/admin-session';
 import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
@@ -22,6 +23,23 @@ const updateStatusSchema = z.object({
   status: z.nativeEnum(SupportTicketStatus),
   resolution: z.string().max(2000, 'Resolution must be at most 2000 characters').optional(),
 });
+
+// ─── Admin auth helper ────────────────────────────────────
+
+/**
+ * Checks the admin_session cookie first (ADMIN_SECRET_KEY auth), then falls back
+ * to the legacy requireAuth() + isSystemAdmin() DB check.
+ */
+async function requireAdminAccess() {
+  const adminSession = await getAdminSession();
+  if (adminSession) return;
+
+  await requireAuth();
+  const admin = await isSystemAdmin();
+  if (!admin) {
+    throw new Error('Unauthorized: Admin access required');
+  }
+}
 
 // ─── Helper to generate ticket number ──────────────────────
 
@@ -151,11 +169,7 @@ export async function getAllTickets(filters?: {
   priority?: string;
   tenantId?: string;
 }) {
-  await requireAuth();
-  const admin = await isSystemAdmin();
-  if (!admin) {
-    throw new Error('Unauthorized: System admin access required');
-  }
+  await requireAdminAccess();
 
   // Use $queryRaw — raw SQL bypasses RLS entirely, no set_config needed.
   // SupportTicket has no RLS so this is safe for cross-tenant admin access.
@@ -233,11 +247,7 @@ export async function updateTicketStatus(
   ticketId: string,
   data: { status: string; resolution?: string }
 ): Promise<{ success: boolean; error?: string }> {
-  await requireAuth();
-  const admin = await isSystemAdmin();
-  if (!admin) {
-    throw new Error('Unauthorized: System admin access required');
-  }
+  await requireAdminAccess();
 
   const validation = updateStatusSchema.safeParse(data);
   if (!validation.success) {
@@ -380,9 +390,7 @@ export async function addAdminReply(
   ticketId: string,
   body: string
 ): Promise<{ success: boolean; error?: string }> {
-  await requireAuth();
-  const admin = await isSystemAdmin();
-  if (!admin) return { success: false, error: 'Unauthorized' };
+  try { await requireAdminAccess(); } catch { return { success: false, error: 'Unauthorized' }; }
 
   const trimmedBody = body.trim();
   if (trimmedBody.length < 1) return { success: false, error: 'Reply cannot be empty' };
@@ -456,9 +464,7 @@ export async function addAdminReply(
  * Used to load thread when expanding a ticket in the admin dashboard.
  */
 export async function getTicketMessages(ticketId: string) {
-  await requireAuth();
-  const admin = await isSystemAdmin();
-  if (!admin) throw new Error('Unauthorized');
+  await requireAdminAccess();
 
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
