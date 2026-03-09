@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/lib/auth/session';
-import { decryptAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/auth/admin-session';
 
 /**
  * Next.js middleware that resolves tenant context from the session cookie
@@ -8,16 +7,10 @@ import { decryptAdminSession, ADMIN_SESSION_COOKIE } from '@/lib/auth/admin-sess
  *
  * Flow:
  * 1. Public routes pass through (sign-in, sign-up, auth API, webhooks)
- * 2. /admin/* routes (except /admin/login): check admin_session cookie first.
- *    If valid, allow through immediately (no tenant session required).
- *    If invalid/absent, redirect to /admin/login.
- * 3. Unauthenticated requests on protected routes get redirected to sign-in
- * 4. Authenticated users without tenantId are redirected to /onboarding
+ * 2. Unauthenticated requests on protected routes get redirected to sign-in
+ * 3. Authenticated users without tenantId are redirected to /onboarding
+ * 4. System admins (isSystemAdmin=true) are restricted to admin portal paths
  * 5. Authenticated users with tenantId get x-tenant-id header injected
- *
- * Uses Web Crypto API (via session.ts decrypt / admin-session.ts decryptAdminSession)
- * which is compatible with Edge Runtime.
- * Cannot use next/headers cookies() in middleware — reads from request directly.
  */
 
 const PUBLIC_PATHS = [
@@ -27,9 +20,6 @@ const PUBLIC_PATHS = [
   '/api/auth/login',
   '/api/auth/logout',
   '/api/auth/accept-invitation',
-  '/api/admin/login',
-  '/api/admin/logout',
-  '/admin/login',
   '/api/warmup',
   '/api/webhooks',
   '/track',
@@ -73,34 +63,6 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Admin portal guard: /admin/* (except /admin/login which is in PUBLIC_PATHS)
-  // Check admin_session cookie directly — decryptAdminSession is pure crypto, Edge-safe.
-  if (pathname.startsWith('/admin')) {
-    const adminToken = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
-    const adminSession = await decryptAdminSession(adminToken);
-
-    // Validate age (8 hours) as defense-in-depth
-    const ADMIN_MAX_AGE_MS = 8 * 60 * 60 * 1000;
-    const adminValid = adminSession && (Date.now() - adminSession.loggedInAt) < ADMIN_MAX_AGE_MS;
-
-    if (adminValid) {
-      // Valid admin_session — allow through without requiring a tenant session
-      return NextResponse.next();
-    }
-
-    // No valid admin_session — fall through to check legacy isSystemAdmin via session cookie
-    const sessionToken = request.cookies.get('session')?.value;
-    const session = await decrypt(sessionToken);
-
-    if (session?.isSystemAdmin) {
-      // Legacy admin access via isSystemAdmin DB flag — allow through
-      return NextResponse.next();
-    }
-
-    // Neither auth mechanism satisfied — redirect to admin login
-    return NextResponse.redirect(new URL('/admin/login', request.url));
-  }
-
   // Read session cookie directly from request (not next/headers)
   const sessionToken = request.cookies.get('session')?.value;
   const session = await decrypt(sessionToken);
@@ -125,7 +87,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   // System admin guard: restrict to admin portal paths only
-  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/tenants', '/unauthorized', '/onboarding', '/api'];
+  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/unauthorized', '/onboarding', '/api'];
   if (session.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {
