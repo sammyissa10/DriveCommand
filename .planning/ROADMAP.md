@@ -142,9 +142,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 22-01-PLAN.md — Data model: SupportTicket model (id, tenantId, createdByUserId, subject, description, category enum BILLING/BUG/FEATURE/GENERAL, priority enum LOW/NORMAL/HIGH/URGENT, status enum OPEN/IN_PROGRESS/WAITING_ON_CUSTOMER/RESOLVED/CLOSED, closedAt), TicketMessage model (ticketId, senderType OWNER/ADMIN, senderLabel, body, createdAt), migration SQL, RLS (tenant-scoped read/write for SupportTicket and TicketMessage; bypass_rls for admin reads across all tenants), schema.prisma update
-- [ ] 22-02-PLAN.md — Owner portal UI: /support page with ticket list (status badge, priority, last updated), new ticket form (subject, category, priority, description), ticket detail page with threaded message timeline, reply form (owner can reply, auto-sets status to WAITING_ON_CUSTOMER), email notification to DriveCommand team inbox on new ticket via Resend
-- [ ] 22-03-PLAN.md — Ticket status lifecycle and notifications: admin reply triggers email to ticket creator (owner) with message preview and link, owner reply triggers admin email alert, auto-close RESOLVED tickets after 7 days of no owner reply (cron job), ticket sidebar link under Help section in owner portal nav (chat-bubble icon, unread reply badge count)
+- [ ] 22-01-PLAN.md — Extension migration: add SupportTicketCategory/Priority/TicketMessageSenderType enums, WAITING_ON_CUSTOMER status value, category+priority columns to SupportTicket (drop type column), create TicketMessage table with FK to SupportTicket, update prisma/schema.prisma
+- [ ] 22-02-PLAN.md — Owner portal: update createSupportTicket action (category+priority), add getTicketById+addOwnerReply actions, update support modal to use category+priority, update /support list page with clickable cards, new /support/[id] ticket detail page with message thread + reply form, email to DriveCommand team on new ticket and owner reply
+- [ ] 22-03-PLAN.md — Admin reply + lifecycle: addAdminReply server action (TicketMessage senderType=ADMIN), admin reply UI in ticket-list.tsx, owner email notification on admin reply, getUnreadAdminReplyCount for sidebar badge, auto-close cron /api/cron/auto-close-tickets (closes RESOLVED tickets older than 7 days), vercel.json cron entry
 
 ---
 
