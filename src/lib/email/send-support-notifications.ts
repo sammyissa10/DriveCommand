@@ -50,6 +50,26 @@ export async function sendNewTicketNotification(params: NewTicketNotificationPar
   });
 }
 
+export interface AdminReplyNotificationParams {
+  ticketNumber: string;
+  title: string;
+  body: string;
+  ownerEmail: string;
+  ticketUrl: string;
+}
+
+/**
+ * Notify the ticket owner (by email) when an admin replies to their support ticket.
+ */
+export async function sendAdminReplyNotification(params: AdminReplyNotificationParams): Promise<void> {
+  const { SupportTicketReplyToOwnerEmail } = await import('@/emails/support-ticket-reply-to-owner');
+  await sendEmail({
+    to: params.ownerEmail,
+    subject: `[${params.ticketNumber}] Support Team Reply — ${params.title}`,
+    react: SupportTicketReplyToOwnerEmail(params),
+  });
+}
+
 /**
  * Notify the DriveCommand team when an owner replies to a support ticket.
  */

@@ -6,7 +6,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
-import { sendNewTicketNotification, sendOwnerReplyNotification } from '@/lib/email/send-support-notifications';
+import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNotification } from '@/lib/email/send-support-notifications';
 
 // ─── Validation schemas ──────────────────────────────────────
 
@@ -340,5 +340,136 @@ export async function addOwnerReply(
   } catch (error) {
     console.error('[addOwnerReply] error:', error);
     return { success: false, error: 'Failed to submit reply. Please try again.' };
+  }
+}
+
+/**
+ * Add an admin reply to a support ticket (admin only).
+ * Creates a TicketMessage with senderType=ADMIN and sets ticket status to IN_PROGRESS.
+ * Sends owner an email notification (fire-and-forget).
+ */
+export async function addAdminReply(
+  ticketId: string,
+  body: string
+): Promise<{ success: boolean; error?: string }> {
+  await requireAuth();
+  const admin = await isSystemAdmin();
+  if (!admin) return { success: false, error: 'Unauthorized' };
+
+  const trimmedBody = body.trim();
+  if (trimmedBody.length < 1) return { success: false, error: 'Reply cannot be empty' };
+  if (trimmedBody.length > 4000) return { success: false, error: 'Reply too long (max 4000 chars)' };
+
+  try {
+    let ownerEmail = '';
+    let ticketNumber = '';
+    let ticketTitle = '';
+
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      const ticket = await tx.supportTicket.findFirst({
+        where: { id: ticketId },
+        select: { id: true, ticketNumber: true, title: true, submittedBy: true, status: true },
+      });
+      if (!ticket) throw new Error('Ticket not found');
+      ticketNumber = ticket.ticketNumber;
+      ticketTitle = ticket.title;
+
+      // Look up owner email via raw query (no Prisma relation)
+      type RawUser = { email: string };
+      const users = await tx.$queryRaw<RawUser[]>`
+        SELECT email FROM "User" WHERE id = ${ticket.submittedBy}::uuid LIMIT 1
+      `;
+      ownerEmail = users[0]?.email ?? '';
+
+      // Create message
+      await tx.ticketMessage.create({
+        data: {
+          ticketId,
+          senderType: 'ADMIN',
+          senderLabel: 'Support Team',
+          body: trimmedBody,
+        },
+      });
+
+      // Set status to IN_PROGRESS (opens the conversation for owner)
+      await tx.supportTicket.update({
+        where: { id: ticketId },
+        data: { status: 'IN_PROGRESS' },
+      });
+    }, TX_OPTIONS);
+
+    revalidatePath('/admin-support');
+
+    // Fire-and-forget: notify owner
+    if (ownerEmail) {
+      try {
+        await sendAdminReplyNotification({
+          ticketNumber,
+          title: ticketTitle,
+          body: trimmedBody,
+          ownerEmail,
+          ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/support/${ticketId}`,
+        });
+      } catch (emailError) {
+        console.error('[addAdminReply] owner notification email failed:', emailError);
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('[addAdminReply] error:', error);
+    return { success: false, error: 'Failed to submit reply.' };
+  }
+}
+
+/**
+ * Get all messages for a ticket (admin only).
+ * Used to load thread when expanding a ticket in the admin dashboard.
+ */
+export async function getTicketMessages(ticketId: string) {
+  await requireAuth();
+  const admin = await isSystemAdmin();
+  if (!admin) throw new Error('Unauthorized');
+
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.ticketMessage.findMany({
+      where: { ticketId },
+      orderBy: { createdAt: 'asc' },
+    });
+  }, TX_OPTIONS);
+}
+
+/**
+ * Count of tickets where the most recent TicketMessage is from ADMIN
+ * and the ticket status is not WAITING_ON_CUSTOMER (owner hasn't replied yet).
+ * Used for the sidebar unread badge in the owner portal.
+ */
+export async function getUnreadAdminReplyCount(): Promise<number> {
+  const userId = await requireAuth();
+  const session = await getSession();
+  if (!session || !session.tenantId) return 0;
+
+  try {
+    type RawResult = { count: bigint };
+    const result = await prisma.$queryRaw<RawResult[]>`
+      SELECT COUNT(DISTINCT st.id) as count
+      FROM "SupportTicket" st
+      INNER JOIN "TicketMessage" tm ON tm."ticketId" = st.id
+      WHERE st."submittedBy" = ${userId}::uuid
+        AND st."tenantId" = ${session.tenantId}::uuid
+        AND st.status != 'WAITING_ON_CUSTOMER'
+        AND st.status NOT IN ('RESOLVED', 'CLOSED')
+        AND tm."senderType" = 'ADMIN'
+        AND tm."createdAt" = (
+          SELECT MAX(tm2."createdAt")
+          FROM "TicketMessage" tm2
+          WHERE tm2."ticketId" = st.id
+        )
+    `;
+    return Number(result[0]?.count ?? 0);
+  } catch {
+    return 0; // Non-blocking — badge simply won't show
   }
 }
