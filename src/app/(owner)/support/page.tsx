@@ -4,28 +4,25 @@ import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LifeBuoy } from 'lucide-react';
 
-function getTypeBadgeClass(type: string) {
-  switch (type) {
+function getCategoryBadgeClass(category: string) {
+  switch (category) {
     case 'BUG':
       return 'bg-red-100 text-red-800 border-red-200';
-    case 'FEATURE_REQUEST':
+    case 'FEATURE':
       return 'bg-purple-100 text-purple-800 border-purple-200';
-    case 'QUESTION':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'ACCOUNT_ISSUE':
+    case 'BILLING':
       return 'bg-orange-100 text-orange-800 border-orange-200';
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
   }
 }
 
-function getTypeLabel(type: string) {
-  switch (type) {
+function getCategoryLabel(category: string) {
+  switch (category) {
     case 'BUG': return 'Bug Report';
-    case 'FEATURE_REQUEST': return 'Feature Request';
-    case 'QUESTION': return 'Question';
-    case 'ACCOUNT_ISSUE': return 'Account Issue';
-    default: return 'Other';
+    case 'FEATURE': return 'Feature Request';
+    case 'BILLING': return 'Billing';
+    default: return 'General';
   }
 }
 
@@ -82,8 +79,8 @@ export default async function OwnerSupportPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs font-mono text-muted-foreground">{ticket.ticketNumber}</span>
-                    <Badge className={getTypeBadgeClass(ticket.type)}>
-                      {getTypeLabel(ticket.type)}
+                    <Badge className={getCategoryBadgeClass(ticket.category)}>
+                      {getCategoryLabel(ticket.category)}
                     </Badge>
                     <Badge className={getStatusBadgeClass(ticket.status)}>
                       {getStatusLabel(ticket.status)}

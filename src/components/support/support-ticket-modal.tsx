@@ -23,12 +23,11 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 
-const TICKET_TYPES = [
+const TICKET_CATEGORIES = [
+  { value: 'GENERAL', label: 'General' },
   { value: 'BUG', label: 'Bug Report' },
-  { value: 'FEATURE_REQUEST', label: 'Feature Request' },
-  { value: 'QUESTION', label: 'Question' },
-  { value: 'ACCOUNT_ISSUE', label: 'Account Issue' },
-  { value: 'OTHER', label: 'Other' },
+  { value: 'FEATURE', label: 'Feature Request' },
+  { value: 'BILLING', label: 'Billing' },
 ];
 
 export function SupportTicketModal() {
@@ -36,7 +35,7 @@ export function SupportTicketModal() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [type, setType] = useState('');
+  const [category, setCategory] = useState('GENERAL');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -44,7 +43,7 @@ export function SupportTicketModal() {
   if (!user) return null;
 
   function resetForm() {
-    setType('');
+    setCategory('GENERAL');
     setTitle('');
     setDescription('');
   }
@@ -52,10 +51,6 @@ export function SupportTicketModal() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!type) {
-      toast.error('Please select a ticket type');
-      return;
-    }
     if (title.trim().length < 3) {
       toast.error('Title must be at least 3 characters');
       return;
@@ -68,7 +63,7 @@ export function SupportTicketModal() {
     setLoading(true);
     try {
       const result = await createSupportTicket({
-        type,
+        category,
         title: title.trim(),
         description: description.trim(),
         fromPage: pathname,
@@ -114,19 +109,19 @@ export function SupportTicketModal() {
           </SheetHeader>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-            {/* Ticket Type */}
+            {/* Ticket Category */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">
-                Type <span className="text-destructive">*</span>
+                Category
               </label>
-              <Select value={type} onValueChange={setType}>
+              <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select ticket type..." />
+                  <SelectValue placeholder="Select category..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {TICKET_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
-                      {t.label}
+                  {TICKET_CATEGORIES.map((c) => (
+                    <SelectItem key={c.value} value={c.value}>
+                      {c.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

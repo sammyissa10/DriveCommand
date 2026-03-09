@@ -5,12 +5,12 @@ import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { SupportTicketStatus, SupportTicketType } from '@/generated/prisma';
+import { SupportTicketStatus, SupportTicketCategory } from '@/generated/prisma';
 
 // ─── Validation schemas ──────────────────────────────────────
 
 const createTicketSchema = z.object({
-  type: z.nativeEnum(SupportTicketType),
+  category: z.nativeEnum(SupportTicketCategory).default(SupportTicketCategory.GENERAL),
   title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be at most 200 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description must be at most 2000 characters'),
   fromPage: z.string().min(1, 'Page path is required'),
@@ -56,7 +56,7 @@ async function generateTicketNumber(): Promise<string> {
  * Any authenticated user (OWNER, MANAGER, DRIVER) can submit.
  */
 export async function createSupportTicket(data: {
-  type: string;
+  category?: string;
   title: string;
   description: string;
   fromPage: string;
@@ -76,7 +76,7 @@ export async function createSupportTicket(data: {
     };
   }
 
-  const { type, title, description, fromPage } = validation.data;
+  const { category, title, description, fromPage } = validation.data;
   const tenantId = session.tenantId;
 
   try {
@@ -91,7 +91,7 @@ export async function createSupportTicket(data: {
           tenantId,
           submittedBy: userId,
           fromPage,
-          type,
+          category,
           title,
           description,
         },

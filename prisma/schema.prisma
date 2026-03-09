@@ -798,39 +798,64 @@ model TenantIntegration {
 
 // ─── Support Ticket Models ───────────────────────────────────
 
-enum SupportTicketType {
-  BUG
-  FEATURE_REQUEST
-  QUESTION
-  ACCOUNT_ISSUE
-  OTHER
-}
-
 enum SupportTicketStatus {
   OPEN
   IN_PROGRESS
+  WAITING_ON_CUSTOMER
   RESOLVED
   CLOSED
 }
 
+enum SupportTicketCategory {
+  BILLING
+  BUG
+  FEATURE
+  GENERAL
+}
+
+enum SupportTicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum TicketMessageSenderType {
+  OWNER
+  ADMIN
+}
+
 model SupportTicket {
-  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ticketNumber String              @unique
-  tenantId     String              @db.Uuid
-  submittedBy  String              @db.Uuid
+  id           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketNumber String                @unique
+  tenantId     String                @db.Uuid
+  submittedBy  String                @db.Uuid
   fromPage     String
-  type         SupportTicketType
+  category     SupportTicketCategory @default(GENERAL)
+  priority     SupportTicketPriority @default(NORMAL)
   title        String
   description  String
-  status       SupportTicketStatus @default(OPEN)
+  status       SupportTicketStatus   @default(OPEN)
   resolution   String?
-  resolvedAt   DateTime?           @db.Timestamptz
-  createdAt    DateTime            @default(now()) @db.Timestamptz
-  updatedAt    DateTime            @updatedAt @db.Timestamptz
+  resolvedAt   DateTime?             @db.Timestamptz
+  createdAt    DateTime              @default(now()) @db.Timestamptz
+  updatedAt    DateTime              @updatedAt @db.Timestamptz
 
   @@index([tenantId])
   @@index([submittedBy])
   @@index([status])
+  @@index([createdAt])
+}
+
+model TicketMessage {
+  id          String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId    String                  @db.Uuid
+  senderType  TicketMessageSenderType
+  senderLabel String
+  body        String
+  createdAt   DateTime                @default(now()) @db.Timestamptz
+
+  @@index([ticketId])
   @@index([createdAt])
 }
 
