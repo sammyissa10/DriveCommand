@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 22 Support Ticket System — IN PROGRESS (Plan 01 of 03 complete)
-Status: Phase 22-01 complete — database foundation ready for Plan 02 (server actions)
-Last activity: 2026-03-09 - Completed Phase 22-01: extend SupportTicket schema, add TicketMessage table, new enums
+Phase: Phase 22 Support Ticket System — IN PROGRESS (Plan 02 of 03 complete)
+Status: Phase 22-02 complete — owner portal UI (list+detail+reply) and server actions ready for Plan 03 (admin reply UI)
+Last activity: 2026-03-09 - Completed Phase 22-02: owner support ticket detail page, threaded reply form, email notifications
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -300,6 +300,11 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 22-01]: No @relation on TicketMessage — FK enforced at SQL level only, avoids polluting SupportTicket model with relation arrays (same pattern as SupportTicket/quick-41)
 - [Phase 22-01]: SupportTicketType enum removed from schema.prisma only, not dropped in SQL — DB system catalog may reference it; safe to leave as unused SQL type
 - [Phase 22-01]: SupportTicketCategory replaces SupportTicketType with 4-value set (BILLING, BUG, FEATURE, GENERAL) — cleaner than old 5-value set
+- [Phase 22-02]: Fire-and-forget email for team notifications: await inside separate try/catch block so failures are logged but never block ticket operations
+- [Phase 22-02]: OwnerReplyForm in dedicated owner-reply-form.tsx with 'use client' — colocated with server page, clean module boundary
+- [Phase 22-02]: DRIVECOMMAND_SUPPORT_EMAIL env var with GMAIL_USER fallback — no breakage until dedicated support email is provisioned
+- [Phase 22-02]: Both CLOSED and RESOLVED hide owner reply form — both are terminal statuses requiring no further action
+- [Phase 22-02]: params typed as Promise<{id: string}> — required by Next.js 15 App Router async params
 
 ### Pending Todos
 
@@ -401,10 +406,11 @@ None blocking immediate progress.
 - Quick-43 (2026-03-04): Three-state tenant status (Pending/Active/Suspended) via ownerSetupComplete computed from OWNER-role user existence — 79s, 2 tasks, 2 files affected
 - Quick-44 (2026-03-07): Status tab filtering on admin support dashboard — All/Open/In Progress/Closed tabs with per-tab counts, RESOLVED+CLOSED combined — ~60s, 1 task, 1 file affected
 | Phase 22-support-ticket-system P01 | 261 | 2 tasks | 6 files |
+| Phase 22-support-ticket-system P02 | 285 | 2 tasks | 8 files |
 
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed Phase 22-01 — extend SupportTicket schema, add TicketMessage table (SupportTicketCategory, SupportTicketPriority, TicketMessageSenderType enums, category/priority columns)
+Stopped at: Completed Phase 22-02 — owner portal UI (list+detail+reply), server actions (getTicketById, addOwnerReply), email notifications to DriveCommand team
 Resume file: None
-Next action: Execute Phase 22-02 — server actions for threaded replies
+Next action: Execute Phase 22-03 — admin reply UI and thread management
