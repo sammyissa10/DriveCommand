@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LifeBuoy, Ticket, Clock, CheckCircle } from 'lucide-react';
 import { AdminTicketList } from './ticket-list';
+import { prisma } from '@/lib/db/prisma';
 
 export default async function AdminSupportPage() {
   let tickets: Awaited<ReturnType<typeof getAllTickets>> = [];
@@ -14,6 +15,17 @@ export default async function AdminSupportPage() {
   } catch (err) {
     console.error('[AdminSupportPage] getAllTickets error:', err);
     fetchError = err instanceof Error ? err.message : 'Failed to load tickets';
+  }
+
+  // Fetch all tenant names for the Priority + Tenant filter dropdown
+  let tenantOptions: { id: string; name: string }[] = [];
+  try {
+    tenantOptions = await prisma.tenant.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+  } catch (err) {
+    console.error('[AdminSupportPage] tenant list error:', err);
   }
 
   // Derive stats
@@ -84,7 +96,7 @@ export default async function AdminSupportPage() {
           description="Tickets submitted by users across all tenants will appear here."
         />
       ) : (
-        <AdminTicketList tickets={tickets} />
+        <AdminTicketList tickets={tickets} tenantOptions={tenantOptions} />
       )}
     </div>
   );

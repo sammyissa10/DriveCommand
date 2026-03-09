@@ -144,8 +144,13 @@ export async function getMyTickets() {
 /**
  * Get all tickets across all tenants (admin only).
  * Returns tickets enriched with submitter email and tenant name.
+ * Optional filters are additive — if omitted, behavior is identical to before.
  */
-export async function getAllTickets() {
+export async function getAllTickets(filters?: {
+  status?: string;
+  priority?: string;
+  tenantId?: string;
+}) {
   await requireAuth();
   const admin = await isSystemAdmin();
   if (!admin) {
@@ -161,9 +166,31 @@ export async function getAllTickets() {
     status: string; resolution: string | null; resolvedAt: Date | null;
     createdAt: Date; updatedAt: Date;
   };
-  const tickets = await prisma.$queryRaw<RawTicket[]>`
-    SELECT * FROM "SupportTicket" ORDER BY "createdAt" DESC
-  `;
+
+  // Build WHERE clauses for optional server-side filters
+  const conditions: string[] = [];
+  const params: unknown[] = [];
+  let paramIndex = 1;
+
+  if (filters?.status) {
+    conditions.push(`status = $${paramIndex++}`);
+    params.push(filters.status);
+  }
+  if (filters?.priority) {
+    conditions.push(`priority = $${paramIndex++}`);
+    params.push(filters.priority);
+  }
+  if (filters?.tenantId) {
+    conditions.push(`"tenantId" = $${paramIndex++}::uuid`);
+    params.push(filters.tenantId);
+  }
+
+  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const tickets = await prisma.$queryRawUnsafe<RawTicket[]>(
+    `SELECT * FROM "SupportTicket" ${whereClause} ORDER BY "createdAt" DESC`,
+    ...params
+  );
 
   if (tickets.length === 0) return [];
 
