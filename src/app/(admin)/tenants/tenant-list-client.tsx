@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   useReactTable,
   getCoreRowModel,
@@ -140,6 +141,21 @@ export function TenantListClient({ tenants }: TenantListClientProps) {
       cell: (info) => {
         const date = info.getValue() as Date;
         return new Date(date).toLocaleDateString();
+      },
+    },
+    {
+      id: 'view',
+      header: '',
+      cell: ({ row }) => {
+        const tenant = row.original;
+        return (
+          <Link
+            href={`/tenants/${tenant.id}`}
+            className="text-blue-600 hover:text-blue-800 font-medium"
+          >
+            View
+          </Link>
+        );
       },
     },
     {

@@ -343,6 +343,7 @@ type TabValue = 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
 
 interface AdminTicketListProps {
   tickets: TicketWithDetails[];
+  tenantOptions?: { id: string; name: string }[];
 }
 
 export function AdminTicketList({ tickets }: AdminTicketListProps) {
