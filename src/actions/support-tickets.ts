@@ -156,7 +156,8 @@ export async function getAllTickets() {
   // SupportTicket has no RLS so this is safe for cross-tenant admin access.
   type RawTicket = {
     id: string; ticketNumber: string; tenantId: string; submittedBy: string;
-    fromPage: string; type: string; title: string; description: string;
+    fromPage: string; category: SupportTicketCategory; priority: SupportTicketPriority;
+    title: string; description: string;
     status: string; resolution: string | null; resolvedAt: Date | null;
     createdAt: Date; updatedAt: Date;
   };
