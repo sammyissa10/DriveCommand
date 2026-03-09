@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 22 Support Ticket System — COMPLETE (all 3 plans shipped)
-Status: Phase 22-03 complete — admin reply UI, owner email notification, auto-close cron, sidebar unread badge. Phase 22 fully complete.
-Last activity: 2026-03-09 - Completed Phase 22-03: admin reply action, owner email template, auto-close cron, sidebar unread badge
+Phase: Phase 23 System Admin Portal — IN PROGRESS (Plan 01 of N shipped)
+Status: Phase 23-01 complete — ADMIN_SECRET_KEY auth layer: admin-session library, /admin/login page, login/logout API routes, middleware guard, updated layout.
+Last activity: 2026-03-09 - Completed Phase 23-01: ADMIN_SECRET_KEY auth for /admin/* portal
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -307,6 +307,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 22-02]: params typed as Promise<{id: string}> — required by Next.js 15 App Router async params
 - [Phase 22-03]: SupportBadge as isolated server component passed via Suspense from OwnerLayout — sidebar is use client, server actions cannot be called in component body; props-as-children pattern maintains correct server/client boundary
 - [Phase 22-03]: WAITING_ON_CUSTOMER included in IN_PROGRESS tab count — both statuses represent active in-flight conversations from admin perspective
+- [Phase 23-01]: ADMIN_SECRET_KEY plain string compare + 500ms delay for brute-force resistance; decryptAdminSession is pure Web Crypto (Edge-safe for middleware); admin_session guard in middleware bypasses tenant session checks entirely
+- [Phase 23-01]: UserMenu conditionally rendered only when tenant session exists — admin-session-only users see Logout link; /admin added to ADMIN_ALLOWED_PATHS for legacy isSystemAdmin DB access to new /admin/* routes
 
 ### Pending Todos
 
@@ -410,10 +412,11 @@ None blocking immediate progress.
 | Phase 22-support-ticket-system P01 | 261 | 2 tasks | 6 files |
 | Phase 22-support-ticket-system P02 | 285 | 2 tasks | 8 files |
 | Phase 22-support-ticket-system P03 | 276 | 2 tasks | 9 files |
+| Phase 23 P01 | 175 | 2 tasks | 7 files |
 
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed Phase 22-03 — admin reply UI, owner email notification, auto-close cron, sidebar unread badge. Phase 22 complete.
+Stopped at: Completed Phase 23-01 — ADMIN_SECRET_KEY auth layer for /admin/* portal: admin-session library, login/logout API routes, /admin/login page, updated layout + middleware.
 Resume file: None
-Next action: Begin Phase 23 — System Admin Portal
+Next action: Continue Phase 23 — System Admin Portal (Plan 02)
