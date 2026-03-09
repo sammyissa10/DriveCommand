@@ -1,7 +1,6 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
-import { getAdminSession } from '@/lib/auth/admin-session';
 import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
@@ -26,14 +25,7 @@ const updateStatusSchema = z.object({
 
 // ─── Admin auth helper ────────────────────────────────────
 
-/**
- * Checks the admin_session cookie first (ADMIN_SECRET_KEY auth), then falls back
- * to the legacy requireAuth() + isSystemAdmin() DB check.
- */
 async function requireAdminAccess() {
-  const adminSession = await getAdminSession();
-  if (adminSession) return;
-
   await requireAuth();
   const admin = await isSystemAdmin();
   if (!admin) {

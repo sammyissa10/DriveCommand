@@ -1,23 +1,12 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
-import { getAdminSession } from '@/lib/auth/admin-session';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 
-/**
- * Helper function to enforce admin authorization.
- * Checks the admin_session cookie first (ADMIN_SECRET_KEY auth), then falls back
- * to the legacy requireAuth() + isSystemAdmin() DB check.
- */
 async function requireAdminAccess() {
-  // Check ADMIN_SECRET_KEY cookie first (no DB hit)
-  const adminSession = await getAdminSession();
-  if (adminSession) return; // valid admin_session cookie — allow through
-
-  // Fall back to legacy isSystemAdmin DB check
   await requireAuth();
   const admin = await isSystemAdmin();
   if (!admin) {
