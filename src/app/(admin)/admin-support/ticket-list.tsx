@@ -343,13 +343,15 @@ type TabValue = 'ALL' | 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
 
 interface AdminTicketListProps {
   tickets: TicketWithDetails[];
-  tenantOptions?: { id: string; name: string }[];
+  tenantOptions: { id: string; name: string }[];
 }
 
-export function AdminTicketList({ tickets }: AdminTicketListProps) {
+export function AdminTicketList({ tickets, tenantOptions }: AdminTicketListProps) {
   const [activeTab, setActiveTab] = useState<TabValue>('ALL');
+  const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
+  const [tenantFilter, setTenantFilter] = useState<string>('ALL');
 
-  // Pre-compute counts from the full unfiltered list
+  // Pre-compute tab counts from the full unfiltered list (unaffected by priority/tenant filters)
   const counts = {
     ALL: tickets.length,
     OPEN: tickets.filter((t) => t.status === 'OPEN').length,
@@ -357,14 +359,17 @@ export function AdminTicketList({ tickets }: AdminTicketListProps) {
     CLOSED: tickets.filter((t) => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
   };
 
-  // Derive filtered list based on active tab
-  const filteredTickets = tickets.filter((t) => {
-    if (activeTab === 'ALL') return true;
-    if (activeTab === 'OPEN') return t.status === 'OPEN';
-    if (activeTab === 'IN_PROGRESS') return t.status === 'IN_PROGRESS' || t.status === 'WAITING_ON_CUSTOMER';
-    if (activeTab === 'CLOSED') return t.status === 'RESOLVED' || t.status === 'CLOSED';
-    return true;
-  });
+  // Derive filtered list — status tab + priority + tenant all applied together
+  const filteredTickets = tickets
+    .filter((t) => {
+      if (activeTab === 'ALL') return true;
+      if (activeTab === 'OPEN') return t.status === 'OPEN';
+      if (activeTab === 'IN_PROGRESS') return t.status === 'IN_PROGRESS' || t.status === 'WAITING_ON_CUSTOMER';
+      if (activeTab === 'CLOSED') return t.status === 'RESOLVED' || t.status === 'CLOSED';
+      return true;
+    })
+    .filter((t) => priorityFilter === 'ALL' || t.priority === priorityFilter)
+    .filter((t) => tenantFilter === 'ALL' || t.tenantId === tenantFilter);
 
   const headingLabel =
     activeTab === 'ALL' ? 'All Tickets' :
@@ -383,8 +388,45 @@ export function AdminTicketList({ tickets }: AdminTicketListProps) {
   const activeTabClass = 'bg-white border border-gray-200 shadow-sm text-gray-900 font-semibold';
   const inactiveTabClass = 'text-gray-500 hover:text-gray-700 hover:bg-gray-100';
 
+  const hasActiveFilter = priorityFilter !== 'ALL' || tenantFilter !== 'ALL';
+
   return (
     <div className="space-y-3">
+      {/* Priority + Tenant filter controls */}
+      <div className="flex items-center gap-3 mb-3 flex-wrap">
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value)}
+          className="border border-gray-200 rounded-md px-3 py-1.5 text-sm bg-white text-gray-700"
+        >
+          <option value="ALL">All Priorities</option>
+          <option value="URGENT">Urgent</option>
+          <option value="HIGH">High</option>
+          <option value="NORMAL">Normal</option>
+          <option value="LOW">Low</option>
+        </select>
+
+        <select
+          value={tenantFilter}
+          onChange={(e) => setTenantFilter(e.target.value)}
+          className="border border-gray-200 rounded-md px-3 py-1.5 text-sm bg-white text-gray-700 max-w-[200px]"
+        >
+          <option value="ALL">All Tenants</option>
+          {tenantOptions.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
+          ))}
+        </select>
+
+        {hasActiveFilter && (
+          <button
+            onClick={() => { setPriorityFilter('ALL'); setTenantFilter('ALL'); }}
+            className="text-xs text-gray-400 hover:text-gray-600 underline"
+          >
+            Reset filters
+          </button>
+        )}
+      </div>
+
       {/* Tab bar */}
       <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg w-fit">
         {tabs.map((tab) => (
