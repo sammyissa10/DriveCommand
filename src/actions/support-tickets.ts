@@ -5,12 +5,14 @@ import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { SupportTicketStatus, SupportTicketCategory } from '@/generated/prisma';
+import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
+import { sendNewTicketNotification, sendOwnerReplyNotification } from '@/lib/email/send-support-notifications';
 
 // ─── Validation schemas ──────────────────────────────────────
 
 const createTicketSchema = z.object({
   category: z.nativeEnum(SupportTicketCategory).default(SupportTicketCategory.GENERAL),
+  priority: z.nativeEnum(SupportTicketPriority).default(SupportTicketPriority.NORMAL),
   title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be at most 200 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description must be at most 2000 characters'),
   fromPage: z.string().min(1, 'Page path is required'),
@@ -57,6 +59,7 @@ async function generateTicketNumber(): Promise<string> {
  */
 export async function createSupportTicket(data: {
   category?: string;
+  priority?: string;
   title: string;
   description: string;
   fromPage: string;
@@ -76,7 +79,7 @@ export async function createSupportTicket(data: {
     };
   }
 
-  const { category, title, description, fromPage } = validation.data;
+  const { category, priority, title, description, fromPage } = validation.data;
   const tenantId = session.tenantId;
 
   try {
@@ -92,11 +95,27 @@ export async function createSupportTicket(data: {
           submittedBy: userId,
           fromPage,
           category,
+          priority,
           title,
           description,
         },
       });
     }, TX_OPTIONS);
+
+    // Fire-and-forget: notify DriveCommand team of new ticket
+    try {
+      await sendNewTicketNotification({
+        ticketNumber,
+        title,
+        category: validation.data.category,
+        priority: validation.data.priority,
+        submitterEmail: session.email,
+        tenantId: tenantId ?? '',
+        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+      });
+    } catch (emailError) {
+      console.error('[createSupportTicket] team notification email failed:', emailError);
+    }
 
     return { success: true, ticketNumber };
   } catch (error) {
@@ -222,5 +241,104 @@ export async function updateTicketStatus(
   } catch (error) {
     console.error('[updateTicketStatus] error:', error);
     return { success: false, error: 'Failed to update ticket status.' };
+  }
+}
+
+/**
+ * Get a single ticket by ID, scoped to the current authenticated user's tenant.
+ * Returns ticket + messages (owner can only see their own tickets).
+ */
+export async function getTicketById(ticketId: string) {
+  const userId = await requireAuth();
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const ticket = await tx.supportTicket.findFirst({
+      where: {
+        id: ticketId,
+        tenantId: session.tenantId ?? undefined,
+        submittedBy: userId,
+      },
+    });
+    if (!ticket) return { ticket: null, messages: [] };
+    const messages = await tx.ticketMessage.findMany({
+      where: { ticketId },
+      orderBy: { createdAt: 'asc' },
+    });
+    return { ticket, messages };
+  }, TX_OPTIONS);
+
+  return result;
+}
+
+/**
+ * Add an owner reply to an existing ticket.
+ * Creates a TicketMessage with senderType=OWNER and sets ticket status to WAITING_ON_CUSTOMER.
+ */
+export async function addOwnerReply(
+  ticketId: string,
+  body: string
+): Promise<{ success: boolean; error?: string }> {
+  const userId = await requireAuth();
+  const session = await getSession();
+  if (!session) return { success: false, error: 'Unauthorized' };
+
+  const trimmedBody = body.trim();
+  if (trimmedBody.length < 1) return { success: false, error: 'Reply cannot be empty' };
+  if (trimmedBody.length > 4000) return { success: false, error: 'Reply too long (max 4000 chars)' };
+
+  try {
+    let ticketNumber = '';
+    let ticketTitle = '';
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      // Verify ticket belongs to this user's tenant
+      const ticket = await tx.supportTicket.findFirst({
+        where: { id: ticketId, tenantId: session.tenantId ?? undefined, submittedBy: userId },
+        select: { id: true, ticketNumber: true, title: true },
+      });
+      if (!ticket) throw new Error('Ticket not found');
+      ticketNumber = ticket.ticketNumber;
+      ticketTitle = ticket.title;
+
+      // Create message
+      const senderLabel = [session.firstName, session.lastName].filter(Boolean).join(' ') || session.email;
+      await tx.ticketMessage.create({
+        data: {
+          ticketId,
+          senderType: 'OWNER',
+          senderLabel,
+          body: trimmedBody,
+        },
+      });
+
+      // Auto-set status to WAITING_ON_CUSTOMER
+      await tx.supportTicket.update({
+        where: { id: ticketId },
+        data: { status: 'WAITING_ON_CUSTOMER' },
+      });
+    }, TX_OPTIONS);
+
+    revalidatePath(`/support/${ticketId}`);
+
+    // Fire-and-forget: notify DriveCommand team of owner reply
+    try {
+      await sendOwnerReplyNotification({
+        ticketNumber,
+        title: ticketTitle,
+        body: trimmedBody,
+        submitterEmail: session.email,
+        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+      });
+    } catch (emailError) {
+      console.error('[addOwnerReply] team notification email failed:', emailError);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('[addOwnerReply] error:', error);
+    return { success: false, error: 'Failed to submit reply. Please try again.' };
   }
 }

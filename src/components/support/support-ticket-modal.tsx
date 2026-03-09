@@ -24,10 +24,17 @@ import {
 import { Input } from '@/components/ui/input';
 
 const TICKET_CATEGORIES = [
-  { value: 'GENERAL', label: 'General' },
+  { value: 'BILLING', label: 'Billing' },
   { value: 'BUG', label: 'Bug Report' },
   { value: 'FEATURE', label: 'Feature Request' },
-  { value: 'BILLING', label: 'Billing' },
+  { value: 'GENERAL', label: 'General' },
+];
+
+const TICKET_PRIORITIES = [
+  { value: 'LOW', label: 'Low' },
+  { value: 'NORMAL', label: 'Normal' },
+  { value: 'HIGH', label: 'High' },
+  { value: 'URGENT', label: 'Urgent' },
 ];
 
 export function SupportTicketModal() {
@@ -36,6 +43,7 @@ export function SupportTicketModal() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState('GENERAL');
+  const [priority, setPriority] = useState('NORMAL');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -44,6 +52,7 @@ export function SupportTicketModal() {
 
   function resetForm() {
     setCategory('GENERAL');
+    setPriority('NORMAL');
     setTitle('');
     setDescription('');
   }
@@ -64,6 +73,7 @@ export function SupportTicketModal() {
     try {
       const result = await createSupportTicket({
         category,
+        priority,
         title: title.trim(),
         description: description.trim(),
         fromPage: pathname,
@@ -122,6 +132,25 @@ export function SupportTicketModal() {
                   {TICKET_CATEGORIES.map((c) => (
                     <SelectItem key={c.value} value={c.value}>
                       {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Ticket Priority */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">
+                Priority
+              </label>
+              <Select value={priority} onValueChange={setPriority}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select priority..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {TICKET_PRIORITIES.map((p) => (
+                    <SelectItem key={p.value} value={p.value}>
+                      {p.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
