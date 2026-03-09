@@ -40,7 +40,11 @@ import {
 import { UserMenu } from "@/components/navigation/user-menu"
 import { UserRole } from "@/lib/auth/roles"
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  supportBadge?: React.ReactNode;
+}
+
+export function AppSidebar({ supportBadge }: AppSidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
 
@@ -404,6 +408,7 @@ export function AppSidebar() {
                   <Link href="/support">
                     <LifeBuoy />
                     <span>My Tickets</span>
+                    {userRole === UserRole.OWNER && supportBadge}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

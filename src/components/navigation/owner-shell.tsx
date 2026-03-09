@@ -4,10 +4,15 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/navigation/sidebar"
 import { Separator } from "@/components/ui/separator"
 
-export function OwnerShell({ children }: { children: React.ReactNode }) {
+interface OwnerShellProps {
+  children: React.ReactNode;
+  supportBadge?: React.ReactNode;
+}
+
+export function OwnerShell({ children, supportBadge }: OwnerShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <AppSidebar />
+      <AppSidebar supportBadge={supportBadge} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-6">
           <SidebarTrigger className="-ml-1" />

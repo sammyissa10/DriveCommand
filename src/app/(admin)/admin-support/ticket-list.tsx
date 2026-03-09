@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { updateTicketStatus } from '@/actions/support-tickets';
+import { updateTicketStatus, addAdminReply, getTicketMessages } from '@/actions/support-tickets';
 import type { TicketWithDetails } from '@/actions/support-tickets';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,8 @@ function getStatusBadgeClass(status: string) {
       return 'bg-yellow-100 text-yellow-800 border-yellow-200';
     case 'IN_PROGRESS':
       return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'WAITING_ON_CUSTOMER':
+      return 'bg-orange-100 text-orange-800 border-orange-200';
     case 'RESOLVED':
       return 'bg-green-100 text-green-800 border-green-200';
     case 'CLOSED':
@@ -59,9 +61,19 @@ function getStatusBadgeClass(status: string) {
 function getStatusLabel(status: string) {
   switch (status) {
     case 'IN_PROGRESS': return 'In Progress';
+    case 'WAITING_ON_CUSTOMER': return 'Waiting on Customer';
     default: return status.charAt(0) + status.slice(1).toLowerCase();
   }
 }
+
+type TicketMessage = {
+  id: string;
+  ticketId: string;
+  senderType: string;
+  senderLabel: string;
+  body: string;
+  createdAt: Date;
+};
 
 interface TicketRowProps {
   ticket: TicketWithDetails;
@@ -72,8 +84,23 @@ function TicketRow({ ticket }: TicketRowProps) {
   const [status, setStatus] = useState(ticket.status as string);
   const [resolution, setResolution] = useState(ticket.resolution ?? '');
   const [saving, setSaving] = useState(false);
+  const [replyText, setReplyText] = useState('');
+  const [messages, setMessages] = useState<TicketMessage[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [, startReplyTransition] = useTransition();
 
   const showResolution = status === 'RESOLVED' || status === 'CLOSED';
+
+  // Load messages when row expands
+  useEffect(() => {
+    if (!expanded) return;
+    if (messages.length > 0) return; // Already loaded
+    setLoadingMessages(true);
+    getTicketMessages(ticket.id)
+      .then((msgs) => setMessages(msgs as TicketMessage[]))
+      .catch(() => toast.error('Failed to load thread'))
+      .finally(() => setLoadingMessages(false));
+  }, [expanded, ticket.id, messages.length]);
 
   async function handleSave() {
     setSaving(true);
@@ -92,6 +119,32 @@ function TicketRow({ ticket }: TicketRowProps) {
     } finally {
       setSaving(false);
     }
+  }
+
+  function handleSendReply() {
+    if (!replyText.trim()) {
+      toast.error('Reply cannot be empty');
+      return;
+    }
+    startReplyTransition(async () => {
+      try {
+        const result = await addAdminReply(ticket.id, replyText);
+        if (result.success) {
+          toast.success('Reply sent');
+          setReplyText('');
+          // Reload messages to show the new reply
+          setMessages([]);
+          const msgs = await getTicketMessages(ticket.id);
+          setMessages(msgs as TicketMessage[]);
+          // Update local status to IN_PROGRESS
+          setStatus('IN_PROGRESS');
+        } else {
+          toast.error(result.error ?? 'Failed to send reply');
+        }
+      } catch {
+        toast.error('Failed to send reply');
+      }
+    });
   }
 
   return (
@@ -147,6 +200,71 @@ function TicketRow({ ticket }: TicketRowProps) {
               <p className="text-xs font-mono text-gray-600">{ticket.fromPage}</p>
             </div>
 
+            {/* Message thread */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 mb-2">Thread</p>
+              {loadingMessages ? (
+                <p className="text-xs text-gray-400">Loading thread...</p>
+              ) : messages.length === 0 ? (
+                <p className="text-xs text-gray-400">No replies yet.</p>
+              ) : (
+                <div className="space-y-2">
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`rounded-md p-3 text-sm ${
+                        msg.senderType === 'ADMIN'
+                          ? 'bg-blue-50 border border-blue-100'
+                          : 'bg-white border border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span
+                          className={`text-xs font-semibold ${
+                            msg.senderType === 'ADMIN' ? 'text-blue-700' : 'text-gray-700'
+                          }`}
+                        >
+                          {msg.senderLabel}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {new Date(msg.createdAt).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          })}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 whitespace-pre-wrap">{msg.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Admin reply form */}
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-gray-500">Send Reply to Owner</p>
+              <textarea
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                rows={4}
+                maxLength={4000}
+                placeholder="Type your reply to the owner..."
+                className="flex w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none"
+              />
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">{replyText.length}/4000</span>
+                <Button
+                  size="sm"
+                  onClick={handleSendReply}
+                  disabled={!replyText.trim()}
+                >
+                  Send Reply
+                </Button>
+              </div>
+            </div>
+
             {/* Status update */}
             <div className="space-y-3">
               <p className="text-xs font-medium text-gray-500">Update Status</p>
@@ -157,6 +275,7 @@ function TicketRow({ ticket }: TicketRowProps) {
                 <SelectContent>
                   <SelectItem value="OPEN">Open</SelectItem>
                   <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="WAITING_ON_CUSTOMER">Waiting on Customer</SelectItem>
                   <SelectItem value="RESOLVED">Resolved</SelectItem>
                   <SelectItem value="CLOSED">Closed</SelectItem>
                 </SelectContent>
@@ -207,7 +326,7 @@ export function AdminTicketList({ tickets }: AdminTicketListProps) {
   const counts = {
     ALL: tickets.length,
     OPEN: tickets.filter((t) => t.status === 'OPEN').length,
-    IN_PROGRESS: tickets.filter((t) => t.status === 'IN_PROGRESS').length,
+    IN_PROGRESS: tickets.filter((t) => t.status === 'IN_PROGRESS' || t.status === 'WAITING_ON_CUSTOMER').length,
     CLOSED: tickets.filter((t) => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
   };
 
@@ -215,7 +334,7 @@ export function AdminTicketList({ tickets }: AdminTicketListProps) {
   const filteredTickets = tickets.filter((t) => {
     if (activeTab === 'ALL') return true;
     if (activeTab === 'OPEN') return t.status === 'OPEN';
-    if (activeTab === 'IN_PROGRESS') return t.status === 'IN_PROGRESS';
+    if (activeTab === 'IN_PROGRESS') return t.status === 'IN_PROGRESS' || t.status === 'WAITING_ON_CUSTOMER';
     if (activeTab === 'CLOSED') return t.status === 'RESOLVED' || t.status === 'CLOSED';
     return true;
   });

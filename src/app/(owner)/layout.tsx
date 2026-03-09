@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getSession } from "@/lib/auth/session";
 import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
+import { SupportBadge } from "@/components/navigation/support-badge";
 
 // All owner-portal pages require auth — force dynamic rendering so Next.js
 // never attempts static pre-rendering (which has no session context).
@@ -33,5 +35,9 @@ export default async function OwnerLayout({
     redirect("/unauthorized");
   }
 
-  return <OwnerShell>{children}</OwnerShell>;
+  return (
+    <OwnerShell supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
+      {children}
+    </OwnerShell>
+  );
 }
