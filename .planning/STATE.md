@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 23 System Admin Portal — IN PROGRESS (Plan 01 of N shipped)
-Status: Phase 23-01 complete — ADMIN_SECRET_KEY auth layer: admin-session library, /admin/login page, login/logout API routes, middleware guard, updated layout.
-Last activity: 2026-03-09 - Completed Phase 23-01: ADMIN_SECRET_KEY auth for /admin/* portal
+Phase: Phase 23 System Admin Portal — IN PROGRESS (Plan 02 of N shipped)
+Status: Phase 23-02 complete — Admin home dashboard (4 metric cards), tenant detail page with owner info + suspension controls, View link in tenant list.
+Last activity: 2026-03-09 - Completed Phase 23-02: Admin home + tenant detail page
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -309,6 +309,11 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 22-03]: WAITING_ON_CUSTOMER included in IN_PROGRESS tab count — both statuses represent active in-flight conversations from admin perspective
 - [Phase 23-01]: ADMIN_SECRET_KEY plain string compare + 500ms delay for brute-force resistance; decryptAdminSession is pure Web Crypto (Edge-safe for middleware); admin_session guard in middleware bypasses tenant session checks entirely
 - [Phase 23-01]: UserMenu conditionally rendered only when tenant session exists — admin-session-only users see Logout link; /admin added to ADMIN_ALLOWED_PATHS for legacy isSystemAdmin DB access to new /admin/* routes
+- [Phase 23-02]: getSystemMetrics uses Promise.all for 4 parallel cross-tenant Prisma queries — minimizes admin dashboard load latency
+- [Phase 23-02]: params typed as Promise<{ id: string }> for Next.js 15 async params (consistent with Phase 22-02)
+- [Phase 23-02]: TenantStatusControls in separate file to maintain clean server/client module boundary
+- [Phase 23-03]: Tab counts based on unfiltered list; priority/tenant filters only affect visible list and heading count
+- [Phase 23-03]: queryRawUnsafe with positional params for optional WHERE clause composition in getAllTickets -- Prisma tagged literals cannot conditionally compose WHERE
 
 ### Pending Todos
 
@@ -413,6 +418,8 @@ None blocking immediate progress.
 | Phase 22-support-ticket-system P02 | 285 | 2 tasks | 8 files |
 | Phase 22-support-ticket-system P03 | 276 | 2 tasks | 9 files |
 | Phase 23 P01 | 175 | 2 tasks | 7 files |
+| Phase 23 P02 | 480 | 2 tasks | 6 files |
+| Phase 23-system-admin-portal P03 | 183 | 2 tasks | 3 files |
 
 ## Session Continuity
 
