@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 19 Multi-Stop Routes — COMPLETE (Plan 03 of 03 complete)
-Status: Phase 19 complete — ready for Phase 20 (Driver Pay Settlement)
-Last activity: 2026-03-07 - Completed quick task 44: Add ticket status filtering to sysadmin portal
+Phase: Phase 22 Support Ticket System — IN PROGRESS (Plan 01 of 03 complete)
+Status: Phase 22-01 complete — database foundation ready for Plan 02 (server actions)
+Last activity: 2026-03-09 - Completed Phase 22-01: extend SupportTicket schema, add TicketMessage table, new enums
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -296,6 +296,10 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-43]: Check for OWNER-role user existence (not invitation) — user record means they completed account setup (accept-invitation creates User)
 - [Phase quick-43]: Suspended takes precedence over Pending in status priority order — admin-disabled tenant shows Suspended regardless of owner status
 - [Phase quick-43]: No schema changes — ownerSetupComplete computed from existing User.role field in tenant query via nested select
+- [Phase 22-01]: No RLS on TicketMessage — admin needs cross-tenant visibility; consistent with SupportTicket pattern from quick-41
+- [Phase 22-01]: No @relation on TicketMessage — FK enforced at SQL level only, avoids polluting SupportTicket model with relation arrays (same pattern as SupportTicket/quick-41)
+- [Phase 22-01]: SupportTicketType enum removed from schema.prisma only, not dropped in SQL — DB system catalog may reference it; safe to leave as unused SQL type
+- [Phase 22-01]: SupportTicketCategory replaces SupportTicketType with 4-value set (BILLING, BUG, FEATURE, GENERAL) — cleaner than old 5-value set
 
 ### Pending Todos
 
@@ -396,10 +400,11 @@ None blocking immediate progress.
 **Quick-43 metrics:**
 - Quick-43 (2026-03-04): Three-state tenant status (Pending/Active/Suspended) via ownerSetupComplete computed from OWNER-role user existence — 79s, 2 tasks, 2 files affected
 - Quick-44 (2026-03-07): Status tab filtering on admin support dashboard — All/Open/In Progress/Closed tabs with per-tab counts, RESOLVED+CLOSED combined — ~60s, 1 task, 1 file affected
+| Phase 22-support-ticket-system P01 | 261 | 2 tasks | 6 files |
 
 ## Session Continuity
 
-Last session: 2026-03-07
-Stopped at: Completed Quick-44 — add ticket status filtering to sysadmin support dashboard (All/Open/In Progress/Closed tabs with per-tab counts)
+Last session: 2026-03-09
+Stopped at: Completed Phase 22-01 — extend SupportTicket schema, add TicketMessage table (SupportTicketCategory, SupportTicketPriority, TicketMessageSenderType enums, category/priority columns)
 Resume file: None
-Next action: Execute Phase 20 — Driver Pay Settlement
+Next action: Execute Phase 22-02 — server actions for threaded replies
