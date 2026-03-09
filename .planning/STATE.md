@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 23 System Admin Portal — IN PROGRESS (Plan 02 of N shipped)
-Status: Phase 23-02 complete — Admin home dashboard (4 metric cards), tenant detail page with owner info + suspension controls, View link in tenant list.
-Last activity: 2026-03-09 - Completed Phase 23-02: Admin home + tenant detail page
+Phase: Phase 23 System Admin Portal — COMPLETE (Plan 03 of 03 complete)
+Status: Phase 23 complete — ADMIN_SECRET_KEY auth, admin home dashboard, tenant detail, support queue filters all shipped
+Last activity: 2026-03-09 - Completed Phase 23: System Admin Portal (all 3 plans + gap fixes)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
