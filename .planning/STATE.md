@@ -331,6 +331,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-51]: New fields added to DriverInvitation only; User model update deferred for full edit support
 - [Phase quick-52]: Use z.preprocess in Zod schema for odometer/year string-to-number coercion rather than parseInt in actions
 - [Phase quick-52]: Server actions return { error, values } on validation failure; form uses key prop to remount and apply sticky defaultValues
+- [Phase quick-53]: Use React state (odometerRaw) instead of ref for hidden input — React resets hidden inputs on re-render
 
 ### Pending Todos
 
