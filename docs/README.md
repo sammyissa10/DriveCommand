@@ -14,7 +14,7 @@ DriveCommand is a multi-tenant SaaS fleet management platform for trucking opera
 | ORM | Prisma 7 with @prisma/adapter-pg |
 | Styling | Tailwind CSS + shadcn/ui |
 | Auth | Custom AES-256-GCM session cookie |
-| Email | Resend (via resend SDK) |
+| Email | Gmail SMTP via Nodemailer |
 | File Storage | Cloudflare R2 / AWS S3 |
 | AI | Anthropic Claude (document reading, profit predictor) |
 | Maps | Leaflet + react-leaflet, Google Maps (autocomplete) |
@@ -55,7 +55,7 @@ Pages: `/admin-dashboard`, `/admin-support`, `/tenants`, `/admin`
 - [Modules](./modules.md) — Feature modules (CRM, dispatch, finance, compliance, AI, integrations)
 - [Local Setup](./setup.md) — Prerequisites, environment variables, database setup, running locally
 - [Deployment](./deployment.md) — Vercel deployment, build command, environment variables, cron jobs
-- [Email](./email.md) — Resend integration, email templates, notification log, idempotency
+- [Email](./email.md) — Gmail SMTP setup, Nodemailer client, email templates, notification log, idempotency
 
 ---
 

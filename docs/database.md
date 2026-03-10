@@ -43,7 +43,7 @@ npx prisma generate
 
 ## Schema Overview — Models
 
-The schema has 28 models covering all platform features.
+The schema has 29 models covering all platform features.
 
 | Model | Purpose | Key Fields |
 |---|---|---|
