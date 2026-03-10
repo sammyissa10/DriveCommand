@@ -18,6 +18,7 @@ import { updateRouteStatus } from '@/app/(owner)/actions/routes';
 interface RoutePageClientProps {
   route: {
     id: string;
+    name: string | null;
     origin: string;
     destination: string;
     scheduledDate: Date;
@@ -146,7 +147,17 @@ export function RoutePageClient({
         </Link>
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {isEditMode ? 'Edit Route' : `${route.origin} to ${route.destination}`}
+            {isEditMode
+              ? 'Edit Route'
+              : (
+                <span className="flex items-center gap-3">
+                  <span className="font-mono text-base font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                    #{route.id.slice(0, 8)}
+                  </span>
+                  <span>{route.name ?? `${route.origin} \u2192 ${route.destination}`}</span>
+                </span>
+              )
+            }
           </h1>
           {isEditMode ? (
             <button

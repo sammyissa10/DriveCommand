@@ -5,7 +5,7 @@
  * Manages document list state with optimistic updates and server-side refresh.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DocumentUpload } from '@/components/documents/document-upload';
 import { DocumentList } from '@/components/documents/document-list';
@@ -29,6 +29,11 @@ export function RouteDocumentsSection({
 }: RouteDocumentsSectionProps) {
   const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
+
+  // Sync local state when server re-fetches and passes new initialDocuments after router.refresh()
+  useEffect(() => {
+    setDocuments(initialDocuments);
+  }, [initialDocuments]);
 
   const handleRefresh = () => {
     // Trigger server-side re-fetch using Next.js App Router pattern
