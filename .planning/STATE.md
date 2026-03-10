@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-51: TKT-0009 Fix new driver creation — expanded invite form with personal info + license fields
+Last activity: 2026-03-10 - Completed Quick-52: TKT-0005 Fix truck creation odometer parsing and sticky form values
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -329,6 +329,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-47]: Used autoComplete=username on read-only email field per WHATWG autofill spec for broadest password manager compatibility on accept-invitation page
 - [Phase quick-49]: Used prisma db push instead of prisma migrate dev due to pre-existing schema drift in development database
 - [Phase quick-51]: New fields added to DriverInvitation only; User model update deferred for full edit support
+- [Phase quick-52]: Use z.preprocess in Zod schema for odometer/year string-to-number coercion rather than parseInt in actions
+- [Phase quick-52]: Server actions return { error, values } on validation failure; form uses key prop to remount and apply sticky defaultValues
 
 ### Pending Todos
 
