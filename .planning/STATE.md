@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-48: TKT-0004 Dashboard updates (5-card grid, Late Loads, dollar scaling, Alerts subtitle)
+Last activity: 2026-03-10 - Completed Quick-49: TKT-0007 Truck document upload fix (state sync bug, upload modal with 5 fields, description/externalUrl schema)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -398,6 +398,7 @@ None blocking immediate progress.
 | 46 | TKT-0008 UX Standards — double-click row navigation on 6 list pages, soft-delete with archivedAt on 5 models, audit trail (createdById/updatedById) on 6 detail pages, driver doc upload form collapsed by default | 2026-03-10 | 9508608 | [46-tkt-0008-ux-standards-double-click-to-op](./quick/46-tkt-0008-ux-standards-double-click-to-op/) |
 | 47 | TKT-0003 Login updates — NEXT_PUBLIC_APP_URL missing-var warning in server logs, pre-filled read-only email field on accept-invitation page for browser credential saving | 2026-03-10 | 8637cb3 | [47-tkt-0003-login-updates-fix-localhost-in-](./quick/47-tkt-0003-login-updates-fix-localhost-in-/) |
 | 48 | TKT-0004 Dashboard updates — removed Total Trucks + Maintenance Alerts KPIs, added Late Loads card with danger variant, 5-card grid, dynamic value text scaling for dollar amounts, Alerts panel subtitle | 2026-03-10 | e543fc9 | [48-tkt-0004-dashboard-updates-remove-total-](./quick/48-tkt-0004-dashboard-updates-remove-total-/) |
+| 49 | TKT-0007 Truck document upload — fixed state sync bug (useEffect), upload modal with name/description/link/file/expiry fields, description+externalUrl added to Document schema, list shows description/link/expiry | 2026-03-10 | acb0f10 | [49-tkt-0007-truck-document-upload-not-savin](./quick/49-tkt-0007-truck-document-upload-not-savin/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
