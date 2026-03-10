@@ -404,6 +404,7 @@ None blocking immediate progress.
 | 49 | TKT-0007 Truck document upload — fixed state sync bug (useEffect), upload modal with name/description/link/file/expiry fields, description+externalUrl added to Document schema, list shows description/link/expiry | 2026-03-10 | acb0f10 | [49-tkt-0007-truck-document-upload-not-savin](./quick/49-tkt-0007-truck-document-upload-not-savin/) |
 | 50 | TKT-0006 Fix VIN validation error on truck edit page — VIN made read-only on edit form (permanent identifier), generateVIN() fixed to exclude I/O/Q per ISO 3779, updateTruck no longer processes VIN | 2026-03-10 | 44cd0cf | [50-tkt-0006-fix-vin-validation-error-on-tru](./quick/50-tkt-0006-fix-vin-validation-error-on-tru/) |
 | 51 | TKT-0009 Fix new driver creation — expand DriverInvitation with middleName, fullName (auto-computed), dateOfBirth, phoneNumber, address, licenseNumber, licenseExpirationDate; live full-name preview in invite form | 2026-03-10 | 111bd70 | [51-tkt-0009-fix-new-driver-creation-email-e](./quick/51-tkt-0009-fix-new-driver-creation-email-e/) |
+| 52 | TKT-0005 Fix new truck creation — strip commas in odometer via z.preprocess, return values on error from createTruck/updateTruck, sticky form fields via key remount pattern | 2026-03-10 | 22555b4 | [52-tkt-0005-fix-new-truck-creation-odometer](./quick/52-tkt-0005-fix-new-truck-creation-odometer/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
