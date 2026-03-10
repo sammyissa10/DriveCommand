@@ -324,6 +324,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-45]: coDriverIds serialized as comma-separated hidden form field; parsed and saved inline in updateRoute/createRoute to avoid unreachable call after redirect()
 - [Phase quick-45]: Primary driver select changed to controlled value so co-driver checkbox list can exclude selected primary driver in real time
 - [Phase quick-45]: useEffect([initialDocuments]) sync pattern required in RouteDocumentsSection — router.refresh() delivers new props but React does not re-initialize state from changed props
+- [Phase quick-46]: Used db push instead of migrate dev due to migration history drift from prior direct DB operations
+- [Phase quick-46]: Driver detail page shows System for createdBy/updatedBy since User model uses invitation-based creation without audit fields
 
 ### Pending Todos
 
@@ -434,6 +436,7 @@ None blocking immediate progress.
 | Phase 23-system-admin-portal P03 | 183 | 2 tasks | 3 files |
 | Phase 24-technical-documentation P01 | 227 | 2 tasks | 4 files |
 | Phase 24-technical-documentation P02 | 230 | 2 tasks | 5 files |
+| Phase quick-46 P01 | 726 | 3 tasks | 23 files |
 
 ## Session Continuity
 
