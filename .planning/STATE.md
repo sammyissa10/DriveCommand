@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-50: TKT-0006 Fix VIN validation error on truck edit page
+Last activity: 2026-03-10 - Completed Quick-51: TKT-0009 Fix new driver creation — expanded invite form with personal info + license fields
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -401,6 +401,7 @@ None blocking immediate progress.
 | 48 | TKT-0004 Dashboard updates — removed Total Trucks + Maintenance Alerts KPIs, added Late Loads card with danger variant, 5-card grid, dynamic value text scaling for dollar amounts, Alerts panel subtitle | 2026-03-10 | e543fc9 | [48-tkt-0004-dashboard-updates-remove-total-](./quick/48-tkt-0004-dashboard-updates-remove-total-/) |
 | 49 | TKT-0007 Truck document upload — fixed state sync bug (useEffect), upload modal with name/description/link/file/expiry fields, description+externalUrl added to Document schema, list shows description/link/expiry | 2026-03-10 | acb0f10 | [49-tkt-0007-truck-document-upload-not-savin](./quick/49-tkt-0007-truck-document-upload-not-savin/) |
 | 50 | TKT-0006 Fix VIN validation error on truck edit page — VIN made read-only on edit form (permanent identifier), generateVIN() fixed to exclude I/O/Q per ISO 3779, updateTruck no longer processes VIN | 2026-03-10 | 44cd0cf | [50-tkt-0006-fix-vin-validation-error-on-tru](./quick/50-tkt-0006-fix-vin-validation-error-on-tru/) |
+| 51 | TKT-0009 Fix new driver creation — expand DriverInvitation with middleName, fullName (auto-computed), dateOfBirth, phoneNumber, address, licenseNumber, licenseExpirationDate; live full-name preview in invite form | 2026-03-10 | 111bd70 | [51-tkt-0009-fix-new-driver-creation-email-e](./quick/51-tkt-0009-fix-new-driver-creation-email-e/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
