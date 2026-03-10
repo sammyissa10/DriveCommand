@@ -3,6 +3,63 @@ import bcrypt from 'bcryptjs';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { setSession } from '@/lib/auth/session';
 
+if (!process.env.NEXT_PUBLIC_APP_URL) {
+  console.warn(
+    '[accept-invitation] NEXT_PUBLIC_APP_URL is not set. Invitation links will use http://localhost:3000. Set this env var in production.'
+  );
+}
+
+/**
+ * GET /api/auth/accept-invitation?id=...
+ *
+ * Returns { email, firstName } for a valid pending invitation.
+ * Used by the accept-invitation page to pre-populate the email field.
+ */
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json(
+      { error: 'Invitation ID is required' },
+      { status: 400 }
+    );
+  }
+
+  const invitation = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.driverInvitation.findUnique({
+      where: { id },
+    });
+  }, TX_OPTIONS);
+
+  if (!invitation) {
+    return NextResponse.json(
+      { error: 'Invitation not found' },
+      { status: 404 }
+    );
+  }
+
+  if (invitation.status !== 'PENDING') {
+    return NextResponse.json(
+      { error: 'This invitation has already been used or cancelled' },
+      { status: 410 }
+    );
+  }
+
+  if (invitation.expiresAt < new Date()) {
+    return NextResponse.json(
+      { error: 'This invitation has expired. Please ask your fleet manager to send a new one.' },
+      { status: 410 }
+    );
+  }
+
+  return NextResponse.json({
+    email: invitation.email,
+    firstName: invitation.firstName,
+  });
+}
+
 /**
  * POST /api/auth/accept-invitation
  *
