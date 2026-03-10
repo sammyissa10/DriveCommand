@@ -5,7 +5,7 @@
  * All actions enforce OWNER/MANAGER/DRIVER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@/lib/validations/route.schemas';
@@ -119,6 +119,8 @@ export async function createRoute(prevState: any, formData: FormData) {
       };
     }
 
+    const userId = await requireAuth();
+
     // Create route with PLANNED status (default), including nested stops
     const route = await prisma.route.create({
       data: {
@@ -131,6 +133,8 @@ export async function createRoute(prevState: any, formData: FormData) {
         notes,
         name: name || null,
         distanceMiles: distanceMiles && !isNaN(distanceMiles) ? distanceMiles : null,
+        createdById: userId,
+        updatedById: userId,
         stops: {
           create: stopInputs.map((stop, idx) => ({
             tenantId,
@@ -287,8 +291,10 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
       }
     }
 
+    const userId = await requireAuth();
+
     // Build update data object
-    const updateData: any = {};
+    const updateData: any = { updatedById: userId };
     if (result.data.origin) updateData.origin = result.data.origin;
     if (result.data.destination) updateData.destination = result.data.destination;
     if (result.data.scheduledDate) updateData.scheduledDate = new Date(result.data.scheduledDate);
@@ -444,8 +450,9 @@ export async function deleteRoute(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  await prisma.route.delete({
+  await prisma.route.update({
     where: { id },
+    data: { archivedAt: new Date() },
   });
 
   // Revalidate
@@ -466,6 +473,7 @@ export async function listRoutes() {
 
   const prisma = await getTenantPrisma();
   return prisma.route.findMany({
+    where: { archivedAt: null },
     take: 100,
     include: {
       driver: {
@@ -505,6 +513,8 @@ export async function getRoute(id: string) {
   return prisma.route.findUnique({
     where: { id },
     include: {
+      createdBy: { select: { firstName: true, lastName: true, email: true } },
+      updatedBy: { select: { firstName: true, lastName: true, email: true } },
       driver: {
         select: {
           id: true,

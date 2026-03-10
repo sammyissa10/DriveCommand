@@ -5,7 +5,7 @@
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import {
@@ -66,11 +66,14 @@ export async function createTruck(prevState: any, formData: FormData) {
   let truckId: string;
   try {
     const tenantId = await requireTenantId();
+    const userId = await requireAuth();
     const prisma = await getTenantPrisma();
     const truck = await prisma.truck.create({
       data: {
         ...result.data,
         tenantId,
+        createdById: userId,
+        updatedById: userId,
       },
     });
     truckId = truck.id;
@@ -149,10 +152,11 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   // Update truck via tenant-scoped Prisma client
   let updatedTruckId: string;
   try {
+    const userId = await requireAuth();
     const prisma = await getTenantPrisma();
     const truck = await prisma.truck.update({
       where: { id },
-      data: result.data,
+      data: { ...result.data, updatedById: userId },
     });
     updatedTruckId = truck.id;
   } catch (error: any) {
@@ -182,10 +186,11 @@ export async function deleteTruck(id: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Delete truck via tenant-scoped Prisma client
+  // Soft-delete truck via tenant-scoped Prisma client (archive instead of hard delete)
   const prisma = await getTenantPrisma();
-  await prisma.truck.delete({
+  await prisma.truck.update({
     where: { id },
+    data: { archivedAt: new Date() },
   });
 
   // Revalidate
@@ -205,6 +210,7 @@ export async function listTrucks() {
 
   const prisma = await getTenantPrisma();
   return prisma.truck.findMany({
+    where: { archivedAt: null },
     take: 100,
     orderBy: { createdAt: 'desc' },
   });
@@ -222,5 +228,9 @@ export async function getTruck(id: string) {
   const prisma = await getTenantPrisma();
   return prisma.truck.findUnique({
     where: { id },
+    include: {
+      createdBy: { select: { firstName: true, lastName: true, email: true } },
+      updatedBy: { select: { firstName: true, lastName: true, email: true } },
+    },
   });
 }

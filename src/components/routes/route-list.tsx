@@ -123,7 +123,7 @@ const columns = [
             onClick={() => {
               if (
                 window.confirm(
-                  `Are you sure you want to delete the route from ${route.origin} to ${route.destination}?`
+                  `Are you sure you want to archive the route from ${route.origin} to ${route.destination}? (recoverable within 30 days)`
                 )
               ) {
                 (info.table.options.meta as RouteTableMeta)?.onDelete(route.id);

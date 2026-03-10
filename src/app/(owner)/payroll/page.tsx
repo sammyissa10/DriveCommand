@@ -10,6 +10,7 @@ export default async function PayrollPage() {
   let records: any[] = [];
   try {
     records = await prisma.payrollRecord.findMany({
+      where: { archivedAt: null },
       orderBy: { periodStart: 'desc' },
       include: {
         driver: {

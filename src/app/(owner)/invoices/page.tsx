@@ -10,6 +10,7 @@ export default async function InvoicesPage() {
   let invoices: any[] = [];
   try {
     invoices = await prisma.invoice.findMany({
+      where: { archivedAt: null },
       orderBy: { createdAt: 'desc' },
       include: { items: true },
     });

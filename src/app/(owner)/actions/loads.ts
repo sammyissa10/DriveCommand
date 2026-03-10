@@ -1,6 +1,6 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@/lib/validations/load.schemas';
@@ -136,6 +136,7 @@ export async function createLoad(prevState: any, formData: FormData) {
   }
 
   const tenantId = await requireTenantId();
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   let createdId: string;
@@ -157,6 +158,8 @@ export async function createLoad(prevState: any, formData: FormData) {
         commodity: result.data.commodity || null,
         rate: new Decimal(result.data.rate),
         notes: result.data.notes || null,
+        createdById: userId,
+        updatedById: userId,
       },
     });
 
@@ -193,6 +196,7 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
     return { error: result.error.flatten().fieldErrors };
   }
 
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   try {
@@ -209,6 +213,7 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
         commodity: result.data.commodity || null,
         rate: new Decimal(result.data.rate),
         notes: result.data.notes || null,
+        updatedById: userId,
       },
     });
   } catch (error: any) {
@@ -236,14 +241,14 @@ export async function deleteLoad(id: string) {
       return { error: 'Load not found.' };
     }
     if (load.status !== 'PENDING' && load.status !== 'CANCELLED') {
-      return { error: 'Only pending or cancelled loads can be deleted.' };
+      return { error: 'Only pending or cancelled loads can be archived.' };
     }
-    await prisma.load.delete({ where: { id } });
+    await prisma.load.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
-    return { error: 'Failed to delete load.' };
+    return { error: 'Failed to archive load.' };
   }
 
   revalidatePath('/loads');

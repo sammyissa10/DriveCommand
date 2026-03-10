@@ -1,6 +1,6 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
@@ -44,6 +44,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
   }
 
   const tenantId = await requireTenantId();
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   // Calculate amounts using Decimal.js (never floating point)
@@ -78,6 +79,8 @@ export async function createInvoice(prevState: any, formData: FormData) {
         dueDate: new Date(result.data.dueDate),
         paidDate: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
+        createdById: userId,
+        updatedById: userId,
         items: {
           create: itemsWithAmounts.map((item) => ({
             tenantId,
@@ -133,6 +136,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
   }
 
   const tenantId = await requireTenantId();
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   const itemsWithAmounts = result.data.items.map((item) => {
@@ -168,6 +172,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
           dueDate: new Date(result.data.dueDate),
           paidDate: result.data.status === 'PAID' ? new Date() : null,
           notes: result.data.notes || null,
+          updatedById: userId,
           items: {
             create: itemsWithAmounts.map((item) => ({
               tenantId,
@@ -243,14 +248,14 @@ export async function deleteInvoice(id: string) {
       return { error: 'Invoice not found.' };
     }
     if (invoice.status !== 'DRAFT') {
-      return { error: 'Only draft invoices can be deleted.' };
+      return { error: 'Only draft invoices can be archived.' };
     }
-    await prisma.invoice.delete({ where: { id } });
+    await prisma.invoice.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
-    return { error: 'Failed to delete invoice.' };
+    return { error: 'Failed to archive invoice.' };
   }
 
   revalidatePath('/invoices');

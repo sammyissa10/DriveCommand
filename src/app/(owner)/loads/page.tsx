@@ -10,6 +10,7 @@ export default async function LoadsPage() {
   let loads: any[] = [];
   try {
     loads = await prisma.load.findMany({
+      where: { archivedAt: null },
       orderBy: { createdAt: 'desc' },
       include: {
         customer: { select: { companyName: true } },

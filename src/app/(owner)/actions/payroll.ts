@@ -1,6 +1,6 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@/lib/validations/payroll.schemas';
@@ -35,6 +35,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
   }
 
   const tenantId = await requireTenantId();
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   // Calculate totalPay using Decimal.js (never floating point)
@@ -61,6 +62,8 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
         status: result.data.status as any,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
+        createdById: userId,
+        updatedById: userId,
       },
     });
     createdId = record.id;
@@ -99,6 +102,7 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
     return { error: result.error.flatten().fieldErrors };
   }
 
+  const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
   const basePay = new Decimal(result.data.basePay);
@@ -122,6 +126,7 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
         status: result.data.status as any,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
+        updatedById: userId,
       },
     });
   } catch (error: any) {
@@ -149,14 +154,14 @@ export async function deletePayrollRecord(id: string) {
       return { error: 'Payroll record not found.' };
     }
     if (record.status !== 'DRAFT') {
-      return { error: 'Only draft payroll records can be deleted.' };
+      return { error: 'Only draft payroll records can be archived.' };
     }
-    await prisma.payrollRecord.delete({ where: { id } });
+    await prisma.payrollRecord.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
-    return { error: 'Failed to delete payroll record.' };
+    return { error: 'Failed to archive payroll record.' };
   }
 
   revalidatePath('/payroll');
