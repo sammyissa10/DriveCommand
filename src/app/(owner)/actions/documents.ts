@@ -205,6 +205,13 @@ export async function getDownloadUrl(documentId: string) {
       };
     }
 
+    // Link-only documents have no s3Key — cannot generate a download URL
+    if (!doc.s3Key) {
+      return {
+        error: 'This document has no file attached. Use the online link to view it.',
+      };
+    }
+
     // CRITICAL: Verify s3Key starts with tenant prefix (defense in depth)
     if (!doc.s3Key.startsWith(`tenant-${tenantId}/`)) {
       return {
@@ -249,14 +256,17 @@ export async function deleteDocument(documentId: string) {
     }
 
     // CRITICAL: Verify s3Key starts with tenant prefix (defense in depth)
-    if (!doc.s3Key.startsWith(`tenant-${tenantId}/`)) {
+    // Skip check for link-only documents (empty s3Key)
+    if (doc.s3Key && !doc.s3Key.startsWith(`tenant-${tenantId}/`)) {
       return {
         error: 'Invalid document: does not match tenant',
       };
     }
 
-    // Delete from S3 first
-    await deleteS3Object(doc.s3Key);
+    // Delete from S3 only if a file was stored
+    if (doc.s3Key) {
+      await deleteS3Object(doc.s3Key);
+    }
 
     // Delete from database
     await repo.delete(documentId);

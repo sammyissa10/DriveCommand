@@ -5,9 +5,9 @@
  * Manages document list state with optimistic updates and server-side refresh.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { DocumentUpload } from '@/components/documents/document-upload';
+import { DocumentUploadModal } from '@/components/documents/document-upload-modal';
 import { DocumentList } from '@/components/documents/document-list';
 
 interface Document {
@@ -16,6 +16,10 @@ interface Document {
   contentType: string;
   sizeBytes: number;
   createdAt: Date;
+  description?: string;
+  externalUrl?: string;
+  expiryDate?: Date | null;
+  notes?: string;
 }
 
 interface TruckDocumentsSectionProps {
@@ -30,6 +34,11 @@ export function TruckDocumentsSection({
   const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
 
+  // Sync local state when server re-fetches initialDocuments after router.refresh()
+  useEffect(() => {
+    setDocuments(initialDocuments);
+  }, [initialDocuments]);
+
   const handleRefresh = () => {
     // Trigger server-side re-fetch using Next.js App Router pattern
     router.refresh();
@@ -37,7 +46,7 @@ export function TruckDocumentsSection({
 
   return (
     <div className="space-y-4">
-      <DocumentUpload
+      <DocumentUploadModal
         entityType="truck"
         entityId={truckId}
         onUploadComplete={handleRefresh}

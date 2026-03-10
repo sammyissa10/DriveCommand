@@ -3,6 +3,7 @@
 /**
  * Document list component with download and delete actions.
  * Uses optimistic UI for instant delete feedback.
+ * Renders description, externalUrl, and expiryDate when present.
  */
 
 import { useOptimistic, useState } from 'react';
@@ -14,6 +15,10 @@ interface Document {
   contentType: string;
   sizeBytes: number;
   createdAt: Date;
+  description?: string;
+  externalUrl?: string;
+  expiryDate?: Date | null;
+  notes?: string;
 }
 
 interface DocumentListProps {
@@ -81,6 +86,7 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
   };
 
   const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '';
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -96,11 +102,19 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
     });
   };
 
+  const formatDateOnly = (date: Date): string => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
   const getFileTypeBadge = (contentType: string): string => {
     if (contentType === 'application/pdf') return 'PDF';
     if (contentType === 'image/jpeg') return 'JPEG';
     if (contentType === 'image/png') return 'PNG';
-    return 'FILE';
+    return 'LINK';
   };
 
   const getFileTypeBadgeColor = (contentType: string): string => {
@@ -137,13 +151,15 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
           const isPending = doc.pending;
           const isDownloading = downloading === doc.id;
           const isDeleting = deleting === doc.id;
+          // Link-only documents have empty s3Key
+          const isLinkOnly = !doc.contentType || doc.contentType === '';
 
           return (
             <li
               key={doc.id}
               className={`p-4 ${isPending ? 'opacity-50' : ''}`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
                     <span
@@ -156,20 +172,47 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
                     </p>
                   </div>
                   <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                    <span>{formatFileSize(doc.sizeBytes)}</span>
-                    <span>•</span>
+                    {doc.sizeBytes > 0 && (
+                      <>
+                        <span>{formatFileSize(doc.sizeBytes)}</span>
+                        <span>•</span>
+                      </>
+                    )}
                     <span>{formatDate(doc.createdAt)}</span>
+                    {doc.expiryDate && (
+                      <>
+                        <span>•</span>
+                        <span className="text-xs text-gray-500">
+                          Expires: {formatDateOnly(doc.expiryDate)}
+                        </span>
+                      </>
+                    )}
                   </div>
+                  {doc.description && (
+                    <p className="mt-1 text-xs text-gray-500">{doc.description}</p>
+                  )}
+                  {doc.externalUrl && (
+                    <a
+                      href={doc.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-1 block text-xs text-blue-600 hover:underline"
+                    >
+                      View online
+                    </a>
+                  )}
                 </div>
 
                 <div className="ml-4 flex items-center gap-2">
-                  <button
-                    onClick={() => handleDownload(doc.id, doc.fileName)}
-                    disabled={isDownloading || isPending}
-                    className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isDownloading ? 'Downloading...' : 'Download'}
-                  </button>
+                  {!isLinkOnly && (
+                    <button
+                      onClick={() => handleDownload(doc.id, doc.fileName)}
+                      disabled={isDownloading || isPending}
+                      className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isDownloading ? 'Downloading...' : 'Download'}
+                    </button>
+                  )}
                   <button
                     onClick={() => handleDelete(doc.id, doc.fileName)}
                     disabled={isDeleting || isPending}
