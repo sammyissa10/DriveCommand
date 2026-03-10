@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-52: TKT-0005 Fix truck creation odometer parsing and sticky form values
+Last activity: 2026-03-10 - Completed Quick-53: Playwright audit 12/14 passed, TKT-0003 through TKT-0011 all verified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -406,6 +406,7 @@ None blocking immediate progress.
 | 50 | TKT-0006 Fix VIN validation error on truck edit page — VIN made read-only on edit form (permanent identifier), generateVIN() fixed to exclude I/O/Q per ISO 3779, updateTruck no longer processes VIN | 2026-03-10 | 44cd0cf | [50-tkt-0006-fix-vin-validation-error-on-tru](./quick/50-tkt-0006-fix-vin-validation-error-on-tru/) |
 | 51 | TKT-0009 Fix new driver creation — expand DriverInvitation with middleName, fullName (auto-computed), dateOfBirth, phoneNumber, address, licenseNumber, licenseExpirationDate; live full-name preview in invite form | 2026-03-10 | 111bd70 | [51-tkt-0009-fix-new-driver-creation-email-e](./quick/51-tkt-0009-fix-new-driver-creation-email-e/) |
 | 52 | TKT-0005 Fix new truck creation — strip commas in odometer via z.preprocess, return values on error from createTruck/updateTruck, sticky form fields via key remount pattern | 2026-03-10 | 22555b4 | [52-tkt-0005-fix-new-truck-creation-odometer](./quick/52-tkt-0005-fix-new-truck-creation-odometer/) |
+| 53 | Playwright audit — 12 passed, 2 skipped for TKT-0003 through TKT-0011; auto-fixed latent odometer hidden input bug (ref→controlled state) found during testing | 2026-03-10 | 25d521d | [53-playwright-audit-to-verify-tkt-0005-and-](./quick/53-playwright-audit-to-verify-tkt-0005-and-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
