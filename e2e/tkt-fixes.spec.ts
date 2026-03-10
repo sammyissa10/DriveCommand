@@ -88,10 +88,10 @@ test.describe('TKT-0005: Truck Form Odometer + Sticky Fields', () => {
     const odometerDisplay = page.locator('#odometerDisplay');
     await expect(odometerDisplay).toBeVisible();
 
-    // Type a number and assert it formats with commas
+    // Use pressSequentially to trigger React's onChange (fill() bypasses synthetic events)
     await odometerDisplay.click();
-    await odometerDisplay.fill('125000');
-    // Trigger change event by blurring
+    await odometerDisplay.pressSequentially('125000');
+    // Trigger blur to confirm formatting
     await page.keyboard.press('Tab');
     await expect(odometerDisplay).toHaveValue('125,000');
 
@@ -100,9 +100,11 @@ test.describe('TKT-0005: Truck Form Odometer + Sticky Fields', () => {
 
     // Clear and type a larger number to confirm no NaN
     await odometerDisplay.click();
-    await odometerDisplay.fill('999999999');
+    await odometerDisplay.selectText();
+    await odometerDisplay.pressSequentially('999999999');
     await page.keyboard.press('Tab');
     await expect(odometerDisplay).toHaveValue('999,999,999');
+    await expect(page.locator('input[name="odometer"]')).toHaveValue('999999999');
   });
 
   test('form fields are sticky after server-side validation error', async ({ page }) => {
@@ -333,7 +335,7 @@ test.describe('TKT-0009: Driver Invite Form Fields + Full Name Preview', () => {
     await expect(page.locator('p:has-text("Full name:") span')).toHaveText('John Michael Doe');
 
     // Clear middle name and verify preview updates
-    await page.locator('#middleName').tripleClick();
+    await page.locator('#middleName').click({ clickCount: 3 });
     await page.keyboard.press('Delete');
     await expect(page.locator('p:has-text("Full name:") span')).toHaveText('John Doe');
   });

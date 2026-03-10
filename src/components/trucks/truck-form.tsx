@@ -45,7 +45,13 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
     if (val != null && val !== '') return formatWithCommas(val);
     return '';
   });
-  const odometerHiddenRef = useRef<HTMLInputElement>(null);
+  // Track the raw numeric value in React state so it persists across re-renders.
+  // Using a ref is insufficient because React resets type="hidden" input values on re-render.
+  const [odometerRaw, setOdometerRaw] = useState(() => {
+    const val = state?.values?.odometer ?? initialData?.odometer;
+    if (val != null && val !== '') return String(val);
+    return '';
+  });
   const [yearFilter, setYearFilter] = useState('');
   const [yearOpen, setYearOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(() => {
@@ -63,12 +69,12 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
     const raw = stripCommas(e.target.value).replace(/[^0-9]/g, '');
     if (raw === '') {
       setOdometerDisplay('');
-      if (odometerHiddenRef.current) odometerHiddenRef.current.value = '';
+      setOdometerRaw('');
       return;
     }
     const num = parseInt(raw, 10);
     setOdometerDisplay(formatWithCommas(num));
-    if (odometerHiddenRef.current) odometerHiddenRef.current.value = num.toString();
+    setOdometerRaw(num.toString());
   };
 
   return (
@@ -248,8 +254,8 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
             <input
               type="hidden"
               name="odometer"
-              ref={odometerHiddenRef}
-              defaultValue={state?.values?.odometer ?? initialData?.odometer?.toString() ?? ''}
+              value={odometerRaw}
+              onChange={() => {}}
             />
             {state?.error?.odometer && (
               <p className="mt-1.5 text-sm text-red-600">{state.error.odometer}</p>
