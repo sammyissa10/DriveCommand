@@ -25,6 +25,17 @@ export const driverInviteSchema = z.object({
     .regex(/^[A-Z0-9\s\-]+$/i, 'License number contains invalid characters')
     .optional()
     .or(z.literal('')),
+  middleName: z.string().max(50, 'Middle name must be 50 characters or less').optional().or(z.literal('')),
+  dateOfBirth: z.string().optional().or(z.literal('')),
+  phoneNumber: z
+    .string()
+    .min(7, 'Phone number too short')
+    .max(20, 'Phone number too long')
+    .regex(/^[0-9+\-() ]+$/, 'Invalid phone number format')
+    .optional()
+    .or(z.literal('')),
+  address: z.string().max(200, 'Address too long').optional().or(z.literal('')),
+  licenseExpirationDate: z.string().optional().or(z.literal('')),
 });
 
 /**
@@ -46,6 +57,17 @@ export const driverUpdateSchema = z.object({
     .regex(/^[A-Z0-9\s\-]+$/i, 'License number contains invalid characters')
     .optional()
     .or(z.literal('')),
+  middleName: z.string().max(50, 'Middle name must be 50 characters or less').optional().or(z.literal('')),
+  dateOfBirth: z.string().optional().or(z.literal('')),
+  phoneNumber: z
+    .string()
+    .min(7, 'Phone number too short')
+    .max(20, 'Phone number too long')
+    .regex(/^[0-9+\-() ]+$/, 'Invalid phone number format')
+    .optional()
+    .or(z.literal('')),
+  address: z.string().max(200, 'Address too long').optional().or(z.literal('')),
+  licenseExpirationDate: z.string().optional().or(z.literal('')),
 });
 
 // Inferred types

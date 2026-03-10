@@ -215,19 +215,25 @@ model Truck {
 }
 
 model DriverInvitation {
-  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String           @db.Uuid
-  email         String
-  firstName     String
-  lastName      String
-  licenseNumber String?
-  role          UserRole         @default(DRIVER)
-  expiresAt     DateTime         @db.Timestamptz
-  status        InvitationStatus @default(PENDING)
-  acceptedAt    DateTime?        @db.Timestamptz
-  userId        String?          @db.Uuid
-  createdAt     DateTime         @default(now()) @db.Timestamptz
-  updatedAt     DateTime         @updatedAt @db.Timestamptz
+  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId             String           @db.Uuid
+  email                String
+  firstName            String
+  lastName             String
+  licenseNumber        String?
+  middleName           String?
+  fullName             String?
+  dateOfBirth          DateTime?        @db.Date
+  phoneNumber          String?
+  address              String?
+  licenseExpirationDate DateTime?       @db.Date
+  role                 UserRole         @default(DRIVER)
+  expiresAt            DateTime         @db.Timestamptz
+  status               InvitationStatus @default(PENDING)
+  acceptedAt           DateTime?        @db.Timestamptz
+  userId               String?          @db.Uuid
+  createdAt            DateTime         @default(now()) @db.Timestamptz
+  updatedAt            DateTime         @updatedAt @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
