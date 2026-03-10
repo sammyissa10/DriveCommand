@@ -61,10 +61,9 @@ export interface FleetStats {
 }
 
 export interface DashboardMetrics {
-  totalTrucks: number;
   activeDrivers: number;
   activeRoutes: number;
-  maintenanceAlerts: number;
+  lateLoads: number;
   unpaidTotal: string;       // e.g. "$12,450.00"
   overdueTotal: string;      // e.g. "$3,200.00" — subset of unpaid
   activeLoads: number;       // DISPATCHED + PICKED_UP + IN_TRANSIT
@@ -311,18 +310,14 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
     const [
-      totalTrucksCount,
       activeDriversCount,
       activeRoutesCount,
-      maintenanceAlertsCount,
+      lateLoadsCount,
       unpaidInvoices,
       overdueInvoices,
       activeLoadsCount,
       completedRoutes,
     ] = await Promise.all([
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
-      db.truck.count() as Promise<number>,
-
       // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.user.count({
         where: { role: 'DRIVER', isActive: true },
@@ -333,9 +328,14 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
         where: { status: { in: ['PLANNED', 'IN_PROGRESS'] } },
       }) as Promise<number>,
 
+      // Late loads: active status but past their delivery date
       // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
-      db.scheduledService.count({
-        where: { isCompleted: false },
+      db.load.count({
+        where: {
+          status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
+          deliveryDate: { lt: new Date() },
+          archivedAt: null,
+        },
       }) as Promise<number>,
 
       // All unpaid invoices (DRAFT, SENT, OVERDUE)
@@ -423,10 +423,9 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
     }
 
     return {
-      totalTrucks: totalTrucksCount,
       activeDrivers: activeDriversCount,
       activeRoutes: activeRoutesCount,
-      maintenanceAlerts: maintenanceAlertsCount,
+      lateLoads: lateLoadsCount,
       unpaidTotal: formatCurrency(unpaidSum),
       overdueTotal: formatCurrency(overdueSum),
       activeLoads: activeLoadsCount,
