@@ -27,6 +27,11 @@ export async function inviteDriver(prevState: any, formData: FormData) {
     firstName: formData.get('firstName') as string,
     lastName: formData.get('lastName') as string,
     licenseNumber: (formData.get('licenseNumber') as string) || '',
+    middleName: (formData.get('middleName') as string) || '',
+    dateOfBirth: (formData.get('dateOfBirth') as string) || '',
+    phoneNumber: (formData.get('phoneNumber') as string) || '',
+    address: (formData.get('address') as string) || '',
+    licenseExpirationDate: (formData.get('licenseExpirationDate') as string) || '',
   };
 
   // Validate with Zod schema
@@ -38,7 +43,10 @@ export async function inviteDriver(prevState: any, formData: FormData) {
     };
   }
 
-  const { email, firstName, lastName, licenseNumber } = result.data;
+  const { email, firstName, lastName, licenseNumber, middleName, dateOfBirth, phoneNumber, address, licenseExpirationDate } = result.data;
+
+  // Compute full name from name parts
+  const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ');
 
   // Get tenant ID and Prisma client
   const tenantId = await requireTenantId();
@@ -81,6 +89,12 @@ export async function inviteDriver(prevState: any, formData: FormData) {
         firstName,
         lastName,
         licenseNumber: licenseNumber || null,
+        middleName: middleName || null,
+        fullName,
+        dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+        phoneNumber: phoneNumber || null,
+        address: address || null,
+        licenseExpirationDate: licenseExpirationDate ? new Date(licenseExpirationDate) : null,
         expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
         status: 'PENDING',
       },
@@ -192,6 +206,11 @@ export async function updateDriver(id: string, prevState: any, formData: FormDat
     firstName: formData.get('firstName') as string,
     lastName: formData.get('lastName') as string,
     licenseNumber: (formData.get('licenseNumber') as string) || '',
+    middleName: (formData.get('middleName') as string) || '',
+    dateOfBirth: (formData.get('dateOfBirth') as string) || '',
+    phoneNumber: (formData.get('phoneNumber') as string) || '',
+    address: (formData.get('address') as string) || '',
+    licenseExpirationDate: (formData.get('licenseExpirationDate') as string) || '',
   };
 
   // Validate with Zod schema
@@ -202,6 +221,10 @@ export async function updateDriver(id: string, prevState: any, formData: FormDat
       error: result.error.flatten().fieldErrors,
     };
   }
+
+  // New fields validated but not yet persisted to User model — User model will need
+  // middleName, dateOfBirth, phoneNumber, address, licenseExpirationDate columns added
+  // before full edit-form support is available.
 
   // Clean licenseNumber: if empty string, set to null
   const updateData = {

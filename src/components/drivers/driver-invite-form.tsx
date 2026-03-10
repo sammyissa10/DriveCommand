@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 
 interface DriverFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -8,6 +8,11 @@ interface DriverFormProps {
     firstName?: string;
     lastName?: string;
     licenseNumber?: string;
+    middleName?: string;
+    dateOfBirth?: string;
+    phoneNumber?: string;
+    address?: string;
+    licenseExpirationDate?: string;
   };
   submitLabel: string;
   mode: 'invite' | 'edit';
@@ -18,6 +23,14 @@ const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
 export function DriverForm({ action, initialData, submitLabel, mode }: DriverFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+
+  // Track name parts for full name preview
+  const [firstName, setFirstName] = useState(initialData?.firstName || '');
+  const [middleName, setMiddleName] = useState(initialData?.middleName || '');
+  const [lastName, setLastName] = useState(initialData?.lastName || '');
+
+  // Compute full name preview (server will also compute this)
+  const fullNamePreview = [firstName, middleName, lastName].filter(Boolean).join(' ');
 
   // Force form remount on success to reset uncontrolled inputs
   const formKey = state?.success ? Date.now() : 'form';
@@ -75,6 +88,7 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             disabled={isPending}
             className={inputClass}
             required
+            onChange={(e) => setFirstName(e.target.value)}
           />
           {state?.error?.firstName && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.firstName}</p>
@@ -90,6 +104,7 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             disabled={isPending}
             className={inputClass}
             required
+            onChange={(e) => setLastName(e.target.value)}
           />
           {state?.error?.lastName && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.lastName}</p>
@@ -97,25 +112,131 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
         </div>
       </div>
 
-      {/* License Number (optional) */}
+      {/* Middle Name (optional) */}
       <div>
-        <label htmlFor="licenseNumber" className={labelClass}>
-          License Number
+        <label htmlFor="middleName" className={labelClass}>
+          Middle Name
           <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
         </label>
         <input
           type="text"
-          id="licenseNumber"
-          name="licenseNumber"
-          maxLength={20}
-          defaultValue={initialData?.licenseNumber || ''}
+          id="middleName"
+          name="middleName"
+          defaultValue={initialData?.middleName || ''}
           disabled={isPending}
-          className={`${inputClass} uppercase font-mono`}
+          className={inputClass}
+          onChange={(e) => setMiddleName(e.target.value)}
         />
-        <p className="mt-1.5 text-xs text-muted-foreground">5-20 characters, alphanumeric</p>
-        {state?.error?.licenseNumber && (
-          <p className="mt-1.5 text-sm text-red-600">{state.error.licenseNumber}</p>
+        {state?.error?.middleName && (
+          <p className="mt-1.5 text-sm text-red-600">{state.error.middleName}</p>
         )}
+      </div>
+
+      {/* Full Name preview (computed display only) */}
+      {fullNamePreview && (
+        <div>
+          <p className="text-xs text-muted-foreground">
+            Full name: <span className="font-medium text-foreground">{fullNamePreview}</span>
+          </p>
+        </div>
+      )}
+
+      {/* Date of Birth & Phone Number */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="dateOfBirth" className={labelClass}>
+            Date of Birth
+            <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
+          </label>
+          <input
+            type="date"
+            id="dateOfBirth"
+            name="dateOfBirth"
+            defaultValue={initialData?.dateOfBirth || ''}
+            disabled={isPending}
+            className={inputClass}
+          />
+          {state?.error?.dateOfBirth && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.dateOfBirth}</p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="phoneNumber" className={labelClass}>
+            Phone Number
+            <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
+          </label>
+          <input
+            type="tel"
+            id="phoneNumber"
+            name="phoneNumber"
+            defaultValue={initialData?.phoneNumber || ''}
+            disabled={isPending}
+            className={inputClass}
+          />
+          {state?.error?.phoneNumber && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.phoneNumber}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Address (full width, optional) */}
+      <div>
+        <label htmlFor="address" className={labelClass}>
+          Address
+          <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
+        </label>
+        <input
+          type="text"
+          id="address"
+          name="address"
+          defaultValue={initialData?.address || ''}
+          disabled={isPending}
+          placeholder="Street address, city, state, ZIP"
+          className={inputClass}
+        />
+        {state?.error?.address && (
+          <p className="mt-1.5 text-sm text-red-600">{state.error.address}</p>
+        )}
+      </div>
+
+      {/* License Number & License Expiration Date */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="licenseNumber" className={labelClass}>
+            License Number
+            <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="licenseNumber"
+            name="licenseNumber"
+            maxLength={20}
+            defaultValue={initialData?.licenseNumber || ''}
+            disabled={isPending}
+            className={`${inputClass} uppercase font-mono`}
+          />
+          <p className="mt-1.5 text-xs text-muted-foreground">5-20 characters, alphanumeric</p>
+          {state?.error?.licenseNumber && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.licenseNumber}</p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="licenseExpirationDate" className={labelClass}>
+            License Expiration Date
+            <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
+          </label>
+          <input
+            type="date"
+            id="licenseExpirationDate"
+            name="licenseExpirationDate"
+            defaultValue={initialData?.licenseExpirationDate || ''}
+            disabled={isPending}
+            className={inputClass}
+          />
+          {state?.error?.licenseExpirationDate && (
+            <p className="mt-1.5 text-sm text-red-600">{state.error.licenseExpirationDate}</p>
+          )}
+        </div>
       </div>
 
       {/* Submit Button */}
