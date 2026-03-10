@@ -40,13 +40,19 @@ const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
 export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
-  const [odometerDisplay, setOdometerDisplay] = useState(
-    initialData?.odometer != null ? formatWithCommas(initialData.odometer) : ''
-  );
+  const [odometerDisplay, setOdometerDisplay] = useState(() => {
+    const val = state?.values?.odometer ?? initialData?.odometer;
+    if (val != null && val !== '') return formatWithCommas(val);
+    return '';
+  });
   const odometerHiddenRef = useRef<HTMLInputElement>(null);
   const [yearFilter, setYearFilter] = useState('');
   const [yearOpen, setYearOpen] = useState(false);
-  const [selectedYear, setSelectedYear] = useState<number | null>(initialData?.year ?? null);
+  const [selectedYear, setSelectedYear] = useState<number | null>(() => {
+    const stateYear = state?.values?.year;
+    if (stateYear) return parseInt(stateYear, 10) || null;
+    return initialData?.year ?? null;
+  });
   const yearContainerRef = useRef<HTMLDivElement>(null);
 
   const filteredYears = yearFilter
@@ -66,7 +72,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
   };
 
   return (
-    <form action={formAction} className="max-w-2xl space-y-5">
+    <form action={formAction} key={state?.values ? JSON.stringify(state.values) : 'initial'} className="max-w-2xl space-y-5">
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
@@ -147,7 +153,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="make"
               name="make"
-              defaultValue={initialData?.make || ''}
+              defaultValue={state?.values?.make ?? initialData?.make ?? ''}
               disabled={isPending}
               className={inputClass}
               required
@@ -162,7 +168,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="model"
               name="model"
-              defaultValue={initialData?.model || ''}
+              defaultValue={state?.values?.model ?? initialData?.model ?? ''}
               disabled={isPending}
               className={inputClass}
               required
@@ -195,6 +201,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
                 name="vin"
                 maxLength={17}
                 pattern="[A-HJ-NPR-Z0-9]{17}"
+                defaultValue={state?.values?.vin ?? ''}
                 disabled={isPending}
                 className={`${inputClass} uppercase font-mono`}
                 required
@@ -216,7 +223,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               id="licensePlate"
               name="licensePlate"
               maxLength={20}
-              defaultValue={initialData?.licensePlate || ''}
+              defaultValue={state?.values?.licensePlate ?? initialData?.licensePlate ?? ''}
               disabled={isPending}
               className={inputClass}
               required
@@ -242,7 +249,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="hidden"
               name="odometer"
               ref={odometerHiddenRef}
-              defaultValue={initialData?.odometer?.toString() ?? ''}
+              defaultValue={state?.values?.odometer ?? initialData?.odometer?.toString() ?? ''}
             />
             {state?.error?.odometer && (
               <p className="mt-1.5 text-sm text-red-600">{state.error.odometer}</p>
@@ -262,7 +269,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="registrationNumber"
               name="registrationNumber"
-              defaultValue={initialData?.documentMetadata?.registrationNumber || ''}
+              defaultValue={state?.values?.registrationNumber ?? initialData?.documentMetadata?.registrationNumber ?? ''}
               disabled={isPending}
               className={inputClass}
             />
@@ -276,7 +283,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="date"
               id="registrationExpiry"
               name="registrationExpiry"
-              defaultValue={initialData?.documentMetadata?.registrationExpiry || ''}
+              defaultValue={state?.values?.registrationExpiry ?? initialData?.documentMetadata?.registrationExpiry ?? ''}
               disabled={isPending}
               className={inputClass}
             />
@@ -293,7 +300,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="insuranceNumber"
               name="insuranceNumber"
-              defaultValue={initialData?.documentMetadata?.insuranceNumber || ''}
+              defaultValue={state?.values?.insuranceNumber ?? initialData?.documentMetadata?.insuranceNumber ?? ''}
               disabled={isPending}
               className={inputClass}
             />
@@ -307,7 +314,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="date"
               id="insuranceExpiry"
               name="insuranceExpiry"
-              defaultValue={initialData?.documentMetadata?.insuranceExpiry || ''}
+              defaultValue={state?.values?.insuranceExpiry ?? initialData?.documentMetadata?.insuranceExpiry ?? ''}
               disabled={isPending}
               className={inputClass}
             />
