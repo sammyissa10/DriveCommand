@@ -83,6 +83,9 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 17. Unified Route View/Edit Page | v3.0 | 2/2 | ✓ Complete | 2026-02-16 |
 | 18. Driver Document Uploads | v3.0 | 3/3 | ✓ Complete | 2026-02-17 |
 | 19. Multi-Stop Routes | v4.0 | 3/3 | ✓ Complete | 2026-02-26 |
+| 24. Technical Documentation | v4.0 | 2/2 | ✓ Complete | 2026-03-09 |
+| 25. SysAdmin Invoicing Module | v4.0 | 0/3 | ○ Planned | — |
+| 26. Automated Testing + Production Readiness | v4.0 | 0/3 | ○ Planned | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -158,3 +161,41 @@ Plans:
 - [x] 23-01-PLAN.md — Admin auth layer: ADMIN_SECRET_KEY env var, /admin/login page with password form (hash comparison, no rate-limit bypass — brute-force resistant), admin session stored as separate signed cookie (admin_session, 8-hour expiry), adminMiddleware guards all /admin/* routes and redirects to /admin/login if not authenticated, admin session has no tenantId (reads across all tenants using bypass_rls pattern), logout endpoint clears cookie
 - [x] 23-02-PLAN.md — Tenant management: /admin/tenants list (company name, owner email, plan, created date, truck count, driver count, active load count, status badge), tenant detail page (/admin/tenants/[id]) with all stats + recent activity + suspension controls, createTenant admin action (name, owner email, auto-generate initial Owner User, send welcome email), suspendTenant/reactivateTenant actions (set Tenant.suspended boolean, middleware blocks suspended tenant sessions), /admin/tenants/new form
 - [x] 23-03-PLAN.md — Admin dashboard and support queue: /admin home with system metrics (total tenants, total active loads today, new signups this week, open support tickets), /admin/support ticket queue showing all SupportTicket records across tenants (filterable by status/priority/tenant), ticket detail with admin reply form (creates TicketMessage with senderType=ADMIN, triggers owner email), ticket status update controls (assign priority, change status, close ticket)
+
+---
+
+### Phase 24: Technical Documentation — Comprehensive developer documentation for architecture, setup, and codebase
+
+**Goal:** Produce a complete set of developer documentation in a /docs folder covering system architecture, technology stack, multi-tenancy design, authentication flows, database schema, major modules, local development setup, environment configuration, deployment, and email. Written as markdown files so they live with the code and can be shared via Notion or GitHub. A developer unfamiliar with the project can install and run the app using only these docs.
+**Depends on:** None (documentation of existing system)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Core docs: docs/README.md (overview + table of contents), docs/architecture.md (system design, three portals, multi-tenancy, RLS, middleware flow), docs/auth.md (session cookie auth, role-based access, isSystemAdmin, driver/owner/sysadmin flows), docs/database.md (schema overview, Prisma usage, RLS policies, migrations, bypass_rls pattern)
+- [ ] 24-02-PLAN.md — Operational docs: docs/stack.md (Next.js App Router, Prisma, Supabase, Tailwind, shadcn/ui, Nodemailer, Zod), docs/modules.md (trucks, drivers, routes, loads, invoices, payroll, CRM, support tickets, admin portal — each module purpose and key files), docs/setup.md (clone, install, env vars, database setup, local dev), docs/deployment.md (Vercel setup, env vars, cron jobs, deploying with npx vercel --prod), docs/email.md (Gmail SMTP, Nodemailer, email templates, notification flows)
+
+---
+
+### Phase 25: SysAdmin Invoicing Module — Per-tenant billing management from the admin portal
+
+**Goal:** Enable DriveCommand to bill tenants directly from the sysadmin portal. Admin can create invoices for any tenant (subscription fees, setup fees, etc.), set line items, amount, and due date, and send the invoice via email to the tenant owner. Admins can track payment status (unpaid/paid/overdue), mark invoices as paid, and view billing history per tenant on the tenant detail page. This is DriveCommand's own billing system, separate from the invoice module tenants use for their customers.
+**Depends on:** Phase 23 (sysadmin portal)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — Data model: TenantInvoice model (tenantId, invoiceNumber, status DRAFT/SENT/PAID/OVERDUE/VOID, dueDate, subtotal, total Decimal, notes), TenantInvoiceItem model (tenantInvoiceId, description, quantity, unitPrice, amount), migration SQL, prisma/schema.prisma update, generateInvoiceNumber helper
+- [ ] 25-02-PLAN.md — Admin invoice CRUD: createTenantInvoice server action (create invoice + line items, send email to tenant owner), getTenantInvoices/getTenantInvoiceById actions, markInvoicePaid/voidInvoice actions, /admin/invoices list page (all invoices across tenants with status badges), /admin/invoices/new form (select tenant, add line items, set due date), /admin/invoices/[id] detail page with line item table and status controls
+- [ ] 25-03-PLAN.md — Tenant billing history: billing history section on /tenants/[id] detail page showing invoice list (number, amount, due date, status), invoice email template (professional invoice with line items, due date, total), overdue detection (mark SENT invoices as OVERDUE when past due date via cron or on-read), reactivate/resend email action on invoice detail
+
+---
+
+### Phase 26: Automated Testing + Production Readiness — Playwright test suite and manual QA sign-off
+
+**Goal:** Validate the full application with automated Playwright end-to-end tests covering all three portals (sysadmin, owner, driver) and critical user flows. Automated tests run via a single command. Simultaneously, co-workers complete manual exploratory testing across all major features. App is production-ready when both automated tests pass and manual QA sign-off is received.
+**Depends on:** Phase 25 (all features complete before testing)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — Test infrastructure: install Playwright, configure playwright.config.ts (base URL, 3 projects for chromium/firefox/webkit, auth setup), create test fixtures for sysadmin/owner/driver sessions, write auth helpers (login as each role), docs/testing.md explaining how to run the suite
+- [ ] 26-02-PLAN.md — Sysadmin + owner portal tests: sysadmin (login, view tenants, create tenant, view support tickets, reply to ticket, view admin dashboard), owner portal (login, dashboard loads, create truck, create driver invite, create route, create load, create invoice, submit support ticket, view ticket thread)
+- [ ] 26-03-PLAN.md — Driver portal + cross-portal tests: driver (login, view assigned route, mark stop arrived/departed), cross-portal (owner submits ticket → sysadmin sees it → sysadmin replies → owner sees reply), full tenant isolation check (tenant A cannot see tenant B data), run full suite and fix any failures
