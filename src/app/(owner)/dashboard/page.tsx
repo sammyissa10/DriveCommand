@@ -34,7 +34,7 @@ async function StatCardsSection() {
   });
 
   const m = metrics ?? {
-    totalTrucks: 0, activeDrivers: 0, activeRoutes: 0, maintenanceAlerts: 0,
+    activeDrivers: 0, lateLoads: 0,
     activeLoads: 0, unpaidTotal: '$0.00', overdueTotal: '$0.00', revenuePerMile: 'N/A',
   };
 
@@ -42,15 +42,14 @@ async function StatCardsSection() {
   const overdueSubtitle = hasOverdue ? `(${m.overdueTotal} overdue)` : undefined;
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-      <StatCard label="Total Trucks" value={m.totalTrucks} href="/trucks" />
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
       <StatCard label="Active Drivers" value={m.activeDrivers} href="/drivers" />
       <StatCard label="Active Loads" value={m.activeLoads} href="/loads" />
       <StatCard
-        label="Maintenance Alerts"
-        value={m.maintenanceAlerts}
-        href="/trucks"
-        variant={m.maintenanceAlerts > 0 ? 'warning' : 'default'}
+        label="Late Loads"
+        value={m.lateLoads}
+        href="/loads"
+        variant={m.lateLoads > 0 ? 'danger' : 'default'}
       />
       <StatCard
         label="Unpaid Invoices"
@@ -92,8 +91,8 @@ async function DocumentsSection() {
 
 function StatCardsSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-      {Array.from({ length: 6 }).map((_, i) => (
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+      {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="rounded-xl border border-border bg-card p-6 shadow-sm animate-pulse">
           <div className="flex items-center justify-between">
             <div className="flex-1 space-y-3">

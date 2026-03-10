@@ -75,7 +75,12 @@ export function NotificationsPanel({ alerts }: NotificationsPanelProps) {
               </span>
             )}
           </div>
-          <h2 className="text-lg font-semibold text-card-foreground">Alerts</h2>
+          <div className="flex flex-col">
+            <h2 className="text-lg font-semibold text-card-foreground">Alerts</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Document expiries · Overdue invoices · Safety events
+            </p>
+          </div>
         </div>
         {alerts.length > 0 && (
           <span

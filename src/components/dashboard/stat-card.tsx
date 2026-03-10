@@ -25,6 +25,7 @@ const iconMap: Record<string, LucideIcon> = {
   'Active Drivers': Users,
   'Active Routes': Route,
   'Maintenance Alerts': AlertTriangle,
+  'Late Loads': AlertTriangle,
   'Unpaid Invoices': DollarSign,
   'Active Loads': Package,
   'Revenue / Mile': TrendingUp,
@@ -66,11 +67,24 @@ const colorMap: Record<string, { bg: string; icon: string; border: string }> = {
     icon: 'text-status-success-foreground',
     border: 'border-t-status-success-foreground',
   },
+  'Late Loads': {
+    bg: 'bg-status-danger-bg',
+    icon: 'text-status-danger-foreground',
+    border: 'border-t-status-danger-foreground',
+  },
 };
 
 export function StatCard({ label, value, href, variant = 'default', subtitle }: StatCardProps) {
   const Icon = iconMap[label] || Truck;
   const colors = colorMap[label] || colorMap['Total Trucks'];
+
+  const valueStr = String(value);
+  const valueSizeClass =
+    valueStr.length > 8
+      ? 'text-xl sm:text-2xl'
+      : valueStr.length > 5
+        ? 'text-2xl sm:text-3xl'
+        : 'text-3xl sm:text-4xl';
 
   // Top border accent: variant overrides colorMap border
   const topBorderClass =
@@ -96,7 +110,7 @@ export function StatCard({ label, value, href, variant = 'default', subtitle }: 
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-card-foreground truncate">{value}</p>
+          <p className={`mt-2 font-bold tracking-tight text-card-foreground truncate ${valueSizeClass}`}>{value}</p>
           {subtitle && (
             <p className="mt-1 text-xs font-medium text-status-danger-foreground truncate">{subtitle}</p>
           )}
