@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, Suspense } from "react";
+import { useState, useEffect, FormEvent, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
@@ -8,10 +8,39 @@ function AcceptInvitationForm() {
   const searchParams = useSearchParams();
   const invitationId = searchParams.get("id");
 
+  const [email, setEmail] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState(true);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!invitationId) {
+      setIsFetching(false);
+      return;
+    }
+
+    fetch(`/api/auth/accept-invitation?id=${encodeURIComponent(invitationId)}`)
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          setFetchError(data.error || "Failed to load invitation details.");
+        } else {
+          setEmail(data.email);
+          setFirstName(data.firstName ?? null);
+        }
+      })
+      .catch(() => {
+        setFetchError("An unexpected error occurred. Please try again.");
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  }, [invitationId]);
 
   if (!invitationId) {
     return (
@@ -23,6 +52,25 @@ function AcceptInvitationForm() {
           This invitation link is invalid or incomplete. Please check the link in
           your email and try again.
         </p>
+      </div>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <div className="w-full rounded-xl border border-border bg-card shadow-sm p-6 flex items-center justify-center min-h-[160px]">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="w-full rounded-xl border border-border bg-card shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-3">
+          Invitation Unavailable
+        </h2>
+        <p className="text-sm text-muted-foreground">{fetchError}</p>
       </div>
     );
   }
@@ -72,10 +120,30 @@ function AcceptInvitationForm() {
         Create Your Account
       </h2>
       <p className="text-sm text-muted-foreground mb-5">
-        Set a password to complete your account setup.
+        {firstName
+          ? `Set a password to complete your account setup, ${firstName}.`
+          : "Set a password to complete your account setup."}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-foreground mb-1.5"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={email ?? ""}
+            readOnly
+            tabIndex={-1}
+            autoComplete="username"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors opacity-60 cursor-not-allowed"
+          />
+        </div>
+
         <div>
           <label
             htmlFor="password"
