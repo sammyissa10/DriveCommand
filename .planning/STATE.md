@@ -326,6 +326,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-45]: useEffect([initialDocuments]) sync pattern required in RouteDocumentsSection — router.refresh() delivers new props but React does not re-initialize state from changed props
 - [Phase quick-46]: Used db push instead of migrate dev due to migration history drift from prior direct DB operations
 - [Phase quick-46]: Driver detail page shows System for createdBy/updatedBy since User model uses invitation-based creation without audit fields
+- [Phase quick-47]: Used autoComplete=username on read-only email field per WHATWG autofill spec for broadest password manager compatibility on accept-invitation page
 
 ### Pending Todos
 
