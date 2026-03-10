@@ -27,6 +27,8 @@ export default async function PayrollDetailPage({
         driver: {
           select: { id: true, firstName: true, lastName: true, email: true },
         },
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
       },
     });
   } catch {
@@ -167,6 +169,41 @@ export default async function PayrollDetailPage({
           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{record.notes}</p>
         </div>
       )}
+
+      {/* Audit Trail */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Record History</h2>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {record.createdBy
+                ? `${record.createdBy.firstName ?? ''} ${record.createdBy.lastName ?? ''}`.trim() || record.createdBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(record.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {record.updatedBy
+                ? `${record.updatedBy.firstName ?? ''} ${record.updatedBy.lastName ?? ''}`.trim() || record.updatedBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(record.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+        </dl>
+      </div>
     </div>
   );
 }

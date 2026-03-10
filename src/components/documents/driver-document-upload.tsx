@@ -6,6 +6,7 @@
  */
 
 import { useState, useRef } from 'react';
+import { Upload } from 'lucide-react';
 import { requestDriverUploadUrl, completeDriverDocumentUpload } from '@/app/(owner)/actions/driver-documents';
 
 interface DriverDocumentUploadProps {
@@ -35,6 +36,7 @@ const DOCUMENT_TYPE_OPTIONS = [
 ];
 
 export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocumentUploadProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const [documentType, setDocumentType] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [notes, setNotes] = useState('');
@@ -59,6 +61,7 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
     setSelectedFile(null);
     setUploadState('idle');
     setError(null);
+    setIsOpen(false);
     setProgress({
       percentage: 0,
       currentPart: 0,
@@ -376,6 +379,18 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
     }
     return `Uploading... ${progress.percentage}%`;
   };
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="inline-flex items-center gap-2 rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted-foreground hover:border-primary hover:text-primary transition-colors w-full justify-center"
+      >
+        <Upload className="h-4 w-4" />
+        Upload Document
+      </button>
+    );
+  }
 
   return (
     <div className="space-y-4">

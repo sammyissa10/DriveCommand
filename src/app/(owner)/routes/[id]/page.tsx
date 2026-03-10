@@ -102,19 +102,56 @@ export default async function RouteDetailPage({
     : undefined;
 
   return (
-    <RoutePageClient
-      route={route}
-      initialEditMode={isEditMode}
-      drivers={drivers}
-      trucks={trucks}
-      formattedScheduledDate={formattedScheduledDate}
-      formattedCompletedAt={formattedCompletedAt}
-      analytics={safeAnalytics}
-      expenses={expenses}
-      payments={payments}
-      categories={categories}
-      templates={templates}
-      documents={documents}
-    />
+    <div className="space-y-6">
+      <RoutePageClient
+        route={route}
+        initialEditMode={isEditMode}
+        drivers={drivers}
+        trucks={trucks}
+        formattedScheduledDate={formattedScheduledDate}
+        formattedCompletedAt={formattedCompletedAt}
+        analytics={safeAnalytics}
+        expenses={expenses}
+        payments={payments}
+        categories={categories}
+        templates={templates}
+        documents={documents}
+      />
+
+      {/* Audit Trail */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Record History</h2>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {route.createdBy
+                ? `${route.createdBy.firstName ?? ''} ${route.createdBy.lastName ?? ''}`.trim() || route.createdBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(route.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {route.updatedBy
+                ? `${route.updatedBy.firstName ?? ''} ${route.updatedBy.lastName ?? ''}`.trim() || route.updatedBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(route.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
   );
 }

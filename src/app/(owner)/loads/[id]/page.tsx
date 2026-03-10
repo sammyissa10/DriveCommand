@@ -41,6 +41,8 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
         customer: true,
         driver: { select: { id: true, firstName: true, lastName: true, email: true } },
         truck: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+        createdBy: { select: { firstName: true, lastName: true, email: true } },
+        updatedBy: { select: { firstName: true, lastName: true, email: true } },
       },
     });
   } catch {
@@ -293,6 +295,41 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
             </div>
           )}
         </div>
+      </div>
+
+      {/* Audit Trail */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Record History</h2>
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {load.createdBy
+                ? `${load.createdBy.firstName ?? ''} ${load.createdBy.lastName ?? ''}`.trim() || load.createdBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Created</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(load.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed by</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {load.updatedBy
+                ? `${load.updatedBy.firstName ?? ''} ${load.updatedBy.lastName ?? ''}`.trim() || load.updatedBy.email
+                : 'System'}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-muted-foreground">Last changed</dt>
+            <dd className="mt-1 text-sm text-card-foreground">
+              {new Date(load.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </dd>
+          </div>
+        </dl>
       </div>
 
       {/* Status timeline */}
