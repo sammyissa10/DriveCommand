@@ -116,9 +116,6 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   const year = formData.get('year') as string;
   if (year) rawData.year = parseInt(year, 10);
 
-  const vin = formData.get('vin') as string;
-  if (vin) rawData.vin = vin;
-
   const licensePlate = formData.get('licensePlate') as string;
   if (licensePlate) rawData.licensePlate = licensePlate;
 
@@ -160,13 +157,6 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
     });
     updatedTruckId = truck.id;
   } catch (error: any) {
-    if (error?.code === 'P2002') {
-      const target = error?.meta?.target;
-      if (Array.isArray(target) && target.includes('vin')) {
-        return { error: { vin: ['A truck with this VIN already exists'] } };
-      }
-      return { error: 'A truck with these details already exists. Please check for duplicates.' };
-    }
     console.error('Failed to update truck:', error);
     return { error: 'Failed to update truck. Please try again.' };
   }

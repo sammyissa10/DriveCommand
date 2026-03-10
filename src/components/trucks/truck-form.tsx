@@ -176,18 +176,32 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
         {/* VIN */}
         <div>
           <label htmlFor="vin" className={labelClass}>VIN</label>
-          <input
-            type="text"
-            id="vin"
-            name="vin"
-            maxLength={17}
-            pattern="[A-HJ-NPR-Z0-9]{17}"
-            defaultValue={initialData?.vin || ''}
-            disabled={isPending}
-            className={`${inputClass} uppercase font-mono`}
-            required
-          />
-          <p className="mt-1.5 text-xs text-muted-foreground">17 characters, no I, O, or Q</p>
+          {initialData?.vin ? (
+            <>
+              <input
+                type="text"
+                id="vin"
+                value={initialData.vin}
+                readOnly
+                className={`${inputClass} uppercase font-mono opacity-60 cursor-not-allowed bg-muted`}
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">VIN cannot be changed after creation</p>
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                id="vin"
+                name="vin"
+                maxLength={17}
+                pattern="[A-HJ-NPR-Z0-9]{17}"
+                disabled={isPending}
+                className={`${inputClass} uppercase font-mono`}
+                required
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">17 characters, no I, O, or Q</p>
+            </>
+          )}
           {state?.error?.vin && (
             <p className="mt-1.5 text-sm text-red-600">{state.error.vin}</p>
           )}
