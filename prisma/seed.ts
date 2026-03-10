@@ -68,7 +68,10 @@ function generateLicensePlate(): string {
  * Generate a realistic VIN (simplified)
  */
 function generateVIN(): string {
-  return faker.string.alphanumeric(17).toUpperCase();
+  const chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
+  return Array.from({ length: 17 }, () =>
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join('');
 }
 
 /**
