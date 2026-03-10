@@ -27,6 +27,7 @@ interface RouteFormProps {
     truckId: string;
     notes?: string;
     distanceMiles?: number | null;
+    name?: string | null;
   };
   initialStops?: Array<{
     id: string;
@@ -36,6 +37,8 @@ interface RouteFormProps {
     notes: string | null;
     position: number;
   }>;
+  initialCoDriverIds?: string[];
+  onCoDriversChange?: (ids: string[]) => void;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{
     id: string;
@@ -62,6 +65,8 @@ export function RouteForm({
   action,
   initialData,
   initialStops,
+  initialCoDriverIds,
+  onCoDriversChange,
   drivers,
   trucks,
   submitLabel,
@@ -73,6 +78,18 @@ export function RouteForm({
 
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [selectedDriverId, setSelectedDriverId] = useState<string>(initialData?.driverId || '');
+  const [coDriverIds, setCoDriverIds] = useState<string[]>(initialCoDriverIds ?? []);
+
+  function toggleCoDriver(driverId: string) {
+    setCoDriverIds((prev) => {
+      const next = prev.includes(driverId)
+        ? prev.filter((id) => id !== driverId)
+        : [...prev, driverId];
+      onCoDriversChange?.(next);
+      return next;
+    });
+  }
 
   // Initialize stops from initialStops prop (editing existing route) or empty array (new route)
   const [stops, setStops] = useState<StopDraft[]>(() => {
@@ -149,6 +166,13 @@ export function RouteForm({
         value={distance !== null ? String(Math.round(distance)) : (initialData?.distanceMiles ?? '')}
       />
 
+      {/* Hidden co-driver IDs — comma-separated list submitted with form */}
+      <input
+        type="hidden"
+        name="coDriverIds"
+        value={coDriverIds.join(',')}
+      />
+
       {/* Hidden stops_submitted sentinel — tells server action stops section was rendered */}
       <input type="hidden" name="stops_submitted" value="true" />
 
@@ -164,6 +188,22 @@ export function RouteForm({
       {/* Origin & Destination */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Route Details</h3>
+
+        <div>
+          <label htmlFor="name" className={labelClass}>
+            Route Name <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            defaultValue={initialData?.name || ''}
+            maxLength={120}
+            disabled={isPending}
+            placeholder="e.g. Chicago Steel Run"
+            className={inputClass}
+          />
+        </div>
 
         <div>
           <label htmlFor="origin" className={labelClass}>Origin</label>
@@ -364,11 +404,12 @@ export function RouteForm({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="driverId" className={labelClass}>Driver</label>
+            <label htmlFor="driverId" className={labelClass}>Primary Driver</label>
             <select
               id="driverId"
               name="driverId"
-              defaultValue={initialData?.driverId || ''}
+              value={selectedDriverId}
+              onChange={(e) => setSelectedDriverId(e.target.value)}
               required
               disabled={isPending || drivers.length === 0}
               className={inputClass}
@@ -414,6 +455,33 @@ export function RouteForm({
             )}
           </div>
         </div>
+
+        {/* Co-Drivers */}
+        {drivers.filter((d) => d.id !== selectedDriverId).length > 0 && (
+          <div>
+            <p className={labelClass}>
+              Co-Drivers <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </p>
+            <div className="mt-2 space-y-2 rounded-lg border border-input bg-background px-3 py-3">
+              {drivers
+                .filter((d) => d.id !== selectedDriverId)
+                .map((driver) => (
+                  <label key={driver.id} className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={coDriverIds.includes(driver.id)}
+                      onChange={() => toggleCoDriver(driver.id)}
+                      disabled={isPending}
+                      className="h-4 w-4 rounded border-input text-primary focus:ring-ring/20"
+                    />
+                    <span className="text-sm text-foreground">
+                      {driver.firstName || ''} {driver.lastName || ''}
+                    </span>
+                  </label>
+                ))}
+            </div>
+          </div>
+        )}
 
         <div>
           <label htmlFor="notes" className={labelClass}>

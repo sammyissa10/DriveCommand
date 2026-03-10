@@ -44,6 +44,8 @@ export async function createRoute(prevState: any, formData: FormData) {
     notes: (formData.get('notes') as string) || undefined,
   };
 
+  const name = (formData.get('name') as string) || null;
+
   // Validate with Zod schema
   const result = routeCreateSchema.safeParse(rawData);
 
@@ -127,6 +129,7 @@ export async function createRoute(prevState: any, formData: FormData) {
         driverId,
         truckId,
         notes,
+        name: name || null,
         distanceMiles: distanceMiles && !isNaN(distanceMiles) ? distanceMiles : null,
         stops: {
           create: stopInputs.map((stop, idx) => ({
@@ -142,6 +145,21 @@ export async function createRoute(prevState: any, formData: FormData) {
     });
 
     createdRouteId = route.id;
+
+    // Handle co-drivers if provided
+    const coDriverIdsRaw = formData.get('coDriverIds') as string | null;
+    if (coDriverIdsRaw) {
+      const coDriverIds = coDriverIdsRaw.split(',').filter(Boolean);
+      if (coDriverIds.length > 0) {
+        await prisma.routeDriver.createMany({
+          data: coDriverIds.map((driverId) => ({
+            routeId: route.id,
+            driverId,
+            role: 'co-driver',
+          })),
+        });
+      }
+    }
   } catch (error) {
     console.error('Failed to create route:', error);
     return { error: 'Failed to create route. Please try again.' };
@@ -182,6 +200,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
 
   const notes = formData.get('notes') as string;
   if (notes !== null && notes !== undefined) rawData.notes = notes;
+
+  const nameValue = formData.get('name') as string | null;
 
   const distanceMilesRaw = formData.get('distanceMiles') as string;
   const distanceMiles = distanceMilesRaw ? parseFloat(distanceMilesRaw) : undefined;
@@ -276,6 +296,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
     if (result.data.truckId) updateData.truckId = result.data.truckId;
     if (result.data.notes !== undefined) updateData.notes = result.data.notes;
     if (distanceMiles !== undefined && !isNaN(distanceMiles)) updateData.distanceMiles = distanceMiles;
+    // name is always overwritten (empty string clears it, null keeps it null)
+    updateData.name = nameValue || null;
 
     // If version field is provided, use optimistic locking
     if (versionStr) {
@@ -327,6 +349,24 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
             address: stop.address,
             scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
             notes: stop.notes || null,
+          })),
+        });
+      }
+    }
+
+    // Handle co-driver updates if coDriverIds field is present in formData
+    const coDriverIdsRaw = formData.get('coDriverIds') as string | null;
+    if (coDriverIdsRaw !== null) {
+      const coDriverIds = coDriverIdsRaw
+        ? coDriverIdsRaw.split(',').filter(Boolean)
+        : [];
+      await prisma.routeDriver.deleteMany({ where: { routeId: id } });
+      if (coDriverIds.length > 0) {
+        await prisma.routeDriver.createMany({
+          data: coDriverIds.map((driverId) => ({
+            routeId: id,
+            driverId,
+            role: 'co-driver',
           })),
         });
       }
@@ -489,6 +529,46 @@ export async function getRoute(id: string) {
       stops: {
         orderBy: { position: 'asc' },
       },
+      coDrivers: {
+        include: {
+          driver: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
+        },
+      },
     },
   });
+}
+
+/**
+ * Update co-drivers for a route (replaces the entire set atomically).
+ * Requires OWNER or MANAGER role.
+ */
+export async function updateRouteCoDrivers(routeId: string, coDriverIds: string[]) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+
+  try {
+    await prisma.$transaction([
+      prisma.routeDriver.deleteMany({ where: { routeId } }),
+      ...(coDriverIds.length > 0
+        ? [
+            prisma.routeDriver.createMany({
+              data: coDriverIds.map((driverId) => ({
+                routeId,
+                driverId,
+                role: 'co-driver',
+              })),
+            }),
+          ]
+        : []),
+    ]);
+  } catch (error) {
+    console.error('Failed to update co-drivers:', error);
+    return { error: 'Failed to update co-drivers. Please try again.' };
+  }
+
+  revalidatePath(`/routes/${routeId}`);
+  return { success: true };
 }

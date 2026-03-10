@@ -32,6 +32,11 @@ interface RouteStop {
   notes: string | null;
 }
 
+interface CoDriver {
+  id: string;
+  driver: { id: string; firstName: string | null; lastName: string | null; email: string };
+}
+
 interface Route {
   id: string;
   origin: string;
@@ -43,6 +48,7 @@ interface Route {
   driver: Driver;
   truck: Truck;
   stops?: RouteStop[];
+  coDrivers?: CoDriver[];
 }
 
 function StopStatusBadge({ status }: { status: string }) {
@@ -197,6 +203,20 @@ export function RouteDetail({
             </p>
           </div>
         </div>
+
+        {route.coDrivers && route.coDrivers.length > 0 && (
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="text-sm font-medium text-muted-foreground mb-2">Co-Drivers</p>
+            <ul className="space-y-1">
+              {route.coDrivers.map((cd) => (
+                <li key={cd.id} className="flex items-center gap-2 text-sm text-card-foreground">
+                  <span>{cd.driver.firstName || ''} {cd.driver.lastName || ''}</span>
+                  <span className="text-muted-foreground text-xs">{cd.driver.email}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mt-4">
           <Link

@@ -55,6 +55,10 @@ interface RoutePageClientProps {
       departedAt: Date | null;
       notes: string | null;
     }>;
+    coDrivers?: Array<{
+      id: string;
+      driver: { id: string; firstName: string | null; lastName: string | null; email: string };
+    }>;
   };
   initialEditMode: boolean;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;

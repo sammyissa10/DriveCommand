@@ -9,6 +9,7 @@ import { useUnsavedChangesWarning } from './use-unsaved-changes-warning';
 interface RouteEditSectionProps {
   route: {
     id: string;
+    name: string | null;
     origin: string;
     destination: string;
     scheduledDate: Date;
@@ -29,6 +30,10 @@ interface RouteEditSectionProps {
       arrivedAt: Date | null;
       departedAt: Date | null;
       notes: string | null;
+    }>;
+    coDrivers?: Array<{
+      id: string;
+      driver: { id: string; firstName: string | null; lastName: string | null; email: string };
     }>;
   };
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
@@ -87,7 +92,10 @@ export function RouteEditSection({
     truckId: route.truck.id,
     notes: route.notes || '',
     distanceMiles: route.distanceMiles,
+    name: route.name,
   };
+
+  const initialCoDriverIds = route.coDrivers?.map((cd) => cd.driver.id) ?? [];
 
   // Bind the update action with the route ID
   const boundUpdateRoute = updateRoute.bind(null, route.id);
@@ -98,6 +106,7 @@ export function RouteEditSection({
         action={boundUpdateRoute}
         initialData={initialData}
         initialStops={route.stops}
+        initialCoDriverIds={initialCoDriverIds}
         drivers={drivers}
         trucks={trucks}
         submitLabel="Update Route"
