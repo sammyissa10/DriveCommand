@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Search, Eye, Pencil, Trash2, Truck as TruckIcon } from 'lucide-react';
 import {
   useReactTable,
@@ -20,11 +21,12 @@ interface TruckListProps {
 }
 
 export function TruckList({ trucks, onDelete }: TruckListProps) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
   const handleDelete = (id: string, make: string, model: string) => {
-    if (window.confirm(`Are you sure you want to delete this truck? (${make} ${model})`)) {
+    if (window.confirm(`Are you sure you want to archive this truck? (${make} ${model}) (recoverable within 30 days)`)) {
       onDelete(id);
     }
   };
@@ -172,7 +174,11 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
           </thead>
           <tbody className="divide-y divide-border">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-muted/30 transition-colors">
+              <tr
+                key={row.id}
+                className="hover:bg-muted/30 transition-colors cursor-pointer"
+                onDoubleClick={() => router.push(`/trucks/${row.original.id}`)}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-6 py-4 text-sm">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

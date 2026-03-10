@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Search, Eye, Pencil, UserX, UserCheck, Users as UsersIcon } from 'lucide-react';
 import {
   useReactTable,
@@ -37,6 +38,7 @@ interface PendingDriver {
 }
 
 export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListProps) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [pendingDeactivate, setPendingDeactivate] = useState<PendingDriver | null>(null);
@@ -219,7 +221,11 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
             </thead>
             <tbody className="divide-y divide-border">
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-muted/30 transition-colors">
+                <tr
+                  key={row.id}
+                  className="hover:bg-muted/30 transition-colors cursor-pointer"
+                  onDoubleClick={() => router.push(`/drivers/${row.original.id}`)}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4 text-sm">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

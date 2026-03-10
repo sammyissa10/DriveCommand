@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   useReactTable,
   getCoreRowModel,
@@ -44,6 +45,7 @@ interface RouteListProps {
 
 interface RouteTableMeta extends TableMeta<Route> {
   onDelete: (id: string) => void;
+  onRowDoubleClick: (id: string) => void;
 }
 
 const columnHelper = createColumnHelper<Route>();
@@ -138,6 +140,7 @@ const columns = [
 ];
 
 export function RouteList({ routes, onDelete }: RouteListProps) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -158,6 +161,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
     getFilteredRowModel: getFilteredRowModel(),
     meta: {
       onDelete,
+      onRowDoubleClick: (id: string) => router.push(`/routes/${id}`),
     },
   });
 
@@ -239,7 +243,11 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
           </thead>
           <tbody className="divide-y divide-border bg-card">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:bg-muted/50">
+              <tr
+                key={row.id}
+                className="hover:bg-muted/50 cursor-pointer"
+                onDoubleClick={() => (table.options.meta as RouteTableMeta)?.onRowDoubleClick(row.original.id)}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}

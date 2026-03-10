@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Package } from 'lucide-react';
 import { LoadStatusBadge } from './load-status-badge';
 
@@ -27,6 +28,7 @@ const TABS = [
 ];
 
 export function LoadList({ loads }: { loads: LoadItem[] }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('ALL');
 
   const filtered =
@@ -102,7 +104,8 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                 {filtered.map((load) => (
                   <tr
                     key={load.id}
-                    className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
+                    className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                    onDoubleClick={() => router.push(`/loads/${load.id}`)}
                   >
                     <td className="px-4 py-3">
                       <Link

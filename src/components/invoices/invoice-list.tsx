@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Receipt } from 'lucide-react';
 
 interface InvoiceItem {
@@ -31,6 +32,8 @@ const statusColors: Record<string, string> = {
 };
 
 export function InvoiceList({ invoices }: { invoices: Invoice[] }) {
+  const router = useRouter();
+
   if (invoices.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-12 text-center">
@@ -68,7 +71,8 @@ export function InvoiceList({ invoices }: { invoices: Invoice[] }) {
             {invoices.map((invoice) => (
               <tr
                 key={invoice.id}
-                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
+                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                onDoubleClick={() => router.push(`/invoices/${invoice.id}`)}
               >
                 <td className="px-4 py-3">
                   <Link

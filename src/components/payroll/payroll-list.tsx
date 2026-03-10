@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { DollarSign } from 'lucide-react';
 
 interface PayrollRecord {
@@ -29,6 +30,8 @@ const statusColors: Record<string, string> = {
 };
 
 export function PayrollList({ records }: { records: PayrollRecord[] }) {
+  const router = useRouter();
+
   if (records.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-12 text-center">
@@ -66,7 +69,8 @@ export function PayrollList({ records }: { records: PayrollRecord[] }) {
             {records.map((record) => (
               <tr
                 key={record.id}
-                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors"
+                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                onDoubleClick={() => router.push(`/payroll/${record.id}`)}
               >
                 <td className="px-4 py-3">
                   <Link
