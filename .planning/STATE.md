@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 24 Technical Documentation — IN PROGRESS (Plan 01 of 03 complete)
-Status: Phase 24-01 complete — docs/README.md, docs/architecture.md, docs/auth.md, docs/database.md written
-Last activity: 2026-03-09 - Completed Phase 24-01: Core developer documentation (4 files, 2 tasks)
+Phase: Phase 24 Technical Documentation — IN PROGRESS (Plan 02 of 03 complete)
+Status: Phase 24-02 complete — docs/stack.md, docs/modules.md, docs/setup.md, docs/deployment.md, docs/email.md written
+Last activity: 2026-03-10 - Completed Phase 24-02: Operational documentation (5 files, 2 tasks)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -317,6 +317,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 24-01]: Tech stack corrected in docs — Next.js 15 (not 16) and Resend (not Gmail SMTP) per actual .env.example and codebase
 - [Phase 24-01]: Admin portal ADMIN_SECRET_KEY auth documented in auth.md (not in original spec but required for developer completeness)
 - [Phase 24-01]: 29 models documented in database.md (not 25+ as estimated — counted all models including RouteStop and TicketMessage)
+- [Phase 24-02]: docs/setup.md documents both Resend (.env.example) and Gmail SMTP (active gmail-client.ts) — the .env.example was not updated when the project migrated from Resend
+- [Phase 24-02]: docs/modules.md includes Shipment Tracking (/track) as entry 21 — significant public-facing surface not in plan spec but required for completeness
+- [Phase 24-02]: docs/email.md flags resend-client.ts as legacy and gmail-client.ts as active to prevent developer confusion from two client files existing
 
 ### Pending Todos
 
@@ -424,10 +427,11 @@ None blocking immediate progress.
 | Phase 23 P02 | 480 | 2 tasks | 6 files |
 | Phase 23-system-admin-portal P03 | 183 | 2 tasks | 3 files |
 | Phase 24-technical-documentation P01 | 227 | 2 tasks | 4 files |
+| Phase 24-technical-documentation P02 | 230 | 2 tasks | 5 files |
 
 ## Session Continuity
 
-Last session: 2026-03-09
-Stopped at: Completed Phase 24-01 — Core developer documentation (README, architecture, auth, database).
+Last session: 2026-03-10
+Stopped at: Completed Phase 24-02 — Operational documentation (stack, modules, setup, deployment, email).
 Resume file: None
-Next action: Continue Phase 24 — Technical Documentation (Plan 02: setup, deployment, stack, modules)
+Next action: Continue Phase 24 — Technical Documentation (Plan 03: final docs)
