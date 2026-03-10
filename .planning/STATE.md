@@ -328,6 +328,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-46]: Driver detail page shows System for createdBy/updatedBy since User model uses invitation-based creation without audit fields
 - [Phase quick-47]: Used autoComplete=username on read-only email field per WHATWG autofill spec for broadest password manager compatibility on accept-invitation page
 - [Phase quick-49]: Used prisma db push instead of prisma migrate dev due to pre-existing schema drift in development database
+- [Phase quick-51]: New fields added to DriverInvitation only; User model update deferred for full edit support
 
 ### Pending Todos
 
@@ -444,6 +445,7 @@ None blocking immediate progress.
 | Phase 24-technical-documentation P01 | 227 | 2 tasks | 4 files |
 | Phase 24-technical-documentation P02 | 230 | 2 tasks | 5 files |
 | Phase quick-46 P01 | 726 | 3 tasks | 23 files |
+| Phase quick-51 P01 | 190 | 2 tasks | 4 files |
 
 ## Session Continuity
 
