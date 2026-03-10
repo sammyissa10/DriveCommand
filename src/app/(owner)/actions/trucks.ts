@@ -24,14 +24,14 @@ export async function createTruck(prevState: any, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Parse FormData fields
+  // Parse FormData fields — pass raw strings; Zod preprocess handles conversion
   const rawData = {
     make: formData.get('make') as string,
     model: formData.get('model') as string,
-    year: parseInt(formData.get('year') as string, 10),
+    year: formData.get('year') as string,
     vin: formData.get('vin') as string,
     licensePlate: formData.get('licensePlate') as string,
-    odometer: parseInt(formData.get('odometer') as string, 10),
+    odometer: formData.get('odometer') as string,
   };
 
   // Build documentMetadata if any document fields are provided
@@ -59,6 +59,18 @@ export async function createTruck(prevState: any, formData: FormData) {
   if (!result.success) {
     return {
       error: result.error.flatten().fieldErrors,
+      values: {
+        make: rawData.make,
+        model: rawData.model,
+        year: formData.get('year') as string,
+        vin: rawData.vin,
+        licensePlate: rawData.licensePlate,
+        odometer: formData.get('odometer') as string,
+        registrationNumber: registrationNumber || '',
+        registrationExpiry: registrationExpiry || '',
+        insuranceNumber: insuranceNumber || '',
+        insuranceExpiry: insuranceExpiry || '',
+      },
     };
   }
 
@@ -114,13 +126,13 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   if (model) rawData.model = model;
 
   const year = formData.get('year') as string;
-  if (year) rawData.year = parseInt(year, 10);
+  if (year) rawData.year = year;
 
   const licensePlate = formData.get('licensePlate') as string;
   if (licensePlate) rawData.licensePlate = licensePlate;
 
   const odometer = formData.get('odometer') as string;
-  if (odometer) rawData.odometer = parseInt(odometer, 10);
+  if (odometer) rawData.odometer = odometer;
 
   // Build documentMetadata if any document fields are provided
   const registrationNumber = formData.get('registrationNumber') as string;
@@ -143,6 +155,17 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
   if (!result.success) {
     return {
       error: result.error.flatten().fieldErrors,
+      values: {
+        make: make || '',
+        model: formData.get('model') as string || '',
+        year: year || '',
+        licensePlate: licensePlate || '',
+        odometer: odometer || '',
+        registrationNumber: registrationNumber || '',
+        registrationExpiry: registrationExpiry || '',
+        insuranceNumber: insuranceNumber || '',
+        insuranceExpiry: insuranceExpiry || '',
+      },
     };
   }
 

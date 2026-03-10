@@ -24,11 +24,14 @@ export const documentMetadataSchema = z
 export const truckCreateSchema = z.object({
   make: z.string().min(1, 'Make is required').max(100, 'Make must be 100 characters or less'),
   model: z.string().min(1, 'Model is required').max(100, 'Model must be 100 characters or less'),
-  year: z
-    .number()
-    .int('Year must be a whole number')
-    .min(1900, 'Year must be 1900 or later')
-    .max(new Date().getFullYear() + 1, `Year cannot be more than ${new Date().getFullYear() + 1}`),
+  year: z.preprocess(
+    (val) => (typeof val === 'string' ? parseInt(val, 10) : val),
+    z
+      .number()
+      .int('Year must be a whole number')
+      .min(1900, 'Year must be 1900 or later')
+      .max(new Date().getFullYear() + 1, `Year cannot be more than ${new Date().getFullYear() + 1}`)
+  ),
   vin: z
     .string()
     .length(17, 'VIN must be exactly 17 characters')
@@ -39,10 +42,13 @@ export const truckCreateSchema = z.object({
     .min(1, 'License plate is required')
     .max(20, 'License plate must be 20 characters or less')
     .regex(/^[A-Z0-9\s\-]+$/i, 'License plate can only contain letters, numbers, spaces, and hyphens'),
-  odometer: z
-    .number()
-    .int('Odometer must be a whole number')
-    .min(0, 'Odometer cannot be negative'),
+  odometer: z.preprocess(
+    (val) => {
+      if (typeof val === 'string') return parseInt(val.replace(/[^0-9]/g, ''), 10);
+      return val;
+    },
+    z.number().int('Odometer must be a whole number').min(0, 'Odometer cannot be negative')
+  ),
   documentMetadata: documentMetadataSchema.optional(),
 });
 
