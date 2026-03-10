@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 23 System Admin Portal — COMPLETE (Plan 03 of 03 complete)
-Status: Phase 23 complete — ADMIN_SECRET_KEY auth, admin home dashboard, tenant detail, support queue filters all shipped
-Last activity: 2026-03-09 - Completed Phase 23: System Admin Portal (all 3 plans + gap fixes)
+Phase: Phase 24 Technical Documentation — IN PROGRESS (Plan 01 of 03 complete)
+Status: Phase 24-01 complete — docs/README.md, docs/architecture.md, docs/auth.md, docs/database.md written
+Last activity: 2026-03-09 - Completed Phase 24-01: Core developer documentation (4 files, 2 tasks)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -314,6 +314,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 23-02]: TenantStatusControls in separate file to maintain clean server/client module boundary
 - [Phase 23-03]: Tab counts based on unfiltered list; priority/tenant filters only affect visible list and heading count
 - [Phase 23-03]: queryRawUnsafe with positional params for optional WHERE clause composition in getAllTickets -- Prisma tagged literals cannot conditionally compose WHERE
+- [Phase 24-01]: Tech stack corrected in docs — Next.js 15 (not 16) and Resend (not Gmail SMTP) per actual .env.example and codebase
+- [Phase 24-01]: Admin portal ADMIN_SECRET_KEY auth documented in auth.md (not in original spec but required for developer completeness)
+- [Phase 24-01]: 29 models documented in database.md (not 25+ as estimated — counted all models including RouteStop and TicketMessage)
 
 ### Pending Todos
 
@@ -420,10 +423,11 @@ None blocking immediate progress.
 | Phase 23 P01 | 175 | 2 tasks | 7 files |
 | Phase 23 P02 | 480 | 2 tasks | 6 files |
 | Phase 23-system-admin-portal P03 | 183 | 2 tasks | 3 files |
+| Phase 24-technical-documentation P01 | 227 | 2 tasks | 4 files |
 
 ## Session Continuity
 
 Last session: 2026-03-09
-Stopped at: Completed Phase 23-02 — Admin home dashboard + tenant detail page with suspension controls, View link in tenant list.
+Stopped at: Completed Phase 24-01 — Core developer documentation (README, architecture, auth, database).
 Resume file: None
-Next action: Continue Phase 23 — System Admin Portal (Plan 03 if exists)
+Next action: Continue Phase 24 — Technical Documentation (Plan 02: setup, deployment, stack, modules)
