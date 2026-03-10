@@ -18,6 +18,8 @@ export interface DocumentCreateInput {
   documentType?: string;
   expiryDate?: Date;
   notes?: string;
+  description?: string;
+  externalUrl?: string;
 }
 
 export class DocumentRepository extends TenantRepository {

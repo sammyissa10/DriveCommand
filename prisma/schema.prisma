@@ -307,6 +307,8 @@ model Document {
   documentType DocumentType?
   expiryDate   DateTime?     @db.Timestamptz
   notes        String?
+  description  String?       @db.Text
+  externalUrl  String?
   createdAt    DateTime      @default(now()) @db.Timestamptz
   updatedAt    DateTime      @updatedAt @db.Timestamptz
 

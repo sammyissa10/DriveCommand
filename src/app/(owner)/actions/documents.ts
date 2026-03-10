@@ -105,6 +105,10 @@ export async function completeUpload(data: {
   sizeBytes: number;
   entityType: 'truck' | 'route';
   entityId: string;
+  description?: string;
+  externalUrl?: string;
+  expiryDate?: string; // ISO string
+  documentName?: string;
 }) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
@@ -121,7 +125,8 @@ export async function completeUpload(data: {
     }
 
     // CRITICAL: Verify s3Key starts with tenant prefix (defense in depth)
-    if (!data.s3Key.startsWith(`tenant-${tenantId}/`)) {
+    // Skip check when it's a link-only document (no s3Key)
+    if (data.s3Key && !data.s3Key.startsWith(`tenant-${tenantId}/`)) {
       return {
         error: 'Invalid S3 key: does not match tenant',
       };
@@ -129,10 +134,10 @@ export async function completeUpload(data: {
 
     // Build document data based on entity type
     const documentData: any = {
-      fileName: data.fileName,
-      s3Key: data.s3Key,
-      contentType: data.contentType,
-      sizeBytes: data.sizeBytes,
+      fileName: data.documentName || data.fileName,
+      s3Key: data.s3Key || '',
+      contentType: data.contentType || '',
+      sizeBytes: data.sizeBytes || 0,
     };
 
     if (data.entityType === 'truck') {
@@ -140,6 +145,10 @@ export async function completeUpload(data: {
     } else {
       documentData.routeId = data.entityId;
     }
+
+    if (data.description) documentData.description = data.description;
+    if (data.externalUrl) documentData.externalUrl = data.externalUrl;
+    if (data.expiryDate) documentData.expiryDate = new Date(data.expiryDate);
 
     // Validate with Zod schema
     const result = documentCreateSchema.safeParse(documentData);
