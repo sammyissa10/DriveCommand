@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-46: TKT-0008 UX Standards (double-click nav, soft-delete archive, audit trails, driver doc upload fix)
+Last activity: 2026-03-10 - Completed Quick-47: TKT-0003 Login updates (NEXT_PUBLIC_APP_URL warning, email pre-fill on accept-invitation page)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -395,6 +395,7 @@ None blocking immediate progress.
 | 44 | Add ticket status filtering to sysadmin support dashboard — All/Open/In Progress/Closed tab bar with per-tab counts, RESOLVED+CLOSED combined into Closed bucket | 2026-03-07 | f393887 | [44-add-ticket-status-filtering-to-sysadmin-](./quick/44-add-ticket-status-filtering-to-sysadmin-/) |
 | 45 | TKT-0011 Routes UX — condensed title (short ID badge), document upload list fix (useEffect sync), co-driver multi-select with RouteDriver join table | 2026-03-10 | c9f7141 | [45-tkt-0011-routes-ux-condense-route-page-t](./quick/45-tkt-0011-routes-ux-condense-route-page-t/) |
 | 46 | TKT-0008 UX Standards — double-click row navigation on 6 list pages, soft-delete with archivedAt on 5 models, audit trail (createdById/updatedById) on 6 detail pages, driver doc upload form collapsed by default | 2026-03-10 | 9508608 | [46-tkt-0008-ux-standards-double-click-to-op](./quick/46-tkt-0008-ux-standards-double-click-to-op/) |
+| 47 | TKT-0003 Login updates — NEXT_PUBLIC_APP_URL missing-var warning in server logs, pre-filled read-only email field on accept-invitation page for browser credential saving | 2026-03-10 | 8637cb3 | [47-tkt-0003-login-updates-fix-localhost-in-](./quick/47-tkt-0003-login-updates-fix-localhost-in-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
