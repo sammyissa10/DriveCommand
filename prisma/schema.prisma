@@ -163,6 +163,7 @@ model User {
   tagAssignments    TagAssignment[]
   payrollRecords    PayrollRecord[]
   driverLoads       Load[]          @relation(name: "DriverLoads")
+  routeCoDrivers    RouteDriver[]   @relation(name: "RouteCoDrivers")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -228,6 +229,7 @@ model Route {
   scheduledDate  DateTime    @db.Timestamptz
   status         RouteStatus @default(PLANNED)
   notes          String?
+  name           String?
   completedAt    DateTime?   @db.Timestamptz
   version        Int         @default(1)
   startOdometer  Int?
@@ -245,12 +247,28 @@ model Route {
   payments     RoutePayment[]
   loads        Load[]
   stops        RouteStop[]
+  coDrivers    RouteDriver[]
 
   @@index([tenantId])
   @@index([driverId])
   @@index([truckId])
   @@index([scheduledDate])
   @@index([status])
+}
+
+model RouteDriver {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String   @db.Uuid
+  driverId  String   @db.Uuid
+  role      String   @default("co-driver")
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  route  Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  driver User  @relation(name: "RouteCoDrivers", fields: [driverId], references: [id])
+
+  @@unique([routeId, driverId])
+  @@index([routeId])
+  @@index([driverId])
 }
 
 model Document {
