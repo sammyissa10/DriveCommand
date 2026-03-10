@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
 Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-09 - Completed Phase 24: Technical Documentation (all 2 plans, 9 doc files)
+Last activity: 2026-03-10 - Completed Quick-45: TKT-0011 Routes UX (condensed title, document upload fix, co-driver support)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -320,6 +320,10 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 24-02]: docs/setup.md documents both Resend (.env.example) and Gmail SMTP (active gmail-client.ts) — the .env.example was not updated when the project migrated from Resend
 - [Phase 24-02]: docs/modules.md includes Shipment Tracking (/track) as entry 21 — significant public-facing surface not in plan spec but required for completeness
 - [Phase 24-02]: docs/email.md flags resend-client.ts as legacy and gmail-client.ts as active to prevent developer confusion from two client files existing
+- [Phase quick-45]: prisma db push used (not migrate dev) due to existing migration history drift — multiple prior migrations modified after application
+- [Phase quick-45]: coDriverIds serialized as comma-separated hidden form field; parsed and saved inline in updateRoute/createRoute to avoid unreachable call after redirect()
+- [Phase quick-45]: Primary driver select changed to controlled value so co-driver checkbox list can exclude selected primary driver in real time
+- [Phase quick-45]: useEffect([initialDocuments]) sync pattern required in RouteDocumentsSection — router.refresh() delivers new props but React does not re-initialize state from changed props
 
 ### Pending Todos
 
@@ -386,6 +390,7 @@ None blocking immediate progress.
 | 42 | Extend create tenant flow with owner invitation — role on DriverInvitation, OwnerInvitationEmail template, sendOwnerInvitation, owner fields on create-tenant form, role-aware accept-invitation (OWNER->dashboard, DRIVER->my-route) | 2026-03-04 | 8e92f1b | [42-extend-create-tenant-flow-with-owner-inv](./quick/42-extend-create-tenant-flow-with-owner-inv/) |
 | 43 | Change tenant status to Pending until owner accepts invitation — ownerSetupComplete via OWNER-role user check, three-state badge (Pending/Active/Suspended) in admin tenant list | 2026-03-04 | 7b3a6f1 | [43-change-tenant-status-to-pending-until-ow](./quick/43-change-tenant-status-to-pending-until-ow/) |
 | 44 | Add ticket status filtering to sysadmin support dashboard — All/Open/In Progress/Closed tab bar with per-tab counts, RESOLVED+CLOSED combined into Closed bucket | 2026-03-07 | f393887 | [44-add-ticket-status-filtering-to-sysadmin-](./quick/44-add-ticket-status-filtering-to-sysadmin-/) |
+| 45 | TKT-0011 Routes UX — condensed title (short ID badge), document upload list fix (useEffect sync), co-driver multi-select with RouteDriver join table | 2026-03-10 | c9f7141 | [45-tkt-0011-routes-ux-condense-route-page-t](./quick/45-tkt-0011-routes-ux-condense-route-page-t/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -420,6 +425,7 @@ None blocking immediate progress.
 **Quick-43 metrics:**
 - Quick-43 (2026-03-04): Three-state tenant status (Pending/Active/Suspended) via ownerSetupComplete computed from OWNER-role user existence — 79s, 2 tasks, 2 files affected
 - Quick-44 (2026-03-07): Status tab filtering on admin support dashboard — All/Open/In Progress/Closed tabs with per-tab counts, RESOLVED+CLOSED combined — ~60s, 1 task, 1 file affected
+- Quick-45 (2026-03-10): TKT-0011 Routes UX — RouteDriver join table + Route.name schema, document upload useEffect sync fix, short ID title badge, co-driver multi-select form — ~5min, 3 tasks, 7 files affected
 | Phase 22-support-ticket-system P01 | 261 | 2 tasks | 6 files |
 | Phase 22-support-ticket-system P02 | 285 | 2 tasks | 8 files |
 | Phase 22-support-ticket-system P03 | 276 | 2 tasks | 9 files |
@@ -432,6 +438,6 @@ None blocking immediate progress.
 ## Session Continuity
 
 Last session: 2026-03-10
-Stopped at: Completed Phase 24-02 — Operational documentation (stack, modules, setup, deployment, email).
+Stopped at: Completed Quick-45 — TKT-0011 Routes UX (condensed title, document upload sync fix, co-driver support).
 Resume file: None
-Next action: Continue Phase 24 — Technical Documentation (Plan 03: final docs)
+Next action: Continue v4.0 milestone or pick next quick task.
