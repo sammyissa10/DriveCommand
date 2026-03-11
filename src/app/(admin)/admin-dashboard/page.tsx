@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
-import { Building2, Truck, TrendingUp, LifeBuoy } from 'lucide-react';
+import { Building2, Truck, TrendingUp, LifeBuoy, Receipt } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSystemMetrics } from '@/app/(admin)/actions/tenants';
 
@@ -71,7 +71,7 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           href="/tenants"
           className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-6 py-4 shadow-sm hover:bg-gray-50 transition-colors"
@@ -79,6 +79,16 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center gap-3">
             <Building2 className="h-5 w-5 text-gray-400" />
             <span className="font-medium text-gray-900">Manage Tenants</span>
+          </div>
+          <span className="text-gray-400">→</span>
+        </Link>
+        <Link
+          href="/billing"
+          className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-6 py-4 shadow-sm hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <Receipt className="h-5 w-5 text-gray-400" />
+            <span className="font-medium text-gray-900">Billing</span>
           </div>
           <span className="text-gray-400">→</span>
         </Link>

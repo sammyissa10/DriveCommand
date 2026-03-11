@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     });
 
     let redirectUrl = '/dashboard';
-    if (user.isSystemAdmin) redirectUrl = '/admin-support';
+    if (user.isSystemAdmin) redirectUrl = '/admin-dashboard';
     else if (user.role === 'DRIVER') redirectUrl = '/my-route';
     return NextResponse.json({ success: true, redirectUrl });
   } catch (error) {
