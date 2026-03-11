@@ -183,9 +183,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — Data model: TenantInvoice model (tenantId, invoiceNumber, status DRAFT/SENT/PAID/OVERDUE/VOID, dueDate, subtotal, total Decimal, notes), TenantInvoiceItem model (tenantInvoiceId, description, quantity, unitPrice, amount), migration SQL, prisma/schema.prisma update, generateInvoiceNumber helper
-- [ ] 25-02-PLAN.md — Admin invoice CRUD: createTenantInvoice server action (create invoice + line items, send email to tenant owner), getTenantInvoices/getTenantInvoiceById actions, markInvoicePaid/voidInvoice actions, /admin/invoices list page (all invoices across tenants with status badges), /admin/invoices/new form (select tenant, add line items, set due date), /admin/invoices/[id] detail page with line item table and status controls
-- [ ] 25-03-PLAN.md — Tenant billing history: billing history section on /tenants/[id] detail page showing invoice list (number, amount, due date, status), invoice email template (professional invoice with line items, due date, total), overdue detection (mark SENT invoices as OVERDUE when past due date via cron or on-read), reactivate/resend email action on invoice detail
+- [ ] 25-01-PLAN.md — Data layer: SysAdminInvoice + SysAdminInvoiceItem models, migration SQL with RLS, generateInvoiceNumber (SINV-XXXX), all server actions (CRUD + markPaid + void + archive + markOverdueInvoices)
+- [ ] 25-02-PLAN.md — Admin invoice UI: /billing list page with summary stats, /billing/new form (tenant select, line items, due date), /billing/[id] detail page, /billing/[id]/edit page, Billing nav link in layout, billing history section on /tenants/[id]
+- [ ] 25-03-PLAN.md — Email + overdue: SysAdminInvoiceEmail React Email template, send-sysadmin-invoice.ts helper, sendInvoiceAction (DRAFT to SENT + email), /api/cron/mark-overdue-invoices route, vercel.json cron registration
 
 ---
 
