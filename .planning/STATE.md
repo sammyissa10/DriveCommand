@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (1/3 plans)
-Status: Plan 01 complete — data layer (schema models + server actions) done
-Last activity: 2026-03-11 - Completed 25-01: SysAdminInvoice schema + 9 server actions; Plans 02 (UI) and 03 (email/cron) remain
+Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (2/3 plans)
+Status: Plan 02 complete — awaiting human verification checkpoint before proceeding to Plan 03
+Last activity: 2026-03-11 - Completed 25-02: Full admin billing UI (8 files); Plan 03 (email/cron) remains
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -335,6 +335,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25]: SysAdminInvoice.invoiceNumber globally unique (SINV-XXXX sequence spans all tenants, not tenant-scoped)
 - [Phase 25]: decimal.js installed for monetary arithmetic precision in invoice line item calculations
 - [Phase 25]: updateSysAdminInvoice uses prisma.$transaction to atomically delete and recreate line items
+- [Phase 25]: MarkOverdueButton placed in separate file to keep server component clean
+- [Phase 25]: InvoiceActions uses window.confirm for destructive actions matching existing admin portal patterns
 
 ### Pending Todos
 
@@ -456,6 +458,7 @@ None blocking immediate progress.
 | Phase quick-46 P01 | 726 | 3 tasks | 23 files |
 | Phase quick-51 P01 | 190 | 2 tasks | 4 files |
 | Phase 25 P01 | 164 | 2 tasks | 4 files |
+| Phase 25 P02 | 378 | 2 tasks | 10 files |
 
 ## Session Continuity
 
