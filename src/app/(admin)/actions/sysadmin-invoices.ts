@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { Decimal } from 'decimal.js';
 import { z } from 'zod';
+import { sendSysAdminInvoice } from '@/lib/email/send-sysadmin-invoice';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -317,6 +318,52 @@ export async function archiveInvoice(id: string): Promise<{ success: true } | { 
 }
 
 // ─── Batch Operations ────────────────────────────────────────
+
+/**
+ * Send a DRAFT invoice to the tenant owner via email.
+ * Updates status to SENT first; email failure surfaces as emailWarning, not a failure return.
+ */
+export async function sendInvoiceAction(
+  invoiceId: string
+): Promise<{ success: true; emailWarning?: string } | { success: false; error: string }> {
+  try {
+    await requireAdminAccess();
+
+    const invoice = await prisma.sysAdminInvoice.findUnique({
+      where: { id: invoiceId },
+      select: { status: true },
+    });
+    if (!invoice) return { success: false, error: 'Invoice not found' };
+    if (invoice.status !== 'DRAFT') {
+      return { success: false, error: 'Only DRAFT invoices can be sent. Current status: ' + invoice.status };
+    }
+
+    // Update status to SENT before attempting email delivery
+    await prisma.sysAdminInvoice.update({
+      where: { id: invoiceId },
+      data: { status: 'SENT' },
+    });
+
+    try {
+      const result = await sendSysAdminInvoice(invoiceId);
+      if (!result.sent) {
+        revalidatePath('/billing');
+        return { success: true, emailWarning: result.warning };
+      }
+    } catch (emailError: unknown) {
+      console.error('[sendInvoiceAction] Email delivery failed:', emailError);
+      const message = emailError instanceof Error ? emailError.message : String(emailError);
+      revalidatePath('/billing');
+      return { success: true, emailWarning: 'Invoice marked as SENT but email delivery failed: ' + message };
+    }
+
+    revalidatePath('/billing');
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to send invoice';
+    return { success: false, error: message };
+  }
+}
 
 /**
  * Transition all SENT invoices past their dueDate to OVERDUE.
