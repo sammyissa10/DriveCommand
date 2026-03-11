@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (2/3 plans)
-Status: Plan 02 complete — awaiting human verification checkpoint before proceeding to Plan 03
-Last activity: 2026-03-11 - Completed 25-02: Full admin billing UI (8 files); Plan 03 (email/cron) remains
+Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (3/3 plans, awaiting human verification)
+Status: Plan 03 tasks complete — awaiting checkpoint:human-verify before marking phase complete
+Last activity: 2026-03-11 - Completed 25-03: Email template, sendInvoiceAction, overdue cron (6 files); awaiting human verification
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -337,6 +337,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25]: updateSysAdminInvoice uses prisma.$transaction to atomically delete and recreate line items
 - [Phase 25]: MarkOverdueButton placed in separate file to keep server component clean
 - [Phase 25]: InvoiceActions uses window.confirm for destructive actions matching existing admin portal patterns
+- [Phase 25-03]: DB status committed to SENT before email attempt — consistent state even if email service is down
+- [Phase 25-03]: Email failure is non-fatal: returns emailWarning in success response, shown as yellow banner in UI
+- [Phase 25-03]: Cron uses base prisma (no bypass_rls) — SysAdminInvoice RLS only restricts rows when app.current_tenant_id is set; cron runs without tenant context
 
 ### Pending Todos
 
@@ -459,6 +462,7 @@ None blocking immediate progress.
 | Phase quick-51 P01 | 190 | 2 tasks | 4 files |
 | Phase 25 P01 | 164 | 2 tasks | 4 files |
 | Phase 25 P02 | 378 | 2 tasks | 10 files |
+| Phase 25 P03 | 159 | 2 tasks | 6 files |
 
 ## Session Continuity
 
