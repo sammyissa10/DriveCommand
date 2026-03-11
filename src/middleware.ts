@@ -87,7 +87,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   // System admin guard: restrict to admin portal paths only
-  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/unauthorized', '/onboarding', '/api'];
+  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/unauthorized', '/onboarding', '/api'];
   if (session.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {
