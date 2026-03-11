@@ -2,20 +2,43 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { getTenantById } from '@/app/(admin)/actions/tenants';
+import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
+
+function getStatusBadgeClasses(status: string): string {
+  switch (status) {
+    case 'DRAFT':
+      return 'bg-gray-100 text-gray-700';
+    case 'SENT':
+      return 'bg-blue-100 text-blue-700';
+    case 'PAID':
+      return 'bg-green-100 text-green-700';
+    case 'OVERDUE':
+      return 'bg-red-100 text-red-700';
+    case 'VOID':
+      return 'bg-gray-100 text-gray-400';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+}
 
 export default async function TenantDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   let tenant: Awaited<ReturnType<typeof getTenantById>> | null = null;
   let fetchError: string | null = null;
+  let billingHistory: Awaited<ReturnType<typeof getSysAdminInvoices>> = [];
 
   try {
     tenant = await getTenantById(id);
   } catch (err: any) {
     console.error('[TenantDetailPage] getTenantById error:', err);
     fetchError = err.message || 'Failed to load tenant';
+  }
+
+  if (!fetchError && tenant) {
+    billingHistory = await getSysAdminInvoices({ tenantId: id }).catch(() => []);
   }
 
   if (fetchError || !tenant) {
@@ -159,6 +182,67 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           </CardContent>
         </Card>
       </div>
+
+      {/* Billing History */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-base font-semibold">Billing History</CardTitle>
+          <Link
+            href={`/billing/new?tenantId=${tenant.id}`}
+            className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            + New Invoice
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {billingHistory.length === 0 ? (
+            <p className="px-6 py-8 text-center text-sm text-gray-400">
+              No invoices for this tenant yet.
+            </p>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                  <th className="px-6 py-3">Invoice #</th>
+                  <th className="px-6 py-3">Amount</th>
+                  <th className="px-6 py-3">Due Date</th>
+                  <th className="px-6 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {billingHistory.map((inv) => (
+                  <tr key={inv.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-3 font-mono">
+                      <Link
+                        href={`/billing/${inv.id}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {inv.invoiceNumber}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-3 text-gray-900">
+                      {Number(inv.total).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
+                    </td>
+                    <td className="px-6 py-3 text-gray-500">
+                      {new Date(inv.dueDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-3">
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusBadgeClasses(inv.status)}`}
+                      >
+                        {inv.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
