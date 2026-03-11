@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 24 Technical Documentation — COMPLETE (2/2 plans)
-Status: Phase 24 complete — 9 docs written covering architecture, auth, database, stack, modules, setup, deployment, email
-Last activity: 2026-03-10 - Completed Quick-53: Playwright audit 12/14 passed, TKT-0003 through TKT-0011 all verified
+Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (1/3 plans)
+Status: Plan 01 complete — data layer (schema models + server actions) done
+Last activity: 2026-03-11 - Completed 25-01: SysAdminInvoice schema + 9 server actions; Plans 02 (UI) and 03 (email/cron) remain
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -332,6 +332,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-52]: Use z.preprocess in Zod schema for odometer/year string-to-number coercion rather than parseInt in actions
 - [Phase quick-52]: Server actions return { error, values } on validation failure; form uses key prop to remount and apply sticky defaultValues
 - [Phase quick-53]: Use React state (odometerRaw) instead of ref for hidden input — React resets hidden inputs on re-render
+- [Phase 25]: SysAdminInvoice.invoiceNumber globally unique (SINV-XXXX sequence spans all tenants, not tenant-scoped)
+- [Phase 25]: decimal.js installed for monetary arithmetic precision in invoice line item calculations
+- [Phase 25]: updateSysAdminInvoice uses prisma.$transaction to atomically delete and recreate line items
 
 ### Pending Todos
 
@@ -452,6 +455,7 @@ None blocking immediate progress.
 | Phase 24-technical-documentation P02 | 230 | 2 tasks | 5 files |
 | Phase quick-46 P01 | 726 | 3 tasks | 23 files |
 | Phase quick-51 P01 | 190 | 2 tasks | 4 files |
+| Phase 25 P01 | 164 | 2 tasks | 4 files |
 
 ## Session Continuity
 
