@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 26 QA Test Scripts — IN PROGRESS (Plan 01 of 3 complete)
-Status: Phase 26 Plan 01 complete — sysadmin-tests.md written (56 test cases)
-Last activity: 2026-03-13 - Completed Phase 26 Plan 01: SysAdmin portal QA test scripts — 56 manual test cases covering auth, tenants, support, billing/invoicing, user management
+Phase: Phase 26 QA Test Scripts — IN PROGRESS (Plan 02 of 3 complete)
+Status: Phase 26 Plan 02 complete — owner-tests.md written (106 test cases)
+Last activity: 2026-03-13 - Completed Phase 26 Plan 02: Owner portal QA test scripts — 106 manual test cases covering all 15 feature sections including full load dispatch lifecycle and notifications
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -46,6 +46,7 @@ Progress: [███████████████████████
 - Phase 25-02 (2026-03-11): Admin billing UI (list + detail + create + edit) — 3 tasks, 8 files
 - Phase 25-03 (2026-03-13): Email delivery + overdue cron — 2 tasks, 6 files
 - Phase 26-01 (2026-03-13): SysAdmin portal QA test scripts — 1 task, 1 file, 3min
+- Phase 26-02 (2026-03-13): Owner portal QA test scripts — 1 task, 1 file, 5min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -88,6 +89,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 26-02 decisions (QA test scripts — Owner portal):**
+- Load lifecycle tests are individual test cases per status transition (not one mega-test) — enables targeted regression testing at each state boundary
+- Smoke tests reference TC IDs only — testers jump to the full test case for exact steps
+- TC-OW-NOT-xxx notifications section written as UI tests (page load, event-triggered, mark-as-read) per plan specification
+- TC-OW-CRM-003 (duplicate company name) observes behavior rather than prescribing outcome — uniqueness constraint not confirmed in codebase
+- N/A checkbox added to conditionally-present feature tests (multi-stop route UI, CRM messaging UI)
 
 **Phase 26-01 decisions (QA test scripts — SysAdmin):**
 - Test case preconditions specify HOW to achieve required state (not just "a tenant exists") — testers are self-sufficient
