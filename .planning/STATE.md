@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 25 SysAdmin Invoicing Module — IN PROGRESS (3/3 plans, awaiting human verification)
-Status: Plan 03 tasks complete — awaiting checkpoint:human-verify before marking phase complete
-Last activity: 2026-03-11 - Completed 25-03: Email template, sendInvoiceAction, overdue cron (6 files); awaiting human verification
+Phase: Phase 26 QA Test Scripts — NEXT
+Status: Phase 25 complete (all 3 plans verified) — ready to begin Phase 26
+Last activity: 2026-03-13 - Phase 25 complete: SysAdmin Invoicing Module — SINV invoice creation, billing UI, email delivery, overdue cron; human-verified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -41,8 +41,13 @@ Progress: [███████████████████████
 - Phase 18-02 (2026-02-17): Upload UI components — 396s, 2 tasks, 6 files affected
 - Phase 18-03 (2026-02-17): Driver document expiry notifications — 342s, 2 tasks, 4 files affected
 
+**v4.0 metrics:**
+- Phase 25-01 (2026-03-11): SysAdminInvoice schema + server actions — 3 tasks, 5 files
+- Phase 25-02 (2026-03-11): Admin billing UI (list + detail + create + edit) — 3 tasks, 8 files
+- Phase 25-03 (2026-03-13): Email delivery + overdue cron — 2 tasks, 6 files
+
 **Combined:**
-- Total: 18 phases complete, 43 plans
+- Total: 19 phases complete, 46 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
