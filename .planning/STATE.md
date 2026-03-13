@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-13 - Completed Phase 26 Plan 03: Driver portal QA test scripts (48 test cases, 10 sections incl GPS tracking) and README.md entry point for all QA testers
+Last activity: 2026-03-13 - Completed quick task 56: TKT-0014 Fix dashboard truck expiry alerts navigating to /trucks instead of /trucks/{id}
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -445,6 +445,7 @@ None blocking immediate progress.
 | 53 | Playwright audit — 12 passed, 2 skipped for TKT-0003 through TKT-0011; auto-fixed latent odometer hidden input bug (ref→controlled state) found during testing | 2026-03-10 | 25d521d | [53-playwright-audit-to-verify-tkt-0005-and-](./quick/53-playwright-audit-to-verify-tkt-0005-and-/) |
 | 54 | Full mobile redesign — driver + owner bottom nav bars, larger text, full-width cards, bigger tap targets on mobile; desktop untouched | 2026-03-13 | a489c92 | [54-full-mobile-redesign-of-the-driver-porta](./quick/54-full-mobile-redesign-of-the-driver-porta/) |
 | 55 | TKT-0013 Fix "a.split is not a function" when uploading truck document with expiry date — completeUpload no longer returns Prisma document with Date fields (unused by client, caused RSC serialization failure) | 2026-03-13 | a3df0eb | [55-tkt-0013-fix-a-split-is-not-a-function-e](./quick/55-tkt-0013-fix-a-split-is-not-a-function-e/) |
+| 56 | TKT-0014 Fix dashboard truck expiry alerts — href was hardcoded to /trucks (all trucks page); changed to /trucks/${truck.id} so alert navigates to the specific truck | 2026-03-13 | 557d6e5 | [56-tkt-0014-fix-home-page-dashboard-alerts-](./quick/56-tkt-0014-fix-home-page-dashboard-alerts-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
