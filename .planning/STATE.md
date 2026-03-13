@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — NEXT
 Status: Phase 25 complete (all 3 plans verified) — ready to begin Phase 26
-Last activity: 2026-03-13 - Phase 25 complete: SysAdmin Invoicing Module — SINV invoice creation, billing UI, email delivery, overdue cron; human-verified
+Last activity: 2026-03-13 - Completed quick task 54: Full mobile redesign of driver + owner portals — bottom nav bars, larger text, full-width cards, app-like feel on mobile
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -420,6 +420,7 @@ None blocking immediate progress.
 | 51 | TKT-0009 Fix new driver creation — expand DriverInvitation with middleName, fullName (auto-computed), dateOfBirth, phoneNumber, address, licenseNumber, licenseExpirationDate; live full-name preview in invite form | 2026-03-10 | 111bd70 | [51-tkt-0009-fix-new-driver-creation-email-e](./quick/51-tkt-0009-fix-new-driver-creation-email-e/) |
 | 52 | TKT-0005 Fix new truck creation — strip commas in odometer via z.preprocess, return values on error from createTruck/updateTruck, sticky form fields via key remount pattern | 2026-03-10 | 22555b4 | [52-tkt-0005-fix-new-truck-creation-odometer](./quick/52-tkt-0005-fix-new-truck-creation-odometer/) |
 | 53 | Playwright audit — 12 passed, 2 skipped for TKT-0003 through TKT-0011; auto-fixed latent odometer hidden input bug (ref→controlled state) found during testing | 2026-03-10 | 25d521d | [53-playwright-audit-to-verify-tkt-0005-and-](./quick/53-playwright-audit-to-verify-tkt-0005-and-/) |
+| 54 | Full mobile redesign — driver + owner bottom nav bars, larger text, full-width cards, bigger tap targets on mobile; desktop untouched | 2026-03-13 | a489c92 | [54-full-mobile-redesign-of-the-driver-porta](./quick/54-full-mobile-redesign-of-the-driver-porta/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
