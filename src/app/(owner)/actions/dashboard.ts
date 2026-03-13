@@ -211,7 +211,7 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
             daysUntil < 0
               ? `Expired ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''} ago`
               : `Expires in ${daysUntil} day${daysUntil !== 1 ? 's' : ''}`,
-          href: '/trucks',
+          href: `/trucks/${truck.id}`,
           timestamp: expiryDate.toISOString(),
         });
       };
