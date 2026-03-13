@@ -86,6 +86,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 24. Technical Documentation | v4.0 | 2/2 | ✓ Complete | 2026-03-09 |
 | 25. SysAdmin Invoicing Module | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
+| 27. Automated Playwright E2E Tests | v4.0 | 0/3 | ○ Planned | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -199,3 +200,16 @@ Plans:
 - [ ] 26-01-PLAN.md — SysAdmin portal test scripts: docs/qa/sysadmin-tests.md covering auth (ADMIN_SECRET_KEY), dashboard, tenant management (create/suspend/reactivate), support ticket queue, and billing/invoicing lifecycle (DRAFT→SENT→PAID→VOID) — ~50 test cases with smoke tests
 - [ ] 26-02-PLAN.md — Owner portal test scripts: docs/qa/owner-tests.md covering auth, dashboard, trucks, drivers, routes, loads/dispatch (full PENDING→DISPATCHED→DELIVERED→INVOICED lifecycle), invoices, payroll, CRM, compliance, finance analytics, AI documents, settings — ~100 test cases with smoke tests
 - [ ] 26-03-PLAN.md — Driver portal + README: docs/qa/driver-tests.md covering auth, my-route (read-only), my-load status advancement, HOS logging, incidents, messages, support tickets, access boundary tests; plus docs/qa/README.md with test environment setup, test account creation guide, seed data sequence, and portal login quick reference
+
+---
+
+### Phase 27: Automated Playwright E2E Tests — Full browser automation suite covering all three portals
+
+**Goal:** Implement a complete Playwright end-to-end test suite covering all three portals (SysAdmin, Owner/Manager, Driver) and all critical user flows. Auth fixtures for all 3 roles eliminate per-test login overhead. Builds on existing e2e/tkt-fixes.spec.ts. App is considered production-ready when the full suite passes with a clean HTML report.
+**Depends on:** Phase 26 (QA Test Scripts serve as source of truth for what to automate)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Playwright setup + auth fixtures + SysAdmin tests: playwright.config.ts, e2e/fixtures/ with storageState for sysadmin/owner/driver roles, e2e/sysadmin/ tests covering login, dashboard, tenant CRUD, support tickets, invoicing lifecycle
+- [ ] 27-02-PLAN.md — Owner portal tests: e2e/owner/ covering dashboard, trucks CRUD, drivers CRUD, full load/dispatch lifecycle (PENDING→DISPATCHED→DELIVERED→INVOICED), route finance, document uploads
+- [ ] 27-03-PLAN.md — Driver portal tests + CI config: e2e/driver/ covering login, load status view, document access, access boundary tests; GitHub Actions workflow (.github/workflows/playwright.yml); e2e/README.md with run instructions; production readiness sign-off
