@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 26 QA Test Scripts — IN PROGRESS (Plan 02 of 3 complete)
-Status: Phase 26 Plan 02 complete — owner-tests.md written (106 test cases)
-Last activity: 2026-03-13 - Completed Phase 26 Plan 02: Owner portal QA test scripts — 106 manual test cases covering all 15 feature sections including full load dispatch lifecycle and notifications
+Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
+Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
+Last activity: 2026-03-13 - Completed Phase 26 Plan 03: Driver portal QA test scripts (48 test cases, 10 sections incl GPS tracking) and README.md entry point for all QA testers
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -47,6 +47,7 @@ Progress: [███████████████████████
 - Phase 25-03 (2026-03-13): Email delivery + overdue cron — 2 tasks, 6 files
 - Phase 26-01 (2026-03-13): SysAdmin portal QA test scripts — 1 task, 1 file, 3min
 - Phase 26-02 (2026-03-13): Owner portal QA test scripts — 1 task, 1 file, 5min
+- Phase 26-03 (2026-03-13): Driver portal QA test scripts + README — 2 tasks, 2 files, 4min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -89,6 +90,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 26-03 decisions (QA test scripts — Driver portal + README):**
+- Driver documents section uses explicit "NOTE TO TESTER" callout block — makes view/download-only constraint unmissable
+- GPS section (TC-DR-GPS-001 through TC-DR-GPS-004) covers four perspectives: driver map view, public tracking URL, status-change update, owner TC-OW-LOD-012 cross-reference
+- README explicitly calls out Playwright as Phase 27 (out of scope) to prevent testers from attempting automation with manual scripts
+- 7-step seeding sequence written in full so brand-new testers can set up from scratch without tribal knowledge
 
 **Phase 26-02 decisions (QA test scripts — Owner portal):**
 - Load lifecycle tests are individual test cases per status transition (not one mega-test) — enables targeted regression testing at each state boundary
