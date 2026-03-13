@@ -6,6 +6,7 @@ import { UserMenu } from "@/components/navigation/user-menu";
 import { Truck } from "lucide-react";
 import { DriverNav } from "@/components/driver/driver-nav";
 import { GpsTracker } from "@/components/driver/gps-tracker";
+import { DriverBottomNav } from "@/components/driver/driver-bottom-nav";
 import { prisma, TX_OPTIONS } from "@/lib/db/prisma";
 
 // Prevent static pre-rendering at build time — driver pages require auth context
@@ -63,10 +64,13 @@ export default async function DriverLayout({
           </div>
           <UserMenu />
         </div>
-        <DriverNav />
+        <div className="hidden lg:block">
+          <DriverNav />
+        </div>
         <GpsTracker truckId={truckId} />
       </header>
-      <main className="p-4 sm:p-6">{children}</main>
+      <main className="p-4 pb-20 sm:p-6 lg:pb-6">{children}</main>
+      <DriverBottomNav />
     </div>
   );
 }

@@ -17,7 +17,7 @@ export function DriverNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 overflow-x-auto px-6 pb-2">
+    <nav className="hidden lg:flex gap-1 overflow-x-auto px-6 pb-2">
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href || pathname.startsWith(href + '/');
         return (
