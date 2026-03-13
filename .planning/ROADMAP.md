@@ -85,7 +85,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 19. Multi-Stop Routes | v4.0 | 3/3 | ✓ Complete | 2026-02-26 |
 | 24. Technical Documentation | v4.0 | 2/2 | ✓ Complete | 2026-03-09 |
 | 25. SysAdmin Invoicing Module | v4.0 | 0/3 | ○ Planned | — |
-| 26. Automated Testing + Production Readiness | v4.0 | 0/3 | ○ Planned | — |
+| 26. QA Test Scripts | v4.0 | 0/3 | ○ Planned | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -189,13 +189,13 @@ Plans:
 
 ---
 
-### Phase 26: Automated Testing + Production Readiness — Playwright test suite and manual QA sign-off
+### Phase 26: QA Test Scripts — Written manual test documentation covering all three portals
 
-**Goal:** Validate the full application with automated Playwright end-to-end tests covering all three portals (sysadmin, owner, driver) and critical user flows. Automated tests run via a single command. Simultaneously, co-workers complete manual exploratory testing across all major features. App is production-ready when both automated tests pass and manual QA sign-off is received.
-**Depends on:** Phase 25 (all features complete before testing)
+**Goal:** Produce step-by-step manual QA test scripts (markdown files in docs/qa/) covering every major feature across all three portals. Coworkers follow these scripts to manually test the app. Each test case specifies preconditions, numbered steps with exact field values, expected results, and Pass/Fail checkboxes. Includes a smoke test section per portal and a README with test environment setup instructions.
+**Depends on:** Phase 25 (all features complete before QA scripts are written)
 **Plans:** 3 plans
 
 Plans:
-- [ ] 26-01-PLAN.md — Test infrastructure: install Playwright, configure playwright.config.ts (base URL, 3 projects for chromium/firefox/webkit, auth setup), create test fixtures for sysadmin/owner/driver sessions, write auth helpers (login as each role), docs/testing.md explaining how to run the suite
-- [ ] 26-02-PLAN.md — Sysadmin + owner portal tests: sysadmin (login, view tenants, create tenant, view support tickets, reply to ticket, view admin dashboard), owner portal (login, dashboard loads, create truck, create driver invite, create route, create load, create invoice, submit support ticket, view ticket thread)
-- [ ] 26-03-PLAN.md — Driver portal + cross-portal tests: driver (login, view assigned route, mark stop arrived/departed), cross-portal (owner submits ticket → sysadmin sees it → sysadmin replies → owner sees reply), full tenant isolation check (tenant A cannot see tenant B data), run full suite and fix any failures
+- [ ] 26-01-PLAN.md — SysAdmin portal test scripts: docs/qa/sysadmin-tests.md covering auth (ADMIN_SECRET_KEY), dashboard, tenant management (create/suspend/reactivate), support ticket queue, and billing/invoicing lifecycle (DRAFT→SENT→PAID→VOID) — ~50 test cases with smoke tests
+- [ ] 26-02-PLAN.md — Owner portal test scripts: docs/qa/owner-tests.md covering auth, dashboard, trucks, drivers, routes, loads/dispatch (full PENDING→DISPATCHED→DELIVERED→INVOICED lifecycle), invoices, payroll, CRM, compliance, finance analytics, AI documents, settings — ~100 test cases with smoke tests
+- [ ] 26-03-PLAN.md — Driver portal + README: docs/qa/driver-tests.md covering auth, my-route (read-only), my-load status advancement, HOS logging, incidents, messages, support tickets, access boundary tests; plus docs/qa/README.md with test environment setup, test account creation guide, seed data sequence, and portal login quick reference
