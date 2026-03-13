@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 26 QA Test Scripts — NEXT
-Status: Phase 25 complete (all 3 plans verified) — ready to begin Phase 26
-Last activity: 2026-03-13 - Completed quick task 54: Full mobile redesign of driver + owner portals — bottom nav bars, larger text, full-width cards, app-like feel on mobile
+Phase: Phase 26 QA Test Scripts — IN PROGRESS (Plan 01 of 3 complete)
+Status: Phase 26 Plan 01 complete — sysadmin-tests.md written (56 test cases)
+Last activity: 2026-03-13 - Completed Phase 26 Plan 01: SysAdmin portal QA test scripts — 56 manual test cases covering auth, tenants, support, billing/invoicing, user management
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -45,6 +45,7 @@ Progress: [███████████████████████
 - Phase 25-01 (2026-03-11): SysAdminInvoice schema + server actions — 3 tasks, 5 files
 - Phase 25-02 (2026-03-11): Admin billing UI (list + detail + create + edit) — 3 tasks, 8 files
 - Phase 25-03 (2026-03-13): Email delivery + overdue cron — 2 tasks, 6 files
+- Phase 26-01 (2026-03-13): SysAdmin portal QA test scripts — 1 task, 1 file, 3min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -87,6 +88,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 26-01 decisions (QA test scripts — SysAdmin):**
+- Test case preconditions specify HOW to achieve required state (not just "a tenant exists") — testers are self-sufficient
+- ADMIN_SECRET_KEY auth documented in intro paragraph so testers see it before any test case
+- Invoice number format `SINV-XXXX` documented so testers know what to look for when verifying creation
+- Email warning toast on invoice send is expected behavior (not failure) — documented per actual server action
+- TC-SA-{AREA}-NNN test ID scheme established: AUTH, DASH, TEN, SUP, BILL, USR
 
 **v3.0 architectural decisions (from research):**
 - Use Decimal.js for all financial calculations (matching Prisma.Decimal pattern from FuelRecord) — prevents floating-point errors
