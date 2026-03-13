@@ -161,7 +161,7 @@ export async function completeUpload(data: {
 
     // Create document via repository
     const repo = new DocumentRepository(tenantId);
-    const document = await repo.create({
+    await repo.create({
       ...result.data,
       tenantId,
       uploadedBy: user.id,
@@ -172,10 +172,7 @@ export async function completeUpload(data: {
       data.entityType === 'truck' ? `/trucks/${data.entityId}` : `/routes/${data.entityId}`;
     revalidatePath(entityPath);
 
-    return {
-      success: true,
-      document,
-    };
+    return { success: true };
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : 'Failed to complete upload',
