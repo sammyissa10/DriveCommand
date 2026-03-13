@@ -7,8 +7,25 @@ import { Decimal } from 'decimal.js';
 import { createSysAdminInvoice } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent } from '@/components/ui/card';
 
+const CHARGE_TYPES = [
+  { value: 'MONTHLY_SUBSCRIPTION', label: 'Monthly Subscription' },
+  { value: 'ANNUAL_SUBSCRIPTION', label: 'Annual Subscription' },
+  { value: 'SETUP_FEE', label: 'Setup / Onboarding Fee' },
+  { value: 'CUSTOM', label: 'Custom' },
+];
+
+function getDefaultDescription(chargeType: string): string {
+  switch (chargeType) {
+    case 'MONTHLY_SUBSCRIPTION': return 'DriveCommand Monthly Subscription';
+    case 'ANNUAL_SUBSCRIPTION': return 'DriveCommand Annual Subscription';
+    case 'SETUP_FEE': return 'Setup & Onboarding Fee';
+    default: return '';
+  }
+}
+
 interface LineItem {
   id: string;
+  chargeType: string;
   description: string;
   quantity: string;
   unitPrice: string;
@@ -21,9 +38,7 @@ interface Props {
 
 function computeItemAmount(quantity: string, unitPrice: string): string {
   try {
-    const qty = new Decimal(quantity || '0');
-    const price = new Decimal(unitPrice || '0');
-    return qty.times(price).toFixed(2);
+    return new Decimal(quantity || '0').times(new Decimal(unitPrice || '0')).toFixed(2);
   } catch {
     return '0.00';
   }
@@ -31,11 +46,9 @@ function computeItemAmount(quantity: string, unitPrice: string): string {
 
 function computeSubtotal(items: LineItem[]): string {
   try {
-    let total = new Decimal(0);
-    for (const item of items) {
-      total = total.plus(new Decimal(computeItemAmount(item.quantity, item.unitPrice)));
-    }
-    return total.toFixed(2);
+    return items
+      .reduce((sum, item) => sum.plus(new Decimal(computeItemAmount(item.quantity, item.unitPrice))), new Decimal(0))
+      .toFixed(2);
   } catch {
     return '0.00';
   }
@@ -45,9 +58,12 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
   const router = useRouter();
   const [selectedTenantId, setSelectedTenantId] = useState(preselectedTenantId ?? '');
   const [dueDate, setDueDate] = useState('');
+  const [billingPeriodStart, setBillingPeriodStart] = useState('');
+  const [billingPeriodEnd, setBillingPeriodEnd] = useState('');
+  const [isRecurring, setIsRecurring] = useState(false);
   const [notes, setNotes] = useState('');
   const [items, setItems] = useState<LineItem[]>([
-    { id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0.00' },
+    { id: crypto.randomUUID(), chargeType: 'MONTHLY_SUBSCRIPTION', description: 'DriveCommand Monthly Subscription', quantity: '1', unitPrice: '0.00' },
   ]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,7 +71,7 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
   function addLineItem() {
     setItems((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), description: '', quantity: '1', unitPrice: '0.00' },
+      { id: crypto.randomUUID(), chargeType: 'CUSTOM', description: '', quantity: '1', unitPrice: '0.00' },
     ]);
   }
 
@@ -65,7 +81,14 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
 
   function updateItem(id: string, field: keyof Omit<LineItem, 'id'>, value: string) {
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        if (field === 'chargeType') {
+          const defaultDesc = getDefaultDescription(value);
+          return { ...item, chargeType: value, description: defaultDesc || item.description };
+        }
+        return { ...item, [field]: value };
+      }),
     );
   }
 
@@ -73,24 +96,25 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
     try {
       const result = await createSysAdminInvoice({
         tenantId: selectedTenantId,
         dueDate,
+        billingPeriodStart: billingPeriodStart || undefined,
+        billingPeriodEnd: billingPeriodEnd || undefined,
+        isRecurring,
         notes: notes || undefined,
         items: items.map((i) => ({
+          chargeType: i.chargeType || undefined,
           description: i.description,
           quantity: parseFloat(i.quantity) || 0,
           unitPrice: parseFloat(i.unitPrice) || 0,
         })),
       });
-
       if (!result.success) {
         setError(result.error);
         return;
       }
-
       router.push('/billing/' + result.invoice.id);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
@@ -111,7 +135,7 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
 
       <Card>
         <CardContent className="space-y-4 pt-6">
-          {/* Tenant select */}
+          {/* Tenant */}
           <div>
             <label htmlFor="tenant" className="block text-sm font-medium text-gray-700">
               Tenant <span className="text-red-500">*</span>
@@ -125,9 +149,7 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
             >
               <option value="">Select a tenant…</option>
               {tenants.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
+                <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
           </div>
@@ -147,6 +169,42 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
             />
           </div>
 
+          {/* Billing period */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Billing Period <span className="text-gray-400">(optional)</span>
+            </label>
+            <div className="mt-1 flex items-center gap-3">
+              <input
+                type="date"
+                value={billingPeriodStart}
+                onChange={(e) => setBillingPeriodStart(e.target.value)}
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              />
+              <span className="text-sm text-gray-400">to</span>
+              <input
+                type="date"
+                value={billingPeriodEnd}
+                onChange={(e) => setBillingPeriodEnd(e.target.value)}
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              />
+            </div>
+          </div>
+
+          {/* Recurring toggle */}
+          <div className="flex items-center gap-3">
+            <input
+              id="isRecurring"
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500"
+            />
+            <label htmlFor="isRecurring" className="text-sm font-medium text-gray-700">
+              Recurring invoice <span className="text-gray-400 font-normal">(monthly subscription)</span>
+            </label>
+          </div>
+
           {/* Notes */}
           <div>
             <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
@@ -154,7 +212,7 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
             </label>
             <textarea
               id="notes"
-              rows={3}
+              rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Additional notes for this invoice…"
@@ -178,30 +236,46 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
             </button>
           </div>
 
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                <th className="pb-2">Description</th>
-                <th className="pb-2 w-24 text-right">Qty</th>
-                <th className="pb-2 w-32 text-right">Unit Price</th>
-                <th className="pb-2 w-28 text-right">Amount</th>
-                <th className="pb-2 w-10"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="py-2 pr-3">
-                    <input
-                      type="text"
-                      required
-                      value={item.description}
-                      onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                      placeholder="Description"
-                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
-                    />
-                  </td>
-                  <td className="py-2 pr-3">
+          <div className="space-y-3">
+            {items.map((item, idx) => (
+              <div key={item.id} className="rounded-md border border-gray-200 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Charge Type</label>
+                    <select
+                      value={item.chargeType}
+                      onChange={(e) => updateItem(item.id, 'chargeType', e.target.value)}
+                      className="w-full rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                    >
+                      {CHARGE_TYPES.map((ct) => (
+                        <option key={ct.value} value={ct.value}>{ct.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeLineItem(item.id)}
+                    disabled={items.length === 1}
+                    className="mt-5 text-gray-400 hover:text-red-600 disabled:opacity-30"
+                    aria-label="Remove line item"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                  <input
+                    type="text"
+                    required
+                    value={item.description}
+                    onChange={(e) => updateItem(item.id, 'description', e.target.value)}
+                    placeholder="e.g. DriveCommand Monthly Subscription — March 2026"
+                    className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-24">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Qty</label>
                     <input
                       type="number"
                       required
@@ -209,10 +283,11 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
                       min="0.01"
                       value={item.quantity}
                       onChange={(e) => updateItem(item.id, 'quantity', e.target.value)}
-                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-right text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                      className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-right text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                     />
-                  </td>
-                  <td className="py-2 pr-3">
+                  </div>
+                  <div className="w-36">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Unit Price ($)</label>
                     <input
                       type="number"
                       required
@@ -220,37 +295,26 @@ export function NewInvoiceForm({ tenants, preselectedTenantId }: Props) {
                       min="0"
                       value={item.unitPrice}
                       onChange={(e) => updateItem(item.id, 'unitPrice', e.target.value)}
-                      className="w-full rounded-md border border-gray-300 px-2 py-1 text-right text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                      className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-right text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
                     />
-                  </td>
-                  <td className="py-2 pr-3 text-right text-gray-700 tabular-nums">
-                    ${computeItemAmount(item.quantity, item.unitPrice)}
-                  </td>
-                  <td className="py-2 text-right">
-                    <button
-                      type="button"
-                      onClick={() => removeLineItem(item.id)}
-                      disabled={items.length === 1}
-                      className="text-gray-400 hover:text-red-600 disabled:opacity-30"
-                      aria-label="Remove line item"
-                    >
-                      ✕
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                  <div className="flex-1 text-right">
+                    <label className="block text-xs font-medium text-gray-500 mb-1">Amount</label>
+                    <span className="text-sm font-medium text-gray-900 tabular-nums">
+                      ${computeItemAmount(item.quantity, item.unitPrice)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
 
           <div className="mt-4 flex justify-end border-t border-gray-200 pt-4">
-            <div className="text-sm font-semibold text-gray-900">
-              Subtotal: ${subtotal}
-            </div>
+            <div className="text-sm font-semibold text-gray-900">Subtotal: ${subtotal}</div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Actions */}
       <div className="flex items-center gap-4">
         <button
           type="submit"

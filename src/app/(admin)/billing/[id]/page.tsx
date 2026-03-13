@@ -60,7 +60,7 @@ export default async function InvoiceDetailPage({
       </Link>
 
       {/* Page header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         <h1 className="text-2xl font-bold tracking-tight font-mono text-gray-900">
           {invoice.invoiceNumber}
         </h1>
@@ -69,6 +69,11 @@ export default async function InvoiceDetailPage({
         >
           {invoice.status}
         </span>
+        {invoice.isRecurring && (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-700">
+            Recurring
+          </span>
+        )}
       </div>
 
       {/* Info grid */}
@@ -106,6 +111,14 @@ export default async function InvoiceDetailPage({
                 {new Date(invoice.dueDate).toLocaleDateString()}
               </p>
             </div>
+            {invoice.billingPeriodStart && invoice.billingPeriodEnd && (
+              <div>
+                <p className="text-gray-500">Billing Period</p>
+                <p className="font-medium text-gray-900">
+                  {new Date(invoice.billingPeriodStart).toLocaleDateString()} — {new Date(invoice.billingPeriodEnd).toLocaleDateString()}
+                </p>
+              </div>
+            )}
             {invoice.notes && (
               <div>
                 <p className="text-gray-500">Notes</p>

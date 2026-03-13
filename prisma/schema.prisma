@@ -754,19 +754,22 @@ model InvoiceItem {
 // ─── SysAdmin Invoice Models ────────────────────────────────
 
 model SysAdminInvoice {
-  id            String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String                 @db.Uuid
-  invoiceNumber String                 @unique
-  status        SysAdminInvoiceStatus  @default(DRAFT)
-  issueDate     DateTime               @db.Timestamptz
-  dueDate       DateTime               @db.Timestamptz
-  subtotal      Decimal                @db.Decimal(12, 2)
-  total         Decimal                @db.Decimal(12, 2)
-  notes         String?
-  paidAt        DateTime?              @db.Timestamptz
-  archivedAt    DateTime?              @db.Timestamptz
-  createdAt     DateTime               @default(now()) @db.Timestamptz
-  updatedAt     DateTime               @updatedAt @db.Timestamptz
+  id                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String                 @db.Uuid
+  invoiceNumber      String                 @unique
+  status             SysAdminInvoiceStatus  @default(DRAFT)
+  issueDate          DateTime               @db.Timestamptz
+  dueDate            DateTime               @db.Timestamptz
+  billingPeriodStart DateTime?              @db.Timestamptz
+  billingPeriodEnd   DateTime?              @db.Timestamptz
+  isRecurring        Boolean                @default(false)
+  subtotal           Decimal                @db.Decimal(12, 2)
+  total              Decimal                @db.Decimal(12, 2)
+  notes              String?
+  paidAt             DateTime?              @db.Timestamptz
+  archivedAt         DateTime?              @db.Timestamptz
+  createdAt          DateTime               @default(now()) @db.Timestamptz
+  updatedAt          DateTime               @updatedAt @db.Timestamptz
 
   tenant Tenant                @relation(fields: [tenantId], references: [id])
   items  SysAdminInvoiceItem[]
@@ -780,6 +783,7 @@ model SysAdminInvoice {
 model SysAdminInvoiceItem {
   id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   invoiceId   String  @db.Uuid
+  chargeType  String?
   description String
   quantity    Decimal @db.Decimal(10, 2)
   unitPrice   Decimal @db.Decimal(10, 2)

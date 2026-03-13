@@ -41,6 +41,7 @@ export async function generateInvoiceNumber(): Promise<string> {
 // ─── Zod Schemas ─────────────────────────────────────────────
 
 const itemSchema = z.object({
+  chargeType: z.string().optional(),
   description: z.string().min(1, 'Description is required'),
   quantity: z.number().positive('Quantity must be greater than 0'),
   unitPrice: z.number().min(0, 'Unit price must be >= 0'),
@@ -49,6 +50,9 @@ const itemSchema = z.object({
 const invoiceInputSchema = z.object({
   tenantId: z.string().uuid('Tenant ID must be a valid UUID'),
   dueDate: z.string().refine((d) => !isNaN(Date.parse(d)), 'Due date must be a valid date'),
+  billingPeriodStart: z.string().optional(),
+  billingPeriodEnd: z.string().optional(),
+  isRecurring: z.boolean().optional(),
   notes: z.string().optional(),
   items: z.array(itemSchema).min(1, 'At least one line item is required'),
 });
@@ -62,8 +66,11 @@ const invoiceInputSchema = z.object({
 export async function createSysAdminInvoice(data: {
   tenantId: string;
   dueDate: string;
+  billingPeriodStart?: string;
+  billingPeriodEnd?: string;
+  isRecurring?: boolean;
   notes?: string;
-  items: Array<{ description: string; quantity: number; unitPrice: number }>;
+  items: Array<{ chargeType?: string; description: string; quantity: number; unitPrice: number }>;
 }): Promise<{ success: true; invoice: Awaited<ReturnType<typeof prisma.sysAdminInvoice.create>> } | { success: false; error: string }> {
   try {
     await requireAdminAccess();
@@ -73,7 +80,7 @@ export async function createSysAdminInvoice(data: {
       return { success: false, error: validation.error.issues[0].message };
     }
 
-    const { tenantId, dueDate, notes, items } = validation.data;
+    const { tenantId, dueDate, billingPeriodStart, billingPeriodEnd, isRecurring, notes, items } = validation.data;
 
     const invoiceNumber = await generateInvoiceNumber();
 
@@ -83,6 +90,7 @@ export async function createSysAdminInvoice(data: {
       const amount = new Decimal(item.quantity).times(item.unitPrice);
       subtotalDecimal = subtotalDecimal.plus(amount);
       return {
+        chargeType: item.chargeType ?? null,
         description: item.description,
         quantity: item.quantity.toString(),
         unitPrice: item.unitPrice.toString(),
@@ -100,6 +108,9 @@ export async function createSysAdminInvoice(data: {
         status: 'DRAFT',
         issueDate: new Date(),
         dueDate: new Date(dueDate),
+        billingPeriodStart: billingPeriodStart ? new Date(billingPeriodStart) : null,
+        billingPeriodEnd: billingPeriodEnd ? new Date(billingPeriodEnd) : null,
+        isRecurring: isRecurring ?? false,
         subtotal,
         total,
         notes,
@@ -176,8 +187,11 @@ export async function updateSysAdminInvoice(
   id: string,
   data: {
     dueDate: string;
+    billingPeriodStart?: string;
+    billingPeriodEnd?: string;
+    isRecurring?: boolean;
     notes?: string;
-    items: Array<{ description: string; quantity: number; unitPrice: number }>;
+    items: Array<{ chargeType?: string; description: string; quantity: number; unitPrice: number }>;
   }
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
@@ -191,6 +205,9 @@ export async function updateSysAdminInvoice(
 
     const updateSchema = z.object({
       dueDate: z.string().refine((d) => !isNaN(Date.parse(d)), 'Due date must be a valid date'),
+      billingPeriodStart: z.string().optional(),
+      billingPeriodEnd: z.string().optional(),
+      isRecurring: z.boolean().optional(),
       notes: z.string().optional(),
       items: z.array(itemSchema).min(1, 'At least one line item is required'),
     });
@@ -200,13 +217,14 @@ export async function updateSysAdminInvoice(
       return { success: false, error: validation.error.issues[0].message };
     }
 
-    const { dueDate, notes, items } = validation.data;
+    const { dueDate, billingPeriodStart, billingPeriodEnd, isRecurring, notes, items } = validation.data;
 
     let subtotalDecimal = new Decimal(0);
     const itemsWithAmounts = items.map((item) => {
       const amount = new Decimal(item.quantity).times(item.unitPrice);
       subtotalDecimal = subtotalDecimal.plus(amount);
       return {
+        chargeType: item.chargeType ?? null,
         description: item.description,
         quantity: item.quantity.toString(),
         unitPrice: item.unitPrice.toString(),
@@ -223,6 +241,9 @@ export async function updateSysAdminInvoice(
         where: { id },
         data: {
           dueDate: new Date(dueDate),
+          billingPeriodStart: billingPeriodStart ? new Date(billingPeriodStart) : null,
+          billingPeriodEnd: billingPeriodEnd ? new Date(billingPeriodEnd) : null,
+          isRecurring: isRecurring ?? false,
           subtotal,
           total,
           notes,
