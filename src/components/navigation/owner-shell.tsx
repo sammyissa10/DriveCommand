@@ -3,6 +3,7 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/navigation/sidebar"
 import { Separator } from "@/components/ui/separator"
+import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 
 interface OwnerShellProps {
   children: React.ReactNode;
@@ -18,10 +19,11 @@ export function OwnerShell({ children, supportBadge }: OwnerShellProps) {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
         </header>
-        <main className="flex-1 p-6 overflow-x-hidden">
+        <main className="flex-1 p-6 pb-20 lg:pb-6 overflow-x-hidden">
           {children}
         </main>
       </SidebarInset>
+      <OwnerBottomNav />
     </SidebarProvider>
   )
 }
