@@ -51,17 +51,17 @@ export default async function MyLoadPage() {
   const currentIndex = DRIVER_STATUS_LIFECYCLE.indexOf(load.status);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">My Load</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-foreground">My Load</h1>
         <p className="mt-1 text-muted-foreground">
           Load #{load.loadNumber} &mdash; {load.origin} to {load.destination}
         </p>
       </div>
 
       {/* Load details card */}
-      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5 shadow-sm">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
           <Package className="h-4 w-4" />
           Load Details
@@ -121,7 +121,7 @@ export default async function MyLoadPage() {
       </div>
 
       {/* Status timeline */}
-      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5 shadow-sm">
         <h3 className="mb-5 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Status Timeline
         </h3>
@@ -170,7 +170,7 @@ export default async function MyLoadPage() {
       </div>
 
       {/* Status action button */}
-      <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5 shadow-sm">
         <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Update Status
         </h3>

@@ -5,14 +5,14 @@ import { AlertTriangle, Camera, CheckCircle2 } from 'lucide-react';
 import { submitIncidentReport } from '@/app/(driver)/actions/driver-incidents';
 
 const inputClass =
-  'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
-const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
+  'w-full rounded-lg border border-input bg-background px-3 py-3 lg:py-2.5 text-base lg:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
+const labelClass = 'block text-base lg:text-sm font-medium text-foreground mb-1.5';
 
 export function IncidentReportForm() {
   const [state, formAction, isPending] = useActionState(submitIncidentReport, null);
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-none lg:max-w-2xl">
       {state?.success && (
         <div className="mb-6 flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4">
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-600" />
@@ -25,7 +25,7 @@ export function IncidentReportForm() {
 
       <form
         action={formAction}
-        className="space-y-5 rounded-lg border border-border bg-card p-6"
+        className="space-y-5 rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6"
         key={state?.success ? Date.now() : 'form'}
       >
         {/* Field-level errors are shown below each input */}
@@ -93,7 +93,7 @@ export function IncidentReportForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-2.5 text-sm font-medium text-destructive-foreground shadow-sm hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 lg:py-2.5 text-base lg:text-sm font-medium text-destructive-foreground shadow-sm hover:bg-destructive/90 disabled:opacity-50 transition-colors min-h-[52px] lg:min-h-[44px]"
         >
           <AlertTriangle className="h-4 w-4" />
           {isPending ? 'Submitting...' : 'Submit Incident Report'}

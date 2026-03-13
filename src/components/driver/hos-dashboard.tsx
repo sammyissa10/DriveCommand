@@ -40,7 +40,7 @@ export function HOSDashboard({ hosData }: { hosData: HOSData }) {
   return (
     <div className="space-y-6">
       {/* Current Status */}
-      <div className="rounded-lg border border-border bg-card p-6">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
           Current Status
         </h3>
@@ -57,7 +57,7 @@ export function HOSDashboard({ hosData }: { hosData: HOSData }) {
               <button
                 type="submit"
                 disabled={isPending || hosData.currentStatus === key}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+                className={`rounded-lg px-4 py-3 lg:py-2 text-base lg:text-sm font-medium transition-colors disabled:opacity-50 min-h-[44px] ${
                   hosData.currentStatus === key
                     ? 'bg-primary text-primary-foreground'
                     : 'border border-border bg-card text-foreground hover:bg-accent'
@@ -78,16 +78,16 @@ export function HOSDashboard({ hosData }: { hosData: HOSData }) {
       </div>
 
       {/* Hours Summary */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-border bg-card p-5">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-3">
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5">
           <div className="text-sm text-muted-foreground">Driving Hours (11h limit)</div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{hosData.drivingHoursUsed}h</span>
+            <span className="text-3xl lg:text-2xl font-bold">{hosData.drivingHoursUsed}h</span>
             <span className="text-sm text-muted-foreground">
               / {hosData.drivingHoursRemaining}h left
             </span>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+          <div className="mt-3 h-3 lg:h-2 overflow-hidden rounded-full bg-muted">
             <div
               className={`h-full rounded-full transition-all ${
                 drivingPercent > 80 ? 'bg-red-500' : drivingPercent > 60 ? 'bg-amber-500' : 'bg-green-500'
@@ -97,15 +97,15 @@ export function HOSDashboard({ hosData }: { hosData: HOSData }) {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5">
           <div className="text-sm text-muted-foreground">On-Duty Hours (14h limit)</div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{hosData.onDutyHoursUsed}h</span>
+            <span className="text-3xl lg:text-2xl font-bold">{hosData.onDutyHoursUsed}h</span>
             <span className="text-sm text-muted-foreground">
               / {hosData.onDutyHoursRemaining}h left
             </span>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+          <div className="mt-3 h-3 lg:h-2 overflow-hidden rounded-full bg-muted">
             <div
               className={`h-full rounded-full transition-all ${
                 onDutyPercent > 80 ? 'bg-red-500' : onDutyPercent > 60 ? 'bg-amber-500' : 'bg-green-500'
@@ -115,15 +115,15 @@ export function HOSDashboard({ hosData }: { hosData: HOSData }) {
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-card p-5">
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5">
           <div className="text-sm text-muted-foreground">8-Day Cycle (70h limit)</div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{hosData.cycleHoursUsed}h</span>
+            <span className="text-3xl lg:text-2xl font-bold">{hosData.cycleHoursUsed}h</span>
             <span className="text-sm text-muted-foreground">
               / {hosData.cycleHoursRemaining}h left
             </span>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+          <div className="mt-3 h-3 lg:h-2 overflow-hidden rounded-full bg-muted">
             <div
               className={`h-full rounded-full transition-all ${
                 cyclePercent > 80 ? 'bg-red-500' : cyclePercent > 60 ? 'bg-amber-500' : 'bg-green-500'

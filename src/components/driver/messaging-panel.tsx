@@ -5,7 +5,7 @@ import { Send, MessageSquare } from 'lucide-react';
 import { sendDriverMessage } from '@/app/(driver)/actions/driver-messages';
 
 const inputClass =
-  'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+  'w-full rounded-lg border border-input bg-background px-3 py-3 lg:py-2.5 text-base lg:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
 export function MessagingPanel() {
   const [state, formAction, isPending] = useActionState(sendDriverMessage, null);
@@ -13,7 +13,7 @@ export function MessagingPanel() {
   return (
     <div className="rounded-lg border border-border bg-card">
       {/* Messages area */}
-      <div className="flex h-[400px] flex-col items-center justify-center border-b border-border p-8">
+      <div className="flex h-[300px] lg:h-[400px] flex-col items-center justify-center border-b border-border p-8">
         <MessageSquare className="h-12 w-12 text-muted-foreground/30" />
         <p className="mt-3 text-sm font-medium text-muted-foreground">No messages yet</p>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -34,7 +34,7 @@ export function MessagingPanel() {
         <button
           type="submit"
           disabled={isPending}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 transition-colors"
+          className="flex h-12 w-12 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 disabled:opacity-50 transition-colors"
         >
           <Send className="h-4 w-4" />
         </button>

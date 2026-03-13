@@ -144,10 +144,10 @@ export function RouteDetailReadOnly({
       )}
 
       {/* Section 1: Route Details */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
         <h2 className="mb-4 text-xl font-semibold text-foreground">Route Details</h2>
 
-        <dl className="grid gap-4 sm:grid-cols-2">
+        <dl className="grid gap-4 grid-cols-1 lg:grid-cols-2">
           <div>
             <dt className="text-sm font-medium text-muted-foreground">Origin</dt>
             <dd className="mt-1 text-sm text-foreground">{route.origin}</dd>
@@ -194,7 +194,7 @@ export function RouteDetailReadOnly({
 
       {/* All Stops list — shown when route has stops */}
       {route.stops && route.stops.length > 0 && (
-        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-semibold text-foreground">All Stops</h2>
           <ol className="space-y-3">
             {route.stops
@@ -226,10 +226,10 @@ export function RouteDetailReadOnly({
       )}
 
       {/* Section 2: Assigned Truck */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
         <h2 className="mb-4 text-xl font-semibold text-foreground">Assigned Truck</h2>
 
-        <dl className="grid gap-4 sm:grid-cols-2">
+        <dl className="grid gap-4 grid-cols-1 lg:grid-cols-2">
           <div>
             <dt className="text-sm font-medium text-muted-foreground">Vehicle</dt>
             <dd className="mt-1 text-sm text-foreground">

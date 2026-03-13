@@ -11,9 +11,9 @@ export default async function DriverHoursPage() {
 
   if (!hosData) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 lg:space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Hours of Service</h1>
+          <h1 className="text-xl lg:text-2xl font-bold text-foreground">Hours of Service</h1>
           <p className="mt-1 text-muted-foreground">
             Unable to load HOS data. Please try again.
           </p>
@@ -23,9 +23,9 @@ export default async function DriverHoursPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Hours of Service</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-foreground">Hours of Service</h1>
         <p className="mt-1 text-muted-foreground">
           Track your driving hours and duty status
         </p>

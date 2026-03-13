@@ -68,10 +68,10 @@ export default async function MyRoutePage() {
     : undefined;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       {/* Page heading */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">My Route</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-foreground">My Route</h1>
         <p className="mt-1 text-muted-foreground">
           {route.origin} to {route.destination}
         </p>
@@ -85,7 +85,7 @@ export default async function MyRoutePage() {
       />
 
       {/* Route Documents section */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
         <h2 className="mb-4 text-xl font-semibold text-foreground">Route Documents</h2>
         <DocumentListReadOnly
           documents={routeDocuments}
@@ -94,7 +94,7 @@ export default async function MyRoutePage() {
       </div>
 
       {/* Truck Documents section */}
-      <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
         <h2 className="mb-4 text-xl font-semibold text-foreground">Truck Documents</h2>
         <DocumentListReadOnly
           documents={truckDocuments}
