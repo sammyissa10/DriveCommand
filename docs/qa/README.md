@@ -36,7 +36,6 @@ DATABASE_URL=<your_database_connection_string>
 NEXT_PUBLIC_SUPABASE_URL=<your_supabase_project_url>
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_supabase_anon_key>
 JWT_SECRET=<your_jwt_secret>
-ADMIN_SECRET_KEY=<the_sysadmin_secret_key>
 ```
 
 > **Security note:** Never commit `.env.local` or test credentials to version control.
@@ -49,10 +48,10 @@ Three types of accounts are needed to run the full suite. Credentials should be 
 
 #### 1. SysAdmin Account
 
-- **No email/password login.** The SysAdmin portal uses a secret key for authentication.
-- Login URL: `/admin/login`
-- Auth method: Enter the value of `ADMIN_SECRET_KEY` from `.env.local` into the secret key field.
-- No account creation is needed — the secret key is the credential.
+- Login URL: `/sign-in` (same page as Owner/Driver)
+- Auth method: Email + Password
+- Account creation: A User record with `isSystemAdmin = true` must exist in the database. Create one via the seed script or a direct DB insert (`UPDATE "User" SET "isSystemAdmin" = true WHERE email = 'admin@example.com'`).
+- Store the sysadmin email and password in `.env.test`.
 
 #### 2. Owner Account
 
@@ -79,7 +78,7 @@ Three types of accounts are needed to run the full suite. Credentials should be 
 Before running the full suite, set up the following data. Work through this sequence in order — each step builds on the previous one.
 
 1. **Create a tenant (SysAdmin):**
-   Log in to the SysAdmin portal (`/admin/login`) → Create Tenant → set name to `Test Fleet Co`, owner email to `test-owner@yourteam.test`
+   Log in at `/sign-in` with the sysadmin account → navigate to `/tenants/new` → Create Tenant → set name to `Test Fleet Co`, owner email to `test-owner@yourteam.test`
 
 2. **Accept the owner invitation and complete onboarding:**
    Check `test-owner@yourteam.test` inbox → accept invite → set password → complete any onboarding flow → confirm the Owner portal is accessible at `/dashboard`
@@ -111,7 +110,8 @@ All major test cases can now be executed against this seeded data. Individual se
 | `NEXT_PUBLIC_SUPABASE_URL` | All portals | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | All portals | Supabase anonymous key (public) |
 | `JWT_SECRET` | Auth middleware | Secret for signing/verifying JWTs |
-| `ADMIN_SECRET_KEY` | SysAdmin only | Secret key used to authenticate at `/admin/login` |
+| `TEST_SYSADMIN_EMAIL` | SysAdmin tests | Email of the sysadmin User (isSystemAdmin=true) |
+| `TEST_SYSADMIN_PASSWORD` | SysAdmin tests | Password for the sysadmin account |
 
 ---
 
@@ -157,11 +157,11 @@ Smoke tests are selected to catch the most critical failures quickly. A smoke te
 
 | Portal | URL | Auth Method |
 |--------|-----|-------------|
-| SysAdmin | `/admin/login` | `ADMIN_SECRET_KEY` (from `.env.local`) |
+| SysAdmin | `/sign-in` | Email + Password (User with `isSystemAdmin=true` in DB) |
 | Owner / Manager | `/sign-in` | Email + Password (role: OWNER or MANAGER) |
 | Driver | `/sign-in` | Email + Password (role: DRIVER) |
 
-> The Owner and Driver portals share the same login page (`/sign-in`). The portal experience and available pages differ based on the user's role. Logging in with a DRIVER account will redirect to `/my-route`, while an OWNER account redirects to `/dashboard`.
+> All three portals share the same login page (`/sign-in`). The portal experience differs based on the user's role. A DRIVER account redirects to `/my-route`, an OWNER account redirects to `/dashboard`, and a sysadmin account (isSystemAdmin=true) redirects to `/admin-dashboard`.
 
 ---
 

@@ -4,7 +4,7 @@ This document contains the complete manual QA test script for the DriveCommand S
 
 **How to use:** Work through each section top to bottom. Before running a full test pass, run the Smoke Tests first. If any smoke test fails, stop and file a bug before continuing. Mark each test **Pass** or **Fail** as you go.
 
-**Login instructions:** The SysAdmin portal uses a separate authentication mechanism from the Owner/Driver portals. Navigate to `/admin/login` and enter the `ADMIN_SECRET_KEY` value from the project's `.env.local` file (key name: `NEXT_PUBLIC_ADMIN_SECRET`). This creates an `admin_session` cookie — it is not tied to any Clerk user account.
+**Login instructions:** The SysAdmin portal uses the same login page as Owner/Driver portals. Navigate to `/sign-in` and enter the sysadmin account's email and password. Access is controlled by the `isSystemAdmin` flag on the User record in the database — a sysadmin account must be created directly in the DB or via a seed script.
 
 **Base URL:** All paths in this document are relative to the application's root URL (e.g., `http://localhost:3000` for local testing or the deployed staging URL).
 
@@ -16,7 +16,7 @@ Run these first. If any smoke test fails, stop and file a bug before continuing.
 
 | Test ID | Title | Section |
 |---------|-------|---------|
-| TC-SA-AUTH-001 | Login with correct ADMIN_SECRET_KEY | Section 1: Authentication |
+| TC-SA-AUTH-001 | Login as sysadmin at /sign-in | Section 1: Authentication |
 | TC-SA-DASH-001 | Dashboard loads with metrics cards | Section 2: Dashboard |
 | TC-SA-TEN-003 | Create tenant — happy path | Section 3: Tenant Management |
 | TC-SA-TEN-008 | Suspend active tenant | Section 3: Tenant Management |
@@ -28,43 +28,44 @@ Run these first. If any smoke test fails, stop and file a bug before continuing.
 
 ## Section 1: Authentication
 
-### TC-SA-AUTH-001: Login with correct ADMIN_SECRET_KEY
+### TC-SA-AUTH-001: Login as sysadmin at /sign-in
 
 **Preconditions:**
 - Application is running (local or staging)
-- You have the `NEXT_PUBLIC_ADMIN_SECRET` value from `.env.local`
-- No active `admin_session` cookie (open a private/incognito browser window to ensure clean state)
+- A User record with `isSystemAdmin = true` exists in the database (created via seed script or direct DB insert)
+- You have that user's email and password
+- No active `session` cookie (open a private/incognito browser window to ensure clean state)
 
 **Steps:**
-1. Navigate to `/admin/login`
-2. Locate the **Admin Secret Key** input field
-3. Enter the correct `NEXT_PUBLIC_ADMIN_SECRET` value from `.env.local`
-4. Click **Login**
+1. Navigate to `/sign-in`
+2. Enter the sysadmin account's email address
+3. Enter the sysadmin account's password
+4. Click **Sign In**
 
 **Expected Result:**
 - Redirected to `/admin-dashboard`
-- Admin navigation is visible (links to Tenants, Support, Billing, or similar)
+- Admin navigation is visible (links to Tenants, Support, Billing)
 - Page shows SysAdmin dashboard content (metrics cards or welcome screen)
 
 **Pass** [ ] **Fail** [ ]
 
 ---
 
-### TC-SA-AUTH-002: Login with wrong ADMIN_SECRET_KEY
+### TC-SA-AUTH-002: Login with wrong password
 
 **Preconditions:**
 - Application is running
-- No active `admin_session` cookie
+- No active `session` cookie
 
 **Steps:**
-1. Navigate to `/admin/login`
-2. Enter `wrong-key-123` into the Admin Secret Key field
-3. Click **Login**
+1. Navigate to `/sign-in`
+2. Enter the sysadmin email with password `wrong-password-123`
+3. Click **Sign In**
 
 **Expected Result:**
-- Error message appears (e.g., "Invalid admin key", "Unauthorized", or similar)
-- Stays on `/admin/login` — no redirect to dashboard
-- No `admin_session` cookie is set
+- Error message appears (e.g., "Invalid credentials" or similar)
+- Stays on `/sign-in` — no redirect to dashboard
+- No `session` cookie is set
 
 **Pass** [ ] **Fail** [ ]
 
@@ -76,12 +77,12 @@ Run these first. If any smoke test fails, stop and file a bug before continuing.
 - Logged in as SysAdmin (completed TC-SA-AUTH-001)
 
 **Steps:**
-1. While on any admin page, locate and click the **Logout** button (typically in the header or sidebar)
+1. While on any admin page, locate and click the **Logout** button (typically in the header)
 
 **Expected Result:**
-- Redirected to `/admin/login`
-- `admin_session` cookie is cleared
-- Navigating to `/admin-dashboard` redirects back to `/admin/login`
+- Redirected to `/sign-in`
+- `session` cookie is cleared
+- Navigating to `/admin-dashboard` redirects back to `/sign-in`
 
 **Pass** [ ] **Fail** [ ]
 
@@ -90,13 +91,13 @@ Run these first. If any smoke test fails, stop and file a bug before continuing.
 ### TC-SA-AUTH-004: Access /admin-dashboard without login
 
 **Preconditions:**
-- No active `admin_session` cookie (use a private/incognito window or clear cookies)
+- No active `session` cookie (use a private/incognito window or clear cookies)
 
 **Steps:**
 1. Navigate directly to `/admin-dashboard`
 
 **Expected Result:**
-- Redirected to `/admin/login`
+- Redirected to `/sign-in`
 - Admin dashboard content is not visible
 
 **Pass** [ ] **Fail** [ ]
