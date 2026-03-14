@@ -447,6 +447,7 @@ None blocking immediate progress.
 | 54 | Full mobile redesign — driver + owner bottom nav bars, larger text, full-width cards, bigger tap targets on mobile; desktop untouched | 2026-03-13 | a489c92 | [54-full-mobile-redesign-of-the-driver-porta](./quick/54-full-mobile-redesign-of-the-driver-porta/) |
 | 55 | TKT-0013 Fix "a.split is not a function" when uploading truck document with expiry date — completeUpload no longer returns Prisma document with Date fields (unused by client, caused RSC serialization failure) | 2026-03-13 | a3df0eb | [55-tkt-0013-fix-a-split-is-not-a-function-e](./quick/55-tkt-0013-fix-a-split-is-not-a-function-e/) |
 | 56 | TKT-0014 Fix dashboard truck expiry alerts — href was hardcoded to /trucks (all trucks page); changed to /trucks/${truck.id} so alert navigates to the specific truck | 2026-03-13 | 557d6e5 | [56-tkt-0014-fix-home-page-dashboard-alerts-](./quick/56-tkt-0014-fix-home-page-dashboard-alerts-/) |
+| 57 | TKT-0015 Add automated truck status badges — computeTruckStatus() utility (In Use/In Maintenance/Expired Docs/Ready to Use), Status column on trucks list, badge on truck detail page | 2026-03-14 | 00c70c5 | [57-tkt-0015-add-automated-status-to-trucks-](./quick/57-tkt-0015-add-automated-status-to-trucks-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
