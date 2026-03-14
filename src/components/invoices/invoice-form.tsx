@@ -8,6 +8,13 @@ interface Customer {
   companyName: string;
 }
 
+interface Load {
+  id: string;
+  loadNumber: string;
+  customerId: string;
+  status: string;
+}
+
 interface InvoiceFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
   initialData?: {
@@ -27,6 +34,7 @@ interface InvoiceFormProps {
     }>;
   };
   customers?: Customer[];
+  loads?: Load[];
   nextInvoiceNumber?: string;
   submitLabel: string;
   loadId?: string;
@@ -46,6 +54,7 @@ export function InvoiceForm({
   action,
   initialData,
   customers,
+  loads,
   nextInvoiceNumber,
   submitLabel,
   loadId,
@@ -54,13 +63,17 @@ export function InvoiceForm({
   const [state, formAction, isPending] = useActionState(action, null);
   const [subtotal, setSubtotal] = useState(0);
   const [taxValue, setTaxValue] = useState(Number(initialData?.tax) || 0);
+  const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
+  const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
+
+  const customerLoads = loads?.filter((l) => l.customerId === selectedCustomerId) ?? [];
 
   const total = subtotal + taxValue;
 
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
-      {/* Hidden loadId field — submitted with form when creating from a load */}
-      <input type="hidden" name="loadId" value={loadId || ''} />
+      {/* loadId — hidden, controlled by load picker or pre-filled from load page */}
+      <input type="hidden" name="loadId" value={selectedLoadId} />
 
       {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
@@ -167,30 +180,59 @@ export function InvoiceForm({
         </div>
       </div>
 
-      {/* Customer (optional) */}
+      {/* Customer + Load (optional) */}
       {customers && customers.length > 0 && (
         <div className="space-y-4 border-t border-border pt-6">
           <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Customer <span className="text-xs font-normal normal-case">(optional)</span>
           </h3>
-          <div>
-            <label htmlFor="customerId" className={labelClass}>
-              Customer
-            </label>
-            <select
-              id="customerId"
-              name="customerId"
-              defaultValue={initialData?.customerId || ''}
-              disabled={isPending}
-              className={inputClass}
-            >
-              <option value="">No customer linked</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.companyName}
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="customerId" className={labelClass}>
+                Customer
+              </label>
+              <select
+                id="customerId"
+                name="customerId"
+                value={selectedCustomerId}
+                onChange={(e) => {
+                  setSelectedCustomerId(e.target.value);
+                  setSelectedLoadId(''); // reset load when customer changes
+                }}
+                disabled={isPending}
+                className={inputClass}
+              >
+                <option value="">No customer linked</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.companyName}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {loads && (
+              <div>
+                <label htmlFor="loadPicker" className={labelClass}>
+                  Link to Load <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <select
+                  id="loadPicker"
+                  value={selectedLoadId}
+                  onChange={(e) => setSelectedLoadId(e.target.value)}
+                  disabled={isPending || !selectedCustomerId}
+                  className={inputClass}
+                >
+                  <option value="">
+                    {selectedCustomerId ? 'No load linked' : 'Select a customer first'}
+                  </option>
+                  {customerLoads.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      Load #{l.loadNumber} — {l.status.replace(/_/g, ' ')}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
       )}

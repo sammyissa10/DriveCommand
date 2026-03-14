@@ -13,15 +13,23 @@ export default async function NewInvoicePage({
   const { loadId, customerId, amount, loadNumber } = params;
 
   let customers: Array<{ id: string; companyName: string }> = [];
+  let loads: Array<{ id: string; loadNumber: string; customerId: string; status: string }> = [];
   let nextInvoiceNumber = 'INV-0001';
 
   try {
     const prisma = await getTenantPrisma();
 
-    customers = await prisma.customer.findMany({
-      select: { id: true, companyName: true },
-      orderBy: { companyName: 'asc' },
-    });
+    [customers, loads] = await Promise.all([
+      prisma.customer.findMany({
+        select: { id: true, companyName: true },
+        orderBy: { companyName: 'asc' },
+      }),
+      prisma.load.findMany({
+        where: { archivedAt: null },
+        select: { id: true, loadNumber: true, customerId: true, status: true },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
     // Auto-generate next invoice number
     const latestInvoice = await prisma.invoice.findFirst({
@@ -74,6 +82,7 @@ export default async function NewInvoicePage({
       <InvoiceForm
         action={createInvoice}
         customers={customers}
+        loads={loads}
         nextInvoiceNumber={nextInvoiceNumber}
         submitLabel="Create Invoice"
         initialData={initialData}
