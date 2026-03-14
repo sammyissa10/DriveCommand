@@ -51,6 +51,47 @@ export async function getMyActiveLoad() {
 }
 
 /**
+ * Get a lightweight summary of the active load assigned to the authenticated driver.
+ * Returns only fields needed for cross-reference info card: id, loadNumber, origin, destination, status.
+ * Returns null if no active load assignment exists.
+ *
+ * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
+ */
+export async function getMyActiveLoadSummary() {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.DRIVER]);
+
+  // Get current user from database
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Get tenant-scoped Prisma client
+  const prisma = await getTenantPrisma();
+
+  // Query load assigned to this driver — select only summary fields
+  const load = await prisma.load.findFirst({
+    where: {
+      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
+      status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] },
+    },
+    select: {
+      id: true,
+      loadNumber: true,
+      origin: true,
+      destination: true,
+      status: true,
+    },
+    orderBy: {
+      pickupDate: 'asc', // Earliest active load first
+    },
+  });
+
+  return load;
+}
+
+/**
  * Advance the authenticated driver's load status one step forward.
  * Status progression: DISPATCHED -> PICKED_UP -> IN_TRANSIT -> DELIVERED
  * SECURITY: Verifies load ownership (driverId = user.id) before updating.

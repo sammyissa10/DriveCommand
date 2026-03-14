@@ -71,6 +71,47 @@ export async function getMyAssignedRoute() {
 }
 
 /**
+ * Get a lightweight summary of the route assigned to the authenticated driver.
+ * Returns only fields needed for cross-reference info card: id, name, origin, destination, status.
+ * Returns null if no active route assignment exists.
+ *
+ * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
+ */
+export async function getMyAssignedRouteSummary() {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.DRIVER]);
+
+  // Get current user from database
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Get tenant-scoped Prisma client
+  const prisma = await getTenantPrisma();
+
+  // Query route assigned to this driver — select only summary fields
+  const route = await prisma.route.findFirst({
+    where: {
+      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
+      status: { in: ['PLANNED', 'IN_PROGRESS'] },
+    },
+    select: {
+      id: true,
+      name: true,
+      origin: true,
+      destination: true,
+      status: true,
+    },
+    orderBy: {
+      scheduledDate: 'asc', // Earliest active route first
+    },
+  });
+
+  return route;
+}
+
+/**
  * Mark a route stop as DEPARTED (manual only — geofence exit does NOT trigger this).
  * Stop must be in ARRIVED status and belong to the authenticated driver's active route.
  * SECURITY: Validates stop ownership via route.driverId = user.id.
