@@ -9,6 +9,7 @@ export const invoiceItemSchema = z.object({
 export const invoiceCreateSchema = z.object({
   customerId: z.string().uuid('Invalid customer').optional().or(z.literal('')),
   routeId: z.string().uuid('Invalid route').optional().or(z.literal('')),
+  loadId: z.string().uuid('Invalid load').optional().or(z.literal('')),
   invoiceNumber: z.string().min(1, 'Invoice number is required').max(50),
   tax: z.coerce.number().min(0, 'Tax must be non-negative').default(0),
   status: z.enum(['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED']).default('DRAFT'),

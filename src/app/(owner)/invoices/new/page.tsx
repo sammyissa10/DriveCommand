@@ -4,7 +4,14 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createInvoice } from '@/app/(owner)/actions/invoices';
 import { InvoiceForm } from '@/components/invoices/invoice-form';
 
-export default async function NewInvoicePage() {
+export default async function NewInvoicePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ loadId?: string; customerId?: string; amount?: string; loadNumber?: string }>;
+}) {
+  const params = await searchParams;
+  const { loadId, customerId, amount, loadNumber } = params;
+
   let customers: Array<{ id: string; companyName: string }> = [];
   let nextInvoiceNumber = 'INV-0001';
 
@@ -33,15 +40,31 @@ export default async function NewInvoicePage() {
     // Use defaults on error
   }
 
+  // Build pre-fill initialData from query params (load context)
+  const initialData = loadId
+    ? {
+        customerId: customerId || undefined,
+        items: amount
+          ? [
+              {
+                description: loadNumber ? `Freight - Load #${loadNumber}` : 'Freight',
+                quantity: 1,
+                unitPrice: parseFloat(amount) || 0,
+              },
+            ]
+          : undefined,
+      }
+    : undefined;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
-          href="/invoices"
+          href={loadId ? `/loads/${loadId}` : '/invoices'}
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Invoices
+          {loadId ? 'Back to Load' : 'Back to Invoices'}
         </Link>
       </div>
       <div>
@@ -53,6 +76,9 @@ export default async function NewInvoicePage() {
         customers={customers}
         nextInvoiceNumber={nextInvoiceNumber}
         submitLabel="Create Invoice"
+        initialData={initialData}
+        loadId={loadId}
+        loadNumber={loadNumber}
       />
     </div>
   );

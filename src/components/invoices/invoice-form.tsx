@@ -29,6 +29,8 @@ interface InvoiceFormProps {
   customers?: Customer[];
   nextInvoiceNumber?: string;
   submitLabel: string;
+  loadId?: string;
+  loadNumber?: string;
 }
 
 const inputClass =
@@ -46,6 +48,8 @@ export function InvoiceForm({
   customers,
   nextInvoiceNumber,
   submitLabel,
+  loadId,
+  loadNumber,
 }: InvoiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [subtotal, setSubtotal] = useState(0);
@@ -55,9 +59,28 @@ export function InvoiceForm({
 
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
+      {/* Hidden loadId field — submitted with form when creating from a load */}
+      <input type="hidden" name="loadId" value={loadId || ''} />
+
       {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
           <p className="text-sm text-red-800">{state.error}</p>
+        </div>
+      )}
+
+      {/* Load context banner */}
+      {loadId && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 flex items-center gap-2 text-sm text-blue-800">
+          <span>
+            Creating invoice for{' '}
+            {loadNumber ? (
+              <a href={`/loads/${loadId}`} className="font-semibold underline hover:text-blue-900">
+                Load #{loadNumber}
+              </a>
+            ) : (
+              'this load'
+            )}
+          </span>
         </div>
       )}
 

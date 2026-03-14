@@ -29,6 +29,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
   const rawData = {
     customerId: (formData.get('customerId') as string) || '',
     routeId: (formData.get('routeId') as string) || '',
+    loadId: (formData.get('loadId') as string) || '',
     invoiceNumber: formData.get('invoiceNumber') as string,
     tax: formData.get('tax') as string,
     status: (formData.get('status') as string) || 'DRAFT',
@@ -70,6 +71,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
         tenantId,
         customerId: result.data.customerId || null,
         routeId: result.data.routeId || null,
+        loadId: result.data.loadId || null,
         invoiceNumber: result.data.invoiceNumber,
         amount: subtotal,
         tax,
@@ -101,6 +103,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
   }
 
   revalidatePath('/invoices');
+  revalidatePath('/loads');
   redirect(`/invoices/${createdId}`);
 }
 
