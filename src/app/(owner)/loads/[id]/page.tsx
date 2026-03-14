@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, Package, MapPin, Calendar, Weight, Truck, User } from 'lucide-react';
+import { ArrowLeft, Pencil, Package, MapPin, Calendar, Weight, Truck, User, FileText, Plus } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { dispatchLoad, deleteLoad, updateLoadStatus, revertLoadStatus } from '@/app/(owner)/actions/loads';
 import { LoadStatusBadge } from '@/components/loads/load-status-badge';
@@ -70,6 +70,13 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
       }).catch(() => []),
     ]);
   }
+
+  // Fetch linked invoices
+  const linkedInvoices = await prisma.invoice.findMany({
+    where: { loadId: id },
+    select: { id: true, invoiceNumber: true, status: true, totalAmount: true, dueDate: true },
+    orderBy: { createdAt: 'desc' },
+  });
 
   const boundDispatchLoad = dispatchLoad.bind(null, id);
   const canEdit = !['INVOICED', 'CANCELLED'].includes(load.status);
@@ -295,6 +302,60 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
             </div>
           )}
         </div>
+      </div>
+
+      {/* Invoices section */}
+      <div className="rounded-lg border border-border bg-card p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Invoices
+          </h3>
+          {['DELIVERED', 'INVOICED'].includes(load.status) && (
+            <Link
+              href={`/invoices/new?loadId=${id}&customerId=${load.customerId}&amount=${Number(load.rate)}&loadNumber=${encodeURIComponent(load.loadNumber)}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Create Invoice
+            </Link>
+          )}
+        </div>
+        {linkedInvoices.length > 0 ? (
+          <div className="divide-y divide-border">
+            {linkedInvoices.map((inv) => {
+              const statusColors: Record<string, string> = {
+                DRAFT: 'bg-gray-100 text-gray-700',
+                SENT: 'bg-blue-100 text-blue-700',
+                PAID: 'bg-green-100 text-green-700',
+                OVERDUE: 'bg-red-100 text-red-700',
+                CANCELLED: 'bg-gray-100 text-gray-500',
+              };
+              const badgeClass = statusColors[inv.status] ?? 'bg-gray-100 text-gray-700';
+              return (
+                <div key={inv.id} className="flex items-center justify-between py-3 text-sm gap-4">
+                  <Link
+                    href={`/invoices/${inv.id}`}
+                    className="font-medium text-primary hover:underline shrink-0"
+                  >
+                    {inv.invoiceNumber}
+                  </Link>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${badgeClass}`}>
+                    {inv.status.charAt(0) + inv.status.slice(1).toLowerCase()}
+                  </span>
+                  <span className="text-muted-foreground">
+                    Due {new Date(inv.dueDate).toLocaleDateString()}
+                  </span>
+                  <span className="font-semibold ml-auto">
+                    ${Number(inv.totalAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">No invoices linked to this load</p>
+        )}
       </div>
 
       {/* Audit Trail */}
