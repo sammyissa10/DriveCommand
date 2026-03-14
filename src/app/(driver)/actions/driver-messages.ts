@@ -4,6 +4,7 @@ import { requireRole } from '@/lib/auth/server';
 import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
+import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';
 
 /**
  * Get messages for the current driver's active route.
@@ -62,7 +63,7 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
       driverId: user.id,
       status: { in: ['PLANNED', 'IN_PROGRESS'] },
     },
-    select: { id: true },
+    select: { id: true, name: true },
   });
 
   if (!route) {
@@ -80,6 +81,18 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
       body: message.trim(),
     },
   });
+
+  // Fire-and-forget: notify owner
+  try {
+    await sendDriverMessageNotification({
+      driverName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
+      messageBody: message.trim(),
+      tenantId: user.tenantId,
+      routeName: route.name ?? undefined,
+    });
+  } catch (emailError) {
+    console.error('[sendDriverMessage] owner notification email failed:', emailError);
+  }
 
   return { success: true, message: 'Message sent.' };
 }

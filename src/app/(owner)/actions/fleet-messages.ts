@@ -4,6 +4,7 @@ import { requireRole } from '@/lib/auth/server';
 import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
+import { sendOwnerReplyNotification } from '@/lib/email/send-fleet-message-notifications';
 
 export type FleetMessageWithSender = {
   id: string;
@@ -96,6 +97,20 @@ export async function sendOwnerReply(prevState: any, formData: FormData) {
       body: message.trim(),
     },
   });
+
+  // Fire-and-forget: notify driver
+  try {
+    if (route.driverId) {
+      await sendOwnerReplyNotification({
+        ownerName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
+        messageBody: message.trim(),
+        driverId: route.driverId,
+        routeName: route.name ?? undefined,
+      });
+    }
+  } catch (emailError) {
+    console.error('[sendOwnerReply] driver notification email failed:', emailError);
+  }
 
   return { success: true };
 }
