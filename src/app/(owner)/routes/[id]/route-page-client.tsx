@@ -13,6 +13,7 @@ import { RouteCostPerMile } from '@/components/routes/route-cost-per-mile';
 import { ProfitMarginAlert } from '@/components/routes/profit-margin-alert';
 import { ApplyTemplateButton } from '@/components/routes/apply-template-button';
 import { RouteDocumentsSection } from './route-documents-section';
+import { DriverAssignmentsSection } from './driver-assignments-section';
 import { updateRouteStatus } from '@/app/(owner)/actions/routes';
 
 interface RoutePageClientProps {
@@ -61,7 +62,7 @@ interface RoutePageClientProps {
     }>;
   };
   initialEditMode: boolean;
-  drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
+  drivers: Array<{ id: string; firstName: string | null; lastName: string | null; email: string }>;
   trucks: Array<{ id: string; make: string; model: string; year: number; licensePlate: string }>;
   formattedScheduledDate: string;
   formattedCompletedAt?: string;
@@ -96,6 +97,7 @@ interface RoutePageClientProps {
   categories: any[];
   templates: any[];
   documents: any[];
+  driverAssignments: any[];
 }
 
 export function RoutePageClient({
@@ -111,6 +113,7 @@ export function RoutePageClient({
   categories,
   templates,
   documents,
+  driverAssignments,
 }: RoutePageClientProps) {
   const [isEditMode, setIsEditMode] = useState(initialEditMode);
   const [isDirty, setIsDirty] = useState(false);
@@ -208,6 +211,13 @@ export function RoutePageClient({
             isLowMargin={analytics.financials.isLowMargin}
           />
 
+          {/* Driver Assignments Section */}
+          <DriverAssignmentsSection
+            routeId={route.id}
+            drivers={drivers}
+            initialAssignments={driverAssignments}
+          />
+
           {/* Expenses Section (inline editing still works) */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
@@ -288,6 +298,13 @@ export function RoutePageClient({
             comparison={analytics.comparison.comparison}
             difference={analytics.comparison.difference}
             differencePercent={analytics.comparison.differencePercent}
+          />
+
+          {/* Driver Assignments Section */}
+          <DriverAssignmentsSection
+            routeId={route.id}
+            drivers={drivers}
+            initialAssignments={driverAssignments}
           />
 
           {/* Expenses Section */}
