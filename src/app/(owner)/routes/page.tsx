@@ -43,7 +43,7 @@ export default function RoutesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Routes</h1>
-          <p className="mt-1 text-muted-foreground">View and manage your routes</p>
+          <p className="mt-1 text-muted-foreground">Plan truck journeys — assign drivers &amp; trucks, add stops, and track progress</p>
         </div>
         <Link
           href="/routes/new"
