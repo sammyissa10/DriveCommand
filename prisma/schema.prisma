@@ -140,6 +140,7 @@ model Tenant {
   tenantIntegrations    TenantIntegration[]
   routeStops            RouteStop[]
   sysAdminInvoices      SysAdminInvoice[]
+  driverRouteJoins      DriverRouteJoin[]
 }
 
 model User {
@@ -175,6 +176,7 @@ model User {
   invoicesUpdated   Invoice[]       @relation(name: "InvoiceUpdatedBy")
   payrollsCreated   PayrollRecord[] @relation(name: "PayrollCreatedBy")
   payrollsUpdated   PayrollRecord[] @relation(name: "PayrollUpdatedBy")
+  driverRouteJoins  DriverRouteJoin[] @relation(name: "DriverRouteJoins")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -269,13 +271,14 @@ model Route {
   truck        Truck          @relation(fields: [truckId], references: [id])
   createdBy    User?          @relation(name: "RouteCreatedBy", fields: [createdById], references: [id])
   updatedBy    User?          @relation(name: "RouteUpdatedBy", fields: [updatedById], references: [id])
-  documents    Document[]
-  safetyEvents SafetyEvent[]
-  expenses     RouteExpense[]
-  payments     RoutePayment[]
-  loads        Load[]
-  stops        RouteStop[]
-  coDrivers    RouteDriver[]
+  documents         Document[]
+  safetyEvents      SafetyEvent[]
+  expenses          RouteExpense[]
+  payments          RoutePayment[]
+  loads             Load[]
+  stops             RouteStop[]
+  coDrivers         RouteDriver[]
+  driverAssignments DriverRouteJoin[]
 
   @@index([tenantId])
   @@index([driverId])
@@ -1004,4 +1007,37 @@ model RouteStop {
   @@index([tenantId])
   @@index([routeId, position])
   @@index([status])
+}
+
+// ─── Driver Route Join Models ────────────────────────────────
+
+enum DriverPaymentMethod {
+  FIXED_AMOUNT
+  HOURLY
+  PER_MILE
+}
+
+model DriverRouteJoin {
+  id            String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String              @db.Uuid
+  routeId       String              @db.Uuid
+  driverId      String              @db.Uuid
+  isMainDriver  Boolean             @default(false)
+  paymentMethod DriverPaymentMethod
+  fixedAmount   Decimal?            @db.Decimal(10, 2)
+  hourlyRate    Decimal?            @db.Decimal(10, 2)
+  numberOfHours Decimal?            @db.Decimal(10, 2)
+  perMileRate   Decimal?            @db.Decimal(10, 4)
+  numberOfMiles Decimal?            @db.Decimal(10, 2)
+  createdAt     DateTime            @default(now()) @db.Timestamptz
+  updatedAt     DateTime            @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  driver User   @relation(name: "DriverRouteJoins", fields: [driverId], references: [id])
+
+  @@unique([routeId, driverId])
+  @@index([tenantId])
+  @@index([routeId])
+  @@index([driverId])
 }
