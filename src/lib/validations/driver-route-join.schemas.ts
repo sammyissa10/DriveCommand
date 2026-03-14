@@ -36,9 +36,15 @@ export const driverRouteJoinCreateSchema = z
     }
   });
 
-export const driverRouteJoinUpdateSchema = driverRouteJoinCreateSchema
-  .partial()
-  .omit({ routeId: true, driverId: true });
+export const driverRouteJoinUpdateSchema = z.object({
+  isMainDriver: z.boolean().optional(),
+  paymentMethod: z.enum(['FIXED_AMOUNT', 'HOURLY', 'PER_MILE']).optional(),
+  fixedAmount: z.string().optional(),
+  hourlyRate: z.string().optional(),
+  numberOfHours: z.string().optional(),
+  perMileRate: z.string().optional(),
+  numberOfMiles: z.string().optional(),
+});
 
 export type DriverRouteJoinCreate = z.infer<typeof driverRouteJoinCreateSchema>;
 export type DriverRouteJoinUpdate = z.infer<typeof driverRouteJoinUpdateSchema>;
