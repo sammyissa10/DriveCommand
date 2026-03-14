@@ -5,6 +5,7 @@ import { getTruck } from '@/app/(owner)/actions/trucks';
 import { listDocuments } from '@/app/(owner)/actions/documents';
 import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
 import { TruckDocumentsSection } from './truck-documents-section';
+import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
 
 interface TruckDetailPageProps {
   params: Promise<{ id: string }>;
@@ -35,6 +36,17 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
     }
   }
 
+  const { status: truckStatus, variant: truckStatusVariant } = computeTruckStatus(
+    truck as unknown as TruckWithRelations
+  );
+
+  const statusVariantClasses = {
+    blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+    red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  };
+
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return null;
     try {
@@ -59,9 +71,14 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           Back to Trucks
         </Link>
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {truck.year} {truck.make} {truck.model}
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              {truck.year} {truck.make} {truck.model}
+            </h1>
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusVariantClasses[truckStatusVariant]}`}>
+              {truckStatus}
+            </span>
+          </div>
           <div className="flex gap-3">
             <Link
               href={`/trucks/${truck.id}/maintenance`}

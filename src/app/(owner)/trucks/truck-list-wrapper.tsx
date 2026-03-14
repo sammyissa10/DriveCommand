@@ -2,10 +2,10 @@
 
 import { useOptimistic, useTransition } from 'react';
 import { TruckList } from '@/components/trucks/truck-list';
-import type { Truck } from '@/generated/prisma/client';
+import type { TruckWithRelations } from '@/lib/trucks/compute-truck-status';
 
 interface TruckListWrapperProps {
-  initialTrucks: Truck[];
+  initialTrucks: TruckWithRelations[];
   deleteAction: (id: string) => Promise<{ success: boolean }>;
 }
 

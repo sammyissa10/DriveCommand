@@ -13,10 +13,17 @@ import {
   type SortingState,
   type ColumnDef,
 } from '@tanstack/react-table';
-import type { Truck } from '@/generated/prisma/client';
+import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
+
+const variantClasses = {
+  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+};
 
 interface TruckListProps {
-  trucks: Truck[];
+  trucks: TruckWithRelations[];
   onDelete: (id: string) => void;
 }
 
@@ -31,7 +38,7 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
     }
   };
 
-  const columns: ColumnDef<Truck>[] = [
+  const columns: ColumnDef<TruckWithRelations>[] = [
     {
       accessorKey: 'make',
       header: 'Make',
@@ -60,6 +67,19 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
           {info.getValue() as string}
         </span>
       ),
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const { status, variant } = computeTruckStatus(row.original);
+        return (
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses[variant]}`}>
+            {status}
+          </span>
+        );
+      },
+      enableSorting: false,
     },
     {
       accessorKey: 'odometer',
