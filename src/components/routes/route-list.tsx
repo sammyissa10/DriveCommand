@@ -54,10 +54,11 @@ const columnHelper = createColumnHelper<Route>();
 const columns = [
   columnHelper.accessor('name', {
     header: 'Route Name',
+    size: 140,
     cell: (info) => {
       const value = info.getValue();
       return value ? (
-        <span className="font-medium text-foreground">{value}</span>
+        <span className="font-medium text-foreground truncate block" title={value}>{value}</span>
       ) : (
         <span className="text-muted-foreground">—</span>
       );
@@ -65,14 +66,21 @@ const columns = [
   }),
   columnHelper.accessor('origin', {
     header: 'Origin',
-    cell: (info) => info.getValue(),
+    size: 180,
+    cell: (info) => (
+      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
-    cell: (info) => info.getValue(),
+    size: 180,
+    cell: (info) => (
+      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor('scheduledDate', {
-    header: 'Scheduled Date',
+    header: 'Date',
+    size: 100,
     cell: (info) => {
       const value = info.getValue();
       return new Intl.DateTimeFormat('en-US', {
@@ -85,15 +93,22 @@ const columns = [
   columnHelper.accessor((row) => `${row.driver.firstName || ''} ${row.driver.lastName || ''}`.trim(), {
     id: 'driver',
     header: 'Driver',
-    cell: (info) => info.getValue(),
+    size: 130,
+    cell: (info) => (
+      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor((row) => `${row.truck.make} ${row.truck.model} (${row.truck.licensePlate})`, {
     id: 'truck',
     header: 'Truck',
-    cell: (info) => info.getValue(),
+    size: 140,
+    cell: (info) => (
+      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+    ),
   }),
   columnHelper.accessor('status', {
     header: 'Status',
+    size: 110,
     cell: (info) => {
       const status = info.getValue();
       let bgColor = 'bg-muted';
@@ -121,6 +136,7 @@ const columns = [
   columnHelper.display({
     id: 'actions',
     header: 'Actions',
+    size: 110,
     cell: (info) => {
       const route = info.row.original;
       return (
@@ -214,14 +230,15 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-border shadow">
-        <table className="min-w-full divide-y divide-border">
+        <table className="w-full table-fixed divide-y divide-border">
           <thead className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 sm:px-6 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                    style={{ width: header.column.getSize() }}
+                    className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground overflow-hidden"
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -263,7 +280,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="whitespace-nowrap px-4 py-3 sm:px-6 sm:py-4 text-sm text-foreground"
+                    className="px-3 py-3 text-sm text-foreground overflow-hidden"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
