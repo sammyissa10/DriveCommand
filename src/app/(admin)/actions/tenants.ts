@@ -5,7 +5,8 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
-import { sendEmail, FROM_EMAIL } from '@/lib/email/gmail-client';
+import { sendEmail } from '@/lib/email/gmail-client';
+import React from 'react';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -349,16 +350,12 @@ export async function updateOwnerEmail(
       await sendEmail({
         to: oldEmail,
         subject: 'Your DriveCommand login email has been updated',
-        react: (
-          <div>
-            <p>Hi {user.firstName || 'there'},</p>
-            <p>
-              Your DriveCommand account login email has been changed to <strong>{validation.data}</strong> by a system administrator.
-            </p>
-            <p>If you did not request this change, please contact support immediately.</p>
-            <p>— The DriveCommand Team</p>
-          </div>
-        ) as any,
+        react: React.createElement('div', null,
+          React.createElement('p', null, `Hi ${user.firstName || 'there'},`),
+          React.createElement('p', null, `Your DriveCommand account login email has been changed to ${validation.data} by a system administrator.`),
+          React.createElement('p', null, 'If you did not request this change, please contact support immediately.'),
+          React.createElement('p', null, '— The DriveCommand Team'),
+        ),
       });
     } catch (emailError) {
       console.error('[updateOwnerEmail] notification email failed:', emailError);
