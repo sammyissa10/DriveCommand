@@ -379,6 +379,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25-03]: Email failure is non-fatal: returns emailWarning in success response, shown as yellow banner in UI
 - [Phase 25-03]: Cron uses base prisma (no bypass_rls) — SysAdminInvoice RLS only restricts rows when app.current_tenant_id is set; cron runs without tenant context
 - [Phase quick-57]: Status is computed from pre-fetched Prisma includes — no schema changes, priority: In Use > In Maintenance > Expired Docs > Ready to Use
+- [Phase quick-60]: Nullable loadId FK (not required) preserves all existing invoice data without migration
 
 ### Pending Todos
 
@@ -506,6 +507,7 @@ None blocking immediate progress.
 | Phase 25 P01 | 164 | 2 tasks | 4 files |
 | Phase 25 P02 | 378 | 2 tasks | 10 files |
 | Phase 25 P03 | 159 | 2 tasks | 6 files |
+| Phase quick-60 P01 | 227 | 3 tasks | 6 files |
 
 ## Session Continuity
 
