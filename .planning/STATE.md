@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-14 - Completed quick task 61: TKT-0020 Driver ticket detail page — thread view + reply form at /driver/my-tickets/[id]
+Last activity: 2026-03-14 - Completed quick task 63: TKT-0021 Status filtering tabs on owner support page
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -460,6 +460,7 @@ None blocking immediate progress.
 | 56 | TKT-0014 Fix dashboard truck expiry alerts — href was hardcoded to /trucks (all trucks page); changed to /trucks/${truck.id} so alert navigates to the specific truck | 2026-03-13 | 557d6e5 | [56-tkt-0014-fix-home-page-dashboard-alerts-](./quick/56-tkt-0014-fix-home-page-dashboard-alerts-/) |
 | 57 | TKT-0015 Add automated truck status badges — computeTruckStatus() utility (In Use/In Maintenance/Expired Docs/Ready to Use), Status column on trucks list, badge on truck detail page | 2026-03-14 | 00c70c5 | [57-tkt-0015-add-automated-status-to-trucks-](./quick/57-tkt-0015-add-automated-status-to-trucks-/) |
 | 61 | TKT-0020 Add driver ticket detail page at /driver/my-tickets/[id] — thread view, reply form, clickable list cards | 2026-03-14 | 4516248 | [61-tkt-0020-add-driver-ticket-detail-page-a](./quick/61-tkt-0020-add-driver-ticket-detail-page-a/) |
+| 63 | TKT-0021 Add status filtering tabs to owner support page — All/Open/In Progress/Closed with count badges, client-side filtering | 2026-03-14 | 09122ce | [63-tkt-0021-add-status-filtering-to-owner-s](./quick/63-tkt-0021-add-status-filtering-to-owner-s/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
