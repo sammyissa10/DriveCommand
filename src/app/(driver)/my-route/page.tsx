@@ -8,6 +8,7 @@ import {
 } from '@/app/(driver)/actions/driver-documents';
 import { RouteDetailReadOnly } from '@/components/driver/route-detail-readonly';
 import { DocumentListReadOnly } from '@/components/driver/document-list-readonly';
+import { MessagingPanel } from '@/components/driver/messaging-panel';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { MapPin } from 'lucide-react';
 
@@ -100,6 +101,12 @@ export default async function MyRoutePage() {
           documents={truckDocuments}
           downloadAction={getDriverDownloadUrl}
         />
+      </div>
+
+      {/* Route Messages section */}
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-6 shadow-sm">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">Route Messages</h2>
+        <MessagingPanel />
       </div>
     </div>
   );
