@@ -30,6 +30,7 @@ interface Truck {
 
 interface Route {
   id: string;
+  name: string | null;
   origin: string;
   destination: string;
   scheduledDate: Date;
@@ -51,6 +52,17 @@ interface RouteTableMeta extends TableMeta<Route> {
 const columnHelper = createColumnHelper<Route>();
 
 const columns = [
+  columnHelper.accessor('name', {
+    header: 'Route Name',
+    cell: (info) => {
+      const value = info.getValue();
+      return value ? (
+        <span className="font-medium text-foreground">{value}</span>
+      ) : (
+        <span className="text-muted-foreground">—</span>
+      );
+    },
+  }),
   columnHelper.accessor('origin', {
     header: 'Origin',
     cell: (info) => info.getValue(),

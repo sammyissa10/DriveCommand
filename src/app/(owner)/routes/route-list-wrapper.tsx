@@ -18,6 +18,7 @@ interface Truck {
 
 interface Route {
   id: string;
+  name: string | null;
   origin: string;
   destination: string;
   scheduledDate: Date;

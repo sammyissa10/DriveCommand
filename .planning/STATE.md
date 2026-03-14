@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-13 - Completed quick task 57: TKT-0015 Add automated status badges to trucks (In Use / In Maintenance / Expired Docs / Ready to Use)
+Last activity: 2026-03-13 - Completed quick task 58: TKT-0016 Add Route Name column to routes list page
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -77,6 +77,10 @@ Progress: [███████████████████████
 - Quick-26 (2026-02-24): Revert status button — REVERSE_STATUS_TRANSITIONS server action + Undo2 revert button on load detail page — 122s, 2 tasks, 3 files affected
 - Quick-27 (2026-02-24): Dashboard financial metrics upgrade — getDashboardMetrics, getNotificationAlerts, NotificationsPanel, 6-card grid — 189s, 2 tasks, 5 files affected
 - Quick-29 (2026-02-24): Fix dashboard slow loading — synchronous DashboardPage + getAuthContext() helper, session decrypts ~9→4 — 231s, 2 tasks, 3 files affected
+- Quick-55 (2026-03-13): TKT-0013 Fix "a.split is not a function" error on truck document upload with expiry — 1 task, 1 file
+- Quick-56 (2026-03-13): TKT-0014 Fix dashboard alerts navigating to /trucks instead of /trucks/[id] — 1 task, 1 file
+- Quick-57 (2026-03-13): TKT-0015 Add automated status badges to trucks (In Use / In Maintenance / Expired Docs / Ready to Use) — 3 tasks, 4 files
+- Quick-58 (2026-03-13): TKT-0016 Add Route Name column to routes list page — 1 task, 2 files
 
 ## Accumulated Context
 
