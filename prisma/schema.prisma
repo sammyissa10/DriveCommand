@@ -1045,3 +1045,19 @@ model DriverRouteJoin {
   @@index([routeId])
   @@index([driverId])
 }
+
+// ─── Fleet Messaging Models ──────────────────────────────────
+
+model FleetMessage {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  routeId    String   @db.Uuid
+  senderId   String   @db.Uuid
+  senderRole String
+  body       String
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([routeId])
+  @@index([createdAt])
+}
