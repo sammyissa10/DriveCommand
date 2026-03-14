@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-13 - Completed quick task 58: TKT-0016 Add Route Name column to routes list page
+Last activity: 2026-03-14 - Completed quick task 59: TKT-0017 DriverRouteJoin — driver payment tracking per route with FIXED_AMOUNT/HOURLY/PER_MILE
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -81,6 +81,7 @@ Progress: [███████████████████████
 - Quick-56 (2026-03-13): TKT-0014 Fix dashboard alerts navigating to /trucks instead of /trucks/[id] — 1 task, 1 file
 - Quick-57 (2026-03-13): TKT-0015 Add automated status badges to trucks (In Use / In Maintenance / Expired Docs / Ready to Use) — 3 tasks, 4 files
 - Quick-58 (2026-03-13): TKT-0016 Add Route Name column to routes list page — 1 task, 2 files
+- Quick-59 (2026-03-14): TKT-0017 DriverRouteJoin payment tracking — 375s, 3 tasks, 8 files
 
 ## Accumulated Context
 
@@ -94,6 +95,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-59 decisions (TKT-0017 DriverRouteJoin):**
+- Hard delete (no soft delete) for DriverRouteJoin — model has no deletedAt field; assignments are simple join records
+- Per-method null logic enforced at server action level: fields irrelevant to the chosen paymentMethod are explicitly null on create/update
+- Controlled useState form for checkbox + payment method select; avoids useActionState re-mount issues with dynamic conditional fields
 
 **Phase 26-03 decisions (QA test scripts — Driver portal + README):**
 - Driver documents section uses explicit "NOTE TO TESTER" callout block — makes view/download-only constraint unmissable
