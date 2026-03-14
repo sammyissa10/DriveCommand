@@ -14,7 +14,9 @@ import { ProfitMarginAlert } from '@/components/routes/profit-margin-alert';
 import { ApplyTemplateButton } from '@/components/routes/apply-template-button';
 import { RouteDocumentsSection } from './route-documents-section';
 import { DriverAssignmentsSection } from './driver-assignments-section';
+import { RouteMessagesSection } from './route-messages-section';
 import { updateRouteStatus } from '@/app/(owner)/actions/routes';
+import type { FleetMessageWithSender } from '@/app/(owner)/actions/fleet-messages';
 
 interface RoutePageClientProps {
   route: {
@@ -98,6 +100,7 @@ interface RoutePageClientProps {
   templates: any[];
   documents: any[];
   driverAssignments: any[];
+  messages: FleetMessageWithSender[];
 }
 
 export function RoutePageClient({
@@ -114,6 +117,7 @@ export function RoutePageClient({
   templates,
   documents,
   driverAssignments,
+  messages,
 }: RoutePageClientProps) {
   const [isEditMode, setIsEditMode] = useState(initialEditMode);
   const [isDirty, setIsDirty] = useState(false);
@@ -340,6 +344,9 @@ export function RoutePageClient({
             <h2 className="text-lg font-semibold text-card-foreground mb-4">Files</h2>
             <RouteDocumentsSection routeId={route.id} initialDocuments={documents} />
           </div>
+
+          {/* Messages Section */}
+          <RouteMessagesSection routeId={route.id} initialMessages={messages} />
         </div>
       )}
     </div>

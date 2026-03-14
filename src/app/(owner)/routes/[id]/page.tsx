@@ -9,6 +9,7 @@ import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { listDrivers } from '@/app/(owner)/actions/drivers';
 import { listTrucks } from '@/app/(owner)/actions/trucks';
 import { listDriverRouteJoinsByRoute } from '@/app/(owner)/actions/driver-route-joins';
+import { getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
 import { RoutePageClient } from './route-page-client';
 
 interface RouteDetailPageProps {
@@ -38,6 +39,7 @@ export default async function RouteDetailPage({
     drivers,
     trucks,
     driverAssignments,
+    messages,
   ] = await Promise.all([
     getRoute(id).catch((err: unknown) => {
       console.error('[routes/[id]] getRoute failed:', err);
@@ -73,6 +75,7 @@ export default async function RouteDetailPage({
       return [] as any[];
     }),
     listDriverRouteJoinsByRoute(id).catch(() => [] as any[]),
+    getRouteMessages(id).catch(() => [] as any[]),
   ]);
 
   if (!route) {
@@ -120,6 +123,7 @@ export default async function RouteDetailPage({
         templates={templates}
         documents={documents}
         driverAssignments={driverAssignments}
+        messages={messages}
       />
 
       {/* Audit Trail */}
