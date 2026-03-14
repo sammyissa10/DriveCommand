@@ -1,6 +1,8 @@
 import { getMyActiveLoad, advanceLoadStatus } from '@/app/(driver)/actions/driver-load';
+import { getMyAssignedRouteSummary } from '@/app/(driver)/actions/driver-routes';
 import { LoadStatusButton } from '@/components/driver/load-status-button';
 import { Package, MapPin, Calendar, Weight } from 'lucide-react';
+import Link from 'next/link';
 
 const DRIVER_STATUS_LIFECYCLE = [
   'PENDING',
@@ -50,6 +52,14 @@ export default async function MyLoadPage() {
 
   const currentIndex = DRIVER_STATUS_LIFECYCLE.indexOf(load.status);
 
+  // Fetch assigned route summary for cross-reference card
+  let routeSummary: Awaited<ReturnType<typeof getMyAssignedRouteSummary>> = null;
+  try {
+    routeSummary = await getMyAssignedRouteSummary();
+  } catch (err) {
+    console.error('[MyLoadPage] Failed to fetch route summary:', err);
+  }
+
   return (
     <div className="space-y-4 lg:space-y-6">
       {/* Page heading */}
@@ -59,6 +69,40 @@ export default async function MyLoadPage() {
           Load #{load.loadNumber} &mdash; {load.origin} to {load.destination}
         </p>
       </div>
+
+      {/* Active Route cross-reference card */}
+      {routeSummary && (
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border border-l-4 border-l-emerald-500 bg-card p-4 lg:p-5 shadow-sm">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Your Active Route
+          </h3>
+          <div className="space-y-1 text-sm">
+            <p className="font-bold text-foreground">{routeSummary.name ?? 'Unnamed Route'}</p>
+            <p className="text-muted-foreground">
+              {routeSummary.origin} &rarr; {routeSummary.destination}
+            </p>
+            <div className="mt-2">
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  routeSummary.status === 'IN_PROGRESS'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : routeSummary.status === 'PLANNED'
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {routeSummary.status.replace(/_/g, ' ')}
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 border-t border-border pt-3">
+            <Link href="/my-route" className="text-sm text-primary hover:underline">
+              View route details &rarr;
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Load details card */}
       <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border bg-card p-4 lg:p-5 shadow-sm">

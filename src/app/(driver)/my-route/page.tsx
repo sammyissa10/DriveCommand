@@ -1,6 +1,7 @@
 import {
   getMyAssignedRoute,
 } from '@/app/(driver)/actions/driver-routes';
+import { getMyActiveLoadSummary } from '@/app/(driver)/actions/driver-load';
 import {
   getMyRouteDocuments,
   getMyTruckDocuments,
@@ -10,7 +11,8 @@ import { RouteDetailReadOnly } from '@/components/driver/route-detail-readonly';
 import { DocumentListReadOnly } from '@/components/driver/document-list-readonly';
 import { MessagingPanel } from '@/components/driver/messaging-panel';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
-import { MapPin } from 'lucide-react';
+import { MapPin, Package } from 'lucide-react';
+import Link from 'next/link';
 
 /**
  * Driver route detail page.
@@ -47,13 +49,15 @@ export default async function MyRoutePage() {
     );
   }
 
-  // Get route and truck documents
+  // Get route and truck documents, plus active load summary for cross-reference card
   let routeDocuments: Awaited<ReturnType<typeof getMyRouteDocuments>> = [];
   let truckDocuments: Awaited<ReturnType<typeof getMyTruckDocuments>> = [];
+  let loadSummary: Awaited<ReturnType<typeof getMyActiveLoadSummary>> = null;
   try {
-    [routeDocuments, truckDocuments] = await Promise.all([
+    [routeDocuments, truckDocuments, loadSummary] = await Promise.all([
       getMyRouteDocuments(),
       getMyTruckDocuments(),
+      getMyActiveLoadSummary(),
     ]);
   } catch (err) {
     console.error('[MyRoutePage] Failed to fetch documents:', err);
@@ -77,6 +81,42 @@ export default async function MyRoutePage() {
           {route.origin} to {route.destination}
         </p>
       </div>
+
+      {/* Active Load cross-reference card */}
+      {loadSummary && (
+        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border border-l-4 border-l-blue-500 bg-card p-4 lg:p-5 shadow-sm">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <Package className="h-4 w-4" />
+            Your Active Load
+          </h3>
+          <div className="space-y-1 text-sm">
+            <p className="font-bold text-foreground">Load #{loadSummary.loadNumber}</p>
+            <p className="text-muted-foreground">
+              {loadSummary.origin} &rarr; {loadSummary.destination}
+            </p>
+            <div className="mt-2">
+              <span
+                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  loadSummary.status === 'IN_TRANSIT'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : loadSummary.status === 'DISPATCHED'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                    : loadSummary.status === 'PICKED_UP'
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {loadSummary.status.replace(/_/g, ' ')}
+              </span>
+            </div>
+          </div>
+          <div className="mt-3 border-t border-border pt-3">
+            <Link href="/my-load" className="text-sm text-primary hover:underline">
+              View load details &rarr;
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Route + Truck details */}
       <RouteDetailReadOnly
