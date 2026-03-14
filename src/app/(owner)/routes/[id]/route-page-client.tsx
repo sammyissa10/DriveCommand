@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, X } from 'lucide-react';
+import { ArrowLeft, Pencil, X, Package } from 'lucide-react';
+import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
 import { RouteEditSection } from '@/components/routes/route-edit-section';
@@ -101,6 +102,16 @@ interface RoutePageClientProps {
   documents: any[];
   driverAssignments: any[];
   messages: FleetMessageWithSender[];
+  linkedLoads: Array<{
+    id: string;
+    loadNumber: string;
+    origin: string;
+    destination: string;
+    status: string;
+    rate: any;
+    pickupDate: Date;
+    customer: { companyName: string };
+  }>;
 }
 
 export function RoutePageClient({
@@ -118,6 +129,7 @@ export function RoutePageClient({
   documents,
   driverAssignments,
   messages,
+  linkedLoads,
 }: RoutePageClientProps) {
   const [isEditMode, setIsEditMode] = useState(initialEditMode);
   const [isDirty, setIsDirty] = useState(false);
@@ -222,6 +234,33 @@ export function RoutePageClient({
             initialAssignments={driverAssignments}
           />
 
+          {/* Loads on this Route */}
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Loads on this Route
+            </h2>
+            {linkedLoads.length > 0 ? (
+              <div className="divide-y divide-border">
+                {linkedLoads.map((load) => (
+                  <div key={load.id} className="flex items-center justify-between py-3 text-sm gap-4 flex-wrap">
+                    <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
+                      #{load.loadNumber}
+                    </Link>
+                    <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
+                    <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
+                    <LoadStatusBadge status={load.status} />
+                    <span className="font-semibold ml-auto shrink-0">
+                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No loads linked to this route. Link loads by selecting this route when dispatching.</p>
+            )}
+          </div>
+
           {/* Expenses Section (inline editing still works) */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <div className="flex items-center justify-between mb-4">
@@ -310,6 +349,33 @@ export function RoutePageClient({
             drivers={drivers}
             initialAssignments={driverAssignments}
           />
+
+          {/* Loads on this Route */}
+          <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Loads on this Route
+            </h2>
+            {linkedLoads.length > 0 ? (
+              <div className="divide-y divide-border">
+                {linkedLoads.map((load) => (
+                  <div key={load.id} className="flex items-center justify-between py-3 text-sm gap-4 flex-wrap">
+                    <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
+                      #{load.loadNumber}
+                    </Link>
+                    <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
+                    <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
+                    <LoadStatusBadge status={load.status} />
+                    <span className="font-semibold ml-auto shrink-0">
+                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No loads linked to this route. Link loads by selecting this route when dispatching.</p>
+            )}
+          </div>
 
           {/* Expenses Section */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">

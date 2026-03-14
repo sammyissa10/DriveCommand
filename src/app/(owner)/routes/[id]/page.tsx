@@ -10,6 +10,7 @@ import { listDrivers } from '@/app/(owner)/actions/drivers';
 import { listTrucks } from '@/app/(owner)/actions/trucks';
 import { listDriverRouteJoinsByRoute } from '@/app/(owner)/actions/driver-route-joins';
 import { getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
+import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { RoutePageClient } from './route-page-client';
 
 interface RouteDetailPageProps {
@@ -28,6 +29,8 @@ export default async function RouteDetailPage({
   // Run all fetches in parallel — every query only needs `id` from params,
   // so there is no reason to await getRoute() first and then fan out.
   // If the route is missing (null), notFound() is called after the parallel fetch.
+  const prisma = await getTenantPrisma();
+
   const [
     route,
     documents,
@@ -40,6 +43,7 @@ export default async function RouteDetailPage({
     trucks,
     driverAssignments,
     messages,
+    linkedLoads,
   ] = await Promise.all([
     getRoute(id).catch((err: unknown) => {
       console.error('[routes/[id]] getRoute failed:', err);
@@ -76,6 +80,20 @@ export default async function RouteDetailPage({
     }),
     listDriverRouteJoinsByRoute(id).catch(() => [] as any[]),
     getRouteMessages(id).catch(() => [] as any[]),
+    prisma.load.findMany({
+      where: { routeId: id },
+      select: {
+        id: true,
+        loadNumber: true,
+        origin: true,
+        destination: true,
+        status: true,
+        rate: true,
+        pickupDate: true,
+        customer: { select: { companyName: true } },
+      },
+      orderBy: { pickupDate: 'asc' },
+    }).catch(() => [] as any[]),
   ]);
 
   if (!route) {
@@ -124,6 +142,7 @@ export default async function RouteDetailPage({
         documents={documents}
         driverAssignments={driverAssignments}
         messages={messages}
+        linkedLoads={linkedLoads}
       />
 
       {/* Audit Trail */}
