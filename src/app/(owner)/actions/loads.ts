@@ -264,6 +264,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
   const rawData = {
     driverId: formData.get('driverId') as string,
     truckId: formData.get('truckId') as string,
+    routeId: (formData.get('routeId') as string) || '',
   };
 
   const result = dispatchLoadSchema.safeParse(rawData);
@@ -287,6 +288,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
       data: {
         driverId: result.data.driverId,
         truckId: result.data.truckId,
+        routeId: result.data.routeId || null,
         status: 'DISPATCHED',
         trackingToken: globalThis.crypto.randomUUID(),
       },

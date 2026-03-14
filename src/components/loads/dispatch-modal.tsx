@@ -8,13 +8,14 @@ interface DispatchModalProps {
   dispatchAction: (prevState: any, formData: FormData) => Promise<any>;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{ id: string; make: string; model: string; licensePlate: string }>;
+  routes?: Array<{ id: string; name: string | null; origin: string; destination: string }>;
 }
 
 const inputClass =
   'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
-export function DispatchModal({ loadId, dispatchAction, drivers, trucks }: DispatchModalProps) {
+export function DispatchModal({ loadId, dispatchAction, drivers, trucks, routes = [] }: DispatchModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [state, formAction, isPending] = useActionState(dispatchAction, null);
@@ -111,6 +112,25 @@ export function DispatchModal({ loadId, dispatchAction, drivers, trucks }: Dispa
                 {state?.error?.truckId && (
                   <p className="mt-1.5 text-sm text-red-600">{state.error.truckId}</p>
                 )}
+              </div>
+
+              <div>
+                <label htmlFor="routeId" className={labelClass}>
+                  Route <span className="text-muted-foreground font-normal">(Optional)</span>
+                </label>
+                <select
+                  id="routeId"
+                  name="routeId"
+                  disabled={isPending}
+                  className={inputClass}
+                >
+                  <option value="">No route</option>
+                  {routes.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name ?? `${r.origin} \u2192 ${r.destination}`}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex gap-3 pt-2">

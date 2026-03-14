@@ -41,6 +41,9 @@ export async function getMyActiveLoad() {
       customer: {
         select: { companyName: true },
       },
+      route: {
+        select: { id: true, name: true, origin: true, destination: true, status: true },
+      },
     },
     orderBy: {
       pickupDate: 'asc', // Earliest active load first
@@ -82,6 +85,10 @@ export async function getMyActiveLoadSummary() {
       origin: true,
       destination: true,
       status: true,
+      routeId: true,
+      route: {
+        select: { id: true, name: true, origin: true, destination: true, status: true },
+      },
     },
     orderBy: {
       pickupDate: 'asc', // Earliest active load first

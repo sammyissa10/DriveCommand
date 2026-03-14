@@ -1,7 +1,6 @@
 import {
   getMyAssignedRoute,
 } from '@/app/(driver)/actions/driver-routes';
-import { getMyActiveLoadSummary } from '@/app/(driver)/actions/driver-load';
 import {
   getMyRouteDocuments,
   getMyTruckDocuments,
@@ -49,19 +48,20 @@ export default async function MyRoutePage() {
     );
   }
 
-  // Get route and truck documents, plus active load summary for cross-reference card
+  // Get route and truck documents
   let routeDocuments: Awaited<ReturnType<typeof getMyRouteDocuments>> = [];
   let truckDocuments: Awaited<ReturnType<typeof getMyTruckDocuments>> = [];
-  let loadSummary: Awaited<ReturnType<typeof getMyActiveLoadSummary>> = null;
   try {
-    [routeDocuments, truckDocuments, loadSummary] = await Promise.all([
+    [routeDocuments, truckDocuments] = await Promise.all([
       getMyRouteDocuments(),
       getMyTruckDocuments(),
-      getMyActiveLoadSummary(),
     ]);
   } catch (err) {
     console.error('[MyRoutePage] Failed to fetch documents:', err);
   }
+
+  // Loads linked to this route via routeId FK
+  const routeLoads = route.loads ?? [];
 
   // Format dates in UTC timezone (tenant timezone would come from tenant settings in future)
   const formattedScheduledDate = formatDateInTenantTimezone(
@@ -82,41 +82,47 @@ export default async function MyRoutePage() {
         </p>
       </div>
 
-      {/* Active Load cross-reference card */}
-      {loadSummary && (
-        <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border border-l-4 border-l-blue-500 bg-card p-4 lg:p-5 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <Package className="h-4 w-4" />
-            Your Active Load
-          </h3>
-          <div className="space-y-1 text-sm">
-            <p className="font-bold text-foreground">Load #{loadSummary.loadNumber}</p>
-            <p className="text-muted-foreground">
-              {loadSummary.origin} &rarr; {loadSummary.destination}
-            </p>
-            <div className="mt-2">
-              <span
-                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  loadSummary.status === 'IN_TRANSIT'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                    : loadSummary.status === 'DISPATCHED'
-                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                    : loadSummary.status === 'PICKED_UP'
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {loadSummary.status.replace(/_/g, ' ')}
-              </span>
+      {/* Loads on this Route section (via routeId FK) */}
+      <div className="rounded-none border-x-0 lg:rounded-lg lg:border-x border border-border border-l-4 border-l-blue-500 bg-card p-4 lg:p-5 shadow-sm">
+        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+          <Package className="h-4 w-4" />
+          Loads on this Route
+        </h3>
+        {routeLoads.length > 0 ? (
+          <div className="space-y-3">
+            {routeLoads.map((load) => (
+              <div key={load.id} className="text-sm">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <p className="font-bold text-foreground">Load #{load.loadNumber}</p>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      load.status === 'IN_TRANSIT'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                        : load.status === 'DISPATCHED'
+                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                        : load.status === 'PICKED_UP'
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {load.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <p className="text-muted-foreground mt-0.5">
+                  {load.origin} &rarr; {load.destination}
+                </p>
+              </div>
+            ))}
+            <div className="border-t border-border pt-3">
+              <Link href="/my-load" className="text-sm text-primary hover:underline">
+                View load details &rarr;
+              </Link>
             </div>
           </div>
-          <div className="mt-3 border-t border-border pt-3">
-            <Link href="/my-load" className="text-sm text-primary hover:underline">
-              View load details &rarr;
-            </Link>
-          </div>
-        </div>
-      )}
+        ) : (
+          <p className="text-sm text-muted-foreground">No loads linked to this route.</p>
+        )}
+      </div>
 
       {/* Route + Truck details */}
       <RouteDetailReadOnly

@@ -61,6 +61,11 @@ export async function getMyAssignedRoute() {
       },
       documents: true,
       stops: { orderBy: { position: 'asc' } },
+      loads: {
+        where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] } },
+        select: { id: true, loadNumber: true, origin: true, destination: true, status: true },
+        orderBy: { pickupDate: 'asc' },
+      },
     },
     orderBy: {
       scheduledDate: 'asc', // Earliest active route first

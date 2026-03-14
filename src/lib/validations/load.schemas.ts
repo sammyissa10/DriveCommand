@@ -18,6 +18,7 @@ export const loadUpdateSchema = loadCreateSchema;
 export const dispatchLoadSchema = z.object({
   driverId: z.string().uuid('Select a driver'),
   truckId: z.string().uuid('Select a truck'),
+  routeId: z.string().uuid().optional().or(z.literal('')),
 });
 
 export type LoadCreate = z.infer<typeof loadCreateSchema>;

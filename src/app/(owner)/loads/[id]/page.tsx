@@ -53,12 +53,13 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
     notFound();
   }
 
-  // Fetch drivers and trucks for dispatch modal if PENDING
+  // Fetch drivers, trucks, and routes for dispatch modal if PENDING
   let availableDrivers: Array<{ id: string; firstName: string | null; lastName: string | null }> = [];
   let availableTrucks: Array<{ id: string; make: string; model: string; licensePlate: string }> = [];
+  let availableRoutes: Array<{ id: string; name: string | null; origin: string; destination: string }> = [];
 
   if (load.status === 'PENDING') {
-    [availableDrivers, availableTrucks] = await Promise.all([
+    [availableDrivers, availableTrucks, availableRoutes] = await Promise.all([
       prisma.user.findMany({
         where: { role: 'DRIVER', isActive: true },
         select: { id: true, firstName: true, lastName: true },
@@ -67,6 +68,11 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
       prisma.truck.findMany({
         select: { id: true, make: true, model: true, licensePlate: true },
         orderBy: { make: 'asc' },
+      }).catch(() => []),
+      prisma.route.findMany({
+        where: { status: { in: ['PLANNED', 'IN_PROGRESS'] } },
+        select: { id: true, name: true, origin: true, destination: true },
+        orderBy: { scheduledDate: 'desc' },
       }).catch(() => []),
     ]);
   }
@@ -119,6 +125,7 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
               dispatchAction={boundDispatchLoad}
               drivers={availableDrivers}
               trucks={availableTrucks}
+              routes={availableRoutes}
             />
           )}
           {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'INVOICED'].includes(load.status) && (
