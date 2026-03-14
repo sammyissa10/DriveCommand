@@ -380,6 +380,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25-03]: Cron uses base prisma (no bypass_rls) — SysAdminInvoice RLS only restricts rows when app.current_tenant_id is set; cron runs without tenant context
 - [Phase quick-57]: Status is computed from pre-fetched Prisma includes — no schema changes, priority: In Use > In Maintenance > Expired Docs > Ready to Use
 - [Phase quick-60]: Nullable loadId FK (not required) preserves all existing invoice data without migration
+- [Phase quick-65]: Fleet message emails are fire-and-forget: try/catch after DB insert so email failures never block message saving
 
 ### Pending Todos
 
