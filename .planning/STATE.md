@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-13 - Completed quick task 56: TKT-0014 Fix dashboard truck expiry alerts navigating to /trucks instead of /trucks/{id}
+Last activity: 2026-03-13 - Completed quick task 57: TKT-0015 Add automated status badges to trucks (In Use / In Maintenance / Expired Docs / Ready to Use)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -368,6 +368,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 25-03]: DB status committed to SENT before email attempt — consistent state even if email service is down
 - [Phase 25-03]: Email failure is non-fatal: returns emailWarning in success response, shown as yellow banner in UI
 - [Phase 25-03]: Cron uses base prisma (no bypass_rls) — SysAdminInvoice RLS only restricts rows when app.current_tenant_id is set; cron runs without tenant context
+- [Phase quick-57]: Status is computed from pre-fetched Prisma includes — no schema changes, priority: In Use > In Maintenance > Expired Docs > Ready to Use
 
 ### Pending Todos
 
