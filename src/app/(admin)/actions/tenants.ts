@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
+import { sendEmail, FROM_EMAIL } from '@/lib/email/gmail-client';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -306,6 +307,69 @@ export async function updateTenant(
       return { success: false, error: 'A tenant with this slug already exists' };
     }
     return { success: false, error: 'Failed to update tenant. Please try again.' };
+  }
+}
+
+/**
+ * Update a tenant owner's email address.
+ * Sends a notification to the OLD email address before changing.
+ */
+export async function updateOwnerEmail(
+  userId: string,
+  newEmail: string
+): Promise<{ success: boolean; error?: string }> {
+  await requireAdminAccess();
+
+  const validation = z.string().email('Must be a valid email address').safeParse(newEmail.trim().toLowerCase());
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message };
+  }
+
+  try {
+    // Get current email before updating
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, firstName: true, lastName: true, tenantId: true },
+    });
+    if (!user) return { success: false, error: 'User not found' };
+
+    const oldEmail = user.email;
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { email: validation.data },
+    });
+
+    if (user.tenantId) {
+      revalidatePath(`/tenants/${user.tenantId}`);
+    }
+
+    // Notify old email — fire and forget
+    try {
+      await sendEmail({
+        to: oldEmail,
+        subject: 'Your DriveCommand login email has been updated',
+        react: (
+          <div>
+            <p>Hi {user.firstName || 'there'},</p>
+            <p>
+              Your DriveCommand account login email has been changed to <strong>{validation.data}</strong> by a system administrator.
+            </p>
+            <p>If you did not request this change, please contact support immediately.</p>
+            <p>— The DriveCommand Team</p>
+          </div>
+        ) as any,
+      });
+    } catch (emailError) {
+      console.error('[updateOwnerEmail] notification email failed:', emailError);
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+      return { success: false, error: 'This email is already in use by another account' };
+    }
+    return { success: false, error: 'Failed to update email. Please try again.' };
   }
 }
 

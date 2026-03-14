@@ -6,6 +6,7 @@ import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
+import { OwnerEmailForm } from './owner-email-form';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -125,15 +126,20 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
             <div className="border-t pt-4">
               <p className="mb-2 text-sm font-medium text-gray-700">Owner</p>
               {tenant.ownerUser ? (
-                <div className="text-sm space-y-1">
-                  <p className="font-medium text-gray-900">
-                    {tenant.ownerUser.firstName} {tenant.ownerUser.lastName}
-                  </p>
-                  <p className="text-gray-500">{tenant.ownerUser.email}</p>
-                  <p className="text-gray-400 text-xs">
-                    Account active since{' '}
-                    {new Date(tenant.ownerUser.createdAt).toLocaleDateString()}
-                  </p>
+                <div className="text-sm space-y-3">
+                  <div className="space-y-0.5">
+                    <p className="font-medium text-gray-900">
+                      {tenant.ownerUser.firstName} {tenant.ownerUser.lastName}
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      Account active since{' '}
+                      {new Date(tenant.ownerUser.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <OwnerEmailForm
+                    userId={tenant.ownerUser.id}
+                    currentEmail={tenant.ownerUser.email}
+                  />
                 </div>
               ) : tenant.pendingOwnerInvitation ? (
                 <div className="text-sm space-y-1">
