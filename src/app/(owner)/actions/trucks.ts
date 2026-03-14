@@ -226,6 +226,24 @@ export async function listTrucks() {
     where: { archivedAt: null },
     take: 100,
     orderBy: { createdAt: 'desc' },
+    include: {
+      assignedRoutes: {
+        where: { status: 'IN_PROGRESS', archivedAt: null },
+        select: { id: true, status: true },
+      },
+      loads: {
+        where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
+        select: { id: true, status: true },
+      },
+      scheduledServices: {
+        where: { isCompleted: false },
+        select: { id: true },
+      },
+      documents: {
+        where: { expiryDate: { not: null } },
+        select: { id: true, expiryDate: true },
+      },
+    },
   });
 }
 
@@ -244,6 +262,22 @@ export async function getTruck(id: string) {
     include: {
       createdBy: { select: { firstName: true, lastName: true, email: true } },
       updatedBy: { select: { firstName: true, lastName: true, email: true } },
+      assignedRoutes: {
+        where: { status: 'IN_PROGRESS', archivedAt: null },
+        select: { id: true, status: true },
+      },
+      loads: {
+        where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
+        select: { id: true, status: true },
+      },
+      scheduledServices: {
+        where: { isCompleted: false },
+        select: { id: true },
+      },
+      documents: {
+        where: { expiryDate: { not: null } },
+        select: { id: true, expiryDate: true },
+      },
     },
   });
 }
