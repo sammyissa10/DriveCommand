@@ -5,6 +5,7 @@ import { getTenantById } from '@/app/(admin)/actions/tenants';
 import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
+import { TenantEditForm } from './tenant-edit-form';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -95,16 +96,15 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
             <CardTitle className="text-base font-semibold">Tenant Info</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Basic info */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-gray-500">Name</p>
-                <p className="font-medium text-gray-900">{tenant.name}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Slug</p>
-                <p className="font-medium text-gray-900">{tenant.slug ?? '—'}</p>
-              </div>
+            {/* Editable name + slug */}
+            <TenantEditForm
+              tenantId={tenant.id}
+              initialName={tenant.name}
+              initialSlug={tenant.slug ?? ''}
+            />
+
+            {/* Read-only metadata */}
+            <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
               <div>
                 <p className="text-gray-500">Status</p>
                 <span

@@ -270,6 +270,46 @@ export async function getTenantById(tenantId: string) {
 }
 
 /**
+ * Update a tenant's name and/or slug.
+ */
+export async function updateTenant(
+  tenantId: string,
+  data: { name: string; slug: string }
+): Promise<{ success: boolean; error?: string }> {
+  await requireAdminAccess();
+
+  const schema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+    slug: z.string()
+      .min(2, 'Slug must be at least 2 characters')
+      .max(50, 'Slug must be at most 50 characters')
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
+  });
+
+  const validation = schema.safeParse(data);
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message };
+  }
+
+  try {
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: { name: validation.data.name, slug: validation.data.slug },
+    });
+
+    revalidatePath(`/tenants/${tenantId}`);
+    revalidatePath('/tenants');
+
+    return { success: true };
+  } catch (error: any) {
+    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+      return { success: false, error: 'A tenant with this slug already exists' };
+    }
+    return { success: false, error: 'Failed to update tenant. Please try again.' };
+  }
+}
+
+/**
  * Delete a tenant (hard delete).
  * Will fail if tenant has associated users, trucks, or routes.
  */
