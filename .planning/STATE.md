@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-14 - Completed quick task 66: TKT-0022 Cross-reference routes and loads in driver portal
+Last activity: 2026-03-14 - Completed quick task 67: Add routeId FK wiring — dispatch form route picker, driver portal explicit routeId queries, owner route detail Loads section
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -465,6 +465,7 @@ None blocking immediate progress.
 | 64 | TKT-0020 Fix driver portal messaging — FleetMessage model + RLS, driver MessagingPanel on /my-route with real persistence, owner RouteMessagesSection on route detail with reply | 2026-03-14 | a21c741 | [64-tkt-0020-fix-driver-portal-messaging-sen](./quick/64-tkt-0020-fix-driver-portal-messaging-sen/) |
 | 65 | TKT-0020 follow-up: Fleet message email notifications — owner emailed when driver sends, driver emailed when owner replies; fire-and-forget pattern | 2026-03-14 | c9a7dc6 | [65-tkt-0020-follow-up-send-email-notificati](./quick/65-tkt-0020-follow-up-send-email-notificati/) |
 | 66 | TKT-0022 Cross-reference routes and loads — Active Load card on /my-route (load#, addresses, status, link), Active Route card on /my-load (route name, origin/dest, link) | 2026-03-14 | 1c06c97 | [66-tkt-0022-cross-reference-routes-and-load](./quick/66-tkt-0022-cross-reference-routes-and-load/) |
+| 67 | Add routeId FK to Load — dispatch modal route picker, driver portal uses explicit routeId (not driverId guess), owner route detail shows linked loads | 2026-03-14 | c165ba5 | [67-add-routeid-fk-to-load-model-nullable-fo](./quick/67-add-routeid-fk-to-load-model-nullable-fo/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
