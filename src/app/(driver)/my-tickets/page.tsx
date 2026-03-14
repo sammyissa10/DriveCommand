@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from '@/components/ui/empty-state';
 import { LifeBuoy } from 'lucide-react';
+import Link from 'next/link';
 
 function getCategoryBadgeClass(category: string) {
   switch (category) {
@@ -74,7 +75,8 @@ export default async function DriverSupportPage() {
       ) : (
         <div className="space-y-3">
           {tickets.map((ticket) => (
-            <Card key={ticket.id} className="hover:shadow-sm transition-shadow">
+            <Link key={ticket.id} href={`/my-tickets/${ticket.id}`} className="block">
+            <Card className="hover:shadow-sm transition-shadow cursor-pointer">
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -106,6 +108,7 @@ export default async function DriverSupportPage() {
                 )}
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       )}
