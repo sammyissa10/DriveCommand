@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-14 - Completed quick task 63: TKT-0021 Status filtering tabs on owner support page
+Last activity: 2026-03-14 - Completed quick task 64: TKT-0020 Fix driver portal messaging — sending a message from /my-route doesnt work and messages should be visible in the owner portal
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -461,6 +461,7 @@ None blocking immediate progress.
 | 57 | TKT-0015 Add automated truck status badges — computeTruckStatus() utility (In Use/In Maintenance/Expired Docs/Ready to Use), Status column on trucks list, badge on truck detail page | 2026-03-14 | 00c70c5 | [57-tkt-0015-add-automated-status-to-trucks-](./quick/57-tkt-0015-add-automated-status-to-trucks-/) |
 | 61 | TKT-0020 Add driver ticket detail page at /driver/my-tickets/[id] — thread view, reply form, clickable list cards | 2026-03-14 | 4516248 | [61-tkt-0020-add-driver-ticket-detail-page-a](./quick/61-tkt-0020-add-driver-ticket-detail-page-a/) |
 | 63 | TKT-0021 Add status filtering tabs to owner support page — All/Open/In Progress/Closed with count badges, client-side filtering | 2026-03-14 | 09122ce | [63-tkt-0021-add-status-filtering-to-owner-s](./quick/63-tkt-0021-add-status-filtering-to-owner-s/) |
+| 64 | TKT-0020 Fix driver portal messaging — FleetMessage model + RLS, driver MessagingPanel on /my-route with real persistence, owner RouteMessagesSection on route detail with reply | 2026-03-14 | a21c741 | [64-tkt-0020-fix-driver-portal-messaging-sen](./quick/64-tkt-0020-fix-driver-portal-messaging-sen/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
