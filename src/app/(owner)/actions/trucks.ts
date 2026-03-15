@@ -267,6 +267,32 @@ export async function toggleTruckMaintenance(truckId: string, inMaintenance: boo
 }
 
 /**
+ * List all routes assigned to a specific truck, including archived routes.
+ * Sorted most recent first by scheduledDate.
+ * Requires OWNER, MANAGER, or DRIVER role (read access).
+ */
+export async function listTruckRoutes(truckId: string) {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.OWNER, UserRole.MANAGER, UserRole.DRIVER]);
+
+  const prisma = await getTenantPrisma();
+  return prisma.route.findMany({
+    where: { truckId },
+    orderBy: { scheduledDate: 'desc' },
+    take: 50,
+    select: {
+      id: true,
+      name: true,
+      origin: true,
+      destination: true,
+      status: true,
+      scheduledDate: true,
+      archivedAt: true,
+    },
+  });
+}
+
+/**
  * Get a single truck by ID.
  * Requires OWNER, MANAGER, or DRIVER role (read access).
  * Returns null if not found or belongs to different tenant (RLS).
