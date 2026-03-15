@@ -18,6 +18,13 @@ export interface TruckStatusInfo {
   variant: TruckStatusVariant;
 }
 
+interface DocumentMetadata {
+  registrationNumber?: string;
+  registrationExpiry?: string;
+  insuranceNumber?: string;
+  insuranceExpiry?: string;
+}
+
 /** Minimal shape of related data expected by computeTruckStatus. */
 export interface TruckWithRelations {
   id: string;
@@ -82,6 +89,29 @@ function isServiceOverdue(
 }
 
 /**
+ * Returns true if documentMetadata contains a registrationExpiry or insuranceExpiry
+ * date string that is in the past (i.e. expired). Invalid or missing date strings are
+ * safely ignored.
+ */
+function hasExpiredMetadataDate(
+  documentMetadata: DocumentMetadata | null | undefined
+): boolean {
+  if (!documentMetadata) return false;
+
+  for (const field of ['registrationExpiry', 'insuranceExpiry'] as const) {
+    const value = documentMetadata[field];
+    if (value) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime()) && date < new Date()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
  * Compute the operational status of a truck from its related data.
  *
  * @param truck - Truck with pre-fetched relations (routes, loads, services, documents).
@@ -110,11 +140,13 @@ export function computeTruckStatus(truck: TruckWithRelations): TruckStatusInfo {
     return { status: 'In Maintenance', variant: 'amber' };
   }
 
-  // 3. Expired Docs — at least one document has passed its expiry date
+  // 3. Expired Docs — at least one document has passed its expiry date,
+  //    OR a documentMetadata expiry date (registration/insurance) is in the past
   const now = new Date();
-  const hasExpiredDocs = (truck.documents ?? []).some(
-    (doc) => doc.expiryDate !== null && doc.expiryDate < now
-  );
+  const hasExpiredDocs =
+    (truck.documents ?? []).some(
+      (doc) => doc.expiryDate !== null && doc.expiryDate < now
+    ) || hasExpiredMetadataDate(truck.documentMetadata as DocumentMetadata | null);
 
   if (hasExpiredDocs) {
     return { status: 'Expired Docs', variant: 'red' };
