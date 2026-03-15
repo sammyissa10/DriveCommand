@@ -381,6 +381,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-57]: Status is computed from pre-fetched Prisma includes — no schema changes, priority: In Use > In Maintenance > Expired Docs > Ready to Use
 - [Phase quick-60]: Nullable loadId FK (not required) preserves all existing invoice data without migration
 - [Phase quick-65]: Fleet message emails are fire-and-forget: try/catch after DB insert so email failures never block message saving
+- [Phase quick-70]: Overdue service threshold: intervalDays met (date+days <= now) OR intervalMiles met (baselineOdometer+miles <= odometer)
 
 ### Pending Todos
 
