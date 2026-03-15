@@ -470,6 +470,7 @@ None blocking immediate progress.
 | 68 | Add Resend Invitation feature for expired owner invitations on tenant detail page | 2026-03-15 | 0f87116 | [68-add-resend-invitation-feature-for-expire](./quick/68-add-resend-invitation-feature-for-expire/) |
 | 69 | TKT-0022 Add edit functionality for scheduled services on truck maintenance page | 2026-03-15 | a7e8c30 | [69-tkt-0022-add-edit-functionality-for-sche](./quick/69-tkt-0022-add-edit-functionality-for-sche/) |
 | 70 | TKT-0023: Truck Status Logic — fix scheduled service status bug and add status legend to UI | 2026-03-15 | 26e577c | [70-tkt-0023-truck-status-logic-fix-schedule](./quick/70-tkt-0023-truck-status-logic-fix-schedule/) |
+| 71 | TKT-0024: Add manual In Maintenance toggle — inMaintenance DB field, MaintenanceToggleButton on truck detail + maintenance pages, manual override priority in computeTruckStatus | 2026-03-15 | 2780dd6 | [71-tkt-0024-add-manual-in-maintenance-toggl](./quick/71-tkt-0024-add-manual-in-maintenance-toggl/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
