@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
 import { OwnerEmailForm } from './owner-email-form';
+import { ResendInvitationButton } from './resend-invitation-button';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -151,6 +152,23 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                     Invitation pending (expires{' '}
                     {new Date(tenant.pendingOwnerInvitation.expiresAt).toLocaleDateString()})
                   </p>
+                  <ResendInvitationButton tenantId={tenant.id} />
+                </div>
+              ) : tenant.expiredOwnerInvitation ? (
+                <div className="text-sm space-y-1">
+                  <p className="font-medium text-gray-900">
+                    {tenant.expiredOwnerInvitation.firstName} {tenant.expiredOwnerInvitation.lastName}
+                  </p>
+                  <p className="text-gray-500">{tenant.expiredOwnerInvitation.email}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                      Expired
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      Expired on {new Date(tenant.expiredOwnerInvitation.expiresAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <ResendInvitationButton tenantId={tenant.id} />
                 </div>
               ) : (
                 <p className="text-sm text-gray-400">No owner configured</p>
