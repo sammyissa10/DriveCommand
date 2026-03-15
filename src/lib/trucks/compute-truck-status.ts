@@ -4,7 +4,7 @@
  *
  * Priority order (highest wins):
  *   1. In Use        — active route or active load
- *   2. In Maintenance — pending scheduled service
+ *   2. In Maintenance — overdue scheduled service (past due date or mileage threshold exceeded)
  *   3. Expired Docs  — at least one document past its expiry date
  *   4. Ready to Use  — none of the above
  */
@@ -38,13 +38,46 @@ export interface TruckWithRelations {
   assignedRoutes: { id: string; status: string }[];
   /** Active loads assigned to this truck (pre-filtered to DISPATCHED/PICKED_UP/IN_TRANSIT). */
   loads: { id: string; status: string }[];
-  /** Pending scheduled services (pre-filtered to isCompleted === false). */
-  scheduledServices: { id: string }[];
+  /** Pending scheduled services (pre-filtered to isCompleted === false). Must include due-date fields. */
+  scheduledServices: {
+    id: string;
+    baselineDate: Date;
+    intervalDays: number | null;
+    intervalMiles: number | null;
+    baselineOdometer: number;
+  }[];
   /** Documents with an expiry date (pre-filtered to expiryDate not null). */
   documents: { id: string; expiryDate: Date | null }[];
   /** Optional audit relations (present on detail page). */
   createdBy?: { firstName: string | null; lastName: string | null; email: string } | null;
   updatedBy?: { firstName: string | null; lastName: string | null; email: string } | null;
+}
+
+/**
+ * Determine if a scheduled service is currently overdue.
+ *
+ * A service is overdue when:
+ *   - intervalDays is set AND baselineDate + intervalDays <= now, OR
+ *   - intervalMiles is set AND baselineOdometer + intervalMiles <= truck.odometer
+ */
+function isServiceOverdue(
+  service: TruckWithRelations['scheduledServices'][number],
+  truckOdometer: number
+): boolean {
+  const now = new Date();
+
+  if (service.intervalDays !== null) {
+    const dueDate = new Date(service.baselineDate);
+    dueDate.setDate(dueDate.getDate() + service.intervalDays);
+    if (dueDate <= now) return true;
+  }
+
+  if (service.intervalMiles !== null) {
+    const dueMileage = service.baselineOdometer + service.intervalMiles;
+    if (dueMileage <= truckOdometer) return true;
+  }
+
+  return false;
 }
 
 /**
@@ -62,8 +95,10 @@ export function computeTruckStatus(truck: TruckWithRelations): TruckStatusInfo {
     return { status: 'In Use', variant: 'blue' };
   }
 
-  // 2. In Maintenance — truck has at least one pending scheduled service
-  const isInMaintenance = (truck.scheduledServices?.length ?? 0) > 0;
+  // 2. In Maintenance — truck has at least one OVERDUE scheduled service
+  const isInMaintenance = (truck.scheduledServices ?? []).some((service) =>
+    isServiceOverdue(service, truck.odometer)
+  );
 
   if (isInMaintenance) {
     return { status: 'In Maintenance', variant: 'amber' };

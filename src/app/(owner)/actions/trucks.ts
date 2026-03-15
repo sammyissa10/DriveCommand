@@ -237,7 +237,7 @@ export async function listTrucks() {
       },
       scheduledServices: {
         where: { isCompleted: false },
-        select: { id: true },
+        select: { id: true, baselineDate: true, intervalDays: true, intervalMiles: true, baselineOdometer: true },
       },
       documents: {
         where: { expiryDate: { not: null } },
@@ -272,7 +272,7 @@ export async function getTruck(id: string) {
       },
       scheduledServices: {
         where: { isCompleted: false },
-        select: { id: true },
+        select: { id: true, baselineDate: true, intervalDays: true, intervalMiles: true, baselineOdometer: true },
       },
       documents: {
         where: { expiryDate: { not: null } },
