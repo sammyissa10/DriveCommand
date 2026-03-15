@@ -250,8 +250,9 @@ export async function getTenantById(tenantId: string) {
         take: 1,
       },
       driverInvitations: {
-        where: { role: 'OWNER', status: 'PENDING' },
-        select: { id: true, email: true, firstName: true, lastName: true, createdAt: true, expiresAt: true },
+        where: { role: 'OWNER', status: { in: ['PENDING', 'EXPIRED'] } },
+        select: { id: true, email: true, firstName: true, lastName: true, createdAt: true, expiresAt: true, status: true },
+        orderBy: { createdAt: 'desc' },
         take: 1,
       },
     },
@@ -263,12 +264,80 @@ export async function getTenantById(tenantId: string) {
 
   const { users, driverInvitations, ...rest } = tenant;
 
+  const latestInvitation = driverInvitations[0] ?? null;
+
   return {
     ...rest,
     ownerSetupComplete: users.length > 0,
     ownerUser: users[0] ?? null,
-    pendingOwnerInvitation: driverInvitations[0] ?? null,
+    pendingOwnerInvitation: latestInvitation?.status === 'PENDING' ? latestInvitation : null,
+    expiredOwnerInvitation: latestInvitation?.status === 'EXPIRED' ? latestInvitation : null,
   };
+}
+
+/**
+ * Resend owner invitation — resets an expired or pending invitation to PENDING with a new 7-day expiry
+ * and sends the invitation email again.
+ */
+export async function resendOwnerInvitation(tenantId: string) {
+  await requireAdminAccess();
+
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { name: true },
+    });
+
+    if (!tenant) {
+      return { success: false, error: 'Tenant not found' };
+    }
+
+    const invitation = await prisma.driverInvitation.findFirst({
+      where: { tenantId, role: 'OWNER', status: { in: ['PENDING', 'EXPIRED'] } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!invitation) {
+      return { success: false, error: 'No invitation found to resend' };
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await prisma.driverInvitation.update({
+      where: { id: invitation.id },
+      data: { status: 'PENDING', expiresAt },
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const acceptUrl = `${appUrl}/accept-invitation?id=${invitation.id}`;
+
+    try {
+      await sendOwnerInvitation(invitation.email, {
+        firstName: invitation.firstName,
+        lastName: invitation.lastName,
+        organizationName: tenant.name,
+        acceptUrl,
+        expiresAt: expiresAt.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+      });
+    } catch (emailError: any) {
+      console.error('[resendOwnerInvitation] email send failed:', emailError);
+      revalidatePath('/tenants/' + tenantId);
+      return {
+        success: true,
+        emailWarning: 'Invitation reset but email could not be sent. Please check your email configuration.',
+      };
+    }
+
+    revalidatePath('/tenants/' + tenantId);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: 'Failed to resend invitation. Please try again.' };
+  }
 }
 
 /**
