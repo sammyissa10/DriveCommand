@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { ArrowLeft, Wrench, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
-import { getTruck } from '@/app/(owner)/actions/trucks';
+import { getTruck, listTruckRoutes } from '@/app/(owner)/actions/trucks';
 import { listDocuments } from '@/app/(owner)/actions/documents';
 import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
 import { TruckDocumentsSection } from './truck-documents-section';
+import { TruckRoutesHistory } from './truck-routes-history';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
 import { MaintenanceToggleButton } from '@/components/trucks/maintenance-toggle-button';
 
@@ -26,6 +27,14 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
     documents = await listDocuments('truck', id);
   } catch (error) {
     console.error('Failed to load truck documents:', error);
+  }
+
+  // Fetch routes for this truck (non-blocking - page renders even if this fails)
+  let truckRoutes: any[] = [];
+  try {
+    truckRoutes = await listTruckRoutes(id);
+  } catch (error) {
+    console.error('Failed to load truck routes:', error);
   }
 
   // Parse and validate document metadata
@@ -201,6 +210,12 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-card-foreground mb-4">Files</h2>
         <TruckDocumentsSection truckId={truck.id} initialDocuments={documents} />
+      </div>
+
+      {/* Routes History */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Routes History</h2>
+        <TruckRoutesHistory routes={truckRoutes} />
       </div>
 
       {/* Audit Trail */}
