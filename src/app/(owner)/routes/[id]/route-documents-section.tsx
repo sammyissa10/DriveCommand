@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { DocumentUpload } from '@/components/documents/document-upload';
+import { DocumentUploadModal } from '@/components/documents/document-upload-modal';
 import { DocumentList } from '@/components/documents/document-list';
 
 interface Document {
@@ -42,7 +42,7 @@ export function RouteDocumentsSection({
 
   return (
     <div className="space-y-4">
-      <DocumentUpload
+      <DocumentUploadModal
         entityType="route"
         entityId={routeId}
         onUploadComplete={handleRefresh}
