@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 75: TKT-0025 follow-up — Fix Driver Route Assignments section dual-source merge
+Last activity: 2026-03-15 - Completed quick task 76: TKT-0028: Fix mobile UX — tables and pages are not horizontally scrollable on phone
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -478,6 +478,7 @@ None blocking immediate progress.
 | 73 | TKT-0026: Add routes history section to truck detail page — listTruckRoutes action, TruckRoutesHistory component with status badges, dates, and links | 2026-03-15 | 1d07847 | [73-tkt-0026-add-routes-history-section-to-t](./quick/73-tkt-0026-add-routes-history-section-to-t/) |
 | 74 | TKT-0025: Fix Drivers Page Route Assignments not working — create DriverRouteJoin migration SQL with enum, indexes, FK constraints, and RLS so production DB has the table | 2026-03-15 | 6436e8e | [74-tkt-0025-drivers-page-route-assignments-](./quick/74-tkt-0025-drivers-page-route-assignments-/) |
 | 75 | TKT-0025 follow-up: Fix Driver Route Assignments section — merge Route.driverId (Primary Driver) and DriverRouteJoin (Main Driver/Co-Driver) sources with deduplication and role badges | 2026-03-15 | c2248b5 | [75-tkt-0025-follow-up-fix-driver-route-assi](./quick/75-tkt-0025-follow-up-fix-driver-route-assi/) |
+| 76 | TKT-0028: Fix mobile UX — tables and pages are not horizontally scrollable on phone | 2026-03-15 | 5177744 | [76-tkt-0028-fix-mobile-ux-tables-and-pages-](./quick/76-tkt-0028-fix-mobile-ux-tables-and-pages-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
