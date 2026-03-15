@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Trash2, Star, ExternalLink } from 'lucide-react';
+import { Trash2, ExternalLink } from 'lucide-react';
 import { deleteDriverRouteJoin } from '@/app/(owner)/actions/driver-route-joins';
 
 type RouteInfo = {
@@ -242,9 +242,8 @@ export function DriverRouteAssignmentsSection({
                         </Link>
                         <RouteStatusBadge status={item.status} />
                         {item.isMainDriver ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                            <Star className="h-3 w-3" />
-                            Main Driver
+                          <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                            Primary Driver
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
