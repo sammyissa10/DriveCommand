@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 71: TKT-0024 — Add manual in-maintenance toggle (inMaintenance boolean on Truck, toggleTruckMaintenance action, MaintenanceToggleButton component)
+Last activity: 2026-03-15 - Completed quick task 72: TKT-0025 — Fix Expired Docs status not triggering from documentMetadata JSONB expiry dates
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -472,6 +472,7 @@ None blocking immediate progress.
 | 69 | TKT-0022 Add edit functionality for scheduled services on truck maintenance page | 2026-03-15 | a7e8c30 | [69-tkt-0022-add-edit-functionality-for-sche](./quick/69-tkt-0022-add-edit-functionality-for-sche/) |
 | 70 | TKT-0023: Truck Status Logic — fix scheduled service status bug and add status legend to UI | 2026-03-15 | 26e577c | [70-tkt-0023-truck-status-logic-fix-schedule](./quick/70-tkt-0023-truck-status-logic-fix-schedule/) |
 | 71 | TKT-0024: Add manual In Maintenance toggle — inMaintenance DB field, MaintenanceToggleButton on truck detail + maintenance pages, manual override priority in computeTruckStatus | 2026-03-15 | 2780dd6 | [71-tkt-0024-add-manual-in-maintenance-toggl](./quick/71-tkt-0024-add-manual-in-maintenance-toggl/) |
+| 72 | TKT-0025: Fix Expired Docs status not triggering — parse documentMetadata JSONB registrationExpiry/insuranceExpiry in computeTruckStatus alongside Document model | 2026-03-15 | d612c1d | [72-tkt-0025-fix-expired-docs-status-not-tri](./quick/72-tkt-0025-fix-expired-docs-status-not-tri/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
