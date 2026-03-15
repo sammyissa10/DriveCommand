@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 70: TKT-0023 Truck Status Logic — fix scheduled service status bug and add status legend to UI
+Last activity: 2026-03-15 - Completed quick task 71: TKT-0024 — Add manual in-maintenance toggle (inMaintenance boolean on Truck, toggleTruckMaintenance action, MaintenanceToggleButton component)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
