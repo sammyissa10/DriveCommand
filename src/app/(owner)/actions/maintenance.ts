@@ -203,3 +203,61 @@ export async function deleteScheduledService(id: string, truckId: string) {
 
   return { success: true };
 }
+
+/**
+ * Get a single scheduled service by ID.
+ * Requires OWNER or MANAGER role.
+ */
+export async function getScheduledService(id: string) {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
+  return prisma.scheduledService.findUnique({ where: { id } });
+}
+
+/**
+ * Update an existing scheduled service.
+ * Requires OWNER or MANAGER role.
+ */
+export async function updateScheduledService(
+  truckId: string,
+  serviceId: string,
+  prevState: any,
+  formData: FormData
+) {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  // Parse FormData fields (same as createScheduledService)
+  const rawData = {
+    serviceType: formData.get('serviceType') as string,
+    intervalDays: formData.get('intervalDays') ? (formData.get('intervalDays') as string) : null,
+    intervalMiles: formData.get('intervalMiles')
+      ? (formData.get('intervalMiles') as string)
+      : null,
+    baselineDate: formData.get('baselineDate') as string,
+    baselineOdometer: formData.get('baselineOdometer') as string,
+    notes: formData.get('notes') ? (formData.get('notes') as string) : null,
+  };
+
+  // Validate with Zod schema
+  const result = scheduledServiceCreateSchema.safeParse(rawData);
+
+  if (!result.success) {
+    return {
+      error: result.error.flatten().fieldErrors,
+    };
+  }
+
+  const prisma = await getTenantPrisma();
+  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
+  await prisma.scheduledService.update({
+    where: { id: serviceId },
+    data: { ...result.data },
+  });
+
+  revalidatePath(`/trucks/${truckId}/maintenance`);
+  redirect(`/trucks/${truckId}/maintenance`);
+}

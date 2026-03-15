@@ -6,9 +6,17 @@ interface ScheduledServiceFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
   currentOdometer: number;
   submitLabel: string;
+  initialValues?: {
+    serviceType?: string;
+    intervalDays?: number | null;
+    intervalMiles?: number | null;
+    baselineDate?: string;
+    baselineOdometer?: number;
+    notes?: string | null;
+  };
 }
 
-export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: ScheduledServiceFormProps) {
+export function ScheduledServiceForm({ action, currentOdometer, submitLabel, initialValues }: ScheduledServiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
 
   // Get today's date in YYYY-MM-DD format for default value
@@ -33,6 +41,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           id="serviceType"
           name="serviceType"
           placeholder="e.g., Oil Change, Brake Inspection"
+          defaultValue={initialValues?.serviceType ?? ''}
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
@@ -54,6 +63,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           min={1}
           step={1}
           placeholder="e.g., 90"
+          defaultValue={initialValues?.intervalDays ?? ''}
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
@@ -74,6 +84,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           min={1}
           step={1}
           placeholder="e.g., 5000"
+          defaultValue={initialValues?.intervalMiles ?? ''}
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
@@ -94,7 +105,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           type="date"
           id="baselineDate"
           name="baselineDate"
-          defaultValue={today}
+          defaultValue={initialValues?.baselineDate ?? today}
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
@@ -113,7 +124,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           type="number"
           id="baselineOdometer"
           name="baselineOdometer"
-          defaultValue={currentOdometer}
+          defaultValue={initialValues?.baselineOdometer ?? currentOdometer}
           min={0}
           step={1}
           disabled={isPending}
@@ -134,6 +145,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel }: S
           id="notes"
           name="notes"
           rows={3}
+          defaultValue={initialValues?.notes ?? ''}
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
