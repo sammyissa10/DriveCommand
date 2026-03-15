@@ -132,15 +132,15 @@ model Tenant {
   routePayments        RoutePayment[]
   customers            Customer[]
   customerInteractions CustomerInteraction[]
-  invoices              Invoice[]
-  invoiceItems          InvoiceItem[]
-  payrollRecords        PayrollRecord[]
-  expenseTemplateItems  ExpenseTemplateItem[]
-  loads                 Load[]
-  tenantIntegrations    TenantIntegration[]
-  routeStops            RouteStop[]
-  sysAdminInvoices      SysAdminInvoice[]
-  driverRouteJoins      DriverRouteJoin[]
+  invoices             Invoice[]
+  invoiceItems         InvoiceItem[]
+  payrollRecords       PayrollRecord[]
+  expenseTemplateItems ExpenseTemplateItem[]
+  loads                Load[]
+  tenantIntegrations   TenantIntegration[]
+  routeStops           RouteStop[]
+  sysAdminInvoices     SysAdminInvoice[]
+  driverRouteJoins     DriverRouteJoin[]
 }
 
 model User {
@@ -157,25 +157,25 @@ model User {
   createdAt     DateTime @default(now()) @db.Timestamptz
   updatedAt     DateTime @updatedAt @db.Timestamptz
 
-  tenant            Tenant          @relation(fields: [tenantId], references: [id])
+  tenant            Tenant            @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
   uploadedDocuments Document[]
-  driverDocuments   Document[]      @relation(name: "DriverDocuments")
+  driverDocuments   Document[]        @relation(name: "DriverDocuments")
   safetyEvents      SafetyEvent[]
   tagAssignments    TagAssignment[]
   payrollRecords    PayrollRecord[]
-  driverLoads       Load[]          @relation(name: "DriverLoads")
-  routeCoDrivers    RouteDriver[]   @relation(name: "RouteCoDrivers")
-  trucksCreated     Truck[]         @relation(name: "TruckCreatedBy")
-  trucksUpdated     Truck[]         @relation(name: "TruckUpdatedBy")
-  routesCreated     Route[]         @relation(name: "RouteCreatedBy")
-  routesUpdated     Route[]         @relation(name: "RouteUpdatedBy")
-  loadsCreated      Load[]          @relation(name: "LoadCreatedBy")
-  loadsUpdated      Load[]          @relation(name: "LoadUpdatedBy")
-  invoicesCreated   Invoice[]       @relation(name: "InvoiceCreatedBy")
-  invoicesUpdated   Invoice[]       @relation(name: "InvoiceUpdatedBy")
-  payrollsCreated   PayrollRecord[] @relation(name: "PayrollCreatedBy")
-  payrollsUpdated   PayrollRecord[] @relation(name: "PayrollUpdatedBy")
+  driverLoads       Load[]            @relation(name: "DriverLoads")
+  routeCoDrivers    RouteDriver[]     @relation(name: "RouteCoDrivers")
+  trucksCreated     Truck[]           @relation(name: "TruckCreatedBy")
+  trucksUpdated     Truck[]           @relation(name: "TruckUpdatedBy")
+  routesCreated     Route[]           @relation(name: "RouteCreatedBy")
+  routesUpdated     Route[]           @relation(name: "RouteUpdatedBy")
+  loadsCreated      Load[]            @relation(name: "LoadCreatedBy")
+  loadsUpdated      Load[]            @relation(name: "LoadUpdatedBy")
+  invoicesCreated   Invoice[]         @relation(name: "InvoiceCreatedBy")
+  invoicesUpdated   Invoice[]         @relation(name: "InvoiceUpdatedBy")
+  payrollsCreated   PayrollRecord[]   @relation(name: "PayrollCreatedBy")
+  payrollsUpdated   PayrollRecord[]   @relation(name: "PayrollUpdatedBy")
   driverRouteJoins  DriverRouteJoin[] @relation(name: "DriverRouteJoins")
 
   @@unique([email, tenantId])
@@ -184,33 +184,34 @@ model User {
 }
 
 model Truck {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId          String    @db.Uuid
-  make              String
-  model             String
-  year              Int
-  vin               String
-  licensePlate      String
-  odometer          Int       // Whole miles only (federal requirement)
-  documentMetadata  Json?     // JSONB: registration number, insurance expiry, etc.
-  createdById       String?   @db.Uuid
-  updatedById       String?   @db.Uuid
-  createdAt         DateTime  @default(now()) @db.Timestamptz
-  updatedAt         DateTime  @updatedAt @db.Timestamptz
-  archivedAt        DateTime? @db.Timestamptz
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String    @db.Uuid
+  make             String
+  model            String
+  year             Int
+  vin              String
+  licensePlate     String
+  odometer         Int // Whole miles only (federal requirement)
+  inMaintenance    Boolean   @default(false)
+  documentMetadata Json? // JSONB: registration number, insurance expiry, etc.
+  createdById      String?   @db.Uuid
+  updatedById      String?   @db.Uuid
+  createdAt        DateTime  @default(now()) @db.Timestamptz
+  updatedAt        DateTime  @updatedAt @db.Timestamptz
+  archivedAt       DateTime? @db.Timestamptz
 
-  tenant             Tenant             @relation(fields: [tenantId], references: [id])
-  createdBy          User?              @relation(name: "TruckCreatedBy", fields: [createdById], references: [id])
-  updatedBy          User?              @relation(name: "TruckUpdatedBy", fields: [updatedById], references: [id])
-  assignedRoutes     Route[]
-  documents          Document[]
-  maintenanceEvents  MaintenanceEvent[]
-  scheduledServices  ScheduledService[]
-  gpsLocations       GPSLocation[]
-  safetyEvents       SafetyEvent[]
-  fuelRecords        FuelRecord[]
-  tagAssignments     TagAssignment[]
-  loads              Load[]
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  createdBy         User?              @relation(name: "TruckCreatedBy", fields: [createdById], references: [id])
+  updatedBy         User?              @relation(name: "TruckUpdatedBy", fields: [updatedById], references: [id])
+  assignedRoutes    Route[]
+  documents         Document[]
+  maintenanceEvents MaintenanceEvent[]
+  scheduledServices ScheduledService[]
+  gpsLocations      GPSLocation[]
+  safetyEvents      SafetyEvent[]
+  fuelRecords       FuelRecord[]
+  tagAssignments    TagAssignment[]
+  loads             Load[]
 
   @@unique([tenantId, vin])
   @@index([tenantId])
@@ -218,25 +219,25 @@ model Truck {
 }
 
 model DriverInvitation {
-  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId             String           @db.Uuid
-  email                String
-  firstName            String
-  lastName             String
-  licenseNumber        String?
-  middleName           String?
-  fullName             String?
-  dateOfBirth          DateTime?        @db.Date
-  phoneNumber          String?
-  address              String?
-  licenseExpirationDate DateTime?       @db.Date
-  role                 UserRole         @default(DRIVER)
-  expiresAt            DateTime         @db.Timestamptz
-  status               InvitationStatus @default(PENDING)
-  acceptedAt           DateTime?        @db.Timestamptz
-  userId               String?          @db.Uuid
-  createdAt            DateTime         @default(now()) @db.Timestamptz
-  updatedAt            DateTime         @updatedAt @db.Timestamptz
+  id                    String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId              String           @db.Uuid
+  email                 String
+  firstName             String
+  lastName              String
+  licenseNumber         String?
+  middleName            String?
+  fullName              String?
+  dateOfBirth           DateTime?        @db.Date
+  phoneNumber           String?
+  address               String?
+  licenseExpirationDate DateTime?        @db.Date
+  role                  UserRole         @default(DRIVER)
+  expiresAt             DateTime         @db.Timestamptz
+  status                InvitationStatus @default(PENDING)
+  acceptedAt            DateTime?        @db.Timestamptz
+  userId                String?          @db.Uuid
+  createdAt             DateTime         @default(now()) @db.Timestamptz
+  updatedAt             DateTime         @updatedAt @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
@@ -245,32 +246,32 @@ model DriverInvitation {
 }
 
 model Route {
-  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId       String      @db.Uuid
-  driverId       String      @db.Uuid
-  truckId        String      @db.Uuid
-  origin         String
-  destination    String
-  scheduledDate  DateTime    @db.Timestamptz
-  status         RouteStatus @default(PLANNED)
-  notes          String?
-  name           String?
-  completedAt    DateTime?   @db.Timestamptz
-  version        Int         @default(1)
-  startOdometer  Int?
-  endOdometer    Int?
-  distanceMiles  Float?
-  createdById    String?     @db.Uuid
-  updatedById    String?     @db.Uuid
-  createdAt      DateTime    @default(now()) @db.Timestamptz
-  updatedAt      DateTime    @updatedAt @db.Timestamptz
-  archivedAt     DateTime?   @db.Timestamptz
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String      @db.Uuid
+  driverId      String      @db.Uuid
+  truckId       String      @db.Uuid
+  origin        String
+  destination   String
+  scheduledDate DateTime    @db.Timestamptz
+  status        RouteStatus @default(PLANNED)
+  notes         String?
+  name          String?
+  completedAt   DateTime?   @db.Timestamptz
+  version       Int         @default(1)
+  startOdometer Int?
+  endOdometer   Int?
+  distanceMiles Float?
+  createdById   String?     @db.Uuid
+  updatedById   String?     @db.Uuid
+  createdAt     DateTime    @default(now()) @db.Timestamptz
+  updatedAt     DateTime    @updatedAt @db.Timestamptz
+  archivedAt    DateTime?   @db.Timestamptz
 
-  tenant       Tenant         @relation(fields: [tenantId], references: [id])
-  driver       User           @relation(fields: [driverId], references: [id])
-  truck        Truck          @relation(fields: [truckId], references: [id])
-  createdBy    User?          @relation(name: "RouteCreatedBy", fields: [createdById], references: [id])
-  updatedBy    User?          @relation(name: "RouteUpdatedBy", fields: [updatedById], references: [id])
+  tenant            Tenant            @relation(fields: [tenantId], references: [id])
+  driver            User              @relation(fields: [driverId], references: [id])
+  truck             Truck             @relation(fields: [truckId], references: [id])
+  createdBy         User?             @relation(name: "RouteCreatedBy", fields: [createdById], references: [id])
+  updatedBy         User?             @relation(name: "RouteUpdatedBy", fields: [updatedById], references: [id])
   documents         Document[]
   safetyEvents      SafetyEvent[]
   expenses          RouteExpense[]
@@ -323,10 +324,10 @@ model Document {
   updatedAt    DateTime      @updatedAt @db.Timestamptz
 
   tenant   Tenant @relation(fields: [tenantId], references: [id])
-  truck    Truck?  @relation(fields: [truckId], references: [id])
-  route    Route?  @relation(fields: [routeId], references: [id])
-  driver   User?   @relation(name: "DriverDocuments", fields: [driverId], references: [id])
-  uploader User    @relation(fields: [uploadedBy], references: [id])
+  truck    Truck? @relation(fields: [truckId], references: [id])
+  route    Route? @relation(fields: [routeId], references: [id])
+  driver   User?  @relation(name: "DriverDocuments", fields: [driverId], references: [id])
+  uploader User   @relation(fields: [uploadedBy], references: [id])
 
   @@index([tenantId])
   @@index([truckId])
@@ -381,22 +382,22 @@ model ScheduledService {
 }
 
 model NotificationLog {
-  id              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId        String             @db.Uuid
-  idempotencyKey  String             @unique
+  id               String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String             @db.Uuid
+  idempotencyKey   String             @unique
   notificationType String
-  entityType      String?
-  entityId        String?            @db.Uuid
-  recipientEmail  String
-  status          NotificationStatus @default(PENDING)
-  sentAt          DateTime?          @db.Timestamptz
-  failedAt        DateTime?          @db.Timestamptz
-  errorMessage    String?
-  retryCount      Int                @default(0)
-  emailSubject    String?
-  externalId      String?
-  createdAt       DateTime           @default(now()) @db.Timestamptz
-  updatedAt       DateTime           @updatedAt @db.Timestamptz
+  entityType       String?
+  entityId         String?            @db.Uuid
+  recipientEmail   String
+  status           NotificationStatus @default(PENDING)
+  sentAt           DateTime?          @db.Timestamptz
+  failedAt         DateTime?          @db.Timestamptz
+  errorMessage     String?
+  retryCount       Int                @default(0)
+  emailSubject     String?
+  externalId       String?
+  createdAt        DateTime           @default(now()) @db.Timestamptz
+  updatedAt        DateTime           @updatedAt @db.Timestamptz
 
   tenant Tenant @relation(fields: [tenantId], references: [id])
 
@@ -638,27 +639,27 @@ enum InteractionType {
 }
 
 model Customer {
-  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId     String           @db.Uuid
-  companyName  String
-  contactName  String?
-  email        String?
-  phone        String?
-  address      String?
-  city         String?
-  state        String?
-  zipCode      String?
-  priority              CustomerPriority @default(MEDIUM)
-  status                CustomerStatus   @default(ACTIVE)
-  notes                 String?
-  emailNotifications    Boolean          @default(true)
-  totalLoads   Int              @default(0)
-  totalRevenue Decimal          @default(0) @db.Decimal(12, 2)
-  lastLoadDate DateTime?        @db.Timestamptz
-  createdAt    DateTime         @default(now()) @db.Timestamptz
-  updatedAt    DateTime         @updatedAt @db.Timestamptz
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String           @db.Uuid
+  companyName        String
+  contactName        String?
+  email              String?
+  phone              String?
+  address            String?
+  city               String?
+  state              String?
+  zipCode            String?
+  priority           CustomerPriority @default(MEDIUM)
+  status             CustomerStatus   @default(ACTIVE)
+  notes              String?
+  emailNotifications Boolean          @default(true)
+  totalLoads         Int              @default(0)
+  totalRevenue       Decimal          @default(0) @db.Decimal(12, 2)
+  lastLoadDate       DateTime?        @db.Timestamptz
+  createdAt          DateTime         @default(now()) @db.Timestamptz
+  updatedAt          DateTime         @updatedAt @db.Timestamptz
 
-  tenant       Tenant              @relation(fields: [tenantId], references: [id])
+  tenant       Tenant                @relation(fields: [tenantId], references: [id])
   interactions CustomerInteraction[]
   loads        Load[]
 
@@ -669,15 +670,15 @@ model Customer {
 }
 
 model CustomerInteraction {
-  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String          @db.Uuid
-  customerId    String          @db.Uuid
-  type          InteractionType
-  subject       String
-  description   String?
-  isAutomated   Boolean         @default(false)
-  createdBy     String?         @db.Uuid
-  createdAt     DateTime        @default(now()) @db.Timestamptz
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String          @db.Uuid
+  customerId  String          @db.Uuid
+  type        InteractionType
+  subject     String
+  description String?
+  isAutomated Boolean         @default(false)
+  createdBy   String?         @db.Uuid
+  createdAt   DateTime        @default(now()) @db.Timestamptz
 
   tenant   Tenant   @relation(fields: [tenantId], references: [id])
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -760,22 +761,22 @@ model InvoiceItem {
 // ─── SysAdmin Invoice Models ────────────────────────────────
 
 model SysAdminInvoice {
-  id                 String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId           String                 @db.Uuid
-  invoiceNumber      String                 @unique
-  status             SysAdminInvoiceStatus  @default(DRAFT)
-  issueDate          DateTime               @db.Timestamptz
-  dueDate            DateTime               @db.Timestamptz
-  billingPeriodStart DateTime?              @db.Timestamptz
-  billingPeriodEnd   DateTime?              @db.Timestamptz
-  isRecurring        Boolean                @default(false)
-  subtotal           Decimal                @db.Decimal(12, 2)
-  total              Decimal                @db.Decimal(12, 2)
+  id                 String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String                @db.Uuid
+  invoiceNumber      String                @unique
+  status             SysAdminInvoiceStatus @default(DRAFT)
+  issueDate          DateTime              @db.Timestamptz
+  dueDate            DateTime              @db.Timestamptz
+  billingPeriodStart DateTime?             @db.Timestamptz
+  billingPeriodEnd   DateTime?             @db.Timestamptz
+  isRecurring        Boolean               @default(false)
+  subtotal           Decimal               @db.Decimal(12, 2)
+  total              Decimal               @db.Decimal(12, 2)
   notes              String?
-  paidAt             DateTime?              @db.Timestamptz
-  archivedAt         DateTime?              @db.Timestamptz
-  createdAt          DateTime               @default(now()) @db.Timestamptz
-  updatedAt          DateTime               @updatedAt @db.Timestamptz
+  paidAt             DateTime?             @db.Timestamptz
+  archivedAt         DateTime?             @db.Timestamptz
+  createdAt          DateTime              @default(now()) @db.Timestamptz
+  updatedAt          DateTime              @updatedAt @db.Timestamptz
 
   tenant Tenant                @relation(fields: [tenantId], references: [id])
   items  SysAdminInvoiceItem[]
@@ -870,13 +871,13 @@ model Load {
   rate          Decimal    @db.Decimal(12, 2)
   status        LoadStatus @default(PENDING)
   notes         String?
-  pickupLat     Decimal?   @db.Decimal(10, 8)   // Geocoded from origin address
+  pickupLat     Decimal?   @db.Decimal(10, 8) // Geocoded from origin address
   pickupLng     Decimal?   @db.Decimal(11, 8)
-  deliveryLat   Decimal?   @db.Decimal(10, 8)   // Geocoded from destination address
+  deliveryLat   Decimal?   @db.Decimal(10, 8) // Geocoded from destination address
   deliveryLng   Decimal?   @db.Decimal(11, 8)
-  geofenceFlags Json?                            // JSONB: tracks which alerts have fired
-                                                // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
-  trackingToken String?    @unique               // Public token for customer shipment tracking
+  geofenceFlags Json? // JSONB: tracks which alerts have fired
+  // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
+  trackingToken String?    @unique // Public token for customer shipment tracking
   createdById   String?    @db.Uuid
   updatedById   String?    @db.Uuid
   createdAt     DateTime   @default(now()) @db.Timestamptz
@@ -911,7 +912,7 @@ model TenantIntegration {
   provider   IntegrationProvider
   category   IntegrationCategory
   enabled    Boolean             @default(false)
-  configJson Json?               // JSONB: future API keys, webhook URLs, etc.
+  configJson Json? // JSONB: future API keys, webhook URLs, etc.
   createdAt  DateTime            @default(now()) @db.Timestamptz
   updatedAt  DateTime            @updatedAt @db.Timestamptz
 
@@ -990,7 +991,7 @@ model RouteStop {
   id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   routeId     String          @db.Uuid
   tenantId    String          @db.Uuid
-  position    Int             // 1-based ordering
+  position    Int // 1-based ordering
   type        RouteStopType
   address     String
   lat         Decimal?        @db.Decimal(10, 8)

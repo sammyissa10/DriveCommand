@@ -248,6 +248,25 @@ export async function listTrucks() {
 }
 
 /**
+ * Toggle manual maintenance flag on a truck.
+ * Requires OWNER or MANAGER role.
+ */
+export async function toggleTruckMaintenance(truckId: string, inMaintenance: boolean) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const userId = await requireAuth();
+  const prisma = await getTenantPrisma();
+  await prisma.truck.update({
+    where: { id: truckId },
+    data: { inMaintenance, updatedById: userId },
+  });
+  revalidatePath('/trucks');
+  revalidatePath(`/trucks/${truckId}`);
+  revalidatePath(`/trucks/${truckId}/maintenance`);
+  revalidateTag('dashboard-metrics', 'max');
+  return { success: true };
+}
+
+/**
  * Get a single truck by ID.
  * Requires OWNER, MANAGER, or DRIVER role (read access).
  * Returns null if not found or belongs to different tenant (RLS).

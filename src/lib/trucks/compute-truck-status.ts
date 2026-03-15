@@ -4,7 +4,7 @@
  *
  * Priority order (highest wins):
  *   1. In Use        — active route or active load
- *   2. In Maintenance — overdue scheduled service (past due date or mileage threshold exceeded)
+ *   2. In Maintenance — manual override OR overdue scheduled service
  *   3. Expired Docs  — at least one document past its expiry date
  *   4. Ready to Use  — none of the above
  */
@@ -27,6 +27,7 @@ export interface TruckWithRelations {
   vin: string;
   licensePlate: string;
   odometer: number;
+  inMaintenance?: boolean;
   documentMetadata?: unknown;
   tenantId: string;
   createdById: string | null;
@@ -95,7 +96,12 @@ export function computeTruckStatus(truck: TruckWithRelations): TruckStatusInfo {
     return { status: 'In Use', variant: 'blue' };
   }
 
-  // 2. In Maintenance — truck has at least one OVERDUE scheduled service
+  // 2a. In Maintenance — manual override
+  if (truck.inMaintenance) {
+    return { status: 'In Maintenance', variant: 'amber' };
+  }
+
+  // 2b. In Maintenance — truck has at least one OVERDUE scheduled service
   const isInMaintenance = (truck.scheduledServices ?? []).some((service) =>
     isServiceOverdue(service, truck.odometer)
   );
