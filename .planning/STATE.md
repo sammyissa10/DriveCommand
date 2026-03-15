@@ -384,6 +384,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-70]: Overdue service threshold: intervalDays met (date+days <= now) OR intervalMiles met (baselineOdometer+miles <= odometer)
 - [Phase quick-72]: Keep TruckWithRelations.documentMetadata as unknown and cast to DocumentMetadata | null only at the hasExpiredMetadataDate call site, avoiding TS2322 from Prisma JsonValue callers
 - [Phase quick-74]: Used idempotent SQL throughout so migration is safe on dev DBs that already ran prisma db push
+- [Phase quick-75]: DriverRouteJoin entries win over Route.driverId duplicates (join records carry payment data); Primary Driver entries have no delete button
 
 ### Pending Todos
 
@@ -525,6 +526,7 @@ None blocking immediate progress.
 | Phase 25 P02 | 378 | 2 tasks | 10 files |
 | Phase 25 P03 | 159 | 2 tasks | 6 files |
 | Phase quick-60 P01 | 227 | 3 tasks | 6 files |
+| Phase quick-75 P01 | 148 | 2 tasks | 3 files |
 
 ## Session Continuity
 
