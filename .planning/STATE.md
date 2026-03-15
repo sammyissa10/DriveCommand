@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 73: TKT-0026 — Add routes history section to truck detail page
+Last activity: 2026-03-15 - Completed quick task 74: TKT-0025 — Fix Drivers Page Route Assignments not working
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -475,6 +475,7 @@ None blocking immediate progress.
 | 71 | TKT-0024: Add manual In Maintenance toggle — inMaintenance DB field, MaintenanceToggleButton on truck detail + maintenance pages, manual override priority in computeTruckStatus | 2026-03-15 | 2780dd6 | [71-tkt-0024-add-manual-in-maintenance-toggl](./quick/71-tkt-0024-add-manual-in-maintenance-toggl/) |
 | 72 | TKT-0025: Fix Expired Docs status not triggering — parse documentMetadata JSONB registrationExpiry/insuranceExpiry in computeTruckStatus alongside Document model | 2026-03-15 | d612c1d | [72-tkt-0025-fix-expired-docs-status-not-tri](./quick/72-tkt-0025-fix-expired-docs-status-not-tri/) |
 | 73 | TKT-0026: Add routes history section to truck detail page — listTruckRoutes action, TruckRoutesHistory component with status badges, dates, and links | 2026-03-15 | 1d07847 | [73-tkt-0026-add-routes-history-section-to-t](./quick/73-tkt-0026-add-routes-history-section-to-t/) |
+| 74 | TKT-0025: Fix Drivers Page Route Assignments not working — create DriverRouteJoin migration SQL with enum, indexes, FK constraints, and RLS so production DB has the table | 2026-03-15 | 6436e8e | [74-tkt-0025-drivers-page-route-assignments-](./quick/74-tkt-0025-drivers-page-route-assignments-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
