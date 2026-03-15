@@ -30,9 +30,19 @@ type DriverRouteJoinWithRoute = {
   route: RouteInfo;
 };
 
+type PrimaryRouteInfo = {
+  id: string;
+  name: string | null;
+  origin: string;
+  destination: string;
+  scheduledDate: Date;
+  status: string;
+};
+
 interface DriverRouteAssignmentsSectionProps {
   driverId: string;
   initialAssignments: DriverRouteJoinWithRoute[];
+  primaryRoutes: PrimaryRouteInfo[];
 }
 
 function formatCurrency(value: any, decimals = 2): string {
@@ -85,7 +95,7 @@ function formatDate(date: Date): string {
   });
 }
 
-function routeDisplayName(route: RouteInfo): string {
+function routeDisplayName(route: RouteInfo | PrimaryRouteInfo): string {
   return route.name ?? `${route.origin} \u2192 ${route.destination}`;
 }
 
@@ -114,9 +124,36 @@ function RouteStatusBadge({ status }: { status: string }) {
   );
 }
 
+// Unified display item discriminated union
+type JoinDisplayItem = {
+  source: 'join';
+  joinId: string;
+  routeId: string;
+  routeName: string | null;
+  origin: string;
+  destination: string;
+  scheduledDate: Date;
+  status: string;
+  isMainDriver: boolean;
+  assignment: DriverRouteJoinWithRoute;
+};
+
+type PrimaryDisplayItem = {
+  source: 'primary';
+  routeId: string;
+  routeName: string | null;
+  origin: string;
+  destination: string;
+  scheduledDate: Date;
+  status: string;
+};
+
+type DisplayItem = JoinDisplayItem | PrimaryDisplayItem;
+
 export function DriverRouteAssignmentsSection({
   driverId,
   initialAssignments,
+  primaryRoutes,
 }: DriverRouteAssignmentsSectionProps) {
   const router = useRouter();
   const [deletingJoinId, setDeletingJoinId] = useState<string | null>(null);
@@ -133,13 +170,47 @@ export function DriverRouteAssignmentsSection({
     }
   };
 
+  // Build set of routeIds that already have a DriverRouteJoin entry
+  const joinRouteIds = new Set(initialAssignments.map((a) => a.routeId));
+
+  // Build unified display list
+  const joinItems: JoinDisplayItem[] = initialAssignments.map((a) => ({
+    source: 'join',
+    joinId: a.id,
+    routeId: a.routeId,
+    routeName: a.route.name,
+    origin: a.route.origin,
+    destination: a.route.destination,
+    scheduledDate: a.route.scheduledDate,
+    status: a.route.status,
+    isMainDriver: a.isMainDriver,
+    assignment: a,
+  }));
+
+  // Only include primary routes not already covered by a DriverRouteJoin entry
+  const primaryItems: PrimaryDisplayItem[] = primaryRoutes
+    .filter((r) => !joinRouteIds.has(r.id))
+    .map((r) => ({
+      source: 'primary',
+      routeId: r.id,
+      routeName: r.name,
+      origin: r.origin,
+      destination: r.destination,
+      scheduledDate: r.scheduledDate,
+      status: r.status,
+    }));
+
+  const allItems: DisplayItem[] = [...joinItems, ...primaryItems].sort(
+    (a, b) => new Date(b.scheduledDate).getTime() - new Date(a.scheduledDate).getTime()
+  );
+
   return (
     <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
       {/* Header */}
       <h2 className="text-lg font-semibold text-card-foreground mb-4">Route Assignments</h2>
 
       {/* Empty state */}
-      {initialAssignments.length === 0 ? (
+      {allItems.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">
             This driver has no route assignments.
@@ -147,58 +218,97 @@ export function DriverRouteAssignmentsSection({
         </div>
       ) : (
         <div className="space-y-3">
-          {initialAssignments.map((assignment) => {
-            const isDeleting = deletingJoinId === assignment.id;
-            const total = computeTotal(assignment);
+          {allItems.map((item) => {
+            if (item.source === 'join') {
+              const { assignment, joinId } = item;
+              const isDeleting = deletingJoinId === joinId;
+              const total = computeTotal(assignment);
 
+              return (
+                <div
+                  key={joinId}
+                  className="rounded-lg border border-border bg-card p-4"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      {/* Route name + status + role badge */}
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <Link
+                          href={`/routes/${item.routeId}`}
+                          className="text-sm font-semibold text-card-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
+                        >
+                          {routeDisplayName(assignment.route)}
+                          <ExternalLink className="h-3 w-3 opacity-60" />
+                        </Link>
+                        <RouteStatusBadge status={item.status} />
+                        {item.isMainDriver ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                            <Star className="h-3 w-3" />
+                            Main Driver
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                            Co-Driver
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Scheduled date */}
+                      <p className="text-xs text-muted-foreground mb-1">
+                        Scheduled: {formatDate(item.scheduledDate)}
+                      </p>
+
+                      {/* Payment summary + total */}
+                      <p className="text-sm text-muted-foreground">
+                        {formatPaymentSummary(assignment)}
+                      </p>
+                      <p className="text-sm font-medium text-foreground mt-0.5">
+                        Total: {formatCurrency(total)}
+                      </p>
+                    </div>
+
+                    {/* Delete button */}
+                    <button
+                      onClick={() => handleDelete(joinId)}
+                      disabled={isDeleting}
+                      className="rounded-lg p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50 shrink-0"
+                      title="Remove assignment"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            // source === 'primary'
             return (
               <div
-                key={assignment.id}
+                key={item.routeId}
                 className="rounded-lg border border-border bg-card p-4"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4">
                   <div className="flex-1 min-w-0">
-                    {/* Route name + status + main driver badge */}
+                    {/* Route name + status + Primary Driver badge */}
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <Link
-                        href={`/routes/${assignment.route.id}`}
+                        href={`/routes/${item.routeId}`}
                         className="text-sm font-semibold text-card-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                       >
-                        {routeDisplayName(assignment.route)}
+                        {item.routeName ?? `${item.origin} \u2192 ${item.destination}`}
                         <ExternalLink className="h-3 w-3 opacity-60" />
                       </Link>
-                      <RouteStatusBadge status={assignment.route.status} />
-                      {assignment.isMainDriver && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                          <Star className="h-3 w-3" />
-                          Main Driver
-                        </span>
-                      )}
+                      <RouteStatusBadge status={item.status} />
+                      <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                        Primary Driver
+                      </span>
                     </div>
 
                     {/* Scheduled date */}
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Scheduled: {formatDate(assignment.route.scheduledDate)}
-                    </p>
-
-                    {/* Payment summary + total */}
-                    <p className="text-sm text-muted-foreground">
-                      {formatPaymentSummary(assignment)}
-                    </p>
-                    <p className="text-sm font-medium text-foreground mt-0.5">
-                      Total: {formatCurrency(total)}
+                    <p className="text-xs text-muted-foreground">
+                      Scheduled: {formatDate(item.scheduledDate)}
                     </p>
                   </div>
-
-                  {/* Delete button */}
-                  <button
-                    onClick={() => handleDelete(assignment.id)}
-                    disabled={isDeleting}
-                    className="rounded-lg p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50 shrink-0"
-                    title="Remove assignment"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             );

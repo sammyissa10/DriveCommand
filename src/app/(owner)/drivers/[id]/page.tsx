@@ -3,7 +3,7 @@ import { ArrowLeft, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getDriver, deactivateDriver, reactivateDriver } from '@/app/(owner)/actions/drivers';
 import { listDriverDocuments } from '@/app/(owner)/actions/driver-documents';
-import { listDriverRouteJoinsByDriver } from '@/app/(owner)/actions/driver-route-joins';
+import { listDriverRouteJoinsByDriver, listDriverPrimaryRoutes } from '@/app/(owner)/actions/driver-route-joins';
 import { DriverDocumentsSection } from './driver-documents-section';
 import { DriverStatusButton } from './driver-status-button';
 import { DriverRouteAssignmentsSection } from './driver-route-assignments-section';
@@ -15,10 +15,11 @@ interface DriverDetailPageProps {
 export default async function DriverDetailPage({ params }: DriverDetailPageProps) {
   const { id } = await params;
 
-  const [driver, documents, routeAssignments] = await Promise.all([
+  const [driver, documents, routeAssignments, primaryRoutes] = await Promise.all([
     getDriver(id).catch(() => null),
     listDriverDocuments(id).catch(() => [] as any[]),
     listDriverRouteJoinsByDriver(id).catch(() => [] as any[]),
+    listDriverPrimaryRoutes(id).catch(() => [] as any[]),
   ]);
 
   if (!driver) {
@@ -121,7 +122,7 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
       </div>
 
       {/* Route Assignments */}
-      <DriverRouteAssignmentsSection driverId={id} initialAssignments={routeAssignments} />
+      <DriverRouteAssignmentsSection driverId={id} initialAssignments={routeAssignments} primaryRoutes={primaryRoutes} />
 
       {/* Driver Documents */}
       <DriverDocumentsSection driverId={id} initialDocuments={documents} />
