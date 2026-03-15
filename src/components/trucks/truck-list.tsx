@@ -185,7 +185,8 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
 
       {/* Table */}
       <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px]">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-border bg-muted/50">
@@ -229,6 +230,7 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

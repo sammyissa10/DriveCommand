@@ -128,7 +128,8 @@ export function MaintenanceEventList({ events, onDelete }: MaintenanceEventListP
 
       {/* Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full border-collapse">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px] border-collapse">
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -168,6 +169,7 @@ export function MaintenanceEventList({ events, onDelete }: MaintenanceEventListP
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
