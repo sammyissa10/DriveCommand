@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getTruck } from '@/app/(owner)/actions/trucks';
+import { MaintenanceToggleButton } from '@/components/trucks/maintenance-toggle-button';
 import {
   listMaintenanceEvents,
   listScheduledServices,
@@ -49,6 +50,12 @@ export default async function MaintenancePage({ params }: MaintenancePageProps) 
         <p className="text-muted-foreground mt-1">
           Current odometer: {truck.odometer.toLocaleString()} miles
         </p>
+        <div className="mt-3">
+          <MaintenanceToggleButton
+            truckId={id}
+            inMaintenance={(truck as any).inMaintenance ?? false}
+          />
+        </div>
       </div>
 
       <MaintenancePageClient

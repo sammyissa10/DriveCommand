@@ -6,6 +6,7 @@ import { listDocuments } from '@/app/(owner)/actions/documents';
 import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
 import { TruckDocumentsSection } from './truck-documents-section';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
+import { MaintenanceToggleButton } from '@/components/trucks/maintenance-toggle-button';
 
 interface TruckDetailPageProps {
   params: Promise<{ id: string }>;
@@ -42,7 +43,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
 
   const statusDescriptions: Record<string, string> = {
     'In Use': 'This truck is assigned to an active dispatch',
-    'In Maintenance': 'This truck has an overdue scheduled service',
+    'In Maintenance': 'This truck has been manually marked as in maintenance or has an overdue scheduled service',
     'Expired Docs': 'This truck has at least one expired document',
     'Ready to Use': 'This truck is available for dispatch',
   };
@@ -90,6 +91,10 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
             </span>
           </div>
           <div className="flex gap-3">
+            <MaintenanceToggleButton
+              truckId={truck.id}
+              inMaintenance={(truck as any).inMaintenance ?? false}
+            />
             <Link
               href={`/trucks/${truck.id}/maintenance`}
               className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
