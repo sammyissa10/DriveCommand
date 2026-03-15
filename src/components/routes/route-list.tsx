@@ -230,15 +230,14 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
 
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-border shadow">
-        <table className="w-full table-fixed divide-y divide-border">
+        <table className="w-full min-w-[900px] divide-y divide-border">
           <thead className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    style={{ width: header.column.getSize() }}
-                    className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground overflow-hidden"
+                    className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground"
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -280,7 +279,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="px-3 py-3 text-sm text-foreground overflow-hidden"
+                    className="px-3 py-3 text-sm text-foreground"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
