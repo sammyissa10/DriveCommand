@@ -162,6 +162,27 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
         />
       </div>
 
+      {/* Status Legend */}
+      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Status Guide:</span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses.blue}`}>In Use</span>
+          Active dispatch
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses.amber}`}>In Maintenance</span>
+          Overdue service
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses.red}`}>Expired Docs</span>
+          Document past expiry
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses.green}`}>Ready to Use</span>
+          Available
+        </span>
+      </div>
+
       {/* Table */}
       <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
         <table className="w-full">

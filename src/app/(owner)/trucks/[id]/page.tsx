@@ -40,6 +40,13 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
     truck as unknown as TruckWithRelations
   );
 
+  const statusDescriptions: Record<string, string> = {
+    'In Use': 'This truck is assigned to an active dispatch',
+    'In Maintenance': 'This truck has an overdue scheduled service',
+    'Expired Docs': 'This truck has at least one expired document',
+    'Ready to Use': 'This truck is available for dispatch',
+  };
+
   const statusVariantClasses = {
     blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
@@ -75,7 +82,10 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               {truck.year} {truck.make} {truck.model}
             </h1>
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusVariantClasses[truckStatusVariant]}`}>
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${statusVariantClasses[truckStatusVariant]}`}
+              title={statusDescriptions[truckStatus]}
+            >
               {truckStatus}
             </span>
           </div>
