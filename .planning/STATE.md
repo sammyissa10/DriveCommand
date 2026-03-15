@@ -383,6 +383,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-65]: Fleet message emails are fire-and-forget: try/catch after DB insert so email failures never block message saving
 - [Phase quick-70]: Overdue service threshold: intervalDays met (date+days <= now) OR intervalMiles met (baselineOdometer+miles <= odometer)
 - [Phase quick-72]: Keep TruckWithRelations.documentMetadata as unknown and cast to DocumentMetadata | null only at the hasExpiredMetadataDate call site, avoiding TS2322 from Prisma JsonValue callers
+- [Phase quick-74]: Used idempotent SQL throughout so migration is safe on dev DBs that already ran prisma db push
 
 ### Pending Todos
 
