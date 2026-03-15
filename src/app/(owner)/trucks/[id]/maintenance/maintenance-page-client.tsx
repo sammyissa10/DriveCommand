@@ -50,7 +50,7 @@ export function MaintenancePageClient({
             Schedule Service
           </Link>
         </div>
-        <ScheduledServiceList schedules={optimisticSchedules} onDelete={handleDeleteSchedule} />
+        <ScheduledServiceList schedules={optimisticSchedules} onDelete={handleDeleteSchedule} truckId={truckId} />
       </div>
 
       {/* Service History Section */}

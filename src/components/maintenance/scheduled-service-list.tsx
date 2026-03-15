@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   useReactTable,
   getCoreRowModel,
@@ -25,9 +26,10 @@ interface ScheduledService {
 interface ScheduledServiceListProps {
   schedules: ScheduledService[];
   onDelete: (id: string) => void;
+  truckId: string;
 }
 
-export function ScheduledServiceList({ schedules, onDelete }: ScheduledServiceListProps) {
+export function ScheduledServiceList({ schedules, onDelete, truckId }: ScheduledServiceListProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -132,12 +134,20 @@ export function ScheduledServiceList({ schedules, onDelete }: ScheduledServiceLi
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => (
-        <button
-          onClick={() => handleDelete(row.original.id, row.original.serviceType)}
-          className="text-red-600 hover:text-red-800 font-medium"
-        >
-          Delete
-        </button>
+        <>
+          <Link
+            href={`/trucks/${truckId}/maintenance/${row.original.id}/edit`}
+            className="text-blue-600 hover:text-blue-800 font-medium mr-3"
+          >
+            Edit
+          </Link>
+          <button
+            onClick={() => handleDelete(row.original.id, row.original.serviceType)}
+            className="text-red-600 hover:text-red-800 font-medium"
+          >
+            Delete
+          </button>
+        </>
       ),
     },
   ];
