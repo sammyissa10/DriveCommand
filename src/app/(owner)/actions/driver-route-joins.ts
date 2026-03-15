@@ -256,6 +256,37 @@ export async function updateDriverRouteJoin(
 }
 
 /**
+ * List all routes where the driver is set as the primary driver via Route.driverId.
+ * This covers drivers assigned through the route create/edit form, which is a
+ * separate mechanism from DriverRouteJoin records.
+ * OWNER/MANAGER/DRIVER read access.
+ */
+export async function listDriverPrimaryRoutes(driverId: string) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER, UserRole.DRIVER]);
+  const prisma = await getTenantPrisma();
+
+  try {
+    const routes = await prisma.route.findMany({
+      where: { driverId, archivedAt: null },
+      select: {
+        id: true,
+        name: true,
+        origin: true,
+        destination: true,
+        scheduledDate: true,
+        status: true,
+      },
+      orderBy: { scheduledDate: 'desc' },
+    });
+
+    return routes;
+  } catch (error) {
+    console.error('Error listing driver primary routes:', error);
+    return [];
+  }
+}
+
+/**
  * Hard delete a DriverRouteJoin entry.
  * OWNER/MANAGER only.
  */
