@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 68: Add Resend Invitation feature for expired owner invitations on tenant detail page
+Last activity: 2026-03-15 - Completed quick task 69: TKT-0022 Add edit functionality for scheduled services on truck maintenance page
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -467,6 +467,7 @@ None blocking immediate progress.
 | 66 | TKT-0022 Cross-reference routes and loads — Active Load card on /my-route (load#, addresses, status, link), Active Route card on /my-load (route name, origin/dest, link) | 2026-03-14 | 1c06c97 | [66-tkt-0022-cross-reference-routes-and-load](./quick/66-tkt-0022-cross-reference-routes-and-load/) |
 | 67 | Add routeId FK to Load — dispatch modal route picker, driver portal uses explicit routeId (not driverId guess), owner route detail shows linked loads | 2026-03-14 | c165ba5 | [67-add-routeid-fk-to-load-model-nullable-fo](./quick/67-add-routeid-fk-to-load-model-nullable-fo/) |
 | 68 | Add Resend Invitation feature for expired owner invitations on tenant detail page | 2026-03-15 | 0f87116 | [68-add-resend-invitation-feature-for-expire](./quick/68-add-resend-invitation-feature-for-expire/) |
+| 69 | TKT-0022 Add edit functionality for scheduled services on truck maintenance page | 2026-03-15 | a7e8c30 | [69-tkt-0022-add-edit-functionality-for-sche](./quick/69-tkt-0022-add-edit-functionality-for-sche/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
