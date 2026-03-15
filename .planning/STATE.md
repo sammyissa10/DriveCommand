@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-15 - Completed quick task 69: TKT-0022 Add edit functionality for scheduled services on truck maintenance page
+Last activity: 2026-03-15 - Completed quick task 70: TKT-0023 Truck Status Logic — fix scheduled service status bug and add status legend to UI
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -469,6 +469,7 @@ None blocking immediate progress.
 | 67 | Add routeId FK to Load — dispatch modal route picker, driver portal uses explicit routeId (not driverId guess), owner route detail shows linked loads | 2026-03-14 | c165ba5 | [67-add-routeid-fk-to-load-model-nullable-fo](./quick/67-add-routeid-fk-to-load-model-nullable-fo/) |
 | 68 | Add Resend Invitation feature for expired owner invitations on tenant detail page | 2026-03-15 | 0f87116 | [68-add-resend-invitation-feature-for-expire](./quick/68-add-resend-invitation-feature-for-expire/) |
 | 69 | TKT-0022 Add edit functionality for scheduled services on truck maintenance page | 2026-03-15 | a7e8c30 | [69-tkt-0022-add-edit-functionality-for-sche](./quick/69-tkt-0022-add-edit-functionality-for-sche/) |
+| 70 | TKT-0023: Truck Status Logic — fix scheduled service status bug and add status legend to UI | 2026-03-15 | 26e577c | [70-tkt-0023-truck-status-logic-fix-schedule](./quick/70-tkt-0023-truck-status-logic-fix-schedule/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
