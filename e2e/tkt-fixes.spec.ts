@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import path from 'path';
+
+test.use({ storageState: path.join(__dirname, '../.playwright/auth/owner.json') });
 
 /**
  * E2E regression tests for support ticket fixes Quick-45 through Quick-52

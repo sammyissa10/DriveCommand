@@ -1,7 +1,4 @@
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
-
-const authFile = path.join(__dirname, '.playwright', 'auth.json');
 
 export default defineConfig({
   testDir: './e2e',
@@ -12,7 +9,7 @@ export default defineConfig({
   // The withTenantRLS extension wraps every query in a transaction; too many parallel tests
   // saturate the Supabase connection pool and cause "Unable to start a transaction" errors.
   workers: process.env.CI ? 1 : 3,
-  reporter: 'html',
+  reporter: [['html', { open: 'never' }]],
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -24,12 +21,14 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], storageState: authFile },
+      use: { ...devices['Desktop Chrome'] },
+      // No global storageState — each spec file declares its own via test.use({ storageState })
       dependencies: ['setup'],
     },
     {
       name: 'mobile',
-      use: { ...devices['iPhone 14'], storageState: authFile },
+      use: { ...devices['iPhone 14'] },
+      // No global storageState — each spec file declares its own via test.use({ storageState })
       dependencies: ['setup'],
     },
   ],

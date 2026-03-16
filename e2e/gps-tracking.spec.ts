@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import path from 'path';
+
+test.use({ storageState: path.join(__dirname, '../.playwright/auth/owner.json') });
 
 /**
  * GPS Tracking Integration Tests (Quick-17 & Quick-18)

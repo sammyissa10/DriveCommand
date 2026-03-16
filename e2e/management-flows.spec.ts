@@ -1,4 +1,7 @@
 import { test, expect } from '@playwright/test';
+import path from 'path';
+
+test.use({ storageState: path.join(__dirname, '../.playwright/auth/owner.json') });
 
 /**
  * E2E tests for Driver and Route Management pages
