@@ -75,7 +75,8 @@ export function TruckComplianceTable({ trucks }: TruckComplianceTableProps) {
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
@@ -134,6 +135,47 @@ export function TruckComplianceTable({ trucks }: TruckComplianceTableProps) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-border">
+        {trucks.map((truck) => (
+          <div key={truck.truckId} className="p-4 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="font-medium">{truck.truckLabel}</div>
+                <div className="font-mono text-xs text-muted-foreground mt-0.5">{truck.licensePlate}</div>
+              </div>
+              <Link
+                href={`/trucks/${truck.truckId}`}
+                className="text-sm text-primary hover:underline shrink-0"
+              >
+                View Truck
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <div className="text-xs text-muted-foreground mb-0.5">Registration</div>
+                {truck.registration.expiry && truck.registration.status !== 'NOT_SET' && (
+                  <div className="text-xs text-muted-foreground mb-0.5">
+                    {formatDate(truck.registration.expiry)}
+                  </div>
+                )}
+                <TruckFieldBadge status={truck.registration.status} />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-0.5">Insurance</div>
+                {truck.insurance.expiry && truck.insurance.status !== 'NOT_SET' && (
+                  <div className="text-xs text-muted-foreground mb-0.5">
+                    {formatDate(truck.insurance.expiry)}
+                  </div>
+                )}
+                <TruckFieldBadge status={truck.insurance.status} />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

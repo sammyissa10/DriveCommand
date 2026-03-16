@@ -92,7 +92,8 @@ export function DriverComplianceTable({ drivers }: DriverComplianceTableProps) {
         <p className="text-xs text-muted-foreground mt-0.5">{drivers.length} driver{drivers.length !== 1 ? 's' : ''} with tracked documents</p>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
@@ -162,6 +163,60 @@ export function DriverComplianceTable({ drivers }: DriverComplianceTableProps) {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-border">
+        {drivers.map((driver) => {
+          const shownDocs = driver.documents.slice(0, 3);
+          const moreDocs = driver.documents.length - shownDocs.length;
+
+          return (
+            <div key={driver.driverId} className="p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{driver.driverName}</div>
+                  {!driver.isActive && (
+                    <span className="text-xs text-muted-foreground">Inactive</span>
+                  )}
+                </div>
+                <StatusBadge status={driver.overallStatus} />
+              </div>
+
+              {shownDocs.length > 0 && (
+                <div className="space-y-1">
+                  {shownDocs.map((doc) => (
+                    <div key={doc.id} className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        {formatDocumentType(doc.documentType)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(doc.expiryDate)}
+                      </span>
+                      <StatusBadge status={doc.status} />
+                    </div>
+                  ))}
+                  {moreDocs > 0 && (
+                    <span className="text-xs text-muted-foreground">+{moreDocs} more</span>
+                  )}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs text-muted-foreground">Safety (90d):</span>
+                  <SafetyEventCell count={driver.highCriticalEvents} />
+                </div>
+                <Link
+                  href={`/drivers/${driver.driverId}`}
+                  className="text-sm text-primary hover:underline"
+                >
+                  View Driver
+                </Link>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

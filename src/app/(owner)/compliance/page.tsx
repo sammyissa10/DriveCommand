@@ -34,8 +34,8 @@ export default async function CompliancePage() {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Compliance Dashboard</h1>
+      <div className="min-w-0">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Compliance Dashboard</h1>
         <p className="text-muted-foreground mt-1">
           Monitor document expiry and safety compliance across your fleet
         </p>

@@ -51,7 +51,8 @@ export function CustomerList({ customers }: { customers: Customer[] }) {
 
   return (
     <div className="rounded-lg border border-border bg-card overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
@@ -111,6 +112,49 @@ export function CustomerList({ customers }: { customers: Customer[] }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="md:hidden space-y-3 p-3">
+        {customers.map((customer) => (
+          <Link
+            key={customer.id}
+            href={`/crm/${customer.id}`}
+            className="block rounded-lg border border-border bg-card p-4 hover:bg-muted/30 transition-colors"
+          >
+            <div className="font-semibold text-foreground">{customer.companyName}</div>
+            {customer.contactName && (
+              <div className="text-sm text-muted-foreground mt-0.5">{customer.contactName}</div>
+            )}
+            <div className="flex flex-col gap-0.5 mt-1">
+              {customer.email && (
+                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Mail className="h-3 w-3 shrink-0" />
+                  {customer.email}
+                </span>
+              )}
+              {customer.phone && (
+                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <Phone className="h-3 w-3 shrink-0" />
+                  {customer.phone}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityColors[customer.priority]}`}>
+                {customer.priority === 'VIP' && <Star className="h-3 w-3" />}
+                {customer.priority}
+              </span>
+              <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[customer.status]}`}>
+                {customer.status}
+              </span>
+            </div>
+            <div className="flex gap-4 mt-2 text-sm font-medium">
+              <span>{customer.totalLoads} loads</span>
+              <span>${Number(customer.totalRevenue).toLocaleString()}</span>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
