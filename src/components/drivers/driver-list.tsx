@@ -266,11 +266,10 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <span>{driver.licenseNumber ? `License: ${driver.licenseNumber}` : 'No license'}</span>
-                    <span className="text-muted-foreground/40">&middot;</span>
-                    <span className="truncate">{driver.email}</span>
-                  </div>
+                  <div className="mt-0.5 text-sm text-muted-foreground truncate">{driver.email}</div>
+                  {driver.licenseNumber && (
+                    <div className="mt-0.5 text-xs text-muted-foreground/70 font-mono">{driver.licenseNumber}</div>
+                  )}
                 </div>
                 <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
               </div>
