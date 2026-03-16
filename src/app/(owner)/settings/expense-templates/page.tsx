@@ -17,7 +17,7 @@ export default async function ExpenseTemplatesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Expense Templates</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Expense Templates</h1>
         <p className="text-muted-foreground mt-1">Create templates to quickly add common expenses to routes.</p>
       </div>
       <TemplateManager initialTemplates={templates} categories={categories} />

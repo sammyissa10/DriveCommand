@@ -49,8 +49,8 @@ export default async function LaneAnalyticsPage({
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Lane Profitability Analysis</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lane Analytics</h1>
+          <p className="text-muted-foreground mt-1 line-clamp-2 sm:line-clamp-none">
             Profitability by origin-destination pair — identify your best and worst routes
           </p>
         </div>

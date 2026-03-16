@@ -10,7 +10,7 @@ export default async function ExpenseCategoriesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Expense Categories</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Expense Categories</h1>
         <p className="text-muted-foreground mt-1">Manage expense categories for route cost tracking.</p>
       </div>
       <CategoryManager initialCategories={categories} />

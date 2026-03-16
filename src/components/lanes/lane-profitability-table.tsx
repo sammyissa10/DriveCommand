@@ -132,7 +132,9 @@ export function LaneProfitabilityTable({ lanes }: LaneProfitabilityTableProps) {
           {lanes.length} lane{lanes.length !== 1 ? 's' : ''} — click column headers to sort
         </p>
       </div>
-      <div className="overflow-x-auto">
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-muted/30">
             <tr>
@@ -195,6 +197,48 @@ export function LaneProfitabilityTable({ lanes }: LaneProfitabilityTableProps) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-border">
+        {sorted.map((lane) => (
+          <div key={lane.lane} className="p-4">
+            <div className="font-bold text-foreground">{lane.origin}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">&#8594; {lane.destination}</div>
+            <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+              <div>
+                <div className="text-xs text-muted-foreground">Routes</div>
+                <div className="font-medium">{lane.routeCount}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Revenue</div>
+                <div className="font-medium">{formatCurrency(lane.totalRevenue)}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Expenses</div>
+                <div className="font-medium">{formatCurrency(lane.totalExpenses)}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Profit</div>
+                <div className={`font-semibold ${getProfitColor(lane.profit)}`}>
+                  {formatCurrency(lane.profit)}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Margin %</div>
+                <div className={`font-medium ${getMarginColor(lane.marginPercent)}`}>
+                  {lane.marginPercent.toFixed(1)}%
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Avg/Route</div>
+                <div className={getProfitColor(lane.avgProfitPerRoute)}>
+                  {formatCurrency(lane.avgProfitPerRoute)}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

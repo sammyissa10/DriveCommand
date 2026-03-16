@@ -76,7 +76,7 @@ export default async function IFTAPage({
       {/* Page header */}
       <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">IFTA Fuel Tax Report</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">IFTA Fuel Tax Report</h1>
           <p className="text-muted-foreground mt-1">
             Quarterly miles driven and fuel purchased by state — for IFTA tax filing
           </p>
