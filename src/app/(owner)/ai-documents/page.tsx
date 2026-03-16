@@ -8,7 +8,7 @@ export default async function AiDocumentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Document Reading</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AI Document Reading</h1>
         <p className="text-muted-foreground mt-1">
           Upload freight documents to automatically extract load data using AI
         </p>

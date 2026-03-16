@@ -62,7 +62,7 @@ export default async function EditPayrollPage({
         </Link>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Payroll Record</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Payroll Record</h1>
         <p className="mt-1 text-muted-foreground">
           Update {record.driver.firstName} {record.driver.lastName}&apos;s record
         </p>

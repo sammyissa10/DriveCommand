@@ -53,7 +53,7 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
       </Link>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           Edit Load #{load.loadNumber}
         </h1>
         <p className="mt-1 text-muted-foreground">Update load details</p>

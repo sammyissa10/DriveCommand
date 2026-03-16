@@ -5,7 +5,7 @@ export default function NewCustomerPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Add Customer</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Add Customer</h1>
         <p className="mt-1 text-muted-foreground">Add a new customer to your CRM</p>
       </div>
       <CustomerForm action={createCustomer} submitLabel="Create Customer" />

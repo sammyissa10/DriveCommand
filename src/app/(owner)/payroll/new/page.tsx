@@ -30,7 +30,7 @@ export default async function NewPayrollPage() {
         </Link>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">New Payroll Record</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">New Payroll Record</h1>
         <p className="mt-1 text-muted-foreground">Create a payroll entry for a driver</p>
       </div>
       <PayrollForm action={createPayrollRecord} drivers={drivers} submitLabel="Create Payroll Record" />

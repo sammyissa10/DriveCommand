@@ -51,7 +51,7 @@ export default async function EditInvoicePage({
         </Link>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Invoice</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Invoice</h1>
         <p className="mt-1 text-muted-foreground">Update {invoice.invoiceNumber}</p>
       </div>
       <InvoiceForm

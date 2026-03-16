@@ -34,7 +34,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
         </Link>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Customer</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Customer</h1>
         <p className="mt-1 text-muted-foreground">Update {customer.companyName}</p>
       </div>
       <CustomerForm

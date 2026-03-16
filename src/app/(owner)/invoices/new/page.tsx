@@ -76,7 +76,7 @@ export default async function NewInvoicePage({
         </Link>
       </div>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">New Invoice</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">New Invoice</h1>
         <p className="mt-1 text-muted-foreground">Create a new invoice with line items</p>
       </div>
       <InvoiceForm

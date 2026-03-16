@@ -44,7 +44,7 @@ export default async function MaintenancePage({ params }: MaintenancePageProps) 
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Truck
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground truncate">
           Maintenance: {truck.year} {truck.make} {truck.model}
         </h1>
         <p className="text-muted-foreground mt-1">

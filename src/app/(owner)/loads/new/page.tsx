@@ -29,7 +29,7 @@ export default async function NewLoadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
         <p className="mt-1 text-muted-foreground">Add a new load to your board</p>
       </div>
       <LoadForm action={createLoad} customers={customers} drivers={drivers} submitLabel="Create Load" />
