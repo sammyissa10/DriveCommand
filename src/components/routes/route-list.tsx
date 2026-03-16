@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ChevronRight } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -167,6 +168,12 @@ const columns = [
   }),
 ];
 
+function getRouteStatusClasses(status: string): { bgColor: string; textColor: string } {
+  if (status === 'IN_PROGRESS') return { bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
+  if (status === 'COMPLETED') return { bgColor: 'bg-green-100', textColor: 'text-green-800' };
+  return { bgColor: 'bg-muted', textColor: 'text-muted-foreground' };
+}
+
 export function RouteList({ routes, onDelete }: RouteListProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -228,8 +235,8 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
         </select>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-border shadow">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto rounded-lg border border-border shadow">
         <table className="w-full min-w-[900px] divide-y divide-border">
           <thead className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -288,6 +295,46 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+        {table.getRowModel().rows.map((row) => {
+          const route = row.original;
+          const { bgColor, textColor } = getRouteStatusClasses(route.status);
+          const displayDate = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          }).format(new Date(route.scheduledDate));
+          return (
+            <div
+              key={route.id}
+              onClick={() => router.push(`/routes/${route.id}`)}
+              className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground truncate">
+                    {route.name || 'Unnamed Route'}
+                  </span>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${bgColor} ${textColor}`}
+                  >
+                    {route.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <span className="truncate">{route.origin}</span>
+                  <span>&rarr;</span>
+                  <span className="truncate">{route.destination}</span>
+                </div>
+                <div className="mt-0.5 text-xs text-muted-foreground">{displayDate}</div>
+              </div>
+              <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

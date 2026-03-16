@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { DollarSign } from 'lucide-react';
+import { DollarSign, ChevronRight } from 'lucide-react';
 
 interface PayrollRecord {
   id: string;
@@ -51,63 +51,98 @@ export function PayrollList({ records }: { records: PayrollRecord[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Driver</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Period</th>
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Base Pay</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Bonuses</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Deductions</th>
-              <th className="px-4 py-3 text-right font-medium text-muted-foreground">Total Pay</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((record) => (
-              <tr
-                key={record.id}
-                className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
-                onDoubleClick={() => router.push(`/payroll/${record.id}`)}
-              >
-                <td className="px-4 py-3">
-                  <Link
-                    href={`/payroll/${record.id}`}
-                    className="font-medium text-foreground hover:text-primary transition-colors"
-                  >
-                    {record.driver.firstName} {record.driver.lastName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
-                  {new Date(record.periodEnd).toLocaleDateString()}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[record.status]}`}
-                  >
-                    {record.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-right">
-                  ${Number(record.basePay).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </td>
-                <td className="px-4 py-3 text-right text-green-600">
-                  +${Number(record.bonuses).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </td>
-                <td className="px-4 py-3 text-right text-red-600">
-                  -${Number(record.deductions).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </td>
-                <td className="px-4 py-3 text-right font-bold">
-                  ${Number(record.totalPay).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                </td>
+    <>
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-lg border border-border bg-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Driver</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Period</th>
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Base Pay</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Bonuses</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Deductions</th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">Total Pay</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {records.map((record) => (
+                <tr
+                  key={record.id}
+                  className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                  onDoubleClick={() => router.push(`/payroll/${record.id}`)}
+                >
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/payroll/${record.id}`}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
+                      {record.driver.firstName} {record.driver.lastName}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
+                    {new Date(record.periodEnd).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[record.status]}`}
+                    >
+                      {record.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    ${Number(record.basePay).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-4 py-3 text-right text-green-600">
+                    +${Number(record.bonuses).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-4 py-3 text-right text-red-600">
+                    -${Number(record.deductions).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold">
+                    ${Number(record.totalPay).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+        {records.map((record) => (
+          <div
+            key={record.id}
+            onClick={() => router.push(`/payroll/${record.id}`)}
+            className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+          >
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-foreground truncate">
+                  {record.driver.firstName} {record.driver.lastName}
+                </span>
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${statusColors[record.status]}`}
+                >
+                  {record.status}
+                </span>
+              </div>
+              <div className="mt-1 text-sm text-muted-foreground">
+                Period: {new Date(record.periodStart).toLocaleDateString()} &ndash;{' '}
+                {new Date(record.periodEnd).toLocaleDateString()}
+              </div>
+              <div className="mt-0.5 text-sm font-bold text-foreground">
+                ${Number(record.totalPay).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
