@@ -26,7 +26,7 @@ export default async function EditDriverPage({ params }: EditDriverPageProps) {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Driver
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Driver</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Driver</h1>
         <p className="mt-1 text-muted-foreground">Update driver information</p>
       </div>
 

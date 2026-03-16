@@ -58,7 +58,7 @@ export default async function FuelPage({
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Fuel & Energy Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Fuel & Energy Dashboard</h1>
           <p className="text-muted-foreground">Fleet fuel efficiency, emissions, and cost analysis</p>
         </div>
         <TagFilter tags={tags} selectedTagId={tagId || null} />

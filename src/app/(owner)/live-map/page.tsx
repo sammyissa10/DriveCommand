@@ -30,7 +30,7 @@ export default async function LiveMapPage({
       <div className="mb-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Live Fleet Map</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Live Fleet Map</h1>
             <p className="text-muted-foreground">
               {vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} tracked
             </p>

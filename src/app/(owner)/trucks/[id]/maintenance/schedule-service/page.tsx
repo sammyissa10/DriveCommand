@@ -30,7 +30,7 @@ export default async function ScheduleServicePage({ params }: ScheduleServicePag
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Maintenance
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Schedule Service</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Schedule Service</h1>
         <p className="text-muted-foreground mt-1">
           {truck.year} {truck.make} {truck.model}
         </p>

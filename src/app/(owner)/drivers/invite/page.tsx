@@ -14,7 +14,7 @@ export default function InviteDriverPage() {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Drivers
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Invite Driver</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Invite Driver</h1>
         <p className="mt-1 text-muted-foreground">Send an invitation to a new driver</p>
       </div>
 

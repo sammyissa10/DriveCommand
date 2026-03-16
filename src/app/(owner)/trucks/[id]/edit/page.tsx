@@ -34,7 +34,7 @@ export default async function EditTruckPage({ params }: EditTruckPageProps) {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Truck
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Truck</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Edit Truck</h1>
         <p className="mt-1 text-muted-foreground">Update vehicle details</p>
       </div>
 

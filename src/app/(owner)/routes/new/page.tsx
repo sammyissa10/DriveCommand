@@ -28,7 +28,7 @@ export default async function NewRoutePage() {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Routes
         </Link>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create Route</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Route</h1>
         <p className="mt-1 text-muted-foreground">Set up a new delivery route</p>
       </div>
 
