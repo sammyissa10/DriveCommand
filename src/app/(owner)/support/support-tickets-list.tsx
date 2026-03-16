@@ -139,7 +139,7 @@ export function SupportTicketsList({ tickets }: SupportTicketsListProps) {
   return (
     <div className="space-y-4">
       {/* Tab bar */}
-      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1 w-fit">
+      <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1 overflow-x-auto">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           const count = counts[tab.key];
