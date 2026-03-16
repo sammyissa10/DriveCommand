@@ -480,6 +480,7 @@ None blocking immediate progress.
 | 75 | TKT-0025 follow-up: Fix Driver Route Assignments section — merge Route.driverId (Primary Driver) and DriverRouteJoin (Main Driver/Co-Driver) sources with deduplication and role badges | 2026-03-15 | c2248b5 | [75-tkt-0025-follow-up-fix-driver-route-assi](./quick/75-tkt-0025-follow-up-fix-driver-route-assi/) |
 | 76 | TKT-0028: Fix mobile UX — tables and pages are not horizontally scrollable on phone | 2026-03-15 | 5177744 | [76-tkt-0028-fix-mobile-ux-tables-and-pages-](./quick/76-tkt-0028-fix-mobile-ux-tables-and-pages-/) |
 | 77 | TKT-0028 follow-up: Mobile-first card layouts replacing tables on small screens for trucks, drivers, loads, routes, invoices, payroll | 2026-03-16 | 5f80830 | [77-tkt-0028-follow-up-mobile-first-card-lay](./quick/77-tkt-0028-follow-up-mobile-first-card-lay/) |
+| 78 | TKT-0028 comprehensive mobile fix — all owner-portal pages mobile-friendly at 390px (CRM, compliance, lane analytics, profit predictor, IFTA, settings, truck/driver detail headers) | 2026-03-15 | a930ed4 | [78-tkt-0028-comprehensive-mobile-fix](./quick/78-tkt-0028-comprehensive-mobile-fix/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
