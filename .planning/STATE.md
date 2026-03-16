@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-16 - Completed quick task 79: TKT-0028 mobile audit and fix ALL sidebar pages — detail headers, form page h1s, support tab bar (17 files)
+Last activity: 2026-03-16 - Completed quick task 80: TKT-0018 fix support ticket reply emails bouncing to demo@drivecommand.com
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -483,6 +483,7 @@ None blocking immediate progress.
 | 77 | TKT-0028 follow-up: Mobile-first card layouts replacing tables on small screens for trucks, drivers, loads, routes, invoices, payroll | 2026-03-16 | 5f80830 | [77-tkt-0028-follow-up-mobile-first-card-lay](./quick/77-tkt-0028-follow-up-mobile-first-card-lay/) |
 | 78 | TKT-0028 comprehensive mobile fix — all owner-portal pages mobile-friendly at 390px (CRM, compliance, lane analytics, profit predictor, IFTA, settings, truck/driver detail headers) | 2026-03-15 | a930ed4 | [78-tkt-0028-comprehensive-mobile-fix](./quick/78-tkt-0028-comprehensive-mobile-fix/) |
 | 79 | TKT-0028 mobile audit and fix ALL sidebar pages — detail page action headers flex-col on mobile, responsive h1 on all form pages, support tab bar overflow fix (17 files) | 2026-03-16 | 56d44ed | [79-tkt-0028-mobile-audit-and-fix-all-sideba](./quick/79-tkt-0028-mobile-audit-and-fix-all-sideba/) |
+| 80 | TKT-0018 fix: skip admin reply emails to non-deliverable domains (drivecommand.com, example.com, test.com) — guard in sendAdminReplyNotification, diagnostic warn in addAdminReply | 2026-03-16 | 186727d | [80-tkt-0018-fix-support-ticket-reply-emails](./quick/80-tkt-0018-fix-support-ticket-reply-emails/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
