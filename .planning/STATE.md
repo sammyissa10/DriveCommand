@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 27 Automated Playwright E2E Tests — IN PROGRESS (Plan 1 of 3 complete)
-Status: Phase 27 Plan 01 complete — multi-role auth infrastructure + all SysAdmin portal E2E tests
-Last activity: 2026-03-16 - Completed 27-01: multi-role Playwright auth + SysAdmin E2E tests (22 tests in 5 spec files)
+Phase: Phase 27 Automated Playwright E2E Tests — IN PROGRESS (Plan 2 of 3 complete)
+Status: Phase 27 Plan 02 complete — 34 owner portal E2E tests (dashboard, trucks, drivers, loads lifecycle, routes, finance)
+Last activity: 2026-03-16 - Completed 27-02: Owner portal E2E tests (34 tests in 6 spec files)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -49,6 +49,7 @@ Progress: [███████████████████████
 - Phase 26-02 (2026-03-13): Owner portal QA test scripts — 1 task, 1 file, 5min
 - Phase 26-03 (2026-03-13): Driver portal QA test scripts + README — 2 tasks, 2 files, 4min
 - Phase 27-01 (2026-03-16): Multi-role Playwright auth + SysAdmin E2E tests — 2 tasks, 14 files, 7min
+- Phase 27-02 (2026-03-16): Owner portal E2E tests — 2 tasks, 6 files, 5min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -104,6 +105,13 @@ Progress: [███████████████████████
 - TEST_SYSADMIN_EMAIL/PASSWORD env vars required — no hardcoded admin credentials in repo
 - Invoice lifecycle tests each create their own DRAFT invoice — eliminates test ordering dependencies
 - Admin support tests use expand-in-place pattern — matches inline ticket-list component (no separate /admin-support/[id] detail route)
+
+**Phase 27-02 decisions (Owner portal E2E tests):**
+- test.describe.serial() for load lifecycle — guarantees PENDING→DISPATCHED→...→INVOICED sequential progression on one load
+- Graceful skip over hard fail when DB prerequisites absent — enables running against fresh tenants without blocking CI
+- testLoadUrl module variable shared across serial block — captures URL from dispatch test for subsequent status tests
+- Plain text input for route origin/destination — AddressAutocomplete accepts text without Google Places API resolution in test env
+- No data-testid additions needed — existing forms use proper htmlFor label associations, getByLabel() works throughout
 
 **Quick-59 decisions (TKT-0017 DriverRouteJoin):**
 - Hard delete (no soft delete) for DriverRouteJoin — model has no deletedAt field; assignments are simple join records
