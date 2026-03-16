@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Eye, Pencil, Trash2, Truck as TruckIcon } from 'lucide-react';
+import { Search, Eye, Pencil, Trash2, Truck as TruckIcon, ChevronRight } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -183,8 +183,8 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
         </span>
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+      {/* Desktop Table */}
+      <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
         <table className="w-full min-w-[900px]">
           <thead>
@@ -231,6 +231,38 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
           </tbody>
         </table>
         </div>
+      </div>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+        {table.getRowModel().rows.map((row) => {
+          const truck = row.original;
+          const { status, variant } = computeTruckStatus(truck);
+          return (
+            <div
+              key={truck.id}
+              onClick={() => router.push(`/trucks/${truck.id}`)}
+              className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+                    {truck.licensePlate}
+                  </span>
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses[variant]}`}>
+                    {status}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <span>{truck.year} {truck.make} {truck.model}</span>
+                  <span className="text-muted-foreground/40">&middot;</span>
+                  <span>{truck.odometer.toLocaleString()} mi</span>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

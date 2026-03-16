@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Package } from 'lucide-react';
+import { Package, ChevronRight } from 'lucide-react';
 import { LoadStatusBadge } from './load-status-badge';
 
 interface LoadItem {
@@ -86,59 +86,91 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
           )}
         </div>
       ) : (
-        <div className="rounded-lg border border-border bg-card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/50">
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Load #</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Customer</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Route</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Pickup Date</th>
-                  <th className="px-4 py-3 text-right font-medium text-muted-foreground">Rate</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Driver</th>
-                  <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((load) => (
-                  <tr
-                    key={load.id}
-                    className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
-                    onDoubleClick={() => router.push(`/loads/${load.id}`)}
-                  >
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/loads/${load.id}`}
-                        className="font-medium text-primary hover:underline"
-                      >
-                        {load.loadNumber}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-foreground">{load.customer.companyName}</td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {load.origin} &rarr; {load.destination}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {new Date(load.pickupDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium">
-                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {load.driver
-                        ? `${load.driver.firstName ?? ''} ${load.driver.lastName ?? ''}`.trim()
-                        : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <LoadStatusBadge status={load.status} />
-                    </td>
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block rounded-lg border border-border bg-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/50">
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Load #</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Customer</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Route</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Pickup Date</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">Rate</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Driver</th>
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map((load) => (
+                    <tr
+                      key={load.id}
+                      className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                      onDoubleClick={() => router.push(`/loads/${load.id}`)}
+                    >
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/loads/${load.id}`}
+                          className="font-medium text-primary hover:underline"
+                        >
+                          {load.loadNumber}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-foreground">{load.customer.companyName}</td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {load.origin} &rarr; {load.destination}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(load.pickupDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {load.driver
+                          ? `${load.driver.firstName ?? ''} ${load.driver.lastName ?? ''}`.trim()
+                          : '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <LoadStatusBadge status={load.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Card List */}
+          <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+            {filtered.map((load) => (
+              <div
+                key={load.id}
+                onClick={() => router.push(`/loads/${load.id}`)}
+                className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">{load.loadNumber}</span>
+                    <LoadStatusBadge status={load.status} />
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <span className="truncate">{load.customer.companyName}</span>
+                    <span className="text-muted-foreground/40">&middot;</span>
+                    <span className="font-medium text-foreground">
+                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {new Date(load.pickupDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

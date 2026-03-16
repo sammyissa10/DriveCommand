@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Eye, Pencil, UserX, UserCheck, Users as UsersIcon } from 'lucide-react';
+import { Search, Eye, Pencil, UserX, UserCheck, Users as UsersIcon, ChevronRight } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -189,8 +189,8 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
           />
         </div>
 
-        {/* Table */}
-        <div className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+        {/* Desktop Table */}
+        <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead>
@@ -237,6 +237,45 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
             </tbody>
           </table>
           </div>
+        </div>
+
+        {/* Mobile Card List */}
+        <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+          {table.getRowModel().rows.map((row) => {
+            const driver = row.original;
+            return (
+              <div
+                key={driver.id}
+                onClick={() => router.push(`/drivers/${driver.id}`)}
+                className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground truncate">
+                      {driver.firstName} {driver.lastName}
+                    </span>
+                    {driver.isActive ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 flex-shrink-0">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 flex-shrink-0">
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                        Deactivated
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <span>{driver.licenseNumber ? `License: ${driver.licenseNumber}` : 'No license'}</span>
+                    <span className="text-muted-foreground/40">&middot;</span>
+                    <span className="truncate">{driver.email}</span>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
+              </div>
+            );
+          })}
         </div>
       </div>
 
