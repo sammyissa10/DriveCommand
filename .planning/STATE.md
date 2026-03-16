@@ -385,6 +385,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-72]: Keep TruckWithRelations.documentMetadata as unknown and cast to DocumentMetadata | null only at the hasExpiredMetadataDate call site, avoiding TS2322 from Prisma JsonValue callers
 - [Phase quick-74]: Used idempotent SQL throughout so migration is safe on dev DBs that already ran prisma db push
 - [Phase quick-75]: DriverRouteJoin entries win over Route.driverId duplicates (join records carry payment data); Primary Driver entries have no delete button
+- [Phase quick-80]: Block admin reply emails by domain (not per-address) using UNDELIVERABLE_DOMAINS Set — silent early return preserves fire-and-forget contract
 
 ### Pending Todos
 
@@ -533,6 +534,7 @@ None blocking immediate progress.
 | Phase quick-60 P01 | 227 | 3 tasks | 6 files |
 | Phase quick-75 P01 | 148 | 2 tasks | 3 files |
 | Phase quick-77 P01 | 220 | 2 tasks | 6 files |
+| Phase quick-80 P1 | 3 | 1 tasks | 2 files |
 
 ## Session Continuity
 
