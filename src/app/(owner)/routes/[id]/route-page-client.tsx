@@ -168,8 +168,8 @@ export function RoutePageClient({
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Routes
         </Link>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground min-w-0">
             {isEditMode
               ? 'Edit Route'
               : (
@@ -185,7 +185,7 @@ export function RoutePageClient({
           {isEditMode ? (
             <button
               onClick={handleCancelEdit}
-              className="inline-flex items-center gap-2 rounded-lg bg-muted px-4 py-2.5 text-sm font-medium text-muted-foreground shadow-sm hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-muted px-4 py-2.5 text-sm font-medium text-muted-foreground shadow-sm hover:bg-muted/80 transition-colors flex-shrink-0"
             >
               <X className="h-4 w-4" />
               Cancel
@@ -193,7 +193,7 @@ export function RoutePageClient({
           ) : (
             <button
               onClick={handleEnterEdit}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors flex-shrink-0"
             >
               <Pencil className="h-4 w-4" />
               Edit Route
