@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 27 Automated Playwright E2E Tests — IN PROGRESS (Plan 2 of 3 complete)
-Status: Phase 27 Plan 02 complete — 34 owner portal E2E tests (dashboard, trucks, drivers, loads lifecycle, routes, finance)
-Last activity: 2026-03-16 - Completed 27-02: Owner portal E2E tests (34 tests in 6 spec files)
+Phase: Phase 27 Automated Playwright E2E Tests — COMPLETE (Plan 3 of 3 complete)
+Status: Phase 27 complete — full Playwright E2E suite: 16 driver tests + access boundaries, GitHub Actions CI, e2e/README.md
+Last activity: 2026-03-16 - Completed 27-03: Driver portal tests, cross-role access boundaries, CI workflow
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -403,6 +403,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-74]: Used idempotent SQL throughout so migration is safe on dev DBs that already ran prisma db push
 - [Phase quick-75]: DriverRouteJoin entries win over Route.driverId duplicates (join records carry payment data); Primary Driver entries have no delete button
 - [Phase quick-80]: Block admin reply emails by domain (not per-address) using UNDELIVERABLE_DOMAINS Set — silent early return preserves fire-and-forget contract
+- [Phase 27-automated-playwright-tests]: Driver access boundaries: test.describe blocks with separate test.use() per role — cleanest Playwright pattern for multi-role tests in one file
+- [Phase 27-automated-playwright-tests]: Access denial assertions use URL exclusion (not.toContain) not exact match — resilient across different redirect targets per role
 
 ### Pending Todos
 
@@ -553,6 +555,7 @@ None blocking immediate progress.
 | Phase quick-75 P01 | 148 | 2 tasks | 3 files |
 | Phase quick-77 P01 | 220 | 2 tasks | 6 files |
 | Phase quick-80 P1 | 3 | 1 tasks | 2 files |
+| Phase 27-automated-playwright-tests P03 | 3 | 2 tasks | 6 files |
 
 ## Session Continuity
 
