@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
-Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-16 - Completed quick task 80: TKT-0018 fix support ticket reply emails bouncing to demo@drivecommand.com
+Phase: Phase 27 Automated Playwright E2E Tests — IN PROGRESS (Plan 1 of 3 complete)
+Status: Phase 27 Plan 01 complete — multi-role auth infrastructure + all SysAdmin portal E2E tests
+Last activity: 2026-03-16 - Completed 27-01: multi-role Playwright auth + SysAdmin E2E tests (22 tests in 5 spec files)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -48,6 +48,7 @@ Progress: [███████████████████████
 - Phase 26-01 (2026-03-13): SysAdmin portal QA test scripts — 1 task, 1 file, 3min
 - Phase 26-02 (2026-03-13): Owner portal QA test scripts — 1 task, 1 file, 5min
 - Phase 26-03 (2026-03-13): Driver portal QA test scripts + README — 2 tasks, 2 files, 4min
+- Phase 27-01 (2026-03-16): Multi-role Playwright auth + SysAdmin E2E tests — 2 tasks, 14 files, 7min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -95,6 +96,14 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 27-01 decisions (Playwright multi-role auth + SysAdmin E2E):**
+- API-based login for all 3 roles: POST /api/auth/login — faster than UI login, avoids React hydration delays
+- Per-spec storageState (test.use) over global config — enables mixed-role runs without project duplication
+- Legacy .playwright/auth.json kept for backward compat — existing specs need only a single added line
+- TEST_SYSADMIN_EMAIL/PASSWORD env vars required — no hardcoded admin credentials in repo
+- Invoice lifecycle tests each create their own DRAFT invoice — eliminates test ordering dependencies
+- Admin support tests use expand-in-place pattern — matches inline ticket-list component (no separate /admin-support/[id] detail route)
 
 **Quick-59 decisions (TKT-0017 DriverRouteJoin):**
 - Hard delete (no soft delete) for DriverRouteJoin — model has no deletedAt field; assignments are simple join records
