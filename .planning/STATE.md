@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 26 QA Test Scripts — COMPLETE (all 3 plans complete)
 Status: Phase 26 complete — driver-tests.md (48 test cases) and README.md written; full docs/qa/ suite ready
-Last activity: 2026-03-16 - Completed quick task 77: TKT-0028 follow-up: Mobile-first card layouts replacing tables on small screens for trucks, drivers, loads, routes, invoices, payroll
+Last activity: 2026-03-15 - Completed quick task 78: TKT-0028 comprehensive mobile fix — all owner-portal pages mobile-friendly at 390px (CRM, compliance, lane analytics, profit predictor, IFTA, settings, truck/driver detail headers)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
