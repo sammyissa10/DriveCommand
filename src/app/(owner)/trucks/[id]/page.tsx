@@ -87,9 +87,9 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Trucks
         </Link>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {truck.year} {truck.make} {truck.model}
             </h1>
             <span
@@ -99,7 +99,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
               {truckStatus}
             </span>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             <MaintenanceToggleButton
               truckId={truck.id}
               inMaintenance={(truck as any).inMaintenance ?? false}

@@ -36,11 +36,11 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
           Back to Drivers
         </Link>
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground min-w-0">
             {driver.firstName} {driver.lastName}
           </h1>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <DriverStatusButton
               driverId={id}
               driverName={`${driver.firstName} ${driver.lastName}`}
