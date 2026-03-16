@@ -19,7 +19,7 @@ export function OwnerShell({ children, supportBadge }: OwnerShellProps) {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
         </header>
-        <main className="flex-1 p-6 pb-20 lg:pb-6 overflow-x-hidden">
+        <main className="flex-1 p-6 pb-20 lg:pb-6">
           {children}
         </main>
       </SidebarInset>
