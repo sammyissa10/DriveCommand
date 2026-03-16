@@ -8,6 +8,25 @@ function getSupportRecipient(): string {
   return process.env.DRIVECOMMAND_SUPPORT_EMAIL || process.env.GMAIL_USER || '';
 }
 
+// Domains that have no mailbox and will always bounce. Easy to extend — just add entries.
+const UNDELIVERABLE_DOMAINS = new Set([
+  'drivecommand.com',
+  'example.com',
+  'test.com',
+  'localhost',
+]);
+
+/**
+ * Returns false for empty emails or emails whose domain is known to be non-deliverable.
+ * Used to skip fire-and-forget notifications before they reach Gmail and bounce.
+ */
+function isDeliverableEmail(email: string): boolean {
+  if (!email) return false;
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain) return false;
+  return !UNDELIVERABLE_DOMAINS.has(domain);
+}
+
 export interface NewTicketNotificationParams {
   ticketNumber: string;
   title: string;
@@ -60,8 +79,19 @@ export interface AdminReplyNotificationParams {
 
 /**
  * Notify the ticket owner (by email) when an admin replies to their support ticket.
+ * Skips silently when the owner's email is on a non-deliverable domain (e.g. demo accounts).
  */
 export async function sendAdminReplyNotification(params: AdminReplyNotificationParams): Promise<void> {
+  if (!isDeliverableEmail(params.ownerEmail)) {
+    console.warn(
+      '[sendAdminReplyNotification] Skipping email to undeliverable address:',
+      params.ownerEmail,
+      'for ticket',
+      params.ticketNumber,
+    );
+    return;
+  }
+
   const { SupportTicketReplyToOwnerEmail } = await import('@/emails/support-ticket-reply-to-owner');
   await sendEmail({
     to: params.ownerEmail,

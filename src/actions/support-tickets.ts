@@ -442,6 +442,8 @@ export async function addAdminReply(
       } catch (emailError) {
         console.error('[addAdminReply] owner notification email failed:', emailError);
       }
+    } else {
+      console.warn('[addAdminReply] No email found for ticket submitter, skipping notification for ticket:', ticketNumber);
     }
 
     return { success: true };
