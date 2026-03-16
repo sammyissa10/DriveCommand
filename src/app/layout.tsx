@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AuthProvider } from '@/lib/auth/auth-context';
 import { Toaster } from 'sonner';
 import { SupportTicketModal } from '@/components/support/support-ticket-modal';
@@ -10,6 +10,11 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'DriveCommand',
   description: 'Logistics fleet management platform',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
