@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Search, MapPin } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -112,22 +112,10 @@ const columns = [
     size: 110,
     cell: (info) => {
       const status = info.getValue();
-      let bgColor = 'bg-muted';
-      let textColor = 'text-muted-foreground';
-
-      if (status === 'IN_PROGRESS') {
-        bgColor = 'bg-blue-100';
-        textColor = 'text-blue-800';
-      } else if (status === 'COMPLETED') {
-        bgColor = 'bg-green-100';
-        textColor = 'text-green-800';
-      }
-
       const displayText = status.replace(/_/g, ' ');
-
       return (
         <span
-          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${bgColor} ${textColor}`}
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getRouteStatusClasses(status)}`}
         >
           {displayText}
         </span>
@@ -168,10 +156,10 @@ const columns = [
   }),
 ];
 
-function getRouteStatusClasses(status: string): { bgColor: string; textColor: string } {
-  if (status === 'IN_PROGRESS') return { bgColor: 'bg-blue-100', textColor: 'text-blue-800' };
-  if (status === 'COMPLETED') return { bgColor: 'bg-green-100', textColor: 'text-green-800' };
-  return { bgColor: 'bg-muted', textColor: 'text-muted-foreground' };
+function getRouteStatusClasses(status: string): string {
+  if (status === 'IN_PROGRESS') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+  if (status === 'COMPLETED') return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+  return 'bg-muted text-muted-foreground';
 }
 
 export function RouteList({ routes, onDelete }: RouteListProps) {
@@ -202,9 +190,13 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
 
   if (routes.length === 0) {
     return (
-      <div className="rounded-lg bg-card p-8 text-center shadow">
-        <p className="text-muted-foreground">
-          No routes found. Create your first route to get started.
+      <div className="rounded-xl border border-border bg-card p-16 text-center">
+        <MapPin className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
+        <p className="text-lg font-medium text-muted-foreground">
+          No routes found
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground/70">
+          Create your first route to get started.
         </p>
       </div>
     );
@@ -214,19 +206,22 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
     <div className="space-y-4">
       {/* Filter UI */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <input
-          type="text"
-          value={globalFilter ?? ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search routes..."
-          className="rounded-md border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 bg-background text-foreground"
-        />
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder="Search routes..."
+            className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
+          />
+        </div>
         <select
           value={(table.getColumn('status')?.getFilterValue() as string) ?? ''}
           onChange={(e) =>
             table.getColumn('status')?.setFilterValue(e.target.value || undefined)
           }
-          className="rounded-md border border-border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 bg-background text-foreground"
+          className="rounded-lg border border-input bg-card px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
         >
           <option value="">All Statuses</option>
           <option value="PLANNED">Planned</option>
@@ -236,7 +231,8 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto rounded-lg border border-border shadow">
+      <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
         <table className="w-full min-w-[900px] divide-y divide-border">
           <thead className="bg-muted/50">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -276,7 +272,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-border bg-card">
+          <tbody className="divide-y divide-border">
             {table.getRowModel().rows.map((row) => (
               <tr
                 key={row.id}
@@ -295,13 +291,14 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Mobile Card List */}
       <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
         {table.getRowModel().rows.map((row) => {
           const route = row.original;
-          const { bgColor, textColor } = getRouteStatusClasses(route.status);
+          const statusClasses = getRouteStatusClasses(route.status);
           const displayDate = new Intl.DateTimeFormat('en-US', {
             month: 'short',
             day: 'numeric',
@@ -319,7 +316,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
                     {route.name || 'Unnamed Route'}
                   </span>
                   <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${bgColor} ${textColor}`}
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium flex-shrink-0 ${statusClasses}`}
                   >
                     {route.status.replace(/_/g, ' ')}
                   </span>
