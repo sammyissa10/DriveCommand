@@ -14,7 +14,7 @@
 
 import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client, bucket } from './s3-client';
+import { s3Client, getBucketName } from './s3-client';
 
 export type DocumentCategory = 'trucks' | 'routes' | 'drivers';
 
@@ -41,7 +41,7 @@ export async function generateUploadUrl(
   const s3Key = `tenant-${tenantId}/${category}/${fileId}-${fileName}`;
 
   const command = new PutObjectCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
     ContentType: contentType,
     ContentLength: fileSize,
@@ -61,7 +61,7 @@ export async function generateUploadUrl(
  */
 export async function generateDownloadUrl(s3Key: string): Promise<string> {
   const command = new GetObjectCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
   });
 
@@ -78,7 +78,7 @@ export async function generateDownloadUrl(s3Key: string): Promise<string> {
  */
 export async function deleteS3Object(s3Key: string): Promise<void> {
   const command = new DeleteObjectCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
   });
 

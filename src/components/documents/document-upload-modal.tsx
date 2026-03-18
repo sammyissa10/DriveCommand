@@ -5,7 +5,7 @@
  * Supports both file uploads (presigned S3 flow) and link-only documents.
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Upload } from 'lucide-react';
 import {
   Dialog,
@@ -19,7 +19,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { requestUploadUrl, completeUpload } from '@/app/(owner)/actions/documents';
 
 interface DocumentUploadModalProps {
   entityType: 'truck' | 'route';
@@ -38,6 +37,32 @@ export function DocumentUploadModal({
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Capture global JS errors / unhandled rejections while the modal is submitting
+  const submittingRef = useRef(false);
+  useEffect(() => {
+    const onError = (event: ErrorEvent) => {
+      if (!submittingRef.current) return;
+      setError(`[window-error] ${event.message}`);
+      setSubmitting(false);
+      submittingRef.current = false;
+      event.preventDefault();
+    };
+    const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (!submittingRef.current) return;
+      const msg = event.reason instanceof Error ? event.reason.message : String(event.reason ?? 'unknown');
+      setError(`[unhandled-rejection] ${msg}`);
+      setSubmitting(false);
+      submittingRef.current = false;
+      event.preventDefault();
+    };
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    };
+  }, []);
 
   // Form fields
   const [documentName, setDocumentName] = useState('');
@@ -89,120 +114,69 @@ export function DocumentUploadModal({
     return valid;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     setError(null);
 
     if (!validate()) return;
 
     setSubmitting(true);
+    submittingRef.current = true;
 
+    let step = 'init';
     try {
       if (file) {
-        // File upload flow: requestUploadUrl → S3 PUT → completeUpload
         if (file.size > MAX_FILE_SIZE) {
           setError('File size exceeds maximum of 10MB');
           setSubmitting(false);
+          submittingRef.current = false;
           return;
         }
 
         if (!ALLOWED_TYPES.includes(file.type)) {
           setError('File type not allowed. Please upload a PDF, JPEG, or PNG file.');
           setSubmitting(false);
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('entityType', entityType);
-        formData.append('entityId', entityId);
-
-        const urlResult = await requestUploadUrl(formData);
-
-        if ('error' in urlResult && urlResult.error) {
-          setError(
-            typeof urlResult.error === 'string'
-              ? urlResult.error
-              : 'Failed to prepare upload'
-          );
-          setSubmitting(false);
-          return;
-        }
-
-        if (!('uploadUrl' in urlResult) || !urlResult.uploadUrl) {
-          setError('Invalid response from server');
-          setSubmitting(false);
-          return;
-        }
-
-        const uploadResponse = await fetch(urlResult.uploadUrl, {
-          method: 'PUT',
-          body: file,
-          headers: { 'Content-Type': urlResult.contentType! },
-        });
-
-        if (!uploadResponse.ok) {
-          setError(`Upload failed: ${uploadResponse.statusText}`);
-          setSubmitting(false);
-          return;
-        }
-
-        const completeResult = await completeUpload({
-          s3Key: urlResult.s3Key!,
-          fileName: urlResult.fileName!,
-          contentType: urlResult.contentType!,
-          sizeBytes: urlResult.sizeBytes!,
-          entityType,
-          entityId,
-          description: description.trim() || undefined,
-          externalUrl: externalUrl.trim() || undefined,
-          expiryDate: expiryDate || undefined,
-          documentName: documentName.trim(),
-        });
-
-        if ('error' in completeResult) {
-          setError(
-            typeof completeResult.error === 'string'
-              ? completeResult.error
-              : 'Failed to save document metadata'
-          );
-          setSubmitting(false);
-          return;
-        }
-      } else {
-        // Link-only flow: call completeUpload directly
-        const completeResult = await completeUpload({
-          s3Key: '',
-          fileName: documentName.trim(),
-          contentType: '',
-          sizeBytes: 0,
-          entityType,
-          entityId,
-          description: description.trim() || undefined,
-          externalUrl: externalUrl.trim(),
-          expiryDate: expiryDate || undefined,
-          documentName: documentName.trim(),
-        });
-
-        if ('error' in completeResult) {
-          setError(
-            typeof completeResult.error === 'string'
-              ? completeResult.error
-              : 'Failed to save document'
-          );
-          setSubmitting(false);
+          submittingRef.current = false;
           return;
         }
       }
 
-      // Success — close modal and notify parent
-      setOpen(false);
-      resetForm();
-      onUploadComplete();
+      step = 'upload';
+      const formData = new FormData();
+      formData.append('entityType', entityType);
+      formData.append('entityId', entityId);
+      formData.append('documentName', documentName.trim());
+      if (file) formData.append('file', file);
+      if (description.trim()) formData.append('description', description.trim());
+      if (externalUrl.trim()) formData.append('externalUrl', externalUrl.trim());
+      if (expiryDate) formData.append('expiryDate', expiryDate);
+
+      step = 'fetch-upload';
+      const res = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      step = 'parse-response';
+      const result = await res.json();
+
+      if (result.error) {
+        setError(String(result.error));
+        setSubmitting(false);
+        submittingRef.current = false;
+        return;
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
+      setError(`[${step}] ${err instanceof Error ? err.message : 'Upload failed'}`);
       setSubmitting(false);
+      submittingRef.current = false;
+      return;
     }
+
+    // Upload succeeded — close modal and notify parent outside upload try/catch
+    submittingRef.current = false;
+    setOpen(false);
+    resetForm();
+    onUploadComplete();
   };
 
   return (
@@ -217,7 +191,7 @@ export function DocumentUploadModal({
         <DialogHeader>
           <DialogTitle>Upload Document</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           {/* Document Name */}
           <div className="space-y-1">
             <Label htmlFor="doc-name">
@@ -310,7 +284,7 @@ export function DocumentUploadModal({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="button" onClick={handleSubmit} disabled={submitting}>
               {submitting ? (
                 <>
                   <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -321,7 +295,7 @@ export function DocumentUploadModal({
               )}
             </Button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

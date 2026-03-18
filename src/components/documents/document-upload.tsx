@@ -6,7 +6,6 @@
  */
 
 import { useState } from 'react';
-import { requestUploadUrl, completeUpload } from '@/app/(owner)/actions/documents';
 
 interface DocumentUploadProps {
   entityType: 'truck' | 'route';
@@ -54,42 +53,25 @@ export function DocumentUpload({
       }
 
       // Step 1: Request presigned upload URL
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('entityType', entityType);
-      formData.append('entityId', entityId);
+      setProgress('uploading');
+      const urlRes = await fetch('/api/documents/request-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityType, entityId, fileName: file.name, contentType: file.type, sizeBytes: file.size }),
+      });
+      const urlResult = await urlRes.json();
 
-      const urlResult = await requestUploadUrl(formData);
-
-      if ('error' in urlResult && urlResult.error) {
+      if (urlResult.error) {
         setError(urlResult.error);
         resetState();
         return;
       }
 
-      // Type guard: ensure we have the success response
-      if (!('uploadUrl' in urlResult) || !urlResult.uploadUrl) {
-        setError('Invalid response from server');
-        resetState();
-        return;
-      }
-
-      // Extract values from success response (non-null assertions safe after type guard)
-      const uploadUrl = urlResult.uploadUrl!;
-      const s3Key = urlResult.s3Key!;
-      const fileName = urlResult.fileName!;
-      const contentType = urlResult.contentType!;
-      const sizeBytes = urlResult.sizeBytes!;
-
       // Step 2: Upload file directly to S3
-      setProgress('uploading');
-
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(urlResult.uploadUrl, {
         method: 'PUT',
         body: file,
-        headers: {
-          'Content-Type': contentType,
-        },
+        headers: { 'Content-Type': urlResult.contentType },
       });
 
       if (!uploadResponse.ok) {
@@ -100,22 +82,15 @@ export function DocumentUpload({
 
       // Step 3: Save metadata to database
       setProgress('saving');
-
-      const completeResult = await completeUpload({
-        s3Key,
-        fileName,
-        contentType,
-        sizeBytes,
-        entityType,
-        entityId,
+      const completeRes = await fetch('/api/documents/complete-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ s3Key: urlResult.s3Key, fileName: urlResult.fileName, contentType: urlResult.contentType, sizeBytes: urlResult.sizeBytes, entityType, entityId }),
       });
+      const completeResult = await completeRes.json();
 
-      if ('error' in completeResult) {
-        setError(
-          typeof completeResult.error === 'string'
-            ? completeResult.error
-            : 'Failed to save document metadata'
-        );
+      if (completeResult.error) {
+        setError(completeResult.error);
         resetState();
         return;
       }

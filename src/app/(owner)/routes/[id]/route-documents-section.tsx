@@ -6,7 +6,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { DocumentUploadModal } from '@/components/documents/document-upload-modal';
 import { DocumentList } from '@/components/documents/document-list';
 
@@ -27,17 +26,15 @@ export function RouteDocumentsSection({
   routeId,
   initialDocuments,
 }: RouteDocumentsSectionProps) {
-  const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>(initialDocuments);
 
-  // Sync local state when server re-fetches and passes new initialDocuments after router.refresh()
+  // Sync local state when server re-fetches and passes new initialDocuments after reload
   useEffect(() => {
     setDocuments(initialDocuments);
   }, [initialDocuments]);
 
   const handleRefresh = () => {
-    // Trigger server-side re-fetch using Next.js App Router pattern
-    router.refresh();
+    window.location.reload();
   };
 
   return (

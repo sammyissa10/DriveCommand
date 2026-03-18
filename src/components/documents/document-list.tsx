@@ -7,7 +7,6 @@
  */
 
 import { useOptimistic, useState } from 'react';
-import { getDownloadUrl, deleteDocument } from '@/app/(owner)/actions/documents';
 
 interface Document {
   id: string;
@@ -40,14 +39,14 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
   const handleDownload = async (docId: string, fileName: string) => {
     setDownloading(docId);
     try {
-      const result = await getDownloadUrl(docId);
+      const res = await fetch(`/api/documents/download-url/${docId}`);
+      const result = await res.json();
 
-      if ('error' in result) {
+      if (result.error) {
         alert(`Download failed: ${result.error}`);
         return;
       }
 
-      // Open download URL in new tab
       window.open(result.downloadUrl, '_blank');
     } catch (error) {
       alert(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -57,26 +56,22 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
   };
 
   const handleDelete = async (docId: string, fileName: string) => {
-    // Confirmation prompt
     if (!confirm(`Are you sure you want to delete "${fileName}"?`)) {
       return;
     }
 
     setDeleting(docId);
-
-    // Optimistic update: remove from list immediately
     setOptimisticDocuments(docId);
 
     try {
-      const result = await deleteDocument(docId);
+      const res = await fetch(`/api/documents/delete/${docId}`, { method: 'DELETE' });
+      const result = await res.json();
 
-      if ('error' in result) {
+      if (result.error) {
         alert(`Delete failed: ${result.error}`);
-        // Don't call onDocumentDeleted - let the list revert optimistic change
         return;
       }
 
-      // Success - notify parent to refresh
       onDocumentDeleted();
     } catch (error) {
       alert(`Delete failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

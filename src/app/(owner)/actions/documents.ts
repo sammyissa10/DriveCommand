@@ -9,7 +9,7 @@ import { requireRole, getCurrentUser } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
-import { validateFileType, MAX_FILE_SIZE } from '@/lib/storage/validate';
+import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { generateUploadUrl, generateDownloadUrl, deleteS3Object } from '@/lib/storage/presigned';
 import { documentCreateSchema } from '@/lib/validations/document.schemas';
 import { nanoid } from 'nanoid';
@@ -17,79 +17,44 @@ import { revalidatePath } from 'next/cache';
 
 /**
  * Request a presigned upload URL for a file.
- * Validates file type using magic bytes before generating URL.
+ * Client validates file type before calling; server generates the presigned URL.
  * Requires OWNER or MANAGER role.
  */
-export async function requestUploadUrl(formData: FormData) {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-
+export async function requestUploadUrl(
+  entityType: 'truck' | 'route',
+  entityId: string,
+  fileName: string,
+  contentType: string,
+  sizeBytes: number
+) {
   try {
-    // Extract form data
-    const file = formData.get('file') as File;
-    const entityType = formData.get('entityType') as 'truck' | 'route';
-    const entityId = formData.get('entityId') as string;
+    await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-    if (!file || !entityType || !entityId) {
-      return {
-        error: 'Missing required fields: file, entityType, and entityId are required',
-      };
+    if (!entityType || !entityId || !fileName || !contentType || !sizeBytes) {
+      return { error: 'Missing required fields' };
     }
 
-    // Validate file size
-    if (file.size > MAX_FILE_SIZE) {
-      return {
-        error: `File size exceeds maximum allowed size of ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
-      };
+    if (sizeBytes > MAX_FILE_SIZE) {
+      return { error: `File size exceeds maximum allowed size of ${MAX_FILE_SIZE / (1024 * 1024)}MB` };
     }
 
-    // Read first 4100 bytes for magic bytes validation
-    const buffer = await file.slice(0, 4100).arrayBuffer();
-
-    // Validate file type using magic bytes (prevents MIME spoofing)
-    const validation = await validateFileType(buffer, file.type);
-    if (!validation.valid) {
-      return {
-        error: validation.error,
-      };
-    }
-
-    // Get tenant ID
     const tenantId = await requireTenantId();
-
-    // Generate unique file ID
     const fileId = nanoid();
-
-    // Sanitize filename (remove path separators)
-    const sanitizedFileName = file.name.replace(/[/\\]/g, '-');
-
-    // Determine category from entity type
+    const sanitizedFileName = fileName.replace(/[/\\]/g, '-');
     const category = entityType === 'truck' ? 'trucks' : 'routes';
 
-    // Generate presigned upload URL
     const { uploadUrl, s3Key } = await generateUploadUrl(
       tenantId,
       category,
       fileId,
       sanitizedFileName,
-      validation.detectedType,
-      file.size
+      contentType,
+      sizeBytes
     );
 
-    return {
-      uploadUrl,
-      s3Key,
-      fileId,
-      fileName: file.name,
-      contentType: validation.detectedType,
-      sizeBytes: file.size,
-      entityType,
-      entityId,
-    };
+    return { uploadUrl, s3Key, fileId, fileName, contentType, sizeBytes, entityType, entityId };
   } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : 'Failed to generate upload URL',
-    };
+    return { error: error instanceof Error ? error.message : 'Failed to generate upload URL' };
   }
 }
 
@@ -110,29 +75,20 @@ export async function completeUpload(data: {
   expiryDate?: string; // ISO string
   documentName?: string;
 }) {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-
   try {
-    // Get tenant ID and current user
+    await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
     const tenantId = await requireTenantId();
     const user = await getCurrentUser();
 
     if (!user) {
-      return {
-        error: 'User not found',
-      };
+      return { error: 'User not found' };
     }
 
-    // CRITICAL: Verify s3Key starts with tenant prefix (defense in depth)
-    // Skip check when it's a link-only document (no s3Key)
     if (data.s3Key && !data.s3Key.startsWith(`tenant-${tenantId}/`)) {
-      return {
-        error: 'Invalid S3 key: does not match tenant',
-      };
+      return { error: 'Invalid S3 key: does not match tenant' };
     }
 
-    // Build document data based on entity type
     const documentData: any = {
       fileName: data.documentName || data.fileName,
       s3Key: data.s3Key || '',
@@ -150,16 +106,13 @@ export async function completeUpload(data: {
     if (data.externalUrl) documentData.externalUrl = data.externalUrl;
     if (data.expiryDate) documentData.expiryDate = new Date(data.expiryDate);
 
-    // Validate with Zod schema
     const result = documentCreateSchema.safeParse(documentData);
 
     if (!result.success) {
-      return {
-        error: result.error.flatten().fieldErrors,
-      };
+      const messages = Object.values(result.error.flatten().fieldErrors).flat().join(', ');
+      return { error: messages || 'Invalid document data' };
     }
 
-    // Create document via repository
     const repo = new DocumentRepository(tenantId);
     await repo.create({
       ...result.data,
@@ -167,16 +120,9 @@ export async function completeUpload(data: {
       uploadedBy: user.id,
     });
 
-    // Revalidate the entity detail page
-    const entityPath =
-      data.entityType === 'truck' ? `/trucks/${data.entityId}` : `/routes/${data.entityId}`;
-    revalidatePath(entityPath);
-
     return { success: true };
   } catch (error) {
-    return {
-      error: error instanceof Error ? error.message : 'Failed to complete upload',
-    };
+    return { error: error instanceof Error ? error.message : 'Failed to complete upload' };
   }
 }
 

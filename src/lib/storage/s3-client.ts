@@ -46,16 +46,11 @@ export const s3Client = new Proxy({} as S3Client, {
   },
 });
 
-// Lazy bucket name (throws only when accessed)
-export const bucket = new Proxy(
-  {},
-  {
-    get() {
-      const bucketName = process.env.S3_BUCKET;
-      if (!bucketName) {
-        throw new Error('S3_BUCKET environment variable is required');
-      }
-      return bucketName;
-    },
+// Returns the bucket name as a plain string — throws only when called if env var is missing.
+export function getBucketName(): string {
+  const bucketName = process.env.S3_BUCKET;
+  if (!bucketName) {
+    throw new Error('S3_BUCKET environment variable is required');
   }
-) as string;
+  return bucketName;
+}

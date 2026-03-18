@@ -16,7 +16,7 @@ import {
   AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3Client, bucket } from './s3-client';
+import { s3Client, getBucketName } from './s3-client';
 import type { DocumentCategory } from './presigned';
 
 /**
@@ -42,7 +42,7 @@ export async function initiateMultipartUpload(
   const s3Key = `tenant-${tenantId}/${category}/${fileId}-${fileName}`;
 
   const command = new CreateMultipartUploadCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
     ContentType: contentType,
   });
@@ -74,7 +74,7 @@ export async function getPartUploadUrl(
   partNumber: number
 ): Promise<string> {
   const command = new UploadPartCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
     UploadId: uploadId,
     PartNumber: partNumber,
@@ -99,7 +99,7 @@ export async function completeMultipartUpload(
   parts: Array<{ PartNumber: number; ETag: string }>
 ): Promise<void> {
   const command = new CompleteMultipartUploadCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
     UploadId: uploadId,
     MultipartUpload: {
@@ -121,7 +121,7 @@ export async function completeMultipartUpload(
  */
 export async function abortMultipartUpload(s3Key: string, uploadId: string): Promise<void> {
   const command = new AbortMultipartUploadCommand({
-    Bucket: bucket,
+    Bucket: getBucketName(),
     Key: s3Key,
     UploadId: uploadId,
   });
