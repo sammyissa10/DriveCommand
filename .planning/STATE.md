@@ -504,6 +504,7 @@ None blocking immediate progress.
 | 78 | TKT-0028 comprehensive mobile fix — all owner-portal pages mobile-friendly at 390px (CRM, compliance, lane analytics, profit predictor, IFTA, settings, truck/driver detail headers) | 2026-03-15 | a930ed4 | [78-tkt-0028-comprehensive-mobile-fix](./quick/78-tkt-0028-comprehensive-mobile-fix/) |
 | 79 | TKT-0028 mobile audit and fix ALL sidebar pages — detail page action headers flex-col on mobile, responsive h1 on all form pages, support tab bar overflow fix (17 files) | 2026-03-16 | 56d44ed | [79-tkt-0028-mobile-audit-and-fix-all-sideba](./quick/79-tkt-0028-mobile-audit-and-fix-all-sideba/) |
 | 80 | TKT-0018 fix: skip admin reply emails to non-deliverable domains (drivecommand.com, example.com, test.com) — guard in sendAdminReplyNotification, diagnostic warn in addAdminReply | 2026-03-16 | 186727d | [80-tkt-0018-fix-support-ticket-reply-emails](./quick/80-tkt-0018-fix-support-ticket-reply-emails/) |
+| 81 | Fix mobile layout on loads and routes list pages to match the card-based pattern used on other fixed pages | 2026-03-18 | 1a029ed | [81-fix-mobile-layout-on-loads-and-routes-li](./quick/81-fix-mobile-layout-on-loads-and-routes-li/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
@@ -560,7 +561,7 @@ None blocking immediate progress.
 
 ## Session Continuity
 
-Last session: 2026-03-10
-Stopped at: Completed Quick-45 — TKT-0011 Routes UX (condensed title, document upload sync fix, co-driver support).
+Last session: 2026-03-18
+Stopped at: Completed Quick-81 — Fix mobile layout on loads and routes list pages.
 Resume file: None
-Next action: Continue v4.0 milestone or pick next quick task.
+Next action: Deploy to Vercel or pick next quick task.
