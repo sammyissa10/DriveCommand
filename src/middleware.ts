@@ -49,6 +49,7 @@ const OWNER_PATHS = [
   '/fuel',
   '/safety',
   '/tags',
+  '/subscription',
 ];
 
 function isPublicPath(pathname: string): boolean {

@@ -24,6 +24,7 @@ import {
   FileSpreadsheet,
   Settings,
   LifeBuoy,
+  CreditCard,
 } from "lucide-react"
 import {
   Sidebar,
@@ -352,6 +353,18 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/subscription')}
+                    tooltip="Subscription"
+                  >
+                    <Link href="/subscription">
+                      <CreditCard />
+                      <span>Subscription</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
