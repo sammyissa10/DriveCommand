@@ -42,8 +42,8 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
   return (
     <div className="space-y-4">
       {/* Tab bar */}
-      <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
-        <div className="flex gap-1 border-b border-border flex-nowrap whitespace-nowrap">
+      <div className="overflow-x-auto border-b border-border">
+        <div className="flex gap-1 flex-nowrap whitespace-nowrap">
           {TABS.map((tab) => (
             <button
               key={tab.value}

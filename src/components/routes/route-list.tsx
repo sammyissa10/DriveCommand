@@ -206,7 +206,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
     <div className="space-y-4">
       {/* Filter UI */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative max-w-sm">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
@@ -221,7 +221,7 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
           onChange={(e) =>
             table.getColumn('status')?.setFilterValue(e.target.value || undefined)
           }
-          className="rounded-lg border border-input bg-card px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
+          className="w-full sm:w-auto rounded-lg border border-input bg-card px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
         >
           <option value="">All Statuses</option>
           <option value="PLANNED">Planned</option>
