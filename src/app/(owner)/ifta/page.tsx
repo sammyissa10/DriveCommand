@@ -3,6 +3,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { getIFTAReport, generateIFTACSV } from '@/app/(owner)/actions/ifta';
 import { IFTAQuarterSelector } from '@/components/ifta/ifta-quarter-selector';
 import { IFTAReportTable } from '@/components/ifta/ifta-report-table';
+import { ComingSoonBanner } from '@/components/ui/coming-soon-banner';
 
 // Force fresh data on every load — tax data must never be stale
 export const fetchCache = 'force-no-store';
@@ -73,6 +74,8 @@ export default async function IFTAPage({
 
   return (
     <div className="space-y-6">
+      <ComingSoonBanner message="IFTA mileage calculations will auto-populate from ELD data once integrations are connected. Currently uses manually logged fuel entries." />
+
       {/* Page header */}
       <div className="flex flex-col gap-4">
         <div>

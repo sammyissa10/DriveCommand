@@ -8,6 +8,7 @@ import {
   getFuelEfficiencyRankings,
 } from './actions';
 import { listTags } from '@/app/(owner)/actions/tags';
+import { ComingSoonBanner } from '@/components/ui/coming-soon-banner';
 import { FuelSummaryCard } from '@/components/fuel/fuel-summary-card';
 import { MPGTrendChart } from '@/components/fuel/mpg-trend-chart';
 import { EmissionsCard } from '@/components/fuel/emissions-card';
@@ -55,6 +56,8 @@ export default async function FuelPage({
 
   return (
     <div className="space-y-6">
+      <ComingSoonBanner message="Fuel tracking will sync automatically with ELD and fuel card integrations. Data shown is based on manually logged fill-ups." />
+
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

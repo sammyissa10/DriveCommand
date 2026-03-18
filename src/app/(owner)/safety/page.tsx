@@ -2,6 +2,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getFleetSafetyScore, getEventDistribution, getSafetyScoreTrend, getDriverRankings } from './actions';
 import { listTags } from '@/app/(owner)/actions/tags';
+import { ComingSoonBanner } from '@/components/ui/coming-soon-banner';
 import { SafetyScoreCard } from '@/components/safety/safety-score-card';
 import { EventDistributionChart } from '@/components/safety/event-distribution-chart';
 import { SafetyTrendChart } from '@/components/safety/safety-trend-chart';
@@ -45,6 +46,8 @@ export default async function SafetyPage({
 
   return (
     <div className="space-y-6">
+      <ComingSoonBanner message="Safety scoring will sync automatically once ELD integrations are connected. Data shown is based on manually logged incidents." />
+
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
