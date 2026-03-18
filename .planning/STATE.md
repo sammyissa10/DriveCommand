@@ -405,6 +405,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-80]: Block admin reply emails by domain (not per-address) using UNDELIVERABLE_DOMAINS Set — silent early return preserves fire-and-forget contract
 - [Phase 27-automated-playwright-tests]: Driver access boundaries: test.describe blocks with separate test.use() per role — cleanest Playwright pattern for multi-role tests in one file
 - [Phase 27-automated-playwright-tests]: Access denial assertions use URL exclusion (not.toContain) not exact match — resilient across different redirect targets per role
+- [Phase quick-81]: getRouteStatusClasses refactored to return a single class string instead of separate bgColor/textColor to ensure dark mode variants always travel with light variants
 
 ### Pending Todos
 
