@@ -42,33 +42,35 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
   return (
     <div className="space-y-4">
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-border">
-        {TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === tab.value
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
-            }`}
-          >
-            {tab.label}
-            {tab.value !== 'ALL' && (
-              <span className="ml-1.5 text-xs text-muted-foreground">
-                ({loads.filter((l) => {
-                  if (tab.value === 'IN_TRANSIT') return l.status === 'IN_TRANSIT' || l.status === 'PICKED_UP';
-                  return l.status === tab.value;
-                }).length})
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
+        <div className="flex gap-1 border-b border-border flex-nowrap whitespace-nowrap">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.value
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+              }`}
+            >
+              {tab.label}
+              {tab.value !== 'ALL' && (
+                <span className="ml-1.5 text-xs text-muted-foreground">
+                  ({loads.filter((l) => {
+                    if (tab.value === 'IN_TRANSIT') return l.status === 'IN_TRANSIT' || l.status === 'PICKED_UP';
+                    return l.status === tab.value;
+                  }).length})
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Table or empty state */}
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-12 text-center">
+        <div className="rounded-xl border border-border bg-card p-12 text-center">
           <Package className="mx-auto h-12 w-12 text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-semibold">No loads yet</h3>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -88,7 +90,7 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block rounded-lg border border-border bg-card overflow-hidden">
+          <div className="hidden md:block rounded-xl border border-border bg-card overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -161,6 +163,9 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                     <span className="font-medium text-foreground">
                       ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
+                  </div>
+                  <div className="mt-0.5 text-sm text-muted-foreground truncate">
+                    {load.origin} &rarr; {load.destination}
                   </div>
                   <div className="mt-0.5 text-xs text-muted-foreground">
                     {new Date(load.pickupDate).toLocaleDateString()}
