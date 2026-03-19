@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, ChevronDown } from 'lucide-react';
 
 interface InvoiceItem {
   description: string;
@@ -19,11 +19,137 @@ interface InvoiceItemsEditorProps {
   onSubtotalChange?: (subtotal: number) => void;
 }
 
+interface PredefinedLineItem {
+  label: string;
+  defaultPrice: string;
+}
+
+const PREDEFINED_LINE_ITEMS: PredefinedLineItem[] = [
+  { label: 'Freight Charges', defaultPrice: '' },
+  { label: 'Fuel Surcharge', defaultPrice: '' },
+  { label: 'Detention', defaultPrice: '75.00' },
+  { label: 'Layover', defaultPrice: '250.00' },
+  { label: 'Lumper Fee', defaultPrice: '' },
+  { label: 'TONU (Truck Ordered Not Used)', defaultPrice: '250.00' },
+  { label: 'Accessorial Charges', defaultPrice: '' },
+  { label: 'Stop-Off Charge', defaultPrice: '50.00' },
+  { label: 'Deadhead Miles', defaultPrice: '' },
+  { label: 'Hazmat Fee', defaultPrice: '150.00' },
+];
+
 const inputClass =
   'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 
 function emptyItem(): InvoiceItem {
   return { description: '', quantity: '', unitPrice: '' };
+}
+
+interface DescriptionComboProps {
+  value: string;
+  onChange: (description: string, autoFillPrice?: string) => void;
+  currentUnitPrice: string;
+}
+
+function DescriptionCombo({ value, onChange, currentUnitPrice }: DescriptionComboProps) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const filteredItems =
+    value.trim() === ''
+      ? PREDEFINED_LINE_ITEMS
+      : PREDEFINED_LINE_ITEMS.filter((item) =>
+          item.label.toLowerCase().includes(value.toLowerCase())
+        );
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleMouseDown(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, []);
+
+  function handleSelect(item: PredefinedLineItem) {
+    const shouldAutoFill =
+      item.defaultPrice !== '' &&
+      (currentUnitPrice === '' || currentUnitPrice === '0');
+    onChange(item.label, shouldAutoFill ? item.defaultPrice : undefined);
+    setOpen(false);
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    onChange(e.target.value);
+    setOpen(true);
+  }
+
+  function handleFocus() {
+    if (value === '') {
+      setOpen(true);
+    }
+  }
+
+  return (
+    <div ref={wrapperRef} className="relative">
+      <input
+        type="text"
+        placeholder="Description"
+        value={value}
+        onChange={handleInputChange}
+        onFocus={handleFocus}
+        className={`${inputClass} pr-8`}
+        required
+        autoComplete="off"
+      />
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => setOpen((prev) => !prev)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Show predefined items"
+      >
+        <ChevronDown className="h-4 w-4" />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-border bg-popover shadow-md z-10">
+          {filteredItems.length === 0 ? (
+            <div className="px-3 py-2 text-sm text-muted-foreground">No matches — type to use custom</div>
+          ) : (
+            filteredItems.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onMouseDown={(e) => {
+                  // Prevent input blur before click fires
+                  e.preventDefault();
+                  handleSelect(item);
+                }}
+                className="flex w-full items-center px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+              >
+                <span className="flex-1 text-left">{item.label}</span>
+                {item.defaultPrice && (
+                  <span className="text-muted-foreground ml-3">${item.defaultPrice}</span>
+                )}
+              </button>
+            ))
+          )}
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setOpen(false);
+            }}
+            className="flex w-full items-center px-3 py-2 text-sm cursor-pointer text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors border-t border-border"
+          >
+            Custom entry — type freely
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceItemsEditorProps) {
@@ -53,6 +179,17 @@ export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceIt
     setItems((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleDescriptionChange = (index: number, description: string, autoFillPrice?: string) => {
+    setItems((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], description };
+      if (autoFillPrice !== undefined) {
+        updated[index] = { ...updated[index], unitPrice: autoFillPrice };
+      }
       return updated;
     });
   };
@@ -93,13 +230,12 @@ export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceIt
         return (
           <div key={index} className="grid grid-cols-12 gap-2 items-center">
             <div className="col-span-5">
-              <input
-                type="text"
-                placeholder="Description"
+              <DescriptionCombo
                 value={item.description}
-                onChange={(e) => updateItem(index, 'description', e.target.value)}
-                className={inputClass}
-                required
+                currentUnitPrice={item.unitPrice}
+                onChange={(description, autoFillPrice) =>
+                  handleDescriptionChange(index, description, autoFillPrice)
+                }
               />
             </div>
             <div className="col-span-2">
