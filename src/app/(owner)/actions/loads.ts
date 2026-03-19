@@ -115,8 +115,6 @@ async function generateLoadNumber(prisma: any, tenantId: string): Promise<string
  * Create a new load.
  */
 export async function createLoad(prevState: any, formData: FormData) {
-  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
@@ -135,13 +133,19 @@ export async function createLoad(prevState: any, formData: FormData) {
     return { error: result.error.flatten().fieldErrors };
   }
 
-  const tenantId = await requireTenantId();
-  const userId = await requireAuth();
-  const prisma = await getTenantPrisma();
+  const pickupLat = parseFloat(formData.get('pickupLat') as string);
+  const pickupLng = parseFloat(formData.get('pickupLng') as string);
+  const deliveryLat = parseFloat(formData.get('deliveryLat') as string);
+  const deliveryLng = parseFloat(formData.get('deliveryLng') as string);
 
   let createdId: string;
 
   try {
+    await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+    const tenantId = await requireTenantId();
+    const userId = await requireAuth();
+    const prisma = await getTenantPrisma();
+
     const loadNumber = await generateLoadNumber(prisma, tenantId);
 
     const load = await prisma.load.create({
@@ -158,6 +162,10 @@ export async function createLoad(prevState: any, formData: FormData) {
         commodity: result.data.commodity || null,
         rate: new Decimal(result.data.rate),
         notes: result.data.notes || null,
+        pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : null,
+        pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : null,
+        deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : null,
+        deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : null,
         createdById: userId,
         updatedById: userId,
       },
@@ -165,7 +173,9 @@ export async function createLoad(prevState: any, formData: FormData) {
 
     createdId = load.id;
   } catch (error: any) {
-    return { error: 'Failed to create load. Please try again.' };
+    const msg = error?.message || '';
+    // Surface the real error so it's visible in the form
+    return { error: msg || 'Failed to create load. Please try again.' };
   }
 
   revalidatePath('/loads');
@@ -199,6 +209,11 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
   const userId = await requireAuth();
   const prisma = await getTenantPrisma();
 
+  const pickupLat = parseFloat(formData.get('pickupLat') as string);
+  const pickupLng = parseFloat(formData.get('pickupLng') as string);
+  const deliveryLat = parseFloat(formData.get('deliveryLat') as string);
+  const deliveryLng = parseFloat(formData.get('deliveryLng') as string);
+
   try {
     await prisma.load.update({
       where: { id },
@@ -213,6 +228,10 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
         commodity: result.data.commodity || null,
         rate: new Decimal(result.data.rate),
         notes: result.data.notes || null,
+        ...(!isNaN(pickupLat) && { pickupLat: new Decimal(pickupLat) }),
+        ...(!isNaN(pickupLng) && { pickupLng: new Decimal(pickupLng) }),
+        ...(!isNaN(deliveryLat) && { deliveryLat: new Decimal(deliveryLat) }),
+        ...(!isNaN(deliveryLng) && { deliveryLng: new Decimal(deliveryLng) }),
         updatedById: userId,
       },
     });
@@ -342,6 +361,16 @@ export async function updateLoadStatus(id: string, newStatus: string) {
     const allowedTransitions = STATUS_TRANSITIONS[load.status] || [];
     if (!allowedTransitions.includes(newStatus)) {
       return { error: `Cannot transition from ${load.status} to ${newStatus}.` };
+    }
+
+    // Guard: require at least one linked invoice before marking as INVOICED
+    if (newStatus === 'INVOICED') {
+      const invoiceCount = await prisma.invoice.count({
+        where: { loadId: id, status: { not: 'CANCELLED' } },
+      });
+      if (invoiceCount === 0) {
+        return { error: 'An invoice must be created and linked to this load before it can be marked as Invoiced.' };
+      }
     }
 
     await prisma.load.update({

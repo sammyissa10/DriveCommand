@@ -1,6 +1,8 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
+import { Navigation } from 'lucide-react';
+import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
 
 interface LoadFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -25,8 +27,17 @@ const inputClass =
   'w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
+interface Coords { lat: number; lng: number }
+
 export function LoadForm({ action, initialData, submitLabel, customers, drivers = [] }: LoadFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  const [originCoords, setOriginCoords] = useState<Coords | null>(null);
+  const [destCoords, setDestCoords] = useState<Coords | null>(null);
+
+  const distance =
+    originCoords && destCoords
+      ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      : null;
 
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
@@ -91,16 +102,18 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             <label htmlFor="origin" className={labelClass}>
               Origin
             </label>
-            <input
-              type="text"
+            <AddressAutocomplete
               id="origin"
               name="origin"
               defaultValue={initialData?.origin || ''}
               disabled={isPending}
               className={inputClass}
               required
-              placeholder="City, State"
+              placeholder="City, State or full address"
+              onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
             />
+            <input type="hidden" name="pickupLat" value={originCoords ? String(originCoords.lat) : ''} />
+            <input type="hidden" name="pickupLng" value={originCoords ? String(originCoords.lng) : ''} />
             {state?.error?.origin && (
               <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
             )}
@@ -109,21 +122,34 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             <label htmlFor="destination" className={labelClass}>
               Destination
             </label>
-            <input
-              type="text"
+            <AddressAutocomplete
               id="destination"
               name="destination"
               defaultValue={initialData?.destination || ''}
               disabled={isPending}
               className={inputClass}
               required
-              placeholder="City, State"
+              placeholder="City, State or full address"
+              onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
             />
+            <input type="hidden" name="deliveryLat" value={destCoords ? String(destCoords.lat) : ''} />
+            <input type="hidden" name="deliveryLng" value={destCoords ? String(destCoords.lng) : ''} />
             {state?.error?.destination && (
               <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
             )}
           </div>
         </div>
+
+        {/* Distance badge — shown once both locations are geocoded */}
+        {distance !== null && (
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
+            <Navigation className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+              Estimated distance: <strong>{Math.round(distance).toLocaleString()} miles</strong>
+            </span>
+            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">straight-line est.</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>

@@ -11,8 +11,8 @@ import { z } from 'zod';
  * Conversion to Date happens in the server action.
  */
 export const routeCreateSchema = z.object({
-  origin: z.string().min(1, 'Origin is required').max(200),
-  destination: z.string().min(1, 'Destination is required').max(200),
+  origin: z.string().min(1, 'Origin is required').max(500),
+  destination: z.string().min(1, 'Destination is required').max(500),
   scheduledDate: z.string().min(1, 'Scheduled date is required'),
   driverId: z.string().uuid('Invalid driver ID'),
   truckId: z.string().uuid('Invalid truck ID'),

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createLoad } from '@/app/(owner)/actions/loads';
 import { LoadForm } from '@/components/loads/load-form';
@@ -29,7 +30,10 @@ export default async function NewLoadPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
+        <Link href="/loads" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          ← Back to Loads
+        </Link>
+        <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
         <p className="mt-1 text-muted-foreground">Add a new load to your board</p>
       </div>
       <LoadForm action={createLoad} customers={customers} drivers={drivers} submitLabel="Create Load" />

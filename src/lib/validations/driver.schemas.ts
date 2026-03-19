@@ -34,7 +34,7 @@ export const driverInviteSchema = z.object({
     .regex(/^[0-9+\-() ]+$/, 'Invalid phone number format')
     .optional()
     .or(z.literal('')),
-  address: z.string().max(200, 'Address too long').optional().or(z.literal('')),
+  address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
   licenseExpirationDate: z.string().optional().or(z.literal('')),
 });
 
@@ -66,7 +66,7 @@ export const driverUpdateSchema = z.object({
     .regex(/^[0-9+\-() ]+$/, 'Invalid phone number format')
     .optional()
     .or(z.literal('')),
-  address: z.string().max(200, 'Address too long').optional().or(z.literal('')),
+  address: z.string().max(500, 'Address too long').optional().or(z.literal('')),
   licenseExpirationDate: z.string().optional().or(z.literal('')),
 });
 
