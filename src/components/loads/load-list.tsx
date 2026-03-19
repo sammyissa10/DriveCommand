@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Package, ChevronRight } from 'lucide-react';
 import { LoadStatusBadge } from './load-status-badge';
+import { formatAddress } from '@/components/shared/address-autocomplete';
 
 interface LoadItem {
   id: string;
@@ -121,7 +122,7 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                       </td>
                       <td className="px-4 py-3 text-foreground">{load.customer.companyName}</td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {load.origin} &rarr; {load.destination}
+                        {formatAddress(load.origin)} &rarr; {formatAddress(load.destination)}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {new Date(load.pickupDate).toLocaleDateString()}
@@ -165,7 +166,7 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                     </span>
                   </div>
                   <div className="mt-0.5 text-sm text-muted-foreground truncate">
-                    {load.origin} &rarr; {load.destination}
+                    {formatAddress(load.origin)} &rarr; {formatAddress(load.destination)}
                   </div>
                   <div className="mt-0.5 text-xs text-muted-foreground">
                     {new Date(load.pickupDate).toLocaleDateString()}

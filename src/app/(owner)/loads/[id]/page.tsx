@@ -8,6 +8,7 @@ import { DispatchModal } from '@/components/loads/dispatch-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
 import { DeleteLoadButton } from '@/components/loads/delete-load-button';
 import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
+import { formatAddress } from '@/components/shared/address-autocomplete';
 import { DownloadRateConfirmationButton } from '@/components/loads/download-rate-confirmation-button';
 
 const STATUS_LIFECYCLE = [
@@ -113,7 +114,7 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
             <LoadStatusBadge status={load.status} />
           </div>
           <p className="mt-1 text-muted-foreground">
-            {load.origin} &rarr; {load.destination}
+            {formatAddress(load.origin)} &rarr; {formatAddress(load.destination)}
           </p>
         </div>
 
@@ -170,13 +171,13 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
               <dt className="text-muted-foreground flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5" /> Origin
               </dt>
-              <dd className="font-medium mt-0.5">{load.origin}</dd>
+              <dd className="font-medium mt-0.5">{formatAddress(load.origin)}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground flex items-center gap-1.5">
                 <MapPin className="h-3.5 w-3.5" /> Destination
               </dt>
-              <dd className="font-medium mt-0.5">{load.destination}</dd>
+              <dd className="font-medium mt-0.5">{formatAddress(load.destination)}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground flex items-center gap-1.5">

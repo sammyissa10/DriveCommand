@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, Search, MapPin } from 'lucide-react';
+import { formatAddress } from '@/components/shared/address-autocomplete';
 import {
   useReactTable,
   getCoreRowModel,
@@ -69,14 +70,14 @@ const columns = [
     header: 'Origin',
     size: 180,
     cell: (info) => (
-      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+      <span className="truncate block" title={info.getValue()}>{formatAddress(info.getValue())}</span>
     ),
   }),
   columnHelper.accessor('destination', {
     header: 'Destination',
     size: 180,
     cell: (info) => (
-      <span className="truncate block" title={info.getValue()}>{info.getValue()}</span>
+      <span className="truncate block" title={info.getValue()}>{formatAddress(info.getValue())}</span>
     ),
   }),
   columnHelper.accessor('scheduledDate', {
@@ -324,9 +325,9 @@ export function RouteList({ routes, onDelete }: RouteListProps) {
                   </span>
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <span className="truncate">{route.origin}</span>
+                  <span className="truncate">{formatAddress(route.origin)}</span>
                   <span>&rarr;</span>
-                  <span className="truncate">{route.destination}</span>
+                  <span className="truncate">{formatAddress(route.destination)}</span>
                 </div>
                 <div className="mt-0.5 text-xs text-muted-foreground">{displayDate}</div>
               </div>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { formatAddress } from '@/components/shared/address-autocomplete';
 
 interface Driver {
   id: string;
@@ -95,12 +96,12 @@ export function RouteDetail({
         <div className="grid gap-4 lg:grid-cols-2">
           <div>
             <p className="text-sm font-medium text-muted-foreground">Origin</p>
-            <p className="mt-1 text-sm text-card-foreground">{route.origin}</p>
+            <p className="mt-1 text-sm text-card-foreground">{formatAddress(route.origin)}</p>
           </div>
 
           <div>
             <p className="text-sm font-medium text-muted-foreground">Destination</p>
-            <p className="mt-1 text-sm text-card-foreground">{route.destination}</p>
+            <p className="mt-1 text-sm text-card-foreground">{formatAddress(route.destination)}</p>
           </div>
 
           <div>
