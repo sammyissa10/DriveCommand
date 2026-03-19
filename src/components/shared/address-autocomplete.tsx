@@ -82,19 +82,40 @@ export function AddressAutocomplete({
           format: 'json',
           limit: '6',
           countrycodes: 'us',
-          addressdetails: '0',
+          addressdetails: '1',
         });
         const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
           headers: { Accept: 'application/json' },
         });
         if (!res.ok) return;
-        const data: Array<{ display_name: string; lat: string; lon: string }> = await res.json();
+        const data: Array<{
+          display_name: string;
+          lat: string;
+          lon: string;
+          address: {
+            house_number?: string;
+            road?: string;
+            city?: string;
+            town?: string;
+            village?: string;
+            state?: string;
+            postcode?: string;
+          };
+        }> = await res.json();
         setSuggestions(
-          data.map((d) => ({
-            displayName: d.display_name,
-            lat: parseFloat(d.lat),
-            lng: parseFloat(d.lon),
-          }))
+          data.map((d) => {
+            const a = d.address ?? {};
+            const street = [a.house_number, a.road].filter(Boolean).join(' ');
+            const city = a.city || a.town || a.village || '';
+            const state = a.state || '';
+            const zip = a.postcode || '';
+            const parts = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean);
+            return {
+              displayName: parts.join(', '),
+              lat: parseFloat(d.lat),
+              lng: parseFloat(d.lon),
+            };
+          })
         );
         setIsOpen(data.length > 0);
       } catch {
