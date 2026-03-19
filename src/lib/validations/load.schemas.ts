@@ -7,7 +7,7 @@ export const loadCreateSchema = z.object({
   destination: z.string().min(1, 'Destination is required').max(500),
   pickupDate: z.string().min(1, 'Pickup date is required'),
   deliveryDate: z.string().optional().or(z.literal('')),
-  weight: z.coerce.number().int().positive().optional().or(z.literal(0)),
+  weight: z.coerce.number().int().positive().optional().or(z.literal('')),
   commodity: z.string().max(100).optional().or(z.literal('')),
   rate: z.coerce.number().positive('Rate must be positive'),
   notes: z.string().max(2000).optional().or(z.literal('')),

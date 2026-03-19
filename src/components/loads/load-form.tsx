@@ -46,6 +46,11 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
           <p className="text-sm text-red-800">{state.error}</p>
         </div>
       )}
+      {state?.error && typeof state.error === 'object' && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+          <p className="text-sm text-red-800">Please fix the errors below and try again.</p>
+        </div>
+      )}
 
       {/* Load Details */}
       <div className="space-y-4">
