@@ -19,22 +19,17 @@ interface InvoiceItemsEditorProps {
   onSubtotalChange?: (subtotal: number) => void;
 }
 
-interface PredefinedLineItem {
-  label: string;
-  defaultPrice: string;
-}
-
-const PREDEFINED_LINE_ITEMS: PredefinedLineItem[] = [
-  { label: 'Freight Charges', defaultPrice: '' },
-  { label: 'Fuel Surcharge', defaultPrice: '' },
-  { label: 'Detention', defaultPrice: '75.00' },
-  { label: 'Layover', defaultPrice: '250.00' },
-  { label: 'Lumper Fee', defaultPrice: '' },
-  { label: 'TONU (Truck Ordered Not Used)', defaultPrice: '250.00' },
-  { label: 'Accessorial Charges', defaultPrice: '' },
-  { label: 'Stop-Off Charge', defaultPrice: '50.00' },
-  { label: 'Deadhead Miles', defaultPrice: '' },
-  { label: 'Hazmat Fee', defaultPrice: '150.00' },
+const PREDEFINED_LINE_ITEMS: string[] = [
+  'Freight Charges',
+  'Fuel Surcharge',
+  'Detention',
+  'Layover',
+  'Lumper Fee',
+  'TONU (Truck Ordered Not Used)',
+  'Accessorial Charges',
+  'Stop-Off Charge',
+  'Deadhead Miles',
+  'Hazmat Fee',
 ];
 
 const inputClass =
@@ -46,19 +41,18 @@ function emptyItem(): InvoiceItem {
 
 interface DescriptionComboProps {
   value: string;
-  onChange: (description: string, autoFillPrice?: string) => void;
-  currentUnitPrice: string;
+  onChange: (description: string) => void;
 }
 
-function DescriptionCombo({ value, onChange, currentUnitPrice }: DescriptionComboProps) {
+function DescriptionCombo({ value, onChange }: DescriptionComboProps) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const filteredItems =
     value.trim() === ''
       ? PREDEFINED_LINE_ITEMS
-      : PREDEFINED_LINE_ITEMS.filter((item) =>
-          item.label.toLowerCase().includes(value.toLowerCase())
+      : PREDEFINED_LINE_ITEMS.filter((label) =>
+          label.toLowerCase().includes(value.toLowerCase())
         );
 
   // Close dropdown on outside click
@@ -72,11 +66,8 @@ function DescriptionCombo({ value, onChange, currentUnitPrice }: DescriptionComb
     return () => document.removeEventListener('mousedown', handleMouseDown);
   }, []);
 
-  function handleSelect(item: PredefinedLineItem) {
-    const shouldAutoFill =
-      item.defaultPrice !== '' &&
-      (currentUnitPrice === '' || currentUnitPrice === '0');
-    onChange(item.label, shouldAutoFill ? item.defaultPrice : undefined);
+  function handleSelect(label: string) {
+    onChange(label);
     setOpen(false);
   }
 
@@ -118,21 +109,17 @@ function DescriptionCombo({ value, onChange, currentUnitPrice }: DescriptionComb
           {filteredItems.length === 0 ? (
             <div className="px-3 py-2 text-sm text-muted-foreground">No matches — type to use custom</div>
           ) : (
-            filteredItems.map((item) => (
+            filteredItems.map((label) => (
               <button
-                key={item.label}
+                key={label}
                 type="button"
                 onMouseDown={(e) => {
-                  // Prevent input blur before click fires
                   e.preventDefault();
-                  handleSelect(item);
+                  handleSelect(label);
                 }}
                 className="flex w-full items-center px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
               >
-                <span className="flex-1 text-left">{item.label}</span>
-                {item.defaultPrice && (
-                  <span className="text-muted-foreground ml-3">${item.defaultPrice}</span>
-                )}
+                {label}
               </button>
             ))
           )}
@@ -183,13 +170,10 @@ export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceIt
     });
   };
 
-  const handleDescriptionChange = (index: number, description: string, autoFillPrice?: string) => {
+  const handleDescriptionChange = (index: number, description: string) => {
     setItems((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], description };
-      if (autoFillPrice !== undefined) {
-        updated[index] = { ...updated[index], unitPrice: autoFillPrice };
-      }
       return updated;
     });
   };
@@ -232,10 +216,7 @@ export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceIt
             <div className="col-span-5">
               <DescriptionCombo
                 value={item.description}
-                currentUnitPrice={item.unitPrice}
-                onChange={(description, autoFillPrice) =>
-                  handleDescriptionChange(index, description, autoFillPrice)
-                }
+                onChange={(description) => handleDescriptionChange(index, description)}
               />
             </div>
             <div className="col-span-2">
