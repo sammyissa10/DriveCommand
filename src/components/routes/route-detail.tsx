@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { formatAddress } from '@/components/shared/address-autocomplete';
+import { formatAddress } from '@/lib/utils/format-address';
 
 interface Driver {
   id: string;

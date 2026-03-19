@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Package, ChevronRight } from 'lucide-react';
 import { LoadStatusBadge } from './load-status-badge';
-import { formatAddress } from '@/components/shared/address-autocomplete';
+import { formatAddress } from '@/lib/utils/format-address';
 
 interface LoadItem {
   id: string;

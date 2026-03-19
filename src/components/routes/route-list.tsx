@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronRight, Search, MapPin } from 'lucide-react';
-import { formatAddress } from '@/components/shared/address-autocomplete';
+import { formatAddress } from '@/lib/utils/format-address';
 import {
   useReactTable,
   getCoreRowModel,

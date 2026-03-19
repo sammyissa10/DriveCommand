@@ -8,7 +8,7 @@ import { DispatchModal } from '@/components/loads/dispatch-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
 import { DeleteLoadButton } from '@/components/loads/delete-load-button';
 import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
-import { formatAddress } from '@/components/shared/address-autocomplete';
+import { formatAddress } from '@/lib/utils/format-address';
 import { DownloadRateConfirmationButton } from '@/components/loads/download-rate-confirmation-button';
 
 const STATUS_LIFECYCLE = [
