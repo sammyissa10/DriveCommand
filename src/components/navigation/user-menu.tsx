@@ -59,7 +59,7 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted transition-colors text-left"
       >
-        <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white text-xs font-semibold shadow-sm">
+        <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-white text-blue-600 text-xs font-semibold shadow-sm">
           {initials}
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
@@ -79,7 +79,7 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-60"
             >
               <LogOut className="h-4 w-4 text-muted-foreground" />
               {isSigningOut ? "Signing out..." : "Sign out"}
