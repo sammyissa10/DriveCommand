@@ -12,16 +12,25 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const prisma = await getTenantPrisma();
 
   let customer;
+  let loadStats;
   try {
-    customer = await prisma.customer.findUnique({
-      where: { id },
-      include: {
-        interactions: {
-          orderBy: { createdAt: 'desc' },
-          take: 50,
+    [customer, loadStats] = await Promise.all([
+      prisma.customer.findUnique({
+        where: { id },
+        include: {
+          interactions: {
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+          },
         },
-      },
-    });
+      }),
+      prisma.load.aggregate({
+        where: { customerId: id, status: 'INVOICED' },
+        _count: { id: true },
+        _sum: { rate: true },
+        _max: { updatedAt: true },
+      }),
+    ]);
   } catch {
     notFound();
   }
@@ -29,6 +38,10 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   if (!customer) {
     notFound();
   }
+
+  const totalLoads = loadStats._count.id;
+  const totalRevenue = loadStats._sum.rate ?? 0;
+  const lastLoadDate = loadStats._max.updatedAt;
 
   const priorityColors: Record<string, string> = {
     LOW: 'bg-gray-100 text-gray-700',
@@ -129,17 +142,17 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
             <dl className="space-y-3 text-sm">
               <div>
                 <dt className="text-muted-foreground">Total Loads</dt>
-                <dd className="text-xl font-bold">{customer.totalLoads}</dd>
+                <dd className="text-xl font-bold">{totalLoads}</dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Total Revenue</dt>
-                <dd className="text-xl font-bold">${Number(customer.totalRevenue).toLocaleString()}</dd>
+                <dd className="text-xl font-bold">${Number(totalRevenue).toLocaleString()}</dd>
               </div>
-              {customer.lastLoadDate && (
+              {lastLoadDate && (
                 <div>
                   <dt className="text-muted-foreground">Last Load</dt>
                   <dd className="font-medium">
-                    {new Date(customer.lastLoadDate).toLocaleDateString()}
+                    {new Date(lastLoadDate).toLocaleDateString()}
                   </dd>
                 </div>
               )}
