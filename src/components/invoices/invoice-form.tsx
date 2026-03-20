@@ -62,7 +62,7 @@ export function InvoiceForm({
 }: InvoiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [subtotal, setSubtotal] = useState(0);
-  const [taxPercent, setTaxPercent] = useState(0);
+  const [taxPercent, setTaxPercent] = useState(7);
   const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
   const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
 
