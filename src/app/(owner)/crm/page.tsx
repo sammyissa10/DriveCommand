@@ -9,14 +9,28 @@ export default async function CRMPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let customers: any[] = [];
   try {
-    customers = await prisma.customer.findMany({
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        _count: {
-          select: { interactions: true },
-        },
-      },
-    });
+    const [rawCustomers, loadStats] = await Promise.all([
+      prisma.customer.findMany({
+        orderBy: { updatedAt: 'desc' },
+        include: { _count: { select: { interactions: true } } },
+      }),
+      prisma.load.groupBy({
+        by: ['customerId'],
+        where: { status: 'INVOICED' },
+        _count: { id: true },
+        _sum: { rate: true },
+      }),
+    ]);
+
+    const statsMap = new Map(
+      loadStats.map((s: any) => [s.customerId, { totalLoads: s._count.id, totalRevenue: Number(s._sum.rate ?? 0) }])
+    );
+
+    customers = rawCustomers.map((c: any) => ({
+      ...c,
+      totalLoads: statsMap.get(c.id)?.totalLoads ?? 0,
+      totalRevenue: statsMap.get(c.id)?.totalRevenue ?? 0,
+    }));
   } catch {
     // DB failure — render empty list
   }
