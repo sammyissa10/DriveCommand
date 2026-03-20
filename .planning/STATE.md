@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 27 Automated Playwright E2E Tests — COMPLETE (Plan 3 of 3 complete)
 Status: Phase 27 complete — full Playwright E2E suite: 16 driver tests + access boundaries, GitHub Actions CI, e2e/README.md
-Last activity: 2026-03-20 - Completed quick task 84: TKT-0035 Fix CRM Performance section not updating on INVOICED transition
+Last activity: 2026-03-20 - Completed quick task 85: TKT-0035 follow-up: CRM Performance now computed live from INVOICED loads
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -508,6 +508,7 @@ None blocking immediate progress.
 | 82 | TKT-0032: Fix invoice line items — unit price not populating correctly, improve description field with predefined dropdown + ability to add custom items | 2026-03-19 | 4b6bda5 | [82-tkt-0032-fix-invoice-line-items-unit-pri](./quick/82-tkt-0032-fix-invoice-line-items-unit-pri/) |
 | 83 | TKT-0034: Make updateLoadStatus idempotent — return success silently when load is already at target status, eliminating "Cannot transition from X to X" race condition errors | 2026-03-20 | c90e044 | [83-tkt-0034-fix-redundant-status-transition](./quick/83-tkt-0034-fix-redundant-status-transition/) |
 | 84 | TKT-0035: Fix CRM Performance section not updating — increment totalLoads/totalRevenue/lastLoadDate on Customer when load transitions to INVOICED | 2026-03-20 | caf2da3 | [84-tkt-0035-fix-crm-performance-section-not](./quick/84-tkt-0035-fix-crm-performance-section-not/) |
+| 85 | TKT-0035 follow-up: Compute CRM Performance stats live from INVOICED loads via prisma.load.aggregate — fixes historical loads and eliminates stored-field drift | 2026-03-20 | e13b9c4 | [85-tkt-0035-follow-up-fix-crm-performance-s](./quick/85-tkt-0035-follow-up-fix-crm-performance-s/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
