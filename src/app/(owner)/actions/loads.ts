@@ -358,6 +358,11 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       return { error: 'Load not found.' };
     }
 
+    // Idempotency: if already at target status, treat as success (TKT-0034)
+    if (load.status === newStatus) {
+      return { success: true };
+    }
+
     const allowedTransitions = STATUS_TRANSITIONS[load.status] || [];
     if (!allowedTransitions.includes(newStatus)) {
       return { error: `Cannot transition from ${load.status} to ${newStatus}.` };
