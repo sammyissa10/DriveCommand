@@ -352,8 +352,10 @@ export async function updateLoadStatus(id: string, newStatus: string) {
 
   const prisma = await getTenantPrisma();
 
+  let invoicedCustomerId: string | null = null;
+
   try {
-    const load = await prisma.load.findUnique({ where: { id }, select: { status: true } });
+    const load = await prisma.load.findUnique({ where: { id }, select: { status: true, customerId: true, rate: true } });
     if (!load) {
       return { error: 'Load not found.' };
     }
@@ -388,6 +390,19 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       const tId = await requireTenantId();
       sendNotificationAndLogInteraction(prisma, tId, id, newStatus);
     }
+
+    // Update CRM customer performance stats when a load is invoiced
+    if (newStatus === 'INVOICED' && load.customerId) {
+      invoicedCustomerId = load.customerId;
+      prisma.customer.update({
+        where: { id: load.customerId },
+        data: {
+          totalLoads: { increment: 1 },
+          totalRevenue: { increment: load.rate },
+          lastLoadDate: new Date(),
+        },
+      }).catch((err) => console.error('Failed to update customer stats:', err));
+    }
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
@@ -397,6 +412,9 @@ export async function updateLoadStatus(id: string, newStatus: string) {
 
   revalidatePath('/loads');
   revalidatePath(`/loads/${id}`);
+  if (invoicedCustomerId) {
+    revalidatePath(`/crm/${invoicedCustomerId}`);
+  }
   return { success: true };
 }
 
