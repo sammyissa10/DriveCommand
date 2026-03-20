@@ -79,7 +79,7 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-foreground hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-muted hover:text-gray-900 transition-colors disabled:opacity-60"
             >
               <LogOut className="h-4 w-4 text-muted-foreground" />
               {isSigningOut ? "Signing out..." : "Sign out"}
