@@ -57,16 +57,16 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted transition-colors text-left group"
+        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted transition-colors text-left group/usermenu"
       >
         <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-white text-blue-600 text-xs font-semibold shadow-sm">
           {initials}
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <span className="truncate font-semibold group-hover:text-gray-900">{displayName}</span>
-          <span className="truncate text-xs text-muted-foreground group-hover:text-gray-600">{user?.email}</span>
+          <span className="truncate font-semibold group-hover/usermenu:text-gray-900">{displayName}</span>
+          <span className="truncate text-xs text-muted-foreground group-hover/usermenu:text-gray-600">{user?.email}</span>
         </div>
-        <ChevronsUpDown className="ml-auto size-4 group-hover:text-gray-900" />
+        <ChevronsUpDown className="ml-auto size-4 group-hover/usermenu:text-gray-900" />
       </button>
 
       {isOpen && (
