@@ -259,7 +259,7 @@ export function InvoiceForm({
         <div className="flex items-center justify-between gap-8">
           <div className="w-48">
             <label htmlFor="taxPercent" className={labelClass}>
-              Tax (%) <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+              Tax (%)
             </label>
             <input
               type="number"
