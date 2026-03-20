@@ -57,16 +57,16 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted transition-colors text-left group/usermenu"
+        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted active:bg-muted transition-colors text-left group/usermenu"
       >
         <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-white text-blue-600 text-xs font-semibold shadow-sm">
           {initials}
         </div>
         <div className="grid flex-1 text-left text-sm leading-tight">
-          <span className="truncate font-semibold group-hover/usermenu:text-gray-900">{displayName}</span>
-          <span className="truncate text-xs text-muted-foreground group-hover/usermenu:text-gray-600">{user?.email}</span>
+          <span className="truncate font-semibold group-hover/usermenu:text-gray-900 group-active/usermenu:text-gray-900">{displayName}</span>
+          <span className="truncate text-xs text-muted-foreground group-hover/usermenu:text-gray-600 group-active/usermenu:text-gray-600">{user?.email}</span>
         </div>
-        <ChevronsUpDown className="ml-auto size-4 group-hover/usermenu:text-gray-900" />
+        <ChevronsUpDown className="ml-auto size-4 group-hover/usermenu:text-gray-900 group-active/usermenu:text-gray-900" />
       </button>
 
       {isOpen && (
@@ -79,7 +79,7 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-muted hover:text-gray-900 transition-colors disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-muted hover:text-gray-900 active:bg-muted active:text-gray-900 transition-colors disabled:opacity-60"
             >
               <LogOut className="h-4 w-4 text-muted-foreground" />
               {isSigningOut ? "Signing out..." : "Sign out"}
