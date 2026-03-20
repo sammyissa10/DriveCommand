@@ -1,4 +1,4 @@
-import { Truck } from "lucide-react";
+import { AppLogo } from "@/components/navigation/app-logo";
 
 export default function AuthLayout({
   children,
@@ -6,14 +6,19 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background theme-transition">
-      <div className="mb-6 flex flex-col items-center gap-2">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
-          <Truck className="h-6 w-6" />
+    <div
+      className="min-h-screen flex flex-col items-center justify-center relative"
+      style={{ backgroundImage: "url('/login-bg.jpeg')", backgroundSize: "cover", backgroundPosition: "center" }}
+    >
+      {/* Overlay to ensure form readability */}
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 flex flex-col items-center w-full">
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <AppLogo size={56} className="drop-shadow-md" />
+          <h1 className="text-xl font-semibold text-white drop-shadow">DriveCommand</h1>
         </div>
-        <h1 className="text-xl font-semibold text-foreground">DriveCommand</h1>
+        {children}
       </div>
-      {children}
     </div>
   );
 }
