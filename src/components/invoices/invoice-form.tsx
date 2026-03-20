@@ -62,13 +62,14 @@ export function InvoiceForm({
 }: InvoiceFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [subtotal, setSubtotal] = useState(0);
-  const [taxValue, setTaxValue] = useState(Number(initialData?.tax) || 0);
+  const [taxPercent, setTaxPercent] = useState(0);
   const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
   const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
 
   const customerLoads = loads?.filter((l) => l.customerId === selectedCustomerId) ?? [];
 
-  const total = subtotal + taxValue;
+  const taxAmount = subtotal * taxPercent / 100;
+  const total = subtotal + taxAmount;
 
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
@@ -253,19 +254,22 @@ export function InvoiceForm({
 
       {/* Tax and totals */}
       <div className="space-y-4 border-t border-border pt-6">
+        {/* Hidden field submits the computed dollar amount to the server */}
+        <input type="hidden" name="tax" value={taxAmount.toFixed(2)} />
         <div className="flex items-center justify-between gap-8">
           <div className="w-48">
-            <label htmlFor="tax" className={labelClass}>
-              Tax ($) <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            <label htmlFor="taxPercent" className={labelClass}>
+              Tax (%) <span className="text-xs text-muted-foreground font-normal">(optional)</span>
             </label>
             <input
               type="number"
-              id="tax"
-              name="tax"
+              id="taxPercent"
               step="0.01"
               min="0"
-              defaultValue={Number(initialData?.tax) || 0}
-              onChange={(e) => setTaxValue(parseFloat(e.target.value) || 0)}
+              max="100"
+              placeholder="0"
+              value={taxPercent || ''}
+              onChange={(e) => setTaxPercent(parseFloat(e.target.value) || 0)}
               disabled={isPending}
               className={inputClass}
             />
@@ -281,9 +285,9 @@ export function InvoiceForm({
               </span>
             </div>
             <div className="flex items-center justify-between gap-8 text-sm">
-              <span className="text-muted-foreground">Tax</span>
+              <span className="text-muted-foreground">Tax {taxPercent > 0 ? `(${taxPercent}%)` : ''}</span>
               <span className="font-medium">
-                ${taxValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="flex items-center justify-between gap-8 text-base font-bold border-t border-border pt-1">
