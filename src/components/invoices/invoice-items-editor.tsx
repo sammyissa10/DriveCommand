@@ -223,8 +223,8 @@ export function InvoiceItemsEditor({ initialItems, onSubtotalChange }: InvoiceIt
               <input
                 type="number"
                 placeholder="1"
-                step="0.01"
-                min="0.01"
+                step="1"
+                min="1"
                 value={item.quantity}
                 onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                 className={inputClass}
