@@ -44,10 +44,9 @@ import { UserRole } from "@/lib/auth/roles"
 
 interface AppSidebarProps {
   supportBadge?: React.ReactNode;
-  tenantName?: string | null;
 }
 
-export function AppSidebar({ supportBadge, tenantName }: AppSidebarProps) {
+export function AppSidebar({ supportBadge }: AppSidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
 
@@ -76,7 +75,7 @@ export function AppSidebar({ supportBadge, tenantName }: AppSidebarProps) {
             />
           </div>
           <div className="grid text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="truncate font-bold tracking-tight">{tenantName ?? "DriveCommand"}</span>
+            <span className="truncate font-bold tracking-tight">DriveCommand</span>
             <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>
           </div>
         </Link>

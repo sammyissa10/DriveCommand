@@ -14,11 +14,14 @@ interface OwnerShellProps {
 export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <AppSidebar supportBadge={supportBadge} tenantName={tenantName} />
+      <AppSidebar supportBadge={supportBadge} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-6">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
+          {tenantName && (
+            <span className="text-sm font-semibold text-foreground truncate">{tenantName}</span>
+          )}
         </header>
         <main className="flex-1 p-6 pb-20 lg:pb-6">
           {children}
