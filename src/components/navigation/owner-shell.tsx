@@ -8,12 +8,13 @@ import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 interface OwnerShellProps {
   children: React.ReactNode;
   supportBadge?: React.ReactNode;
+  tenantName?: string | null;
 }
 
-export function OwnerShell({ children, supportBadge }: OwnerShellProps) {
+export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellProps) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <AppSidebar supportBadge={supportBadge} />
+      <AppSidebar supportBadge={supportBadge} tenantName={tenantName} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-6">
           <SidebarTrigger className="-ml-1" />

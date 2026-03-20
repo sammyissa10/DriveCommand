@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth/auth-context"
 import {
@@ -43,9 +44,10 @@ import { UserRole } from "@/lib/auth/roles"
 
 interface AppSidebarProps {
   supportBadge?: React.ReactNode;
+  tenantName?: string | null;
 }
 
-export function AppSidebar({ supportBadge }: AppSidebarProps) {
+export function AppSidebar({ supportBadge, tenantName }: AppSidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
 
@@ -57,22 +59,27 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon" className="[&_[data-sidebar=menu-button]]:transition-all [&_[data-sidebar=menu-button]]:duration-150 [&_[data-sidebar=menu-button]]:focus-visible:ring-2 [&_[data-sidebar=menu-button]]:focus-visible:ring-sidebar-ring [&_[data-sidebar=menu-button]]:focus-visible:ring-offset-1 [&_[data-sidebar=menu-button]]:focus-visible:outline-none">
       {/* Header with company branding */}
-      <SidebarHeader className="border-b border-sidebar-border pb-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-md">
-                  <Truck className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-bold tracking-tight">DriveCommand</span>
-                  <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <SidebarHeader className="border-b border-sidebar-border">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3"
+        >
+          <div className="flex shrink-0 items-center justify-center rounded-lg bg-white" style={{ width: 38, height: 38, padding: 7 }}>
+            <Image
+              src="/logo.png"
+              alt="DriveCommand"
+              width={24}
+              height={24}
+              quality={95}
+              className="object-contain block"
+              priority
+            />
+          </div>
+          <div className="grid text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+            <span className="truncate font-bold tracking-tight">{tenantName ?? "DriveCommand"}</span>
+            <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>
+          </div>
+        </Link>
       </SidebarHeader>
 
       {/* Main navigation content */}

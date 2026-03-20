@@ -5,6 +5,7 @@ import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
 import { SupportBadge } from "@/components/navigation/support-badge";
+import { prisma } from "@/lib/db/prisma";
 
 // All owner-portal pages require auth — force dynamic rendering so Next.js
 // never attempts static pre-rendering (which has no session context).
@@ -35,8 +36,19 @@ export default async function OwnerLayout({
     redirect("/unauthorized");
   }
 
+  // Fetch the tenant's business name to display in the sidebar
+  let tenantName: string | null = null;
+  try {
+    const rows = await prisma.$queryRaw<{ name: string }[]>`
+      SELECT name FROM "Tenant" WHERE id = ${session.tenantId}::uuid LIMIT 1
+    `;
+    tenantName = rows[0]?.name ?? null;
+  } catch {
+    // Non-fatal — sidebar falls back to "DriveCommand"
+  }
+
   return (
-    <OwnerShell supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
+    <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
       {children}
     </OwnerShell>
   );
