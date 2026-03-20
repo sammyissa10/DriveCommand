@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 27 Automated Playwright E2E Tests — COMPLETE (Plan 3 of 3 complete)
 Status: Phase 27 complete — full Playwright E2E suite: 16 driver tests + access boundaries, GitHub Actions CI, e2e/README.md
-Last activity: 2026-03-19 - Completed quick task 82: TKT-0032 Fix invoice line items — predefined dropdown with unit price auto-fill
+Last activity: 2026-03-20 - Completed quick task 83: TKT-0034 Make updateLoadStatus idempotent — eliminate same-status transition errors
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -506,6 +506,7 @@ None blocking immediate progress.
 | 80 | TKT-0018 fix: skip admin reply emails to non-deliverable domains (drivecommand.com, example.com, test.com) — guard in sendAdminReplyNotification, diagnostic warn in addAdminReply | 2026-03-16 | 186727d | [80-tkt-0018-fix-support-ticket-reply-emails](./quick/80-tkt-0018-fix-support-ticket-reply-emails/) |
 | 81 | Fix mobile layout on loads and routes list pages to match the card-based pattern used on other fixed pages | 2026-03-18 | 1a029ed | [81-fix-mobile-layout-on-loads-and-routes-li](./quick/81-fix-mobile-layout-on-loads-and-routes-li/) |
 | 82 | TKT-0032: Fix invoice line items — unit price not populating correctly, improve description field with predefined dropdown + ability to add custom items | 2026-03-19 | 4b6bda5 | [82-tkt-0032-fix-invoice-line-items-unit-pri](./quick/82-tkt-0032-fix-invoice-line-items-unit-pri/) |
+| 83 | TKT-0034: Make updateLoadStatus idempotent — return success silently when load is already at target status, eliminating "Cannot transition from X to X" race condition errors | 2026-03-20 | c90e044 | [83-tkt-0034-fix-redundant-status-transition](./quick/83-tkt-0034-fix-redundant-status-transition/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
