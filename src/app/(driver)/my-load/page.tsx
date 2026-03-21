@@ -1,5 +1,6 @@
-import { getMyActiveLoad, advanceLoadStatus } from '@/app/(driver)/actions/driver-load';
+import { getMyActiveLoad, advanceLoadStatus, getMyCompletedLoads } from '@/app/(driver)/actions/driver-load';
 import { LoadStatusButton } from '@/components/driver/load-status-button';
+import { CompletedLoadHistory } from '@/components/driver/completed-load-history';
 import { Package, MapPin, Calendar, Weight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -34,17 +35,28 @@ export default async function MyLoadPage() {
     console.error('[MyLoadPage] Failed to fetch active load:', err);
   }
 
-  // No active load — show empty state
+  // Fetch completed loads regardless of active load status
+  let completedLoads: Awaited<ReturnType<typeof getMyCompletedLoads>> = [];
+  try {
+    completedLoads = await getMyCompletedLoads();
+  } catch (err) {
+    console.error('[MyLoadPage] Failed to fetch completed loads:', err);
+  }
+
+  // No active load — show empty state + history
   if (!load) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-          <Package className="h-7 w-7 text-muted-foreground" />
+      <div className="space-y-4 lg:space-y-6">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+            <Package className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground">No active load assigned</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            You don&apos;t have an active load right now. Check back later or contact your dispatcher.
+          </p>
         </div>
-        <h2 className="text-lg font-semibold text-foreground">No active load assigned</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          You don&apos;t have an active load right now. Check back later or contact your dispatcher.
-        </p>
+        <CompletedLoadHistory completedLoads={completedLoads} />
       </div>
     );
   }
@@ -216,6 +228,9 @@ export default async function MyLoadPage() {
           advanceAction={advanceLoadStatus}
         />
       </div>
+
+      {/* Past Loads history */}
+      <CompletedLoadHistory completedLoads={completedLoads} />
     </div>
   );
 }
