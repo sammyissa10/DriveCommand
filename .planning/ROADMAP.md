@@ -87,6 +87,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 25. SysAdmin Invoicing Module | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 27. Automated Playwright E2E Tests | v4.0 | 0/3 | ○ Planned | — |
+| 28. Driver History | v4.0 | 0/2 | ○ Planned | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -200,6 +201,18 @@ Plans:
 - [ ] 26-01-PLAN.md — SysAdmin portal test scripts: docs/qa/sysadmin-tests.md covering auth (ADMIN_SECRET_KEY), dashboard, tenant management (create/suspend/reactivate), support ticket queue, and billing/invoicing lifecycle (DRAFT→SENT→PAID→VOID) — ~50 test cases with smoke tests
 - [ ] 26-02-PLAN.md — Owner portal test scripts: docs/qa/owner-tests.md covering auth, dashboard, trucks, drivers, routes, loads/dispatch (full PENDING→DISPATCHED→DELIVERED→INVOICED lifecycle), invoices, payroll, CRM, compliance, finance analytics, AI documents, settings — ~100 test cases with smoke tests
 - [ ] 26-03-PLAN.md — Driver portal + README: docs/qa/driver-tests.md covering auth, my-route (read-only), my-load status advancement, HOS logging, incidents, messages, support tickets, access boundary tests; plus docs/qa/README.md with test environment setup, test account creation guide, seed data sequence, and portal login quick reference
+
+---
+
+### Phase 28: Driver History — View completed loads and routes in the driver portal
+
+**Goal:** Drivers can view their previously completed loads and routes from within the driver portal. The Load tab and Route tab (or a History tab) surfaces DELIVERED loads and completed routes scoped to the logged-in driver — read-only, with full detail views. Allows drivers to reference past deliveries for disputes, pay questions, or general record-keeping without needing to contact a dispatcher.
+**Depends on:** Phase 7 (driver portal), Phase 19 (multi-stop routes)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 28-01-PLAN.md — Data layer: server actions to fetch completed loads and routes for the current driver (scoped by driverId + tenantId, statuses DELIVERED/COMPLETED), pagination or limited history window
+- [ ] 28-02-PLAN.md — Driver portal UI: History section in Load and Route tabs (or dedicated History tab), completed load cards with key details, completed route cards, read-only detail views
 
 ---
 
