@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 28 Driver History — IN PROGRESS (Plan 2 of 2 — paused at checkpoint)
-Status: Phase 28 Plan 02 tasks 1-3 complete — history UI components built, wired into pages; awaiting human verify (Task 4)
-Last activity: 2026-03-21 - Completed Phase 28 Plan 02 Tasks 1-3: CompletedLoadHistory, CompletedRouteHistory, page wiring
+Phase: Phase 28 Driver History — COMPLETE
+Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
+Last activity: 2026-03-21 - Completed Phase 28 Plan 02: CompletedLoadHistory, CompletedRouteHistory, page wiring, human-verified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -51,7 +51,7 @@ Progress: [███████████████████████
 - Phase 27-01 (2026-03-16): Multi-role Playwright auth + SysAdmin E2E tests — 2 tasks, 14 files, 7min
 - Phase 27-02 (2026-03-16): Owner portal E2E tests — 2 tasks, 6 files, 5min
 - Phase 28-01 (2026-03-21): Driver history server actions (getMyCompletedLoads + getMyCompletedRoutes) — 2 tasks, 2 files, 67s
-- Phase 28-02 (2026-03-21): Driver history UI — CompletedLoadHistory + CompletedRouteHistory components, page wiring — 3 tasks, 4 files, ~3min (paused at human-verify)
+- Phase 28-02 (2026-03-21): Driver history UI — CompletedLoadHistory + CompletedRouteHistory components, page wiring — 4 tasks, 4 files, ~5min
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -115,10 +115,11 @@ Progress: [███████████████████████
 - Plain text input for route origin/destination — AddressAutocomplete accepts text without Google Places API resolution in test env
 - No data-testid additions needed — existing forms use proper htmlFor label associations, getByLabel() works throughout
 
-**Phase 28-02 decisions (Driver history UI):**
+**Phase 28-02 decisions (Driver history UI — COMPLETE):**
 - Restructured empty-state branches to return full page with history — ensures drivers with no active assignment can still see past work
 - History fetches are non-fatal (try/catch default to []) — page never fails due to history query errors
 - Used toLocaleDateString() for history dates (acceptable minor inconsistency vs tenant timezone utility per plan)
+- Human-verified in browser: history sections render correctly, read-only constraint confirmed
 
 **Quick-59 decisions (TKT-0017 DriverRouteJoin):**
 - Hard delete (no soft delete) for DriverRouteJoin — model has no deletedAt field; assignments are simple join records
