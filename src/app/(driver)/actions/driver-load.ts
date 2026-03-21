@@ -149,3 +149,33 @@ export async function advanceLoadStatus(loadId: string) {
   revalidatePath('/my-load');
   return { success: true, newStatus: nextStatus };
 }
+
+/**
+ * Get all completed loads assigned to the authenticated driver.
+ * Returns DELIVERED and INVOICED loads ordered most-recent-first.
+ * SECURITY: Filters by driverId = user.id from DB (NEVER from params).
+ */
+export async function getMyCompletedLoads() {
+  await requireRole([UserRole.DRIVER]);
+
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not found');
+
+  const prisma = await getTenantPrisma();
+
+  return prisma.load.findMany({
+    where: {
+      driverId: user.id,
+      status: { in: ['DELIVERED', 'INVOICED'] },
+      archivedAt: null,
+    },
+    include: {
+      customer: { select: { companyName: true } },
+      route: { select: { id: true, name: true } },
+    },
+    orderBy: [
+      { deliveryDate: 'desc' },
+      { pickupDate: 'desc' },
+    ],
+  });
+}
