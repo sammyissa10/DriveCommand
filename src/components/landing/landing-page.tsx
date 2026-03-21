@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { DCChevronIcon, DriveCommandWordmark } from "@/components/navigation/app-logo";
 import {
   Truck,
   MapPin,
@@ -173,10 +174,8 @@ export function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700">
-                <Truck className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white">DriveCommand</span>
+              <DCChevronIcon size={28} variant="light" />
+              <DriveCommandWordmark size="md" className="text-white" />
             </Link>
             <div className="hidden items-center gap-6 md:flex">
               <a href="#features" className="text-sm text-gray-400 transition-colors hover:text-white">
@@ -851,10 +850,8 @@ export function LandingPage() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700">
-                  <Truck className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-lg font-bold text-white">DriveCommand</span>
+                <DCChevronIcon size={28} variant="light" />
+                <DriveCommandWordmark size="md" className="text-white" />
               </div>
               <p className="mt-4 max-w-xs text-sm leading-relaxed text-gray-500">
                 The AI-powered operating system for modern fleets. Track, manage, and optimize your

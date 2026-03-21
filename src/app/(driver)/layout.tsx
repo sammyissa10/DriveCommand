@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { getRole } from "@/lib/auth/server";
 import { UserRole } from "@/lib/auth/roles";
 import { UserMenu } from "@/components/navigation/user-menu";
-import { Truck } from "lucide-react";
+import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo";
 import { DriverNav } from "@/components/driver/driver-nav";
 import { GpsTracker } from "@/components/driver/gps-tracker";
 import { DriverBottomNav } from "@/components/driver/driver-bottom-nav";
@@ -57,12 +57,10 @@ export default async function DriverLayout({
       <header className="border-b border-border bg-card">
         <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white">
-              <Truck className="h-4 w-4" />
-            </div>
-            <h1 className="text-lg font-bold tracking-tight text-foreground">DriveCommand</h1>
+            <AppLogo size={32} variant="dark" />
+            <DriveCommandWordmark size="md" />
           </div>
-          <UserMenu />
+          <UserMenu compactOnMobile />
         </div>
         <div className="hidden lg:block">
           <DriverNav />

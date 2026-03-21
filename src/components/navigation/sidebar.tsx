@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth/auth-context"
 import {
@@ -41,6 +40,7 @@ import {
 } from "@/components/ui/sidebar"
 import { UserMenu } from "@/components/navigation/user-menu"
 import { UserRole } from "@/lib/auth/roles"
+import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 
 interface AppSidebarProps {
   supportBadge?: React.ReactNode;
@@ -63,19 +63,9 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
           href="/dashboard"
           className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3"
         >
-          <div className="flex shrink-0 items-center justify-center rounded-lg bg-white" style={{ width: 38, height: 38, padding: 7 }}>
-            <Image
-              src="/logo.png"
-              alt="DriveCommand"
-              width={24}
-              height={24}
-              quality={95}
-              className="object-contain block"
-              priority
-            />
-          </div>
+          <AppLogo size={32} variant="dark" />
           <div className="grid text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="truncate font-bold tracking-tight">DriveCommand</span>
+            <DriveCommandWordmark size="sm" />
             <span className="truncate text-xs text-sidebar-foreground/60">Fleet Management</span>
           </div>
         </Link>
