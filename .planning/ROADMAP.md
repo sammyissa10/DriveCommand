@@ -87,7 +87,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 25. SysAdmin Invoicing Module | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 27. Automated Playwright E2E Tests | v4.0 | 0/3 | ○ Planned | — |
-| 28. Driver History | v4.0 | 0/2 | ○ Planned | — |
+| 28. Driver History | v4.0 | 2/2 | ✓ Complete | 2026-03-21 |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
