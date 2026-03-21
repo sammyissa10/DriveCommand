@@ -211,8 +211,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 28-01-PLAN.md — Data layer: server actions to fetch completed loads and routes for the current driver (scoped by driverId + tenantId, statuses DELIVERED/COMPLETED), pagination or limited history window
-- [ ] 28-02-PLAN.md — Driver portal UI: History section in Load and Route tabs (or dedicated History tab), completed load cards with key details, completed route cards, read-only detail views
+- [ ] 28-01-PLAN.md — Data layer: getMyCompletedLoads() and getMyCompletedRoutes() server actions appended to existing action files (DELIVERED/INVOICED loads + COMPLETED routes, driverId-scoped, most-recent-first)
+- [ ] 28-02-PLAN.md — Driver portal UI: CompletedLoadHistory + CompletedRouteHistory client components, expandable inline cards, wired into /my-load and /my-route pages, human verification checkpoint
 
 ---
 
