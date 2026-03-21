@@ -158,3 +158,40 @@ export async function markStopDeparted(stopId: string) {
   revalidatePath('/my-route');
   return { success: true };
 }
+
+/**
+ * Get all completed routes assigned to the authenticated driver.
+ * Returns COMPLETED routes ordered most-recent-first.
+ * SECURITY: Filters by driverId = user.id from DB (NEVER from params).
+ */
+export async function getMyCompletedRoutes() {
+  await requireRole([UserRole.DRIVER]);
+
+  const user = await getCurrentUser();
+  if (!user) throw new Error('User not found');
+
+  const prisma = await getTenantPrisma();
+
+  return prisma.route.findMany({
+    where: {
+      driverId: user.id,
+      status: 'COMPLETED',
+      archivedAt: null,
+    },
+    include: {
+      truck: {
+        select: { id: true, year: true, make: true, model: true, licensePlate: true },
+      },
+      stops: { orderBy: { position: 'asc' } },
+      loads: {
+        where: { status: { in: ['DELIVERED', 'INVOICED'] } },
+        select: { id: true, loadNumber: true, origin: true, destination: true, status: true },
+        orderBy: { pickupDate: 'asc' },
+      },
+    },
+    orderBy: [
+      { completedAt: 'desc' },
+      { scheduledDate: 'desc' },
+    ],
+  });
+}
