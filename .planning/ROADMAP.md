@@ -2,13 +2,14 @@
 
 ## Overview
 
-DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads.
+DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads. v5.0 extends DriveCommand into native iOS and Android applications via React Native + Expo — driver and owner portals rebuilt for mobile with background GPS, push notifications, offline support, document camera, and App Store/Play Store distribution.
 
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** — Phases 1-10 (shipped 2026-02-15)
 - ✅ **v2.0 Samsara-Inspired Fleet Intelligence** — Phases 11-15 (shipped 2026-02-16)
 - ✅ **v3.0 Route Finance & Driver Documents** — Phases 16-18 (shipped 2026-02-17)
+- ⬜ **v5.0 DriveCommand Mobile** — Phases 29-39 (target: 9-10 weeks from kickoff)
 
 ## Phases
 
@@ -226,3 +227,148 @@ Plans:
 - [ ] 27-01-PLAN.md — Playwright setup + auth fixtures + SysAdmin tests: playwright.config.ts, e2e/fixtures/ with storageState for sysadmin/owner/driver roles, e2e/sysadmin/ tests covering login, dashboard, tenant CRUD, support tickets, invoicing lifecycle
 - [ ] 27-02-PLAN.md — Owner portal tests: e2e/owner/ covering dashboard, trucks CRUD, drivers CRUD, full load/dispatch lifecycle (PENDING→DISPATCHED→DELIVERED→INVOICED), route finance, document uploads
 - [ ] 27-03-PLAN.md — Driver portal tests + CI config: e2e/driver/ covering login, load status view, document access, access boundary tests; GitHub Actions workflow (.github/workflows/playwright.yml); e2e/README.md with run instructions; production readiness sign-off
+
+---
+
+## v5.0 DriveCommand Mobile — Phases 29-39
+
+**Milestone Goal:** Extend DriveCommand into production-ready native iOS and Android apps via React Native + Expo. Driver and owner portals delivered as separate tab-navigated experiences. Backend unchanged — all existing Next.js API routes serve as the mobile backend. No sysadmin portal on mobile. Target: App Store + Google Play live within 9-10 weeks of kickoff.
+
+**Architecture:** Turborepo monorepo (apps/web + apps/mobile + packages/). React Native 0.76 New Architecture. Expo SDK 52 + Expo Router v4. NativeWind v4. EAS Build + EAS Update.
+
+---
+
+### Phase 29: Monorepo Foundation + Expo Scaffold — Convert to Turborepo, extract shared packages, scaffold Expo app with NativeWind and EAS
+
+**Goal:** Transform the existing single Next.js repo into a Turborepo monorepo. Move the web app to apps/web. Extract shared TypeScript types and Zod validation schemas into packages/ that both web and mobile import. Scaffold the Expo app at apps/mobile with Expo Router, NativeWind v4, and EAS configuration. Running `npx expo start` in apps/mobile produces a working blank app on a physical device.
+**Depends on:** None (additive — web app untouched, just moved/restructured)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 29-01-PLAN.md — Turborepo setup: root package.json with workspaces, turbo.json pipeline (build/lint/test tasks), move existing Next.js app into apps/web/, update all internal import paths, verify `turbo run build` succeeds for apps/web
+- [ ] 29-02-PLAN.md — Expo scaffold: create apps/mobile/ with Expo SDK 52, Expo Router v4 file-based routing, NativeWind v4 + Tailwind config, app.json (bundle ID com.drivecommand.app, version 1.0.0), .eas.json with development/preview/production profiles, first `npx expo start` boots successfully on physical device
+- [ ] 29-03-PLAN.md — Shared packages: packages/types/ (TypeScript interfaces for Truck, Driver, Load, Route, User, Tenant), packages/validation/ (move src/lib/validations/* here, import in both apps/web and apps/mobile), packages/api-client/ (typed fetch wrapper with Bearer token auth targeting EXPO_PUBLIC_API_URL, mirrors all server actions as REST calls)
+
+---
+
+### Phase 30: Mobile Auth + Navigation Shell — JWT login flow, MMKV token storage, role-based tab navigators for driver and owner
+
+**Goal:** Build the complete auth system for mobile: login screen UI, JWT token extraction from the existing /api/auth/login endpoint (already returns token in JSON), secure storage in MMKV with optional biometric protection, auth guard in the root layout, and role-based routing so drivers land in the driver tab navigator and owners land in the owner tab navigator. Both navigators are scaffolded with placeholder screens.
+**Depends on:** Phase 29 (Expo app exists)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 30-01-PLAN.md — Auth flow: login screen (email + password, DriveCommand branding), POST to /api/auth/login and extract JWT + user role from JSON response, store token + user in MMKV (react-native-mmkv), useAuth hook (read/write/clear), root _layout.tsx auth guard (redirect to /login if no token, redirect to role portal if authenticated), logout action clears MMKV + navigates to login, /api/auth/me endpoint called on app foreground to validate token freshness
+- [ ] 30-02-PLAN.md — Navigation shell: (driver) tab navigator with 5 tabs (Dashboard, Loads, HOS, Messages, Documents) each with placeholder screen + correct Lucide icon; (owner) tab navigator with 5 tabs (Dashboard, Map, Loads, Drivers, Fleet) each with placeholder screen + correct icon; shared UI primitives (Button, Card, Badge, LoadingSpinner, EmptyState) built with NativeWind; safe area handling; keyboard dismiss on tap outside
+
+---
+
+### Phase 31: Driver Core Screens — Dashboard, loads list, load detail, and status update flow
+
+**Goal:** Build the primary screens a driver uses daily: a dashboard showing active load summary and today's snapshot, a loads list with active and completed tabs, a load detail screen with multi-stop timeline, and the status update flow (accept → en route → delivered) with confirmation and haptic feedback.
+**Depends on:** Phase 30 (driver navigation shell)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 31-01-PLAN.md — Driver dashboard: active load card (origin→destination, status badge, assigned truck), today's stats (miles, stops completed, HOS hours remaining), recent alerts list (expiring docs, maintenance), quick-action buttons (View Load, Log HOS); calls existing getMyCurrentLoad + getDriverDashboardData server actions via api-client; FlashList for alerts; skeleton loader while fetching
+- [ ] 31-02-PLAN.md — Loads list + detail + status update: FlashList with Active/Completed tab toggle (getMyLoads filtered by status); load detail screen (load number, customer, origin, destination, rate, stops timeline with status dots); status update button (PENDING→ACCEPTED→EN_ROUTE→DELIVERED) with bottom sheet confirmation + Haptics.notificationAsync(Success) on confirm; calls existing updateLoadStatus action; optimistic UI update then refetch
+
+---
+
+### Phase 32: Driver HOS + Incident Reporting — Duty status logging and incident report submission with photo capture
+
+**Goal:** Build the HOS (Hours of Service) logging screen where drivers change duty status (Off Duty / Sleeper Berth / Driving / On Duty) and view their daily log summary with 14-hour clock. Build the incident reporting screen where drivers submit an incident report with category, description, location (GPS auto-attached), and optional photo evidence using the device camera.
+**Depends on:** Phase 31 (driver screens established)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 32-01-PLAN.md — HOS logging: duty status selector with 4 status cards (Off Duty, Sleeper Berth, Driving, On Duty — color-coded), current status display with time-in-status counter, daily log timeline (visual bar showing status changes across 24 hours), 14-hour and 11-hour driving clocks with countdown, status change confirmation bottom sheet; calls existing driver-hos server actions (getMyHOSLogs, createHOSEntry)
+- [ ] 32-02-PLAN.md — Incident reporting: incident form (category select: accident/violation/mechanical/hazard/other, severity: low/medium/high, description textarea, date/time auto-filled), GPS location auto-attached via expo-location one-shot fix, optional photo via expo-image-picker (camera or gallery, compressed to <2MB), photo preview with remove option, submit calls existing createDriverIncident action with photo upload to S3 via existing multipart API; success toast + navigate back
+
+---
+
+### Phase 33: Driver Native Features — Background GPS reporting, push notifications, and offline mutation queue
+
+**Goal:** Implement the three core native capabilities that make the driver app indispensable: background GPS reporting to the existing /api/gps/report endpoint (runs even when app is backgrounded), push notifications for dispatch alerts and HOS warnings via FCM/APNs, and an offline mutation queue that buffers status updates and HOS entries when the driver has no signal and flushes them automatically on reconnect.
+**Depends on:** Phase 31 (load status updates exist to queue), Phase 32 (HOS entries exist to queue)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 33-01-PLAN.md — Background GPS: expo-location background location task (BACKGROUND_LOCATION_TASK), permission request flow (foreground then background, explain why), report interval 30s on-duty / 5min off-duty based on current HOS status, POST to /api/gps/report with driver tracking token (existing token system), battery-aware: reduce frequency when battery < 20%, GPS status indicator in driver dashboard header (green dot = active, grey = paused)
+- [ ] 33-02-PLAN.md — Push notifications: Expo Notifications setup, request permissions on first launch with explanation modal, register FCM (Android) + APNs (iOS) token, POST token to new /api/push-tokens endpoint (upsert by userId + platform), add /api/push-tokens route to web app (stores in new PushToken table with userId/token/platform/updatedAt), send test notification from owner fleet messaging triggers driver push; notification tap deep-links to relevant screen (load detail, message thread)
+- [ ] 33-03-PLAN.md — Offline queue: MMKV-backed PendingMutation queue (type, payload, timestamp, retryCount), NetInfo listener (reconnect triggers flush), flushQueue processes mutations in order (max 3 retries each, exponential backoff), queue drains via api-client with Bearer token, sync status bar component (shows "X updates pending" when offline, "Syncing..." when flushing, disappears when clear), wrap updateLoadStatus + createHOSEntry + createDriverIncident calls with enqueue-or-execute logic
+
+---
+
+### Phase 34: Driver Documents + Messaging — Document viewer with upload and driver messaging thread
+
+**Goal:** Build the documents screen where drivers can view their compliance documents (license, medical card, etc.) with expiry status, upload new documents using the device file picker or camera, and view upload progress. Build the messaging screen where drivers can view and reply to fleet messages from their owner/dispatcher, with push notification badge counts on the tab icon.
+**Depends on:** Phase 33 (push notifications for message badges)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 34-01-PLAN.md — Documents screen: FlashList of driver documents from getMyDriverDocuments (name, type, expiry date, status badge: valid/expiring/expired color-coded), document detail bottom sheet (full details + download link via presigned S3 URL), upload FAB → bottom sheet with two options (Pick File via expo-document-picker, Take Photo via expo-camera), selected file preview, upload progress bar using existing multipart S3 API (/api/documents/multipart/*), success toast + list refresh
+- [ ] 34-02-PLAN.md — Driver messaging: message thread list (FlashList, each row shows sender, preview, timestamp, unread badge), conversation detail screen (FlatList of messages, inverted, auto-scroll to bottom), send message input (TextInput + send button, KeyboardAvoidingView), poll for new messages every 10s when screen focused, unread count badge on Messages tab icon (from getUnreadMessageCount), calls existing driver-messages server actions; mark as read on open
+
+---
+
+### Phase 35: Owner Core Screens — Dashboard KPIs, loads management, and driver management
+
+**Goal:** Build the three primary owner screens: a dashboard with at-a-glance fleet KPIs, a loads management screen where owners can view all loads and create new ones, and a driver management screen showing driver status and compliance at a glance.
+**Depends on:** Phase 30 (owner navigation shell)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 35-01-PLAN.md — Owner dashboard: KPI cards row (active loads count, drivers on duty, revenue this month, open alerts), active loads mini-list (top 5, each showing driver name + route + status badge), driver status grid (all drivers, colored dot for on-duty/off-duty/no-load), recent alerts list (maintenance due, expiring documents, incidents); calls existing getDashboardData + getActiveLoads actions via api-client; pull-to-refresh; skeleton loaders
+- [ ] 35-02-PLAN.md — Loads management: FlashList with status filter tabs (All / Active / Pending / Delivered), each load card (load number, customer, origin→destination, driver name, status badge, rate), FAB → create load bottom sheet (customer select, origin, destination, pickup date, rate, assign driver select), load detail screen (full load info + stop timeline + status update controls for owner), calls existing load server actions
+- [ ] 35-03-PLAN.md — Driver management: FlashList of all drivers (avatar initials, name, status badge, assigned load if active, compliance indicator), driver detail screen (contact info, current load, document compliance summary with expiry alerts, HOS current status), quick actions: send message button (navigates to fleet messaging), call button (tel: deep link), compliance badges (green/yellow/red per document category); calls existing getDrivers + getDriverById actions
+
+---
+
+### Phase 36: Owner Map + Fleet Communication — Live map with vehicle markers and fleet messaging
+
+**Goal:** Build the live map screen showing all vehicles as positioned markers using react-native-maps (replaces Leaflet which is web-only), with tap-to-select vehicle detail. Build the fleet communication screen where owners compose and send messages to individual drivers or broadcast to all drivers, with delivery status tracking.
+**Depends on:** Phase 35 (owner screens established)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 36-01-PLAN.md — Live map: react-native-maps MapView with vehicle markers (custom callout showing truck number + driver name + speed + status), marker color by status (moving=green, idle=yellow, offline=grey), tap marker → vehicle detail bottom sheet (full diagnostics: odometer, fuel level, engine state, current load), 30-second poll to refresh positions from existing /api/gps/locations endpoint, map auto-fits to show all vehicles on mount, locate-me button re-centers, clustering via react-native-map-clustering for dense fleets
+- [ ] 36-02-PLAN.md — Fleet communication: message compose screen (recipient select: individual driver or "All Drivers" broadcast, message body textarea, send button), sent messages list (FlashList, each row: recipient, preview, timestamp, delivery badge), message detail with thread replies; calls existing fleet-messages server actions; send triggers push notification to recipient driver(s) via existing push token system; unread indicator on Fleet tab icon for owner replies received
+
+---
+
+### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere
+
+**Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
+**Depends on:** Phases 31-36 (all screens built)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 37-01-PLAN.md — Touch + layout pass: audit all buttons/pressables for min h-12 (48px) touch target, fix any smaller targets; replace every FlatList/ScrollView with FlashList (estimatedItemSize tuned per list); add pull-to-refresh to all list screens; fix KeyboardAvoidingView on all form screens; test safe area insets on notched devices (iPhone 14 Pro notch, Android punch-hole); verify landscape layout doesn't break on tablet; add empty state illustrations to all empty lists
+- [ ] 37-02-PLAN.md — Animation + dark mode: React Native Reanimated FadeIn/SlideInRight on screen mount; haptic feedback (Haptics.impactAsync Medium) on all tab presses, (Haptics.notificationAsync Success/Error) on form submits; skeleton loaders (animated shimmer) on all loading states replacing spinners; NativeWind dark: variants on all components matching web dark mode colors; system color scheme detection (useColorScheme); status bar style per theme; test full dark mode pass on both portals
+
+---
+
+### Phase 38: EAS Build Pipeline + CI/CD + Beta Distribution — Code signing, GitHub Actions, TestFlight, and Google Play Internal Track
+
+**Goal:** Set up the complete build and distribution infrastructure: EAS code signing for both platforms, GitHub Actions workflows for automated lint/test/build/deploy, TestFlight external beta for iOS, and Google Play Internal Track + open testing for Android. At the end of this phase, any push to main automatically ships an OTA update to beta testers, and tagged releases trigger full native builds submitted to stores.
+**Depends on:** Phase 37 (all screens polished and stable)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 38-01-PLAN.md — EAS build setup: eas.json with development (simulator + device, debug), preview (internal distribution, production JS), production (App Store/Play Store submission) profiles; iOS code signing: Apple Developer account credentials in EAS secrets, auto-managed provisioning profiles; Android signing: generate upload keystore, store in EAS secrets; run first production build for both platforms (eas build --platform all --profile production); verify .ipa and .aab are generated without errors
+- [ ] 38-02-PLAN.md — GitHub Actions CI/CD: .github/workflows/mobile-ci.yml (on PR: turbo lint + type-check + vitest, then eas build --profile preview for QR code comment on PR); .github/workflows/mobile-deploy.yml (on push to main: eas update --branch production for OTA JS push to all installed apps, no app store review needed for JS-only changes); .github/workflows/mobile-release.yml (on tag v*: eas build --profile production + eas submit for both platforms)
+- [ ] 38-03-PLAN.md — Beta distribution: TestFlight external testing group setup (add beta testers by email, 90-day expiry auto-renewal), Google Play Internal Track upload + promote to Open Testing track (14-day mandatory period — must be started by Week 7), internal testing checklist (GPS background on physical device, push notifications end-to-end, camera document upload, offline queue flush, both portals full walkthrough, dark mode, both iOS and Android), document any bugs found and fix before store submission
+
+---
+
+### Phase 39: App Store Submission + Launch — Store assets, listings, submission, review, and staged rollout
+
+**Goal:** Prepare all store assets (icon, screenshots, descriptions, privacy policy), submit to both App Store and Google Play, manage review feedback, and execute a staged rollout. App is live on both stores with a 1.0.0 production release. Includes a rejection response playbook so review issues are resolved within 24 hours.
+**Depends on:** Phase 38 (production builds exist, beta testing complete)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 39-01-PLAN.md — Store assets: app icon 1024×1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732×2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024×500; all screenshots show realistic data (use seed data), no placeholder text
+- [ ] 39-02-PLAN.md — Store listings: App Store Connect (app name "DriveCommand", subtitle "Fleet Management for Truckers", description, keywords: fleet management/trucking/dispatch/driver app/logistics, support URL, privacy policy URL, category: Business, age rating: 4+, export compliance: No); Google Play Console (title, short description 80 chars, full description, content rating questionnaire, data safety section declaring location collection, app category: Business); both stores: privacy policy must be live at a public URL before submission
+- [ ] 39-03-PLAN.md — Submission + launch: iOS submit via `eas submit --platform ios --profile production`, select build, submit to App Store review; Android submit via `eas submit --platform android --profile production`, promote from Internal to Production with 10% staged rollout; rejection playbook (common rejections: background location justification, missing privacy policy, demo account required — prepare demo credentials for reviewers); post-approval: 10% → 50% → 100% rollout over 3 days; announce launch, monitor crash reports via Expo crash reporting

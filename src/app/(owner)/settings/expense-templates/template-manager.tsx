@@ -180,15 +180,6 @@ export function TemplateManager({ initialTemplates, categories }: TemplateManage
           {/* Hidden field for JSON items */}
           <input type="hidden" name="itemsJson" value={JSON.stringify(items)} />
 
-          {/* Add Item Button */}
-          <button
-            type="button"
-            onClick={handleAddItem}
-            className="text-sm text-primary hover:text-primary/80 transition-colors"
-          >
-            + Add Item
-          </button>
-
           {state?.error && typeof state.error === 'string' && (
             <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3">
               <p className="text-sm text-destructive">{state.error}</p>
@@ -201,14 +192,24 @@ export function TemplateManager({ initialTemplates, categories }: TemplateManage
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus className="h-4 w-4" />
-            {isPending ? 'Creating...' : 'Create Template'}
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleAddItem}
+              className="text-sm text-primary hover:text-primary/80 transition-colors"
+            >
+              + Add Item
+            </button>
+
+            <button
+              type="submit"
+              disabled={isPending}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="h-4 w-4" />
+              {isPending ? 'Creating...' : 'Create Template'}
+            </button>
+          </div>
         </form>
       </div>
 

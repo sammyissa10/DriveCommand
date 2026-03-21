@@ -359,7 +359,8 @@ export function AdminTicketList({ tickets, tenantOptions }: AdminTicketListProps
     CLOSED: tickets.filter((t) => t.status === 'RESOLVED' || t.status === 'CLOSED').length,
   };
 
-  // Derive filtered list — status tab + priority + tenant all applied together
+  // Derive filtered + sorted list
+  // ALL/CLOSED → newest first (desc); OPEN/IN_PROGRESS → oldest first (asc)
   const filteredTickets = tickets
     .filter((t) => {
       if (activeTab === 'ALL') return true;
@@ -369,7 +370,12 @@ export function AdminTicketList({ tickets, tenantOptions }: AdminTicketListProps
       return true;
     })
     .filter((t) => priorityFilter === 'ALL' || t.priority === priorityFilter)
-    .filter((t) => tenantFilter === 'ALL' || t.tenantId === tenantFilter);
+    .filter((t) => tenantFilter === 'ALL' || t.tenantId === tenantFilter)
+    .sort((a, b) => {
+      const asc = activeTab === 'OPEN' || activeTab === 'IN_PROGRESS';
+      const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return asc ? diff : -diff;
+    });
 
   const headingLabel =
     activeTab === 'ALL' ? 'All Tickets' :

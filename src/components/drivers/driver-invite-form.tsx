@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useState } from 'react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
 
 interface DriverFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -185,13 +186,12 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
           Address
           <span className="text-xs text-muted-foreground font-normal ml-2">(optional)</span>
         </label>
-        <input
-          type="text"
+        <AddressAutocomplete
           id="address"
           name="address"
           defaultValue={initialData?.address || ''}
           disabled={isPending}
-          placeholder="Street address, city, state, ZIP"
+          placeholder="Start typing an address..."
           className={inputClass}
         />
         {state?.error?.address && (

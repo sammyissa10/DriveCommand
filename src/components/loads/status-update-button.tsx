@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Undo2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface StatusUpdateButtonProps {
   loadId: string;
@@ -36,7 +37,6 @@ export function StatusUpdateButton({
 }: StatusUpdateButtonProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const next = NEXT_STATUS[currentStatus];
   const prev = PREV_STATUS[currentStatus];
@@ -46,17 +46,16 @@ export function StatusUpdateButton({
   async function handleProgress() {
     if (!next) return;
     setIsPending(true);
-    setError(null);
     try {
       const result = await updateStatusAction(loadId, next.status);
       if (result?.error) {
-        setError(typeof result.error === 'string' ? result.error : 'Failed to update status.');
+        toast.error(typeof result.error === 'string' ? result.error : 'Failed to update status.');
         setIsPending(false);
         return;
       }
       router.refresh();
     } catch {
-      setError('Failed to update status.');
+      toast.error('Failed to update status.');
     }
     setIsPending(false);
   }
@@ -65,17 +64,16 @@ export function StatusUpdateButton({
     if (!revertStatusAction || !prev) return;
     if (!window.confirm(`Are you sure you want to revert this load to ${prev.label.replace('Revert to ', '')}?`)) return;
     setIsPending(true);
-    setError(null);
     try {
       const result = await revertStatusAction(loadId);
       if (result?.error) {
-        setError(typeof result.error === 'string' ? result.error : 'Failed to revert status.');
+        toast.error(typeof result.error === 'string' ? result.error : 'Failed to revert status.');
         setIsPending(false);
         return;
       }
       router.refresh();
     } catch {
-      setError('Failed to revert status.');
+      toast.error('Failed to revert status.');
     }
     setIsPending(false);
   }
@@ -83,17 +81,16 @@ export function StatusUpdateButton({
   async function handleCancel() {
     if (!window.confirm('Are you sure you want to cancel this load?')) return;
     setIsPending(true);
-    setError(null);
     try {
       const result = await updateStatusAction(loadId, 'CANCELLED');
       if (result?.error) {
-        setError(typeof result.error === 'string' ? result.error : 'Failed to cancel load.');
+        toast.error(typeof result.error === 'string' ? result.error : 'Failed to cancel load.');
         setIsPending(false);
         return;
       }
       router.refresh();
     } catch {
-      setError('Failed to cancel load.');
+      toast.error('Failed to cancel load.');
     }
     setIsPending(false);
   }
@@ -104,9 +101,6 @@ export function StatusUpdateButton({
 
   return (
     <div className="flex items-center gap-2">
-      {error && (
-        <p className="text-sm text-red-600">{error}</p>
-      )}
       {next && (
         <button
           onClick={handleProgress}

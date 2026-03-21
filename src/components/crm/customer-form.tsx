@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
 
 interface CustomerFormProps {
   action: (prevState: any, formData: FormData) => Promise<any>;
@@ -158,13 +159,13 @@ export function CustomerForm({ action, initialData, submitLabel }: CustomerFormP
 
         <div>
           <label htmlFor="address" className={labelClass}>Street Address</label>
-          <input
-            type="text"
+          <AddressAutocomplete
             id="address"
             name="address"
             defaultValue={initialData?.address || ''}
             disabled={isPending}
             className={inputClass}
+            placeholder="Start typing an address..."
           />
         </div>
 

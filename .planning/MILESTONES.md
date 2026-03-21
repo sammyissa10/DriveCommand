@@ -34,6 +34,36 @@
 ---
 
 
+## v5.0 DriveCommand Mobile (Planned — target 9-10 weeks from kickoff)
+
+**Phases planned:** 11 phases (29-39), 27 plans
+**Architecture:** Turborepo monorepo, React Native 0.76 + Expo SDK 52, NativeWind v4, EAS Build/Update
+**Portals:** Driver + Owner (no sysadmin on mobile)
+**Backend:** Existing Next.js API routes — zero backend rewrites
+
+**Phase overview:**
+- Phase 29: Monorepo Foundation + Expo Scaffold
+- Phase 30: Mobile Auth + Navigation Shell
+- Phase 31: Driver Core Screens (Dashboard, Loads, Status Updates)
+- Phase 32: Driver HOS + Incident Reporting
+- Phase 33: Driver Native Features (GPS, Push Notifications, Offline Queue)
+- Phase 34: Driver Documents + Messaging
+- Phase 35: Owner Core Screens (Dashboard, Loads, Drivers)
+- Phase 36: Owner Map + Fleet Communication
+- Phase 37: Polish + Performance
+- Phase 38: EAS Pipeline + CI/CD + Beta Distribution
+- Phase 39: App Store + Google Play Submission + Launch
+
+**External prerequisites (owner action required):**
+- Apple Developer Program ($99/year) — enroll at developer.apple.com
+- Google Play Console ($25 one-time) — enroll at play.google.com/console
+- EAS account (free) — create at expo.dev
+- Google Play 14-day open testing period — must start by Week 7
+
+See: [.planning/milestones/v5.0-mobile-ROADMAP.md] for full architecture, scope, and progress tracking.
+
+---
+
 ## v3.0 Route Finance & Driver Documents (Shipped: 2026-02-17)
 
 **Phases completed:** 3 phases (16-18), 10 plans, 20 tasks

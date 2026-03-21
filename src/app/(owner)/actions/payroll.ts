@@ -141,6 +141,52 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
 }
 
 /**
+ * Fetch completed loads stats for a driver within a pay period.
+ * Used to auto-populate milesLogged and loadsCompleted on the payroll form.
+ */
+export async function getDriverPayPeriodStats(
+  driverId: string,
+  periodStart: string,
+  periodEnd: string,
+): Promise<{ loadsCompleted: number; milesLogged: number } | { error: string }> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  if (!driverId || !periodStart || !periodEnd) {
+    return { error: 'Missing required fields.' };
+  }
+
+  const start = new Date(periodStart);
+  const end = new Date(periodEnd);
+  // Set end to end-of-day so loads on the last day are included
+  end.setHours(23, 59, 59, 999);
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return { error: 'Invalid dates.' };
+  }
+
+  const prisma = await getTenantPrisma();
+
+  const loads = await prisma.load.findMany({
+    where: {
+      driverId,
+      status: { in: ['DELIVERED', 'INVOICED'] },
+      archivedAt: null,
+      pickupDate: { gte: start, lte: end },
+    },
+    select: {
+      route: { select: { distanceMiles: true } },
+    },
+  });
+
+  const loadsCompleted = loads.length;
+  const milesLogged = Math.round(
+    loads.reduce((sum, load) => sum + (load.route?.distanceMiles ?? 0), 0)
+  );
+
+  return { loadsCompleted, milesLogged };
+}
+
+/**
  * Delete a draft payroll record.
  */
 export async function deletePayrollRecord(id: string) {

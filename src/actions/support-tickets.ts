@@ -305,7 +305,7 @@ export async function getTicketById(ticketId: string) {
 
 /**
  * Add an owner reply to an existing ticket.
- * Creates a TicketMessage with senderType=OWNER and sets ticket status to WAITING_ON_CUSTOMER.
+ * Creates a TicketMessage with senderType=OWNER. Does not auto-change ticket status.
  */
 export async function addOwnerReply(
   ticketId: string,
@@ -342,12 +342,6 @@ export async function addOwnerReply(
           senderLabel,
           body: trimmedBody,
         },
-      });
-
-      // Auto-set status to WAITING_ON_CUSTOMER
-      await tx.supportTicket.update({
-        where: { id: ticketId },
-        data: { status: 'WAITING_ON_CUSTOMER' },
       });
     }, TX_OPTIONS);
 

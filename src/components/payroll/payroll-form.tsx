@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useCallback } from 'react';
+import { getDriverPayPeriodStats } from '@/app/(owner)/actions/payroll';
 
 interface Driver {
   id: string;
@@ -41,6 +42,57 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
   const [bonuses, setBonuses] = useState(Number(initialData?.bonuses) || 0);
   const [deductions, setDeductions] = useState(Number(initialData?.deductions) || 0);
 
+  // Hourly calculator — client-side only, feeds into basePay
+  const [hourlyRate, setHourlyRate] = useState('');
+  const [hoursWorked, setHoursWorked] = useState('');
+
+  function applyHourlyCalc() {
+    const rate = parseFloat(hourlyRate);
+    const hours = parseFloat(hoursWorked);
+    if (!isNaN(rate) && !isNaN(hours) && rate >= 0 && hours >= 0) {
+      setBasePay(parseFloat((rate * hours).toFixed(2)));
+    }
+  }
+
+  // Auto-populate performance stats
+  const [driverId, setDriverId] = useState(initialData?.driverId || '');
+  const [periodStart, setPeriodStart] = useState(toDateInputValue(initialData?.periodStart));
+  const [periodEnd, setPeriodEnd] = useState(toDateInputValue(initialData?.periodEnd));
+  const [milesLogged, setMilesLogged] = useState(initialData?.milesLogged ?? 0);
+  const [loadsCompleted, setLoadsCompleted] = useState(initialData?.loadsCompleted ?? 0);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [statsSource, setStatsSource] = useState<'auto' | 'manual'>('manual');
+
+  const fetchStats = useCallback(async (driver: string, start: string, end: string) => {
+    if (!driver || !start || !end) return;
+    setStatsLoading(true);
+    try {
+      const result = await getDriverPayPeriodStats(driver, start, end);
+      if (!('error' in result)) {
+        setLoadsCompleted(result.loadsCompleted);
+        setMilesLogged(result.milesLogged);
+        setStatsSource('auto');
+      }
+    } finally {
+      setStatsLoading(false);
+    }
+  }, []);
+
+  function handleDriverChange(value: string) {
+    setDriverId(value);
+    fetchStats(value, periodStart, periodEnd);
+  }
+
+  function handlePeriodStartChange(value: string) {
+    setPeriodStart(value);
+    fetchStats(driverId, value, periodEnd);
+  }
+
+  function handlePeriodEndChange(value: string) {
+    setPeriodEnd(value);
+    fetchStats(driverId, periodStart, value);
+  }
+
   const totalPay = basePay + bonuses - deductions;
 
   return (
@@ -64,7 +116,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
           <select
             id="driverId"
             name="driverId"
-            defaultValue={initialData?.driverId || ''}
+            value={driverId}
+            onChange={(e) => handleDriverChange(e.target.value)}
             disabled={isPending}
             className={inputClass}
             required
@@ -97,7 +150,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               type="date"
               id="periodStart"
               name="periodStart"
-              defaultValue={toDateInputValue(initialData?.periodStart)}
+              value={periodStart}
+              onChange={(e) => handlePeriodStartChange(e.target.value)}
               disabled={isPending}
               className={inputClass}
               required
@@ -114,7 +168,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               type="date"
               id="periodEnd"
               name="periodEnd"
-              defaultValue={toDateInputValue(initialData?.periodEnd)}
+              value={periodEnd}
+              onChange={(e) => handlePeriodEndChange(e.target.value)}
               disabled={isPending}
               className={inputClass}
               required
@@ -132,6 +187,57 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
           Compensation
         </h3>
 
+        {/* Hourly calculator */}
+        <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Hourly Calculator <span className="font-normal normal-case">(optional — auto-fills Base Pay)</span>
+          </p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 items-end">
+            <div>
+              <label className={labelClass}>Hourly Rate ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={hourlyRate}
+                onChange={(e) => setHourlyRate(e.target.value)}
+                disabled={isPending}
+                placeholder="e.g. 25.00"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Hours Worked</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                value={hoursWorked}
+                onChange={(e) => setHoursWorked(e.target.value)}
+                disabled={isPending}
+                placeholder="e.g. 40"
+                className={inputClass}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={applyHourlyCalc}
+              disabled={isPending || !hourlyRate || !hoursWorked}
+              className="rounded-lg border border-primary bg-primary/10 px-4 py-2.5 text-sm font-medium text-primary hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Calculate
+            </button>
+          </div>
+          {hourlyRate && hoursWorked && !isNaN(parseFloat(hourlyRate)) && !isNaN(parseFloat(hoursWorked)) && (
+            <p className="text-xs text-muted-foreground">
+              {parseFloat(hoursWorked)} hrs × ${parseFloat(hourlyRate).toFixed(2)}/hr ={' '}
+              <span className="font-semibold text-foreground">
+                ${(parseFloat(hourlyRate) * parseFloat(hoursWorked)).toFixed(2)}
+              </span>
+            </p>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <label htmlFor="basePay" className={labelClass}>
@@ -143,7 +249,7 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               name="basePay"
               step="0.01"
               min="0"
-              defaultValue={Number(initialData?.basePay) || ''}
+              value={basePay || ''}
               onChange={(e) => setBasePay(parseFloat(e.target.value) || 0)}
               disabled={isPending}
               className={inputClass}
@@ -220,9 +326,17 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
 
       {/* Performance */}
       <div className="space-y-4 border-t border-border pt-6">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Performance
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Performance
+          </h3>
+          {statsLoading && (
+            <span className="text-xs text-muted-foreground animate-pulse">Loading stats...</span>
+          )}
+          {!statsLoading && statsSource === 'auto' && (
+            <span className="text-xs text-green-600 font-medium">Auto-populated from completed loads</span>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -235,7 +349,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               name="milesLogged"
               min="0"
               step="1"
-              defaultValue={initialData?.milesLogged ?? 0}
+              value={milesLogged}
+              onChange={(e) => { setMilesLogged(parseInt(e.target.value) || 0); setStatsSource('manual'); }}
               disabled={isPending}
               className={inputClass}
             />
@@ -250,12 +365,23 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               name="loadsCompleted"
               min="0"
               step="1"
-              defaultValue={initialData?.loadsCompleted ?? 0}
+              value={loadsCompleted}
+              onChange={(e) => { setLoadsCompleted(parseInt(e.target.value) || 0); setStatsSource('manual'); }}
               disabled={isPending}
               className={inputClass}
             />
           </div>
         </div>
+        {!statsLoading && statsSource === 'auto' && (
+          <p className="text-xs text-muted-foreground">
+            Counts loads with Delivered or Invoiced status where pickup date falls within the pay period. You can edit these values manually if needed.
+          </p>
+        )}
+        {!statsLoading && statsSource === 'manual' && driverId && periodStart && periodEnd && (
+          <p className="text-xs text-muted-foreground">
+            Values entered manually. Select a driver and pay period to auto-populate from completed loads.
+          </p>
+        )}
       </div>
 
       {/* Status */}

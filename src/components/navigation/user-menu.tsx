@@ -19,9 +19,10 @@ function getInitials(firstName?: string, lastName?: string, email?: string): str
 
 interface UserMenuProps {
   dropdownDirection?: "up" | "down";
+  compactOnMobile?: boolean;
 }
 
-export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
+export function UserMenu({ dropdownDirection = "down", compactOnMobile = false }: UserMenuProps) {
   const { user, isLoaded } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -57,16 +58,16 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 rounded-lg px-2 py-1.5 w-full hover:bg-muted active:bg-muted transition-colors text-left group/usermenu"
+        className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-muted active:bg-muted transition-colors text-left group/usermenu"
       >
-        <div className="flex aspect-square size-8 items-center justify-center rounded-full bg-white text-blue-600 text-xs font-semibold shadow-sm">
+        <div className={`flex aspect-square size-8 items-center justify-center rounded-full text-xs font-semibold shadow-sm shrink-0 ${compactOnMobile ? "bg-blue-600 text-white" : "bg-white text-blue-600"}`}>
           {initials}
         </div>
-        <div className="grid flex-1 text-left text-sm leading-tight">
+        <div className={`${compactOnMobile ? "hidden sm:grid" : "grid"} flex-1 text-left text-sm leading-tight min-w-0`}>
           <span className="truncate font-semibold group-hover/usermenu:text-gray-900 group-active/usermenu:text-gray-900">{displayName}</span>
           <span className="truncate text-xs text-muted-foreground group-hover/usermenu:text-gray-600 group-active/usermenu:text-gray-600">{user?.email}</span>
         </div>
-        <ChevronsUpDown className="ml-auto size-4 group-hover/usermenu:text-gray-900 group-active/usermenu:text-gray-900" />
+        <ChevronsUpDown className="size-4 group-hover/usermenu:text-gray-900 group-active/usermenu:text-gray-900" />
       </button>
 
       {isOpen && (
@@ -75,7 +76,11 @@ export function UserMenu({ dropdownDirection = "down" }: UserMenuProps) {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className={`absolute left-0 right-0 z-50 rounded-lg border border-border bg-card shadow-lg p-1 ${dropdownDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"}`}>
+          <div className={`absolute right-0 z-50 w-56 rounded-lg border border-border bg-card shadow-lg p-1 ${dropdownDirection === "up" ? "bottom-full mb-2" : "top-full mt-2"}`}>
+            <div className="px-3 py-2 mb-1 border-b border-border">
+              <p className="text-sm font-semibold text-foreground truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
             <button
               onClick={handleSignOut}
               disabled={isSigningOut}

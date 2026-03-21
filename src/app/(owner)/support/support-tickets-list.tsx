@@ -121,10 +121,16 @@ export function SupportTicketsList({ tickets }: SupportTicketsListProps) {
     return result;
   }, [tickets]);
 
-  const filteredTickets = useMemo(
-    () => tickets.filter((t) => matchesTab(t.status, activeTab)),
-    [tickets, activeTab]
-  );
+  // ALL/closed → newest first (desc); open/in_progress → oldest first (asc)
+  const filteredTickets = useMemo(() => {
+    const asc = activeTab === 'open' || activeTab === 'in_progress';
+    return tickets
+      .filter((t) => matchesTab(t.status, activeTab))
+      .sort((a, b) => {
+        const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        return asc ? diff : -diff;
+      });
+  }, [tickets, activeTab]);
 
   if (tickets.length === 0) {
     return (
