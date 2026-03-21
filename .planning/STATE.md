@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 27 Automated Playwright E2E Tests — COMPLETE (Plan 3 of 3 complete)
-Status: Phase 27 complete — full Playwright E2E suite: 16 driver tests + access boundaries, GitHub Actions CI, e2e/README.md
-Last activity: 2026-03-20 - Completed quick task 85: TKT-0035 follow-up: CRM Performance now computed live from INVOICED loads
+Phase: Phase 28 Driver History — IN PROGRESS (Plan 1 of 2 complete)
+Status: Phase 28 Plan 01 complete — getMyCompletedLoads() and getMyCompletedRoutes() server actions added
+Last activity: 2026-03-21 - Completed Phase 28 Plan 01: driver history server actions
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -50,6 +50,7 @@ Progress: [███████████████████████
 - Phase 26-03 (2026-03-13): Driver portal QA test scripts + README — 2 tasks, 2 files, 4min
 - Phase 27-01 (2026-03-16): Multi-role Playwright auth + SysAdmin E2E tests — 2 tasks, 14 files, 7min
 - Phase 27-02 (2026-03-16): Owner portal E2E tests — 2 tasks, 6 files, 5min
+- Phase 28-01 (2026-03-21): Driver history server actions (getMyCompletedLoads + getMyCompletedRoutes) — 2 tasks, 2 files, 67s
 
 **Combined:**
 - Total: 19 phases complete, 46 plans
@@ -509,6 +510,7 @@ None blocking immediate progress.
 | 83 | TKT-0034: Make updateLoadStatus idempotent — return success silently when load is already at target status, eliminating "Cannot transition from X to X" race condition errors | 2026-03-20 | c90e044 | [83-tkt-0034-fix-redundant-status-transition](./quick/83-tkt-0034-fix-redundant-status-transition/) |
 | 84 | TKT-0035: Fix CRM Performance section not updating — increment totalLoads/totalRevenue/lastLoadDate on Customer when load transitions to INVOICED | 2026-03-20 | caf2da3 | [84-tkt-0035-fix-crm-performance-section-not](./quick/84-tkt-0035-fix-crm-performance-section-not/) |
 | 85 | TKT-0035 follow-up: Compute CRM Performance stats live from INVOICED loads via prisma.load.aggregate — fixes historical loads and eliminates stored-field drift | 2026-03-20 | e13b9c4 | [85-tkt-0035-follow-up-fix-crm-performance-s](./quick/85-tkt-0035-follow-up-fix-crm-performance-s/) |
+| 86 | Display tenant business name in owner portal sidebar — fetch Tenant.name in OwnerLayout, thread through OwnerShell → AppSidebar, fallback to "DriveCommand" | 2026-03-20 | 7d03cde | [86-display-tenant-business-name-in-sidebar](./quick/86-PLAN.md) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
