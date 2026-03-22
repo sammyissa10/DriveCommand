@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 29 Monorepo + Expo Scaffold — IN PROGRESS
-Status: Phase 29 Plan 03 complete — shared packages (types, validation, api-client) built and apps/web imports migrated
-Last activity: 2026-03-22 - Completed Phase 29 Plan 03: Shared Packages — Types, Validation, API Client
-Stopped at: Phase 29 Plan 03 complete — next is Phase 30 (auth screens)
+Phase: Phase 30 Mobile Auth + Navigation — IN PROGRESS
+Status: Phase 30 Plan 01 complete — full mobile auth system (login screen, MMKV session, AuthContext, 401 guard, role-based routing)
+Last activity: 2026-03-22 - Completed Phase 30 Plan 01: Auth Flow (Login Screen + JWT + MMKV + Auth Guard)
+Stopped at: Phase 30 Plan 01 complete — next is Phase 31 (driver portal)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -57,9 +57,10 @@ Progress: [███████████████████████
 - Phase 29-01 (2026-03-22): Turborepo monorepo setup — Next.js migrated to apps/web/, turbo.json, stub shared packages — 10 tasks, 530 files moved, ~5min
 - Phase 29-02 (2026-03-22): Expo app scaffold + NativeWind v4 + EAS config — Expo SDK 55, Expo Router v4, (driver)/(owner) route groups, Poppins font, eas.json — 10 tasks, 33 files, ~6min
 - Phase 29-03 (2026-03-22): Shared packages (types, validation, api-client) — TypeScript interfaces, 17 Zod schemas migrated from apps/web, Bearer token REST client — 3 tasks, 46 files, ~7min
+- Phase 30-01 (2026-03-22): Mobile auth system — AES-256-GCM Bearer tokens, MMKV session, login screen, AuthContext, 401 guard, role-based routing — 8 tasks, 8 files, ~4min
 
 **Combined:**
-- Total: 20 phases complete, 47 plans
+- Total: 21 phases complete, 48 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -105,6 +106,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 30-01 decisions (Mobile auth flow):**
+- Reused existing AES-256-GCM encrypt() from lib/auth/session.ts as Bearer token — no separate JWT library needed; same payload works for both cookie (web) and Bearer (mobile)
+- /api/auth/me Bearer path hits DB for fresh user+companyName; cookie path returns cached session for web performance
+- AuthGuard is a child of AuthProvider so it has stable logout reference for 401 handler registration
 
 **Phase 29-01 decisions (Turborepo monorepo setup):**
 - npm workspaces chosen over pnpm — project already uses npm, zero toolchain disruption
