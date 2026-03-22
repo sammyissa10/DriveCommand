@@ -9,10 +9,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
-Phase: Phase 28 Driver History — COMPLETE
-Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-22 - Completed quick task 100: Remove AI suggestion feature from admin support tickets
+Milestone: v5.0 Mobile App — IN PROGRESS
+Phase: Phase 29 Monorepo + Expo Scaffold — IN PROGRESS
+Status: Phase 29 Plan 01 complete — Turborepo monorepo setup, web app migrated to apps/web/, build verified
+Last activity: 2026-03-22 - Completed Phase 29 Plan 01: Turborepo monorepo setup + web app migration
+Stopped at: Phase 29 Plan 01 complete — next is Phase 29 Plan 02 (Expo scaffold)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -53,8 +54,10 @@ Progress: [███████████████████████
 - Phase 28-01 (2026-03-21): Driver history server actions (getMyCompletedLoads + getMyCompletedRoutes) — 2 tasks, 2 files, 67s
 - Phase 28-02 (2026-03-21): Driver history UI — CompletedLoadHistory + CompletedRouteHistory components, page wiring — 4 tasks, 4 files, ~5min
 
+- Phase 29-01 (2026-03-22): Turborepo monorepo setup — Next.js migrated to apps/web/, turbo.json, stub shared packages — 10 tasks, 530 files moved, ~5min
+
 **Combined:**
-- Total: 19 phases complete, 46 plans
+- Total: 20 phases complete, 47 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -100,6 +103,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 29-01 decisions (Turborepo monorepo setup):**
+- npm workspaces chosen over pnpm — project already uses npm, zero toolchain disruption
+- turbo@^2.0.0 installed at workspace root only — individual apps don't need it
+- .env copied (not symlinked) to apps/web/ — Vercel reads env from app root at deploy time
+- All file content inside apps/web/src/ left completely unchanged — only directory location changed
+- IMPORTANT: Vercel Root Directory must be updated to apps/web/ before next deployment
 
 **Phase 27-01 decisions (Playwright multi-role auth + SysAdmin E2E):**
 - API-based login for all 3 roles: POST /api/auth/login — faster than UI login, avoids React hydration delays
