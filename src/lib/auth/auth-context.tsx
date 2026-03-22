@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { UserRole } from './roles';
+import type { UserPermissions } from './permissions';
 
 interface AuthUser {
   id: string;
@@ -10,6 +11,7 @@ interface AuthUser {
   tenantId: string;
   firstName?: string;
   lastName?: string;
+  permissions?: UserPermissions;
 }
 
 interface AuthContextValue {
@@ -48,6 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             tenantId: data.tenantId,
             firstName: data.firstName,
             lastName: data.lastName,
+            permissions: data.permissions,
           });
         }
       })

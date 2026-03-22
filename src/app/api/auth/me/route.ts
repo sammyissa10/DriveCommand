@@ -21,5 +21,6 @@ export async function GET() {
     tenantId: session.tenantId,
     firstName: session.firstName,
     lastName: session.lastName,
+    permissions: session.permissions,
   });
 }

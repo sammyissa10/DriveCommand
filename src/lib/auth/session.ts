@@ -9,6 +9,7 @@
 
 import { cache } from 'react';
 import { cookies } from 'next/headers';
+import type { UserPermissions } from './permissions';
 
 export interface SessionData {
   userId: string;
@@ -18,6 +19,7 @@ export interface SessionData {
   firstName?: string;
   lastName?: string;
   isSystemAdmin?: boolean;
+  permissions?: UserPermissions;
 }
 
 const SESSION_COOKIE_NAME = 'session';

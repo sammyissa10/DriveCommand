@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { setSession } from '@/lib/auth/session';
+import { getPermissions } from '@/lib/auth/permissions';
 
 /**
  * POST /api/auth/login
@@ -49,6 +50,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Compute permissions based on role and stored permissions field
+    const permissions = getPermissions({ role: user.role, permissions: user.permissions });
+
     // Set encrypted session cookie
     await setSession({
       userId: user.id,
@@ -58,6 +62,7 @@ export async function POST(req: NextRequest) {
       firstName: user.firstName ?? undefined,
       lastName: user.lastName ?? undefined,
       isSystemAdmin: user.isSystemAdmin,
+      permissions,
     });
 
     let redirectUrl = '/dashboard';

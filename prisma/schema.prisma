@@ -154,6 +154,7 @@ model User {
   lastName      String?
   licenseNumber String?
   isActive      Boolean  @default(true)
+  permissions   Json?
   createdAt     DateTime @default(now()) @db.Timestamptz
   updatedAt     DateTime @updatedAt @db.Timestamptz
 
