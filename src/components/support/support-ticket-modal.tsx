@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
-import { LifeBuoy, X, Paperclip } from 'lucide-react';
+import { LifeBuoy, X, Paperclip, Camera, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createSupportTicket } from '@/actions/support-tickets';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 
 const TICKET_CATEGORIES = [
@@ -61,6 +71,12 @@ export function SupportTicketModal() {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Screenshot capture state
+  const [screenshotBlob, setScreenshotBlob] = useState<Blob | null>(null);
+  const [screenshotPreviewUrl, setScreenshotPreviewUrl] = useState<string | null>(null);
+  const [capturing, setCapturing] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
   // Only render for authenticated users
   if (!user) return null;
 
@@ -72,6 +88,20 @@ export function SupportTicketModal() {
     setPlatform(typeof window !== 'undefined' && window.innerWidth < 768 ? 'MOBILE' : 'DESKTOP');
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+    // Clear screenshot
+    setScreenshotBlob(null);
+    if (screenshotPreviewUrl) {
+      URL.revokeObjectURL(screenshotPreviewUrl);
+    }
+    setScreenshotPreviewUrl(null);
+  }
+
+  function clearScreenshot() {
+    setScreenshotBlob(null);
+    if (screenshotPreviewUrl) {
+      URL.revokeObjectURL(screenshotPreviewUrl);
+    }
+    setScreenshotPreviewUrl(null);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -103,6 +133,45 @@ export function SupportTicketModal() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
+  async function captureAndOpen() {
+    setShowConfirmDialog(false);
+    setCapturing(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(document.body, {
+        useCORS: true,
+        scale: 1,
+        logging: false,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight,
+      });
+      await new Promise<void>((resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              setScreenshotBlob(blob);
+              setScreenshotPreviewUrl(URL.createObjectURL(blob));
+            }
+            resolve();
+          },
+          'image/png',
+          0.8
+        );
+      });
+    } catch (err) {
+      console.error('[SupportTicketModal] Screenshot capture failed:', err);
+      toast.error('Screenshot capture failed — you can still submit without one.');
+    } finally {
+      setCapturing(false);
+      setOpen(true);
+    }
+  }
+
+  function skipAndOpen() {
+    setShowConfirmDialog(false);
+    setOpen(true);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -116,8 +185,9 @@ export function SupportTicketModal() {
     }
 
     let attachmentKey: string | undefined;
+    let screenshotS3Key: string | undefined;
 
-    // Upload attachment if selected
+    // Upload manual attachment if selected
     if (file) {
       setUploading(true);
       try {
@@ -162,6 +232,45 @@ export function SupportTicketModal() {
       setUploading(false);
     }
 
+    // Upload auto-captured screenshot if present
+    if (screenshotBlob) {
+      setUploading(true);
+      try {
+        const uploadRes = await fetch('/api/support/upload-attachment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: 'screenshot.png',
+            contentType: 'image/png',
+            sizeBytes: screenshotBlob.size,
+          }),
+        });
+
+        if (!uploadRes.ok) {
+          // Non-fatal: continue without screenshot
+          console.error('[SupportTicketModal] Failed to get screenshot upload URL');
+        } else {
+          const { uploadUrl, s3Key } = await uploadRes.json();
+
+          const putRes = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'image/png' },
+            body: screenshotBlob,
+          });
+
+          if (putRes.ok) {
+            screenshotS3Key = s3Key;
+          } else {
+            console.error('[SupportTicketModal] Failed to upload screenshot to S3');
+          }
+        }
+      } catch (err) {
+        // Non-fatal: log and continue
+        console.error('[SupportTicketModal] Screenshot upload error:', err);
+      }
+      setUploading(false);
+    }
+
     setLoading(true);
     try {
       const result = await createSupportTicket({
@@ -172,6 +281,7 @@ export function SupportTicketModal() {
         fromPage: pathname,
         platform,
         attachmentKey,
+        screenshotKey: screenshotS3Key,
       });
 
       if (result.success) {
@@ -194,13 +304,45 @@ export function SupportTicketModal() {
     <>
       {/* Fixed support button — bottom-right */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => setShowConfirmDialog(true)}
         className="fixed bottom-20 lg:bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         aria-label="Open support"
         title="Get support"
       >
         <LifeBuoy className="h-5 w-5" />
       </button>
+
+      {/* Screenshot confirmation dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5 text-blue-500" />
+              Capture Screenshot?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              We can capture a screenshot of the current page to attach to your support ticket.
+              This helps our team understand the issue faster.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={skipAndOpen}>Skip</AlertDialogCancel>
+            <AlertDialogAction onClick={captureAndOpen}>
+              Capture &amp; Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Capturing overlay */}
+      {capturing && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="flex items-center gap-3 rounded-lg bg-white px-5 py-4 shadow-xl">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+            <span className="text-sm font-medium text-gray-700">Capturing screenshot...</span>
+          </div>
+        </div>
+      )}
 
       {/* Support sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
@@ -319,6 +461,32 @@ export function SupportTicketModal() {
                 {description.length}/2000
               </p>
             </div>
+
+            {/* Auto-captured screenshot preview */}
+            {screenshotPreviewUrl && (
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                  <Camera className="h-4 w-4 text-blue-500" />
+                  Auto-captured Screenshot
+                </label>
+                <div className="relative inline-block">
+                  <img
+                    src={screenshotPreviewUrl}
+                    alt="Page screenshot preview"
+                    className="max-h-32 rounded-md border border-input object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearScreenshot}
+                    disabled={isDisabled}
+                    className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80 transition-colors disabled:opacity-50"
+                    aria-label="Remove screenshot"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* File attachment */}
             <div className="space-y-1.5">
