@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
-import { LifeBuoy, X } from 'lucide-react';
+import { LifeBuoy, X, Paperclip } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 import { createSupportTicket } from '@/actions/support-tickets';
 import { Button } from '@/components/ui/button';
@@ -37,15 +37,29 @@ const TICKET_PRIORITIES = [
   { value: 'URGENT', label: 'Urgent' },
 ];
 
+const SUPPORT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function SupportTicketModal() {
   const { user } = useAuth();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [category, setCategory] = useState('GENERAL');
   const [priority, setPriority] = useState('NORMAL');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [platform, setPlatform] = useState<'MOBILE' | 'DESKTOP'>(() =>
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 'MOBILE' : 'DESKTOP'
+  );
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Only render for authenticated users
   if (!user) return null;
@@ -55,6 +69,38 @@ export function SupportTicketModal() {
     setPriority('NORMAL');
     setTitle('');
     setDescription('');
+    setPlatform(typeof window !== 'undefined' && window.innerWidth < 768 ? 'MOBILE' : 'DESKTOP');
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0] ?? null;
+    if (!selected) {
+      setFile(null);
+      return;
+    }
+
+    // Validate type
+    if (!selected.type.startsWith('image/') && selected.type !== 'application/pdf') {
+      toast.error('Only images and PDFs are accepted');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // Validate size
+    if (selected.size > SUPPORT_MAX_FILE_SIZE) {
+      toast.error('File must be under 10MB');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setFile(selected);
+  }
+
+  function clearFile() {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -69,6 +115,53 @@ export function SupportTicketModal() {
       return;
     }
 
+    let attachmentKey: string | undefined;
+
+    // Upload attachment if selected
+    if (file) {
+      setUploading(true);
+      try {
+        const uploadRes = await fetch('/api/support/upload-attachment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileName: file.name,
+            contentType: file.type,
+            sizeBytes: file.size,
+          }),
+        });
+
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json().catch(() => ({ error: 'Upload failed' }));
+          toast.error(err.error ?? 'Failed to get upload URL');
+          setUploading(false);
+          return;
+        }
+
+        const { uploadUrl, s3Key } = await uploadRes.json();
+
+        // PUT the file directly to S3
+        const putRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+
+        if (!putRes.ok) {
+          toast.error('Failed to upload attachment. Please try again.');
+          setUploading(false);
+          return;
+        }
+
+        attachmentKey = s3Key;
+      } catch {
+        toast.error('Failed to upload attachment. Please try again.');
+        setUploading(false);
+        return;
+      }
+      setUploading(false);
+    }
+
     setLoading(true);
     try {
       const result = await createSupportTicket({
@@ -77,6 +170,8 @@ export function SupportTicketModal() {
         title: title.trim(),
         description: description.trim(),
         fromPage: pathname,
+        platform,
+        attachmentKey,
       });
 
       if (result.success) {
@@ -92,6 +187,8 @@ export function SupportTicketModal() {
       setLoading(false);
     }
   }
+
+  const isDisabled = loading || uploading;
 
   return (
     <>
@@ -157,6 +254,37 @@ export function SupportTicketModal() {
               </Select>
             </div>
 
+            {/* Platform toggle */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">
+                Platform
+              </label>
+              <div className="flex rounded-md overflow-hidden border border-input">
+                <button
+                  type="button"
+                  onClick={() => setPlatform('MOBILE')}
+                  className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                    platform === 'MOBILE'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Mobile
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPlatform('DESKTOP')}
+                  className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                    platform === 'DESKTOP'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Desktop
+                </button>
+              </div>
+            </div>
+
             {/* Title */}
             <div className="space-y-1.5">
               <label htmlFor="support-title" className="text-sm font-medium text-foreground">
@@ -192,6 +320,41 @@ export function SupportTicketModal() {
               </p>
             </div>
 
+            {/* File attachment */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">
+                Attachment <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              {file ? (
+                <div className="flex items-center gap-2 rounded-md border border-input bg-muted/50 px-3 py-2">
+                  <Paperclip className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-foreground truncate flex-1">{file.name}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">{formatFileSize(file.size)}</span>
+                  <button
+                    type="button"
+                    onClick={clearFile}
+                    disabled={isDisabled}
+                    className="shrink-0 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                    aria-label="Remove attachment"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  disabled={isDisabled}
+                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-muted-foreground file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground cursor-pointer disabled:opacity-50"
+                />
+              )}
+              <p className="text-xs text-muted-foreground">
+                Images or PDF only, max 10MB
+              </p>
+            </div>
+
             {/* Current page (auto-populated info) */}
             <div className="rounded-md bg-muted px-3 py-2">
               <p className="text-xs text-muted-foreground">
@@ -206,16 +369,16 @@ export function SupportTicketModal() {
                 variant="outline"
                 className="flex-1"
                 onClick={() => { setOpen(false); resetForm(); }}
-                disabled={loading}
+                disabled={isDisabled}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={loading}
+                disabled={isDisabled}
               >
-                {loading ? 'Submitting...' : 'Submit Ticket'}
+                {uploading ? 'Uploading...' : loading ? 'Submitting...' : 'Submit Ticket'}
               </Button>
             </div>
           </form>
