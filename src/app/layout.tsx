@@ -15,8 +15,12 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: 'DriveCommand',
   description: 'Logistics fleet management platform',
+  manifest: '/site.webmanifest',
   icons: {
-    icon: { url: '/favicon.png', type: 'image/png' },
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/logo-32.png', sizes: '32x32', type: 'image/png' },
+    ],
     apple: { url: '/logo-192.png', sizes: '192x192', type: 'image/png' },
   },
 };

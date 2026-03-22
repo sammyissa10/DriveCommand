@@ -27,6 +27,7 @@ const PUBLIC_PATHS = [
   '/_next/image',
   '/favicon.ico',
   '/favicon.png',
+  '/site.webmanifest',
 ];
 
 // Paths that belong to the owner portal — drivers navigating here get redirected to /my-route
