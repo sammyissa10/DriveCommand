@@ -372,3 +372,16 @@ Plans:
 - [ ] 39-01-PLAN.md — Store assets: app icon 1024×1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732×2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024×500; all screenshots show realistic data (use seed data), no placeholder text
 - [ ] 39-02-PLAN.md — Store listings: App Store Connect (app name "DriveCommand", subtitle "Fleet Management for Truckers", description, keywords: fleet management/trucking/dispatch/driver app/logistics, support URL, privacy policy URL, category: Business, age rating: 4+, export compliance: No); Google Play Console (title, short description 80 chars, full description, content rating questionnaire, data safety section declaring location collection, app category: Business); both stores: privacy policy must be live at a public URL before submission
 - [ ] 39-03-PLAN.md — Submission + launch: iOS submit via `eas submit --platform ios --profile production`, select build, submit to App Store review; Android submit via `eas submit --platform android --profile production`, promote from Internal to Production with 10% staged rollout; rejection playbook (common rejections: background location justification, missing privacy policy, demo account required — prepare demo credentials for reviewers); post-approval: 10% → 50% → 100% rollout over 3 days; announce launch, monitor crash reports via Expo crash reporting
+
+---
+
+## v6.0 Owner Portal Permissions
+
+### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
+
+**Goal:** Implement a granular permissions system in the owner portal so OwnerAdmin users (OWNER role) can control exactly which pages and features their team members (MANAGER role — dispatchers, assistants, partners) can access. OwnerAdmin sees everything. OwnerUser access is configurable per-user via a permissions management UI in Settings. Route guards and sidebar filtering enforce permissions at runtime. The invite flow gains a role selector so new team members can be invited as OwnerUser with a pre-configured permission set.
+**Depends on:** Phase 23 (SysAdmin portal), Phase 7 (owner portal foundation)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
