@@ -53,7 +53,8 @@ export async function validateFileType(
       };
     }
 
-    // Check if detected type is in allowed list
+    // Check if detected type is in allowed list — this is the real security check.
+    // Magic bytes detection is the source of truth regardless of what the browser claims.
     if (!ALLOWED_TYPES[detected.mime]) {
       return {
         valid: false,
@@ -61,8 +62,20 @@ export async function validateFileType(
       };
     }
 
-    // Verify detected type matches claimed type (prevent spoofing)
-    if (detected.mime !== claimedType) {
+    // Relaxed mismatch check for mobile browser compatibility.
+    // Mobile browsers (iOS Safari, Android Chrome) often report non-standard MIME types:
+    //   - empty string ""      : Android gallery / unknown type
+    //   - "image/heic"         : iOS camera (auto-converted to JPEG by iOS for web)
+    //   - "image/heif"         : iOS HEIF variant
+    //   - "application/octet-stream" : generic binary type used by some browsers
+    // Only reject if the claimed type is a known allowed type that does NOT match
+    // the detected type — that's an actual spoofing attempt (e.g., claim PDF, send JPEG).
+    const MOBILE_PASSTHROUGH_TYPES = ['', 'image/heic', 'image/heif', 'application/octet-stream'];
+    if (
+      claimedType &&
+      !MOBILE_PASSTHROUGH_TYPES.includes(claimedType) &&
+      detected.mime !== claimedType
+    ) {
       return {
         valid: false,
         error: `File type mismatch. File appears to be ${detected.mime} but was uploaded as ${claimedType}.`,
