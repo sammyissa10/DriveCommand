@@ -66,7 +66,7 @@ completed: 2026-03-22
 1. **Task 1: Content type resolution + HEIC validation message** - `50cb553` (fix)
 2. **Task 2: resolvedContentType in complete call + better S3 PUT error** - `f21bee2` (fix)
 
-**Plan metadata:** (docs commit — see final commit)
+**Plan metadata:** `9cc90d0` (docs: complete plan)
 
 ## Files Created/Modified
 
@@ -100,3 +100,13 @@ None - no external service configuration required.
 ---
 *Phase: quick-93*
 *Completed: 2026-03-22*
+
+## Self-Check: PASSED
+
+- src/app/api/documents/multipart/initiate/route.ts — FOUND
+- src/lib/storage/validate.ts — FOUND
+- src/components/documents/driver-document-upload.tsx — FOUND
+- .planning/quick/93-tkt-0042-follow-up-fix-remaining-mobile-/93-SUMMARY.md — FOUND
+- Commit 50cb553 — FOUND
+- Commit f21bee2 — FOUND
+- Commit 9cc90d0 — FOUND
