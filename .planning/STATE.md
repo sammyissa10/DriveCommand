@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 29 Monorepo + Expo Scaffold — IN PROGRESS
-Status: Phase 29 Plan 02 complete — Expo SDK 55 scaffold, NativeWind v4, EAS config, Poppins font, route groups
-Last activity: 2026-03-22 - Completed Phase 29 Plan 02: Expo app scaffold + NativeWind + EAS config
-Stopped at: Phase 29 Plan 02 complete — next is Phase 30 (auth screens)
+Status: Phase 29 Plan 03 complete — shared packages (types, validation, api-client) built and apps/web imports migrated
+Last activity: 2026-03-22 - Completed Phase 29 Plan 03: Shared Packages — Types, Validation, API Client
+Stopped at: Phase 29 Plan 03 complete — next is Phase 30 (auth screens)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -56,6 +56,7 @@ Progress: [███████████████████████
 
 - Phase 29-01 (2026-03-22): Turborepo monorepo setup — Next.js migrated to apps/web/, turbo.json, stub shared packages — 10 tasks, 530 files moved, ~5min
 - Phase 29-02 (2026-03-22): Expo app scaffold + NativeWind v4 + EAS config — Expo SDK 55, Expo Router v4, (driver)/(owner) route groups, Poppins font, eas.json — 10 tasks, 33 files, ~6min
+- Phase 29-03 (2026-03-22): Shared packages (types, validation, api-client) — TypeScript interfaces, 17 Zod schemas migrated from apps/web, Bearer token REST client — 3 tasks, 46 files, ~7min
 
 **Combined:**
 - Total: 20 phases complete, 47 plans
@@ -435,6 +436,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 29]: Used Expo SDK 55 (latest stable via create-expo-app, ships React 19 + RN 0.83.2)
 - [Phase 29]: NativeWind v4 requires nativewind-env.d.ts type reference for className prop TS support
 - [Phase 29]: Notification icon is placeholder logo-192.png — replace with proper 96x96 PNG before Phase 38
+- [Phase 29-03]: packages/* are pure TypeScript/Zod with no React Native or Next.js imports
+- [Phase 29-03]: Shared Zod schemas in @drivecommand/validation — single source of truth for both web and mobile validation
 
 ### Pending Todos
 
@@ -608,6 +611,7 @@ None blocking immediate progress.
 | Phase 27-automated-playwright-tests P03 | 3 | 2 tasks | 6 files |
 | Phase quick-92 P01 | 2m | 2 tasks | 2 files |
 | Phase 29 P02 | 365 | 10 tasks | 33 files |
+| Phase 29-monorepo-expo-scaffold P03 | 7min | 3 tasks | 46 files |
 
 ## Session Continuity
 
