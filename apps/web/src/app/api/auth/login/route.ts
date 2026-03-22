@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { setSession } from '@/lib/auth/session';
+import { setSession, encrypt } from '@/lib/auth/session';
 import { getPermissions } from '@/lib/auth/permissions';
 
 /**
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Look up user by email, bypassing RLS
+    // Look up user by email (with tenant), bypassing RLS
     const user = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.user.findFirst({
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
           email: email.toLowerCase().trim(),
           isActive: true,
         },
+        include: { tenant: { select: { name: true } } },
       });
     }, TX_OPTIONS);
 
@@ -53,8 +54,7 @@ export async function POST(req: NextRequest) {
     // Compute permissions based on role and stored permissions field
     const permissions = getPermissions({ role: user.role, permissions: user.permissions });
 
-    // Set encrypted session cookie
-    await setSession({
+    const sessionPayload = {
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -63,12 +63,35 @@ export async function POST(req: NextRequest) {
       lastName: user.lastName ?? undefined,
       isSystemAdmin: user.isSystemAdmin,
       permissions,
-    });
+    };
+
+    // Set encrypted session cookie (for web app)
+    await setSession(sessionPayload);
+
+    // Also generate a token for the mobile app (same encrypted payload)
+    const token = await encrypt(sessionPayload);
+
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
+    const companyName = user.tenant.name;
 
     let redirectUrl = '/dashboard';
     if (user.isSystemAdmin) redirectUrl = '/admin-dashboard';
     else if (user.role === 'DRIVER') redirectUrl = '/my-route';
-    return NextResponse.json({ success: true, redirectUrl });
+
+    return NextResponse.json({
+      success: true,
+      redirectUrl,
+      // Mobile app reads these fields:
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name,
+        role: user.role,
+        tenantId: user.tenantId,
+        companyName,
+      },
+    });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
