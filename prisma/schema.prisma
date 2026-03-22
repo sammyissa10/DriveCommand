@@ -971,6 +971,7 @@ model SupportTicket {
   platform     String?
   attachmentUrl String?
   attachmentKey String?
+  screenshotKey String?
   status       SupportTicketStatus   @default(OPEN)
   resolution   String?
   resolvedAt   DateTime?             @db.Timestamptz

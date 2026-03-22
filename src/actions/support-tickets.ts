@@ -20,6 +20,7 @@ const createTicketSchema = z.object({
   platform: z.enum(['MOBILE', 'DESKTOP']).optional(),
   attachmentUrl: z.string().url().optional(),
   attachmentKey: z.string().optional(),
+  screenshotKey: z.string().optional(),
 });
 
 const updateStatusSchema = z.object({
@@ -80,6 +81,7 @@ export async function createSupportTicket(data: {
   platform?: string;
   attachmentUrl?: string;
   attachmentKey?: string;
+  screenshotKey?: string;
 }): Promise<{ success: boolean; ticketNumber?: string; error?: string }> {
   const userId = await requireAuth();
   const session = await getSession();
@@ -96,7 +98,7 @@ export async function createSupportTicket(data: {
     };
   }
 
-  const { category, priority, title, description, fromPage, platform, attachmentUrl, attachmentKey } = validation.data;
+  const { category, priority, title, description, fromPage, platform, attachmentUrl, attachmentKey, screenshotKey } = validation.data;
   const tenantId = session.tenantId;
 
   try {
@@ -118,6 +120,7 @@ export async function createSupportTicket(data: {
           platform: platform ?? null,
           attachmentUrl: attachmentUrl ?? null,
           attachmentKey: attachmentKey ?? null,
+          screenshotKey: screenshotKey ?? null,
         },
       });
     }, TX_OPTIONS);
@@ -179,7 +182,7 @@ export async function getAllTickets(filters?: {
     id: string; ticketNumber: string; tenantId: string; submittedBy: string;
     fromPage: string; category: SupportTicketCategory; priority: SupportTicketPriority;
     title: string; description: string;
-    platform: string | null; attachmentUrl: string | null; attachmentKey: string | null;
+    platform: string | null; attachmentUrl: string | null; attachmentKey: string | null; screenshotKey: string | null;
     status: string; resolution: string | null; resolvedAt: Date | null;
     createdAt: Date; updatedAt: Date;
   };
