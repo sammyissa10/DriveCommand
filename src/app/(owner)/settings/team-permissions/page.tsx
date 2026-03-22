@@ -9,28 +9,46 @@ import {
   PERMISSION_LABELS,
   DEFAULT_MANAGER_PERMISSIONS,
 } from '@/lib/auth/permissions';
-import { getTeamMembers, updateUserPermissions, TeamMember } from '@/app/(owner)/actions/team-permissions';
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '@/components/ui/card';
+  getTeamMembers,
+  updateUserPermissions,
+  inviteTeamMember,
+  TeamMember,
+} from '@/app/(owner)/actions/team-permissions';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Users, Shield } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
+import { Shield, UserPlus, Users } from 'lucide-react';
 import { toast } from 'sonner';
+
+const permissionKeys = Object.keys(DEFAULT_MANAGER_PERMISSIONS) as Array<keyof UserPermissions>;
 
 export default function TeamPermissionsPage() {
   const { user, isLoaded } = useAuth();
   const router = useRouter();
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pendingUserId, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
-  // Redirect MANAGER users away — this page is OWNER-only
+  // Invite sheet state
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteFirstName, setInviteFirstName] = useState('');
+  const [inviteLastName, setInviteLastName] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [invitePermissions, setInvitePermissions] = useState<UserPermissions>({ ...DEFAULT_MANAGER_PERMISSIONS });
+
+  // Redirect MANAGER users — this page is OWNER-only
   useEffect(() => {
     if (isLoaded && user?.role === UserRole.MANAGER) {
       router.replace('/dashboard');
@@ -39,48 +57,61 @@ export default function TeamPermissionsPage() {
 
   useEffect(() => {
     if (!isLoaded || user?.role !== UserRole.OWNER) return;
-
     getTeamMembers()
       .then(setMembers)
-      .catch((err) => {
-        console.error('Failed to load team members:', err);
-        toast.error('Failed to load team members');
-      })
+      .catch(() => toast.error('Failed to load team members'))
       .finally(() => setLoading(false));
   }, [isLoaded, user]);
 
-  function handleToggle(
-    member: TeamMember,
-    key: keyof UserPermissions,
-    value: boolean
-  ) {
-    const updatedPermissions: UserPermissions = {
-      ...member.permissions,
-      [key]: value,
-    };
-
-    // Optimistic update
-    setMembers((prev) =>
-      prev.map((m) =>
-        m.id === member.id ? { ...m, permissions: updatedPermissions } : m
-      )
-    );
-
+  function handleToggle(member: TeamMember, key: keyof UserPermissions, value: boolean) {
+    const updated: UserPermissions = { ...member.permissions, [key]: value };
+    setMembers((prev) => prev.map((m) => m.id === member.id ? { ...m, permissions: updated } : m));
     startTransition(async () => {
       try {
-        await updateUserPermissions(member.id, updatedPermissions);
+        await updateUserPermissions(member.id, updated);
         toast.success('Permissions updated');
-      } catch (err) {
-        // Revert on error
-        setMembers((prev) =>
-          prev.map((m) =>
-            m.id === member.id ? { ...m, permissions: member.permissions } : m
-          )
-        );
+      } catch {
+        setMembers((prev) => prev.map((m) => m.id === member.id ? { ...m, permissions: member.permissions } : m));
         toast.error('Failed to update permissions');
-        console.error(err);
       }
     });
+  }
+
+  function resetInviteForm() {
+    setInviteFirstName('');
+    setInviteLastName('');
+    setInviteEmail('');
+    setInvitePermissions({ ...DEFAULT_MANAGER_PERMISSIONS });
+  }
+
+  async function handleInvite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!inviteEmail.trim() || !inviteFirstName.trim() || !inviteLastName.trim()) {
+      toast.error('First name, last name, and email are required');
+      return;
+    }
+    setInviteLoading(true);
+    try {
+      const result = await inviteTeamMember({
+        email: inviteEmail.trim(),
+        firstName: inviteFirstName.trim(),
+        lastName: inviteLastName.trim(),
+        permissions: invitePermissions,
+      });
+      if (result.success) {
+        toast.success(`Invitation sent to ${inviteEmail.trim()}`);
+        setInviteOpen(false);
+        resetInviteForm();
+        // Reload members list
+        getTeamMembers().then(setMembers).catch(() => {});
+      } else {
+        toast.error(result.error ?? 'Failed to send invitation');
+      }
+    } catch {
+      toast.error('Failed to send invitation');
+    } finally {
+      setInviteLoading(false);
+    }
   }
 
   if (!isLoaded || loading) {
@@ -91,23 +122,23 @@ export default function TeamPermissionsPage() {
     );
   }
 
-  const permissionKeys = Object.keys(DEFAULT_MANAGER_PERMISSIONS) as Array<
-    keyof UserPermissions
-  >;
-
   return (
     <div className="space-y-6 p-6 max-w-4xl mx-auto">
       {/* Page header */}
-      <div className="flex items-center gap-3">
-        <Shield className="h-6 w-6 text-primary" />
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Team Permissions
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Control what your team members can access
-          </p>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
+          <Shield className="h-6 w-6 text-primary" />
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Team Permissions</h1>
+            <p className="text-sm text-muted-foreground">
+              Invite dispatchers, assistants, and partners — control what they can access
+            </p>
+          </div>
         </div>
+        <Button onClick={() => setInviteOpen(true)} className="gap-2 shrink-0">
+          <UserPlus className="h-4 w-4" />
+          Invite Team Member
+        </Button>
       </div>
 
       {/* Empty state */}
@@ -117,20 +148,17 @@ export default function TeamPermissionsPage() {
             <Users className="h-10 w-10 text-muted-foreground mb-4" />
             <h3 className="font-medium mb-1">No team members yet</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Invite team members from the Drivers page to configure their
-              permissions.
+              Invite dispatchers, assistants, or partners and set their permissions before they join.
             </p>
-            <Link
-              href="/drivers"
-              className="text-sm text-primary hover:underline font-medium"
-            >
-              Go to Drivers &rarr;
-            </Link>
+            <Button onClick={() => setInviteOpen(true)} variant="outline" className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Invite Team Member
+            </Button>
           </CardContent>
         </Card>
       )}
 
-      {/* Member cards */}
+      {/* Member permission cards */}
       {members.map((member) => (
         <Card key={member.id}>
           <CardHeader className="pb-4">
@@ -141,43 +169,26 @@ export default function TeamPermissionsPage() {
                     ? `${member.firstName} ${member.lastName}`
                     : member.email}
                 </CardTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {member.email}
-                </p>
+                <p className="text-sm text-muted-foreground mt-0.5">{member.email}</p>
               </div>
-              <Badge variant="secondary">Manager</Badge>
+              <Badge variant="secondary">Team Member</Badge>
             </div>
           </CardHeader>
-
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {permissionKeys.map((key) => {
                 const { label, description } = PERMISSION_LABELS[key];
-                const checked = member.permissions[key];
-
                 return (
-                  <div
-                    key={key}
-                    className="flex items-start gap-3 rounded-lg border p-3"
-                  >
+                  <div key={key} className="flex items-start gap-3 rounded-lg border p-3">
                     <Switch
                       id={`${member.id}-${key}`}
-                      checked={checked}
-                      onCheckedChange={(value) =>
-                        handleToggle(member, key, value)
-                      }
+                      checked={member.permissions[key]}
+                      onCheckedChange={(value) => handleToggle(member, key, value)}
                       className="mt-0.5 shrink-0"
                     />
-                    <Label
-                      htmlFor={`${member.id}-${key}`}
-                      className="cursor-pointer space-y-0.5"
-                    >
-                      <span className="block text-sm font-medium leading-none">
-                        {label}
-                      </span>
-                      <span className="block text-xs text-muted-foreground leading-relaxed">
-                        {description}
-                      </span>
+                    <Label htmlFor={`${member.id}-${key}`} className="cursor-pointer space-y-0.5">
+                      <span className="block text-sm font-medium leading-none">{label}</span>
+                      <span className="block text-xs text-muted-foreground leading-relaxed">{description}</span>
                     </Label>
                   </div>
                 );
@@ -186,6 +197,111 @@ export default function TeamPermissionsPage() {
           </CardContent>
         </Card>
       ))}
+
+      {/* Invite Team Member sheet */}
+      <Sheet open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) resetInviteForm(); }}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-primary" />
+              Invite Team Member
+            </SheetTitle>
+            <SheetDescription>
+              Send an invitation to a dispatcher, assistant, or partner. Set their permissions now — they take effect as soon as they join.
+            </SheetDescription>
+          </SheetHeader>
+
+          <form onSubmit={handleInvite} className="mt-6 space-y-5">
+            {/* Name row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-first">First Name <span className="text-destructive">*</span></Label>
+                <Input
+                  id="invite-first"
+                  placeholder="Jane"
+                  value={inviteFirstName}
+                  onChange={(e) => setInviteFirstName(e.target.value)}
+                  required
+                  disabled={inviteLoading}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="invite-last">Last Name <span className="text-destructive">*</span></Label>
+                <Input
+                  id="invite-last"
+                  placeholder="Smith"
+                  value={inviteLastName}
+                  onChange={(e) => setInviteLastName(e.target.value)}
+                  required
+                  disabled={inviteLoading}
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <Label htmlFor="invite-email">Email <span className="text-destructive">*</span></Label>
+              <Input
+                id="invite-email"
+                type="email"
+                placeholder="jane@yourcompany.com"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                required
+                disabled={inviteLoading}
+              />
+            </div>
+
+            {/* Permissions */}
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">Permissions</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Select what this team member can access. You can change this anytime.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                {permissionKeys.map((key) => {
+                  const { label, description } = PERMISSION_LABELS[key];
+                  return (
+                    <div key={key} className="flex items-center gap-3 rounded-lg border p-3">
+                      <Switch
+                        id={`invite-${key}`}
+                        checked={invitePermissions[key]}
+                        onCheckedChange={(value) =>
+                          setInvitePermissions((prev) => ({ ...prev, [key]: value }))
+                        }
+                        disabled={inviteLoading}
+                        className="shrink-0"
+                      />
+                      <Label htmlFor={`invite-${key}`} className="cursor-pointer flex-1">
+                        <span className="block text-sm font-medium leading-none">{label}</span>
+                        <span className="block text-xs text-muted-foreground mt-0.5">{description}</span>
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => { setInviteOpen(false); resetInviteForm(); }}
+                disabled={inviteLoading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-1" disabled={inviteLoading}>
+                {inviteLoading ? 'Sending...' : 'Send Invitation'}
+              </Button>
+            </div>
+          </form>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

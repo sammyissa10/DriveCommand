@@ -233,6 +233,7 @@ model DriverInvitation {
   address               String?
   licenseExpirationDate DateTime?        @db.Date
   role                  UserRole         @default(DRIVER)
+  permissions           Json?
   expiresAt             DateTime         @db.Timestamptz
   status                InvitationStatus @default(PENDING)
   acceptedAt            DateTime?        @db.Timestamptz

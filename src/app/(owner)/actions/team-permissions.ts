@@ -9,6 +9,7 @@ import {
   getPermissions,
 } from '@/lib/auth/permissions';
 import { revalidatePath } from 'next/cache';
+import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 
 export interface TeamMember {
   id: string;
@@ -86,5 +87,85 @@ export async function updateUserPermissions(
 
   revalidatePath('/settings/team-permissions');
 
+  return { success: true };
+}
+
+/**
+ * Invite a new team member (MANAGER role) with pre-configured permissions.
+ * Requires OWNER role.
+ */
+export async function inviteTeamMember(data: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  permissions: UserPermissions;
+}): Promise<{ success: boolean; error?: string }> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const email = data.email.toLowerCase().trim();
+
+  if (!email || !data.firstName.trim() || !data.lastName.trim()) {
+    return { success: false, error: 'Email, first name, and last name are required' };
+  }
+
+  // Check for existing user with same email in tenant
+  const existingUser = await prisma.user.findFirst({
+    where: { email, tenantId },
+  });
+  if (existingUser) {
+    return { success: false, error: 'A user with this email already exists in your organization' };
+  }
+
+  // Cancel any pending invitations for same email
+  await prisma.driverInvitation.updateMany({
+    where: { email, tenantId, status: 'PENDING' },
+    data: { status: 'CANCELLED' },
+  });
+
+  // Fetch tenant name for the email
+  let organizationName = 'your fleet';
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { name: true },
+    });
+    organizationName = tenant?.name || 'your fleet';
+  } catch { /* non-critical */ }
+
+  const invitation = await prisma.driverInvitation.create({
+    data: {
+      tenantId,
+      email,
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      fullName: `${data.firstName.trim()} ${data.lastName.trim()}`,
+      role: UserRole.MANAGER,
+      permissions: data.permissions as any,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      status: 'PENDING',
+    },
+  });
+
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
+
+  try {
+    await sendDriverInvitation(email, {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      organizationName,
+      acceptUrl,
+      expiresAt: invitation.expiresAt.toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric',
+      }),
+    });
+  } catch (err) {
+    console.error('[inviteTeamMember] email failed:', err);
+    // Invitation exists — email can be resent. Don't fail the action.
+  }
+
+  revalidatePath('/settings/team-permissions');
   return { success: true };
 }

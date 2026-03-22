@@ -147,6 +147,7 @@ export async function POST(req: NextRequest) {
           firstName: invitation.firstName,
           lastName: invitation.lastName,
           licenseNumber: invitation.role === 'DRIVER' ? invitation.licenseNumber : null,
+          permissions: invitation.role === 'MANAGER' ? (invitation.permissions ?? undefined) : undefined,
           isActive: true,
         },
       });
