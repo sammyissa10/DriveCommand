@@ -33,25 +33,25 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
     string
   >(documents, (state, deletedId) => state.filter((doc) => doc.id !== deletedId));
 
-  const [downloading, setDownloading] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const handleDownload = async (docId: string, fileName: string) => {
-    setDownloading(docId);
+  const handleView = async (docId: string, fileName: string) => {
+    setViewing(docId);
     try {
       const res = await fetch(`/api/documents/download-url/${docId}`);
       const result = await res.json();
 
       if (result.error) {
-        alert(`Download failed: ${result.error}`);
+        alert(`Failed to open document: ${result.error}`);
         return;
       }
 
       window.open(result.downloadUrl, '_blank');
     } catch (error) {
-      alert(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(`Failed to open document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setDownloading(null);
+      setViewing(null);
     }
   };
 
@@ -144,7 +144,7 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
       <ul className="divide-y divide-gray-200">
         {optimisticDocuments.map((doc) => {
           const isPending = doc.pending;
-          const isDownloading = downloading === doc.id;
+          const isViewing = viewing === doc.id;
           const isDeleting = deleting === doc.id;
           // Link-only documents have empty s3Key
           const isLinkOnly = !doc.contentType || doc.contentType === '';
@@ -201,11 +201,11 @@ export function DocumentList({ documents, onDocumentDeleted }: DocumentListProps
                 <div className="ml-4 flex items-center gap-2">
                   {!isLinkOnly && (
                     <button
-                      onClick={() => handleDownload(doc.id, doc.fileName)}
-                      disabled={isDownloading || isPending}
+                      onClick={() => handleView(doc.id, doc.fileName)}
+                      disabled={isViewing || isPending}
                       className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isDownloading ? 'Downloading...' : 'Download'}
+                      {isViewing ? 'Opening...' : 'View'}
                     </button>
                   )}
                   <button

@@ -26,26 +26,26 @@ export function DocumentListReadOnly({
   documents,
   downloadAction,
 }: DocumentListReadOnlyProps) {
-  const [downloading, setDownloading] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<string | null>(null);
 
-  const handleDownload = async (docId: string, fileName: string) => {
-    setDownloading(docId);
+  const handleView = async (docId: string, fileName: string) => {
+    setViewing(docId);
     try {
       const result = await downloadAction(docId);
 
       if ('error' in result) {
-        alert(`Download failed: ${result.error}`);
+        alert(`Failed to open document: ${result.error}`);
         return;
       }
 
-      // Open download URL in new tab
+      // Open document in new tab for inline viewing
       window.open(result.downloadUrl, '_blank');
     } catch (error) {
       alert(
-        `Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to open document: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     } finally {
-      setDownloading(null);
+      setViewing(null);
     }
   };
 
@@ -103,7 +103,7 @@ export function DocumentListReadOnly({
     <div className="overflow-hidden rounded-lg border border-border bg-card">
       <ul className="divide-y divide-border">
         {documents.map((doc) => {
-          const isDownloading = downloading === doc.id;
+          const isViewing = viewing === doc.id;
 
           return (
             <li key={doc.id} className="p-4 min-h-[56px] lg:min-h-0">
@@ -128,11 +128,11 @@ export function DocumentListReadOnly({
 
                 <div className="ml-4 flex items-center gap-2">
                   <button
-                    onClick={() => handleDownload(doc.id, doc.fileName)}
-                    disabled={isDownloading}
+                    onClick={() => handleView(doc.id, doc.fileName)}
+                    disabled={isViewing}
                     className="rounded-md bg-blue-600 px-4 py-2.5 lg:px-3 lg:py-1.5 text-base lg:text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isDownloading ? 'Downloading...' : 'Download'}
+                    {isViewing ? 'Opening...' : 'View'}
                   </button>
                 </div>
               </div>

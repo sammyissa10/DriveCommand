@@ -40,7 +40,7 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
     string
   >(documents, (state, deletedId) => state.filter((doc) => doc.id !== deletedId));
 
-  const [downloading, setDownloading] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<{
@@ -49,21 +49,21 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
     notes: string;
   }>({ documentType: '', expiryDate: '', notes: '' });
 
-  const handleDownload = async (docId: string, fileName: string) => {
-    setDownloading(docId);
+  const handleView = async (docId: string, fileName: string) => {
+    setViewing(docId);
     try {
       const result = await getDownloadUrl(docId);
 
       if ('error' in result) {
-        alert(`Download failed: ${result.error}`);
+        alert(`Failed to open document: ${result.error}`);
         return;
       }
 
       window.open(result.downloadUrl, '_blank');
     } catch (error) {
-      alert(`Download failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(`Failed to open document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setDownloading(null);
+      setViewing(null);
     }
   };
 
@@ -202,7 +202,7 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
       <ul className="divide-y divide-gray-200">
         {optimisticDocuments.map((doc) => {
           const isPending = doc.pending;
-          const isDownloading = downloading === doc.id;
+          const isViewing = viewing === doc.id;
           const isDeleting = deleting === doc.id;
           const isEditing = editing === doc.id;
           const docTypeBadge = getDocumentTypeBadge(doc.documentType);
@@ -329,11 +329,11 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDownload(doc.id, doc.fileName)}
-                    disabled={isDownloading || isPending}
+                    onClick={() => handleView(doc.id, doc.fileName)}
+                    disabled={isViewing || isPending}
                     className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isDownloading ? 'Downloading...' : 'Download'}
+                    {isViewing ? 'Opening...' : 'View'}
                   </button>
                   <button
                     onClick={() => handleDelete(doc.id, doc.fileName)}
