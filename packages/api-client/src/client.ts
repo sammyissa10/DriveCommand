@@ -6,6 +6,13 @@ const getBaseUrl = () => {
   return 'http://localhost:3000'
 }
 
+// 401 handler — set by the app's auth context so any unauthorized response triggers logout
+let unauthorizedHandler: (() => void) | null = null
+
+export const setUnauthorizedHandler = (handler: (() => void) | null) => {
+  unauthorizedHandler = handler
+}
+
 async function apiRequest<T>(
   path: string,
   options: RequestInit & { token?: string } = {}
@@ -23,6 +30,11 @@ async function apiRequest<T>(
   }
 
   const res = await fetch(url, { ...fetchOptions, headers })
+
+  if (res.status === 401) {
+    unauthorizedHandler?.()
+    throw new Error('Unauthorized')
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: 'Request failed' }))
