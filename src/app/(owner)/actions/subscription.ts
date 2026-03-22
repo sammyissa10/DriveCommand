@@ -3,6 +3,7 @@
 import { getSession } from '@/lib/auth/session';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
+import { requirePermission } from '@/lib/auth/require-permission';
 
 async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
   const session = await getSession();
@@ -22,6 +23,7 @@ async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
  */
 export async function getMySubscriptionInvoices() {
   const { tenantId } = await requireOwnerOrManager();
+  await requirePermission('canViewBilling');
 
   return prisma.sysAdminInvoice.findMany({
     where: { tenantId, archivedAt: null },

@@ -2,6 +2,7 @@
 
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@/lib/validations/payroll.schemas';
 import { Prisma } from '@/generated/prisma';
@@ -15,6 +16,7 @@ const Decimal = Prisma.Decimal;
  */
 export async function createPayrollRecord(prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -83,6 +85,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
  */
 export async function updatePayrollRecord(id: string, prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -150,6 +153,7 @@ export async function getDriverPayPeriodStats(
   periodEnd: string,
 ): Promise<{ loadsCompleted: number; milesLogged: number } | { error: string }> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewPayroll');
 
   if (!driverId || !periodStart || !periodEnd) {
     return { error: 'Missing required fields.' };
@@ -191,6 +195,7 @@ export async function getDriverPayPeriodStats(
  */
 export async function deletePayrollRecord(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewPayroll');
 
   const prisma = await getTenantPrisma();
 

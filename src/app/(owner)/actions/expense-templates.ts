@@ -7,6 +7,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
 import { templateCreateSchema } from '@/lib/validations/expense-template.schemas';
@@ -23,6 +24,7 @@ const Decimal = Prisma.Decimal;
 export async function createTemplate(prevState: any, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const name = formData.get('name') as string;
@@ -108,6 +110,7 @@ export async function createTemplate(prevState: any, formData: FormData) {
 export async function deleteTemplate(templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 
@@ -169,6 +172,7 @@ export async function listTemplates() {
 export async function applyTemplate(routeId: string, templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canManageSettings');
 
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();

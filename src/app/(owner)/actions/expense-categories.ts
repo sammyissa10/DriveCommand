@@ -7,6 +7,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { categoryCreateSchema } from '@/lib/validations/expense-category.schemas';
 import { revalidatePath } from 'next/cache';
@@ -19,6 +20,7 @@ import { revalidatePath } from 'next/cache';
 export async function createCategory(prevState: any, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const rawData = {
@@ -79,6 +81,7 @@ export async function createCategory(prevState: any, formData: FormData) {
 export async function deleteCategory(categoryId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 

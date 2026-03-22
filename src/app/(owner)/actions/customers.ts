@@ -2,6 +2,7 @@
 
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@/lib/validations/customer.schemas';
 import { revalidatePath } from 'next/cache';
@@ -13,6 +14,7 @@ import { getSession } from '@/lib/auth/session';
  */
 export async function createCustomer(prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -71,6 +73,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
  */
 export async function updateCustomer(id: string, prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -128,6 +131,7 @@ export async function updateCustomer(id: string, prevState: any, formData: FormD
  */
 export async function deleteCustomer(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewCRM');
 
   const prisma = await getTenantPrisma();
 
@@ -149,6 +153,7 @@ export async function deleteCustomer(id: string) {
  */
 export async function addInteraction(prevState: any, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewCRM');
 
   const rawData = {
     customerId: formData.get('customerId') as string,

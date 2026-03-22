@@ -3,6 +3,7 @@
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import {
   getStateFromCoordinates,
   haversineDistance,
@@ -76,6 +77,7 @@ export async function getIFTAReport(
 ): Promise<IFTAReportData> {
   // OWNER/MANAGER only — drivers do not have access to IFTA tax data
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewIFTA');
 
   const prisma = await getTenantPrisma();
   const { startDate, endDate } = getQuarterDateRange(quarter, year);

@@ -3,6 +3,7 @@
 import { Prisma } from '@/generated/prisma';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
+import { requirePermission } from '@/lib/auth/require-permission';
 import { getLaneAnalytics } from '@/app/(owner)/actions/lane-analytics';
 import { getFleetAverageCostPerMile } from '@/app/(owner)/actions/route-analytics';
 
@@ -40,6 +41,7 @@ export async function predictLoadProfitability(
 ): Promise<PredictionResult> {
   // OWNER/MANAGER only — drivers cannot see fleet-wide financial prediction data
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePermission('canViewProfitPredictor');
 
   // Normalize origin and destination for consistent lane matching
   const normalizedOrigin = input.origin.trim().toUpperCase();
