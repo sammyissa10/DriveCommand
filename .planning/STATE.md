@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 28 Driver History — COMPLETE
 Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-22 - Completed quick task 99: TKT-0045: AI auto-resolution field on support tickets
+Last activity: 2026-03-22 - Completed quick task 100: Remove AI suggestion feature from admin support tickets
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -538,6 +538,7 @@ None blocking immediate progress.
 | 97 | TKT-0044: Add rate confirmation upload to /loads/[id] page | 2026-03-22 | — | [97-tkt-0044-add-rate-confirmation-upload-to](./quick/97-tkt-0044-add-rate-confirmation-upload-to/) |
 | 98 | TKT-0044: Screenshot auto-capture on support ticket creation | 2026-03-22 | 4581048 | [98-tkt-0044-screenshot-auto-capture-on-supp](./quick/98-tkt-0044-screenshot-auto-capture-on-supp/) |
 | 99 | TKT-0045: AI auto-resolution field on support tickets (diagnosis + draft reply via Claude Haiku) | 2026-03-22 | 8e7c4d6 | [99-tkt-0045-ai-auto-resolution-field-on-sup](./quick/99-tkt-0045-ai-auto-resolution-field-on-sup/) |
+| 100 | Remove AI suggestion feature from admin support tickets | 2026-03-22 | f7b1be4 | [100-remove-the-ai-suggestion-feature-entirel](./quick/100-remove-the-ai-suggestion-feature-entirel/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
