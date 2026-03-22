@@ -16,6 +16,9 @@ const createTicketSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be at most 200 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters').max(2000, 'Description must be at most 2000 characters'),
   fromPage: z.string().min(1, 'Page path is required'),
+  platform: z.enum(['MOBILE', 'DESKTOP']).optional(),
+  attachmentUrl: z.string().url().optional(),
+  attachmentKey: z.string().optional(),
 });
 
 const updateStatusSchema = z.object({
@@ -73,6 +76,9 @@ export async function createSupportTicket(data: {
   title: string;
   description: string;
   fromPage: string;
+  platform?: string;
+  attachmentUrl?: string;
+  attachmentKey?: string;
 }): Promise<{ success: boolean; ticketNumber?: string; error?: string }> {
   const userId = await requireAuth();
   const session = await getSession();
@@ -89,7 +95,7 @@ export async function createSupportTicket(data: {
     };
   }
 
-  const { category, priority, title, description, fromPage } = validation.data;
+  const { category, priority, title, description, fromPage, platform, attachmentUrl, attachmentKey } = validation.data;
   const tenantId = session.tenantId;
 
   try {
@@ -108,6 +114,9 @@ export async function createSupportTicket(data: {
           priority,
           title,
           description,
+          platform: platform ?? null,
+          attachmentUrl: attachmentUrl ?? null,
+          attachmentKey: attachmentKey ?? null,
         },
       });
     }, TX_OPTIONS);
@@ -169,6 +178,7 @@ export async function getAllTickets(filters?: {
     id: string; ticketNumber: string; tenantId: string; submittedBy: string;
     fromPage: string; category: SupportTicketCategory; priority: SupportTicketPriority;
     title: string; description: string;
+    platform: string | null; attachmentUrl: string | null; attachmentKey: string | null;
     status: string; resolution: string | null; resolvedAt: Date | null;
     createdAt: Date; updatedAt: Date;
   };
