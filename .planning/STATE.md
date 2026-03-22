@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 28 Driver History — COMPLETE
 Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-21 - Completed quick task 87: DriveCommand logo system — DC Chevron SVG icon + Forward D wordmark across all surfaces
+Last activity: 2026-03-22 - Completed quick task 88: Update browser tab favicon to the new DriveCommand logo
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -519,6 +519,7 @@ None blocking immediate progress.
 | 85 | TKT-0035 follow-up: Compute CRM Performance stats live from INVOICED loads via prisma.load.aggregate — fixes historical loads and eliminates stored-field drift | 2026-03-20 | e13b9c4 | [85-tkt-0035-follow-up-fix-crm-performance-s](./quick/85-tkt-0035-follow-up-fix-crm-performance-s/) |
 | 86 | Display tenant business name in owner portal sidebar — fetch Tenant.name in OwnerLayout, thread through OwnerShell → AppSidebar, fallback to "DriveCommand" | 2026-03-20 | 7d03cde | [86-display-tenant-business-name-in-sidebar](./quick/86-PLAN.md) |
 | 87 | Implement DriveCommand logo system — DC Chevron SVG icon + Forward D wordmark across app-logo component, all layout headers (admin/driver/owner), login/landing page, favicon, metadata, Poppins font | 2026-03-21 | a3f73ec | [87-implement-drivecommand-logo-system-dc-ch](./quick/87-implement-drivecommand-logo-system-dc-ch/) |
+| 88 | Update browser tab favicon to the new DriveCommand logo | 2026-03-22 | 96ea4eb | [88-update-browser-tab-favicon-to-the-new-dr](./quick/88-update-browser-tab-favicon-to-the-new-dr/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
