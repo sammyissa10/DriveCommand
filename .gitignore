@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Vercel auto-deploy tracking
+.vercel-last-deploy
+
 # dependencies
 /node_modules
 /.pnp
@@ -57,3 +60,12 @@ prisma/*.db-journal
 .claude/
 
 .vercel
+
+# monorepo — workspace app and package artifacts
+apps/web/.next/
+apps/web/node_modules/
+apps/web/playwright-report/
+apps/web/test-results/
+apps/web/.playwright/
+packages/*/dist/
+packages/*/node_modules/
