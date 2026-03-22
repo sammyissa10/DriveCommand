@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 28 Driver History — COMPLETE
 Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-22 - Completed quick task 92: TKT-0042: Fix driver page document upload on mobile
+Last activity: 2026-03-22 - Completed quick task 98: TKT-0044: Screenshot auto-capture on support ticket creation
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -86,6 +86,7 @@ Progress: [███████████████████████
 - Quick-57 (2026-03-13): TKT-0015 Add automated status badges to trucks (In Use / In Maintenance / Expired Docs / Ready to Use) — 3 tasks, 4 files
 - Quick-58 (2026-03-13): TKT-0016 Add Route Name column to routes list page — 1 task, 2 files
 - Quick-59 (2026-03-14): TKT-0017 DriverRouteJoin payment tracking — 375s, 3 tasks, 8 files
+- Quick-98 (2026-03-22): TKT-0044 Screenshot auto-capture on support ticket — ~25min, 3 tasks, 4 files
 
 ## Accumulated Context
 
@@ -120,6 +121,12 @@ Progress: [███████████████████████
 - History fetches are non-fatal (try/catch default to []) — page never fails due to history query errors
 - Used toLocaleDateString() for history dates (acceptable minor inconsistency vs tenant timezone utility per plan)
 - Human-verified in browser: history sections render correctly, read-only constraint confirmed
+
+**Quick-98 decisions (TKT-0044 Screenshot auto-capture):**
+- screenshotKey stored as separate DB field from attachmentKey — both can coexist independently on one ticket
+- Screenshot upload failure is non-fatal — ticket submits without screenshotKey rather than blocking user
+- html2canvas dynamically imported to avoid SSR bundle bloat and Next.js window/document errors
+- Capture happens BEFORE setOpen(true) so Sheet is not rendered, capturing actual page state user was viewing
 
 **Quick-59 decisions (TKT-0017 DriverRouteJoin):**
 - Hard delete (no soft delete) for DriverRouteJoin — model has no deletedAt field; assignments are simple join records
