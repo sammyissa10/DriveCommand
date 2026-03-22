@@ -25,7 +25,11 @@ interface ProgressState {
 const PART_SIZE = 10 * 1024 * 1024; // 10MB per part
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
-const ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png'];
+const ALLOWED_EXTENSIONS = ['.pdf', '.jpg', '.jpeg', '.png', '.heic', '.heif'];
+// Mobile browsers (especially iOS Safari) may report non-standard MIME types.
+// Empty string = unknown type (Android gallery), HEIC/HEIF = iOS camera photos
+// (iOS auto-converts HEIC to JPEG for web; server magic bytes check is the real gate).
+const MOBILE_EXTRA_TYPES = ['image/heic', 'image/heif', ''];
 
 type UploadState = 'idle' | 'uploading' | 'saving' | 'cancelling';
 
@@ -84,8 +88,14 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
       return;
     }
 
-    // Validate file type
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Validate file type — use extension fallback for mobile browsers where
+    // file.type may be empty (Android gallery) or non-standard (iOS HEIC).
+    // The server-side magic bytes check is the real security gate.
+    const isAllowedByType = ALLOWED_TYPES.includes(file.type) || MOBILE_EXTRA_TYPES.includes(file.type);
+    const extension = '.' + (file.name.split('.').pop()?.toLowerCase() ?? '');
+    const isAllowedByExtension = ALLOWED_EXTENSIONS.includes(extension);
+
+    if (!isAllowedByType && !isAllowedByExtension) {
       setError('File type not allowed. Please upload a PDF, JPEG, or PNG file.');
       return;
     }
@@ -489,7 +499,7 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
           ref={fileInputRef}
           id="file-upload"
           type="file"
-          accept={ALLOWED_EXTENSIONS.join(',')}
+          accept={[...ALLOWED_EXTENSIONS, 'image/heic', 'image/heif'].join(',')}
           onChange={handleFileChange}
           disabled={isUploading}
           className="hidden"
