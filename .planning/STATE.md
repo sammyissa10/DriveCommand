@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 30 Mobile Auth + Navigation — IN PROGRESS
-Status: Phase 30 Plan 01 complete — full mobile auth system (login screen, MMKV session, AuthContext, 401 guard, role-based routing)
-Last activity: 2026-03-22 - Completed Phase 30 Plan 01: Auth Flow (Login Screen + JWT + MMKV + Auth Guard)
-Stopped at: Phase 30 Plan 01 complete — next is Phase 31 (driver portal)
+Status: Phase 30 Plan 02 complete — navigation shell (driver/owner tab navigators) + 9-component shared UI library
+Last activity: 2026-03-22 - Completed Phase 30 Plan 02: Navigation Shell + Shared UI Primitives
+Stopped at: Phase 30 Plan 02 complete — Phase 30 fully done, next is Phase 31 (driver portal)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -58,9 +58,10 @@ Progress: [███████████████████████
 - Phase 29-02 (2026-03-22): Expo app scaffold + NativeWind v4 + EAS config — Expo SDK 55, Expo Router v4, (driver)/(owner) route groups, Poppins font, eas.json — 10 tasks, 33 files, ~6min
 - Phase 29-03 (2026-03-22): Shared packages (types, validation, api-client) — TypeScript interfaces, 17 Zod schemas migrated from apps/web, Bearer token REST client — 3 tasks, 46 files, ~7min
 - Phase 30-01 (2026-03-22): Mobile auth system — AES-256-GCM Bearer tokens, MMKV session, login screen, AuthContext, 401 guard, role-based routing — 8 tasks, 8 files, ~4min
+- Phase 30-02 (2026-03-22): Navigation shell — driver/owner tab navigators (lucide icons), 9-component shared UI library (Button/Card/Badge/Input/LoadingSpinner/EmptyState/Typography/ScreenWrapper/BottomSheet) — 6 tasks, 22 files, 198s
 
 **Combined:**
-- Total: 21 phases complete, 48 plans
+- Total: 21 phases complete, 49 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -444,6 +445,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 29]: Notification icon is placeholder logo-192.png — replace with proper 96x96 PNG before Phase 38
 - [Phase 29-03]: packages/* are pure TypeScript/Zod with no React Native or Next.js imports
 - [Phase 29-03]: Shared Zod schemas in @drivecommand/validation — single source of truth for both web and mobile validation
+- [Phase 30]: Used lucide-react-native for SVG tab icons (New Architecture native)
+- [Phase 30]: BottomSheet uses React Native Modal (no third-party dep) — simpler for Phase 30 scope
 
 ### Pending Todos
 
@@ -618,6 +621,7 @@ None blocking immediate progress.
 | Phase quick-92 P01 | 2m | 2 tasks | 2 files |
 | Phase 29 P02 | 365 | 10 tasks | 33 files |
 | Phase 29-monorepo-expo-scaffold P03 | 7min | 3 tasks | 46 files |
+| Phase 30 P02 | 198 | 6 tasks | 22 files |
 
 ## Session Continuity
 
