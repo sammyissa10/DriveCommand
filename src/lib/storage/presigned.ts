@@ -54,18 +54,22 @@ export async function generateUploadUrl(
 }
 
 /**
- * Generate presigned download URL for document retrieval.
+ * Generate presigned view URL for inline document rendering.
+ *
+ * Sets Content-Disposition to inline so browsers render PDFs and images
+ * directly in a new tab instead of prompting a file download.
  *
  * @param s3Key - S3 object key (already validated with tenant prefix)
- * @returns Presigned download URL
+ * @returns Presigned view URL (1-hour expiry)
  */
 export async function generateDownloadUrl(s3Key: string): Promise<string> {
   const command = new GetObjectCommand({
     Bucket: getBucketName(),
     Key: s3Key,
+    ResponseContentDisposition: 'inline',
   });
 
-  // 1-hour expiry for download URL
+  // 1-hour expiry for view URL
   const downloadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
 
   return downloadUrl;
