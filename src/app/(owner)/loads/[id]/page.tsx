@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Pencil, Package, MapPin, Calendar, Weight, Truck, User, FileText, Plus } from 'lucide-react';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { dispatchLoad, deleteLoad, updateLoadStatus, revertLoadStatus } from '@/app/(owner)/actions/loads';
 import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { DispatchModal } from '@/components/loads/dispatch-modal';
@@ -10,6 +11,7 @@ import { DeleteLoadButton } from '@/components/loads/delete-load-button';
 import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
 import { formatAddress } from '@/lib/utils/format-address';
 import { DownloadRateConfirmationButton } from '@/components/loads/download-rate-confirmation-button';
+import { LoadRCDocumentsSection } from '@/components/loads/load-rc-documents-section';
 
 const STATUS_LIFECYCLE = [
   'PENDING',
@@ -84,6 +86,11 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
     select: { id: true, invoiceNumber: true, status: true, totalAmount: true, dueDate: true },
     orderBy: { createdAt: 'desc' },
   });
+
+  // Fetch load RC documents
+  const tenantId = await requireTenantId();
+  const docRepo = new DocumentRepository(tenantId);
+  const loadDocuments = await docRepo.findByLoadId(id);
 
   const boundDispatchLoad = dispatchLoad.bind(null, id);
   const canEdit = !['INVOICED', 'CANCELLED'].includes(load.status);
@@ -365,6 +372,11 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
           <p className="text-sm text-muted-foreground">No invoices linked to this load</p>
         )}
       </div>
+
+      {/* Rate Confirmations section — shown for dispatched+ loads (excludes PENDING and CANCELLED) */}
+      {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'INVOICED'].includes(load.status) && (
+        <LoadRCDocumentsSection loadId={id} initialDocuments={loadDocuments} />
+      )}
 
       {/* Audit Trail */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
