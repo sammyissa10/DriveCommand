@@ -37,6 +37,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import { UserMenu } from "@/components/navigation/user-menu"
 import { UserRole } from "@/lib/auth/roles"
@@ -50,6 +51,11 @@ interface AppSidebarProps {
 export function AppSidebar({ supportBadge }: AppSidebarProps) {
   const pathname = usePathname()
   const { user } = useAuth()
+  const { setOpenMobile } = useSidebar()
+
+  const handleNavClick = () => {
+    setOpenMobile(false)
+  }
 
   // Check if user has OWNER or MANAGER role for Fleet Intelligence visibility
   const userRole = user?.role as UserRole | undefined
@@ -62,6 +68,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
       <SidebarHeader className="border-b border-sidebar-border">
         <Link
           href="/dashboard"
+          onClick={handleNavClick}
           className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3"
         >
           <AppLogo size={32} variant="dark" />
@@ -84,7 +91,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname === "/dashboard"}
                   tooltip="Dashboard"
                 >
-                  <Link href="/dashboard">
+                  <Link href="/dashboard" onClick={handleNavClick}>
                     <LayoutDashboard />
                     <span>Dashboard</span>
                   </Link>
@@ -104,7 +111,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   tooltip="Add Truck"
                   className="bg-sidebar-primary/10 text-sidebar-primary hover:bg-sidebar-primary/20 hover:text-sidebar-primary font-medium"
                 >
-                  <Link href="/trucks/new">
+                  <Link href="/trucks/new" onClick={handleNavClick}>
                     <Plus />
                     <span>Add Truck</span>
                   </Link>
@@ -128,7 +135,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     isActive={pathname.startsWith("/live-map")}
                     tooltip="Live Map"
                   >
-                    <Link href="/live-map">
+                    <Link href="/live-map" onClick={handleNavClick}>
                       <MapPin />
                       <span>Live Map</span>
                     </Link>
@@ -140,7 +147,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     isActive={pathname.startsWith("/safety")}
                     tooltip="Safety"
                   >
-                    <Link href="/safety">
+                    <Link href="/safety" onClick={handleNavClick}>
                       <Shield />
                       <span>Safety</span>
                     </Link>
@@ -152,7 +159,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     isActive={pathname.startsWith("/fuel")}
                     tooltip="Fuel & Energy"
                   >
-                    <Link href="/fuel">
+                    <Link href="/fuel" onClick={handleNavClick}>
                       <Fuel />
                       <span>Fuel & Energy</span>
                     </Link>
@@ -165,7 +172,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/lane-analytics")}
                       tooltip="Lane Profitability"
                     >
-                      <Link href="/lane-analytics">
+                      <Link href="/lane-analytics" onClick={handleNavClick}>
                         <TrendingUp />
                         <span>Lane Profitability</span>
                       </Link>
@@ -179,7 +186,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/profit-predictor")}
                       tooltip="Profit Predictor"
                     >
-                      <Link href="/profit-predictor">
+                      <Link href="/profit-predictor" onClick={handleNavClick}>
                         <Calculator />
                         <span>Profit Predictor</span>
                       </Link>
@@ -192,7 +199,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     isActive={pathname.startsWith("/compliance")}
                     tooltip="Compliance"
                   >
-                    <Link href="/compliance">
+                    <Link href="/compliance" onClick={handleNavClick}>
                       <ClipboardCheck />
                       <span>Compliance</span>
                     </Link>
@@ -205,7 +212,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/ifta")}
                       tooltip="IFTA Reports"
                     >
-                      <Link href="/ifta">
+                      <Link href="/ifta" onClick={handleNavClick}>
                         <FileSpreadsheet />
                         <span>IFTA Reports</span>
                       </Link>
@@ -231,7 +238,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     isActive={pathname.startsWith("/loads")}
                     tooltip="Loads"
                   >
-                    <Link href="/loads">
+                    <Link href="/loads" onClick={handleNavClick}>
                       <Package />
                       <span>Loads</span>
                     </Link>
@@ -244,7 +251,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/crm")}
                       tooltip="CRM"
                     >
-                      <Link href="/crm">
+                      <Link href="/crm" onClick={handleNavClick}>
                         <Building2 />
                         <span>CRM</span>
                       </Link>
@@ -258,7 +265,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/invoices")}
                       tooltip="Invoices"
                     >
-                      <Link href="/invoices">
+                      <Link href="/invoices" onClick={handleNavClick}>
                         <Receipt />
                         <span>Invoices</span>
                       </Link>
@@ -272,7 +279,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/payroll")}
                       tooltip="Payroll"
                     >
-                      <Link href="/payroll">
+                      <Link href="/payroll" onClick={handleNavClick}>
                         <DollarSign />
                         <span>Payroll</span>
                       </Link>
@@ -286,7 +293,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith("/ai-documents")}
                       tooltip="AI Documents"
                     >
-                      <Link href="/ai-documents">
+                      <Link href="/ai-documents" onClick={handleNavClick}>
                         <FileSearch />
                         <span>AI Documents</span>
                       </Link>
@@ -311,7 +318,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname.startsWith("/trucks")}
                   tooltip="Trucks"
                 >
-                  <Link href="/trucks">
+                  <Link href="/trucks" onClick={handleNavClick}>
                     <Truck />
                     <span>Trucks</span>
                   </Link>
@@ -323,7 +330,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname.startsWith("/drivers")}
                   tooltip="Drivers"
                 >
-                  <Link href="/drivers">
+                  <Link href="/drivers" onClick={handleNavClick}>
                     <Users />
                     <span>Drivers</span>
                   </Link>
@@ -335,7 +342,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname.startsWith("/routes")}
                   tooltip="Routes"
                 >
-                  <Link href="/routes">
+                  <Link href="/routes" onClick={handleNavClick}>
                     <RouteIcon />
                     <span>Routes</span>
                   </Link>
@@ -347,7 +354,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname.startsWith("/tags")}
                   tooltip="Tags"
                 >
-                  <Link href="/tags">
+                  <Link href="/tags" onClick={handleNavClick}>
                     <Tag />
                     <span>Tags</span>
                   </Link>
@@ -372,7 +379,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith('/settings/team-permissions')}
                       tooltip="Team Permissions"
                     >
-                      <Link href="/settings/team-permissions">
+                      <Link href="/settings/team-permissions" onClick={handleNavClick}>
                         <Shield />
                         <span>Team Permissions</span>
                       </Link>
@@ -386,7 +393,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith('/subscription')}
                       tooltip="Subscription"
                     >
-                      <Link href="/subscription">
+                      <Link href="/subscription" onClick={handleNavClick}>
                         <CreditCard />
                         <span>Subscription</span>
                       </Link>
@@ -400,7 +407,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith('/settings/expense-categories')}
                       tooltip="Expense Categories"
                     >
-                      <Link href="/settings/expense-categories">
+                      <Link href="/settings/expense-categories" onClick={handleNavClick}>
                         <Tag />
                         <span>Expense Categories</span>
                       </Link>
@@ -414,7 +421,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith('/settings/expense-templates')}
                       tooltip="Expense Templates"
                     >
-                      <Link href="/settings/expense-templates">
+                      <Link href="/settings/expense-templates" onClick={handleNavClick}>
                         <FileSpreadsheet />
                         <span>Expense Templates</span>
                       </Link>
@@ -428,7 +435,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       isActive={pathname.startsWith('/settings/integrations')}
                       tooltip="Integrations"
                     >
-                      <Link href="/settings/integrations">
+                      <Link href="/settings/integrations" onClick={handleNavClick}>
                         <Settings />
                         <span>Integrations</span>
                       </Link>
@@ -452,7 +459,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   isActive={pathname.startsWith('/support')}
                   tooltip="My Tickets"
                 >
-                  <Link href="/support">
+                  <Link href="/support" onClick={handleNavClick}>
                     <LifeBuoy />
                     <span>My Tickets</span>
                     {userRole === UserRole.OWNER && supportBadge}
