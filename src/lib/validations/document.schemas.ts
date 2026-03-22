@@ -10,7 +10,7 @@ export type DocumentCategory = 'trucks' | 'routes' | 'drivers';
 /**
  * Document type enum for driver documents.
  */
-export const documentTypeEnum = z.enum(['DRIVER_LICENSE', 'DRIVER_APPLICATION', 'GENERAL']);
+export const documentTypeEnum = z.enum(['DRIVER_LICENSE', 'DRIVER_APPLICATION', 'GENERAL', 'RATE_CONFIRMATION']);
 
 /**
  * Schema for creating a new document record.
@@ -40,6 +40,7 @@ export const documentCreateSchema = z
     truckId: z.string().uuid('Invalid truck ID').optional(),
     routeId: z.string().uuid('Invalid route ID').optional(),
     driverId: z.string().uuid('Invalid driver ID').optional(),
+    loadId: z.string().uuid('Invalid load ID').optional(),
     documentType: documentTypeEnum.optional(),
     expiryDate: z.coerce.date().optional(),
     notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
@@ -49,18 +50,18 @@ export const documentCreateSchema = z
   })
   .refine(
     (data) => {
-      const entityCount = [data.truckId, data.routeId, data.driverId].filter(Boolean).length;
+      const entityCount = [data.truckId, data.routeId, data.driverId, data.loadId].filter(Boolean).length;
       return entityCount === 1;
     },
     {
-      message: 'Document must be associated with exactly one entity (truck, route, or driver)',
+      message: 'Document must be associated with exactly one entity (truck, route, driver, or load)',
       path: ['truckId'],
     }
   )
   .refine(
     (data) => {
-      // If driverId is set, documentType is required
-      if (data.driverId && !data.documentType) {
+      // If driverId is set (and not a load doc), documentType is required
+      if (data.driverId && !data.loadId && !data.documentType) {
         return false;
       }
       return true;

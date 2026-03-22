@@ -72,6 +72,7 @@ enum DocumentType {
   DRIVER_LICENSE
   DRIVER_APPLICATION
   GENERAL
+  RATE_CONFIRMATION
 }
 
 enum IntegrationProvider {
@@ -312,6 +313,7 @@ model Document {
   truckId      String?       @db.Uuid
   routeId      String?       @db.Uuid
   driverId     String?       @db.Uuid
+  loadId       String?       @db.Uuid
   fileName     String
   s3Key        String
   contentType  String
@@ -329,12 +331,14 @@ model Document {
   truck    Truck? @relation(fields: [truckId], references: [id])
   route    Route? @relation(fields: [routeId], references: [id])
   driver   User?  @relation(name: "DriverDocuments", fields: [driverId], references: [id])
+  load     Load?  @relation(fields: [loadId], references: [id])
   uploader User   @relation(fields: [uploadedBy], references: [id])
 
   @@index([tenantId])
   @@index([truckId])
   @@index([routeId])
   @@index([driverId])
+  @@index([loadId])
   @@index([expiryDate])
   @@index([uploadedBy])
 }
@@ -892,8 +896,9 @@ model Load {
   driver    User?     @relation(name: "DriverLoads", fields: [driverId], references: [id])
   truck     Truck?    @relation(fields: [truckId], references: [id])
   createdBy User?     @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
-  updatedBy User?     @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
+  updatedBy User?       @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
   invoices  Invoice[]
+  documents Document[]
 
   @@unique([tenantId, loadNumber])
   @@index([tenantId])

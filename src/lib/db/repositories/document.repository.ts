@@ -10,6 +10,7 @@ export interface DocumentCreateInput {
   truckId?: string;
   routeId?: string;
   driverId?: string;
+  loadId?: string;
   fileName: string;
   s3Key: string;
   contentType: string;
@@ -100,6 +101,26 @@ export class DocumentRepository extends TenantRepository {
     // @ts-ignore - Extended Prisma client type inference issue
     return this.db.document.findMany({
       where: { driverId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        uploader: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Find all documents for a specific load
+   */
+  async findByLoadId(loadId: string) {
+    // @ts-ignore - Extended Prisma client type inference issue
+    return this.db.document.findMany({
+      where: { loadId },
       orderBy: { createdAt: 'desc' },
       include: {
         uploader: {
