@@ -324,18 +324,16 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
               </div>
 
               {/* Row 2: doc-type badge + size + date + Edit/Delete text links */}
-              <div className="mt-1.5 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-xs text-gray-500 min-w-0">
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
                   <span
                     className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium flex-shrink-0 ${docTypeBadge.color}`}
                   >
                     {docTypeBadge.label}
                   </span>
-                  <span className="flex-shrink-0">{formatFileSize(doc.sizeBytes)}</span>
-                  <span className="flex-shrink-0">·</span>
-                  <span className="flex-shrink-0">{formatShortDate(doc.createdAt)}</span>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className="text-xs text-gray-500 flex-shrink-0">{formatFileSize(doc.sizeBytes)}</span>
+                  <span className="text-xs text-gray-500 flex-shrink-0">·</span>
+                  <span className="text-xs text-gray-500 flex-shrink-0">{formatShortDate(doc.createdAt)}</span>
+                <div className="ml-auto flex items-center gap-3 flex-shrink-0">
                   <button
                     onClick={() => startEdit(doc)}
                     disabled={isPending}
