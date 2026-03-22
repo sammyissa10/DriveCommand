@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 28 Driver History — COMPLETE
 Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-22 - Completed quick task 91: TKT-0041: Left Navigation auto collapse on selection
+Last activity: 2026-03-22 - Completed quick task 92: TKT-0042: Fix driver page document upload on mobile
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -576,6 +576,7 @@ None blocking immediate progress.
 | Phase quick-77 P01 | 220 | 2 tasks | 6 files |
 | Phase quick-80 P1 | 3 | 1 tasks | 2 files |
 | Phase 27-automated-playwright-tests P03 | 3 | 2 tasks | 6 files |
+| Phase quick-92 P01 | 2m | 2 tasks | 2 files |
 
 ## Session Continuity
 
