@@ -80,11 +80,13 @@ export function StatCard({ label, value, href, variant = 'default', subtitle }: 
 
   const valueStr = String(value);
   const valueSizeClass =
-    valueStr.length > 8
-      ? 'text-xl sm:text-2xl'
-      : valueStr.length > 5
-        ? 'text-2xl sm:text-3xl'
-        : 'text-3xl sm:text-4xl';
+    valueStr.length > 10
+      ? 'text-base sm:text-xl'
+      : valueStr.length > 7
+        ? 'text-lg sm:text-2xl'
+        : valueStr.length > 4
+          ? 'text-2xl sm:text-3xl'
+          : 'text-3xl sm:text-4xl';
 
   // Top border accent: variant overrides colorMap border
   const topBorderClass =
@@ -110,9 +112,9 @@ export function StatCard({ label, value, href, variant = 'default', subtitle }: 
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className={`mt-2 font-bold tracking-tight text-card-foreground truncate ${valueSizeClass}`}>{value}</p>
+          <p className={`mt-2 font-bold tracking-tight text-card-foreground break-words leading-tight ${valueSizeClass}`}>{value}</p>
           {subtitle && (
-            <p className="mt-1 text-xs font-medium text-status-danger-foreground truncate">{subtitle}</p>
+            <p className="mt-1 text-xs font-medium text-status-danger-foreground break-words">{subtitle}</p>
           )}
         </div>
         <div
