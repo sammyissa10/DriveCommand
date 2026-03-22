@@ -530,6 +530,13 @@ None blocking immediate progress.
 | 89 | Support ticket: add file attachment and mobile/desktop platform field | 2026-03-22 | bded3aa | [89-support-ticket-add-file-attachment-and-m](./quick/89-support-ticket-add-file-attachment-and-m/) |
 | 90 | Owner Portal RBAC — permissions system for OwnerUser/MANAGER role with settings UI, route guards, and sidebar filtering | 2026-03-22 | 46cf9ad | [90-owner-portal-rbac-permissions-system-for](./quick/90-owner-portal-rbac-permissions-system-for/) |
 | 91 | TKT-0041: Left Navigation auto collapse on selection — auto-close mobile sidebar on nav link click | 2026-03-22 | 5f20e46 | [91-tkt-0041-left-navigation-auto-collapse-o](./quick/91-tkt-0041-left-navigation-auto-collapse-o/) |
+| 92 | TKT-0042: Fix driver document upload on mobile iOS Safari (MIME type + HEIC validation) | 2026-03-22 | — | [92-tkt-0042-fix-driver-document-upload-on-m](./quick/92-tkt-0042-fix-driver-document-upload-on-m/) |
+| 93 | TKT-0042: Fix multipart upload content type resolution and S3 error reporting | 2026-03-22 | — | [93-tkt-0042-fix-multipart-upload-content-ty](./quick/93-tkt-0042-fix-multipart-upload-content-ty/) |
+| 94 | TKT-0042: Eliminate browser→R2 CORS by uploading driver documents server-side | 2026-03-22 | — | [94-tkt-0042-eliminate-browser-r2-cors-by-up](./quick/94-tkt-0042-eliminate-browser-r2-cors-by-up/) |
+| 95 | TKT-0043: Fix document download — force inline view, rename Download → View | 2026-03-22 | — | [95-tkt-0043-fix-document-download-force-inl](./quick/95-tkt-0043-fix-document-download-force-inl/) |
+| 96 | TKT-0043: Fix iOS Safari View button + redesign mobile document card | 2026-03-22 | — | [96-tkt-0043-fix-ios-safari-view-button-and-](./quick/96-tkt-0043-fix-ios-safari-view-button-and-/) |
+| 97 | TKT-0044: Add rate confirmation upload to /loads/[id] page | 2026-03-22 | — | [97-tkt-0044-add-rate-confirmation-upload-to](./quick/97-tkt-0044-add-rate-confirmation-upload-to/) |
+| 98 | TKT-0044: Screenshot auto-capture on support ticket creation | 2026-03-22 | 4581048 | [98-tkt-0044-screenshot-auto-capture-on-supp](./quick/98-tkt-0044-screenshot-auto-capture-on-supp/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
