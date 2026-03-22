@@ -13,6 +13,13 @@ import { initiateMultipartUpload } from '@/lib/storage/multipart';
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
 
+const EXTENSION_MIME_MAP: Record<string, string> = {
+  pdf: 'application/pdf',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+};
+
 export async function POST(req: NextRequest) {
   try {
     // CRITICAL: Auth check FIRST before any data access
@@ -41,12 +48,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate content type
-    if (!Object.keys(ALLOWED_TYPES).includes(contentType)) {
-      return NextResponse.json(
-        { error: 'Content type must be PDF, JPEG, or PNG' },
-        { status: 400 }
-      );
+    // Validate content type — resolve from extension if browser-reported type is empty or non-standard
+    // (mobile browsers may report empty string on Android or image/heic on iOS)
+    let resolvedContentType: string;
+    if (Object.keys(ALLOWED_TYPES).includes(contentType)) {
+      resolvedContentType = contentType;
+    } else {
+      const ext = fileName.split('.').pop()?.toLowerCase() ?? '';
+      const mappedType = EXTENSION_MIME_MAP[ext];
+      if (mappedType) {
+        resolvedContentType = mappedType;
+      } else {
+        return NextResponse.json(
+          { error: 'Content type must be PDF, JPEG, or PNG' },
+          { status: 400 }
+        );
+      }
     }
 
     // Validate entity type (only driver supported for multipart uploads)
@@ -69,7 +86,7 @@ export async function POST(req: NextRequest) {
       'drivers',
       fileId,
       sanitizedFileName,
-      contentType,
+      resolvedContentType,
       totalParts
     );
 
@@ -78,6 +95,7 @@ export async function POST(req: NextRequest) {
       s3Key,
       fileId,
       totalParts: parts,
+      resolvedContentType,
     });
   } catch (error) {
     console.error('Multipart initiate error:', error);

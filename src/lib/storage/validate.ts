@@ -53,6 +53,16 @@ export async function validateFileType(
       };
     }
 
+    // HEIC/HEIF check: provide a specific, actionable message before the generic rejection.
+    // iOS camera photos may be detected as HEIC/HEIF by magic bytes even when iOS auto-converts
+    // them for web — the converted file must actually be JPEG for upload to succeed.
+    if (detected.mime === 'image/heic' || detected.mime === 'image/heif') {
+      return {
+        valid: false,
+        error: 'HEIC/HEIF image format is not supported. Please convert your photo to JPEG or PNG before uploading.',
+      };
+    }
+
     // Check if detected type is in allowed list — this is the real security check.
     // Magic bytes detection is the source of truth regardless of what the browser claims.
     if (!ALLOWED_TYPES[detected.mime]) {
