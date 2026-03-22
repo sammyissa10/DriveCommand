@@ -171,7 +171,14 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
     });
 
     if (!uploadResponse.ok) {
-      throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+      let detail = uploadResponse.statusText;
+      try {
+        const bodyText = await uploadResponse.text();
+        if (bodyText) detail = bodyText;
+      } catch {
+        // Cross-origin response may not expose body
+      }
+      throw new Error(`Upload failed (${uploadResponse.status}): ${detail || 'unknown error'}`);
     }
 
     // Step 3: Complete upload
@@ -232,7 +239,7 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
       throw new Error(error.error || 'Failed to initiate upload');
     }
 
-    const { uploadId, s3Key } = await initiateResponse.json();
+    const { uploadId, s3Key, resolvedContentType } = await initiateResponse.json();
 
     // Step 2: Upload parts
     const parts: Array<{ PartNumber: number; ETag: string }> = [];
@@ -272,7 +279,7 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
         uploadId,
         parts,
         fileName: selectedFile.name,
-        contentType: selectedFile.type,
+        contentType: resolvedContentType,
         sizeBytes: selectedFile.size,
         entityType: 'driver',
         entityId: driverId,
