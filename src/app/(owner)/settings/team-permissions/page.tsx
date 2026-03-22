@@ -15,7 +15,7 @@ import {
   inviteTeamMember,
   TeamMember,
 } from '@/app/(owner)/actions/team-permissions';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +28,27 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Shield, UserPlus, Users } from 'lucide-react';
+import { Shield, UserPlus, Users, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const permissionKeys = Object.keys(DEFAULT_MANAGER_PERMISSIONS) as Array<keyof UserPermissions>;
+
+function activeCount(permissions: UserPermissions) {
+  return permissionKeys.filter((k) => permissions[k]).length;
+}
+
+function memberInitials(member: TeamMember) {
+  if (member.firstName && member.lastName) {
+    return `${member.firstName[0]}${member.lastName[0]}`.toUpperCase();
+  }
+  return member.email[0].toUpperCase();
+}
+
+function memberName(member: TeamMember) {
+  return member.firstName && member.lastName
+    ? `${member.firstName} ${member.lastName}`
+    : member.email;
+}
 
 export default function TeamPermissionsPage() {
   const { user, isLoaded } = useAuth();
@@ -39,6 +56,9 @@ export default function TeamPermissionsPage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [, startTransition] = useTransition();
+
+  // Which member's sheet is open
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
   // Invite sheet state
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -48,11 +68,8 @@ export default function TeamPermissionsPage() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitePermissions, setInvitePermissions] = useState<UserPermissions>({ ...DEFAULT_MANAGER_PERMISSIONS });
 
-  // Redirect MANAGER users — this page is OWNER-only
   useEffect(() => {
-    if (isLoaded && user?.role === UserRole.MANAGER) {
-      router.replace('/dashboard');
-    }
+    if (isLoaded && user?.role === UserRole.MANAGER) router.replace('/dashboard');
   }, [isLoaded, user, router]);
 
   useEffect(() => {
@@ -63,15 +80,25 @@ export default function TeamPermissionsPage() {
       .finally(() => setLoading(false));
   }, [isLoaded, user]);
 
-  function handleToggle(member: TeamMember, key: keyof UserPermissions, value: boolean) {
+  // Keep selectedMember in sync when members list updates
+  useEffect(() => {
+    if (selectedMember) {
+      const updated = members.find((m) => m.id === selectedMember.id);
+      if (updated) setSelectedMember(updated);
+    }
+  }, [members]);
+
+  function handleToggle(memberId: string, key: keyof UserPermissions, value: boolean) {
+    const member = members.find((m) => m.id === memberId);
+    if (!member) return;
     const updated: UserPermissions = { ...member.permissions, [key]: value };
-    setMembers((prev) => prev.map((m) => m.id === member.id ? { ...m, permissions: updated } : m));
+    setMembers((prev) => prev.map((m) => m.id === memberId ? { ...m, permissions: updated } : m));
     startTransition(async () => {
       try {
-        await updateUserPermissions(member.id, updated);
+        await updateUserPermissions(memberId, updated);
         toast.success('Permissions updated');
       } catch {
-        setMembers((prev) => prev.map((m) => m.id === member.id ? { ...m, permissions: member.permissions } : m));
+        setMembers((prev) => prev.map((m) => m.id === memberId ? { ...m, permissions: member.permissions } : m));
         toast.error('Failed to update permissions');
       }
     });
@@ -102,7 +129,6 @@ export default function TeamPermissionsPage() {
         toast.success(`Invitation sent to ${inviteEmail.trim()}`);
         setInviteOpen(false);
         resetInviteForm();
-        // Reload members list
         getTeamMembers().then(setMembers).catch(() => {});
       } else {
         toast.error(result.error ?? 'Failed to send invitation');
@@ -123,8 +149,8 @@ export default function TeamPermissionsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6 max-w-4xl mx-auto">
-      {/* Page header */}
+    <div className="space-y-6 p-6 max-w-3xl mx-auto">
+      {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <Shield className="h-6 w-6 text-primary" />
@@ -158,45 +184,82 @@ export default function TeamPermissionsPage() {
         </Card>
       )}
 
-      {/* Member permission cards */}
-      {members.map((member) => (
-        <Card key={member.id}>
-          <CardHeader className="pb-4">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <CardTitle className="text-base font-semibold">
-                  {member.firstName && member.lastName
-                    ? `${member.firstName} ${member.lastName}`
-                    : member.email}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">{member.email}</p>
-              </div>
-              <Badge variant="secondary">Team Member</Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {permissionKeys.map((key) => {
-                const { label, description } = PERMISSION_LABELS[key];
-                return (
-                  <div key={key} className="flex items-start gap-3 rounded-lg border p-3">
-                    <Switch
-                      id={`${member.id}-${key}`}
-                      checked={member.permissions[key]}
-                      onCheckedChange={(value) => handleToggle(member, key, value)}
-                      className="mt-0.5 shrink-0"
-                    />
-                    <Label htmlFor={`${member.id}-${key}`} className="cursor-pointer space-y-0.5">
-                      <span className="block text-sm font-medium leading-none">{label}</span>
-                      <span className="block text-xs text-muted-foreground leading-relaxed">{description}</span>
-                    </Label>
+      {/* Member list — compact rows, click to open permissions sheet */}
+      {members.length > 0 && (
+        <Card>
+          <div className="divide-y divide-border">
+            {members.map((member) => {
+              const count = activeCount(member.permissions);
+              return (
+                <button
+                  key={member.id}
+                  onClick={() => setSelectedMember(member)}
+                  className="w-full flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors text-left"
+                >
+                  {/* Avatar */}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                    {memberInitials(member)}
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{memberName(member)}</p>
+                    <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                  </div>
+                  {/* Permission count badge */}
+                  <Badge variant="secondary" className="shrink-0">
+                    {count === 0 ? 'No extras' : `${count} permission${count === 1 ? '' : 's'}`}
+                  </Badge>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                </button>
+              );
+            })}
+          </div>
         </Card>
-      ))}
+      )}
+
+      {/* Member permissions sheet */}
+      <Sheet open={!!selectedMember} onOpenChange={(open) => { if (!open) setSelectedMember(null); }}>
+        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+          {selectedMember && (
+            <>
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                    {memberInitials(selectedMember)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold leading-tight truncate">{memberName(selectedMember)}</p>
+                    <p className="text-xs text-muted-foreground font-normal truncate">{selectedMember.email}</p>
+                  </div>
+                </SheetTitle>
+                <SheetDescription>
+                  Toggle permissions on or off. Changes save instantly.
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-6 space-y-2">
+                {permissionKeys.map((key) => {
+                  const { label, description } = PERMISSION_LABELS[key];
+                  return (
+                    <div key={key} className="flex items-center gap-3 rounded-lg border p-3">
+                      <Switch
+                        id={`member-${selectedMember.id}-${key}`}
+                        checked={selectedMember.permissions[key]}
+                        onCheckedChange={(value) => handleToggle(selectedMember.id, key, value)}
+                        className="shrink-0"
+                      />
+                      <Label htmlFor={`member-${selectedMember.id}-${key}`} className="cursor-pointer flex-1">
+                        <span className="block text-sm font-medium leading-none">{label}</span>
+                        <span className="block text-xs text-muted-foreground mt-0.5">{description}</span>
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Invite Team Member sheet */}
       <Sheet open={inviteOpen} onOpenChange={(open) => { setInviteOpen(open); if (!open) resetInviteForm(); }}>
@@ -212,55 +275,28 @@ export default function TeamPermissionsPage() {
           </SheetHeader>
 
           <form onSubmit={handleInvite} className="mt-6 space-y-5">
-            {/* Name row */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor="invite-first">First Name <span className="text-destructive">*</span></Label>
-                <Input
-                  id="invite-first"
-                  placeholder="Jane"
-                  value={inviteFirstName}
-                  onChange={(e) => setInviteFirstName(e.target.value)}
-                  required
-                  disabled={inviteLoading}
-                />
+                <Input id="invite-first" placeholder="Jane" value={inviteFirstName} onChange={(e) => setInviteFirstName(e.target.value)} required disabled={inviteLoading} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="invite-last">Last Name <span className="text-destructive">*</span></Label>
-                <Input
-                  id="invite-last"
-                  placeholder="Smith"
-                  value={inviteLastName}
-                  onChange={(e) => setInviteLastName(e.target.value)}
-                  required
-                  disabled={inviteLoading}
-                />
+                <Input id="invite-last" placeholder="Smith" value={inviteLastName} onChange={(e) => setInviteLastName(e.target.value)} required disabled={inviteLoading} />
               </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-1.5">
               <Label htmlFor="invite-email">Email <span className="text-destructive">*</span></Label>
-              <Input
-                id="invite-email"
-                type="email"
-                placeholder="jane@yourcompany.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                required
-                disabled={inviteLoading}
-              />
+              <Input id="invite-email" type="email" placeholder="jane@yourcompany.com" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required disabled={inviteLoading} />
             </div>
 
-            {/* Permissions */}
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-foreground">Permissions</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Select what this team member can access. You can change this anytime.
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Select what this team member can access. You can change this anytime.</p>
               </div>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="space-y-2">
                 {permissionKeys.map((key) => {
                   const { label, description } = PERMISSION_LABELS[key];
                   return (
@@ -268,9 +304,7 @@ export default function TeamPermissionsPage() {
                       <Switch
                         id={`invite-${key}`}
                         checked={invitePermissions[key]}
-                        onCheckedChange={(value) =>
-                          setInvitePermissions((prev) => ({ ...prev, [key]: value }))
-                        }
+                        onCheckedChange={(value) => setInvitePermissions((prev) => ({ ...prev, [key]: value }))}
                         disabled={inviteLoading}
                         className="shrink-0"
                       />
@@ -284,15 +318,8 @@ export default function TeamPermissionsPage() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => { setInviteOpen(false); resetInviteForm(); }}
-                disabled={inviteLoading}
-              >
+              <Button type="button" variant="outline" className="flex-1" onClick={() => { setInviteOpen(false); resetInviteForm(); }} disabled={inviteLoading}>
                 Cancel
               </Button>
               <Button type="submit" className="flex-1" disabled={inviteLoading}>
