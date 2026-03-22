@@ -8,7 +8,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { createTagSchema, assignTagSchema } from '@/lib/validations/tag.schemas';
+import { createTagSchema, assignTagSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 
 /**

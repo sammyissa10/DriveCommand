@@ -8,7 +8,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { driverInviteSchema, driverUpdateSchema } from '@/lib/validations/driver.schemas';
+import { driverInviteSchema, driverUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 

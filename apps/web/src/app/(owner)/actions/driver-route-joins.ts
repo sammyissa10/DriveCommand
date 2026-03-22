@@ -8,7 +8,7 @@ import { Prisma } from '@/generated/prisma';
 import {
   driverRouteJoinCreateSchema,
   driverRouteJoinUpdateSchema,
-} from '@/lib/validations/driver-route-join.schemas';
+} from '@drivecommand/validation';
 
 const Decimal = Prisma.Decimal;
 

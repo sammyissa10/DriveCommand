@@ -4,7 +4,7 @@ import { addDays, subDays } from 'date-fns';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
-import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
+import { documentMetadataSchema } from '@drivecommand/validation';
 
 // ---------------------------------------------------------------------------
 // Types

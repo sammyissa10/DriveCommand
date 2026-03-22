@@ -12,7 +12,7 @@ import {
   truckCreateSchema,
   truckUpdateSchema,
   type DocumentMetadata,
-} from '@/lib/validations/truck.schemas';
+} from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 

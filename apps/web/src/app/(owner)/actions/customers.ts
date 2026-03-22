@@ -4,7 +4,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@/lib/validations/customer.schemas';
+import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/session';

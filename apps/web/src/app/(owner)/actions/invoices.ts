@@ -5,7 +5,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
-import { invoiceCreateSchema, invoiceUpdateSchema } from '@/lib/validations/invoice.schemas';
+import { invoiceCreateSchema, invoiceUpdateSchema } from '@drivecommand/validation';
 import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';

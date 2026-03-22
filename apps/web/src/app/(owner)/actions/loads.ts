@@ -3,7 +3,7 @@
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@/lib/validations/load.schemas';
+import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@drivecommand/validation';
 import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';

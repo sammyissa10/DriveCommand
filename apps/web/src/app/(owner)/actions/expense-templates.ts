@@ -10,7 +10,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
-import { templateCreateSchema } from '@/lib/validations/expense-template.schemas';
+import { templateCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
 

@@ -3,7 +3,7 @@ import { ArrowLeft, Wrench, Pencil } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getTruck, listTruckRoutes } from '@/app/(owner)/actions/trucks';
 import { listDocuments } from '@/app/(owner)/actions/documents';
-import { documentMetadataSchema } from '@/lib/validations/truck.schemas';
+import { documentMetadataSchema } from '@drivecommand/validation';
 import { TruckDocumentsSection } from './truck-documents-section';
 import { TruckRoutesHistory } from './truck-routes-history';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';

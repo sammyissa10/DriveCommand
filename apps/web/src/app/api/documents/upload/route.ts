@@ -13,7 +13,7 @@ import { requireRole, getCurrentUser } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
-import { documentCreateSchema } from '@/lib/validations/document.schemas';
+import { documentCreateSchema } from '@drivecommand/validation';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';

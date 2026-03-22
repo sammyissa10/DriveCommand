@@ -8,7 +8,7 @@
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { expenseCreateSchema, expenseUpdateSchema } from '@/lib/validations/expense.schemas';
+import { expenseCreateSchema, expenseUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
 

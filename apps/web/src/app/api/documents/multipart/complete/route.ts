@@ -11,7 +11,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { completeMultipartUpload, abortMultipartUpload } from '@/lib/storage/multipart';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
-import { documentCreateSchema } from '@/lib/validations/document.schemas';
+import { documentCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 
 export async function POST(req: NextRequest) {

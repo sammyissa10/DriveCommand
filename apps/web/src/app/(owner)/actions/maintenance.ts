@@ -11,7 +11,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import {
   maintenanceEventCreateSchema,
   scheduledServiceCreateSchema,
-} from '@/lib/validations/maintenance.schemas';
+} from '@drivecommand/validation';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';

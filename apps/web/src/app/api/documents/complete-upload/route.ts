@@ -9,7 +9,7 @@ import { requireRole, getCurrentUser } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
-import { documentCreateSchema } from '@/lib/validations/document.schemas';
+import { documentCreateSchema } from '@drivecommand/validation';
 
 export async function POST(req: NextRequest) {
   try {

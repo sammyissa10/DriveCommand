@@ -8,7 +8,7 @@
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@/lib/validations/route.schemas';
+import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 

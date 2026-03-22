@@ -4,7 +4,7 @@ import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { payrollCreateSchema, payrollUpdateSchema } from '@/lib/validations/payroll.schemas';
+import { payrollCreateSchema, payrollUpdateSchema } from '@drivecommand/validation';
 import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';

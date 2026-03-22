@@ -11,7 +11,7 @@ import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { generateUploadUrl, generateDownloadUrl, deleteS3Object } from '@/lib/storage/presigned';
-import { documentCreateSchema } from '@/lib/validations/document.schemas';
+import { documentCreateSchema } from '@drivecommand/validation';
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
 

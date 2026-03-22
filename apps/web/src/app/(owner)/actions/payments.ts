@@ -8,7 +8,7 @@ import { Prisma } from '@/generated/prisma';
 import {
   paymentCreateSchema,
   paymentUpdateSchema,
-} from '@/lib/validations/payment.schemas';
+} from '@drivecommand/validation';
 
 const Decimal = Prisma.Decimal;
 
