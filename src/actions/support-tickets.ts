@@ -12,6 +12,7 @@ import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNo
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { nanoid } from 'nanoid';
+import Anthropic from '@anthropic-ai/sdk';
 
 // ─── Validation schemas ──────────────────────────────────────
 
@@ -560,4 +561,92 @@ export async function getUnreadAdminReplyCount(): Promise<number> {
 export async function getAttachmentDownloadUrl(s3Key: string): Promise<string> {
   await requireAuth();
   return generateDownloadUrl(s3Key);
+}
+
+/**
+ * Generate an AI-powered resolution suggestion for a support ticket (admin only).
+ * Uses Claude Haiku to analyze the full ticket context and return a diagnosis + draft reply.
+ */
+export async function generateAiResolution(
+  ticketId: string
+): Promise<{ success: true; diagnosis: string; draftReply: string } | { success: false; error: string }> {
+  await requireAdminAccess();
+
+  // Fetch ticket and messages
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    const ticket = await tx.supportTicket.findFirst({
+      where: { id: ticketId },
+    });
+    if (!ticket) return { ticket: null, messages: [] };
+    const messages = await tx.ticketMessage.findMany({
+      where: { ticketId },
+      orderBy: { createdAt: 'asc' },
+    });
+    return { ticket, messages };
+  }, TX_OPTIONS);
+
+  if (!result.ticket) {
+    return { success: false, error: 'Ticket not found' };
+  }
+
+  const { ticket, messages } = result;
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return { success: false, error: 'AI service not configured' };
+  }
+
+  const systemPrompt = `You are a DriveCommand support specialist AI. DriveCommand is a fleet management / trucking SaaS platform. Analyze the support ticket below and provide:
+1. A diagnosis of the issue (what's likely wrong, what area of the system is affected, potential root causes)
+2. A professional draft reply to send to the ticket submitter with actionable next steps
+
+Return your response as JSON with exactly two fields:
+{"diagnosis": "...", "draftReply": "..."}
+
+For the draftReply: be professional, empathetic, address the user by saying "Hi there", reference their specific issue, provide clear next steps or a resolution explanation. Keep it concise (2-4 paragraphs max). Do NOT use markdown in the draftReply — plain text only.
+For the diagnosis: be technical and specific for the admin's benefit. Reference the category, page, platform if relevant.
+
+Return ONLY the JSON object. No markdown fences, no explanation outside the JSON.`;
+
+  const userMessage = `Ticket: ${ticket.ticketNumber}
+Category: ${ticket.category}
+Priority: ${ticket.priority}
+Status: ${ticket.status}
+Platform: ${ticket.platform || 'Not specified'}
+Submitted from page: ${ticket.fromPage}
+
+Title: ${ticket.title}
+
+Description:
+${ticket.description}
+
+${messages.length > 0 ? `Thread (${messages.length} messages):\n${messages.map((m) => `[${m.senderType}] ${m.senderLabel} (${m.createdAt.toISOString()}):\n${m.body}`).join('\n\n')}` : 'No thread messages yet.'}`;
+
+  try {
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    const response = await anthropic.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }],
+    });
+
+    const textContent = response.content.find((c) => c.type === 'text');
+    if (!textContent || textContent.type !== 'text') {
+      return { success: false, error: 'AI suggestion failed. Please try again.' };
+    }
+
+    // Strip potential markdown fences
+    const raw = textContent.text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    const parsed = JSON.parse(raw) as { diagnosis: string; draftReply: string };
+
+    return {
+      success: true,
+      diagnosis: parsed.diagnosis,
+      draftReply: parsed.draftReply,
+    };
+  } catch {
+    return { success: false, error: 'AI suggestion failed. Please try again.' };
+  }
 }
