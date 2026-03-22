@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronUp, Paperclip, Loader2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Paperclip, Loader2, Camera } from 'lucide-react';
 import { updateTicketStatus, addAdminReply, getTicketMessages, getAttachmentDownloadUrl } from '@/actions/support-tickets';
 import type { TicketWithDetails } from '@/actions/support-tickets';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 function getCategoryBadgeClass(category: string) {
   switch (category) {
@@ -112,19 +118,37 @@ function TicketRow({ ticket }: TicketRowProps) {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [, startReplyTransition] = useTransition();
   const [attachmentLoading, setAttachmentLoading] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
+  const [screenshotLoading, setScreenshotLoading] = useState(false);
+  const [screenshotExpanded, setScreenshotExpanded] = useState(false);
 
   const showResolution = status === 'RESOLVED' || status === 'CLOSED';
 
-  // Load messages when row expands
+  // Load messages and screenshot URL when row expands
   useEffect(() => {
     if (!expanded) return;
-    if (messages.length > 0) return; // Already loaded
-    setLoadingMessages(true);
-    getTicketMessages(ticket.id)
-      .then((msgs) => setMessages(msgs as TicketMessage[]))
-      .catch(() => toast.error('Failed to load thread'))
-      .finally(() => setLoadingMessages(false));
-  }, [expanded, ticket.id, messages.length]);
+
+    // Load messages
+    if (messages.length === 0) {
+      setLoadingMessages(true);
+      getTicketMessages(ticket.id)
+        .then((msgs) => setMessages(msgs as TicketMessage[]))
+        .catch(() => toast.error('Failed to load thread'))
+        .finally(() => setLoadingMessages(false));
+    }
+
+    // Load screenshot URL
+    if (ticket.screenshotKey && screenshotUrl === null) {
+      setScreenshotLoading(true);
+      getAttachmentDownloadUrl(ticket.screenshotKey)
+        .then((url) => setScreenshotUrl(url))
+        .catch((err) => {
+          console.error('[TicketRow] Failed to load screenshot URL:', err);
+          // Don't show error toast — just don't display the screenshot
+        })
+        .finally(() => setScreenshotLoading(false));
+    }
+  }, [expanded, ticket.id, ticket.screenshotKey, messages.length, screenshotUrl]);
 
   async function handleViewAttachment() {
     if (!ticket.attachmentKey) return;
@@ -204,6 +228,11 @@ function TicketRow({ ticket }: TicketRowProps) {
               <Badge className={getStatusBadgeClass(ticket.status as string)}>
                 {getStatusLabel(ticket.status as string)}
               </Badge>
+              {ticket.screenshotKey && (
+                <span title="Has screenshot">
+                  <Camera className="h-3.5 w-3.5 text-gray-400" />
+                </span>
+              )}
             </div>
             <p className="font-semibold text-gray-900 truncate">{ticket.title}</p>
             <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
@@ -272,6 +301,33 @@ function TicketRow({ ticket }: TicketRowProps) {
                   )}
                   {attachmentLoading ? 'Loading...' : 'View Attachment'}
                 </button>
+              </div>
+            )}
+
+            {/* Auto-captured Screenshot */}
+            {ticket.screenshotKey && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">Auto-captured Screenshot</p>
+                {screenshotLoading ? (
+                  <p className="text-xs text-gray-400">Loading screenshot...</p>
+                ) : screenshotUrl ? (
+                  <>
+                    <img
+                      src={screenshotUrl}
+                      alt="Page screenshot"
+                      className="max-h-48 rounded-md border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => setScreenshotExpanded(true)}
+                    />
+                    <Dialog open={screenshotExpanded} onOpenChange={setScreenshotExpanded}>
+                      <DialogContent className="max-w-4xl">
+                        <DialogHeader>
+                          <DialogTitle>Screenshot — {ticket.ticketNumber}</DialogTitle>
+                        </DialogHeader>
+                        <img src={screenshotUrl} alt="Full page screenshot" className="w-full rounded-md" />
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                ) : null}
               </div>
             )}
 
