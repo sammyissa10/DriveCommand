@@ -7,7 +7,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload } from 'lucide-react';
-import { requestDriverUploadUrl, completeDriverDocumentUpload } from '@/app/(owner)/actions/driver-documents';
+import { uploadDriverDocument, requestDriverUploadUrl, completeDriverDocumentUpload } from '@/app/(owner)/actions/driver-documents';
 
 interface DriverDocumentUploadProps {
   driverId: string;
@@ -140,9 +140,9 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
   const uploadSmallFile = async () => {
     if (!selectedFile) return;
 
-    setUploadState('uploading');
+    // Go straight to saving — file bytes go to the server action, no separate S3 PUT step
+    setUploadState('saving');
 
-    // Step 1: Request presigned URL
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('driverId', driverId);
@@ -150,56 +150,13 @@ export function DriverDocumentUpload({ driverId, onUploadComplete }: DriverDocum
     if (expiryDate) formData.append('expiryDate', expiryDate);
     if (notes) formData.append('notes', notes);
 
-    const urlResult = await requestDriverUploadUrl(formData);
+    const result = await uploadDriverDocument(formData);
 
-    if ('error' in urlResult && urlResult.error) {
-      throw new Error(urlResult.error);
-    }
-
-    if (!('uploadUrl' in urlResult) || !urlResult.uploadUrl) {
-      throw new Error('Invalid response from server');
-    }
-
-    // Step 2: Upload to S3
-    const uploadResponse = await fetch(urlResult.uploadUrl, {
-      method: 'PUT',
-      body: selectedFile,
-      headers: {
-        'Content-Type': urlResult.contentType,
-      },
-      signal: abortControllerRef.current?.signal,
-    });
-
-    if (!uploadResponse.ok) {
-      let detail = uploadResponse.statusText;
-      try {
-        const bodyText = await uploadResponse.text();
-        if (bodyText) detail = bodyText;
-      } catch {
-        // Cross-origin response may not expose body
-      }
-      throw new Error(`Upload failed (${uploadResponse.status}): ${detail || 'unknown error'}`);
-    }
-
-    // Step 3: Complete upload
-    setUploadState('saving');
-
-    const completeResult = await completeDriverDocumentUpload({
-      s3Key: urlResult.s3Key,
-      fileName: urlResult.fileName,
-      contentType: urlResult.contentType,
-      sizeBytes: urlResult.sizeBytes,
-      driverId,
-      documentType,
-      expiryDate: expiryDate || undefined,
-      notes: notes || undefined,
-    });
-
-    if ('error' in completeResult) {
+    if ('error' in result && result.error) {
       throw new Error(
-        typeof completeResult.error === 'string'
-          ? completeResult.error
-          : 'Failed to save document metadata'
+        typeof result.error === 'string'
+          ? result.error
+          : 'Failed to upload document'
       );
     }
   };
