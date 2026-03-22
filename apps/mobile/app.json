@@ -1,0 +1,77 @@
+{
+  "expo": {
+    "name": "DriveCommand",
+    "slug": "drivecommand",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "drivecommand",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.drivecommand.app",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "DriveCommand uses your location to track deliveries and report your position to dispatchers.",
+        "NSLocationWhenInUseUsageDescription": "DriveCommand uses your location to track deliveries.",
+        "NSCameraUsageDescription": "DriveCommand uses the camera to photograph delivery documents and incident evidence.",
+        "NSPhotoLibraryUsageDescription": "DriveCommand accesses your photo library to attach images to incident reports."
+      },
+      "backgroundModes": [
+        "location",
+        "remote-notification",
+        "background-fetch"
+      ]
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png",
+        "backgroundColor": "#0f172a"
+      },
+      "package": "com.drivecommand.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-camera",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "DriveCommand uses your location to track deliveries.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#0f172a"
+        }
+      ],
+      "expo-image"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
