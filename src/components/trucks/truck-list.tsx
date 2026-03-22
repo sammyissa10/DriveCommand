@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Eye, Pencil, Trash2, Truck as TruckIcon, ChevronRight } from 'lucide-react';
+import { Search, Eye, Pencil, Trash2, Truck as TruckIcon, ChevronRight, Info, ChevronDown } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -31,6 +31,7 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [showStatusGuide, setShowStatusGuide] = useState(false);
 
   const handleDelete = (id: string, make: string, model: string) => {
     if (window.confirm(`Are you sure you want to archive this truck? (${make} ${model}) (recoverable within 30 days)`)) {
@@ -150,20 +151,31 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
 
   return (
     <div className="space-y-4">
-      {/* Search Input */}
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="text"
-          value={globalFilter ?? ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder="Search trucks..."
-          className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
-        />
+      {/* Search + Status Guide toggle (mobile: side by side) */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 md:max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder="Search trucks..."
+            className="w-full rounded-lg border border-input bg-card pl-10 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-colors"
+          />
+        </div>
+        {/* Mobile-only status guide toggle */}
+        <button
+          onClick={() => setShowStatusGuide((v) => !v)}
+          className="md:hidden inline-flex items-center gap-1.5 rounded-lg border border-input bg-card px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+          aria-label="Toggle status guide"
+        >
+          <Info className="h-4 w-4" />
+          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showStatusGuide ? 'rotate-180' : ''}`} />
+        </button>
       </div>
 
-      {/* Status Legend */}
-      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+      {/* Status Legend — always on desktop, collapsible on mobile */}
+      <div className={`flex flex-wrap items-center gap-4 text-xs text-muted-foreground ${showStatusGuide ? '' : 'hidden'} md:flex`}>
         <span className="font-medium text-foreground">Status Guide:</span>
         <span className="inline-flex items-center gap-1.5">
           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses.blue}`}>In Use</span>
@@ -234,7 +246,7 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
       </div>
 
       {/* Mobile Card List */}
-      <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden">
+      <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-card overflow-hidden shadow-sm">
         {table.getRowModel().rows.map((row) => {
           const truck = row.original;
           const { status, variant } = computeTruckStatus(truck);
@@ -242,21 +254,24 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
             <div
               key={truck.id}
               onClick={() => router.push(`/trucks/${truck.id}`)}
-              className="flex items-center gap-3 px-4 py-3.5 active:bg-muted/50 cursor-pointer"
+              className="flex items-center gap-3 px-4 py-4 active:bg-muted/50 cursor-pointer"
             >
+              {/* Truck icon avatar */}
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-muted">
+                <TruckIcon className="h-5 w-5 text-muted-foreground" />
+              </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium text-sm text-foreground">{truck.year} {truck.make} {truck.model}</span>
+                </div>
+                <div className="mt-1 flex items-center gap-2 flex-wrap">
                   <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
                     {truck.licensePlate}
                   </span>
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${variantClasses[variant]}`}>
                     {status}
                   </span>
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <span>{truck.year} {truck.make} {truck.model}</span>
-                  <span className="text-muted-foreground/40">&middot;</span>
-                  <span>{truck.odometer.toLocaleString()} mi</span>
+                  <span className="text-xs text-muted-foreground">{truck.odometer.toLocaleString()} mi</span>
                 </div>
               </div>
               <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground/50" />
