@@ -41,6 +41,7 @@ import {
 import { UserMenu } from "@/components/navigation/user-menu"
 import { UserRole } from "@/lib/auth/roles"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
+import { PermissionGuard } from "@/lib/auth/guards"
 
 interface AppSidebarProps {
   supportBadge?: React.ReactNode;
@@ -157,30 +158,34 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/lane-analytics")}
-                    tooltip="Lane Profitability"
-                  >
-                    <Link href="/lane-analytics">
-                      <TrendingUp />
-                      <span>Lane Profitability</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/profit-predictor")}
-                    tooltip="Profit Predictor"
-                  >
-                    <Link href="/profit-predictor">
-                      <Calculator />
-                      <span>Profit Predictor</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <PermissionGuard permission="canViewLaneAnalytics">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/lane-analytics")}
+                      tooltip="Lane Profitability"
+                    >
+                      <Link href="/lane-analytics">
+                        <TrendingUp />
+                        <span>Lane Profitability</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canViewProfitPredictor">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/profit-predictor")}
+                      tooltip="Profit Predictor"
+                    >
+                      <Link href="/profit-predictor">
+                        <Calculator />
+                        <span>Profit Predictor</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -193,18 +198,20 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/ifta")}
-                    tooltip="IFTA Reports"
-                  >
-                    <Link href="/ifta">
-                      <FileSpreadsheet />
-                      <span>IFTA Reports</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <PermissionGuard permission="canViewIFTA">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/ifta")}
+                      tooltip="IFTA Reports"
+                    >
+                      <Link href="/ifta">
+                        <FileSpreadsheet />
+                        <span>IFTA Reports</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -230,54 +237,62 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/crm")}
-                    tooltip="CRM"
-                  >
-                    <Link href="/crm">
-                      <Building2 />
-                      <span>CRM</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/invoices")}
-                    tooltip="Invoices"
-                  >
-                    <Link href="/invoices">
-                      <Receipt />
-                      <span>Invoices</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/payroll")}
-                    tooltip="Payroll"
-                  >
-                    <Link href="/payroll">
-                      <DollarSign />
-                      <span>Payroll</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/ai-documents")}
-                    tooltip="AI Documents"
-                  >
-                    <Link href="/ai-documents">
-                      <FileSearch />
-                      <span>AI Documents</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <PermissionGuard permission="canViewCRM">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/crm")}
+                      tooltip="CRM"
+                    >
+                      <Link href="/crm">
+                        <Building2 />
+                        <span>CRM</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canViewInvoices">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/invoices")}
+                      tooltip="Invoices"
+                    >
+                      <Link href="/invoices">
+                        <Receipt />
+                        <span>Invoices</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canViewPayroll">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/payroll")}
+                      tooltip="Payroll"
+                    >
+                      <Link href="/payroll">
+                        <DollarSign />
+                        <span>Payroll</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canViewAIDocuments">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/ai-documents")}
+                      tooltip="AI Documents"
+                    >
+                      <Link href="/ai-documents">
+                        <FileSearch />
+                        <span>AI Documents</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -341,62 +356,85 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {/* Settings - OWNER only */}
-        {userRole === UserRole.OWNER && (
+        {/* Settings - OWNER and MANAGER (individual items gated by permission) */}
+        {(userRole === UserRole.OWNER || userRole === UserRole.MANAGER) && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
               Settings
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/subscription')}
-                    tooltip="Subscription"
-                  >
-                    <Link href="/subscription">
-                      <CreditCard />
-                      <span>Subscription</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/settings/expense-categories')}
-                    tooltip="Expense Categories"
-                  >
-                    <Link href="/settings/expense-categories">
-                      <Tag />
-                      <span>Expense Categories</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/settings/expense-templates')}
-                    tooltip="Expense Templates"
-                  >
-                    <Link href="/settings/expense-templates">
-                      <FileSpreadsheet />
-                      <span>Expense Templates</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/settings/integrations')}
-                    tooltip="Integrations"
-                  >
-                    <Link href="/settings/integrations">
-                      <Settings />
-                      <span>Integrations</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                {/* Team Permissions - OWNER only */}
+                {userRole === UserRole.OWNER && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/settings/team-permissions')}
+                      tooltip="Team Permissions"
+                    >
+                      <Link href="/settings/team-permissions">
+                        <Shield />
+                        <span>Team Permissions</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+                <PermissionGuard permission="canViewBilling">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/subscription')}
+                      tooltip="Subscription"
+                    >
+                      <Link href="/subscription">
+                        <CreditCard />
+                        <span>Subscription</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canManageSettings">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/settings/expense-categories')}
+                      tooltip="Expense Categories"
+                    >
+                      <Link href="/settings/expense-categories">
+                        <Tag />
+                        <span>Expense Categories</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canManageSettings">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/settings/expense-templates')}
+                      tooltip="Expense Templates"
+                    >
+                      <Link href="/settings/expense-templates">
+                        <FileSpreadsheet />
+                        <span>Expense Templates</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                <PermissionGuard permission="canManageSettings">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/settings/integrations')}
+                      tooltip="Integrations"
+                    >
+                      <Link href="/settings/integrations">
+                        <Settings />
+                        <span>Integrations</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

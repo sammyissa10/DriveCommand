@@ -9,6 +9,7 @@
 
 import { useAuth } from '@/lib/auth/auth-context';
 import { UserRole } from '@/lib/auth/roles';
+import type { UserPermissions } from '@/lib/auth/permissions';
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -48,4 +49,55 @@ export function RoleGuard({
   }
 
   return <>{children}</>;
+}
+
+interface PermissionGuardProps {
+  permission: keyof UserPermissions;
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+/**
+ * PermissionGuard - Conditionally render children based on user permissions
+ *
+ * - OWNER: always shows children (unrestricted access)
+ * - MANAGER: shows children only if the specific permission is granted
+ * - All other roles: shows fallback
+ *
+ * @example
+ * <PermissionGuard permission="canViewPayroll">
+ *   <Link href="/payroll">Payroll</Link>
+ * </PermissionGuard>
+ */
+export function PermissionGuard({
+  permission,
+  children,
+  fallback = null,
+}: PermissionGuardProps) {
+  const { user, isLoaded } = useAuth();
+
+  // Prevent flash of content while auth loads
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (!user) {
+    return <>{fallback}</>;
+  }
+
+  // OWNER always has access
+  if (user.role === UserRole.OWNER) {
+    return <>{children}</>;
+  }
+
+  // MANAGER: check the specific permission
+  if (user.role === UserRole.MANAGER) {
+    if (user.permissions?.[permission]) {
+      return <>{children}</>;
+    }
+    return <>{fallback}</>;
+  }
+
+  // All other roles: show fallback
+  return <>{fallback}</>;
 }

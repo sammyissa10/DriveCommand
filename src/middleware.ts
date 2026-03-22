@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/lib/auth/session';
+import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions';
 
 /**
  * Next.js middleware that resolves tenant context from the session cookie
@@ -100,6 +101,19 @@ export default async function middleware(request: NextRequest) {
   // Driver guard: redirect DRIVER role away from owner-only paths
   if (session.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/my-route', request.url));
+  }
+
+  // MANAGER permission guard: check granular permissions for gated paths
+  if (session.role === 'MANAGER') {
+    const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
+      pathname.startsWith(g.path)
+    );
+    if (gatedRoute) {
+      const permissions = (session.permissions ?? {}) as UserPermissions;
+      if (!permissions[gatedRoute.permission]) {
+        return NextResponse.redirect(new URL('/unauthorized', request.url));
+      }
+    }
   }
 
   // User has tenant - inject tenant ID into request headers
