@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 29 Monorepo + Expo Scaffold — IN PROGRESS
-Status: Phase 29 Plan 01 complete — Turborepo monorepo setup, web app migrated to apps/web/, build verified
-Last activity: 2026-03-22 - Completed Phase 29 Plan 01: Turborepo monorepo setup + web app migration
-Stopped at: Phase 29 Plan 01 complete — next is Phase 29 Plan 02 (Expo scaffold)
+Status: Phase 29 Plan 02 complete — Expo SDK 55 scaffold, NativeWind v4, EAS config, Poppins font, route groups
+Last activity: 2026-03-22 - Completed Phase 29 Plan 02: Expo app scaffold + NativeWind + EAS config
+Stopped at: Phase 29 Plan 02 complete — next is Phase 30 (auth screens)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -55,6 +55,7 @@ Progress: [███████████████████████
 - Phase 28-02 (2026-03-21): Driver history UI — CompletedLoadHistory + CompletedRouteHistory components, page wiring — 4 tasks, 4 files, ~5min
 
 - Phase 29-01 (2026-03-22): Turborepo monorepo setup — Next.js migrated to apps/web/, turbo.json, stub shared packages — 10 tasks, 530 files moved, ~5min
+- Phase 29-02 (2026-03-22): Expo app scaffold + NativeWind v4 + EAS config — Expo SDK 55, Expo Router v4, (driver)/(owner) route groups, Poppins font, eas.json — 10 tasks, 33 files, ~6min
 
 **Combined:**
 - Total: 20 phases complete, 47 plans
@@ -431,6 +432,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27-automated-playwright-tests]: Driver access boundaries: test.describe blocks with separate test.use() per role — cleanest Playwright pattern for multi-role tests in one file
 - [Phase 27-automated-playwright-tests]: Access denial assertions use URL exclusion (not.toContain) not exact match — resilient across different redirect targets per role
 - [Phase quick-81]: getRouteStatusClasses refactored to return a single class string instead of separate bgColor/textColor to ensure dark mode variants always travel with light variants
+- [Phase 29]: Used Expo SDK 55 (latest stable via create-expo-app, ships React 19 + RN 0.83.2)
+- [Phase 29]: NativeWind v4 requires nativewind-env.d.ts type reference for className prop TS support
+- [Phase 29]: Notification icon is placeholder logo-192.png — replace with proper 96x96 PNG before Phase 38
 
 ### Pending Todos
 
@@ -603,6 +607,7 @@ None blocking immediate progress.
 | Phase quick-80 P1 | 3 | 1 tasks | 2 files |
 | Phase 27-automated-playwright-tests P03 | 3 | 2 tasks | 6 files |
 | Phase quick-92 P01 | 2m | 2 tasks | 2 files |
+| Phase 29 P02 | 365 | 10 tasks | 33 files |
 
 ## Session Continuity
 
