@@ -1,9 +1,10 @@
 import { getTicketById } from '@/actions/support-tickets';
+import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Paperclip } from 'lucide-react';
 import { OwnerReplyForm } from './owner-reply-form';
 
 interface TicketDetailPageProps {
@@ -97,6 +98,7 @@ export default async function TicketDetailPage({ params }: TicketDetailPageProps
   }
 
   const isClosed = ticket.status === 'CLOSED' || ticket.status === 'RESOLVED';
+  const attachmentUrl = ticket.attachmentKey ? await generateDownloadUrl(ticket.attachmentKey) : null;
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -138,11 +140,43 @@ export default async function TicketDetailPage({ params }: TicketDetailPageProps
             })}
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="rounded-md bg-muted/50 border border-border px-4 py-3">
             <p className="text-xs font-medium text-muted-foreground mb-1">Original Description</p>
             <p className="text-sm text-foreground whitespace-pre-wrap">{ticket.description}</p>
           </div>
+
+          {/* Platform badge */}
+          {ticket.platform && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-1">Platform</p>
+              <Badge
+                className={
+                  ticket.platform === 'DESKTOP'
+                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-violet-50 text-violet-700 border-violet-200'
+                }
+              >
+                {ticket.platform === 'DESKTOP' ? 'Desktop' : 'Mobile'}
+              </Badge>
+            </div>
+          )}
+
+          {/* Attachment link */}
+          {attachmentUrl && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-1">Attachment</p>
+              <a
+                href={attachmentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline"
+              >
+                <Paperclip className="h-3.5 w-3.5" />
+                View Attachment
+              </a>
+            </div>
+          )}
         </CardContent>
       </Card>
 

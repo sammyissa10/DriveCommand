@@ -3,6 +3,7 @@
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
 import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
@@ -504,4 +505,14 @@ export async function getUnreadAdminReplyCount(): Promise<number> {
   } catch {
     return 0; // Non-blocking — badge simply won't show
   }
+}
+
+/**
+ * Generate a presigned download URL for a support ticket attachment.
+ * Any authenticated user can request a download URL (auth gate only — no tenant check needed
+ * since s3Key is scoped to the tenant prefix by the upload route).
+ */
+export async function getAttachmentDownloadUrl(s3Key: string): Promise<string> {
+  await requireAuth();
+  return generateDownloadUrl(s3Key);
 }

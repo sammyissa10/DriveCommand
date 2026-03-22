@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { updateTicketStatus, addAdminReply, getTicketMessages } from '@/actions/support-tickets';
+import { ChevronDown, ChevronUp, Paperclip, Loader2 } from 'lucide-react';
+import { updateTicketStatus, addAdminReply, getTicketMessages, getAttachmentDownloadUrl } from '@/actions/support-tickets';
 import type { TicketWithDetails } from '@/actions/support-tickets';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -111,6 +111,7 @@ function TicketRow({ ticket }: TicketRowProps) {
   const [messages, setMessages] = useState<TicketMessage[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [, startReplyTransition] = useTransition();
+  const [attachmentLoading, setAttachmentLoading] = useState(false);
 
   const showResolution = status === 'RESOLVED' || status === 'CLOSED';
 
@@ -124,6 +125,19 @@ function TicketRow({ ticket }: TicketRowProps) {
       .catch(() => toast.error('Failed to load thread'))
       .finally(() => setLoadingMessages(false));
   }, [expanded, ticket.id, messages.length]);
+
+  async function handleViewAttachment() {
+    if (!ticket.attachmentKey) return;
+    setAttachmentLoading(true);
+    try {
+      const url = await getAttachmentDownloadUrl(ticket.attachmentKey);
+      window.open(url, '_blank');
+    } catch {
+      toast.error('Failed to load attachment');
+    } finally {
+      setAttachmentLoading(false);
+    }
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -225,6 +239,41 @@ function TicketRow({ ticket }: TicketRowProps) {
               <p className="text-xs font-medium text-gray-500 mb-1">Submitted from page</p>
               <p className="text-xs font-mono text-gray-600">{ticket.fromPage}</p>
             </div>
+
+            {/* Platform badge */}
+            {ticket.platform && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">Platform</p>
+                <span
+                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
+                    ticket.platform === 'DESKTOP'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
+                      : 'bg-violet-50 text-violet-700 border-violet-200'
+                  }`}
+                >
+                  {ticket.platform === 'DESKTOP' ? 'Desktop' : 'Mobile'}
+                </span>
+              </div>
+            )}
+
+            {/* Attachment */}
+            {ticket.attachmentKey && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 mb-1">Attachment</p>
+                <button
+                  onClick={handleViewAttachment}
+                  disabled={attachmentLoading}
+                  className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer disabled:opacity-50"
+                >
+                  {attachmentLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Paperclip className="h-3.5 w-3.5" />
+                  )}
+                  {attachmentLoading ? 'Loading...' : 'View Attachment'}
+                </button>
+              </div>
+            )}
 
             {/* Message thread */}
             <div>
