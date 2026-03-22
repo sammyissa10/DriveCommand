@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v4.0 Multi-Stop Routes — IN PROGRESS
 Phase: Phase 28 Driver History — COMPLETE
 Status: Phase 28 Plan 02 complete — all 4 tasks done, human-verified, history UI shipped
-Last activity: 2026-03-22 - Completed quick task 90: Owner Portal RBAC — permissions system for OwnerUser/MANAGER role
+Last activity: 2026-03-22 - Completed quick task 91: TKT-0041: Left Navigation auto collapse on selection
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -522,6 +522,7 @@ None blocking immediate progress.
 | 88 | Update browser tab favicon to the new DriveCommand logo | 2026-03-22 | 96ea4eb | [88-update-browser-tab-favicon-to-the-new-dr](./quick/88-update-browser-tab-favicon-to-the-new-dr/) |
 | 89 | Support ticket: add file attachment and mobile/desktop platform field | 2026-03-22 | bded3aa | [89-support-ticket-add-file-attachment-and-m](./quick/89-support-ticket-add-file-attachment-and-m/) |
 | 90 | Owner Portal RBAC — permissions system for OwnerUser/MANAGER role with settings UI, route guards, and sidebar filtering | 2026-03-22 | 46cf9ad | [90-owner-portal-rbac-permissions-system-for](./quick/90-owner-portal-rbac-permissions-system-for/) |
+| 91 | TKT-0041: Left Navigation auto collapse on selection — auto-close mobile sidebar on nav link click | 2026-03-22 | 5f20e46 | [91-tkt-0041-left-navigation-auto-collapse-o](./quick/91-tkt-0041-left-navigation-auto-collapse-o/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
