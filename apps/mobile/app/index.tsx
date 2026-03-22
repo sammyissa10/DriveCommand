@@ -1,7 +1,18 @@
 import { Redirect } from 'expo-router'
+import { useAuthContext } from '../context/AuthContext'
 
-// Entry point: redirect to login screen.
-// Phase 30 will implement auth guard logic (driver vs owner routing).
+/**
+ * Entry point — redirects based on auth state:
+ *   - Loading → renders nothing (splash remains visible)
+ *   - No session → /login
+ *   - OWNER role → /(owner)
+ *   - DRIVER role → /(driver)
+ */
 export default function Index() {
-  return <Redirect href="/login" />
+  const { user, isLoading } = useAuthContext()
+
+  if (isLoading) return null
+  if (!user) return <Redirect href="/login" />
+  if (user.role === 'OWNER') return <Redirect href="/(owner)" />
+  return <Redirect href="/(driver)" />
 }

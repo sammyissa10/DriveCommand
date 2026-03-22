@@ -1,12 +1,30 @@
-import { Stack } from 'expo-router'
+import { Slot } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
+import { AuthProvider } from '../context/AuthContext'
+import { setUnauthorizedHandler } from '@drivecommand/api-client'
+import { useAuthContext } from '../context/AuthContext'
 import '../global.css'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
+
+/**
+ * Inner layout that has access to AuthContext.
+ * Registers the 401 handler so any unauthorized API response logs the user out.
+ */
+function AuthGuard() {
+  const { logout } = useAuthContext()
+
+  useEffect(() => {
+    setUnauthorizedHandler(logout)
+    return () => setUnauthorizedHandler(null)
+  }, [logout])
+
+  return <Slot />
+}
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -29,7 +47,9 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      <AuthProvider>
+        <AuthGuard />
+      </AuthProvider>
     </SafeAreaProvider>
   )
 }
