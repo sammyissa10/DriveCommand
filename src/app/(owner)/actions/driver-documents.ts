@@ -2,7 +2,7 @@
 
 /**
  * Server actions for driver document operations.
- * Handles both small files (single PUT) and large files (via multipart API routes).
+ * Handles both small files (server-side PUT) and large files (via multipart API routes).
  */
 
 import { requireRole, getCurrentUser } from '@/lib/auth/server';
@@ -14,6 +14,8 @@ import { generateUploadUrl, generateDownloadUrl, deleteS3Object } from '@/lib/st
 import { documentCreateSchema } from '@/lib/validations/document.schemas';
 import { nanoid } from 'nanoid';
 import { revalidatePath } from 'next/cache';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 
 /**
  * Request a presigned upload URL for a small driver document file (<5MB).
@@ -95,8 +97,128 @@ export async function requestDriverUploadUrl(formData: FormData) {
 }
 
 /**
+ * Upload a small driver document file server-side directly to R2.
+ * Eliminates the client-to-S3 PUT, resolving CORS errors on iOS Safari.
+ * For large files (>=5MB), use the multipart upload API routes instead.
+ * Requires OWNER or MANAGER role.
+ */
+export async function uploadDriverDocument(formData: FormData) {
+  // CRITICAL: Auth check FIRST before any data access
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  try {
+    // Extract form data
+    const file = formData.get('file') as File;
+    const driverId = formData.get('driverId') as string;
+    const documentType = formData.get('documentType') as string;
+    const expiryDate = formData.get('expiryDate') as string | null;
+    const notes = formData.get('notes') as string | null;
+
+    if (!file || !driverId || !documentType) {
+      return {
+        error: 'Missing required fields: file, driverId, and documentType are required',
+      };
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      return {
+        error: `File size exceeds maximum allowed size of ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+      };
+    }
+
+    // Read first 4100 bytes for magic bytes validation
+    const buffer = await file.slice(0, 4100).arrayBuffer();
+
+    // Validate file type using magic bytes (prevents MIME spoofing)
+    const validation = await validateFileType(buffer, file.type);
+    if (!validation.valid) {
+      return {
+        error: validation.error,
+      };
+    }
+
+    // Get tenant ID
+    const tenantId = await requireTenantId();
+
+    // Get current user
+    const user = await getCurrentUser();
+    if (!user) {
+      return { error: 'User not found' };
+    }
+
+    // Generate unique file ID
+    const fileId = nanoid();
+
+    // Sanitize filename (remove path separators)
+    const sanitizedFileName = file.name.replace(/[/\\]/g, '-');
+
+    // Build S3 key
+    const s3Key = `tenant-${tenantId}/drivers/${fileId}-${sanitizedFileName}`;
+
+    // Upload directly to R2 server-side (no presigned URL, no CORS)
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: getBucketName(),
+        Key: s3Key,
+        Body: Buffer.from(await file.arrayBuffer()),
+        ContentType: validation.detectedType,
+        ContentLength: file.size,
+      })
+    );
+
+    // Build document data
+    const documentData: any = {
+      fileName: file.name,
+      s3Key,
+      contentType: validation.detectedType,
+      sizeBytes: file.size,
+      driverId,
+      documentType,
+    };
+
+    if (expiryDate) {
+      documentData.expiryDate = new Date(expiryDate);
+    }
+
+    if (notes) {
+      documentData.notes = notes;
+    }
+
+    // Validate with Zod schema
+    const result = documentCreateSchema.safeParse(documentData);
+
+    if (!result.success) {
+      return {
+        error: result.error.flatten().fieldErrors,
+      };
+    }
+
+    // Create document via repository
+    const repo = new DocumentRepository(tenantId);
+    const document = await repo.create({
+      ...result.data,
+      tenantId,
+      uploadedBy: user.id,
+    });
+
+    // Revalidate driver page
+    revalidatePath(`/drivers/${driverId}`);
+
+    return {
+      success: true,
+      document,
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : 'Failed to upload document',
+    };
+  }
+}
+
+/**
  * Complete the upload process by saving driver document metadata to database.
- * Called after the client successfully uploads to S3 (for small files).
+ * Called after the client successfully uploads to S3 (for large multipart files).
  * Requires OWNER or MANAGER role.
  */
 export async function completeDriverDocumentUpload(data: {
