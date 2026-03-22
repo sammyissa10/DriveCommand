@@ -238,16 +238,16 @@ Plans:
 
 ---
 
-### Phase 29: Monorepo Foundation + Expo Scaffold — Convert to Turborepo, extract shared packages, scaffold Expo app with NativeWind and EAS
+### ✅ Phase 29: Monorepo Foundation + Expo Scaffold — Convert to Turborepo, extract shared packages, scaffold Expo app with NativeWind and EAS (complete 2026-03-22)
 
 **Goal:** Transform the existing single Next.js repo into a Turborepo monorepo. Move the web app to apps/web. Extract shared TypeScript types and Zod validation schemas into packages/ that both web and mobile import. Scaffold the Expo app at apps/mobile with Expo Router, NativeWind v4, and EAS configuration. Running `npx expo start` in apps/mobile produces a working blank app on a physical device.
 **Depends on:** None (additive — web app untouched, just moved/restructured)
 **Plans:** 3 plans
 
 Plans:
-- [ ] 29-01-PLAN.md — Turborepo setup: root package.json with workspaces, turbo.json pipeline (build/lint/test tasks), move existing Next.js app into apps/web/, update all internal import paths, verify `turbo run build` succeeds for apps/web
-- [ ] 29-02-PLAN.md — Expo scaffold: create apps/mobile/ with Expo SDK 52, Expo Router v4 file-based routing, NativeWind v4 + Tailwind config, app.json (bundle ID com.drivecommand.app, version 1.0.0), .eas.json with development/preview/production profiles, first `npx expo start` boots successfully on physical device
-- [ ] 29-03-PLAN.md — Shared packages: packages/types/ (TypeScript interfaces for Truck, Driver, Load, Route, User, Tenant), packages/validation/ (move src/lib/validations/* here, import in both apps/web and apps/mobile), packages/api-client/ (typed fetch wrapper with Bearer token auth targeting EXPO_PUBLIC_API_URL, mirrors all server actions as REST calls)
+- [x] 29-01-PLAN.md — Turborepo setup: root package.json with workspaces, turbo.json pipeline (build/lint/test tasks), move existing Next.js app into apps/web/, update all internal import paths, verify `turbo run build` succeeds for apps/web
+- [x] 29-02-PLAN.md — Expo scaffold: create apps/mobile/ with Expo SDK 52, Expo Router v4 file-based routing, NativeWind v4 + Tailwind config, app.json (bundle ID com.drivecommand.app, version 1.0.0), .eas.json with development/preview/production profiles, first `npx expo start` boots successfully on physical device
+- [x] 29-03-PLAN.md — Shared packages: packages/types/ (TypeScript interfaces for Truck, Driver, Load, Route, User, Tenant), packages/validation/ (move src/lib/validations/* here, import in both apps/web and apps/mobile), packages/api-client/ (typed fetch wrapper with Bearer token auth targeting EXPO_PUBLIC_API_URL, mirrors all server actions as REST calls)
 
 ---
 
