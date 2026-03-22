@@ -1,6 +1,7 @@
 'use server';
 
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireTenantId } from '@/lib/context/tenant-context';
 import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { generateDownloadUrl } from '@/lib/storage/presigned';
@@ -8,6 +9,9 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
 import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNotification } from '@/lib/email/send-support-notifications';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { s3Client, getBucketName } from '@/lib/storage/s3-client';
+import { nanoid } from 'nanoid';
 
 // ─── Validation schemas ──────────────────────────────────────
 
@@ -35,6 +39,44 @@ async function requireAdminAccess() {
   const admin = await isSystemAdmin();
   if (!admin) {
     throw new Error('Unauthorized: Admin access required');
+  }
+}
+
+// ─── Upload screenshot server-side (avoids browser→R2 CORS) ─
+
+/**
+ * Upload an auto-captured support ticket screenshot directly from the server.
+ * Returns { s3Key } on success or { error } on failure.
+ */
+export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3Key: string } | { error: string }> {
+  try {
+    await requireAuth();
+    const tenantId = await requireTenantId();
+
+    const file = formData.get('screenshot') as File | null;
+    if (!file || file.size === 0) {
+      return { error: 'No screenshot provided' };
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      return { error: 'Screenshot exceeds 10MB limit' };
+    }
+
+    const fileId = nanoid();
+    const s3Key = `tenant-${tenantId}/support/${fileId}-screenshot.png`;
+    const body = Buffer.from(await file.arrayBuffer());
+
+    await s3Client.send(new PutObjectCommand({
+      Bucket: getBucketName(),
+      Key: s3Key,
+      Body: body,
+      ContentType: 'image/png',
+      ContentLength: file.size,
+    }));
+
+    return { s3Key };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Upload failed' };
   }
 }
 

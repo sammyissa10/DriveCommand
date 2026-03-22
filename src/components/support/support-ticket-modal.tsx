@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import { LifeBuoy, X, Paperclip, Camera, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
-import { createSupportTicket } from '@/actions/support-tickets';
+import { createSupportTicket, uploadSupportScreenshot } from '@/actions/support-tickets';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -232,40 +232,19 @@ export function SupportTicketModal() {
       setUploading(false);
     }
 
-    // Upload auto-captured screenshot if present
+    // Upload auto-captured screenshot server-side (avoids browser→R2 CORS issues)
     if (screenshotBlob) {
       setUploading(true);
       try {
-        const uploadRes = await fetch('/api/support/upload-attachment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fileName: 'screenshot.png',
-            contentType: 'image/png',
-            sizeBytes: screenshotBlob.size,
-          }),
-        });
-
-        if (!uploadRes.ok) {
-          // Non-fatal: continue without screenshot
-          console.error('[SupportTicketModal] Failed to get screenshot upload URL');
+        const ssFormData = new FormData();
+        ssFormData.append('screenshot', new File([screenshotBlob], 'screenshot.png', { type: 'image/png' }));
+        const result = await uploadSupportScreenshot(ssFormData);
+        if ('s3Key' in result) {
+          screenshotS3Key = result.s3Key;
         } else {
-          const { uploadUrl, s3Key } = await uploadRes.json();
-
-          const putRes = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'image/png' },
-            body: screenshotBlob,
-          });
-
-          if (putRes.ok) {
-            screenshotS3Key = s3Key;
-          } else {
-            console.error('[SupportTicketModal] Failed to upload screenshot to S3');
-          }
+          console.error('[SupportTicketModal] Screenshot upload failed:', result.error);
         }
       } catch (err) {
-        // Non-fatal: log and continue
         console.error('[SupportTicketModal] Screenshot upload error:', err);
       }
       setUploading(false);
