@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronUp, Paperclip, Loader2, Camera, Sparkles } from 'lucide-react';
-import { updateTicketStatus, addAdminReply, getTicketMessages, getAttachmentDownloadUrl, generateAiResolution } from '@/actions/support-tickets';
+import { ChevronDown, ChevronUp, Paperclip, Loader2, Camera } from 'lucide-react';
+import { updateTicketStatus, addAdminReply, getTicketMessages, getAttachmentDownloadUrl } from '@/actions/support-tickets';
 import type { TicketWithDetails } from '@/actions/support-tickets';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -121,9 +121,6 @@ function TicketRow({ ticket }: TicketRowProps) {
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
   const [screenshotLoading, setScreenshotLoading] = useState(false);
   const [screenshotExpanded, setScreenshotExpanded] = useState(false);
-  const [aiDiagnosis, setAiDiagnosis] = useState<string | null>(null);
-  const [aiDraftReply, setAiDraftReply] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
 
   const showResolution = status === 'RESOLVED' || status === 'CLOSED';
 
@@ -209,30 +206,6 @@ function TicketRow({ ticket }: TicketRowProps) {
         toast.error('Failed to send reply');
       }
     });
-  }
-
-  async function handleAiSuggest() {
-    setAiLoading(true);
-    try {
-      const result = await generateAiResolution(ticket.id);
-      if (result.success) {
-        setAiDiagnosis(result.diagnosis);
-        setAiDraftReply(result.draftReply);
-      } else {
-        toast.error(result.error ?? 'AI suggestion failed');
-      }
-    } catch {
-      toast.error('AI suggestion failed');
-    } finally {
-      setAiLoading(false);
-    }
-  }
-
-  function handleUseReply() {
-    if (aiDraftReply) {
-      setReplyText(aiDraftReply);
-      toast.success('Draft reply loaded into reply box');
-    }
   }
 
   return (
@@ -396,50 +369,6 @@ function TicketRow({ ticket }: TicketRowProps) {
                       <p className="text-gray-700 whitespace-pre-wrap">{msg.body}</p>
                     </div>
                   ))}
-                </div>
-              )}
-            </div>
-
-            {/* AI Suggest */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <p className="text-xs font-medium text-gray-500">AI Suggestion</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleAiSuggest}
-                  disabled={aiLoading}
-                  className="h-7 text-xs gap-1"
-                >
-                  {aiLoading ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-3 w-3" />
-                  )}
-                  {aiLoading ? 'Analyzing...' : aiDiagnosis ? 'Re-analyze' : 'AI Suggest'}
-                </Button>
-              </div>
-
-              {aiDiagnosis && (
-                <div className="space-y-3">
-                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3">
-                    <p className="text-xs font-semibold text-amber-800 mb-1">Diagnosis</p>
-                    <p className="text-sm text-amber-900 whitespace-pre-wrap">{aiDiagnosis}</p>
-                  </div>
-                  <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="text-xs font-semibold text-blue-800">Draft Reply</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleUseReply}
-                        className="h-6 text-xs border-blue-300 text-blue-700 hover:bg-blue-100"
-                      >
-                        Use this reply
-                      </Button>
-                    </div>
-                    <p className="text-sm text-blue-900 whitespace-pre-wrap">{aiDraftReply}</p>
-                  </div>
                 </div>
               )}
             </div>
