@@ -50,17 +50,19 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
   }>({ documentType: '', expiryDate: '', notes: '' });
 
   const handleView = async (docId: string, fileName: string) => {
+    const win = window.open('', '_blank');
+    if (!win) { return; }
     setViewing(docId);
     try {
       const result = await getDownloadUrl(docId);
-
       if ('error' in result) {
+        win.close();
         alert(`Failed to open document: ${result.error}`);
         return;
       }
-
-      window.open(result.downloadUrl, '_blank');
+      win.location.href = result.downloadUrl;
     } catch (error) {
+      win.close();
       alert(`Failed to open document: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setViewing(null);
@@ -141,6 +143,14 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+    });
+  };
+
+  const formatShortDate = (date: Date | string): string => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
@@ -294,56 +304,64 @@ export function DriverDocumentList({ documents, onDocumentChanged }: DriverDocum
           // Regular document display
           return (
             <li key={doc.id} className={`p-4 ${isPending ? 'opacity-50' : ''}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span
-                      className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium ${getFileTypeBadgeColor(doc.contentType)}`}
-                    >
-                      {getFileTypeBadge(doc.contentType)}
-                    </span>
-                    <span
-                      className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium ${docTypeBadge.color}`}
-                    >
-                      {docTypeBadge.label}
-                    </span>
-                    {doc.expiryDate && <ExpiryStatusBadge expiryDate={doc.expiryDate} />}
-                  </div>
-                  <p className="mt-2 truncate text-sm font-medium text-gray-900">{doc.fileName}</p>
-                  <div className="mt-1 flex items-center gap-4 text-xs text-gray-500">
-                    <span>{formatFileSize(doc.sizeBytes)}</span>
-                    <span>•</span>
-                    <span>{formatDate(doc.createdAt)}</span>
-                  </div>
-                  {doc.notes && (
-                    <p className="mt-1 text-xs text-gray-600 italic">{doc.notes}</p>
-                  )}
+              {/* Row 1: file-type badge + filename + View button */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span
+                    className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium flex-shrink-0 ${getFileTypeBadgeColor(doc.contentType)}`}
+                  >
+                    {getFileTypeBadge(doc.contentType)}
+                  </span>
+                  <p className="truncate text-sm font-medium text-gray-900">{doc.fileName}</p>
                 </div>
+                <button
+                  onClick={() => handleView(doc.id, doc.fileName)}
+                  disabled={isViewing || isPending}
+                  className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                >
+                  {isViewing ? 'Opening...' : 'View'}
+                </button>
+              </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0">
+              {/* Row 2: doc-type badge + size + date + Edit/Delete text links */}
+              <div className="mt-1.5 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs text-gray-500 min-w-0">
+                  <span
+                    className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium flex-shrink-0 ${docTypeBadge.color}`}
+                  >
+                    {docTypeBadge.label}
+                  </span>
+                  <span className="flex-shrink-0">{formatFileSize(doc.sizeBytes)}</span>
+                  <span className="flex-shrink-0">·</span>
+                  <span className="flex-shrink-0">{formatShortDate(doc.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
                   <button
                     onClick={() => startEdit(doc)}
                     disabled={isPending}
-                    className="rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-xs text-gray-500 hover:text-gray-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleView(doc.id, doc.fileName)}
-                    disabled={isViewing || isPending}
-                    className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isViewing ? 'Opening...' : 'View'}
-                  </button>
-                  <button
                     onClick={() => handleDelete(doc.id, doc.fileName)}
                     disabled={isDeleting || isPending}
-                    className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="text-xs text-red-500 hover:text-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
               </div>
+
+              {/* Expiry badge and notes below row 2 */}
+              {doc.expiryDate && (
+                <div className="mt-1.5">
+                  <ExpiryStatusBadge expiryDate={doc.expiryDate} />
+                </div>
+              )}
+              {doc.notes && (
+                <p className="mt-1 text-xs text-gray-600 italic">{doc.notes}</p>
+              )}
             </li>
           );
         })}
