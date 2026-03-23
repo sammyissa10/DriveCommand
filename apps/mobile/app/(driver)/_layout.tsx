@@ -1,7 +1,53 @@
+import { useEffect, useState } from 'react'
+import { View, StyleSheet } from 'react-native'
 import { Tabs } from 'expo-router'
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
+import { useAuthContext } from '../../context/AuthContext'
+import { driverApi } from '@drivecommand/api-client'
+import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
+import { kvStorage } from '../../lib/storage'
+import type { HOSStatus } from '@drivecommand/types'
+
+/**
+ * Small colored dot indicating background GPS status.
+ * Positioned as a custom tab bar icon badge overlay.
+ */
+function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission' | 'off' }) {
+  const color = {
+    active: '#22c55e',       // green — tracking
+    paused: '#94a3b8',       // grey — user paused
+    'no-permission': '#ef4444', // red — permission denied
+    off: '#94a3b8',          // grey — not started
+  }[status]
+
+  return <View style={[styles.gpsDot, { backgroundColor: color }]} />
+}
 
 export default function DriverLayout() {
+  const { token } = useAuthContext()
+  const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
+
+  // Fetch HOS status + active load tracking token on mount
+  useEffect(() => {
+    if (!token) return
+
+    // HOS status calibrates GPS update interval
+    driverApi.getHOS(token)
+      .then((data) => setHOSStatus(data.currentStatus))
+      .catch(() => { /* HOS fetch is best-effort — GPS still starts with default interval */ })
+
+    // Store active load tracking token for GPS reports (supplementary context)
+    driverApi.getTrackingToken(token)
+      .then(({ trackingToken }) => {
+        if (trackingToken) {
+          kvStorage.setString('gps_tracking_token', trackingToken)
+        }
+      })
+      .catch(() => { /* Best-effort — GPS works without tracking token */ })
+  }, [token])
+
+  const { gpsStatus } = useBackgroundGPS(hosStatus)
+
   return (
     <Tabs
       screenOptions={{
@@ -19,7 +65,15 @@ export default function DriverLayout() {
     >
       <Tabs.Screen
         name="index"
-        options={{ tabBarIcon: ({ color }) => <House color={color} size={24} /> }}
+        options={{
+          tabBarIcon: ({ color }) => (
+            <View style={styles.iconWrapper}>
+              <House color={color} size={24} />
+              {/* GPS status dot overlaid on the home tab icon */}
+              <GPSStatusDot status={gpsStatus} />
+            </View>
+          ),
+        }}
       />
       <Tabs.Screen
         name="loads"
@@ -45,3 +99,21 @@ export default function DriverLayout() {
     </Tabs>
   )
 }
+
+const styles = StyleSheet.create({
+  iconWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gpsDot: {
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#1e293b',
+  },
+})
