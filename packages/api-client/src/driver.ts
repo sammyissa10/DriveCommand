@@ -1,4 +1,7 @@
 import { apiRequest } from './client'
+import type { HOSData, HOSStatus, HOSEntry, CreateIncidentPayload, Incident } from '@drivecommand/types'
+
+export type { HOSData, HOSStatus, HOSEntry, CreateIncidentPayload, Incident, IncidentCategory, IncidentSeverity } from '@drivecommand/types'
 
 export interface DashboardData {
   activeLoad: {
@@ -83,4 +86,23 @@ export const driverApi = {
         body: JSON.stringify({ status }),
       }
     ),
+
+  // HOS
+  getHOS: (token: string) =>
+    apiRequest<HOSData>('/api/mobile/driver/hos', { token }),
+
+  updateHOSStatus: (token: string, status: HOSStatus, notes?: string) =>
+    apiRequest<{ entry: HOSEntry }>('/api/mobile/driver/hos', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ status, notes }),
+    }),
+
+  // Incidents
+  createIncident: (token: string, data: CreateIncidentPayload) =>
+    apiRequest<{ incident: Incident }>('/api/mobile/driver/incidents', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(data),
+    }),
 }
