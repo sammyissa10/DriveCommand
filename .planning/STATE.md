@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 31 Driver Core Screens — IN PROGRESS
-Status: Phase 31 Plan 01 complete — 5 mobile REST API files: validateMobileToken utility + dashboard/loads list/load detail/status update endpoints
-Last activity: 2026-03-23 - Completed Phase 31 Plan 01: Driver REST API Endpoints
-Stopped at: Phase 31 Plan 01 complete — next is Phase 31 Plan 02 (driver mobile screens)
+Status: Phase 31 Plan 02 complete — driverApi in api-client, TanStack Query infrastructure, driver dashboard screen with active load card + stat chips + recent alerts
+Last activity: 2026-03-23 - Completed Phase 31 Plan 02: API Client + Driver Dashboard
+Stopped at: Phase 31 Plan 02 complete — next is Phase 31 Plan 03 (loads list + load detail screens)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -60,6 +60,7 @@ Progress: [███████████████████████
 - Phase 30-01 (2026-03-22): Mobile auth system — AES-256-GCM Bearer tokens, MMKV session, login screen, AuthContext, 401 guard, role-based routing — 8 tasks, 8 files, ~4min
 - Phase 30-02 (2026-03-22): Navigation shell — driver/owner tab navigators (lucide icons), 9-component shared UI library (Button/Card/Badge/Input/LoadingSpinner/EmptyState/Typography/ScreenWrapper/BottomSheet) — 6 tasks, 22 files, 198s
 - Phase 31-01 (2026-03-23): Driver REST API endpoints — validateMobileToken utility + 4 endpoints (dashboard, loads list, load detail, status update) — 3 tasks, 5 files, 181s
+- Phase 31-02 (2026-03-23): API client + driver dashboard — driverApi (4 methods), TanStack Query infrastructure, dashboard screen (load card + 3 stat chips + alerts) — 2 tasks, 9 files, ~5min
 
 **Combined:**
 - Total: 21 phases complete, 49 plans
@@ -108,6 +109,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 31-02 decisions (API client + driver dashboard):**
+- apiRequest exported from client.ts so driver.ts and future api modules reuse auth/error handling without duplication
+- api-client tsconfig.json requires noEmit:false — root tsconfig extends expo/tsconfig.base which sets noEmit:true, preventing dist emission without this override
+- QueryProvider wraps above AuthProvider in root layout — QueryClient initialized before auth queries run
+- Navigation to loads tab uses router.push with 'as any' cast — Expo Router typed routes don't include route group paths, matching existing pattern in app/index.tsx
 
 **Phase 31-01 decisions (Driver REST API endpoints):**
 - No separate Driver model — driverId on Load equals User.id for DRIVER role users; validateMobileToken sets ctx.driverId = user.id for DRIVER role
