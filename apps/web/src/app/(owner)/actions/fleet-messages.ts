@@ -5,6 +5,7 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendOwnerReplyNotification } from '@/lib/email/send-fleet-message-notifications';
+import { sendPushToUser } from '@/lib/notifications/send-push';
 
 export type FleetMessageWithSender = {
   id: string;
@@ -98,18 +99,27 @@ export async function sendOwnerReply(prevState: any, formData: FormData) {
     },
   });
 
-  // Fire-and-forget: notify driver
-  try {
-    if (route.driverId) {
+  // Fire-and-forget: email + push notification to driver
+  if (route.driverId) {
+    const senderName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+    try {
       await sendOwnerReplyNotification({
-        ownerName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
+        ownerName: senderName,
         messageBody: message.trim(),
         driverId: route.driverId,
         routeName: route.name ?? undefined,
       });
+    } catch (emailError) {
+      console.error('[sendOwnerReply] driver notification email failed:', emailError);
     }
-  } catch (emailError) {
-    console.error('[sendOwnerReply] driver notification email failed:', emailError);
+
+    // Push notification — best-effort, never blocks the action
+    void sendPushToUser(route.driverId, {
+      title: `New message from ${senderName}`,
+      body: message.trim().slice(0, 100),
+      data: { screen: 'messages' },
+    });
   }
 
   return { success: true };

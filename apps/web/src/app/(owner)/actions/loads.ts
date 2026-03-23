@@ -8,6 +8,7 @@ import { Prisma } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { sendLoadStatusEmail } from '@/lib/email/customer-notifications';
+import { sendPushToUser } from '@/lib/notifications/send-push';
 
 const Decimal = Prisma.Decimal;
 
@@ -294,7 +295,10 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
   const prisma = await getTenantPrisma();
 
   try {
-    const load = await prisma.load.findUnique({ where: { id }, select: { status: true } });
+    const load = await prisma.load.findUnique({
+      where: { id },
+      select: { status: true, loadNumber: true, origin: true, destination: true },
+    });
     if (!load) {
       return { error: 'Load not found.' };
     }
@@ -316,6 +320,13 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
     // Fire-and-forget notification (non-blocking)
     const tId = await requireTenantId();
     sendNotificationAndLogInteraction(prisma, tId, id, 'DISPATCHED');
+
+    // Push notification to assigned driver — best-effort
+    void sendPushToUser(result.data.driverId, {
+      title: 'New load assigned',
+      body: `Load ${load.loadNumber}: ${load.origin} → ${load.destination}`,
+      data: { screen: 'loads', loadId: id },
+    });
   } catch (error: any) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
