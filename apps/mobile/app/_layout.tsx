@@ -45,9 +45,11 @@ function AuthGuard() {
       const data = response.notification.request.content.data as Record<string, string> | undefined
       if (!data) return
 
-      if (data.screen === 'messages') router.push('/(driver)/messages')
-      else if (data.screen === 'loads') router.push('/(driver)/loads')
-      else if (data.screen === 'documents') router.push('/(driver)/documents')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const push = (path: string) => router.push(path as any)
+      if (data.screen === 'messages') push('/(driver)/messages')
+      else if (data.screen === 'loads') push('/(driver)/loads')
+      else if (data.screen === 'documents') push('/(driver)/documents')
     })
     return () => sub.remove()
   }, [router])
