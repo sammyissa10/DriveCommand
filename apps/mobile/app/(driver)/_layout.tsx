@@ -5,8 +5,10 @@ import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-nativ
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
+import { useOfflineSync } from '../../hooks/useOfflineSync'
 import { kvStorage } from '../../lib/storage'
 import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
+import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import type { HOSStatus } from '@drivecommand/types'
 
 /**
@@ -58,9 +60,18 @@ export default function DriverLayout() {
   }, [token])
 
   const { gpsStatus } = useBackgroundGPS(hosStatus)
+  const { isOnline, isSyncing, pendingCount, failedCount, retryFailed } = useOfflineSync()
 
   return (
     <Fragment>
+      {/* Sync status bar — visible only when offline or syncing */}
+      <SyncStatusBar
+        isOnline={isOnline}
+        isSyncing={isSyncing}
+        pendingCount={pendingCount}
+        failedCount={failedCount}
+        onRetryFailed={retryFailed}
+      />
       <Tabs
         screenOptions={{
           headerShown: false,
