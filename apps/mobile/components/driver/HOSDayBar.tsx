@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
-import type { HOSStatus, HOSEntry } from '@drivecommand/api-client'
+import type { HOSEntry, HOSStatus } from '@drivecommand/api-client'
 
 interface HOSDayBarProps {
   entries: HOSEntry[]
@@ -16,78 +16,105 @@ const STATUS_COLORS: Record<HOSStatus, string> = {
 
 const HOUR_LABELS = ['12a', '6a', '12p', '6p', '12a']
 
-export function HOSDayBar({ entries, currentStatus }: HOSDayBarProps) {
-  const { segments, currentTimeRatio } = useMemo(() => {
+export function HOSDayBar({ entries }: HOSDayBarProps) {
+  const [barWidth, setBarWidth] = useState(0)
+
+  const { barSegments, currentTimeX } = useMemo(() => {
     const now = new Date()
     const startOfDay = new Date(now)
     startOfDay.setHours(0, 0, 0, 0)
     const totalDayMs = 24 * 60 * 60 * 1000
+    const dayStart = startOfDay.getTime()
 
-    const segs = entries.map((entry) => {
-      const start = new Date(entry.startTime).getTime()
-      const end = entry.endTime ? new Date(entry.endTime).getTime() : now.getTime()
-      const dayStart = startOfDay.getTime()
+    const rawSegments = entries
+      .map((entry) => {
+        const start = new Date(entry.startTime).getTime()
+        const end = entry.endTime ? new Date(entry.endTime).getTime() : now.getTime()
 
-      const clampedStart = Math.max(start, dayStart)
-      const clampedEnd = Math.min(end, dayStart + totalDayMs)
-      const duration = Math.max(0, clampedEnd - clampedStart)
-      const ratio = duration / totalDayMs
+        const clampedStart = Math.max(start, dayStart)
+        const clampedEnd = Math.min(end, dayStart + totalDayMs)
+        const duration = Math.max(0, clampedEnd - clampedStart)
+        const flexRatio = duration / totalDayMs
 
-      return {
-        id: entry.id,
-        ratio,
-        color: STATUS_COLORS[entry.status],
-        offsetRatio: (clampedStart - dayStart) / totalDayMs,
+        return {
+          id: entry.id,
+          flexRatio,
+          offsetRatio: (clampedStart - dayStart) / totalDayMs,
+          color: STATUS_COLORS[entry.status],
+        }
+      })
+      .filter((s) => s.flexRatio > 0)
+      .sort((a, b) => a.offsetRatio - b.offsetRatio)
+
+    // Build unified flex segments including transparent gaps
+    const result: Array<{ flex: number; color: string | null; key: string }> = []
+    let cursor = 0
+
+    rawSegments.forEach((seg, i) => {
+      const gap = seg.offsetRatio - cursor
+      if (gap > 0.001) {
+        result.push({ flex: gap, color: null, key: `gap-${i}` })
       }
+      result.push({ flex: seg.flexRatio, color: seg.color, key: seg.id })
+      cursor = seg.offsetRatio + seg.flexRatio
     })
 
-    const currentRatio = (now.getTime() - startOfDay.getTime()) / totalDayMs
-
-    return {
-      segments: segs.filter((s) => s.ratio > 0),
-      currentTimeRatio: Math.min(Math.max(currentRatio, 0), 1),
+    const trailing = 1 - cursor
+    if (trailing > 0.001) {
+      result.push({ flex: trailing, color: null, key: 'trailing' })
     }
-  }, [entries])
+
+    if (result.length === 0) {
+      result.push({ flex: 1, color: null, key: 'empty' })
+    }
+
+    const currentTimeRatio = Math.min(
+      Math.max((now.getTime() - dayStart) / totalDayMs, 0),
+      1
+    )
+    const xPos = barWidth > 0 ? currentTimeRatio * barWidth : -4
+
+    return { barSegments: result, currentTimeX: xPos }
+  }, [entries, barWidth])
 
   return (
     <View>
-      {/* Bar container */}
+      {/* Bar */}
       <View
+        onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
         style={{
           height: 32,
           borderRadius: 8,
           backgroundColor: '#334155',
+          flexDirection: 'row',
           overflow: 'hidden',
           position: 'relative',
         }}
       >
-        {/* Render each segment using absolute positioning */}
-        {segments.map((seg) => (
+        {barSegments.map((s) => (
           <View
-            key={seg.id}
+            key={s.key}
             style={{
-              position: 'absolute',
-              top: 0,
-              bottom: 0,
-              left: `${seg.offsetRatio * 100}%` as unknown as number,
-              width: `${seg.ratio * 100}%` as unknown as number,
-              backgroundColor: seg.color,
+              flex: s.flex,
+              backgroundColor: s.color ?? 'transparent',
             }}
           />
         ))}
 
-        {/* Current time marker */}
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: `${currentTimeRatio * 100}%` as unknown as number,
-            width: 2,
-            backgroundColor: '#ef4444',
-            zIndex: 10,
-          }}
-        />
+        {/* Current time marker — only render once we have bar width */}
+        {barWidth > 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: currentTimeX - 1,
+              width: 2,
+              backgroundColor: '#ef4444',
+              zIndex: 10,
+            }}
+          />
+        )}
       </View>
 
       {/* Hour labels */}
@@ -99,13 +126,7 @@ export function HOSDayBar({ entries, currentStatus }: HOSDayBarProps) {
         }}
       >
         {HOUR_LABELS.map((label, i) => (
-          <Text
-            key={i}
-            style={{
-              fontSize: 11,
-              color: '#64748b',
-            }}
-          >
+          <Text key={i} style={{ fontSize: 11, color: '#64748b' }}>
             {label}
           </Text>
         ))}
