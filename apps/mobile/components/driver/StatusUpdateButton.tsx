@@ -5,6 +5,7 @@ import Toast from 'react-native-toast-message'
 import { useQueryClient } from '@tanstack/react-query'
 import { driverApi, type LoadDetail } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
+import { callOrQueue } from '../../lib/api-with-queue'
 
 interface NextAction {
   label: string
@@ -49,17 +50,33 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
 
     setIsLoading(true)
     try {
-      await driverApi.updateLoadStatus(token, load.id, action!.nextStatus)
+      const result = await callOrQueue(
+        'UPDATE_LOAD_STATUS',
+        `/api/mobile/driver/loads/${load.id}/status`,
+        'POST',
+        { status: action!.nextStatus },
+        () => driverApi.updateLoadStatus(token!, load.id, action!.nextStatus)
+      )
 
-      // Success path: haptic + close modal + invalidate queries + notify parent
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       setModalVisible(false)
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['driver-load', load.id] }),
-        queryClient.invalidateQueries({ queryKey: ['driver-loads'] }),
-        queryClient.invalidateQueries({ queryKey: ['driver-dashboard'] }),
-      ])
-      onStatusUpdated()
+
+      if (result === null) {
+        // Queued offline — inform driver the update will sync on reconnect
+        Toast.show({
+          type: 'info',
+          text1: 'Saved offline',
+          text2: 'Update will sync automatically when connected',
+        })
+      } else {
+        // Synced immediately — haptic feedback + invalidate queries
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['driver-load', load.id] }),
+          queryClient.invalidateQueries({ queryKey: ['driver-loads'] }),
+          queryClient.invalidateQueries({ queryKey: ['driver-dashboard'] }),
+        ])
+        onStatusUpdated()
+      }
     } catch (err) {
       // Error path: close modal + toast + re-enable button
       setModalVisible(false)
