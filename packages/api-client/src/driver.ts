@@ -105,4 +105,8 @@ export const driverApi = {
       token,
       body: JSON.stringify(data),
     }),
+
+  // GPS tracking token — returns active load's tracking token for supplementary GPS context
+  getTrackingToken: (token: string) =>
+    apiRequest<{ trackingToken: string | null }>('/api/mobile/driver/tracking-token', { token }),
 }
