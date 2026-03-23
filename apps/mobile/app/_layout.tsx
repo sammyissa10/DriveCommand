@@ -7,6 +7,7 @@ import { AuthProvider } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler } from '@drivecommand/api-client'
 import { useAuthContext } from '../context/AuthContext'
+import Toast from 'react-native-toast-message'
 import '../global.css'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -53,6 +54,7 @@ export default function RootLayout() {
           <AuthGuard />
         </AuthProvider>
       </QueryProvider>
+      <Toast />
     </SafeAreaProvider>
   )
 }
