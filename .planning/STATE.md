@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 32 Driver HOS and Incidents — IN PROGRESS
-Status: Phase 32 Plan 02 complete — GET + POST /api/mobile/driver/hos endpoints with 14h/11h clock calculations; api-client extended with getHOS, updateHOSStatus, createIncident; types package and api-client tsconfigs fixed for dist emission
-Last activity: 2026-03-23 - Completed Phase 32 Plan 02: HOS REST Endpoints
-Stopped at: Phase 32 Plan 02 complete — next is Phase 32 Plan 03 (HOS screen)
+Status: Phase 32 Plan 03 complete — HOS screen with 2x2 status card grid, 24-hour day bar, dual HH:MM:SS countdown clocks, and confirmation modal for duty status changes
+Last activity: 2026-03-23 - Completed Phase 32 Plan 03: HOS Screen
+Stopped at: Phase 32 Plan 03 complete — next is Phase 32 Plan 04 (Incident Reporting screen)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -64,9 +64,10 @@ Progress: [███████████████████████
 - Phase 31-03 (2026-03-22): Loads workflow — loads list (Active/History + FlashList + LoadCard), load detail (info grid + stop timeline + truck), status update confirmation modal + haptic feedback + toast errors — 3 tasks, 10 files, 325s
 - Phase 32-01 (2026-03-23): DB schema foundation — DriverHOSEntry + DriverIncident models, HOSDutyStatus/IncidentCategory/IncidentSeverity enums, db push applied, HOSData + CreateIncidentPayload types — 3 tasks, 3 files, 168s
 - Phase 32-02 (2026-03-23): HOS REST endpoints — GET + POST /api/mobile/driver/hos with 14h/11h clock math; api-client getHOS, updateHOSStatus, createIncident; fixed types + api-client tsconfig inheritance — 3 tasks, 4 files, ~12min
+- Phase 32-03 (2026-03-23): HOS screen — HOSStatusCard + HOSDayBar + HOSClock components, full hos.tsx with 2x2 status grid, day bar, countdown clocks, confirmation modal — 2 tasks, 4 files, 162s
 
 **Combined:**
-- Total: 21 phases complete, 51 plans
+- Total: 21 phases complete, 52 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -112,6 +113,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 32-03 decisions (HOS screen):**
+- HOSDayBar uses onLayout to get pixel width then positions current-time marker with absolute left in pixels — avoids RN percentage string casts and is robust across layouts
+- HOSClock resets totalSeconds when hoursRemaining prop changes via separate useEffect — prevents drift between 60s refetch cycles
+- Active status card border: sky-500 (#0ea5e9) per brand blue, individual status colors reserved for icons/text only
+- Gap/unfilled time in day bar: rendered as transparent flex children, not SVG — no extra dependencies
 
 **Phase 32-02 decisions (HOS REST endpoints):**
 - 14-hour window starts from first non-OFF_DUTY/non-SLEEPER_BERTH entry of the day, not midnight — matches FMCSA HOS rules
