@@ -142,6 +142,8 @@ model Tenant {
   routeStops           RouteStop[]
   sysAdminInvoices     SysAdminInvoice[]
   driverRouteJoins     DriverRouteJoin[]
+  driverHOSEntries     DriverHOSEntry[]
+  driverIncidents      DriverIncident[]
 }
 
 model User {
@@ -179,6 +181,8 @@ model User {
   payrollsCreated   PayrollRecord[]   @relation(name: "PayrollCreatedBy")
   payrollsUpdated   PayrollRecord[]   @relation(name: "PayrollUpdatedBy")
   driverRouteJoins  DriverRouteJoin[] @relation(name: "DriverRouteJoins")
+  hosEntries        DriverHOSEntry[]  @relation(name: "DriverHOSEntries")
+  incidents         DriverIncident[]  @relation(name: "DriverIncidents")
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -1072,4 +1076,72 @@ model FleetMessage {
   @@index([tenantId])
   @@index([routeId])
   @@index([createdAt])
+}
+
+// ─── HOS and Incident Models ──────────────────────────────────
+
+enum HOSDutyStatus {
+  OFF_DUTY
+  SLEEPER_BERTH
+  DRIVING
+  ON_DUTY
+}
+
+enum IncidentCategory {
+  ACCIDENT
+  VIOLATION
+  MECHANICAL
+  HAZARD
+  OTHER
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model DriverHOSEntry {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String        @db.Uuid
+  driverId  String        @db.Uuid
+  status    HOSDutyStatus
+  startTime DateTime      @db.Timestamptz
+  endTime   DateTime?     @db.Timestamptz
+  notes     String?
+  createdAt DateTime      @default(now()) @db.Timestamptz
+  updatedAt DateTime      @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  driver User   @relation(name: "DriverHOSEntries", fields: [driverId], references: [id])
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([driverId, startTime])
+  @@index([tenantId, driverId, startTime])
+}
+
+model DriverIncident {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String           @db.Uuid
+  driverId    String           @db.Uuid
+  category    IncidentCategory
+  severity    IncidentSeverity
+  description String
+  latitude    Decimal?         @db.Decimal(10, 8)
+  longitude   Decimal?         @db.Decimal(11, 8)
+  photoS3Key  String?
+  reportedAt  DateTime         @db.Timestamptz
+  notes       String?
+  createdAt   DateTime         @default(now()) @db.Timestamptz
+  updatedAt   DateTime         @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+  driver User   @relation(name: "DriverIncidents", fields: [driverId], references: [id])
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, reportedAt])
+  @@index([category])
+  @@index([severity])
 }
