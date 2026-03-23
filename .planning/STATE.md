@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 33 Driver Native Features — IN PROGRESS
-Status: Phase 33 Plan 02 complete — push notifications: PushToken table, /api/push-tokens endpoint, sendPushToUser utility (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, notification tap deep-linking, NotificationPermissionModal
-Last activity: 2026-03-23 - Completed Phase 33 Plan 02: Push Notifications
-Stopped at: Phase 33 Plan 02 complete — next is Phase 33 Plan 03
+Status: Phase 33 Plan 03 complete — offline mutation queue: MMKV-backed offlineQueue, flushQueue (exponential backoff), callOrQueue wrapper, SyncStatusBar (amber/blue/red), useOfflineSync (NetInfo auto-flush), StatusUpdateButton offline-wired
+Last activity: 2026-03-23 - Completed Phase 33 Plan 03: Offline Mutation Queue
+Stopped at: Phase 33 Plan 03 complete — next is Phase 33 Plan 04 (if exists) or Phase 34
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -68,6 +68,7 @@ Progress: [███████████████████████
 - Phase 32-04 (2026-03-23): Incident reporting — POST /api/mobile/driver/incidents + upload-photo endpoint, SeverityToggle (traffic light), IncidentPhotoCapture, uploadPhotoToS3 utility, incidents/new.tsx full form, dashboard button — 4 tasks, 8 files, ~5min
 - Phase 33-01 (2026-03-23): Background GPS reporting — expo-task-manager background task, useBackgroundGPS hook (adaptive intervals: 30s/5min/10min), GPSPermissionModal, GET /api/mobile/driver/tracking-token, GPS status dot in tab bar — 7 tasks, 7 files, 257s
 - Phase 33-02 (2026-03-23): Push notifications — PushToken model, /api/push-tokens endpoint, sendPushToUser (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, deep-link tap handler, NotificationPermissionModal — 7 tasks, 10 files, 333s
+- Phase 33-03 (2026-03-23): Offline mutation queue — MMKV offlineQueue, flushQueue (exponential backoff), callOrQueue wrapper, SyncStatusBar (amber/blue/red), useOfflineSync (NetInfo auto-flush on reconnect), StatusUpdateButton offline-wired — 7 tasks, 7 files, 133s
 
 **Combined:**
 - Total: 22 phases complete, 53 plans
@@ -507,6 +508,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 33]: trackingToken is per-load (Load.trackingToken) not per-driver; endpoint returns active load token for GPS supplementary context
 - [Phase 33]: GPS interval adapts to HOSStatus: 30s DRIVING/ON_DUTY, 5min idle, 10min low-battery (<20%)
 - [Phase 33]: GPSStatusDot overlaid on home tab icon (not separate header bar) — minimal UI footprint
+- [Phase 33]: callOrQueue returns null when offline so callers show 'saved offline' feedback without structural error handling changes
+- [Phase 33]: SyncStatusBar mounted at driver layout root for app-wide offline visibility without per-screen wiring
 
 ### Pending Todos
 
@@ -684,6 +687,7 @@ None blocking immediate progress.
 | Phase 30 P02 | 198 | 6 tasks | 22 files |
 | Phase 31-03 P03 | 325 | 3 tasks | 10 files |
 | Phase 33 P01 | 257 | 7 tasks | 7 files |
+| Phase 33-driver-native-features P03 | 133 | 7 tasks | 7 files |
 
 ## Session Continuity
 
