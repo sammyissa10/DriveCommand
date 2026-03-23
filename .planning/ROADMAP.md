@@ -293,16 +293,16 @@ Plans:
 
 ---
 
-### Phase 33: Driver Native Features — Background GPS reporting, push notifications, and offline mutation queue
+### Phase 33: Driver Native Features — Background GPS reporting, push notifications, and offline mutation queue ✓ COMPLETE (2026-03-23)
 
 **Goal:** Implement the three core native capabilities that make the driver app indispensable: background GPS reporting to the existing /api/gps/report endpoint (runs even when app is backgrounded), push notifications for dispatch alerts and HOS warnings via FCM/APNs, and an offline mutation queue that buffers status updates and HOS entries when the driver has no signal and flushes them automatically on reconnect.
 **Depends on:** Phase 31 (load status updates exist to queue), Phase 32 (HOS entries exist to queue)
 **Plans:** 3 plans
 
 Plans:
-- [ ] 33-01-PLAN.md — Background GPS: expo-location background location task (BACKGROUND_LOCATION_TASK), permission request flow (foreground then background, explain why), report interval 30s on-duty / 5min off-duty based on current HOS status, POST to /api/gps/report with driver tracking token (existing token system), battery-aware: reduce frequency when battery < 20%, GPS status indicator in driver dashboard header (green dot = active, grey = paused)
-- [ ] 33-02-PLAN.md — Push notifications: Expo Notifications setup, request permissions on first launch with explanation modal, register FCM (Android) + APNs (iOS) token, POST token to new /api/push-tokens endpoint (upsert by userId + platform), add /api/push-tokens route to web app (stores in new PushToken table with userId/token/platform/updatedAt), send test notification from owner fleet messaging triggers driver push; notification tap deep-links to relevant screen (load detail, message thread)
-- [ ] 33-03-PLAN.md — Offline queue: MMKV-backed PendingMutation queue (type, payload, timestamp, retryCount), NetInfo listener (reconnect triggers flush), flushQueue processes mutations in order (max 3 retries each, exponential backoff), queue drains via api-client with Bearer token, sync status bar component (shows "X updates pending" when offline, "Syncing..." when flushing, disappears when clear), wrap updateLoadStatus + createHOSEntry + createDriverIncident calls with enqueue-or-execute logic
+- [x] 33-01-PLAN.md — Background GPS: expo-location background location task (BACKGROUND_LOCATION_TASK), permission request flow (foreground then background, explain why), report interval 30s on-duty / 5min off-duty based on current HOS status, POST to /api/gps/report with driver tracking token (existing token system), battery-aware: reduce frequency when battery < 20%, GPS status indicator in driver dashboard header (green dot = active, grey = paused)
+- [x] 33-02-PLAN.md — Push notifications: Expo Notifications setup, request permissions on first launch with explanation modal, register FCM (Android) + APNs (iOS) token, POST token to new /api/push-tokens endpoint (upsert by userId + platform), add /api/push-tokens route to web app (stores in new PushToken table with userId/token/platform/updatedAt), send test notification from owner fleet messaging triggers driver push; notification tap deep-links to relevant screen (load detail, message thread)
+- [x] 33-03-PLAN.md — Offline queue: MMKV-backed PendingMutation queue (type, payload, timestamp, retryCount), NetInfo listener (reconnect triggers flush), flushQueue processes mutations in order (max 3 retries each, exponential backoff), queue drains via api-client with Bearer token, sync status bar component (shows "X updates pending" when offline, "Syncing..." when flushing, disappears when clear), wrap updateLoadStatus + createHOSEntry + createDriverIncident calls with enqueue-or-execute logic
 
 ---
 
