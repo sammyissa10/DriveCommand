@@ -87,8 +87,11 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 24. Technical Documentation | v4.0 | 2/2 | ✓ Complete | 2026-03-09 |
 | 25. SysAdmin Invoicing Module | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
-| 27. Automated Playwright E2E Tests | v4.0 | 0/3 | �—� Planned | — |
+| 27. Automated Playwright E2E Tests | v4.0 | 0/3 | �—� Planned | — |
 | 28. Driver History | v4.0 | 2/2 | ✓ Complete | 2026-03-21 |
+| 29. Monorepo Foundation + Expo Scaffold | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
+| 31. Driver Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
+| 32. Driver HOS + Incident Reporting | v5.0 | 4/4 | ✓ Complete | 2026-03-23 |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -276,17 +279,17 @@ Plans:
 
 ---
 
-### Phase 32: Driver HOS + Incident Reporting — Duty status logging and incident report submission with photo capture
+### ✅ Phase 32: Driver HOS + Incident Reporting — Duty status logging and incident report submission with photo capture (complete 2026-03-23)
 
 **Goal:** Build the HOS (Hours of Service) logging screen where drivers change duty status (Off Duty / Sleeper Berth / Driving / On Duty) and view their daily log summary with 14-hour clock. Build the incident reporting screen where drivers submit an incident report with category, description, location (GPS auto-attached), and optional photo evidence using the device camera.
 **Depends on:** Phase 31 (driver screens established)
 **Plans:** 4 plans
 
 Plans:
-- [ ] 32-01-PLAN.md — DB schema: add DriverHOSEntry + DriverIncident Prisma models, enums, migration, type updates
-- [ ] 32-02-PLAN.md — HOS backend: GET + POST /api/mobile/driver/hos endpoints, api-client HOS + incident methods
-- [ ] 32-03-PLAN.md — HOS frontend: HOSStatusCard, HOSDayBar, HOSClock components + main HOS screen with status change confirmation
-- [ ] 32-04-PLAN.md — Incident reporting: POST /api/mobile/driver/incidents endpoint, SeverityToggle, IncidentPhotoCapture, photo upload utility, incident form screen, dashboard entry point
+- [x] 32-01-PLAN.md — DB schema: add DriverHOSEntry + DriverIncident Prisma models, enums, migration, type updates
+- [x] 32-02-PLAN.md — HOS backend: GET + POST /api/mobile/driver/hos endpoints, api-client HOS + incident methods
+- [x] 32-03-PLAN.md — HOS frontend: HOSStatusCard, HOSDayBar, HOSClock components + main HOS screen with status change confirmation
+- [x] 32-04-PLAN.md — Incident reporting: POST /api/mobile/driver/incidents endpoint, SeverityToggle, IncidentPhotoCapture, photo upload utility, incident form screen, dashboard entry point
 
 ---
 
@@ -372,7 +375,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 39-01-PLAN.md — Store assets: app icon 1024�—1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732�—2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024�—500; all screenshots show realistic data (use seed data), no placeholder text
+- [ ] 39-01-PLAN.md — Store assets: app icon 1024�—1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732�—2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024�—500; all screenshots show realistic data (use seed data), no placeholder text
 - [ ] 39-02-PLAN.md — Store listings: App Store Connect (app name "DriveCommand", subtitle "Fleet Management for Truckers", description, keywords: fleet management/trucking/dispatch/driver app/logistics, support URL, privacy policy URL, category: Business, age rating: 4+, export compliance: No); Google Play Console (title, short description 80 chars, full description, content rating questionnaire, data safety section declaring location collection, app category: Business); both stores: privacy policy must be live at a public URL before submission
 - [ ] 39-03-PLAN.md — Submission + launch: iOS submit via `eas submit --platform ios --profile production`, select build, submit to App Store review; Android submit via `eas submit --platform android --profile production`, promote from Internal to Production with 10% staged rollout; rejection playbook (common rejections: background location justification, missing privacy policy, demo account required — prepare demo credentials for reviewers); post-approval: 10% → 50% → 100% rollout over 3 days; announce launch, monitor crash reports via Expo crash reporting
 
