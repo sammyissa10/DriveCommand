@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Tabs } from 'expo-router'
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
@@ -6,6 +6,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
 import { kvStorage } from '../../lib/storage'
+import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
 import type { HOSStatus } from '@drivecommand/types'
 
 /**
@@ -26,6 +27,16 @@ function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission
 export default function DriverLayout() {
   const { token } = useAuthContext()
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
+  const [showNotifModal, setShowNotifModal] = useState(false)
+
+  // Show notification permission modal on first login
+  useEffect(() => {
+    if (shouldShowNotificationModal()) {
+      // Small delay so the driver dashboard is visible before the modal appears
+      const timer = setTimeout(() => setShowNotifModal(true), 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [])
 
   // Fetch HOS status + active load tracking token on mount
   useEffect(() => {
@@ -49,54 +60,62 @@ export default function DriverLayout() {
   const { gpsStatus } = useBackgroundGPS(hosStatus)
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: '#1e293b',
-          borderTopColor: '#334155',
-          height: 64,
-          paddingBottom: 8,
-        },
-        tabBarActiveTintColor: '#0ea5e9',
-        tabBarInactiveTintColor: '#64748b',
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarIcon: ({ color }) => (
-            <View style={styles.iconWrapper}>
-              <House color={color} size={24} />
-              {/* GPS status dot overlaid on the home tab icon */}
-              <GPSStatusDot status={gpsStatus} />
-            </View>
-          ),
+    <Fragment>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: '#1e293b',
+            borderTopColor: '#334155',
+            height: 64,
+            paddingBottom: 8,
+          },
+          tabBarActiveTintColor: '#0ea5e9',
+          tabBarInactiveTintColor: '#64748b',
         }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({ color }) => (
+              <View style={styles.iconWrapper}>
+                <House color={color} size={24} />
+                {/* GPS status dot overlaid on the home tab icon */}
+                <GPSStatusDot status={gpsStatus} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="loads"
+          options={{ tabBarIcon: ({ color }) => <Truck color={color} size={24} /> }}
+        />
+        <Tabs.Screen
+          name="hos"
+          options={{ tabBarIcon: ({ color }) => <Clock color={color} size={24} /> }}
+        />
+        <Tabs.Screen
+          name="messages"
+          options={{
+            tabBarIcon: ({ color }) => (
+              // Badge overlay for unread count — implemented in Phase 34
+              <MessageSquare color={color} size={24} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="documents"
+          options={{ tabBarIcon: ({ color }) => <FileText color={color} size={24} /> }}
+        />
+      </Tabs>
+
+      {/* Notification permission modal — shown on first login */}
+      <NotificationPermissionModal
+        visible={showNotifModal}
+        onDismiss={() => setShowNotifModal(false)}
       />
-      <Tabs.Screen
-        name="loads"
-        options={{ tabBarIcon: ({ color }) => <Truck color={color} size={24} /> }}
-      />
-      <Tabs.Screen
-        name="hos"
-        options={{ tabBarIcon: ({ color }) => <Clock color={color} size={24} /> }}
-      />
-      <Tabs.Screen
-        name="messages"
-        options={{
-          tabBarIcon: ({ color }) => (
-            // Badge overlay for unread count — implemented in Phase 34
-            <MessageSquare color={color} size={24} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="documents"
-        options={{ tabBarIcon: ({ color }) => <FileText color={color} size={24} /> }}
-      />
-    </Tabs>
+    </Fragment>
   )
 }
 
