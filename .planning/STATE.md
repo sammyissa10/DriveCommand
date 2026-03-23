@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 31 Driver Core Screens — COMPLETE
-Status: Phase 31 Plan 03 complete — loads list (Active/History tabs + FlashList + LoadCard), load detail (info grid + stop timeline + truck info + sticky status button), status update confirmation modal with haptic feedback and toast errors
-Last activity: 2026-03-22 - Completed Phase 31 Plan 03: Loads Workflow (list + detail + status update)
-Stopped at: Phase 31 Plan 03 complete — Phase 31 done, next is Phase 32 (Driver HOS Screen)
+Phase: Phase 32 Driver HOS and Incidents — IN PROGRESS
+Status: Phase 32 Plan 01 complete — DriverHOSEntry + DriverIncident Prisma models, enums (HOSDutyStatus/IncidentCategory/IncidentSeverity), db push applied, client regenerated, types updated (HOSData + CreateIncidentPayload)
+Last activity: 2026-03-23 - Completed Phase 32 Plan 01: DB Schema (DriverHOSEntry + DriverIncident)
+Stopped at: Phase 32 Plan 01 complete — next is Phase 32 Plan 02 (HOS REST endpoints)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -62,9 +62,10 @@ Progress: [███████████████████████
 - Phase 31-01 (2026-03-23): Driver REST API endpoints — validateMobileToken utility + 4 endpoints (dashboard, loads list, load detail, status update) — 3 tasks, 5 files, 181s
 - Phase 31-02 (2026-03-23): API client + driver dashboard — driverApi (4 methods), TanStack Query infrastructure, dashboard screen (load card + 3 stat chips + alerts) — 2 tasks, 9 files, ~5min
 - Phase 31-03 (2026-03-22): Loads workflow — loads list (Active/History + FlashList + LoadCard), load detail (info grid + stop timeline + truck), status update confirmation modal + haptic feedback + toast errors — 3 tasks, 10 files, 325s
+- Phase 32-01 (2026-03-23): DB schema foundation — DriverHOSEntry + DriverIncident models, HOSDutyStatus/IncidentCategory/IncidentSeverity enums, db push applied, HOSData + CreateIncidentPayload types — 3 tasks, 3 files, 168s
 
 **Combined:**
-- Total: 21 phases complete, 50 plans
+- Total: 21 phases complete, 51 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -110,6 +111,10 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 32-01 decisions (DB schema foundation):**
+- Used `prisma db push` instead of `prisma migrate dev` — pre-existing migration drift (11 modified migrations) blocks migrate dev; db push syncs schema directly without migration history checks, appropriate for dev environment
+- IncidentSeverity is its own enum (LOW/MEDIUM/HIGH only) — not reusing SafetyEventSeverity which has CRITICAL; incidents are driver-reported events, not AI-detected safety alerts
 
 **Phase 31-03 decisions (Loads workflow):**
 - [Phase 31-03]: Built-in React Native Modal used for status update confirmation (not third-party bottom sheet)
