@@ -263,15 +263,16 @@ Plans:
 
 ---
 
-### Phase 31: Driver Core Screens — Dashboard, loads list, load detail, and status update flow
+### ✅ Phase 31: Driver Core Screens — Dashboard, loads list, load detail, and status update flow (complete 2026-03-22)
 
 **Goal:** Build the primary screens a driver uses daily: a dashboard showing active load summary and today's snapshot, a loads list with active and completed tabs, a load detail screen with multi-stop timeline, and the status update flow (accept → en route → delivered) with confirmation and haptic feedback.
 **Depends on:** Phase 30 (driver navigation shell)
-**Plans:** 2 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] 31-01-PLAN.md — Driver dashboard: active load card (origin→destination, status badge, assigned truck), today's stats (miles, stops completed, HOS hours remaining), recent alerts list (expiring docs, maintenance), quick-action buttons (View Load, Log HOS); calls existing getMyCurrentLoad + getDriverDashboardData server actions via api-client; FlashList for alerts; skeleton loader while fetching
-- [ ] 31-02-PLAN.md — Loads list + detail + status update: FlashList with Active/Completed tab toggle (getMyLoads filtered by status); load detail screen (load number, customer, origin, destination, rate, stops timeline with status dots); status update button (PENDING→ACCEPTED→EN_ROUTE→DELIVERED) with bottom sheet confirmation + Haptics.notificationAsync(Success) on confirm; calls existing updateLoadStatus action; optimistic UI update then refetch
+- [x] 31-01-PLAN.md — Bearer token validator (validateMobileToken) + 4 REST endpoints: dashboard, loads list (active/history), load detail with stops/truck/customer, status update with transition validation
+- [x] 31-02-PLAN.md — api-client driverApi (4 methods), TanStack Query QueryProvider (staleTime 30s), driver dashboard screen (active load card, 3 stat chips, alerts, pull-to-refresh)
+- [x] 31-03-PLAN.md — Loads list (FlashList, Active/History tabs, LoadCard), load detail (info grid, stop timeline, truck info), StatusUpdateButton (confirmation Modal, haptic success, toast errors)
 
 ---
 
