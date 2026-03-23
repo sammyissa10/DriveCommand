@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 33 Driver Native Features — IN PROGRESS
-Status: Phase 33 Plan 01 complete — background GPS reporting: expo-task-manager background task, adaptive intervals (HOS + battery), GPS status dot in tab bar, tracking-token endpoint, GPSPermissionModal
-Last activity: 2026-03-23 - Completed Phase 33 Plan 01: Background GPS Reporting
-Stopped at: Phase 33 Plan 01 complete — next is Phase 33 Plan 02
+Status: Phase 33 Plan 02 complete — push notifications: PushToken table, /api/push-tokens endpoint, sendPushToUser utility (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, notification tap deep-linking, NotificationPermissionModal
+Last activity: 2026-03-23 - Completed Phase 33 Plan 02: Push Notifications
+Stopped at: Phase 33 Plan 02 complete — next is Phase 33 Plan 03
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -67,6 +67,7 @@ Progress: [███████████████████████
 - Phase 32-03 (2026-03-23): HOS screen — HOSStatusCard + HOSDayBar + HOSClock components, full hos.tsx with 2x2 status grid, day bar, countdown clocks, confirmation modal — 2 tasks, 4 files, 162s
 - Phase 32-04 (2026-03-23): Incident reporting — POST /api/mobile/driver/incidents + upload-photo endpoint, SeverityToggle (traffic light), IncidentPhotoCapture, uploadPhotoToS3 utility, incidents/new.tsx full form, dashboard button — 4 tasks, 8 files, ~5min
 - Phase 33-01 (2026-03-23): Background GPS reporting — expo-task-manager background task, useBackgroundGPS hook (adaptive intervals: 30s/5min/10min), GPSPermissionModal, GET /api/mobile/driver/tracking-token, GPS status dot in tab bar — 7 tasks, 7 files, 257s
+- Phase 33-02 (2026-03-23): Push notifications — PushToken model, /api/push-tokens endpoint, sendPushToUser (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, deep-link tap handler, NotificationPermissionModal — 7 tasks, 10 files, 333s
 
 **Combined:**
 - Total: 22 phases complete, 53 plans
@@ -115,6 +116,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 33-02 decisions (Push notifications):**
+- Used db push instead of migrate dev — accumulated schema drift from prior phases blocks migrate dev; db push syncs schema directly (consistent with Phase 32-01 approach)
+- void sendPushToUser() pattern in server actions — push is best-effort, never blocks user-facing operations or server action responses
+- @@unique([userId, platform]) upsert — prevents stale token accumulation when Expo rotates device push tokens
+- NotificationPermissionModal uses 1.2s mount delay — allows driver dashboard to render before showing system permission dialog
 
 **Phase 32-04 decisions (Incident reporting):**
 - Created dedicated /api/mobile/driver/incidents/upload-photo endpoint with Bearer token auth — existing document multipart endpoints require OWNER/MANAGER web session auth via requireRole, incompatible with mobile Bearer tokens
