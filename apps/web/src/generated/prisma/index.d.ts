@@ -183,6 +183,16 @@ export type DriverRouteJoin = $Result.DefaultSelection<Prisma.$DriverRouteJoinPa
  * 
  */
 export type FleetMessage = $Result.DefaultSelection<Prisma.$FleetMessagePayload>
+/**
+ * Model DriverHOSEntry
+ * 
+ */
+export type DriverHOSEntry = $Result.DefaultSelection<Prisma.$DriverHOSEntryPayload>
+/**
+ * Model DriverIncident
+ * 
+ */
+export type DriverIncident = $Result.DefaultSelection<Prisma.$DriverIncidentPayload>
 
 /**
  * Enums
@@ -441,6 +451,36 @@ export const DriverPaymentMethod: {
 
 export type DriverPaymentMethod = (typeof DriverPaymentMethod)[keyof typeof DriverPaymentMethod]
 
+
+export const HOSDutyStatus: {
+  OFF_DUTY: 'OFF_DUTY',
+  SLEEPER_BERTH: 'SLEEPER_BERTH',
+  DRIVING: 'DRIVING',
+  ON_DUTY: 'ON_DUTY'
+};
+
+export type HOSDutyStatus = (typeof HOSDutyStatus)[keyof typeof HOSDutyStatus]
+
+
+export const IncidentCategory: {
+  ACCIDENT: 'ACCIDENT',
+  VIOLATION: 'VIOLATION',
+  MECHANICAL: 'MECHANICAL',
+  HAZARD: 'HAZARD',
+  OTHER: 'OTHER'
+};
+
+export type IncidentCategory = (typeof IncidentCategory)[keyof typeof IncidentCategory]
+
+
+export const IncidentSeverity: {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+};
+
+export type IncidentSeverity = (typeof IncidentSeverity)[keyof typeof IncidentSeverity]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -542,6 +582,18 @@ export const TicketMessageSenderType: typeof $Enums.TicketMessageSenderType
 export type DriverPaymentMethod = $Enums.DriverPaymentMethod
 
 export const DriverPaymentMethod: typeof $Enums.DriverPaymentMethod
+
+export type HOSDutyStatus = $Enums.HOSDutyStatus
+
+export const HOSDutyStatus: typeof $Enums.HOSDutyStatus
+
+export type IncidentCategory = $Enums.IncidentCategory
+
+export const IncidentCategory: typeof $Enums.IncidentCategory
+
+export type IncidentSeverity = $Enums.IncidentSeverity
+
+export const IncidentSeverity: typeof $Enums.IncidentSeverity
 
 /**
  * ##  Prisma Client ʲˢ
@@ -999,6 +1051,26 @@ export class PrismaClient<
     * ```
     */
   get fleetMessage(): Prisma.FleetMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.driverHOSEntry`: Exposes CRUD operations for the **DriverHOSEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DriverHOSEntries
+    * const driverHOSEntries = await prisma.driverHOSEntry.findMany()
+    * ```
+    */
+  get driverHOSEntry(): Prisma.DriverHOSEntryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.driverIncident`: Exposes CRUD operations for the **DriverIncident** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DriverIncidents
+    * const driverIncidents = await prisma.driverIncident.findMany()
+    * ```
+    */
+  get driverIncident(): Prisma.DriverIncidentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1466,7 +1538,9 @@ export namespace Prisma {
     TicketMessage: 'TicketMessage',
     RouteStop: 'RouteStop',
     DriverRouteJoin: 'DriverRouteJoin',
-    FleetMessage: 'FleetMessage'
+    FleetMessage: 'FleetMessage',
+    DriverHOSEntry: 'DriverHOSEntry',
+    DriverIncident: 'DriverIncident'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1482,7 +1556,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "driverHOSEntry" | "driverIncident"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4002,6 +4076,154 @@ export namespace Prisma {
           }
         }
       }
+      DriverHOSEntry: {
+        payload: Prisma.$DriverHOSEntryPayload<ExtArgs>
+        fields: Prisma.DriverHOSEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DriverHOSEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DriverHOSEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.DriverHOSEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DriverHOSEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          findMany: {
+            args: Prisma.DriverHOSEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>[]
+          }
+          create: {
+            args: Prisma.DriverHOSEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          createMany: {
+            args: Prisma.DriverHOSEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DriverHOSEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.DriverHOSEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          update: {
+            args: Prisma.DriverHOSEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.DriverHOSEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DriverHOSEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DriverHOSEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.DriverHOSEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverHOSEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.DriverHOSEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDriverHOSEntry>
+          }
+          groupBy: {
+            args: Prisma.DriverHOSEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DriverHOSEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DriverHOSEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<DriverHOSEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      DriverIncident: {
+        payload: Prisma.$DriverIncidentPayload<ExtArgs>
+        fields: Prisma.DriverIncidentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DriverIncidentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DriverIncidentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          findFirst: {
+            args: Prisma.DriverIncidentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DriverIncidentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          findMany: {
+            args: Prisma.DriverIncidentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>[]
+          }
+          create: {
+            args: Prisma.DriverIncidentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          createMany: {
+            args: Prisma.DriverIncidentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DriverIncidentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>[]
+          }
+          delete: {
+            args: Prisma.DriverIncidentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          update: {
+            args: Prisma.DriverIncidentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          deleteMany: {
+            args: Prisma.DriverIncidentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DriverIncidentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DriverIncidentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>[]
+          }
+          upsert: {
+            args: Prisma.DriverIncidentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DriverIncidentPayload>
+          }
+          aggregate: {
+            args: Prisma.DriverIncidentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDriverIncident>
+          }
+          groupBy: {
+            args: Prisma.DriverIncidentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DriverIncidentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DriverIncidentCountArgs<ExtArgs>
+            result: $Utils.Optional<DriverIncidentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4144,6 +4366,8 @@ export namespace Prisma {
     routeStop?: RouteStopOmit
     driverRouteJoin?: DriverRouteJoinOmit
     fleetMessage?: FleetMessageOmit
+    driverHOSEntry?: DriverHOSEntryOmit
+    driverIncident?: DriverIncidentOmit
   }
 
   /* Types for Logging */
@@ -4252,6 +4476,8 @@ export namespace Prisma {
     routeStops: number
     sysAdminInvoices: number
     driverRouteJoins: number
+    driverHOSEntries: number
+    driverIncidents: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4283,6 +4509,8 @@ export namespace Prisma {
     routeStops?: boolean | TenantCountOutputTypeCountRouteStopsArgs
     sysAdminInvoices?: boolean | TenantCountOutputTypeCountSysAdminInvoicesArgs
     driverRouteJoins?: boolean | TenantCountOutputTypeCountDriverRouteJoinsArgs
+    driverHOSEntries?: boolean | TenantCountOutputTypeCountDriverHOSEntriesArgs
+    driverIncidents?: boolean | TenantCountOutputTypeCountDriverIncidentsArgs
   }
 
   // Custom InputTypes
@@ -4492,6 +4720,20 @@ export namespace Prisma {
     where?: DriverRouteJoinWhereInput
   }
 
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountDriverHOSEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverHOSEntryWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountDriverIncidentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverIncidentWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -4517,6 +4759,8 @@ export namespace Prisma {
     payrollsCreated: number
     payrollsUpdated: number
     driverRouteJoins: number
+    hosEntries: number
+    incidents: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4539,6 +4783,8 @@ export namespace Prisma {
     payrollsCreated?: boolean | UserCountOutputTypeCountPayrollsCreatedArgs
     payrollsUpdated?: boolean | UserCountOutputTypeCountPayrollsUpdatedArgs
     driverRouteJoins?: boolean | UserCountOutputTypeCountDriverRouteJoinsArgs
+    hosEntries?: boolean | UserCountOutputTypeCountHosEntriesArgs
+    incidents?: boolean | UserCountOutputTypeCountIncidentsArgs
   }
 
   // Custom InputTypes
@@ -4683,6 +4929,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountDriverRouteJoinsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverRouteJoinWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountHosEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverHOSEntryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountIncidentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverIncidentWhereInput
   }
 
 
@@ -5381,6 +5641,8 @@ export namespace Prisma {
     routeStops?: boolean | Tenant$routeStopsArgs<ExtArgs>
     sysAdminInvoices?: boolean | Tenant$sysAdminInvoicesArgs<ExtArgs>
     driverRouteJoins?: boolean | Tenant$driverRouteJoinsArgs<ExtArgs>
+    driverHOSEntries?: boolean | Tenant$driverHOSEntriesArgs<ExtArgs>
+    driverIncidents?: boolean | Tenant$driverIncidentsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -5447,6 +5709,8 @@ export namespace Prisma {
     routeStops?: boolean | Tenant$routeStopsArgs<ExtArgs>
     sysAdminInvoices?: boolean | Tenant$sysAdminInvoicesArgs<ExtArgs>
     driverRouteJoins?: boolean | Tenant$driverRouteJoinsArgs<ExtArgs>
+    driverHOSEntries?: boolean | Tenant$driverHOSEntriesArgs<ExtArgs>
+    driverIncidents?: boolean | Tenant$driverIncidentsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5483,6 +5747,8 @@ export namespace Prisma {
       routeStops: Prisma.$RouteStopPayload<ExtArgs>[]
       sysAdminInvoices: Prisma.$SysAdminInvoicePayload<ExtArgs>[]
       driverRouteJoins: Prisma.$DriverRouteJoinPayload<ExtArgs>[]
+      driverHOSEntries: Prisma.$DriverHOSEntryPayload<ExtArgs>[]
+      driverIncidents: Prisma.$DriverIncidentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5915,6 +6181,8 @@ export namespace Prisma {
     routeStops<T extends Tenant$routeStopsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$routeStopsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteStopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sysAdminInvoices<T extends Tenant$sysAdminInvoicesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$sysAdminInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SysAdminInvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverRouteJoins<T extends Tenant$driverRouteJoinsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverRouteJoinsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverRouteJoinPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    driverHOSEntries<T extends Tenant$driverHOSEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverHOSEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    driverIncidents<T extends Tenant$driverIncidentsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverIncidentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7012,6 +7280,54 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.driverHOSEntries
+   */
+  export type Tenant$driverHOSEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    where?: DriverHOSEntryWhereInput
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    cursor?: DriverHOSEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.driverIncidents
+   */
+  export type Tenant$driverIncidentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    where?: DriverIncidentWhereInput
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    cursor?: DriverIncidentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
+  }
+
+  /**
    * Tenant without action
    */
   export type TenantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7274,6 +7590,8 @@ export namespace Prisma {
     payrollsCreated?: boolean | User$payrollsCreatedArgs<ExtArgs>
     payrollsUpdated?: boolean | User$payrollsUpdatedArgs<ExtArgs>
     driverRouteJoins?: boolean | User$driverRouteJoinsArgs<ExtArgs>
+    hosEntries?: boolean | User$hosEntriesArgs<ExtArgs>
+    incidents?: boolean | User$incidentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -7349,6 +7667,8 @@ export namespace Prisma {
     payrollsCreated?: boolean | User$payrollsCreatedArgs<ExtArgs>
     payrollsUpdated?: boolean | User$payrollsUpdatedArgs<ExtArgs>
     driverRouteJoins?: boolean | User$driverRouteJoinsArgs<ExtArgs>
+    hosEntries?: boolean | User$hosEntriesArgs<ExtArgs>
+    incidents?: boolean | User$incidentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7381,6 +7701,8 @@ export namespace Prisma {
       payrollsCreated: Prisma.$PayrollRecordPayload<ExtArgs>[]
       payrollsUpdated: Prisma.$PayrollRecordPayload<ExtArgs>[]
       driverRouteJoins: Prisma.$DriverRouteJoinPayload<ExtArgs>[]
+      hosEntries: Prisma.$DriverHOSEntryPayload<ExtArgs>[]
+      incidents: Prisma.$DriverIncidentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7810,6 +8132,8 @@ export namespace Prisma {
     payrollsCreated<T extends User$payrollsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$payrollsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PayrollRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     payrollsUpdated<T extends User$payrollsUpdatedArgs<ExtArgs> = {}>(args?: Subset<T, User$payrollsUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PayrollRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverRouteJoins<T extends User$driverRouteJoinsArgs<ExtArgs> = {}>(args?: Subset<T, User$driverRouteJoinsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverRouteJoinPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    hosEntries<T extends User$hosEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$hosEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    incidents<T extends User$incidentsArgs<ExtArgs> = {}>(args?: Subset<T, User$incidentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8701,6 +9025,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverRouteJoinScalarFieldEnum | DriverRouteJoinScalarFieldEnum[]
+  }
+
+  /**
+   * User.hosEntries
+   */
+  export type User$hosEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    where?: DriverHOSEntryWhereInput
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    cursor?: DriverHOSEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
+  }
+
+  /**
+   * User.incidents
+   */
+  export type User$incidentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    where?: DriverIncidentWhereInput
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    cursor?: DriverIncidentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
   }
 
   /**
@@ -47915,6 +48287,2332 @@ export namespace Prisma {
 
 
   /**
+   * Model DriverHOSEntry
+   */
+
+  export type AggregateDriverHOSEntry = {
+    _count: DriverHOSEntryCountAggregateOutputType | null
+    _min: DriverHOSEntryMinAggregateOutputType | null
+    _max: DriverHOSEntryMaxAggregateOutputType | null
+  }
+
+  export type DriverHOSEntryMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    driverId: string | null
+    status: $Enums.HOSDutyStatus | null
+    startTime: Date | null
+    endTime: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DriverHOSEntryMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    driverId: string | null
+    status: $Enums.HOSDutyStatus | null
+    startTime: Date | null
+    endTime: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DriverHOSEntryCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    driverId: number
+    status: number
+    startTime: number
+    endTime: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DriverHOSEntryMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    status?: true
+    startTime?: true
+    endTime?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DriverHOSEntryMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    status?: true
+    startTime?: true
+    endTime?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DriverHOSEntryCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    status?: true
+    startTime?: true
+    endTime?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DriverHOSEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DriverHOSEntry to aggregate.
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverHOSEntries to fetch.
+     */
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DriverHOSEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverHOSEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverHOSEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DriverHOSEntries
+    **/
+    _count?: true | DriverHOSEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DriverHOSEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DriverHOSEntryMaxAggregateInputType
+  }
+
+  export type GetDriverHOSEntryAggregateType<T extends DriverHOSEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateDriverHOSEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDriverHOSEntry[P]>
+      : GetScalarType<T[P], AggregateDriverHOSEntry[P]>
+  }
+
+
+
+
+  export type DriverHOSEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverHOSEntryWhereInput
+    orderBy?: DriverHOSEntryOrderByWithAggregationInput | DriverHOSEntryOrderByWithAggregationInput[]
+    by: DriverHOSEntryScalarFieldEnum[] | DriverHOSEntryScalarFieldEnum
+    having?: DriverHOSEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DriverHOSEntryCountAggregateInputType | true
+    _min?: DriverHOSEntryMinAggregateInputType
+    _max?: DriverHOSEntryMaxAggregateInputType
+  }
+
+  export type DriverHOSEntryGroupByOutputType = {
+    id: string
+    tenantId: string
+    driverId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date
+    endTime: Date | null
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: DriverHOSEntryCountAggregateOutputType | null
+    _min: DriverHOSEntryMinAggregateOutputType | null
+    _max: DriverHOSEntryMaxAggregateOutputType | null
+  }
+
+  type GetDriverHOSEntryGroupByPayload<T extends DriverHOSEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DriverHOSEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DriverHOSEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DriverHOSEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], DriverHOSEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DriverHOSEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    status?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverHOSEntry"]>
+
+  export type DriverHOSEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    status?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverHOSEntry"]>
+
+  export type DriverHOSEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    status?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverHOSEntry"]>
+
+  export type DriverHOSEntrySelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    status?: boolean
+    startTime?: boolean
+    endTime?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DriverHOSEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "status" | "startTime" | "endTime" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["driverHOSEntry"]>
+  export type DriverHOSEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DriverHOSEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DriverHOSEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DriverHOSEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DriverHOSEntry"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      driver: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      driverId: string
+      status: $Enums.HOSDutyStatus
+      startTime: Date
+      endTime: Date | null
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["driverHOSEntry"]>
+    composites: {}
+  }
+
+  type DriverHOSEntryGetPayload<S extends boolean | null | undefined | DriverHOSEntryDefaultArgs> = $Result.GetResult<Prisma.$DriverHOSEntryPayload, S>
+
+  type DriverHOSEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DriverHOSEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DriverHOSEntryCountAggregateInputType | true
+    }
+
+  export interface DriverHOSEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DriverHOSEntry'], meta: { name: 'DriverHOSEntry' } }
+    /**
+     * Find zero or one DriverHOSEntry that matches the filter.
+     * @param {DriverHOSEntryFindUniqueArgs} args - Arguments to find a DriverHOSEntry
+     * @example
+     * // Get one DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DriverHOSEntryFindUniqueArgs>(args: SelectSubset<T, DriverHOSEntryFindUniqueArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DriverHOSEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DriverHOSEntryFindUniqueOrThrowArgs} args - Arguments to find a DriverHOSEntry
+     * @example
+     * // Get one DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DriverHOSEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, DriverHOSEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DriverHOSEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryFindFirstArgs} args - Arguments to find a DriverHOSEntry
+     * @example
+     * // Get one DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DriverHOSEntryFindFirstArgs>(args?: SelectSubset<T, DriverHOSEntryFindFirstArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DriverHOSEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryFindFirstOrThrowArgs} args - Arguments to find a DriverHOSEntry
+     * @example
+     * // Get one DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DriverHOSEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, DriverHOSEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DriverHOSEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DriverHOSEntries
+     * const driverHOSEntries = await prisma.driverHOSEntry.findMany()
+     * 
+     * // Get first 10 DriverHOSEntries
+     * const driverHOSEntries = await prisma.driverHOSEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const driverHOSEntryWithIdOnly = await prisma.driverHOSEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DriverHOSEntryFindManyArgs>(args?: SelectSubset<T, DriverHOSEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DriverHOSEntry.
+     * @param {DriverHOSEntryCreateArgs} args - Arguments to create a DriverHOSEntry.
+     * @example
+     * // Create one DriverHOSEntry
+     * const DriverHOSEntry = await prisma.driverHOSEntry.create({
+     *   data: {
+     *     // ... data to create a DriverHOSEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends DriverHOSEntryCreateArgs>(args: SelectSubset<T, DriverHOSEntryCreateArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DriverHOSEntries.
+     * @param {DriverHOSEntryCreateManyArgs} args - Arguments to create many DriverHOSEntries.
+     * @example
+     * // Create many DriverHOSEntries
+     * const driverHOSEntry = await prisma.driverHOSEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DriverHOSEntryCreateManyArgs>(args?: SelectSubset<T, DriverHOSEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DriverHOSEntries and returns the data saved in the database.
+     * @param {DriverHOSEntryCreateManyAndReturnArgs} args - Arguments to create many DriverHOSEntries.
+     * @example
+     * // Create many DriverHOSEntries
+     * const driverHOSEntry = await prisma.driverHOSEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DriverHOSEntries and only return the `id`
+     * const driverHOSEntryWithIdOnly = await prisma.driverHOSEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DriverHOSEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, DriverHOSEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DriverHOSEntry.
+     * @param {DriverHOSEntryDeleteArgs} args - Arguments to delete one DriverHOSEntry.
+     * @example
+     * // Delete one DriverHOSEntry
+     * const DriverHOSEntry = await prisma.driverHOSEntry.delete({
+     *   where: {
+     *     // ... filter to delete one DriverHOSEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DriverHOSEntryDeleteArgs>(args: SelectSubset<T, DriverHOSEntryDeleteArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DriverHOSEntry.
+     * @param {DriverHOSEntryUpdateArgs} args - Arguments to update one DriverHOSEntry.
+     * @example
+     * // Update one DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DriverHOSEntryUpdateArgs>(args: SelectSubset<T, DriverHOSEntryUpdateArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DriverHOSEntries.
+     * @param {DriverHOSEntryDeleteManyArgs} args - Arguments to filter DriverHOSEntries to delete.
+     * @example
+     * // Delete a few DriverHOSEntries
+     * const { count } = await prisma.driverHOSEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DriverHOSEntryDeleteManyArgs>(args?: SelectSubset<T, DriverHOSEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DriverHOSEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DriverHOSEntries
+     * const driverHOSEntry = await prisma.driverHOSEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DriverHOSEntryUpdateManyArgs>(args: SelectSubset<T, DriverHOSEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DriverHOSEntries and returns the data updated in the database.
+     * @param {DriverHOSEntryUpdateManyAndReturnArgs} args - Arguments to update many DriverHOSEntries.
+     * @example
+     * // Update many DriverHOSEntries
+     * const driverHOSEntry = await prisma.driverHOSEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DriverHOSEntries and only return the `id`
+     * const driverHOSEntryWithIdOnly = await prisma.driverHOSEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DriverHOSEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, DriverHOSEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DriverHOSEntry.
+     * @param {DriverHOSEntryUpsertArgs} args - Arguments to update or create a DriverHOSEntry.
+     * @example
+     * // Update or create a DriverHOSEntry
+     * const driverHOSEntry = await prisma.driverHOSEntry.upsert({
+     *   create: {
+     *     // ... data to create a DriverHOSEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DriverHOSEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DriverHOSEntryUpsertArgs>(args: SelectSubset<T, DriverHOSEntryUpsertArgs<ExtArgs>>): Prisma__DriverHOSEntryClient<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DriverHOSEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryCountArgs} args - Arguments to filter DriverHOSEntries to count.
+     * @example
+     * // Count the number of DriverHOSEntries
+     * const count = await prisma.driverHOSEntry.count({
+     *   where: {
+     *     // ... the filter for the DriverHOSEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends DriverHOSEntryCountArgs>(
+      args?: Subset<T, DriverHOSEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DriverHOSEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DriverHOSEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DriverHOSEntryAggregateArgs>(args: Subset<T, DriverHOSEntryAggregateArgs>): Prisma.PrismaPromise<GetDriverHOSEntryAggregateType<T>>
+
+    /**
+     * Group by DriverHOSEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverHOSEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DriverHOSEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DriverHOSEntryGroupByArgs['orderBy'] }
+        : { orderBy?: DriverHOSEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DriverHOSEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDriverHOSEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DriverHOSEntry model
+   */
+  readonly fields: DriverHOSEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DriverHOSEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DriverHOSEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    driver<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DriverHOSEntry model
+   */
+  interface DriverHOSEntryFieldRefs {
+    readonly id: FieldRef<"DriverHOSEntry", 'String'>
+    readonly tenantId: FieldRef<"DriverHOSEntry", 'String'>
+    readonly driverId: FieldRef<"DriverHOSEntry", 'String'>
+    readonly status: FieldRef<"DriverHOSEntry", 'HOSDutyStatus'>
+    readonly startTime: FieldRef<"DriverHOSEntry", 'DateTime'>
+    readonly endTime: FieldRef<"DriverHOSEntry", 'DateTime'>
+    readonly notes: FieldRef<"DriverHOSEntry", 'String'>
+    readonly createdAt: FieldRef<"DriverHOSEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"DriverHOSEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DriverHOSEntry findUnique
+   */
+  export type DriverHOSEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverHOSEntry to fetch.
+     */
+    where: DriverHOSEntryWhereUniqueInput
+  }
+
+  /**
+   * DriverHOSEntry findUniqueOrThrow
+   */
+  export type DriverHOSEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverHOSEntry to fetch.
+     */
+    where: DriverHOSEntryWhereUniqueInput
+  }
+
+  /**
+   * DriverHOSEntry findFirst
+   */
+  export type DriverHOSEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverHOSEntry to fetch.
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverHOSEntries to fetch.
+     */
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DriverHOSEntries.
+     */
+    cursor?: DriverHOSEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverHOSEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverHOSEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverHOSEntries.
+     */
+    distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DriverHOSEntry findFirstOrThrow
+   */
+  export type DriverHOSEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverHOSEntry to fetch.
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverHOSEntries to fetch.
+     */
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DriverHOSEntries.
+     */
+    cursor?: DriverHOSEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverHOSEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverHOSEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverHOSEntries.
+     */
+    distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DriverHOSEntry findMany
+   */
+  export type DriverHOSEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverHOSEntries to fetch.
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverHOSEntries to fetch.
+     */
+    orderBy?: DriverHOSEntryOrderByWithRelationInput | DriverHOSEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DriverHOSEntries.
+     */
+    cursor?: DriverHOSEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverHOSEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverHOSEntries.
+     */
+    skip?: number
+    distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DriverHOSEntry create
+   */
+  export type DriverHOSEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DriverHOSEntry.
+     */
+    data: XOR<DriverHOSEntryCreateInput, DriverHOSEntryUncheckedCreateInput>
+  }
+
+  /**
+   * DriverHOSEntry createMany
+   */
+  export type DriverHOSEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DriverHOSEntries.
+     */
+    data: DriverHOSEntryCreateManyInput | DriverHOSEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DriverHOSEntry createManyAndReturn
+   */
+  export type DriverHOSEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many DriverHOSEntries.
+     */
+    data: DriverHOSEntryCreateManyInput | DriverHOSEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DriverHOSEntry update
+   */
+  export type DriverHOSEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DriverHOSEntry.
+     */
+    data: XOR<DriverHOSEntryUpdateInput, DriverHOSEntryUncheckedUpdateInput>
+    /**
+     * Choose, which DriverHOSEntry to update.
+     */
+    where: DriverHOSEntryWhereUniqueInput
+  }
+
+  /**
+   * DriverHOSEntry updateMany
+   */
+  export type DriverHOSEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DriverHOSEntries.
+     */
+    data: XOR<DriverHOSEntryUpdateManyMutationInput, DriverHOSEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which DriverHOSEntries to update
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * Limit how many DriverHOSEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DriverHOSEntry updateManyAndReturn
+   */
+  export type DriverHOSEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update DriverHOSEntries.
+     */
+    data: XOR<DriverHOSEntryUpdateManyMutationInput, DriverHOSEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which DriverHOSEntries to update
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * Limit how many DriverHOSEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DriverHOSEntry upsert
+   */
+  export type DriverHOSEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DriverHOSEntry to update in case it exists.
+     */
+    where: DriverHOSEntryWhereUniqueInput
+    /**
+     * In case the DriverHOSEntry found by the `where` argument doesn't exist, create a new DriverHOSEntry with this data.
+     */
+    create: XOR<DriverHOSEntryCreateInput, DriverHOSEntryUncheckedCreateInput>
+    /**
+     * In case the DriverHOSEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DriverHOSEntryUpdateInput, DriverHOSEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * DriverHOSEntry delete
+   */
+  export type DriverHOSEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+    /**
+     * Filter which DriverHOSEntry to delete.
+     */
+    where: DriverHOSEntryWhereUniqueInput
+  }
+
+  /**
+   * DriverHOSEntry deleteMany
+   */
+  export type DriverHOSEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DriverHOSEntries to delete
+     */
+    where?: DriverHOSEntryWhereInput
+    /**
+     * Limit how many DriverHOSEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DriverHOSEntry without action
+   */
+  export type DriverHOSEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverHOSEntry
+     */
+    select?: DriverHOSEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverHOSEntry
+     */
+    omit?: DriverHOSEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverHOSEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DriverIncident
+   */
+
+  export type AggregateDriverIncident = {
+    _count: DriverIncidentCountAggregateOutputType | null
+    _avg: DriverIncidentAvgAggregateOutputType | null
+    _sum: DriverIncidentSumAggregateOutputType | null
+    _min: DriverIncidentMinAggregateOutputType | null
+    _max: DriverIncidentMaxAggregateOutputType | null
+  }
+
+  export type DriverIncidentAvgAggregateOutputType = {
+    latitude: Decimal | null
+    longitude: Decimal | null
+  }
+
+  export type DriverIncidentSumAggregateOutputType = {
+    latitude: Decimal | null
+    longitude: Decimal | null
+  }
+
+  export type DriverIncidentMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    driverId: string | null
+    category: $Enums.IncidentCategory | null
+    severity: $Enums.IncidentSeverity | null
+    description: string | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    photoS3Key: string | null
+    reportedAt: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DriverIncidentMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    driverId: string | null
+    category: $Enums.IncidentCategory | null
+    severity: $Enums.IncidentSeverity | null
+    description: string | null
+    latitude: Decimal | null
+    longitude: Decimal | null
+    photoS3Key: string | null
+    reportedAt: Date | null
+    notes: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DriverIncidentCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    driverId: number
+    category: number
+    severity: number
+    description: number
+    latitude: number
+    longitude: number
+    photoS3Key: number
+    reportedAt: number
+    notes: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DriverIncidentAvgAggregateInputType = {
+    latitude?: true
+    longitude?: true
+  }
+
+  export type DriverIncidentSumAggregateInputType = {
+    latitude?: true
+    longitude?: true
+  }
+
+  export type DriverIncidentMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    category?: true
+    severity?: true
+    description?: true
+    latitude?: true
+    longitude?: true
+    photoS3Key?: true
+    reportedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DriverIncidentMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    category?: true
+    severity?: true
+    description?: true
+    latitude?: true
+    longitude?: true
+    photoS3Key?: true
+    reportedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DriverIncidentCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    driverId?: true
+    category?: true
+    severity?: true
+    description?: true
+    latitude?: true
+    longitude?: true
+    photoS3Key?: true
+    reportedAt?: true
+    notes?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DriverIncidentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DriverIncident to aggregate.
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverIncidents to fetch.
+     */
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DriverIncidentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverIncidents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverIncidents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DriverIncidents
+    **/
+    _count?: true | DriverIncidentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DriverIncidentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DriverIncidentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DriverIncidentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DriverIncidentMaxAggregateInputType
+  }
+
+  export type GetDriverIncidentAggregateType<T extends DriverIncidentAggregateArgs> = {
+        [P in keyof T & keyof AggregateDriverIncident]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDriverIncident[P]>
+      : GetScalarType<T[P], AggregateDriverIncident[P]>
+  }
+
+
+
+
+  export type DriverIncidentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DriverIncidentWhereInput
+    orderBy?: DriverIncidentOrderByWithAggregationInput | DriverIncidentOrderByWithAggregationInput[]
+    by: DriverIncidentScalarFieldEnum[] | DriverIncidentScalarFieldEnum
+    having?: DriverIncidentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DriverIncidentCountAggregateInputType | true
+    _avg?: DriverIncidentAvgAggregateInputType
+    _sum?: DriverIncidentSumAggregateInputType
+    _min?: DriverIncidentMinAggregateInputType
+    _max?: DriverIncidentMaxAggregateInputType
+  }
+
+  export type DriverIncidentGroupByOutputType = {
+    id: string
+    tenantId: string
+    driverId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude: Decimal | null
+    longitude: Decimal | null
+    photoS3Key: string | null
+    reportedAt: Date
+    notes: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: DriverIncidentCountAggregateOutputType | null
+    _avg: DriverIncidentAvgAggregateOutputType | null
+    _sum: DriverIncidentSumAggregateOutputType | null
+    _min: DriverIncidentMinAggregateOutputType | null
+    _max: DriverIncidentMaxAggregateOutputType | null
+  }
+
+  type GetDriverIncidentGroupByPayload<T extends DriverIncidentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DriverIncidentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DriverIncidentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DriverIncidentGroupByOutputType[P]>
+            : GetScalarType<T[P], DriverIncidentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DriverIncidentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    category?: boolean
+    severity?: boolean
+    description?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    photoS3Key?: boolean
+    reportedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverIncident"]>
+
+  export type DriverIncidentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    category?: boolean
+    severity?: boolean
+    description?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    photoS3Key?: boolean
+    reportedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverIncident"]>
+
+  export type DriverIncidentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    category?: boolean
+    severity?: boolean
+    description?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    photoS3Key?: boolean
+    reportedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["driverIncident"]>
+
+  export type DriverIncidentSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    driverId?: boolean
+    category?: boolean
+    severity?: boolean
+    description?: boolean
+    latitude?: boolean
+    longitude?: boolean
+    photoS3Key?: boolean
+    reportedAt?: boolean
+    notes?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DriverIncidentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "driverId" | "category" | "severity" | "description" | "latitude" | "longitude" | "photoS3Key" | "reportedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["driverIncident"]>
+  export type DriverIncidentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DriverIncidentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type DriverIncidentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    driver?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $DriverIncidentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DriverIncident"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      driver: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      driverId: string
+      category: $Enums.IncidentCategory
+      severity: $Enums.IncidentSeverity
+      description: string
+      latitude: Prisma.Decimal | null
+      longitude: Prisma.Decimal | null
+      photoS3Key: string | null
+      reportedAt: Date
+      notes: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["driverIncident"]>
+    composites: {}
+  }
+
+  type DriverIncidentGetPayload<S extends boolean | null | undefined | DriverIncidentDefaultArgs> = $Result.GetResult<Prisma.$DriverIncidentPayload, S>
+
+  type DriverIncidentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DriverIncidentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DriverIncidentCountAggregateInputType | true
+    }
+
+  export interface DriverIncidentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DriverIncident'], meta: { name: 'DriverIncident' } }
+    /**
+     * Find zero or one DriverIncident that matches the filter.
+     * @param {DriverIncidentFindUniqueArgs} args - Arguments to find a DriverIncident
+     * @example
+     * // Get one DriverIncident
+     * const driverIncident = await prisma.driverIncident.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DriverIncidentFindUniqueArgs>(args: SelectSubset<T, DriverIncidentFindUniqueArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DriverIncident that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DriverIncidentFindUniqueOrThrowArgs} args - Arguments to find a DriverIncident
+     * @example
+     * // Get one DriverIncident
+     * const driverIncident = await prisma.driverIncident.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DriverIncidentFindUniqueOrThrowArgs>(args: SelectSubset<T, DriverIncidentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DriverIncident that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentFindFirstArgs} args - Arguments to find a DriverIncident
+     * @example
+     * // Get one DriverIncident
+     * const driverIncident = await prisma.driverIncident.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DriverIncidentFindFirstArgs>(args?: SelectSubset<T, DriverIncidentFindFirstArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DriverIncident that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentFindFirstOrThrowArgs} args - Arguments to find a DriverIncident
+     * @example
+     * // Get one DriverIncident
+     * const driverIncident = await prisma.driverIncident.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DriverIncidentFindFirstOrThrowArgs>(args?: SelectSubset<T, DriverIncidentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DriverIncidents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DriverIncidents
+     * const driverIncidents = await prisma.driverIncident.findMany()
+     * 
+     * // Get first 10 DriverIncidents
+     * const driverIncidents = await prisma.driverIncident.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const driverIncidentWithIdOnly = await prisma.driverIncident.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DriverIncidentFindManyArgs>(args?: SelectSubset<T, DriverIncidentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DriverIncident.
+     * @param {DriverIncidentCreateArgs} args - Arguments to create a DriverIncident.
+     * @example
+     * // Create one DriverIncident
+     * const DriverIncident = await prisma.driverIncident.create({
+     *   data: {
+     *     // ... data to create a DriverIncident
+     *   }
+     * })
+     * 
+     */
+    create<T extends DriverIncidentCreateArgs>(args: SelectSubset<T, DriverIncidentCreateArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DriverIncidents.
+     * @param {DriverIncidentCreateManyArgs} args - Arguments to create many DriverIncidents.
+     * @example
+     * // Create many DriverIncidents
+     * const driverIncident = await prisma.driverIncident.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DriverIncidentCreateManyArgs>(args?: SelectSubset<T, DriverIncidentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DriverIncidents and returns the data saved in the database.
+     * @param {DriverIncidentCreateManyAndReturnArgs} args - Arguments to create many DriverIncidents.
+     * @example
+     * // Create many DriverIncidents
+     * const driverIncident = await prisma.driverIncident.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DriverIncidents and only return the `id`
+     * const driverIncidentWithIdOnly = await prisma.driverIncident.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DriverIncidentCreateManyAndReturnArgs>(args?: SelectSubset<T, DriverIncidentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DriverIncident.
+     * @param {DriverIncidentDeleteArgs} args - Arguments to delete one DriverIncident.
+     * @example
+     * // Delete one DriverIncident
+     * const DriverIncident = await prisma.driverIncident.delete({
+     *   where: {
+     *     // ... filter to delete one DriverIncident
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DriverIncidentDeleteArgs>(args: SelectSubset<T, DriverIncidentDeleteArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DriverIncident.
+     * @param {DriverIncidentUpdateArgs} args - Arguments to update one DriverIncident.
+     * @example
+     * // Update one DriverIncident
+     * const driverIncident = await prisma.driverIncident.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DriverIncidentUpdateArgs>(args: SelectSubset<T, DriverIncidentUpdateArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DriverIncidents.
+     * @param {DriverIncidentDeleteManyArgs} args - Arguments to filter DriverIncidents to delete.
+     * @example
+     * // Delete a few DriverIncidents
+     * const { count } = await prisma.driverIncident.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DriverIncidentDeleteManyArgs>(args?: SelectSubset<T, DriverIncidentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DriverIncidents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DriverIncidents
+     * const driverIncident = await prisma.driverIncident.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DriverIncidentUpdateManyArgs>(args: SelectSubset<T, DriverIncidentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DriverIncidents and returns the data updated in the database.
+     * @param {DriverIncidentUpdateManyAndReturnArgs} args - Arguments to update many DriverIncidents.
+     * @example
+     * // Update many DriverIncidents
+     * const driverIncident = await prisma.driverIncident.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DriverIncidents and only return the `id`
+     * const driverIncidentWithIdOnly = await prisma.driverIncident.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DriverIncidentUpdateManyAndReturnArgs>(args: SelectSubset<T, DriverIncidentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DriverIncident.
+     * @param {DriverIncidentUpsertArgs} args - Arguments to update or create a DriverIncident.
+     * @example
+     * // Update or create a DriverIncident
+     * const driverIncident = await prisma.driverIncident.upsert({
+     *   create: {
+     *     // ... data to create a DriverIncident
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DriverIncident we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DriverIncidentUpsertArgs>(args: SelectSubset<T, DriverIncidentUpsertArgs<ExtArgs>>): Prisma__DriverIncidentClient<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DriverIncidents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentCountArgs} args - Arguments to filter DriverIncidents to count.
+     * @example
+     * // Count the number of DriverIncidents
+     * const count = await prisma.driverIncident.count({
+     *   where: {
+     *     // ... the filter for the DriverIncidents we want to count
+     *   }
+     * })
+    **/
+    count<T extends DriverIncidentCountArgs>(
+      args?: Subset<T, DriverIncidentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DriverIncidentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DriverIncident.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DriverIncidentAggregateArgs>(args: Subset<T, DriverIncidentAggregateArgs>): Prisma.PrismaPromise<GetDriverIncidentAggregateType<T>>
+
+    /**
+     * Group by DriverIncident.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DriverIncidentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DriverIncidentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DriverIncidentGroupByArgs['orderBy'] }
+        : { orderBy?: DriverIncidentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DriverIncidentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDriverIncidentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DriverIncident model
+   */
+  readonly fields: DriverIncidentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DriverIncident.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DriverIncidentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    driver<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DriverIncident model
+   */
+  interface DriverIncidentFieldRefs {
+    readonly id: FieldRef<"DriverIncident", 'String'>
+    readonly tenantId: FieldRef<"DriverIncident", 'String'>
+    readonly driverId: FieldRef<"DriverIncident", 'String'>
+    readonly category: FieldRef<"DriverIncident", 'IncidentCategory'>
+    readonly severity: FieldRef<"DriverIncident", 'IncidentSeverity'>
+    readonly description: FieldRef<"DriverIncident", 'String'>
+    readonly latitude: FieldRef<"DriverIncident", 'Decimal'>
+    readonly longitude: FieldRef<"DriverIncident", 'Decimal'>
+    readonly photoS3Key: FieldRef<"DriverIncident", 'String'>
+    readonly reportedAt: FieldRef<"DriverIncident", 'DateTime'>
+    readonly notes: FieldRef<"DriverIncident", 'String'>
+    readonly createdAt: FieldRef<"DriverIncident", 'DateTime'>
+    readonly updatedAt: FieldRef<"DriverIncident", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DriverIncident findUnique
+   */
+  export type DriverIncidentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverIncident to fetch.
+     */
+    where: DriverIncidentWhereUniqueInput
+  }
+
+  /**
+   * DriverIncident findUniqueOrThrow
+   */
+  export type DriverIncidentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverIncident to fetch.
+     */
+    where: DriverIncidentWhereUniqueInput
+  }
+
+  /**
+   * DriverIncident findFirst
+   */
+  export type DriverIncidentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverIncident to fetch.
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverIncidents to fetch.
+     */
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DriverIncidents.
+     */
+    cursor?: DriverIncidentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverIncidents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverIncidents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverIncidents.
+     */
+    distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
+  }
+
+  /**
+   * DriverIncident findFirstOrThrow
+   */
+  export type DriverIncidentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverIncident to fetch.
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverIncidents to fetch.
+     */
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DriverIncidents.
+     */
+    cursor?: DriverIncidentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverIncidents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverIncidents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverIncidents.
+     */
+    distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
+  }
+
+  /**
+   * DriverIncident findMany
+   */
+  export type DriverIncidentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter, which DriverIncidents to fetch.
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DriverIncidents to fetch.
+     */
+    orderBy?: DriverIncidentOrderByWithRelationInput | DriverIncidentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DriverIncidents.
+     */
+    cursor?: DriverIncidentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DriverIncidents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DriverIncidents.
+     */
+    skip?: number
+    distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
+  }
+
+  /**
+   * DriverIncident create
+   */
+  export type DriverIncidentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DriverIncident.
+     */
+    data: XOR<DriverIncidentCreateInput, DriverIncidentUncheckedCreateInput>
+  }
+
+  /**
+   * DriverIncident createMany
+   */
+  export type DriverIncidentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DriverIncidents.
+     */
+    data: DriverIncidentCreateManyInput | DriverIncidentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DriverIncident createManyAndReturn
+   */
+  export type DriverIncidentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * The data used to create many DriverIncidents.
+     */
+    data: DriverIncidentCreateManyInput | DriverIncidentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DriverIncident update
+   */
+  export type DriverIncidentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DriverIncident.
+     */
+    data: XOR<DriverIncidentUpdateInput, DriverIncidentUncheckedUpdateInput>
+    /**
+     * Choose, which DriverIncident to update.
+     */
+    where: DriverIncidentWhereUniqueInput
+  }
+
+  /**
+   * DriverIncident updateMany
+   */
+  export type DriverIncidentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DriverIncidents.
+     */
+    data: XOR<DriverIncidentUpdateManyMutationInput, DriverIncidentUncheckedUpdateManyInput>
+    /**
+     * Filter which DriverIncidents to update
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * Limit how many DriverIncidents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DriverIncident updateManyAndReturn
+   */
+  export type DriverIncidentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * The data used to update DriverIncidents.
+     */
+    data: XOR<DriverIncidentUpdateManyMutationInput, DriverIncidentUncheckedUpdateManyInput>
+    /**
+     * Filter which DriverIncidents to update
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * Limit how many DriverIncidents to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DriverIncident upsert
+   */
+  export type DriverIncidentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DriverIncident to update in case it exists.
+     */
+    where: DriverIncidentWhereUniqueInput
+    /**
+     * In case the DriverIncident found by the `where` argument doesn't exist, create a new DriverIncident with this data.
+     */
+    create: XOR<DriverIncidentCreateInput, DriverIncidentUncheckedCreateInput>
+    /**
+     * In case the DriverIncident was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DriverIncidentUpdateInput, DriverIncidentUncheckedUpdateInput>
+  }
+
+  /**
+   * DriverIncident delete
+   */
+  export type DriverIncidentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+    /**
+     * Filter which DriverIncident to delete.
+     */
+    where: DriverIncidentWhereUniqueInput
+  }
+
+  /**
+   * DriverIncident deleteMany
+   */
+  export type DriverIncidentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DriverIncidents to delete
+     */
+    where?: DriverIncidentWhereInput
+    /**
+     * Limit how many DriverIncidents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DriverIncident without action
+   */
+  export type DriverIncidentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DriverIncident
+     */
+    select?: DriverIncidentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DriverIncident
+     */
+    omit?: DriverIncidentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DriverIncidentInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -48552,6 +51250,40 @@ export namespace Prisma {
   export type FleetMessageScalarFieldEnum = (typeof FleetMessageScalarFieldEnum)[keyof typeof FleetMessageScalarFieldEnum]
 
 
+  export const DriverHOSEntryScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    driverId: 'driverId',
+    status: 'status',
+    startTime: 'startTime',
+    endTime: 'endTime',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DriverHOSEntryScalarFieldEnum = (typeof DriverHOSEntryScalarFieldEnum)[keyof typeof DriverHOSEntryScalarFieldEnum]
+
+
+  export const DriverIncidentScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    driverId: 'driverId',
+    category: 'category',
+    severity: 'severity',
+    description: 'description',
+    latitude: 'latitude',
+    longitude: 'longitude',
+    photoS3Key: 'photoS3Key',
+    reportedAt: 'reportedAt',
+    notes: 'notes',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DriverIncidentScalarFieldEnum = (typeof DriverIncidentScalarFieldEnum)[keyof typeof DriverIncidentScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -49037,6 +51769,48 @@ export namespace Prisma {
    */
   export type ListEnumDriverPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DriverPaymentMethod[]'>
     
+
+
+  /**
+   * Reference to a field of type 'HOSDutyStatus'
+   */
+  export type EnumHOSDutyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HOSDutyStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'HOSDutyStatus[]'
+   */
+  export type ListEnumHOSDutyStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HOSDutyStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'IncidentCategory'
+   */
+  export type EnumIncidentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'IncidentCategory[]'
+   */
+  export type ListEnumIncidentCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'IncidentSeverity'
+   */
+  export type EnumIncidentSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentSeverity'>
+    
+
+
+  /**
+   * Reference to a field of type 'IncidentSeverity[]'
+   */
+  export type ListEnumIncidentSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentSeverity[]'>
+    
   /**
    * Deep Input Types
    */
@@ -49082,6 +51856,8 @@ export namespace Prisma {
     routeStops?: RouteStopListRelationFilter
     sysAdminInvoices?: SysAdminInvoiceListRelationFilter
     driverRouteJoins?: DriverRouteJoinListRelationFilter
+    driverHOSEntries?: DriverHOSEntryListRelationFilter
+    driverIncidents?: DriverIncidentListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -49121,6 +51897,8 @@ export namespace Prisma {
     routeStops?: RouteStopOrderByRelationAggregateInput
     sysAdminInvoices?: SysAdminInvoiceOrderByRelationAggregateInput
     driverRouteJoins?: DriverRouteJoinOrderByRelationAggregateInput
+    driverHOSEntries?: DriverHOSEntryOrderByRelationAggregateInput
+    driverIncidents?: DriverIncidentOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -49163,6 +51941,8 @@ export namespace Prisma {
     routeStops?: RouteStopListRelationFilter
     sysAdminInvoices?: SysAdminInvoiceListRelationFilter
     driverRouteJoins?: DriverRouteJoinListRelationFilter
+    driverHOSEntries?: DriverHOSEntryListRelationFilter
+    driverIncidents?: DriverIncidentListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -49232,6 +52012,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordListRelationFilter
     payrollsUpdated?: PayrollRecordListRelationFilter
     driverRouteJoins?: DriverRouteJoinListRelationFilter
+    hosEntries?: DriverHOSEntryListRelationFilter
+    incidents?: DriverIncidentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -49268,6 +52050,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordOrderByRelationAggregateInput
     payrollsUpdated?: PayrollRecordOrderByRelationAggregateInput
     driverRouteJoins?: DriverRouteJoinOrderByRelationAggregateInput
+    hosEntries?: DriverHOSEntryOrderByRelationAggregateInput
+    incidents?: DriverIncidentOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -49308,6 +52092,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordListRelationFilter
     payrollsUpdated?: PayrollRecordListRelationFilter
     driverRouteJoins?: DriverRouteJoinListRelationFilter
+    hosEntries?: DriverHOSEntryListRelationFilter
+    incidents?: DriverIncidentListRelationFilter
   }, "id" | "email_tenantId">
 
   export type UserOrderByWithAggregationInput = {
@@ -52561,6 +55347,184 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"FleetMessage"> | Date | string
   }
 
+  export type DriverHOSEntryWhereInput = {
+    AND?: DriverHOSEntryWhereInput | DriverHOSEntryWhereInput[]
+    OR?: DriverHOSEntryWhereInput[]
+    NOT?: DriverHOSEntryWhereInput | DriverHOSEntryWhereInput[]
+    id?: UuidFilter<"DriverHOSEntry"> | string
+    tenantId?: UuidFilter<"DriverHOSEntry"> | string
+    driverId?: UuidFilter<"DriverHOSEntry"> | string
+    status?: EnumHOSDutyStatusFilter<"DriverHOSEntry"> | $Enums.HOSDutyStatus
+    startTime?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    endTime?: DateTimeNullableFilter<"DriverHOSEntry"> | Date | string | null
+    notes?: StringNullableFilter<"DriverHOSEntry"> | string | null
+    createdAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    driver?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type DriverHOSEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    status?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    driver?: UserOrderByWithRelationInput
+  }
+
+  export type DriverHOSEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DriverHOSEntryWhereInput | DriverHOSEntryWhereInput[]
+    OR?: DriverHOSEntryWhereInput[]
+    NOT?: DriverHOSEntryWhereInput | DriverHOSEntryWhereInput[]
+    tenantId?: UuidFilter<"DriverHOSEntry"> | string
+    driverId?: UuidFilter<"DriverHOSEntry"> | string
+    status?: EnumHOSDutyStatusFilter<"DriverHOSEntry"> | $Enums.HOSDutyStatus
+    startTime?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    endTime?: DateTimeNullableFilter<"DriverHOSEntry"> | Date | string | null
+    notes?: StringNullableFilter<"DriverHOSEntry"> | string | null
+    createdAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    driver?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type DriverHOSEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    status?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DriverHOSEntryCountOrderByAggregateInput
+    _max?: DriverHOSEntryMaxOrderByAggregateInput
+    _min?: DriverHOSEntryMinOrderByAggregateInput
+  }
+
+  export type DriverHOSEntryScalarWhereWithAggregatesInput = {
+    AND?: DriverHOSEntryScalarWhereWithAggregatesInput | DriverHOSEntryScalarWhereWithAggregatesInput[]
+    OR?: DriverHOSEntryScalarWhereWithAggregatesInput[]
+    NOT?: DriverHOSEntryScalarWhereWithAggregatesInput | DriverHOSEntryScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"DriverHOSEntry"> | string
+    tenantId?: UuidWithAggregatesFilter<"DriverHOSEntry"> | string
+    driverId?: UuidWithAggregatesFilter<"DriverHOSEntry"> | string
+    status?: EnumHOSDutyStatusWithAggregatesFilter<"DriverHOSEntry"> | $Enums.HOSDutyStatus
+    startTime?: DateTimeWithAggregatesFilter<"DriverHOSEntry"> | Date | string
+    endTime?: DateTimeNullableWithAggregatesFilter<"DriverHOSEntry"> | Date | string | null
+    notes?: StringNullableWithAggregatesFilter<"DriverHOSEntry"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DriverHOSEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DriverHOSEntry"> | Date | string
+  }
+
+  export type DriverIncidentWhereInput = {
+    AND?: DriverIncidentWhereInput | DriverIncidentWhereInput[]
+    OR?: DriverIncidentWhereInput[]
+    NOT?: DriverIncidentWhereInput | DriverIncidentWhereInput[]
+    id?: UuidFilter<"DriverIncident"> | string
+    tenantId?: UuidFilter<"DriverIncident"> | string
+    driverId?: UuidFilter<"DriverIncident"> | string
+    category?: EnumIncidentCategoryFilter<"DriverIncident"> | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFilter<"DriverIncident"> | $Enums.IncidentSeverity
+    description?: StringFilter<"DriverIncident"> | string
+    latitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: StringNullableFilter<"DriverIncident"> | string | null
+    reportedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    notes?: StringNullableFilter<"DriverIncident"> | string | null
+    createdAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    driver?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type DriverIncidentOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    category?: SortOrder
+    severity?: SortOrder
+    description?: SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    photoS3Key?: SortOrderInput | SortOrder
+    reportedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    driver?: UserOrderByWithRelationInput
+  }
+
+  export type DriverIncidentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DriverIncidentWhereInput | DriverIncidentWhereInput[]
+    OR?: DriverIncidentWhereInput[]
+    NOT?: DriverIncidentWhereInput | DriverIncidentWhereInput[]
+    tenantId?: UuidFilter<"DriverIncident"> | string
+    driverId?: UuidFilter<"DriverIncident"> | string
+    category?: EnumIncidentCategoryFilter<"DriverIncident"> | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFilter<"DriverIncident"> | $Enums.IncidentSeverity
+    description?: StringFilter<"DriverIncident"> | string
+    latitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: StringNullableFilter<"DriverIncident"> | string | null
+    reportedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    notes?: StringNullableFilter<"DriverIncident"> | string | null
+    createdAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    driver?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type DriverIncidentOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    category?: SortOrder
+    severity?: SortOrder
+    description?: SortOrder
+    latitude?: SortOrderInput | SortOrder
+    longitude?: SortOrderInput | SortOrder
+    photoS3Key?: SortOrderInput | SortOrder
+    reportedAt?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DriverIncidentCountOrderByAggregateInput
+    _avg?: DriverIncidentAvgOrderByAggregateInput
+    _max?: DriverIncidentMaxOrderByAggregateInput
+    _min?: DriverIncidentMinOrderByAggregateInput
+    _sum?: DriverIncidentSumOrderByAggregateInput
+  }
+
+  export type DriverIncidentScalarWhereWithAggregatesInput = {
+    AND?: DriverIncidentScalarWhereWithAggregatesInput | DriverIncidentScalarWhereWithAggregatesInput[]
+    OR?: DriverIncidentScalarWhereWithAggregatesInput[]
+    NOT?: DriverIncidentScalarWhereWithAggregatesInput | DriverIncidentScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"DriverIncident"> | string
+    tenantId?: UuidWithAggregatesFilter<"DriverIncident"> | string
+    driverId?: UuidWithAggregatesFilter<"DriverIncident"> | string
+    category?: EnumIncidentCategoryWithAggregatesFilter<"DriverIncident"> | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityWithAggregatesFilter<"DriverIncident"> | $Enums.IncidentSeverity
+    description?: StringWithAggregatesFilter<"DriverIncident"> | string
+    latitude?: DecimalNullableWithAggregatesFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableWithAggregatesFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: StringNullableWithAggregatesFilter<"DriverIncident"> | string | null
+    reportedAt?: DateTimeWithAggregatesFilter<"DriverIncident"> | Date | string
+    notes?: StringNullableWithAggregatesFilter<"DriverIncident"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DriverIncident"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DriverIncident"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -52598,6 +55562,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -52637,6 +55603,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -52676,6 +55644,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -52715,6 +55685,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -52783,6 +55755,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -52818,6 +55792,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserUpdateInput = {
@@ -52853,6 +55829,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -52888,6 +55866,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -56437,6 +59417,198 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DriverHOSEntryCreateInput = {
+    id?: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDriverHOSEntriesInput
+    driver: UserCreateNestedOneWithoutHosEntriesInput
+  }
+
+  export type DriverHOSEntryUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverHOSEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDriverHOSEntriesNestedInput
+    driver?: UserUpdateOneRequiredWithoutHosEntriesNestedInput
+  }
+
+  export type DriverHOSEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverHOSEntryCreateManyInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverHOSEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverHOSEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentCreateInput = {
+    id?: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDriverIncidentsInput
+    driver: UserCreateNestedOneWithoutIncidentsInput
+  }
+
+  export type DriverIncidentUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDriverIncidentsNestedInput
+    driver?: UserUpdateOneRequiredWithoutIncidentsNestedInput
+  }
+
+  export type DriverIncidentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentCreateManyInput = {
+    id?: string
+    tenantId: string
+    driverId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -56674,6 +59846,18 @@ export namespace Prisma {
     none?: DriverRouteJoinWhereInput
   }
 
+  export type DriverHOSEntryListRelationFilter = {
+    every?: DriverHOSEntryWhereInput
+    some?: DriverHOSEntryWhereInput
+    none?: DriverHOSEntryWhereInput
+  }
+
+  export type DriverIncidentListRelationFilter = {
+    every?: DriverIncidentWhereInput
+    some?: DriverIncidentWhereInput
+    none?: DriverIncidentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -56788,6 +59972,14 @@ export namespace Prisma {
   }
 
   export type DriverRouteJoinOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DriverHOSEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DriverIncidentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -59489,6 +62681,151 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumHOSDutyStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.HOSDutyStatus | EnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumHOSDutyStatusFilter<$PrismaModel> | $Enums.HOSDutyStatus
+  }
+
+  export type DriverHOSEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    status?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DriverHOSEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    status?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DriverHOSEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    status?: SortOrder
+    startTime?: SortOrder
+    endTime?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumHOSDutyStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HOSDutyStatus | EnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumHOSDutyStatusWithAggregatesFilter<$PrismaModel> | $Enums.HOSDutyStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumHOSDutyStatusFilter<$PrismaModel>
+    _max?: NestedEnumHOSDutyStatusFilter<$PrismaModel>
+  }
+
+  export type EnumIncidentCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentCategory | EnumIncidentCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentCategoryFilter<$PrismaModel> | $Enums.IncidentCategory
+  }
+
+  export type EnumIncidentSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentSeverity | EnumIncidentSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentSeverityFilter<$PrismaModel> | $Enums.IncidentSeverity
+  }
+
+  export type DriverIncidentCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    category?: SortOrder
+    severity?: SortOrder
+    description?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    photoS3Key?: SortOrder
+    reportedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DriverIncidentAvgOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
+  }
+
+  export type DriverIncidentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    category?: SortOrder
+    severity?: SortOrder
+    description?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    photoS3Key?: SortOrder
+    reportedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DriverIncidentMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    driverId?: SortOrder
+    category?: SortOrder
+    severity?: SortOrder
+    description?: SortOrder
+    latitude?: SortOrder
+    longitude?: SortOrder
+    photoS3Key?: SortOrder
+    reportedAt?: SortOrder
+    notes?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DriverIncidentSumOrderByAggregateInput = {
+    latitude?: SortOrder
+    longitude?: SortOrder
+  }
+
+  export type EnumIncidentCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentCategory | EnumIncidentCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentCategoryWithAggregatesFilter<$PrismaModel> | $Enums.IncidentCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIncidentCategoryFilter<$PrismaModel>
+    _max?: NestedEnumIncidentCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumIncidentSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentSeverity | EnumIncidentSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentSeverityWithAggregatesFilter<$PrismaModel> | $Enums.IncidentSeverity
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIncidentSeverityFilter<$PrismaModel>
+    _max?: NestedEnumIncidentSeverityFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -59685,6 +63022,20 @@ export namespace Prisma {
     connect?: DriverRouteJoinWhereUniqueInput | DriverRouteJoinWhereUniqueInput[]
   }
 
+  export type DriverHOSEntryCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput> | DriverHOSEntryCreateWithoutTenantInput[] | DriverHOSEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutTenantInput | DriverHOSEntryCreateOrConnectWithoutTenantInput[]
+    createMany?: DriverHOSEntryCreateManyTenantInputEnvelope
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+  }
+
+  export type DriverIncidentCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput> | DriverIncidentCreateWithoutTenantInput[] | DriverIncidentUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutTenantInput | DriverIncidentCreateOrConnectWithoutTenantInput[]
+    createMany?: DriverIncidentCreateManyTenantInputEnvelope
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -59879,6 +63230,20 @@ export namespace Prisma {
     connectOrCreate?: DriverRouteJoinCreateOrConnectWithoutTenantInput | DriverRouteJoinCreateOrConnectWithoutTenantInput[]
     createMany?: DriverRouteJoinCreateManyTenantInputEnvelope
     connect?: DriverRouteJoinWhereUniqueInput | DriverRouteJoinWhereUniqueInput[]
+  }
+
+  export type DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput> | DriverHOSEntryCreateWithoutTenantInput[] | DriverHOSEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutTenantInput | DriverHOSEntryCreateOrConnectWithoutTenantInput[]
+    createMany?: DriverHOSEntryCreateManyTenantInputEnvelope
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+  }
+
+  export type DriverIncidentUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput> | DriverIncidentCreateWithoutTenantInput[] | DriverIncidentUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutTenantInput | DriverIncidentCreateOrConnectWithoutTenantInput[]
+    createMany?: DriverIncidentCreateManyTenantInputEnvelope
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -60297,6 +63662,34 @@ export namespace Prisma {
     deleteMany?: DriverRouteJoinScalarWhereInput | DriverRouteJoinScalarWhereInput[]
   }
 
+  export type DriverHOSEntryUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput> | DriverHOSEntryCreateWithoutTenantInput[] | DriverHOSEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutTenantInput | DriverHOSEntryCreateOrConnectWithoutTenantInput[]
+    upsert?: DriverHOSEntryUpsertWithWhereUniqueWithoutTenantInput | DriverHOSEntryUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DriverHOSEntryCreateManyTenantInputEnvelope
+    set?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    disconnect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    delete?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    update?: DriverHOSEntryUpdateWithWhereUniqueWithoutTenantInput | DriverHOSEntryUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DriverHOSEntryUpdateManyWithWhereWithoutTenantInput | DriverHOSEntryUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+  }
+
+  export type DriverIncidentUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput> | DriverIncidentCreateWithoutTenantInput[] | DriverIncidentUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutTenantInput | DriverIncidentCreateOrConnectWithoutTenantInput[]
+    upsert?: DriverIncidentUpsertWithWhereUniqueWithoutTenantInput | DriverIncidentUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DriverIncidentCreateManyTenantInputEnvelope
+    set?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    disconnect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    delete?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    update?: DriverIncidentUpdateWithWhereUniqueWithoutTenantInput | DriverIncidentUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DriverIncidentUpdateManyWithWhereWithoutTenantInput | DriverIncidentUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -60689,6 +64082,34 @@ export namespace Prisma {
     deleteMany?: DriverRouteJoinScalarWhereInput | DriverRouteJoinScalarWhereInput[]
   }
 
+  export type DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput> | DriverHOSEntryCreateWithoutTenantInput[] | DriverHOSEntryUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutTenantInput | DriverHOSEntryCreateOrConnectWithoutTenantInput[]
+    upsert?: DriverHOSEntryUpsertWithWhereUniqueWithoutTenantInput | DriverHOSEntryUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DriverHOSEntryCreateManyTenantInputEnvelope
+    set?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    disconnect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    delete?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    update?: DriverHOSEntryUpdateWithWhereUniqueWithoutTenantInput | DriverHOSEntryUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DriverHOSEntryUpdateManyWithWhereWithoutTenantInput | DriverHOSEntryUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+  }
+
+  export type DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput> | DriverIncidentCreateWithoutTenantInput[] | DriverIncidentUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutTenantInput | DriverIncidentCreateOrConnectWithoutTenantInput[]
+    upsert?: DriverIncidentUpsertWithWhereUniqueWithoutTenantInput | DriverIncidentUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DriverIncidentCreateManyTenantInputEnvelope
+    set?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    disconnect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    delete?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    update?: DriverIncidentUpdateWithWhereUniqueWithoutTenantInput | DriverIncidentUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DriverIncidentUpdateManyWithWhereWithoutTenantInput | DriverIncidentUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+  }
+
   export type TenantCreateNestedOneWithoutUsersInput = {
     create?: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
     connectOrCreate?: TenantCreateOrConnectWithoutUsersInput
@@ -60828,6 +64249,20 @@ export namespace Prisma {
     connect?: DriverRouteJoinWhereUniqueInput | DriverRouteJoinWhereUniqueInput[]
   }
 
+  export type DriverHOSEntryCreateNestedManyWithoutDriverInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput> | DriverHOSEntryCreateWithoutDriverInput[] | DriverHOSEntryUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutDriverInput | DriverHOSEntryCreateOrConnectWithoutDriverInput[]
+    createMany?: DriverHOSEntryCreateManyDriverInputEnvelope
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+  }
+
+  export type DriverIncidentCreateNestedManyWithoutDriverInput = {
+    create?: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput> | DriverIncidentCreateWithoutDriverInput[] | DriverIncidentUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutDriverInput | DriverIncidentCreateOrConnectWithoutDriverInput[]
+    createMany?: DriverIncidentCreateManyDriverInputEnvelope
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+  }
+
   export type RouteUncheckedCreateNestedManyWithoutDriverInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -60959,6 +64394,20 @@ export namespace Prisma {
     connectOrCreate?: DriverRouteJoinCreateOrConnectWithoutDriverInput | DriverRouteJoinCreateOrConnectWithoutDriverInput[]
     createMany?: DriverRouteJoinCreateManyDriverInputEnvelope
     connect?: DriverRouteJoinWhereUniqueInput | DriverRouteJoinWhereUniqueInput[]
+  }
+
+  export type DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput> | DriverHOSEntryCreateWithoutDriverInput[] | DriverHOSEntryUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutDriverInput | DriverHOSEntryCreateOrConnectWithoutDriverInput[]
+    createMany?: DriverHOSEntryCreateManyDriverInputEnvelope
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+  }
+
+  export type DriverIncidentUncheckedCreateNestedManyWithoutDriverInput = {
+    create?: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput> | DriverIncidentCreateWithoutDriverInput[] | DriverIncidentUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutDriverInput | DriverIncidentCreateOrConnectWithoutDriverInput[]
+    createMany?: DriverIncidentCreateManyDriverInputEnvelope
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -61239,6 +64688,34 @@ export namespace Prisma {
     deleteMany?: DriverRouteJoinScalarWhereInput | DriverRouteJoinScalarWhereInput[]
   }
 
+  export type DriverHOSEntryUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput> | DriverHOSEntryCreateWithoutDriverInput[] | DriverHOSEntryUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutDriverInput | DriverHOSEntryCreateOrConnectWithoutDriverInput[]
+    upsert?: DriverHOSEntryUpsertWithWhereUniqueWithoutDriverInput | DriverHOSEntryUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: DriverHOSEntryCreateManyDriverInputEnvelope
+    set?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    disconnect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    delete?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    update?: DriverHOSEntryUpdateWithWhereUniqueWithoutDriverInput | DriverHOSEntryUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: DriverHOSEntryUpdateManyWithWhereWithoutDriverInput | DriverHOSEntryUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+  }
+
+  export type DriverIncidentUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput> | DriverIncidentCreateWithoutDriverInput[] | DriverIncidentUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutDriverInput | DriverIncidentCreateOrConnectWithoutDriverInput[]
+    upsert?: DriverIncidentUpsertWithWhereUniqueWithoutDriverInput | DriverIncidentUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: DriverIncidentCreateManyDriverInputEnvelope
+    set?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    disconnect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    delete?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    update?: DriverIncidentUpdateWithWhereUniqueWithoutDriverInput | DriverIncidentUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: DriverIncidentUpdateManyWithWhereWithoutDriverInput | DriverIncidentUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+  }
+
   export type RouteUncheckedUpdateManyWithoutDriverNestedInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -61503,6 +64980,34 @@ export namespace Prisma {
     update?: DriverRouteJoinUpdateWithWhereUniqueWithoutDriverInput | DriverRouteJoinUpdateWithWhereUniqueWithoutDriverInput[]
     updateMany?: DriverRouteJoinUpdateManyWithWhereWithoutDriverInput | DriverRouteJoinUpdateManyWithWhereWithoutDriverInput[]
     deleteMany?: DriverRouteJoinScalarWhereInput | DriverRouteJoinScalarWhereInput[]
+  }
+
+  export type DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput> | DriverHOSEntryCreateWithoutDriverInput[] | DriverHOSEntryUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverHOSEntryCreateOrConnectWithoutDriverInput | DriverHOSEntryCreateOrConnectWithoutDriverInput[]
+    upsert?: DriverHOSEntryUpsertWithWhereUniqueWithoutDriverInput | DriverHOSEntryUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: DriverHOSEntryCreateManyDriverInputEnvelope
+    set?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    disconnect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    delete?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    connect?: DriverHOSEntryWhereUniqueInput | DriverHOSEntryWhereUniqueInput[]
+    update?: DriverHOSEntryUpdateWithWhereUniqueWithoutDriverInput | DriverHOSEntryUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: DriverHOSEntryUpdateManyWithWhereWithoutDriverInput | DriverHOSEntryUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+  }
+
+  export type DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput = {
+    create?: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput> | DriverIncidentCreateWithoutDriverInput[] | DriverIncidentUncheckedCreateWithoutDriverInput[]
+    connectOrCreate?: DriverIncidentCreateOrConnectWithoutDriverInput | DriverIncidentCreateOrConnectWithoutDriverInput[]
+    upsert?: DriverIncidentUpsertWithWhereUniqueWithoutDriverInput | DriverIncidentUpsertWithWhereUniqueWithoutDriverInput[]
+    createMany?: DriverIncidentCreateManyDriverInputEnvelope
+    set?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    disconnect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    delete?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+    update?: DriverIncidentUpdateWithWhereUniqueWithoutDriverInput | DriverIncidentUpdateWithWhereUniqueWithoutDriverInput[]
+    updateMany?: DriverIncidentUpdateManyWithWhereWithoutDriverInput | DriverIncidentUpdateManyWithWhereWithoutDriverInput[]
+    deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTrucksInput = {
@@ -63837,6 +67342,74 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDriverRouteJoinsInput, UserUpdateWithoutDriverRouteJoinsInput>, UserUncheckedUpdateWithoutDriverRouteJoinsInput>
   }
 
+  export type TenantCreateNestedOneWithoutDriverHOSEntriesInput = {
+    create?: XOR<TenantCreateWithoutDriverHOSEntriesInput, TenantUncheckedCreateWithoutDriverHOSEntriesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDriverHOSEntriesInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutHosEntriesInput = {
+    create?: XOR<UserCreateWithoutHosEntriesInput, UserUncheckedCreateWithoutHosEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHosEntriesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumHOSDutyStatusFieldUpdateOperationsInput = {
+    set?: $Enums.HOSDutyStatus
+  }
+
+  export type TenantUpdateOneRequiredWithoutDriverHOSEntriesNestedInput = {
+    create?: XOR<TenantCreateWithoutDriverHOSEntriesInput, TenantUncheckedCreateWithoutDriverHOSEntriesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDriverHOSEntriesInput
+    upsert?: TenantUpsertWithoutDriverHOSEntriesInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutDriverHOSEntriesInput, TenantUpdateWithoutDriverHOSEntriesInput>, TenantUncheckedUpdateWithoutDriverHOSEntriesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutHosEntriesNestedInput = {
+    create?: XOR<UserCreateWithoutHosEntriesInput, UserUncheckedCreateWithoutHosEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHosEntriesInput
+    upsert?: UserUpsertWithoutHosEntriesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutHosEntriesInput, UserUpdateWithoutHosEntriesInput>, UserUncheckedUpdateWithoutHosEntriesInput>
+  }
+
+  export type TenantCreateNestedOneWithoutDriverIncidentsInput = {
+    create?: XOR<TenantCreateWithoutDriverIncidentsInput, TenantUncheckedCreateWithoutDriverIncidentsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDriverIncidentsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutIncidentsInput = {
+    create?: XOR<UserCreateWithoutIncidentsInput, UserUncheckedCreateWithoutIncidentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIncidentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumIncidentCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.IncidentCategory
+  }
+
+  export type EnumIncidentSeverityFieldUpdateOperationsInput = {
+    set?: $Enums.IncidentSeverity
+  }
+
+  export type TenantUpdateOneRequiredWithoutDriverIncidentsNestedInput = {
+    create?: XOR<TenantCreateWithoutDriverIncidentsInput, TenantUncheckedCreateWithoutDriverIncidentsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDriverIncidentsInput
+    upsert?: TenantUpsertWithoutDriverIncidentsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutDriverIncidentsInput, TenantUpdateWithoutDriverIncidentsInput>, TenantUncheckedUpdateWithoutDriverIncidentsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutIncidentsNestedInput = {
+    create?: XOR<UserCreateWithoutIncidentsInput, UserUncheckedCreateWithoutIncidentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutIncidentsInput
+    upsert?: UserUpsertWithoutIncidentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIncidentsInput, UserUpdateWithoutIncidentsInput>, UserUncheckedUpdateWithoutIncidentsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -64606,6 +68179,57 @@ export namespace Prisma {
     _max?: NestedEnumDriverPaymentMethodFilter<$PrismaModel>
   }
 
+  export type NestedEnumHOSDutyStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.HOSDutyStatus | EnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumHOSDutyStatusFilter<$PrismaModel> | $Enums.HOSDutyStatus
+  }
+
+  export type NestedEnumHOSDutyStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HOSDutyStatus | EnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumHOSDutyStatusWithAggregatesFilter<$PrismaModel> | $Enums.HOSDutyStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumHOSDutyStatusFilter<$PrismaModel>
+    _max?: NestedEnumHOSDutyStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumIncidentCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentCategory | EnumIncidentCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentCategoryFilter<$PrismaModel> | $Enums.IncidentCategory
+  }
+
+  export type NestedEnumIncidentSeverityFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentSeverity | EnumIncidentSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentSeverityFilter<$PrismaModel> | $Enums.IncidentSeverity
+  }
+
+  export type NestedEnumIncidentCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentCategory | EnumIncidentCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentCategory[] | ListEnumIncidentCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentCategoryWithAggregatesFilter<$PrismaModel> | $Enums.IncidentCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIncidentCategoryFilter<$PrismaModel>
+    _max?: NestedEnumIncidentCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumIncidentSeverityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.IncidentSeverity | EnumIncidentSeverityFieldRefInput<$PrismaModel>
+    in?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.IncidentSeverity[] | ListEnumIncidentSeverityFieldRefInput<$PrismaModel>
+    not?: NestedEnumIncidentSeverityWithAggregatesFilter<$PrismaModel> | $Enums.IncidentSeverity
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumIncidentSeverityFilter<$PrismaModel>
+    _max?: NestedEnumIncidentSeverityFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutTenantInput = {
     id?: string
     email: string
@@ -64638,6 +68262,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
@@ -64672,6 +68298,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -65828,6 +69456,78 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DriverHOSEntryCreateWithoutTenantInput = {
+    id?: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    driver: UserCreateNestedOneWithoutHosEntriesInput
+  }
+
+  export type DriverHOSEntryUncheckedCreateWithoutTenantInput = {
+    id?: string
+    driverId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverHOSEntryCreateOrConnectWithoutTenantInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    create: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DriverHOSEntryCreateManyTenantInputEnvelope = {
+    data: DriverHOSEntryCreateManyTenantInput | DriverHOSEntryCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DriverIncidentCreateWithoutTenantInput = {
+    id?: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    driver: UserCreateNestedOneWithoutIncidentsInput
+  }
+
+  export type DriverIncidentUncheckedCreateWithoutTenantInput = {
+    id?: string
+    driverId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentCreateOrConnectWithoutTenantInput = {
+    where: DriverIncidentWhereUniqueInput
+    create: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DriverIncidentCreateManyTenantInputEnvelope = {
+    data: DriverIncidentCreateManyTenantInput | DriverIncidentCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutTenantInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutTenantInput, UserUncheckedUpdateWithoutTenantInput>
@@ -66813,6 +70513,72 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"DriverRouteJoin"> | Date | string
   }
 
+  export type DriverHOSEntryUpsertWithWhereUniqueWithoutTenantInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    update: XOR<DriverHOSEntryUpdateWithoutTenantInput, DriverHOSEntryUncheckedUpdateWithoutTenantInput>
+    create: XOR<DriverHOSEntryCreateWithoutTenantInput, DriverHOSEntryUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DriverHOSEntryUpdateWithWhereUniqueWithoutTenantInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    data: XOR<DriverHOSEntryUpdateWithoutTenantInput, DriverHOSEntryUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type DriverHOSEntryUpdateManyWithWhereWithoutTenantInput = {
+    where: DriverHOSEntryScalarWhereInput
+    data: XOR<DriverHOSEntryUpdateManyMutationInput, DriverHOSEntryUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type DriverHOSEntryScalarWhereInput = {
+    AND?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+    OR?: DriverHOSEntryScalarWhereInput[]
+    NOT?: DriverHOSEntryScalarWhereInput | DriverHOSEntryScalarWhereInput[]
+    id?: UuidFilter<"DriverHOSEntry"> | string
+    tenantId?: UuidFilter<"DriverHOSEntry"> | string
+    driverId?: UuidFilter<"DriverHOSEntry"> | string
+    status?: EnumHOSDutyStatusFilter<"DriverHOSEntry"> | $Enums.HOSDutyStatus
+    startTime?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    endTime?: DateTimeNullableFilter<"DriverHOSEntry"> | Date | string | null
+    notes?: StringNullableFilter<"DriverHOSEntry"> | string | null
+    createdAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverHOSEntry"> | Date | string
+  }
+
+  export type DriverIncidentUpsertWithWhereUniqueWithoutTenantInput = {
+    where: DriverIncidentWhereUniqueInput
+    update: XOR<DriverIncidentUpdateWithoutTenantInput, DriverIncidentUncheckedUpdateWithoutTenantInput>
+    create: XOR<DriverIncidentCreateWithoutTenantInput, DriverIncidentUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DriverIncidentUpdateWithWhereUniqueWithoutTenantInput = {
+    where: DriverIncidentWhereUniqueInput
+    data: XOR<DriverIncidentUpdateWithoutTenantInput, DriverIncidentUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type DriverIncidentUpdateManyWithWhereWithoutTenantInput = {
+    where: DriverIncidentScalarWhereInput
+    data: XOR<DriverIncidentUpdateManyMutationInput, DriverIncidentUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type DriverIncidentScalarWhereInput = {
+    AND?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+    OR?: DriverIncidentScalarWhereInput[]
+    NOT?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+    id?: UuidFilter<"DriverIncident"> | string
+    tenantId?: UuidFilter<"DriverIncident"> | string
+    driverId?: UuidFilter<"DriverIncident"> | string
+    category?: EnumIncidentCategoryFilter<"DriverIncident"> | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFilter<"DriverIncident"> | $Enums.IncidentSeverity
+    description?: StringFilter<"DriverIncident"> | string
+    latitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    longitude?: DecimalNullableFilter<"DriverIncident"> | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: StringNullableFilter<"DriverIncident"> | string | null
+    reportedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    notes?: StringNullableFilter<"DriverIncident"> | string | null
+    createdAt?: DateTimeFilter<"DriverIncident"> | Date | string
+    updatedAt?: DateTimeFilter<"DriverIncident"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -66849,6 +70615,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -66887,6 +70655,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -67942,6 +71712,78 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type DriverHOSEntryCreateWithoutDriverInput = {
+    id?: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDriverHOSEntriesInput
+  }
+
+  export type DriverHOSEntryUncheckedCreateWithoutDriverInput = {
+    id?: string
+    tenantId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverHOSEntryCreateOrConnectWithoutDriverInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    create: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput>
+  }
+
+  export type DriverHOSEntryCreateManyDriverInputEnvelope = {
+    data: DriverHOSEntryCreateManyDriverInput | DriverHOSEntryCreateManyDriverInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DriverIncidentCreateWithoutDriverInput = {
+    id?: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDriverIncidentsInput
+  }
+
+  export type DriverIncidentUncheckedCreateWithoutDriverInput = {
+    id?: string
+    tenantId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentCreateOrConnectWithoutDriverInput = {
+    where: DriverIncidentWhereUniqueInput
+    create: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput>
+  }
+
+  export type DriverIncidentCreateManyDriverInputEnvelope = {
+    data: DriverIncidentCreateManyDriverInput | DriverIncidentCreateManyDriverInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutUsersInput = {
     update: XOR<TenantUpdateWithoutUsersInput, TenantUncheckedUpdateWithoutUsersInput>
     create: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
@@ -67989,6 +71831,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -68027,6 +71871,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -68344,6 +72190,38 @@ export namespace Prisma {
     data: XOR<DriverRouteJoinUpdateManyMutationInput, DriverRouteJoinUncheckedUpdateManyWithoutDriverInput>
   }
 
+  export type DriverHOSEntryUpsertWithWhereUniqueWithoutDriverInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    update: XOR<DriverHOSEntryUpdateWithoutDriverInput, DriverHOSEntryUncheckedUpdateWithoutDriverInput>
+    create: XOR<DriverHOSEntryCreateWithoutDriverInput, DriverHOSEntryUncheckedCreateWithoutDriverInput>
+  }
+
+  export type DriverHOSEntryUpdateWithWhereUniqueWithoutDriverInput = {
+    where: DriverHOSEntryWhereUniqueInput
+    data: XOR<DriverHOSEntryUpdateWithoutDriverInput, DriverHOSEntryUncheckedUpdateWithoutDriverInput>
+  }
+
+  export type DriverHOSEntryUpdateManyWithWhereWithoutDriverInput = {
+    where: DriverHOSEntryScalarWhereInput
+    data: XOR<DriverHOSEntryUpdateManyMutationInput, DriverHOSEntryUncheckedUpdateManyWithoutDriverInput>
+  }
+
+  export type DriverIncidentUpsertWithWhereUniqueWithoutDriverInput = {
+    where: DriverIncidentWhereUniqueInput
+    update: XOR<DriverIncidentUpdateWithoutDriverInput, DriverIncidentUncheckedUpdateWithoutDriverInput>
+    create: XOR<DriverIncidentCreateWithoutDriverInput, DriverIncidentUncheckedCreateWithoutDriverInput>
+  }
+
+  export type DriverIncidentUpdateWithWhereUniqueWithoutDriverInput = {
+    where: DriverIncidentWhereUniqueInput
+    data: XOR<DriverIncidentUpdateWithoutDriverInput, DriverIncidentUncheckedUpdateWithoutDriverInput>
+  }
+
+  export type DriverIncidentUpdateManyWithWhereWithoutDriverInput = {
+    where: DriverIncidentScalarWhereInput
+    data: XOR<DriverIncidentUpdateManyMutationInput, DriverIncidentUncheckedUpdateManyWithoutDriverInput>
+  }
+
   export type TenantCreateWithoutTrucksInput = {
     id?: string
     name: string
@@ -68380,6 +72258,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -68418,6 +72298,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -68457,6 +72339,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutTrucksCreatedInput = {
@@ -68491,6 +72375,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutTrucksCreatedInput = {
@@ -68530,6 +72416,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutTrucksUpdatedInput = {
@@ -68564,6 +72452,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutTrucksUpdatedInput = {
@@ -69036,6 +72926,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -69074,6 +72966,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -69119,6 +73013,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksCreatedInput = {
@@ -69153,6 +73049,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutTrucksUpdatedInput = {
@@ -69198,6 +73096,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksUpdatedInput = {
@@ -69232,6 +73132,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutTruckInput = {
@@ -69414,6 +73316,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -69452,6 +73356,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -69506,6 +73412,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -69544,6 +73452,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -69582,6 +73492,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -69620,6 +73532,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -69659,6 +73573,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutAssignedRoutesInput = {
@@ -69693,6 +73609,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutAssignedRoutesInput = {
@@ -69789,6 +73707,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutRoutesCreatedInput = {
@@ -69823,6 +73743,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutRoutesCreatedInput = {
@@ -69862,6 +73784,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutRoutesUpdatedInput = {
@@ -69896,6 +73820,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutRoutesUpdatedInput = {
@@ -70294,6 +74220,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -70332,6 +74260,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -70377,6 +74307,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedRoutesInput = {
@@ -70411,6 +74343,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TruckUpsertWithoutAssignedRoutesInput = {
@@ -70519,6 +74453,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesCreatedInput = {
@@ -70553,6 +74489,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutRoutesUpdatedInput = {
@@ -70598,6 +74536,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesUpdatedInput = {
@@ -70632,6 +74572,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutRouteInput = {
@@ -70859,6 +74801,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutRouteCoDriversInput = {
@@ -70893,6 +74837,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutRouteCoDriversInput = {
@@ -71014,6 +74960,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteCoDriversInput = {
@@ -71048,6 +74996,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TenantCreateWithoutDocumentsInput = {
@@ -71086,6 +75036,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -71124,6 +75076,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -71285,6 +75239,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutDriverDocumentsInput = {
@@ -71319,6 +75275,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutDriverDocumentsInput = {
@@ -71425,6 +75383,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -71459,6 +75419,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -71513,6 +75475,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -71551,6 +75515,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -71730,6 +75696,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDocumentsInput = {
@@ -71764,6 +75732,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type LoadUpsertWithoutDocumentsInput = {
@@ -71882,6 +75852,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -71916,6 +75888,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TenantCreateWithoutMaintenanceEventsInput = {
@@ -71954,6 +75928,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -71992,6 +75968,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -72103,6 +76081,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -72141,6 +76121,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -72242,6 +76224,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -72280,6 +76264,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -72391,6 +76377,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -72429,6 +76417,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -72530,6 +76520,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -72568,6 +76560,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -72622,6 +76616,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -72660,6 +76656,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -72698,6 +76696,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -72736,6 +76736,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -72847,6 +76849,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -72885,6 +76889,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -72986,6 +76992,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -73024,6 +77032,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -73120,6 +77130,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutSafetyEventsInput = {
@@ -73154,6 +77166,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutSafetyEventsInput = {
@@ -73273,6 +77287,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -73311,6 +77327,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -73419,6 +77437,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSafetyEventsInput = {
@@ -73453,6 +77473,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type RouteUpsertWithoutSafetyEventsInput = {
@@ -73562,6 +77584,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -73600,6 +77624,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -73711,6 +77737,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -73749,6 +77777,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -73850,6 +77880,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -73888,6 +77920,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -73968,6 +78002,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -74006,6 +78042,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -74060,6 +78098,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -74098,6 +78138,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -74217,6 +78259,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutTagAssignmentsInput = {
@@ -74251,6 +78295,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutTagAssignmentsInput = {
@@ -74305,6 +78351,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -74343,6 +78391,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -74480,6 +78530,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -74514,6 +78566,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TenantCreateWithoutExpenseCategoriesInput = {
@@ -74552,6 +78606,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -74590,6 +78646,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -74704,6 +78762,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -74742,6 +78802,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -74812,6 +78874,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -74850,6 +78914,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -74994,6 +79060,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -75032,6 +79100,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -75172,6 +79242,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -75210,6 +79282,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -75290,6 +79364,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -75328,6 +79404,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -75428,6 +79506,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -75466,6 +79546,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -75578,6 +79660,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -75616,6 +79700,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -75654,6 +79740,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -75692,6 +79780,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -75811,6 +79901,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -75849,6 +79941,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -75958,6 +80052,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -75996,6 +80092,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -76154,6 +80252,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -76192,6 +80292,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -76262,6 +80364,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -76300,6 +80404,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -76405,6 +80511,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -76443,6 +80551,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -76538,6 +80648,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -76576,6 +80688,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -76615,6 +80729,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesCreatedInput = {
@@ -76649,6 +80765,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesCreatedInput = {
@@ -76688,6 +80806,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesUpdatedInput = {
@@ -76722,6 +80842,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesUpdatedInput = {
@@ -76871,6 +80993,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -76909,6 +81033,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -76954,6 +81080,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesCreatedInput = {
@@ -76988,6 +81116,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutInvoicesUpdatedInput = {
@@ -77033,6 +81163,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesUpdatedInput = {
@@ -77067,6 +81199,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type LoadUpsertWithoutInvoicesInput = {
@@ -77243,6 +81377,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -77281,6 +81417,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -77390,6 +81528,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -77428,6 +81568,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -77466,6 +81608,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -77504,6 +81648,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -77586,6 +81732,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -77624,6 +81772,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -77783,6 +81933,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -77821,6 +81973,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -77860,6 +82014,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutPayrollRecordsInput = {
@@ -77894,6 +82050,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutPayrollRecordsInput = {
@@ -77933,6 +82091,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsCreatedInput = {
@@ -77967,6 +82127,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsCreatedInput = {
@@ -78006,6 +82168,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsUpdatedInput = {
@@ -78040,6 +82204,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsUpdatedInput = {
@@ -78094,6 +82260,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -78132,6 +82300,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -78177,6 +82347,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -78211,6 +82383,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutPayrollsCreatedInput = {
@@ -78256,6 +82430,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsCreatedInput = {
@@ -78290,6 +82466,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutPayrollsUpdatedInput = {
@@ -78335,6 +82513,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsUpdatedInput = {
@@ -78369,6 +82549,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TenantCreateWithoutLoadsInput = {
@@ -78407,6 +82589,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -78445,6 +82629,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -78600,6 +82786,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutDriverLoadsInput = {
@@ -78634,6 +82822,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutDriverLoadsInput = {
@@ -78730,6 +82920,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutLoadsCreatedInput = {
@@ -78764,6 +82956,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutLoadsCreatedInput = {
@@ -78803,6 +82997,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutLoadsUpdatedInput = {
@@ -78837,6 +83033,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutLoadsUpdatedInput = {
@@ -78995,6 +83193,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -79033,6 +83233,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -79206,6 +83408,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverLoadsInput = {
@@ -79240,6 +83444,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type TruckUpsertWithoutLoadsInput = {
@@ -79348,6 +83554,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsCreatedInput = {
@@ -79382,6 +83590,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUpsertWithoutLoadsUpdatedInput = {
@@ -79427,6 +83637,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsUpdatedInput = {
@@ -79461,6 +83673,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutLoadInput = {
@@ -79531,6 +83745,8 @@ export namespace Prisma {
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -79569,6 +83785,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -79623,6 +83841,8 @@ export namespace Prisma {
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -79661,6 +83881,8 @@ export namespace Prisma {
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -79764,6 +83986,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -79802,6 +84026,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -79927,6 +84153,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -79965,6 +84193,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutDriverRouteJoinsInput = {
@@ -80003,6 +84233,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
     routeStops?: RouteStopCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -80041,6 +84273,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
     routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -80145,6 +84379,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
     payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
   }
 
   export type UserUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -80179,6 +84415,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
     payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
   }
 
   export type UserCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -80233,6 +84471,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
     routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -80271,6 +84511,8 @@ export namespace Prisma {
     tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
     routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
     sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -80387,6 +84629,8 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -80421,6 +84665,680 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+  }
+
+  export type TenantCreateWithoutDriverHOSEntriesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutDriverHOSEntriesInput, TenantUncheckedCreateWithoutDriverHOSEntriesInput>
+  }
+
+  export type UserCreateWithoutHosEntriesInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserUncheckedCreateWithoutHosEntriesInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserCreateOrConnectWithoutHosEntriesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutHosEntriesInput, UserUncheckedCreateWithoutHosEntriesInput>
+  }
+
+  export type TenantUpsertWithoutDriverHOSEntriesInput = {
+    update: XOR<TenantUpdateWithoutDriverHOSEntriesInput, TenantUncheckedUpdateWithoutDriverHOSEntriesInput>
+    create: XOR<TenantCreateWithoutDriverHOSEntriesInput, TenantUncheckedCreateWithoutDriverHOSEntriesInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutDriverHOSEntriesInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutDriverHOSEntriesInput, TenantUncheckedUpdateWithoutDriverHOSEntriesInput>
+  }
+
+  export type TenantUpdateWithoutDriverHOSEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutHosEntriesInput = {
+    update: XOR<UserUpdateWithoutHosEntriesInput, UserUncheckedUpdateWithoutHosEntriesInput>
+    create: XOR<UserCreateWithoutHosEntriesInput, UserUncheckedCreateWithoutHosEntriesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutHosEntriesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutHosEntriesInput, UserUncheckedUpdateWithoutHosEntriesInput>
+  }
+
+  export type UserUpdateWithoutHosEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutHosEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+  }
+
+  export type TenantCreateWithoutDriverIncidentsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutDriverIncidentsInput, TenantUncheckedCreateWithoutDriverIncidentsInput>
+  }
+
+  export type UserCreateWithoutIncidentsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserUncheckedCreateWithoutIncidentsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserCreateOrConnectWithoutIncidentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutIncidentsInput, UserUncheckedCreateWithoutIncidentsInput>
+  }
+
+  export type TenantUpsertWithoutDriverIncidentsInput = {
+    update: XOR<TenantUpdateWithoutDriverIncidentsInput, TenantUncheckedUpdateWithoutDriverIncidentsInput>
+    create: XOR<TenantCreateWithoutDriverIncidentsInput, TenantUncheckedCreateWithoutDriverIncidentsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutDriverIncidentsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutDriverIncidentsInput, TenantUncheckedUpdateWithoutDriverIncidentsInput>
+  }
+
+  export type TenantUpdateWithoutDriverIncidentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutIncidentsInput = {
+    update: XOR<UserUpdateWithoutIncidentsInput, UserUncheckedUpdateWithoutIncidentsInput>
+    create: XOR<UserCreateWithoutIncidentsInput, UserUncheckedCreateWithoutIncidentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutIncidentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutIncidentsInput, UserUncheckedUpdateWithoutIncidentsInput>
+  }
+
+  export type UserUpdateWithoutIncidentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutIncidentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -80848,6 +85766,32 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type DriverHOSEntryCreateManyTenantInput = {
+    id?: string
+    driverId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentCreateManyTenantInput = {
+    id?: string
+    driverId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type UserUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -80880,6 +85824,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
@@ -80914,6 +85860,8 @@ export namespace Prisma {
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -82215,6 +87163,84 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DriverHOSEntryUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    driver?: UserUpdateOneRequiredWithoutHosEntriesNestedInput
+  }
+
+  export type DriverHOSEntryUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverHOSEntryUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    driver?: UserUpdateOneRequiredWithoutIncidentsNestedInput
+  }
+
+  export type DriverIncidentUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    driverId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RouteCreateManyDriverInput = {
     id?: string
     tenantId: string
@@ -82590,6 +87616,32 @@ export namespace Prisma {
     numberOfHours?: Decimal | DecimalJsLike | number | string | null
     perMileRate?: Decimal | DecimalJsLike | number | string | null
     numberOfMiles?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverHOSEntryCreateManyDriverInput = {
+    id?: string
+    tenantId: string
+    status: $Enums.HOSDutyStatus
+    startTime: Date | string
+    endTime?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DriverIncidentCreateManyDriverInput = {
+    id?: string
+    tenantId: string
+    category: $Enums.IncidentCategory
+    severity: $Enums.IncidentSeverity
+    description: string
+    latitude?: Decimal | DecimalJsLike | number | string | null
+    longitude?: Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: string | null
+    reportedAt: Date | string
+    notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -83827,6 +88879,84 @@ export namespace Prisma {
     numberOfHours?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     perMileRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     numberOfMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverHOSEntryUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDriverHOSEntriesNestedInput
+  }
+
+  export type DriverHOSEntryUncheckedUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverHOSEntryUncheckedUpdateManyWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    status?: EnumHOSDutyStatusFieldUpdateOperationsInput | $Enums.HOSDutyStatus
+    startTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    endTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDriverIncidentsNestedInput
+  }
+
+  export type DriverIncidentUncheckedUpdateWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DriverIncidentUncheckedUpdateManyWithoutDriverInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    category?: EnumIncidentCategoryFieldUpdateOperationsInput | $Enums.IncidentCategory
+    severity?: EnumIncidentSeverityFieldUpdateOperationsInput | $Enums.IncidentSeverity
+    description?: StringFieldUpdateOperationsInput | string
+    latitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    longitude?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    photoS3Key?: NullableStringFieldUpdateOperationsInput | string | null
+    reportedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

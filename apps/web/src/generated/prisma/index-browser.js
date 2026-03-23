@@ -642,6 +642,34 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.DriverHOSEntryScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  status: 'status',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DriverIncidentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  category: 'category',
+  severity: 'severity',
+  description: 'description',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  photoS3Key: 'photoS3Key',
+  reportedAt: 'reportedAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -846,6 +874,27 @@ exports.DriverPaymentMethod = exports.$Enums.DriverPaymentMethod = {
   PER_MILE: 'PER_MILE'
 };
 
+exports.HOSDutyStatus = exports.$Enums.HOSDutyStatus = {
+  OFF_DUTY: 'OFF_DUTY',
+  SLEEPER_BERTH: 'SLEEPER_BERTH',
+  DRIVING: 'DRIVING',
+  ON_DUTY: 'ON_DUTY'
+};
+
+exports.IncidentCategory = exports.$Enums.IncidentCategory = {
+  ACCIDENT: 'ACCIDENT',
+  VIOLATION: 'VIOLATION',
+  MECHANICAL: 'MECHANICAL',
+  HAZARD: 'HAZARD',
+  OTHER: 'OTHER'
+};
+
+exports.IncidentSeverity = exports.$Enums.IncidentSeverity = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -880,7 +929,9 @@ exports.Prisma.ModelName = {
   TicketMessage: 'TicketMessage',
   RouteStop: 'RouteStop',
   DriverRouteJoin: 'DriverRouteJoin',
-  FleetMessage: 'FleetMessage'
+  FleetMessage: 'FleetMessage',
+  DriverHOSEntry: 'DriverHOSEntry',
+  DriverIncident: 'DriverIncident'
 };
 
 /**
