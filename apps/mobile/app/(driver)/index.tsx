@@ -186,6 +186,29 @@ export default function DriverDashboard() {
           <StatChip value={`${hosHoursRemaining}h`} label="HOS Left" />
         </View>
 
+        {/* Report Incident Quick Action */}
+        <Pressable
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onPress={() => router.push('/(driver)/incidents/new' as any)}
+          className="mb-5 active:opacity-80 rounded-xl overflow-hidden"
+          style={{
+            backgroundColor: 'rgba(127,29,29,0.3)',
+            borderWidth: 1,
+            borderColor: 'rgba(153,27,27,0.5)',
+            borderRadius: 12,
+          }}
+        >
+          <View className="flex-row items-center p-4 gap-3">
+            <AlertTriangle color="#f87171" size={22} />
+            <View className="flex-1">
+              <Text className="text-red-400 font-semibold text-base">Report Incident</Text>
+              <Text className="text-slate-500 text-sm mt-0.5">
+                Submit accident, violation, or hazard report
+              </Text>
+            </View>
+          </View>
+        </Pressable>
+
         {/* Recent Alerts */}
         <View>
           <Text className="text-white font-semibold text-base mb-3">Recent Alerts</Text>
