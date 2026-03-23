@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 32 Driver HOS and Incidents — COMPLETE
-Status: Phase 32 Plan 04 complete — full incident reporting vertical slice: REST endpoint, presigned S3 photo upload, SeverityToggle, IncidentPhotoCapture, GPS auto-fill form, dashboard button
-Last activity: 2026-03-23 - Completed Phase 32 Plan 04: Incident Reporting
-Stopped at: Phase 32 complete — next is Phase 33
+Phase: Phase 33 Driver Native Features — IN PROGRESS
+Status: Phase 33 Plan 01 complete — background GPS reporting: expo-task-manager background task, adaptive intervals (HOS + battery), GPS status dot in tab bar, tracking-token endpoint, GPSPermissionModal
+Last activity: 2026-03-23 - Completed Phase 33 Plan 01: Background GPS Reporting
+Stopped at: Phase 33 Plan 01 complete — next is Phase 33 Plan 02
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -66,9 +66,10 @@ Progress: [███████████████████████
 - Phase 32-02 (2026-03-23): HOS REST endpoints — GET + POST /api/mobile/driver/hos with 14h/11h clock math; api-client getHOS, updateHOSStatus, createIncident; fixed types + api-client tsconfig inheritance — 3 tasks, 4 files, ~12min
 - Phase 32-03 (2026-03-23): HOS screen — HOSStatusCard + HOSDayBar + HOSClock components, full hos.tsx with 2x2 status grid, day bar, countdown clocks, confirmation modal — 2 tasks, 4 files, 162s
 - Phase 32-04 (2026-03-23): Incident reporting — POST /api/mobile/driver/incidents + upload-photo endpoint, SeverityToggle (traffic light), IncidentPhotoCapture, uploadPhotoToS3 utility, incidents/new.tsx full form, dashboard button — 4 tasks, 8 files, ~5min
+- Phase 33-01 (2026-03-23): Background GPS reporting — expo-task-manager background task, useBackgroundGPS hook (adaptive intervals: 30s/5min/10min), GPSPermissionModal, GET /api/mobile/driver/tracking-token, GPS status dot in tab bar — 7 tasks, 7 files, 257s
 
 **Combined:**
-- Total: 21 phases complete, 52 plans
+- Total: 22 phases complete, 53 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -496,6 +497,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 31-03]: Built-in React Native Modal used for status update confirmation (not third-party bottom sheet)
 - [Phase 31-03]: FlashList v2+ new arch: estimatedItemSize prop removed (not supported)
 - [Phase 31-03]: RouteStop interface added to api-client with full Prisma schema fields; truck.licensePlate fixed (was plateNumber)
+- [Phase 33]: trackingToken is per-load (Load.trackingToken) not per-driver; endpoint returns active load token for GPS supplementary context
+- [Phase 33]: GPS interval adapts to HOSStatus: 30s DRIVING/ON_DUTY, 5min idle, 10min low-battery (<20%)
+- [Phase 33]: GPSStatusDot overlaid on home tab icon (not separate header bar) — minimal UI footprint
 
 ### Pending Todos
 
@@ -672,6 +676,7 @@ None blocking immediate progress.
 | Phase 29-monorepo-expo-scaffold P03 | 7min | 3 tasks | 46 files |
 | Phase 30 P02 | 198 | 6 tasks | 22 files |
 | Phase 31-03 P03 | 325 | 3 tasks | 10 files |
+| Phase 33 P01 | 257 | 7 tasks | 7 files |
 
 ## Session Continuity
 
