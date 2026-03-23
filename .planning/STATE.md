@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 30 Mobile Auth + Navigation — IN PROGRESS
-Status: Phase 30 Plan 02 complete — navigation shell (driver/owner tab navigators) + 9-component shared UI library
-Last activity: 2026-03-22 - Completed Phase 30 Plan 02: Navigation Shell + Shared UI Primitives
-Stopped at: Phase 30 Plan 02 complete — Phase 30 fully done, next is Phase 31 (driver portal)
+Phase: Phase 31 Driver Core Screens — IN PROGRESS
+Status: Phase 31 Plan 01 complete — 5 mobile REST API files: validateMobileToken utility + dashboard/loads list/load detail/status update endpoints
+Last activity: 2026-03-23 - Completed Phase 31 Plan 01: Driver REST API Endpoints
+Stopped at: Phase 31 Plan 01 complete — next is Phase 31 Plan 02 (driver mobile screens)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -59,6 +59,7 @@ Progress: [███████████████████████
 - Phase 29-03 (2026-03-22): Shared packages (types, validation, api-client) — TypeScript interfaces, 17 Zod schemas migrated from apps/web, Bearer token REST client — 3 tasks, 46 files, ~7min
 - Phase 30-01 (2026-03-22): Mobile auth system — AES-256-GCM Bearer tokens, MMKV session, login screen, AuthContext, 401 guard, role-based routing — 8 tasks, 8 files, ~4min
 - Phase 30-02 (2026-03-22): Navigation shell — driver/owner tab navigators (lucide icons), 9-component shared UI library (Button/Card/Badge/Input/LoadingSpinner/EmptyState/Typography/ScreenWrapper/BottomSheet) — 6 tasks, 22 files, 198s
+- Phase 31-01 (2026-03-23): Driver REST API endpoints — validateMobileToken utility + 4 endpoints (dashboard, loads list, load detail, status update) — 3 tasks, 5 files, 181s
 
 **Combined:**
 - Total: 21 phases complete, 49 plans
@@ -107,6 +108,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 31-01 decisions (Driver REST API endpoints):**
+- No separate Driver model — driverId on Load equals User.id for DRIVER role users; validateMobileToken sets ctx.driverId = user.id for DRIVER role
+- Driver-facing status labels (ACCEPTED, EN_ROUTE) map to DB enum values (DISPATCHED, IN_TRANSIT) inside POST /status — mobile API contract is schema-agnostic
+- Load stops surfaced via route.stops (RouteStop[] on Route model), flattened to top-level stops[] in load detail response
+- Customer model uses companyName not name (corrected from plan spec)
 
 **Phase 30-01 decisions (Mobile auth flow):**
 - Reused existing AES-256-GCM encrypt() from lib/auth/session.ts as Bearer token — no separate JWT library needed; same payload works for both cookie (web) and Bearer (mobile)
