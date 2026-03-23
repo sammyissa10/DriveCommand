@@ -3,6 +3,7 @@ import { AppState } from 'react-native'
 import { useRouter } from 'expo-router'
 import { apiClient } from '@drivecommand/api-client'
 import { sessionStorage } from '../lib/storage'
+import { registerPushToken } from './usePushNotifications'
 import type { AuthUser } from '@drivecommand/types'
 
 export function useAuth() {
@@ -42,6 +43,10 @@ export function useAuth() {
     sessionStorage.set(session)
     setToken(session.token)
     setUser(session.user)
+
+    // Register push token after login — non-blocking, best-effort
+    void registerPushToken(session.token)
+
     return session.user
   }, [])
 
