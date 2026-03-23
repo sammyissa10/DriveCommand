@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 32 Driver HOS and Incidents — IN PROGRESS
-Status: Phase 32 Plan 03 complete — HOS screen with 2x2 status card grid, 24-hour day bar, dual HH:MM:SS countdown clocks, and confirmation modal for duty status changes
-Last activity: 2026-03-23 - Completed Phase 32 Plan 03: HOS Screen
-Stopped at: Phase 32 Plan 03 complete — next is Phase 32 Plan 04 (Incident Reporting screen)
+Phase: Phase 32 Driver HOS and Incidents — COMPLETE
+Status: Phase 32 Plan 04 complete — full incident reporting vertical slice: REST endpoint, presigned S3 photo upload, SeverityToggle, IncidentPhotoCapture, GPS auto-fill form, dashboard button
+Last activity: 2026-03-23 - Completed Phase 32 Plan 04: Incident Reporting
+Stopped at: Phase 32 complete — next is Phase 33
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -65,6 +65,7 @@ Progress: [███████████████████████
 - Phase 32-01 (2026-03-23): DB schema foundation — DriverHOSEntry + DriverIncident models, HOSDutyStatus/IncidentCategory/IncidentSeverity enums, db push applied, HOSData + CreateIncidentPayload types — 3 tasks, 3 files, 168s
 - Phase 32-02 (2026-03-23): HOS REST endpoints — GET + POST /api/mobile/driver/hos with 14h/11h clock math; api-client getHOS, updateHOSStatus, createIncident; fixed types + api-client tsconfig inheritance — 3 tasks, 4 files, ~12min
 - Phase 32-03 (2026-03-23): HOS screen — HOSStatusCard + HOSDayBar + HOSClock components, full hos.tsx with 2x2 status grid, day bar, countdown clocks, confirmation modal — 2 tasks, 4 files, 162s
+- Phase 32-04 (2026-03-23): Incident reporting — POST /api/mobile/driver/incidents + upload-photo endpoint, SeverityToggle (traffic light), IncidentPhotoCapture, uploadPhotoToS3 utility, incidents/new.tsx full form, dashboard button — 4 tasks, 8 files, ~5min
 
 **Combined:**
 - Total: 21 phases complete, 52 plans
@@ -113,6 +114,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 32-04 decisions (Incident reporting):**
+- Created dedicated /api/mobile/driver/incidents/upload-photo endpoint with Bearer token auth — existing document multipart endpoints require OWNER/MANAGER web session auth via requireRole, incompatible with mobile Bearer tokens
+- Used expo-file-system/legacy import for getInfoAsync/readAsStringAsync/EncodingType — SDK 52 new API uses class-based File/Directory approach that doesn't accept bare URI strings
+- Used ActionSheetIOS on iOS + Modal fallback on Android for photo source picker — native feel without @expo/react-native-action-sheet dependency
+- Severity MEDIUM uses black text on yellow-500 background for WCAG contrast compliance
 
 **Phase 32-03 decisions (HOS screen):**
 - HOSDayBar uses onLayout to get pixel width then positions current-time marker with absolute left in pixels — avoids RN percentage string casts and is robust across layouts
