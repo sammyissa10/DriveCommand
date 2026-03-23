@@ -4,6 +4,7 @@ import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
 import { AuthProvider } from '../context/AuthContext'
+import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler } from '@drivecommand/api-client'
 import { useAuthContext } from '../context/AuthContext'
 import '../global.css'
@@ -47,9 +48,11 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <AuthGuard />
-      </AuthProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <AuthGuard />
+        </AuthProvider>
+      </QueryProvider>
     </SafeAreaProvider>
   )
 }

@@ -13,7 +13,7 @@ export const setUnauthorizedHandler = (handler: (() => void) | null) => {
   unauthorizedHandler = handler
 }
 
-async function apiRequest<T>(
+export async function apiRequest<T>(
   path: string,
   options: RequestInit & { token?: string } = {}
 ): Promise<T> {
