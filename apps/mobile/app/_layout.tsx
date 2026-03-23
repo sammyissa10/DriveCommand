@@ -1,5 +1,6 @@
-import { Slot } from 'expo-router'
+import { Slot, useRouter } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import * as Notifications from 'expo-notifications'
 import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
@@ -10,20 +11,46 @@ import { useAuthContext } from '../context/AuthContext'
 import Toast from 'react-native-toast-message'
 import '../global.css'
 
+// Show notifications even when the app is in the foreground
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+})
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
 /**
  * Inner layout that has access to AuthContext.
  * Registers the 401 handler so any unauthorized API response logs the user out.
+ * Also handles deep-linking from notification taps.
  */
 function AuthGuard() {
   const { logout } = useAuthContext()
+  const router = useRouter()
 
   useEffect(() => {
     setUnauthorizedHandler(logout)
     return () => setUnauthorizedHandler(null)
   }, [logout])
+
+  // Handle notification taps — deep-link to the relevant screen
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data as Record<string, string> | undefined
+      if (!data) return
+
+      if (data.screen === 'messages') router.push('/(driver)/messages')
+      else if (data.screen === 'loads') router.push('/(driver)/loads')
+      else if (data.screen === 'documents') router.push('/(driver)/documents')
+    })
+    return () => sub.remove()
+  }, [router])
 
   return <Slot />
 }
