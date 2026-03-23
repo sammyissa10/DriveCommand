@@ -37,21 +37,30 @@ export interface LoadSummary {
   createdAt: string
 }
 
+export interface RouteStop {
+  id: string
+  position: number
+  type: 'PICKUP' | 'DELIVERY'
+  address: string
+  status: 'PENDING' | 'ARRIVED' | 'DEPARTED'
+  scheduledAt: string | null
+  arrivedAt: string | null
+  departedAt: string | null
+  notes: string | null
+}
+
 export interface LoadDetail {
   id: string
   loadNumber: string
   status: string
   origin: string
   destination: string
-  customer: { companyName: string }
-  truck: { plateNumber: string; make: string; model: string } | null
-  stops: Array<{
-    id: string
-    name: string
-    address: string
-    position: number
-    completed: boolean
-  }>
+  pickupDate?: string | null
+  deliveryDate?: string | null
+  rate?: number | null
+  customer: { id: string; companyName: string; email?: string; phone?: string }
+  truck: { id: string; licensePlate: string; make: string; model: string } | null
+  stops: RouteStop[]
   createdAt: string
 }
 
