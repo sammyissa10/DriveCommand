@@ -10,10 +10,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 31 Driver Core Screens — IN PROGRESS
-Status: Phase 31 Plan 02 complete — driverApi in api-client, TanStack Query infrastructure, driver dashboard screen with active load card + stat chips + recent alerts
-Last activity: 2026-03-23 - Completed Phase 31 Plan 02: API Client + Driver Dashboard
-Stopped at: Phase 31 Plan 02 complete — next is Phase 31 Plan 03 (loads list + load detail screens)
+Phase: Phase 31 Driver Core Screens — COMPLETE
+Status: Phase 31 Plan 03 complete — loads list (Active/History tabs + FlashList + LoadCard), load detail (info grid + stop timeline + truck info + sticky status button), status update confirmation modal with haptic feedback and toast errors
+Last activity: 2026-03-22 - Completed Phase 31 Plan 03: Loads Workflow (list + detail + status update)
+Stopped at: Phase 31 Plan 03 complete — Phase 31 done, next is Phase 32 (Driver HOS Screen)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -61,9 +61,10 @@ Progress: [███████████████████████
 - Phase 30-02 (2026-03-22): Navigation shell — driver/owner tab navigators (lucide icons), 9-component shared UI library (Button/Card/Badge/Input/LoadingSpinner/EmptyState/Typography/ScreenWrapper/BottomSheet) — 6 tasks, 22 files, 198s
 - Phase 31-01 (2026-03-23): Driver REST API endpoints — validateMobileToken utility + 4 endpoints (dashboard, loads list, load detail, status update) — 3 tasks, 5 files, 181s
 - Phase 31-02 (2026-03-23): API client + driver dashboard — driverApi (4 methods), TanStack Query infrastructure, dashboard screen (load card + 3 stat chips + alerts) — 2 tasks, 9 files, ~5min
+- Phase 31-03 (2026-03-22): Loads workflow — loads list (Active/History + FlashList + LoadCard), load detail (info grid + stop timeline + truck), status update confirmation modal + haptic feedback + toast errors — 3 tasks, 10 files, 325s
 
 **Combined:**
-- Total: 21 phases complete, 49 plans
+- Total: 21 phases complete, 50 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -109,6 +110,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 31-03 decisions (Loads workflow):**
+- [Phase 31-03]: Built-in React Native Modal used for status update confirmation (not third-party bottom sheet)
+- [Phase 31-03]: FlashList v2+ new arch: estimatedItemSize prop removed (not supported)
+- [Phase 31-03]: RouteStop interface added to api-client with full Prisma schema fields; truck.licensePlate fixed (was plateNumber)
 
 **Phase 31-02 decisions (API client + driver dashboard):**
 - apiRequest exported from client.ts so driver.ts and future api modules reuse auth/error handling without duplication
@@ -461,6 +467,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 29-03]: Shared Zod schemas in @drivecommand/validation — single source of truth for both web and mobile validation
 - [Phase 30]: Used lucide-react-native for SVG tab icons (New Architecture native)
 - [Phase 30]: BottomSheet uses React Native Modal (no third-party dep) — simpler for Phase 30 scope
+- [Phase 31-03]: Built-in React Native Modal used for status update confirmation (not third-party bottom sheet)
+- [Phase 31-03]: FlashList v2+ new arch: estimatedItemSize prop removed (not supported)
+- [Phase 31-03]: RouteStop interface added to api-client with full Prisma schema fields; truck.licensePlate fixed (was plateNumber)
 
 ### Pending Todos
 
@@ -636,6 +645,7 @@ None blocking immediate progress.
 | Phase 29 P02 | 365 | 10 tasks | 33 files |
 | Phase 29-monorepo-expo-scaffold P03 | 7min | 3 tasks | 46 files |
 | Phase 30 P02 | 198 | 6 tasks | 22 files |
+| Phase 31-03 P03 | 325 | 3 tasks | 10 files |
 
 ## Session Continuity
 
