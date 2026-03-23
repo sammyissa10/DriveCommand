@@ -94,6 +94,7 @@ export type HOSStatus = 'OFF_DUTY' | 'SLEEPER_BERTH' | 'DRIVING' | 'ON_DUTY'
 
 export interface HOSEntry {
   id: string
+  tenantId: string
   driverId: string
   status: HOSStatus
   startTime: string
@@ -101,6 +102,18 @@ export interface HOSEntry {
   location?: string | null
   notes?: string | null
   createdAt: string
+  updatedAt: string
+}
+
+export interface HOSData {
+  currentStatus: HOSStatus
+  currentStatusSince: string
+  timeInCurrentStatus: number
+  todayEntries: HOSEntry[]
+  drivingMinutesToday: number
+  onDutyMinutesToday: number
+  hoursUntil14Limit: number
+  hoursUntil11DriveLimit: number
 }
 
 // Incidents
@@ -117,9 +130,20 @@ export interface Incident {
   location?: string | null
   latitude?: number | null
   longitude?: number | null
-  photoUrl?: string | null
+  photoS3Key?: string | null
   reportedAt: string
+  notes?: string | null
   createdAt: string
+  updatedAt: string
+}
+
+export interface CreateIncidentPayload {
+  category: IncidentCategory
+  severity: IncidentSeverity
+  description: string
+  latitude?: number | null
+  longitude?: number | null
+  photoS3Key?: string | null
 }
 
 // Messages
