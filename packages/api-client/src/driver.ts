@@ -71,6 +71,7 @@ export interface FleetMessage {
   id: string
   tenantId: string
   routeId: string | null
+  loadId: string | null
   senderId: string
   senderRole: string
   body: string
@@ -127,10 +128,10 @@ export const driverApi = {
   getMessages: (token: string) =>
     apiRequest<FleetMessage[]>('/api/mobile/driver/messages', { token }),
 
-  sendMessage: (token: string, body: string) =>
+  sendMessage: (token: string, body: string, loadId?: string) =>
     apiRequest<FleetMessage>('/api/mobile/driver/messages', {
       method: 'POST',
       token,
-      body: JSON.stringify({ body }),
+      body: JSON.stringify({ body, ...(loadId && { loadId }) }),
     }),
 }
