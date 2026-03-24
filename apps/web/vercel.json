@@ -1,4 +1,5 @@
 {
+  "installCommand": "cd ../.. && npm install --legacy-peer-deps",
   "buildCommand": "node scripts/migrate.mjs && prisma generate && next build",
   "crons": [
     {
