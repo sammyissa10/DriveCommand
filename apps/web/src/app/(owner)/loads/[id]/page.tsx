@@ -12,6 +12,8 @@ import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
 import { formatAddress } from '@/lib/utils/format-address';
 import { DownloadRateConfirmationButton } from '@/components/loads/download-rate-confirmation-button';
 import { LoadRCDocumentsSection } from '@/components/loads/load-rc-documents-section';
+import { LoadMessagesSection } from './load-messages-section';
+import { getLoadMessages } from '@/app/(owner)/actions/fleet-messages';
 
 const STATUS_LIFECYCLE = [
   'PENDING',
@@ -91,6 +93,9 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
   const tenantId = await requireTenantId();
   const docRepo = new DocumentRepository(tenantId);
   const loadDocuments = await docRepo.findByLoadId(id);
+
+  // Fetch load messages
+  const loadMessages = await getLoadMessages(id);
 
   const boundDispatchLoad = dispatchLoad.bind(null, id);
   const canEdit = !['INVOICED', 'CANCELLED'].includes(load.status);
@@ -372,6 +377,9 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
           <p className="text-sm text-muted-foreground">No invoices linked to this load</p>
         )}
       </div>
+
+      {/* Messages section */}
+      <LoadMessagesSection loadId={id} driverId={load.driverId} initialMessages={loadMessages} />
 
       {/* Rate Confirmations section — shown for dispatched+ loads (excludes PENDING and CANCELLED) */}
       {['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'INVOICED'].includes(load.status) && (
