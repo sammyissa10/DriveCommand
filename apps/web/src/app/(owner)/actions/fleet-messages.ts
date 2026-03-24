@@ -11,6 +11,7 @@ export type FleetMessageWithSender = {
   id: string;
   tenantId: string;
   routeId: string | null;
+  loadId: string | null;
   senderId: string;
   senderRole: string;
   senderName: string;
@@ -52,12 +53,110 @@ export async function getRouteMessages(routeId: string): Promise<FleetMessageWit
     id: msg.id,
     tenantId: msg.tenantId,
     routeId: msg.routeId,
+    loadId: msg.loadId,
     senderId: msg.senderId,
     senderRole: msg.senderRole,
     senderName: userMap.get(msg.senderId) ?? 'Unknown',
     body: msg.body,
     createdAt: msg.createdAt,
   }));
+}
+
+/**
+ * Get all messages for a load, with sender names resolved.
+ * Owner-scoped: returns all driver and owner messages for the load.
+ */
+export async function getLoadMessages(loadId: string): Promise<FleetMessageWithSender[]> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const prisma = await getTenantPrisma();
+
+  const messages = await prisma.fleetMessage.findMany({
+    where: { loadId },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  if (messages.length === 0) return [];
+
+  // Collect unique sender IDs and resolve names in one query
+  const senderIds = [...new Set(messages.map((m) => m.senderId))];
+  const users = await prisma.user.findMany({
+    where: { id: { in: senderIds } },
+    select: { id: true, firstName: true, lastName: true, email: true },
+  });
+
+  const userMap = new Map(
+    users.map((u) => [
+      u.id,
+      `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim() || u.email,
+    ])
+  );
+
+  return messages.map((msg) => ({
+    id: msg.id,
+    tenantId: msg.tenantId,
+    routeId: msg.routeId,
+    loadId: msg.loadId,
+    senderId: msg.senderId,
+    senderRole: msg.senderRole,
+    senderName: userMap.get(msg.senderId) ?? 'Unknown',
+    body: msg.body,
+    createdAt: msg.createdAt,
+  }));
+}
+
+/**
+ * Send a reply from the owner/manager to a driver on a load.
+ */
+export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const loadId = formData.get('loadId') as string;
+  const message = formData.get('message') as string;
+
+  if (!loadId) {
+    return { error: 'Load ID is required.' };
+  }
+  if (!message || message.trim().length === 0) {
+    return { error: 'Message cannot be empty.' };
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: 'Authentication required.' };
+  }
+
+  const prisma = await getTenantPrisma();
+
+  // Verify load exists and belongs to tenant
+  const load = await prisma.load.findFirst({ where: { id: loadId } });
+  if (!load) {
+    return { error: 'Load not found.' };
+  }
+
+  await prisma.fleetMessage.create({
+    data: {
+      tenantId: user.tenantId,
+      loadId,
+      senderId: user.id,
+      senderRole: 'OWNER',
+      body: message.trim(),
+    },
+  });
+
+  // Fire-and-forget: push notification to driver
+  if (load.driverId) {
+    const senderName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+    // Push notification — best-effort, never blocks the action
+    void sendPushToUser(load.driverId, {
+      title: `New message from ${senderName}`,
+      body: message.trim().slice(0, 100),
+      data: { screen: 'messages' },
+    });
+  }
+
+  return { success: true };
 }
 
 /**

@@ -636,6 +636,7 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   routeId: 'routeId',
+  loadId: 'loadId',
   senderId: 'senderId',
   senderRole: 'senderRole',
   body: 'body',

@@ -47407,6 +47407,7 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     routeId: string | null
+    loadId: string | null
     senderId: string | null
     senderRole: string | null
     body: string | null
@@ -47417,6 +47418,7 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     routeId: string | null
+    loadId: string | null
     senderId: string | null
     senderRole: string | null
     body: string | null
@@ -47427,6 +47429,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     routeId: number
+    loadId: number
     senderId: number
     senderRole: number
     body: number
@@ -47439,6 +47442,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     routeId?: true
+    loadId?: true
     senderId?: true
     senderRole?: true
     body?: true
@@ -47449,6 +47453,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     routeId?: true
+    loadId?: true
     senderId?: true
     senderRole?: true
     body?: true
@@ -47459,6 +47464,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     routeId?: true
+    loadId?: true
     senderId?: true
     senderRole?: true
     body?: true
@@ -47542,6 +47548,7 @@ export namespace Prisma {
     id: string
     tenantId: string
     routeId: string | null
+    loadId: string | null
     senderId: string
     senderRole: string
     body: string
@@ -47569,6 +47576,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     routeId?: boolean
+    loadId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
@@ -47579,6 +47587,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     routeId?: boolean
+    loadId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
@@ -47589,6 +47598,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     routeId?: boolean
+    loadId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
@@ -47599,13 +47609,14 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     routeId?: boolean
+    loadId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
     createdAt?: boolean
   }
 
-  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "senderId" | "senderRole" | "body" | "createdAt", ExtArgs["result"]["fleetMessage"]>
+  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "senderId" | "senderRole" | "body" | "createdAt", ExtArgs["result"]["fleetMessage"]>
 
   export type $FleetMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FleetMessage"
@@ -47614,6 +47625,7 @@ export namespace Prisma {
       id: string
       tenantId: string
       routeId: string | null
+      loadId: string | null
       senderId: string
       senderRole: string
       body: string
@@ -48044,6 +48056,7 @@ export namespace Prisma {
     readonly id: FieldRef<"FleetMessage", 'String'>
     readonly tenantId: FieldRef<"FleetMessage", 'String'>
     readonly routeId: FieldRef<"FleetMessage", 'String'>
+    readonly loadId: FieldRef<"FleetMessage", 'String'>
     readonly senderId: FieldRef<"FleetMessage", 'String'>
     readonly senderRole: FieldRef<"FleetMessage", 'String'>
     readonly body: FieldRef<"FleetMessage", 'String'>
@@ -52440,6 +52453,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     routeId: 'routeId',
+    loadId: 'loadId',
     senderId: 'senderId',
     senderRole: 'senderRole',
     body: 'body',
@@ -56506,6 +56520,7 @@ export namespace Prisma {
     id?: UuidFilter<"FleetMessage"> | string
     tenantId?: UuidFilter<"FleetMessage"> | string
     routeId?: UuidNullableFilter<"FleetMessage"> | string | null
+    loadId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
@@ -56516,6 +56531,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrderInput | SortOrder
+    loadId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -56529,6 +56545,7 @@ export namespace Prisma {
     NOT?: FleetMessageWhereInput | FleetMessageWhereInput[]
     tenantId?: UuidFilter<"FleetMessage"> | string
     routeId?: UuidNullableFilter<"FleetMessage"> | string | null
+    loadId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
@@ -56539,6 +56556,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrderInput | SortOrder
+    loadId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -56555,6 +56573,7 @@ export namespace Prisma {
     id?: UuidWithAggregatesFilter<"FleetMessage"> | string
     tenantId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     routeId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
+    loadId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
     senderId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     senderRole?: StringWithAggregatesFilter<"FleetMessage"> | string
     body?: StringWithAggregatesFilter<"FleetMessage"> | string
@@ -60630,6 +60649,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     routeId?: string | null
+    loadId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -60640,6 +60660,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     routeId?: string | null
+    loadId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -60650,6 +60671,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -60660,6 +60682,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -60670,6 +60693,7 @@ export namespace Prisma {
     id?: string
     tenantId: string
     routeId?: string | null
+    loadId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -60680,6 +60704,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -60690,6 +60715,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -64006,6 +64032,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrder
+    loadId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -64016,6 +64043,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrder
+    loadId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -64026,6 +64054,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrder
+    loadId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder

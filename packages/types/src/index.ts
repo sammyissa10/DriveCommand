@@ -150,6 +150,8 @@ export interface CreateIncidentPayload {
 export interface FleetMessage {
   id: string
   tenantId: string
+  routeId?: string | null
+  loadId?: string | null
   senderId: string
   senderName: string
   recipientId?: string | null
