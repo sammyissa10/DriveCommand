@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 33 Driver Native Features — COMPLETE
 Status: Phase 33 complete — all 3 plans verified (9/9 must-haves). Background GPS, push notifications, offline mutation queue all shipped.
-Last activity: 2026-03-23 - Completed Phase 33: Driver Native Features
+Last activity: 2026-03-24 - Completed quick task 101: Add driver ↔ dispatcher messaging to the mobile app
 Stopped at: Phase 33 complete — next is Phase 34
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -628,6 +628,7 @@ None blocking immediate progress.
 | 98 | TKT-0044: Screenshot auto-capture on support ticket creation | 2026-03-22 | 4581048 | [98-tkt-0044-screenshot-auto-capture-on-supp](./quick/98-tkt-0044-screenshot-auto-capture-on-supp/) |
 | 99 | TKT-0045: AI auto-resolution field on support tickets (diagnosis + draft reply via Claude Haiku) | 2026-03-22 | 8e7c4d6 | [99-tkt-0045-ai-auto-resolution-field-on-sup](./quick/99-tkt-0045-ai-auto-resolution-field-on-sup/) |
 | 100 | Remove AI suggestion feature from admin support tickets | 2026-03-22 | f7b1be4 | [100-remove-the-ai-suggestion-feature-entirel](./quick/100-remove-the-ai-suggestion-feature-entirel/) |
+| 101 | Add driver ↔ dispatcher messaging to the mobile app | 2026-03-24 | 37fa5b9 | [101-add-driver-dispatcher-messaging-to-the-m](./quick/101-add-driver-dispatcher-messaging-to-the-m/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
