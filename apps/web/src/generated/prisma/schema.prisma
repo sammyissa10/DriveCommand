@@ -183,6 +183,7 @@ model User {
   driverRouteJoins  DriverRouteJoin[] @relation(name: "DriverRouteJoins")
   hosEntries        DriverHOSEntry[]  @relation(name: "DriverHOSEntries")
   incidents         DriverIncident[]  @relation(name: "DriverIncidents")
+  pushTokens        PushToken[]
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -1067,7 +1068,7 @@ model DriverRouteJoin {
 model FleetMessage {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String   @db.Uuid
-  routeId    String   @db.Uuid
+  routeId    String?  @db.Uuid
   senderId   String   @db.Uuid
   senderRole String
   body       String
@@ -1076,6 +1077,21 @@ model FleetMessage {
   @@index([tenantId])
   @@index([routeId])
   @@index([createdAt])
+}
+
+// ─── Push Token Models ───────────────────────────────────────
+
+model PushToken {
+  id        String   @id @default(cuid())
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  platform  String // 'ios' | 'android'
+  updatedAt DateTime @updatedAt @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@unique([userId, platform]) // one token per user per platform
+  @@index([userId])
 }
 
 // ─── HOS and Incident Models ──────────────────────────────────

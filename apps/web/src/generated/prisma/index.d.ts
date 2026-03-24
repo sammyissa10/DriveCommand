@@ -184,6 +184,11 @@ export type DriverRouteJoin = $Result.DefaultSelection<Prisma.$DriverRouteJoinPa
  */
 export type FleetMessage = $Result.DefaultSelection<Prisma.$FleetMessagePayload>
 /**
+ * Model PushToken
+ * 
+ */
+export type PushToken = $Result.DefaultSelection<Prisma.$PushTokenPayload>
+/**
  * Model DriverHOSEntry
  * 
  */
@@ -1053,6 +1058,16 @@ export class PrismaClient<
   get fleetMessage(): Prisma.FleetMessageDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.pushToken`: Exposes CRUD operations for the **PushToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PushTokens
+    * const pushTokens = await prisma.pushToken.findMany()
+    * ```
+    */
+  get pushToken(): Prisma.PushTokenDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.driverHOSEntry`: Exposes CRUD operations for the **DriverHOSEntry** model.
     * Example usage:
     * ```ts
@@ -1539,6 +1554,7 @@ export namespace Prisma {
     RouteStop: 'RouteStop',
     DriverRouteJoin: 'DriverRouteJoin',
     FleetMessage: 'FleetMessage',
+    PushToken: 'PushToken',
     DriverHOSEntry: 'DriverHOSEntry',
     DriverIncident: 'DriverIncident'
   };
@@ -1556,7 +1572,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "driverHOSEntry" | "driverIncident"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4076,6 +4092,80 @@ export namespace Prisma {
           }
         }
       }
+      PushToken: {
+        payload: Prisma.$PushTokenPayload<ExtArgs>
+        fields: Prisma.PushTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PushTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PushTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.PushTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PushTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          findMany: {
+            args: Prisma.PushTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>[]
+          }
+          create: {
+            args: Prisma.PushTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          createMany: {
+            args: Prisma.PushTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PushTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.PushTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          update: {
+            args: Prisma.PushTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.PushTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PushTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PushTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.PushTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PushTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.PushTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePushToken>
+          }
+          groupBy: {
+            args: Prisma.PushTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PushTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PushTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<PushTokenCountAggregateOutputType> | number
+          }
+        }
+      }
       DriverHOSEntry: {
         payload: Prisma.$DriverHOSEntryPayload<ExtArgs>
         fields: Prisma.DriverHOSEntryFieldRefs
@@ -4366,6 +4456,7 @@ export namespace Prisma {
     routeStop?: RouteStopOmit
     driverRouteJoin?: DriverRouteJoinOmit
     fleetMessage?: FleetMessageOmit
+    pushToken?: PushTokenOmit
     driverHOSEntry?: DriverHOSEntryOmit
     driverIncident?: DriverIncidentOmit
   }
@@ -4761,6 +4852,7 @@ export namespace Prisma {
     driverRouteJoins: number
     hosEntries: number
     incidents: number
+    pushTokens: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4785,6 +4877,7 @@ export namespace Prisma {
     driverRouteJoins?: boolean | UserCountOutputTypeCountDriverRouteJoinsArgs
     hosEntries?: boolean | UserCountOutputTypeCountHosEntriesArgs
     incidents?: boolean | UserCountOutputTypeCountIncidentsArgs
+    pushTokens?: boolean | UserCountOutputTypeCountPushTokensArgs
   }
 
   // Custom InputTypes
@@ -4943,6 +5036,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountIncidentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverIncidentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PushTokenWhereInput
   }
 
 
@@ -7592,6 +7692,7 @@ export namespace Prisma {
     driverRouteJoins?: boolean | User$driverRouteJoinsArgs<ExtArgs>
     hosEntries?: boolean | User$hosEntriesArgs<ExtArgs>
     incidents?: boolean | User$incidentsArgs<ExtArgs>
+    pushTokens?: boolean | User$pushTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -7669,6 +7770,7 @@ export namespace Prisma {
     driverRouteJoins?: boolean | User$driverRouteJoinsArgs<ExtArgs>
     hosEntries?: boolean | User$hosEntriesArgs<ExtArgs>
     incidents?: boolean | User$incidentsArgs<ExtArgs>
+    pushTokens?: boolean | User$pushTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7703,6 +7805,7 @@ export namespace Prisma {
       driverRouteJoins: Prisma.$DriverRouteJoinPayload<ExtArgs>[]
       hosEntries: Prisma.$DriverHOSEntryPayload<ExtArgs>[]
       incidents: Prisma.$DriverIncidentPayload<ExtArgs>[]
+      pushTokens: Prisma.$PushTokenPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8134,6 +8237,7 @@ export namespace Prisma {
     driverRouteJoins<T extends User$driverRouteJoinsArgs<ExtArgs> = {}>(args?: Subset<T, User$driverRouteJoinsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverRouteJoinPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     hosEntries<T extends User$hosEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$hosEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverHOSEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     incidents<T extends User$incidentsArgs<ExtArgs> = {}>(args?: Subset<T, User$incidentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverIncidentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pushTokens<T extends User$pushTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$pushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9073,6 +9177,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
+  }
+
+  /**
+   * User.pushTokens
+   */
+  export type User$pushTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    where?: PushTokenWhereInput
+    orderBy?: PushTokenOrderByWithRelationInput | PushTokenOrderByWithRelationInput[]
+    cursor?: PushTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PushTokenScalarFieldEnum | PushTokenScalarFieldEnum[]
   }
 
   /**
@@ -47413,7 +47541,7 @@ export namespace Prisma {
   export type FleetMessageGroupByOutputType = {
     id: string
     tenantId: string
-    routeId: string
+    routeId: string | null
     senderId: string
     senderRole: string
     body: string
@@ -47485,7 +47613,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
-      routeId: string
+      routeId: string | null
       senderId: string
       senderRole: string
       body: string
@@ -48283,6 +48411,1077 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PushToken
+   */
+
+  export type AggregatePushToken = {
+    _count: PushTokenCountAggregateOutputType | null
+    _min: PushTokenMinAggregateOutputType | null
+    _max: PushTokenMaxAggregateOutputType | null
+  }
+
+  export type PushTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    platform: string | null
+    updatedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PushTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    token: string | null
+    platform: string | null
+    updatedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PushTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    token: number
+    platform: number
+    updatedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PushTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    platform?: true
+    updatedAt?: true
+    createdAt?: true
+  }
+
+  export type PushTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    platform?: true
+    updatedAt?: true
+    createdAt?: true
+  }
+
+  export type PushTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    token?: true
+    platform?: true
+    updatedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PushTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PushToken to aggregate.
+     */
+    where?: PushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushTokens to fetch.
+     */
+    orderBy?: PushTokenOrderByWithRelationInput | PushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PushTokens
+    **/
+    _count?: true | PushTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PushTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PushTokenMaxAggregateInputType
+  }
+
+  export type GetPushTokenAggregateType<T extends PushTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregatePushToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePushToken[P]>
+      : GetScalarType<T[P], AggregatePushToken[P]>
+  }
+
+
+
+
+  export type PushTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PushTokenWhereInput
+    orderBy?: PushTokenOrderByWithAggregationInput | PushTokenOrderByWithAggregationInput[]
+    by: PushTokenScalarFieldEnum[] | PushTokenScalarFieldEnum
+    having?: PushTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PushTokenCountAggregateInputType | true
+    _min?: PushTokenMinAggregateInputType
+    _max?: PushTokenMaxAggregateInputType
+  }
+
+  export type PushTokenGroupByOutputType = {
+    id: string
+    userId: string
+    token: string
+    platform: string
+    updatedAt: Date
+    createdAt: Date
+    _count: PushTokenCountAggregateOutputType | null
+    _min: PushTokenMinAggregateOutputType | null
+    _max: PushTokenMaxAggregateOutputType | null
+  }
+
+  type GetPushTokenGroupByPayload<T extends PushTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PushTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PushTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PushTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], PushTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PushTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    platform?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushToken"]>
+
+  export type PushTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    platform?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushToken"]>
+
+  export type PushTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    platform?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pushToken"]>
+
+  export type PushTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    token?: boolean
+    platform?: boolean
+    updatedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type PushTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "token" | "platform" | "updatedAt" | "createdAt", ExtArgs["result"]["pushToken"]>
+  export type PushTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PushTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PushTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PushTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PushToken"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      token: string
+      platform: string
+      updatedAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["pushToken"]>
+    composites: {}
+  }
+
+  type PushTokenGetPayload<S extends boolean | null | undefined | PushTokenDefaultArgs> = $Result.GetResult<Prisma.$PushTokenPayload, S>
+
+  type PushTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PushTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PushTokenCountAggregateInputType | true
+    }
+
+  export interface PushTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PushToken'], meta: { name: 'PushToken' } }
+    /**
+     * Find zero or one PushToken that matches the filter.
+     * @param {PushTokenFindUniqueArgs} args - Arguments to find a PushToken
+     * @example
+     * // Get one PushToken
+     * const pushToken = await prisma.pushToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PushTokenFindUniqueArgs>(args: SelectSubset<T, PushTokenFindUniqueArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PushToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PushTokenFindUniqueOrThrowArgs} args - Arguments to find a PushToken
+     * @example
+     * // Get one PushToken
+     * const pushToken = await prisma.pushToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PushTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, PushTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PushToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenFindFirstArgs} args - Arguments to find a PushToken
+     * @example
+     * // Get one PushToken
+     * const pushToken = await prisma.pushToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PushTokenFindFirstArgs>(args?: SelectSubset<T, PushTokenFindFirstArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PushToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenFindFirstOrThrowArgs} args - Arguments to find a PushToken
+     * @example
+     * // Get one PushToken
+     * const pushToken = await prisma.pushToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PushTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, PushTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PushTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PushTokens
+     * const pushTokens = await prisma.pushToken.findMany()
+     * 
+     * // Get first 10 PushTokens
+     * const pushTokens = await prisma.pushToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pushTokenWithIdOnly = await prisma.pushToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PushTokenFindManyArgs>(args?: SelectSubset<T, PushTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PushToken.
+     * @param {PushTokenCreateArgs} args - Arguments to create a PushToken.
+     * @example
+     * // Create one PushToken
+     * const PushToken = await prisma.pushToken.create({
+     *   data: {
+     *     // ... data to create a PushToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends PushTokenCreateArgs>(args: SelectSubset<T, PushTokenCreateArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PushTokens.
+     * @param {PushTokenCreateManyArgs} args - Arguments to create many PushTokens.
+     * @example
+     * // Create many PushTokens
+     * const pushToken = await prisma.pushToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PushTokenCreateManyArgs>(args?: SelectSubset<T, PushTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PushTokens and returns the data saved in the database.
+     * @param {PushTokenCreateManyAndReturnArgs} args - Arguments to create many PushTokens.
+     * @example
+     * // Create many PushTokens
+     * const pushToken = await prisma.pushToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PushTokens and only return the `id`
+     * const pushTokenWithIdOnly = await prisma.pushToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PushTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, PushTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PushToken.
+     * @param {PushTokenDeleteArgs} args - Arguments to delete one PushToken.
+     * @example
+     * // Delete one PushToken
+     * const PushToken = await prisma.pushToken.delete({
+     *   where: {
+     *     // ... filter to delete one PushToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PushTokenDeleteArgs>(args: SelectSubset<T, PushTokenDeleteArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PushToken.
+     * @param {PushTokenUpdateArgs} args - Arguments to update one PushToken.
+     * @example
+     * // Update one PushToken
+     * const pushToken = await prisma.pushToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PushTokenUpdateArgs>(args: SelectSubset<T, PushTokenUpdateArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PushTokens.
+     * @param {PushTokenDeleteManyArgs} args - Arguments to filter PushTokens to delete.
+     * @example
+     * // Delete a few PushTokens
+     * const { count } = await prisma.pushToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PushTokenDeleteManyArgs>(args?: SelectSubset<T, PushTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PushTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PushTokens
+     * const pushToken = await prisma.pushToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PushTokenUpdateManyArgs>(args: SelectSubset<T, PushTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PushTokens and returns the data updated in the database.
+     * @param {PushTokenUpdateManyAndReturnArgs} args - Arguments to update many PushTokens.
+     * @example
+     * // Update many PushTokens
+     * const pushToken = await prisma.pushToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PushTokens and only return the `id`
+     * const pushTokenWithIdOnly = await prisma.pushToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PushTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, PushTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PushToken.
+     * @param {PushTokenUpsertArgs} args - Arguments to update or create a PushToken.
+     * @example
+     * // Update or create a PushToken
+     * const pushToken = await prisma.pushToken.upsert({
+     *   create: {
+     *     // ... data to create a PushToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PushToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PushTokenUpsertArgs>(args: SelectSubset<T, PushTokenUpsertArgs<ExtArgs>>): Prisma__PushTokenClient<$Result.GetResult<Prisma.$PushTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PushTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenCountArgs} args - Arguments to filter PushTokens to count.
+     * @example
+     * // Count the number of PushTokens
+     * const count = await prisma.pushToken.count({
+     *   where: {
+     *     // ... the filter for the PushTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends PushTokenCountArgs>(
+      args?: Subset<T, PushTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PushTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PushToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PushTokenAggregateArgs>(args: Subset<T, PushTokenAggregateArgs>): Prisma.PrismaPromise<GetPushTokenAggregateType<T>>
+
+    /**
+     * Group by PushToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PushTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PushTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PushTokenGroupByArgs['orderBy'] }
+        : { orderBy?: PushTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PushTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPushTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PushToken model
+   */
+  readonly fields: PushTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PushToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PushTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PushToken model
+   */
+  interface PushTokenFieldRefs {
+    readonly id: FieldRef<"PushToken", 'String'>
+    readonly userId: FieldRef<"PushToken", 'String'>
+    readonly token: FieldRef<"PushToken", 'String'>
+    readonly platform: FieldRef<"PushToken", 'String'>
+    readonly updatedAt: FieldRef<"PushToken", 'DateTime'>
+    readonly createdAt: FieldRef<"PushToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PushToken findUnique
+   */
+  export type PushTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which PushToken to fetch.
+     */
+    where: PushTokenWhereUniqueInput
+  }
+
+  /**
+   * PushToken findUniqueOrThrow
+   */
+  export type PushTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which PushToken to fetch.
+     */
+    where: PushTokenWhereUniqueInput
+  }
+
+  /**
+   * PushToken findFirst
+   */
+  export type PushTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which PushToken to fetch.
+     */
+    where?: PushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushTokens to fetch.
+     */
+    orderBy?: PushTokenOrderByWithRelationInput | PushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PushTokens.
+     */
+    cursor?: PushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushTokens.
+     */
+    distinct?: PushTokenScalarFieldEnum | PushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * PushToken findFirstOrThrow
+   */
+  export type PushTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which PushToken to fetch.
+     */
+    where?: PushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushTokens to fetch.
+     */
+    orderBy?: PushTokenOrderByWithRelationInput | PushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PushTokens.
+     */
+    cursor?: PushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushTokens.
+     */
+    distinct?: PushTokenScalarFieldEnum | PushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * PushToken findMany
+   */
+  export type PushTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which PushTokens to fetch.
+     */
+    where?: PushTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PushTokens to fetch.
+     */
+    orderBy?: PushTokenOrderByWithRelationInput | PushTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PushTokens.
+     */
+    cursor?: PushTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PushTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PushTokens.
+     */
+    skip?: number
+    distinct?: PushTokenScalarFieldEnum | PushTokenScalarFieldEnum[]
+  }
+
+  /**
+   * PushToken create
+   */
+  export type PushTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PushToken.
+     */
+    data: XOR<PushTokenCreateInput, PushTokenUncheckedCreateInput>
+  }
+
+  /**
+   * PushToken createMany
+   */
+  export type PushTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PushTokens.
+     */
+    data: PushTokenCreateManyInput | PushTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PushToken createManyAndReturn
+   */
+  export type PushTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many PushTokens.
+     */
+    data: PushTokenCreateManyInput | PushTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PushToken update
+   */
+  export type PushTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PushToken.
+     */
+    data: XOR<PushTokenUpdateInput, PushTokenUncheckedUpdateInput>
+    /**
+     * Choose, which PushToken to update.
+     */
+    where: PushTokenWhereUniqueInput
+  }
+
+  /**
+   * PushToken updateMany
+   */
+  export type PushTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PushTokens.
+     */
+    data: XOR<PushTokenUpdateManyMutationInput, PushTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which PushTokens to update
+     */
+    where?: PushTokenWhereInput
+    /**
+     * Limit how many PushTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PushToken updateManyAndReturn
+   */
+  export type PushTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update PushTokens.
+     */
+    data: XOR<PushTokenUpdateManyMutationInput, PushTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which PushTokens to update
+     */
+    where?: PushTokenWhereInput
+    /**
+     * Limit how many PushTokens to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PushToken upsert
+   */
+  export type PushTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PushToken to update in case it exists.
+     */
+    where: PushTokenWhereUniqueInput
+    /**
+     * In case the PushToken found by the `where` argument doesn't exist, create a new PushToken with this data.
+     */
+    create: XOR<PushTokenCreateInput, PushTokenUncheckedCreateInput>
+    /**
+     * In case the PushToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PushTokenUpdateInput, PushTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * PushToken delete
+   */
+  export type PushTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
+    /**
+     * Filter which PushToken to delete.
+     */
+    where: PushTokenWhereUniqueInput
+  }
+
+  /**
+   * PushToken deleteMany
+   */
+  export type PushTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PushTokens to delete
+     */
+    where?: PushTokenWhereInput
+    /**
+     * Limit how many PushTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PushToken without action
+   */
+  export type PushTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PushToken
+     */
+    select?: PushTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PushToken
+     */
+    omit?: PushTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PushTokenInclude<ExtArgs> | null
   }
 
 
@@ -51250,6 +52449,18 @@ export namespace Prisma {
   export type FleetMessageScalarFieldEnum = (typeof FleetMessageScalarFieldEnum)[keyof typeof FleetMessageScalarFieldEnum]
 
 
+  export const PushTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    token: 'token',
+    platform: 'platform',
+    updatedAt: 'updatedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type PushTokenScalarFieldEnum = (typeof PushTokenScalarFieldEnum)[keyof typeof PushTokenScalarFieldEnum]
+
+
   export const DriverHOSEntryScalarFieldEnum: {
     id: 'id',
     tenantId: 'tenantId',
@@ -52014,6 +53225,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinListRelationFilter
     hosEntries?: DriverHOSEntryListRelationFilter
     incidents?: DriverIncidentListRelationFilter
+    pushTokens?: PushTokenListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -52052,6 +53264,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinOrderByRelationAggregateInput
     hosEntries?: DriverHOSEntryOrderByRelationAggregateInput
     incidents?: DriverIncidentOrderByRelationAggregateInput
+    pushTokens?: PushTokenOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -52094,6 +53307,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinListRelationFilter
     hosEntries?: DriverHOSEntryListRelationFilter
     incidents?: DriverIncidentListRelationFilter
+    pushTokens?: PushTokenListRelationFilter
   }, "id" | "email_tenantId">
 
   export type UserOrderByWithAggregationInput = {
@@ -55291,7 +56505,7 @@ export namespace Prisma {
     NOT?: FleetMessageWhereInput | FleetMessageWhereInput[]
     id?: UuidFilter<"FleetMessage"> | string
     tenantId?: UuidFilter<"FleetMessage"> | string
-    routeId?: UuidFilter<"FleetMessage"> | string
+    routeId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
@@ -55301,7 +56515,7 @@ export namespace Prisma {
   export type FleetMessageOrderByWithRelationInput = {
     id?: SortOrder
     tenantId?: SortOrder
-    routeId?: SortOrder
+    routeId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -55314,7 +56528,7 @@ export namespace Prisma {
     OR?: FleetMessageWhereInput[]
     NOT?: FleetMessageWhereInput | FleetMessageWhereInput[]
     tenantId?: UuidFilter<"FleetMessage"> | string
-    routeId?: UuidFilter<"FleetMessage"> | string
+    routeId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
@@ -55324,7 +56538,7 @@ export namespace Prisma {
   export type FleetMessageOrderByWithAggregationInput = {
     id?: SortOrder
     tenantId?: SortOrder
-    routeId?: SortOrder
+    routeId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
@@ -55340,11 +56554,72 @@ export namespace Prisma {
     NOT?: FleetMessageScalarWhereWithAggregatesInput | FleetMessageScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"FleetMessage"> | string
     tenantId?: UuidWithAggregatesFilter<"FleetMessage"> | string
-    routeId?: UuidWithAggregatesFilter<"FleetMessage"> | string
+    routeId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
     senderId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     senderRole?: StringWithAggregatesFilter<"FleetMessage"> | string
     body?: StringWithAggregatesFilter<"FleetMessage"> | string
     createdAt?: DateTimeWithAggregatesFilter<"FleetMessage"> | Date | string
+  }
+
+  export type PushTokenWhereInput = {
+    AND?: PushTokenWhereInput | PushTokenWhereInput[]
+    OR?: PushTokenWhereInput[]
+    NOT?: PushTokenWhereInput | PushTokenWhereInput[]
+    id?: StringFilter<"PushToken"> | string
+    userId?: UuidFilter<"PushToken"> | string
+    token?: StringFilter<"PushToken"> | string
+    platform?: StringFilter<"PushToken"> | string
+    updatedAt?: DateTimeFilter<"PushToken"> | Date | string
+    createdAt?: DateTimeFilter<"PushToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PushTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PushTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_platform?: PushTokenUserIdPlatformCompoundUniqueInput
+    AND?: PushTokenWhereInput | PushTokenWhereInput[]
+    OR?: PushTokenWhereInput[]
+    NOT?: PushTokenWhereInput | PushTokenWhereInput[]
+    userId?: UuidFilter<"PushToken"> | string
+    token?: StringFilter<"PushToken"> | string
+    platform?: StringFilter<"PushToken"> | string
+    updatedAt?: DateTimeFilter<"PushToken"> | Date | string
+    createdAt?: DateTimeFilter<"PushToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_platform">
+
+  export type PushTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: PushTokenCountOrderByAggregateInput
+    _max?: PushTokenMaxOrderByAggregateInput
+    _min?: PushTokenMinOrderByAggregateInput
+  }
+
+  export type PushTokenScalarWhereWithAggregatesInput = {
+    AND?: PushTokenScalarWhereWithAggregatesInput | PushTokenScalarWhereWithAggregatesInput[]
+    OR?: PushTokenScalarWhereWithAggregatesInput[]
+    NOT?: PushTokenScalarWhereWithAggregatesInput | PushTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PushToken"> | string
+    userId?: UuidWithAggregatesFilter<"PushToken"> | string
+    token?: StringWithAggregatesFilter<"PushToken"> | string
+    platform?: StringWithAggregatesFilter<"PushToken"> | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PushToken"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"PushToken"> | Date | string
   }
 
   export type DriverHOSEntryWhereInput = {
@@ -55757,6 +57032,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -55794,6 +57070,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -55831,6 +57108,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -55868,6 +57146,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -59350,7 +60629,7 @@ export namespace Prisma {
   export type FleetMessageCreateInput = {
     id?: string
     tenantId: string
-    routeId: string
+    routeId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -59360,7 +60639,7 @@ export namespace Prisma {
   export type FleetMessageUncheckedCreateInput = {
     id?: string
     tenantId: string
-    routeId: string
+    routeId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -59370,7 +60649,7 @@ export namespace Prisma {
   export type FleetMessageUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    routeId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -59380,7 +60659,7 @@ export namespace Prisma {
   export type FleetMessageUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    routeId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -59390,7 +60669,7 @@ export namespace Prisma {
   export type FleetMessageCreateManyInput = {
     id?: string
     tenantId: string
-    routeId: string
+    routeId?: string | null
     senderId: string
     senderRole: string
     body: string
@@ -59400,7 +60679,7 @@ export namespace Prisma {
   export type FleetMessageUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    routeId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
@@ -59410,10 +60689,72 @@ export namespace Prisma {
   export type FleetMessageUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    routeId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenCreateInput = {
+    id?: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPushTokensInput
+  }
+
+  export type PushTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PushTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPushTokensNestedInput
+  }
+
+  export type PushTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenCreateManyInput = {
+    id?: string
+    userId: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PushTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60154,7 +61495,17 @@ export namespace Prisma {
     none?: RouteDriverWhereInput
   }
 
+  export type PushTokenListRelationFilter = {
+    every?: PushTokenWhereInput
+    some?: PushTokenWhereInput
+    none?: PushTokenWhereInput
+  }
+
   export type RouteDriverOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PushTokenOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -62681,6 +64032,38 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type PushTokenUserIdPlatformCompoundUniqueInput = {
+    userId: string
+    platform: string
+  }
+
+  export type PushTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PushTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PushTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    token?: SortOrder
+    platform?: SortOrder
+    updatedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type EnumHOSDutyStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.HOSDutyStatus | EnumHOSDutyStatusFieldRefInput<$PrismaModel>
     in?: $Enums.HOSDutyStatus[] | ListEnumHOSDutyStatusFieldRefInput<$PrismaModel>
@@ -64263,6 +65646,13 @@ export namespace Prisma {
     connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
   }
 
+  export type PushTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput> | PushTokenCreateWithoutUserInput[] | PushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushTokenCreateOrConnectWithoutUserInput | PushTokenCreateOrConnectWithoutUserInput[]
+    createMany?: PushTokenCreateManyUserInputEnvelope
+    connect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+  }
+
   export type RouteUncheckedCreateNestedManyWithoutDriverInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -64408,6 +65798,13 @@ export namespace Prisma {
     connectOrCreate?: DriverIncidentCreateOrConnectWithoutDriverInput | DriverIncidentCreateOrConnectWithoutDriverInput[]
     createMany?: DriverIncidentCreateManyDriverInputEnvelope
     connect?: DriverIncidentWhereUniqueInput | DriverIncidentWhereUniqueInput[]
+  }
+
+  export type PushTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput> | PushTokenCreateWithoutUserInput[] | PushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushTokenCreateOrConnectWithoutUserInput | PushTokenCreateOrConnectWithoutUserInput[]
+    createMany?: PushTokenCreateManyUserInputEnvelope
+    connect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -64716,6 +66113,20 @@ export namespace Prisma {
     deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
   }
 
+  export type PushTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput> | PushTokenCreateWithoutUserInput[] | PushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushTokenCreateOrConnectWithoutUserInput | PushTokenCreateOrConnectWithoutUserInput[]
+    upsert?: PushTokenUpsertWithWhereUniqueWithoutUserInput | PushTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushTokenCreateManyUserInputEnvelope
+    set?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    disconnect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    delete?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    connect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    update?: PushTokenUpdateWithWhereUniqueWithoutUserInput | PushTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushTokenUpdateManyWithWhereWithoutUserInput | PushTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushTokenScalarWhereInput | PushTokenScalarWhereInput[]
+  }
+
   export type RouteUncheckedUpdateManyWithoutDriverNestedInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -65008,6 +66419,20 @@ export namespace Prisma {
     update?: DriverIncidentUpdateWithWhereUniqueWithoutDriverInput | DriverIncidentUpdateWithWhereUniqueWithoutDriverInput[]
     updateMany?: DriverIncidentUpdateManyWithWhereWithoutDriverInput | DriverIncidentUpdateManyWithWhereWithoutDriverInput[]
     deleteMany?: DriverIncidentScalarWhereInput | DriverIncidentScalarWhereInput[]
+  }
+
+  export type PushTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput> | PushTokenCreateWithoutUserInput[] | PushTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PushTokenCreateOrConnectWithoutUserInput | PushTokenCreateOrConnectWithoutUserInput[]
+    upsert?: PushTokenUpsertWithWhereUniqueWithoutUserInput | PushTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PushTokenCreateManyUserInputEnvelope
+    set?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    disconnect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    delete?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    connect?: PushTokenWhereUniqueInput | PushTokenWhereUniqueInput[]
+    update?: PushTokenUpdateWithWhereUniqueWithoutUserInput | PushTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PushTokenUpdateManyWithWhereWithoutUserInput | PushTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PushTokenScalarWhereInput | PushTokenScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTrucksInput = {
@@ -67342,6 +68767,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDriverRouteJoinsInput, UserUpdateWithoutDriverRouteJoinsInput>, UserUncheckedUpdateWithoutDriverRouteJoinsInput>
   }
 
+  export type UserCreateNestedOneWithoutPushTokensInput = {
+    create?: XOR<UserCreateWithoutPushTokensInput, UserUncheckedCreateWithoutPushTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPushTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPushTokensNestedInput = {
+    create?: XOR<UserCreateWithoutPushTokensInput, UserUncheckedCreateWithoutPushTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPushTokensInput
+    upsert?: UserUpsertWithoutPushTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPushTokensInput, UserUpdateWithoutPushTokensInput>, UserUncheckedUpdateWithoutPushTokensInput>
+  }
+
   export type TenantCreateNestedOneWithoutDriverHOSEntriesInput = {
     create?: XOR<TenantCreateWithoutDriverHOSEntriesInput, TenantUncheckedCreateWithoutDriverHOSEntriesInput>
     connectOrCreate?: TenantCreateOrConnectWithoutDriverHOSEntriesInput
@@ -68264,6 +69703,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
@@ -68300,6 +69740,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -71784,6 +73225,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PushTokenCreateWithoutUserInput = {
+    id?: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PushTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type PushTokenCreateOrConnectWithoutUserInput = {
+    where: PushTokenWhereUniqueInput
+    create: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushTokenCreateManyUserInputEnvelope = {
+    data: PushTokenCreateManyUserInput | PushTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutUsersInput = {
     update: XOR<TenantUpdateWithoutUsersInput, TenantUncheckedUpdateWithoutUsersInput>
     create: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
@@ -72222,6 +73689,34 @@ export namespace Prisma {
     data: XOR<DriverIncidentUpdateManyMutationInput, DriverIncidentUncheckedUpdateManyWithoutDriverInput>
   }
 
+  export type PushTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: PushTokenWhereUniqueInput
+    update: XOR<PushTokenUpdateWithoutUserInput, PushTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<PushTokenCreateWithoutUserInput, PushTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type PushTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: PushTokenWhereUniqueInput
+    data: XOR<PushTokenUpdateWithoutUserInput, PushTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PushTokenUpdateManyWithWhereWithoutUserInput = {
+    where: PushTokenScalarWhereInput
+    data: XOR<PushTokenUpdateManyMutationInput, PushTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PushTokenScalarWhereInput = {
+    AND?: PushTokenScalarWhereInput | PushTokenScalarWhereInput[]
+    OR?: PushTokenScalarWhereInput[]
+    NOT?: PushTokenScalarWhereInput | PushTokenScalarWhereInput[]
+    id?: StringFilter<"PushToken"> | string
+    userId?: UuidFilter<"PushToken"> | string
+    token?: StringFilter<"PushToken"> | string
+    platform?: StringFilter<"PushToken"> | string
+    updatedAt?: DateTimeFilter<"PushToken"> | Date | string
+    createdAt?: DateTimeFilter<"PushToken"> | Date | string
+  }
+
   export type TenantCreateWithoutTrucksInput = {
     id?: string
     name: string
@@ -72341,6 +73836,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksCreatedInput = {
@@ -72377,6 +73873,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksCreatedInput = {
@@ -72418,6 +73915,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksUpdatedInput = {
@@ -72454,6 +73952,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksUpdatedInput = {
@@ -73015,6 +74514,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksCreatedInput = {
@@ -73051,6 +74551,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTrucksUpdatedInput = {
@@ -73098,6 +74599,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksUpdatedInput = {
@@ -73134,6 +74636,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutTruckInput = {
@@ -73575,6 +75078,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignedRoutesInput = {
@@ -73611,6 +75115,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignedRoutesInput = {
@@ -73709,6 +75214,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesCreatedInput = {
@@ -73745,6 +75251,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesCreatedInput = {
@@ -73786,6 +75293,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesUpdatedInput = {
@@ -73822,6 +75330,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesUpdatedInput = {
@@ -74309,6 +75818,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedRoutesInput = {
@@ -74345,6 +75855,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutAssignedRoutesInput = {
@@ -74455,6 +75966,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesCreatedInput = {
@@ -74491,6 +76003,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutRoutesUpdatedInput = {
@@ -74538,6 +76051,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesUpdatedInput = {
@@ -74574,6 +76088,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutRouteInput = {
@@ -74803,6 +76318,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRouteCoDriversInput = {
@@ -74839,6 +76355,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRouteCoDriversInput = {
@@ -74962,6 +76479,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteCoDriversInput = {
@@ -74998,6 +76516,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDocumentsInput = {
@@ -75241,6 +76760,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverDocumentsInput = {
@@ -75277,6 +76797,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverDocumentsInput = {
@@ -75385,6 +76906,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -75421,6 +76943,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -75698,6 +77221,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDocumentsInput = {
@@ -75734,6 +77258,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutDocumentsInput = {
@@ -75854,6 +77379,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -75890,6 +77416,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutMaintenanceEventsInput = {
@@ -77132,6 +78659,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSafetyEventsInput = {
@@ -77168,6 +78696,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSafetyEventsInput = {
@@ -77439,6 +78968,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSafetyEventsInput = {
@@ -77475,6 +79005,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithoutSafetyEventsInput = {
@@ -78261,6 +79792,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTagAssignmentsInput = {
@@ -78297,6 +79829,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTagAssignmentsInput = {
@@ -78532,6 +80065,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -78568,6 +80102,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutExpenseCategoriesInput = {
@@ -80731,6 +82266,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesCreatedInput = {
@@ -80767,6 +82303,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesCreatedInput = {
@@ -80808,6 +82345,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesUpdatedInput = {
@@ -80844,6 +82382,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesUpdatedInput = {
@@ -81082,6 +82621,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesCreatedInput = {
@@ -81118,6 +82658,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutInvoicesUpdatedInput = {
@@ -81165,6 +82706,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesUpdatedInput = {
@@ -81201,6 +82743,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutInvoicesInput = {
@@ -82016,6 +83559,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollRecordsInput = {
@@ -82052,6 +83596,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollRecordsInput = {
@@ -82093,6 +83638,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsCreatedInput = {
@@ -82129,6 +83675,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsCreatedInput = {
@@ -82170,6 +83717,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsUpdatedInput = {
@@ -82206,6 +83754,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsUpdatedInput = {
@@ -82349,6 +83898,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -82385,6 +83935,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsCreatedInput = {
@@ -82432,6 +83983,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsCreatedInput = {
@@ -82468,6 +84020,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsUpdatedInput = {
@@ -82515,6 +84068,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsUpdatedInput = {
@@ -82551,6 +84105,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutLoadsInput = {
@@ -82788,6 +84343,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverLoadsInput = {
@@ -82824,6 +84380,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverLoadsInput = {
@@ -82922,6 +84479,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsCreatedInput = {
@@ -82958,6 +84516,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsCreatedInput = {
@@ -82999,6 +84558,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsUpdatedInput = {
@@ -83035,6 +84595,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsUpdatedInput = {
@@ -83410,6 +84971,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverLoadsInput = {
@@ -83446,6 +85008,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutLoadsInput = {
@@ -83556,6 +85119,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsCreatedInput = {
@@ -83592,6 +85156,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutLoadsUpdatedInput = {
@@ -83639,6 +85204,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsUpdatedInput = {
@@ -83675,6 +85241,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutLoadInput = {
@@ -84381,6 +85948,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -84417,6 +85985,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -84631,6 +86200,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -84665,6 +86235,171 @@ export namespace Prisma {
     invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPushTokensInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserUncheckedCreateWithoutPushTokensInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+  }
+
+  export type UserCreateOrConnectWithoutPushTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPushTokensInput, UserUncheckedCreateWithoutPushTokensInput>
+  }
+
+  export type UserUpsertWithoutPushTokensInput = {
+    update: XOR<UserUpdateWithoutPushTokensInput, UserUncheckedUpdateWithoutPushTokensInput>
+    create: XOR<UserCreateWithoutPushTokensInput, UserUncheckedCreateWithoutPushTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPushTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPushTokensInput, UserUncheckedUpdateWithoutPushTokensInput>
+  }
+
+  export type UserUpdateWithoutPushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPushTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
   }
@@ -84788,6 +86523,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutHosEntriesInput = {
@@ -84824,6 +86560,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutHosEntriesInput = {
@@ -84967,6 +86704,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHosEntriesInput = {
@@ -85003,6 +86741,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverIncidentsInput = {
@@ -85124,6 +86863,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIncidentsInput = {
@@ -85160,6 +86900,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
     driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
     hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIncidentsInput = {
@@ -85303,6 +87044,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIncidentsInput = {
@@ -85339,6 +87081,7 @@ export namespace Prisma {
     payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -85826,6 +87569,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
@@ -85862,6 +87606,7 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
     hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
     incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -87646,6 +89391,14 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PushTokenCreateManyUserInput = {
+    id?: string
+    token: string
+    platform: string
+    updatedAt?: Date | string
+    createdAt?: Date | string
+  }
+
   export type RouteUpdateWithoutDriverInput = {
     id?: StringFieldUpdateOperationsInput | string
     origin?: StringFieldUpdateOperationsInput | string
@@ -88959,6 +90712,30 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PushTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RouteCreateManyTruckInput = {

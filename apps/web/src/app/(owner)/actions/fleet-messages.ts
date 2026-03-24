@@ -10,7 +10,7 @@ import { sendPushToUser } from '@/lib/notifications/send-push';
 export type FleetMessageWithSender = {
   id: string;
   tenantId: string;
-  routeId: string;
+  routeId: string | null;
   senderId: string;
   senderRole: string;
   senderName: string;

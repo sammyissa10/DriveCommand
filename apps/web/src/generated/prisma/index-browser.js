@@ -642,6 +642,15 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PushTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  platform: 'platform',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.DriverHOSEntryScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -930,6 +939,7 @@ exports.Prisma.ModelName = {
   RouteStop: 'RouteStop',
   DriverRouteJoin: 'DriverRouteJoin',
   FleetMessage: 'FleetMessage',
+  PushToken: 'PushToken',
   DriverHOSEntry: 'DriverHOSEntry',
   DriverIncident: 'DriverIncident'
 };

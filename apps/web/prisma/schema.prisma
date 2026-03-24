@@ -1068,7 +1068,7 @@ model DriverRouteJoin {
 model FleetMessage {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String   @db.Uuid
-  routeId    String   @db.Uuid
+  routeId    String?  @db.Uuid
   senderId   String   @db.Uuid
   senderRole String
   body       String

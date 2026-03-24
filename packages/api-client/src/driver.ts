@@ -67,6 +67,16 @@ export interface LoadDetail {
   createdAt: string
 }
 
+export interface FleetMessage {
+  id: string
+  tenantId: string
+  routeId: string | null
+  senderId: string
+  senderRole: string
+  body: string
+  createdAt: string
+}
+
 export const driverApi = {
   getDashboard: (token: string) =>
     apiRequest<DashboardData>('/api/mobile/driver/dashboard', { token }),
@@ -99,6 +109,9 @@ export const driverApi = {
     }),
 
   // Incidents
+  getIncidents: (token: string) =>
+    apiRequest<{ incidents: Incident[] }>('/api/mobile/driver/incidents', { token }),
+
   createIncident: (token: string, data: CreateIncidentPayload) =>
     apiRequest<{ incident: Incident }>('/api/mobile/driver/incidents', {
       method: 'POST',
@@ -109,4 +122,15 @@ export const driverApi = {
   // GPS tracking token — returns active load's tracking token for supplementary GPS context
   getTrackingToken: (token: string) =>
     apiRequest<{ trackingToken: string | null }>('/api/mobile/driver/tracking-token', { token }),
+
+  // Messaging
+  getMessages: (token: string) =>
+    apiRequest<FleetMessage[]>('/api/mobile/driver/messages', { token }),
+
+  sendMessage: (token: string, body: string) =>
+    apiRequest<FleetMessage>('/api/mobile/driver/messages', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ body }),
+    }),
 }
