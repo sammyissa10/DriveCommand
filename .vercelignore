@@ -1,0 +1,14 @@
+android/
+.expo/
+apps/mobile/
+.next/
+node_modules/
+.git/
+.github/
+.claude/
+.planning/
+.playwright/
+playwright-report/
+test-results/
+tsc_err.txt
+DriveCommand Technical Documentation.pdf
