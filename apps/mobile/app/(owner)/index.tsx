@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import {
+  Dimensions,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -13,10 +14,14 @@ import {
   AlertTriangle,
   ArrowRight,
   DollarSign,
-  LayoutDashboard,
   Package,
+  Truck,
   Users,
 } from 'lucide-react-native'
+
+const SCREEN_WIDTH = Dimensions.get('window').width
+// 2-column grid: 16px padding each side + 8px gap between columns
+const CHIP_WIDTH = (SCREEN_WIDTH - 16 - 16 - 8) / 2
 import { useAuthContext } from '../../context/AuthContext'
 import { ownerApi } from '@drivecommand/api-client'
 import { KPICard } from '../../components/owner/KPICard'
@@ -197,7 +202,7 @@ export default function OwnerDashboard() {
           }}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <LayoutDashboard color="#64748b" size={15} style={{ marginRight: 6 }} />
+          <Truck color="#64748b" size={15} style={{ marginRight: 6 }} />
           <Text className="text-white font-semibold text-base">Active Loads</Text>
           <Text className="text-slate-500 text-xs ml-2">(top 5)</Text>
         </View>
@@ -208,21 +213,21 @@ export default function OwnerDashboard() {
             <Text className="text-slate-400 text-sm mt-3 text-center">No active loads right now</Text>
           </View>
         ) : (
-          <View style={{ marginBottom: 20, gap: 0 }}>
+          <View style={{ marginBottom: 20, gap: 8 }}>
             {activeLoads.map((load) => {
               const badge = getStatusBadge(load.status)
               return (
-                <View
+                <Pressable
                   key={load.id}
-                  style={{
-                    backgroundColor: '#1e293b',
+                  onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
+                  style={({ pressed }) => ({
+                    backgroundColor: pressed ? '#263348' : '#1e293b',
                     borderColor: '#334155',
                     borderWidth: 1,
-                    borderRadius: 0,
+                    borderRadius: 12,
                     paddingHorizontal: 14,
                     paddingVertical: 12,
-                    borderBottomWidth: 0,
-                  }}
+                  })}
                 >
                   {/* Row 1: Load number + badge */}
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -247,20 +252,9 @@ export default function OwnerDashboard() {
                   <Text style={{ color: '#64748b', fontSize: 11 }} numberOfLines={1}>
                     {load.driverName ?? 'Unassigned'}
                   </Text>
-                </View>
+                </Pressable>
               )
             })}
-            {/* Bottom border for last card */}
-            <View
-              style={{
-                borderColor: '#334155',
-                borderWidth: 1,
-                borderTopWidth: 0,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
-                height: 1,
-              }}
-            />
           </View>
         )}
 
@@ -284,7 +278,7 @@ export default function OwnerDashboard() {
             {driverStatuses.map((driver) => (
               <Pressable
                 key={driver.id}
-                style={({ pressed }) => ({ width: '47%', opacity: pressed ? 0.75 : 1 })}
+                style={({ pressed }) => ({ width: CHIP_WIDTH, opacity: pressed ? 0.75 : 1 })}
                 onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
               >
                 <DriverStatusChip
