@@ -318,16 +318,16 @@ Plans:
 
 ---
 
-### Phase 35: Owner Core Screens — Dashboard KPIs, loads management, and driver management
+### ✅ Phase 35: Owner Core Screens — Dashboard KPIs, loads management, and driver management (complete 2026-03-24)
 
 **Goal:** Build the three primary owner screens: a dashboard with at-a-glance fleet KPIs, a loads management screen where owners can view all loads and create new ones, and a driver management screen showing driver status and compliance at a glance.
 **Depends on:** Phase 30 (owner navigation shell)
 **Plans:** 3 plans
 
 Plans:
-- [ ] 35-01-PLAN.md — Owner dashboard: KPI cards row (active loads count, drivers on duty, revenue this month, open alerts), active loads mini-list (top 5, each showing driver name + route + status badge), driver status grid (all drivers, colored dot for on-duty/off-duty/no-load), recent alerts list (maintenance due, expiring documents, incidents); calls existing getDashboardData + getActiveLoads actions via api-client; pull-to-refresh; skeleton loaders
-- [ ] 35-02-PLAN.md — Loads management: FlashList with status filter tabs (All / Active / Pending / Delivered), each load card (load number, customer, origin→destination, driver name, status badge, rate), FAB → create load bottom sheet (customer select, origin, destination, pickup date, rate, assign driver select), load detail screen (full load info + stop timeline + status update controls for owner), calls existing load server actions
-- [ ] 35-03-PLAN.md — Driver management: FlashList of all drivers (avatar initials, name, status badge, assigned load if active, compliance indicator), driver detail screen (contact info, current load, document compliance summary with expiry alerts, HOS current status), quick actions: send message button (navigates to fleet messaging), call button (tel: deep link), compliance badges (green/yellow/red per document category); calls existing getDrivers + getDriverById actions
+- [x] 35-01-PLAN.md — Owner dashboard: KPI cards row (active loads count, drivers on duty, revenue this month, open alerts), active loads mini-list (top 5, each showing driver name + route + status badge), driver status grid (all drivers, colored dot for on-duty/off-duty/no-load), recent alerts list (maintenance due, expiring documents, incidents); calls existing getDashboardData + getActiveLoads actions via api-client; pull-to-refresh; skeleton loaders
+- [x] 35-02-PLAN.md — Loads management: FlashList with status filter tabs (All / Active / Pending / Delivered), each load card (load number, customer, origin→destination, driver name, status badge, rate), FAB → create load bottom sheet (customer select, origin, destination, pickup date, rate, assign driver select), load detail screen (full load info + stop timeline + status update controls for owner), calls existing load server actions
+- [x] 35-03-PLAN.md — Driver management: FlashList of all drivers (avatar initials, name, status badge, assigned load if active, compliance indicator), driver detail screen (contact info, current load, document compliance summary with expiry alerts, HOS current status), quick actions: send message button (navigates to fleet messaging), call button (tel: deep link), compliance badges (green/yellow/red per document category); calls existing getDrivers + getDriverById actions
 
 ---
 

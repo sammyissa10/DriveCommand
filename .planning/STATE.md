@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 35 Owner Core Screens — IN PROGRESS
-Current Plan: 35-03 complete — next is 35-04
-Status: 35-03 complete — owner driver list (FlashList, compliance dots, filter tabs), driver detail (current load, documents, contact deep links, incidents, quick actions), 2 REST endpoints (GET drivers + GET drivers/[id]), tappable dashboard driver chips
-Last activity: 2026-03-25 - Completed quick task 105: Revert status + rate confirmation PDF on mobile driver load detail
-Stopped at: Phase 35, Plan 03 complete — next is 35-04
+Phase: Phase 35 Owner Core Screens — COMPLETE (2026-03-24)
+Current Plan: Phase 36 is next
+Status: Phase 35 complete — owner dashboard (KPI grid, driver chips, 60s refresh), loads management (4-tab filter, create form, owner actions), driver management (compliance dots, detail screen, contact deep links)
+Last activity: 2026-03-24 - Completed Phase 35: Owner Core Screens (3 plans, 9/9 verification checks passed)
+Stopped at: Phase 35 complete — ready for Phase 36
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
