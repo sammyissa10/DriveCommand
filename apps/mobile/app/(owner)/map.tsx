@@ -1,48 +1,24 @@
-import React from 'react'
-import { ActivityIndicator, Text, View, StyleSheet } from 'react-native'
-import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
+import React, { useRef, useState, useEffect } from 'react'
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { MapPin, RefreshCw } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
-import { ownerApi, type FleetPosition } from '@drivecommand/api-client'
-import { MapPin } from 'lucide-react-native'
+import { ownerApi, type MapVehicle } from '@drivecommand/api-client'
+import VehicleMarker from '../../components/owner/VehicleMarker'
+import VehicleDetailSheet from '../../components/owner/VehicleDetailSheet'
 
-/** Format a timestamp as a relative "X min ago" string */
-function timeAgo(timestamp: string | Date): string {
-  const now = Date.now()
-  const then = new Date(timestamp).getTime()
-  const diffMs = now - then
-
-  if (diffMs < 60_000) return 'just now'
-  const diffMin = Math.floor(diffMs / 60_000)
-  if (diffMin < 60) return `${diffMin} min ago`
-  const diffHr = Math.floor(diffMin / 60)
-  if (diffHr < 24) return `${diffHr}h ago`
-  return `${Math.floor(diffHr / 24)}d ago`
-}
-
-/** Compute a bounding region that fits all markers */
-function fitRegion(positions: FleetPosition[]) {
-  if (positions.length === 0) return null
-
-  const lats = positions.map((p) => p.latitude)
-  const lngs = positions.map((p) => p.longitude)
-
-  const minLat = Math.min(...lats)
-  const maxLat = Math.max(...lats)
-  const minLng = Math.min(...lngs)
-  const maxLng = Math.max(...lngs)
-
-  const latDelta = Math.max((maxLat - minLat) * 1.4, 0.5)
-  const lngDelta = Math.max((maxLng - minLng) * 1.4, 0.5)
-
-  return {
-    latitude: (minLat + maxLat) / 2,
-    longitude: (minLng + maxLng) / 2,
-    latitudeDelta: latDelta,
-    longitudeDelta: lngDelta,
-  }
-}
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 const US_REGION = {
   latitude: 39.8,
@@ -51,140 +27,241 @@ const US_REGION = {
   longitudeDelta: 30,
 }
 
+/**
+ * Dark map style for Google Maps (Android).
+ * iOS uses Apple Maps which does not accept custom JSON styles.
+ */
+const darkMapStyle = [
+  { elementType: 'geometry', stylers: [{ color: '#1e293b' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#94a3b8' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#0f172a' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#334155' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0f172a' }] },
+]
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
 export default function OwnerMapScreen() {
   const { token } = useAuthContext()
+  const queryClient = useQueryClient()
+  const mapRef = useRef<MapView>(null)
 
-  const { data: positions, isLoading, isError } = useQuery({
-    queryKey: ['fleet-positions'],
-    queryFn: () => ownerApi.getFleetPositions(token!),
+  const [selectedVehicle, setSelectedVehicle] = useState<MapVehicle | null>(null)
+  const [hasFitted, setHasFitted] = useState(false)
+
+  const {
+    data,
+    isLoading,
+    isError,
+    isFetching,
+  } = useQuery({
+    queryKey: ['map-vehicles'],
+    queryFn: () => ownerApi.getMapVehicles(token!),
     enabled: !!token,
-    refetchInterval: 30_000,
+    refetchInterval: 60_000,
   })
 
-  const region = positions && positions.length > 0 ? fitRegion(positions) : null
+  const vehicles = data?.vehicles ?? []
+
+  // Fit map to all vehicle positions on initial data load
+  useEffect(() => {
+    if (!hasFitted && vehicles.length > 0 && mapRef.current) {
+      mapRef.current.fitToCoordinates(
+        vehicles.map((v) => ({ latitude: v.latitude, longitude: v.longitude })),
+        {
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+          animated: true,
+        }
+      )
+      setHasFitted(true)
+    }
+  }, [vehicles, hasFitted])
+
+  const handleMarkerPress = (vehicle: MapVehicle) => {
+    setSelectedVehicle(vehicle)
+  }
+
+  const handleSheetClose = () => {
+    setSelectedVehicle(null)
+  }
+
+  const handleManualRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['map-vehicles'] })
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Live Map</Text>
-        {positions && positions.length > 0 && (
-          <Text style={styles.subtitle}>
-            {positions.length} active {positions.length === 1 ? 'truck' : 'trucks'}
-          </Text>
-        )}
-      </View>
+    <View style={styles.root}>
+      {/* Full-screen map */}
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={US_REGION}
+        showsUserLocation={false}
+        showsMyLocationButton={false}
+        customMapStyle={Platform.OS === 'android' ? darkMapStyle : undefined}
+      >
+        {vehicles.map((vehicle) => (
+          <VehicleMarker
+            key={vehicle.truckId}
+            vehicle={vehicle}
+            onPress={handleMarkerPress}
+          />
+        ))}
+      </MapView>
 
-      {/* Map or loading/error states */}
-      {isLoading ? (
-        <View style={styles.centered}>
+      {/* Safe-area overlay — header + refresh button */}
+      <SafeAreaView style={styles.overlay} edges={['top']} pointerEvents="box-none">
+        {/* Header pill */}
+        <View style={styles.header}>
+          <View style={styles.headerTextBlock}>
+            <Text style={styles.title}>Live Map</Text>
+            {vehicles.length > 0 && (
+              <Text style={styles.subtitle}>
+                {vehicles.length} {vehicles.length === 1 ? 'truck' : 'trucks'}
+              </Text>
+            )}
+          </View>
+
+          {/* Manual refresh button */}
+          <TouchableOpacity
+            style={[styles.refreshButton, isFetching && styles.refreshButtonActive]}
+            onPress={handleManualRefresh}
+            disabled={isFetching}
+          >
+            <RefreshCw
+              size={18}
+              color={isFetching ? '#38bdf8' : '#94a3b8'}
+            />
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+
+      {/* Loading overlay */}
+      {isLoading && (
+        <View style={styles.loadingOverlay} pointerEvents="none">
           <ActivityIndicator size="large" color="#38bdf8" />
           <Text style={styles.loadingText}>Loading fleet positions...</Text>
         </View>
-      ) : isError ? (
-        <View style={styles.centered}>
+      )}
+
+      {/* Error overlay */}
+      {isError && !isLoading && (
+        <View style={styles.errorOverlay} pointerEvents="none">
           <Text style={styles.errorText}>Failed to load fleet positions</Text>
         </View>
-      ) : (
-        <View style={styles.mapContainer}>
-          <MapView
-            style={styles.map}
-            provider={PROVIDER_GOOGLE}
-            initialRegion={region ?? US_REGION}
-            region={region ?? undefined}
-            showsUserLocation={false}
-            showsMyLocationButton={false}
-          >
-            {(positions ?? []).map((pos: FleetPosition) => (
-              <Marker
-                key={pos.truckId}
-                coordinate={{ latitude: pos.latitude, longitude: pos.longitude }}
-                pinColor="#38bdf8"
-              >
-                <Callout tooltip={false}>
-                  <View style={styles.callout}>
-                    <Text style={styles.calloutPlate}>{pos.truck.licensePlate}</Text>
-                    <Text style={styles.calloutLine}>
-                      {pos.truck.make} {pos.truck.model}
-                    </Text>
-                    <Text style={styles.calloutLine}>
-                      Driver: {pos.driverName ?? 'No driver'}
-                    </Text>
-                    <Text style={styles.calloutLine}>
-                      Load: {pos.loadNumber ?? 'No active load'}
-                    </Text>
-                    <Text style={styles.calloutTime}>{timeAgo(pos.timestamp)}</Text>
-                  </View>
-                </Callout>
-              </Marker>
-            ))}
-          </MapView>
+      )}
 
-          {(!positions || positions.length === 0) && (
-            <View style={styles.emptyOverlay} pointerEvents="none">
-              <MapPin color="#64748b" size={40} />
-              <Text style={styles.emptyTitle}>No active vehicles</Text>
-              <Text style={styles.emptySubtitle}>
-                Trucks with GPS pings will appear here
-              </Text>
-            </View>
-          )}
+      {/* Empty state — no vehicles */}
+      {!isLoading && !isError && vehicles.length === 0 && (
+        <View style={styles.emptyOverlay} pointerEvents="none">
+          <MapPin color="#64748b" size={40} />
+          <Text style={styles.emptyTitle}>No vehicle positions available</Text>
+          <Text style={styles.emptySubtitle}>
+            Trucks with GPS pings will appear here
+          </Text>
         </View>
       )}
-    </SafeAreaView>
+
+      {/* Vehicle detail bottom sheet */}
+      <VehicleDetailSheet
+        vehicle={selectedVehicle}
+        visible={selectedVehicle !== null}
+        onClose={handleSheetClose}
+      />
+    </View>
   )
 }
 
+// ---------------------------------------------------------------------------
+// Styles
+// ---------------------------------------------------------------------------
+
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
     backgroundColor: '#0f172a',
   },
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
   header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    marginTop: 8,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    // iOS blur-like shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  headerTextBlock: {
+    flex: 1,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#94a3b8',
-    marginTop: 2,
+    marginTop: 1,
   },
-  mapContainer: {
-    flex: 1,
-    position: 'relative',
-  },
-  map: {
-    flex: 1,
-  },
-  centered: {
-    flex: 1,
+  refreshButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#1e293b',
     alignItems: 'center',
     justifyContent: 'center',
+    marginLeft: 10,
+  },
+  refreshButtonActive: {
+    backgroundColor: '#0f172a',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
     gap: 12,
   },
   loadingText: {
     color: '#94a3b8',
     fontSize: 14,
-    marginTop: 8,
+  },
+  errorOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     color: '#f87171',
     fontSize: 15,
     fontWeight: '600',
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
   emptyOverlay: {
-    position: 'absolute',
-    inset: 0,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
@@ -200,30 +277,5 @@ const styles = StyleSheet.create({
     color: '#64748b',
     textAlign: 'center',
     paddingHorizontal: 32,
-  },
-  callout: {
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
-    padding: 10,
-    minWidth: 160,
-    maxWidth: 220,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  calloutPlate: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#f1f5f9',
-    marginBottom: 4,
-  },
-  calloutLine: {
-    fontSize: 12,
-    color: '#94a3b8',
-    marginBottom: 2,
-  },
-  calloutTime: {
-    fontSize: 11,
-    color: '#64748b',
-    marginTop: 4,
   },
 })
