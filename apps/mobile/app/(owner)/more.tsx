@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -29,6 +29,7 @@ interface MoreRow {
   label: string
   subtitle: string
   Icon: LucideIcon
+  iconBg: string
   iconColor: string
   route: string
 }
@@ -46,6 +47,7 @@ const SECTIONS: MoreSection[] = [
         label: 'Messages',
         subtitle: 'Fleet messaging',
         Icon: MessageSquare,
+        iconBg: 'rgba(14,165,233,0.15)',
         iconColor: '#0ea5e9',
         route: '/(owner)/fleet',
       },
@@ -58,6 +60,7 @@ const SECTIONS: MoreSection[] = [
         label: 'Invoices',
         subtitle: 'Billing & payments',
         Icon: FileText,
+        iconBg: 'rgba(34,197,94,0.15)',
         iconColor: '#22c55e',
         route: '/(owner)/invoices',
       },
@@ -65,6 +68,7 @@ const SECTIONS: MoreSection[] = [
         label: 'CRM',
         subtitle: 'Customer management',
         Icon: Users,
+        iconBg: 'rgba(139,92,246,0.15)',
         iconColor: '#8b5cf6',
         route: '/(owner)/crm',
       },
@@ -72,6 +76,7 @@ const SECTIONS: MoreSection[] = [
         label: 'Payroll',
         subtitle: 'Driver pay',
         Icon: DollarSign,
+        iconBg: 'rgba(245,158,11,0.15)',
         iconColor: '#f59e0b',
         route: '/(owner)/payroll',
       },
@@ -79,6 +84,7 @@ const SECTIONS: MoreSection[] = [
         label: 'AI Documents',
         subtitle: 'Smart doc reading',
         Icon: Sparkles,
+        iconBg: 'rgba(236,72,153,0.15)',
         iconColor: '#ec4899',
         route: '/(owner)/ai-documents',
       },
@@ -91,6 +97,7 @@ const SECTIONS: MoreSection[] = [
         label: 'Trucks',
         subtitle: 'Vehicle management',
         Icon: Truck,
+        iconBg: 'rgba(249,115,22,0.15)',
         iconColor: '#f97316',
         route: '/(owner)/trucks',
       },
@@ -98,6 +105,7 @@ const SECTIONS: MoreSection[] = [
         label: 'Compliance',
         subtitle: 'Docs & expiry',
         Icon: ShieldCheck,
+        iconBg: 'rgba(6,182,212,0.15)',
         iconColor: '#06b6d4',
         route: '/(owner)/compliance',
       },
@@ -110,26 +118,21 @@ const SECTIONS: MoreSection[] = [
         label: 'Team Permissions',
         subtitle: 'Roles & access',
         Icon: Shield,
-        iconColor: '#64748b',
+        iconBg: 'rgba(100,116,139,0.15)',
+        iconColor: '#94a3b8',
         route: '/(owner)/settings/team',
       },
       {
         label: 'Account & Subscription',
         subtitle: 'Plan & billing',
         Icon: CreditCard,
+        iconBg: 'rgba(167,139,250,0.15)',
         iconColor: '#a78bfa',
         route: '/(owner)/settings/account',
       },
     ],
   },
 ]
-
-function hexToRgba(hex: string, opacity: number): string {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`
-}
 
 export default function MoreScreen() {
   const router = useRouter()
@@ -142,56 +145,35 @@ export default function MoreScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Page header */}
           <View style={styles.pageHeader}>
             <Text style={styles.pageTitle}>More</Text>
-            <Text style={styles.pageSubtitle}>Features &amp; settings</Text>
+            <Text style={styles.pageSubtitle}>Features & settings</Text>
           </View>
 
           {SECTIONS.map((section, sectionIndex) => (
-            <View key={section.header}>
-              <Text
-                style={[
-                  styles.sectionHeader,
-                  sectionIndex === 0 ? styles.sectionHeaderFirst : styles.sectionHeaderRest,
-                ]}
-              >
-                {section.header}
-              </Text>
+            <View key={section.header} style={sectionIndex > 0 ? styles.sectionGap : undefined}>
+              <Text style={styles.sectionHeader}>{section.header}</Text>
               <View style={styles.card}>
                 {section.rows.map((row, rowIndex) => (
                   <View key={row.route}>
-                    <Pressable
-                      style={({ pressed }) => [
-                        styles.row,
-                        pressed && styles.rowPressed,
-                      ]}
+                    <TouchableOpacity
+                      style={styles.row}
                       onPress={() => {
                         haptic.light()
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         router.push(row.route as any)
                       }}
+                      activeOpacity={0.7}
                     >
-                      {/* Left icon */}
-                      <View
-                        style={[
-                          styles.iconWrap,
-                          { backgroundColor: hexToRgba(row.iconColor, 0.15) },
-                        ]}
-                      >
+                      <View style={[styles.iconWrap, { backgroundColor: row.iconBg }]}>
                         <row.Icon color={row.iconColor} size={20} />
                       </View>
-
-                      {/* Center text */}
                       <View style={styles.rowText}>
                         <Text style={styles.rowLabel}>{row.label}</Text>
                         <Text style={styles.rowSubtitle}>{row.subtitle}</Text>
                       </View>
-
-                      {/* Right chevron */}
-                      <ChevronRight color="#334155" size={18} />
-                    </Pressable>
-
-                    {/* Separator (not after last row) */}
+                      <ChevronRight color="#475569" size={18} />
+                    </TouchableOpacity>
                     {rowIndex < section.rows.length - 1 && (
                       <View style={styles.separator} />
                     )}
@@ -218,14 +200,14 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 16,
+    paddingTop: 20,
   },
   pageHeader: {
-    paddingTop: 20,
-    paddingBottom: 4,
+    marginBottom: 20,
   },
   pageTitle: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 24,
+    fontWeight: '800',
     color: '#f1f5f9',
   },
   pageSubtitle: {
@@ -233,19 +215,16 @@ const styles = StyleSheet.create({
     color: '#64748b',
     marginTop: 2,
   },
+  sectionGap: {
+    marginTop: 24,
+  },
   sectionHeader: {
     fontSize: 11,
     fontWeight: '600',
     color: '#64748b',
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
     marginBottom: 8,
-  },
-  sectionHeaderFirst: {
-    marginTop: 16,
-  },
-  sectionHeaderRest: {
-    marginTop: 24,
   },
   card: {
     backgroundColor: '#1e293b',
@@ -260,9 +239,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 14,
   },
-  rowPressed: {
-    backgroundColor: '#243447',
-  },
   iconWrap: {
     width: 40,
     height: 40,
@@ -270,12 +246,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
+    flexShrink: 0,
   },
   rowText: {
     flex: 1,
   },
   rowLabel: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: '#f1f5f9',
   },
