@@ -1,6 +1,6 @@
-import { useEffect, useState, Fragment } from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Tabs } from 'expo-router'
+import { useEffect, useState, Fragment, useCallback } from 'react'
+import { View, Text, StyleSheet, AppState } from 'react-native'
+import { Tabs, useFocusEffect } from 'expo-router'
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
@@ -9,7 +9,11 @@ import { useOfflineSync } from '../../hooks/useOfflineSync'
 import { kvStorage } from '../../lib/storage'
 import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
 import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
+import { AppHeader } from '../../components/shared/AppHeader'
 import type { HOSStatus } from '@drivecommand/types'
+
+const LAST_READ_KEY = 'messages_last_read_at'
+const UNREAD_POLL_INTERVAL_MS = 30_000
 
 /**
  * Small colored dot indicating background GPS status.
@@ -26,10 +30,29 @@ function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission
   return <View style={[styles.gpsDot, { backgroundColor: color }]} />
 }
 
+/**
+ * Unread badge overlay for the Messages tab icon.
+ */
+function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: number }) {
+  return (
+    <View style={styles.iconWrapper}>
+      <MessageSquare color={color} size={24} />
+      {unreadCount > 0 && (
+        <View style={styles.unreadBadge}>
+          <Text style={styles.unreadBadgeText}>
+            {unreadCount > 99 ? '99+' : String(unreadCount)}
+          </Text>
+        </View>
+      )}
+    </View>
+  )
+}
+
 export default function DriverLayout() {
   const { token } = useAuthContext()
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
   const [showNotifModal, setShowNotifModal] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   // Show notification permission modal on first login
   useEffect(() => {
@@ -59,11 +82,46 @@ export default function DriverLayout() {
       .catch(() => { /* Best-effort — GPS works without tracking token */ })
   }, [token])
 
+  // Fetch unread count — uses lastReadAt from MMKV as the `since` parameter
+  const fetchUnreadCount = useCallback(async () => {
+    if (!token) return
+    const since = kvStorage.getString(LAST_READ_KEY) ?? undefined
+    try {
+      const { count } = await driverApi.getUnreadCount(token, since)
+      setUnreadCount(count)
+    } catch {
+      // Best-effort — don't disrupt navigation if this fails
+    }
+  }, [token])
+
+  // Initial unread count fetch
+  useEffect(() => {
+    fetchUnreadCount()
+  }, [fetchUnreadCount])
+
+  // Poll unread count every 30s
+  useEffect(() => {
+    const timer = setInterval(fetchUnreadCount, UNREAD_POLL_INTERVAL_MS)
+    return () => clearInterval(timer)
+  }, [fetchUnreadCount])
+
+  // Refresh unread count when app comes back to foreground
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active') {
+        fetchUnreadCount()
+      }
+    })
+    return () => sub.remove()
+  }, [fetchUnreadCount])
+
   const { gpsStatus } = useBackgroundGPS(hosStatus)
   const { isOnline, isSyncing, pendingCount, failedCount, retryFailed } = useOfflineSync()
 
   return (
     <Fragment>
+      {/* Persistent top bar — company name + account avatar */}
+      <AppHeader />
       {/* Sync status bar — visible only when offline or syncing */}
       <SyncStatusBar
         isOnline={isOnline}
@@ -80,12 +138,28 @@ export default function DriverLayout() {
             backgroundColor: '#1e293b',
             borderTopColor: '#334155',
             height: 64,
-            paddingBottom: 8,
+            paddingBottom: 10,
+            paddingTop: 10,
+          },
+          tabBarItemStyle: {
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 0,
           },
           tabBarActiveTintColor: '#0ea5e9',
           tabBarInactiveTintColor: '#64748b',
         }}
       >
+        <Tabs.Screen
+          name="loads"
+          options={{ tabBarIcon: ({ color }) => <Truck color={color} size={24} /> }}
+        />
+        <Tabs.Screen
+          name="hos"
+          options={{ tabBarIcon: ({ color }) => <Clock color={color} size={24} /> }}
+        />
+        {/* Home/Dashboard — center tab */}
         <Tabs.Screen
           name="index"
           options={{
@@ -99,26 +173,25 @@ export default function DriverLayout() {
           }}
         />
         <Tabs.Screen
-          name="loads"
-          options={{ tabBarIcon: ({ color }) => <Truck color={color} size={24} /> }}
-        />
-        <Tabs.Screen
-          name="hos"
-          options={{ tabBarIcon: ({ color }) => <Clock color={color} size={24} /> }}
-        />
-        <Tabs.Screen
           name="messages"
           options={{
             tabBarIcon: ({ color }) => (
-              // Badge overlay for unread count — implemented in Phase 34
-              <MessageSquare color={color} size={24} />
+              <MessageTabIcon color={color} unreadCount={unreadCount} />
             ),
+            listeners: {
+              // Clear unread badge when the Messages tab is pressed
+              tabPress: () => {
+                setUnreadCount(0)
+              },
+            },
           }}
         />
         <Tabs.Screen
           name="documents"
           options={{ tabBarIcon: ({ color }) => <FileText color={color} size={24} /> }}
         />
+        {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
+        <Tabs.Screen name="incidents" options={{ href: null }} />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}
@@ -145,5 +218,23 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#1e293b',
+  },
+  unreadBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  unreadBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '700',
+    lineHeight: 14,
   },
 })
