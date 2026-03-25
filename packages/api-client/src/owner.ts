@@ -164,6 +164,20 @@ export interface OwnerDriverDetail {
   recentIncidents: OwnerDriverIncident[]
 }
 
+export interface MapVehicle {
+  truckId: string
+  truckName: string
+  driverName: string | null
+  driverId: string | null
+  latitude: number
+  longitude: number
+  speed: number
+  heading: number | null
+  lastPingAt: string | null
+  status: 'MOVING' | 'IDLE' | 'OFFLINE'
+  loadNumber: string | null
+}
+
 export interface CreateLoadPayload {
   customerId?: string
   customerName?: string
@@ -235,4 +249,7 @@ export const ownerApi = {
 
   getDriverDetail: (token: string, id: string) =>
     apiRequest<OwnerDriverDetail>(`/api/mobile/owner/drivers/${id}`, { token }),
+
+  getMapVehicles: (token: string) =>
+    apiRequest<{ vehicles: MapVehicle[] }>('/api/mobile/owner/map/vehicles', { token }),
 }
