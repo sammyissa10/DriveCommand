@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 34 Driver Documents + Messaging — IN PROGRESS
-Current Plan: 34-01 complete — next is 34-02
-Status: 34-01 complete — driver documents screen, S3 upload flow, detail sheet, 4 REST endpoints
-Last activity: 2026-03-25 - Completed 34-01: Driver Documents Screen
-Stopped at: Phase 34, Plan 01 complete — next is 34-02
+Current Plan: 34-02 complete — next is 34-03 (or next phase)
+Status: 34-02 complete — driver messaging screen, unread badge, 30s polling, MMKV last-read tracking, 2 new REST endpoints
+Last activity: 2026-03-25 - Completed 34-02: Driver Messaging Screen
+Stopped at: Phase 34, Plan 02 complete — next is 34-03 (if exists) or Phase 35
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -71,9 +71,10 @@ Progress: [███████████████████████
 - Phase 33-02 (2026-03-23): Push notifications — PushToken model, /api/push-tokens endpoint, sendPushToUser (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, deep-link tap handler, NotificationPermissionModal — 7 tasks, 10 files, 333s
 - Phase 33-03 (2026-03-23): Offline mutation queue — MMKV offlineQueue, flushQueue (exponential backoff), callOrQueue wrapper, SyncStatusBar (amber/blue/red), useOfflineSync (NetInfo auto-flush on reconnect), StatusUpdateButton offline-wired — 7 tasks, 7 files, 133s
 - Phase 34-01 (2026-03-25): Driver documents screen — 4 REST endpoints (GET list, GET presigned URL, POST upload-url, POST create), DriverDocument types in api-client, FlashList screen with FAB, DocumentDetailSheet (expo-web-browser), DocumentUploadSheet (S3 upload + progress) — 7 tasks, 8 files, ~7min
+- Phase 34-02 (2026-03-25): Driver messaging screen — unread-count + mark-read REST endpoints, getUnreadCount + markMessagesRead in api-client, 30s polling in messages screen, MMKV last-read tracking, unread badge on Messages tab icon, AppState foreground refresh — 6 tasks, 5 files, 237s
 
 **Combined:**
-- Total: 22 phases complete, 53 plans
+- Total: 22 phases complete, 54 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -119,6 +120,10 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 34-02 decisions (Driver messaging):**
+- Used MMKV client-side last-read timestamp instead of DB readAt field — avoids schema migration; unread count computed as non-driver messages newer than stored ISO timestamp passed as ?since= query param
+- Unread badge clears after messages screen marks all read and next 30s poll fires — no tab press listener needed (Expo Router Tabs.Screen doesn't expose listeners prop)
 
 **Phase 34-01 decisions (Driver documents):**
 - Mobile document type (CDL, MEDICAL_CARD etc.) stored in Document.description field — DB DocumentType enum (DRIVER_LICENSE, GENERAL etc.) is for web portal categories only
