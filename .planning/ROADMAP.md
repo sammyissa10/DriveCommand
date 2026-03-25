@@ -344,15 +344,16 @@ Plans:
 
 ---
 
-### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere
+### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere ✅ COMPLETE 2026-03-25
 
 **Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
 **Depends on:** Phases 31-36 (all screens built)
-**Plans:** 2 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] 37-01-PLAN.md — Touch + layout pass: audit all buttons/pressables for min h-12 (48px) touch target, fix any smaller targets; replace every FlatList/ScrollView with FlashList (estimatedItemSize tuned per list); add pull-to-refresh to all list screens; fix KeyboardAvoidingView on all form screens; test safe area insets on notched devices (iPhone 14 Pro notch, Android punch-hole); verify landscape layout doesn't break on tablet; add empty state illustrations to all empty lists
-- [ ] 37-02-PLAN.md — Animation + dark mode: React Native Reanimated FadeIn/SlideInRight on screen mount; haptic feedback (Haptics.impactAsync Medium) on all tab presses, (Haptics.notificationAsync Success/Error) on form submits; skeleton loaders (animated shimmer) on all loading states replacing spinners; NativeWind dark: variants on all components matching web dark mode colors; system color scheme detection (useColorScheme); status bar style per theme; test full dark mode pass on both portals
+- [x] 37-01-PLAN.md — Touch targets, FlashList audit, skeleton loaders
+- [x] 37-02-PLAN.md — Animations, haptics, dark mode
+- [x] 37-03-PLAN.md — Thumb-friendliness, tab labels, brand fixes
 
 ---
 
