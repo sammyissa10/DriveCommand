@@ -54,6 +54,27 @@ const SECTIONS: MoreSection[] = [
     ],
   },
   {
+    header: 'FLEET',
+    rows: [
+      {
+        label: 'Trucks',
+        subtitle: 'Vehicle management',
+        Icon: Truck,
+        iconBg: 'rgba(249,115,22,0.15)',
+        iconColor: '#f97316',
+        route: '/(owner)/trucks',
+      },
+      {
+        label: 'Compliance',
+        subtitle: 'Docs & expiry',
+        Icon: ShieldCheck,
+        iconBg: 'rgba(6,182,212,0.15)',
+        iconColor: '#06b6d4',
+        route: '/(owner)/compliance',
+      },
+    ],
+  },
+  {
     header: 'BUSINESS',
     rows: [
       {
@@ -87,27 +108,6 @@ const SECTIONS: MoreSection[] = [
         iconBg: 'rgba(236,72,153,0.15)',
         iconColor: '#ec4899',
         route: '/(owner)/ai-documents',
-      },
-    ],
-  },
-  {
-    header: 'FLEET',
-    rows: [
-      {
-        label: 'Trucks',
-        subtitle: 'Vehicle management',
-        Icon: Truck,
-        iconBg: 'rgba(249,115,22,0.15)',
-        iconColor: '#f97316',
-        route: '/(owner)/trucks',
-      },
-      {
-        label: 'Compliance',
-        subtitle: 'Docs & expiry',
-        Icon: ShieldCheck,
-        iconBg: 'rgba(6,182,212,0.15)',
-        iconColor: '#06b6d4',
-        route: '/(owner)/compliance',
       },
     ],
   },
