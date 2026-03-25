@@ -17,6 +17,7 @@ import { driverApi } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
 import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { StatusUpdateButton } from '../../../components/driver/StatusUpdateButton'
+import { LoadStatusTimeline } from '../../../components/driver/LoadStatusTimeline'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -99,7 +100,7 @@ export default function LoadDetailScreen() {
   // Loading state
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
+      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center" edges={['bottom', 'left', 'right']}>
         <ActivityIndicator size="large" color="#0ea5e9" />
         <Text className="text-slate-400 mt-3 text-sm">Loading load details...</Text>
       </SafeAreaView>
@@ -109,7 +110,7 @@ export default function LoadDetailScreen() {
   // Error state
   if (isError || !load) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6">
+      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6" edges={['bottom', 'left', 'right']}>
         <AlertTriangle color="#f87171" size={40} />
         <Text className="text-white text-lg font-semibold mt-4 text-center">
           Failed to load details
@@ -132,7 +133,7 @@ export default function LoadDetailScreen() {
     !['DELIVERED', 'INVOICED', 'CANCELLED'].includes(load.status)
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
         <Pressable
@@ -166,6 +167,9 @@ export default function LoadDetailScreen() {
           paddingBottom: hasStatusButton ? 24 : 32 + insets.bottom,
         }}
       >
+        {/* Status Timeline */}
+        <LoadStatusTimeline status={load.status} />
+
         {/* Route Info Card */}
         <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
           <Text className="text-white font-semibold text-base mb-3">Route Info</Text>
