@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 35 Owner Core Screens — IN PROGRESS
-Current Plan: 35-02 complete — next is 35-03
-Status: 35-02 complete — owner loads list (4-tab filter + FAB), CreateLoadSheet, load detail with assign driver/status change/cancel actions, REST endpoints for loads CRUD, customers + drivers/active endpoints
-Last activity: 2026-03-24 - Completed Phase 35-02: Owner loads management
-Stopped at: Phase 35, Plan 02 complete — next is 35-03
+Current Plan: 35-03 complete — next is 35-04
+Status: 35-03 complete — owner driver list (FlashList, compliance dots, filter tabs), driver detail (current load, documents, contact deep links, incidents, quick actions), 2 REST endpoints (GET drivers + GET drivers/[id]), tappable dashboard driver chips
+Last activity: 2026-03-25 - Completed Phase 35-03: Owner driver management
+Stopped at: Phase 35, Plan 03 complete — next is 35-04
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -74,9 +74,10 @@ Progress: [███████████████████████
 - Phase 34-02 (2026-03-25): Driver messaging screen — unread-count + mark-read REST endpoints, getUnreadCount + markMessagesRead in api-client, 30s polling in messages screen, MMKV last-read tracking, unread badge on Messages tab icon, AppState foreground refresh — 6 tasks, 5 files, 237s
 - Phase 35-01 (2026-03-24): Owner dashboard — KPI aggregates REST endpoint, KPICard + DriverStatusChip components, owner dashboard screen with 4 KPI tiles + driver status list — 3 tasks, 6 files, ~4min
 - Phase 35-02 (2026-03-24): Owner loads management — 4-tab filtered loads list (All/Active/Pending/Delivered) + FAB, CreateLoadSheet (customer/driver pickers + date/rate), POST create load, PATCH status/driver/notes, GET customers + GET active drivers endpoints, load detail with assign driver/change status/cancel actions — 6 tasks, 9 files, 317s
+- Phase 35-03 (2026-03-25): Owner driver management — driver list screen (FlashList, compliance dots, filter tabs), driver detail (current load card, compliance docs, mailto/tel deep links, incidents, quick actions), GET /drivers + GET /drivers/[id] endpoints with compliance computation, tappable dashboard driver chips — 5 tasks, 8 files, 421s
 
 **Combined:**
-- Total: 23 phases complete, 56 plans
+- Total: 23 phases complete, 57 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
