@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 35 Owner Core Screens — COMPLETE (2026-03-24)
-Current Plan: Phase 36 is next
-Status: Phase 35 complete — owner dashboard (KPI grid, driver chips, 60s refresh), loads management (4-tab filter, create form, owner actions), driver management (compliance dots, detail screen, contact deep links)
-Last activity: 2026-03-25 - Completed quick task 107: Fix GPS report endpoint to accept mobile Bearer token auth
-Stopped at: Phase 35 complete — ready for Phase 36
+Phase: Phase 36 Owner Map and Fleet — IN PROGRESS
+Current Plan: 36-02 (Plan 1/3 complete)
+Status: Phase 36 plan 01 complete — live map screen with MOVING/IDLE/OFFLINE vehicle markers, VehicleMarker + VehicleDetailSheet components, GET /api/mobile/owner/map/vehicles endpoint, 60s auto-refresh, dark map style on Android
+Last activity: 2026-03-25 - Completed Phase 36-01: Owner Live Map Screen
+Stopped at: Phase 36-01 complete — ready for 36-02
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -75,6 +75,7 @@ Progress: [███████████████████████
 - Phase 35-01 (2026-03-24): Owner dashboard — KPI aggregates REST endpoint, KPICard + DriverStatusChip components, owner dashboard screen with 4 KPI tiles + driver status list — 3 tasks, 6 files, ~4min
 - Phase 35-02 (2026-03-24): Owner loads management — 4-tab filtered loads list (All/Active/Pending/Delivered) + FAB, CreateLoadSheet (customer/driver pickers + date/rate), POST create load, PATCH status/driver/notes, GET customers + GET active drivers endpoints, load detail with assign driver/change status/cancel actions — 6 tasks, 9 files, 317s
 - Phase 35-03 (2026-03-25): Owner driver management — driver list screen (FlashList, compliance dots, filter tabs), driver detail (current load card, compliance docs, mailto/tel deep links, incidents, quick actions), GET /drivers + GET /drivers/[id] endpoints with compliance computation, tappable dashboard driver chips — 5 tasks, 8 files, 421s
+- Phase 36-01 (2026-03-25): Owner live map — GET /api/mobile/owner/map/vehicles with MOVING/IDLE/OFFLINE status computation, VehicleMarker (status-colored circle), VehicleDetailSheet (Modal bottom sheet with stats grid), full-screen MapView with dark style on Android, 60s auto-refresh, manual refresh button — 3 tasks, 6 files, 241s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -123,6 +124,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 36-01 decisions (Owner live map):**
+- Used React Native Modal (built-in) for bottom sheet instead of @gorhom/bottom-sheet — avoids native module dependency; animationType="slide" provides native sheet feel
+- truckName built from make+model+licensePlate in endpoint, marker label shows plate only for compact display
+- fitToCoordinates fires once on initial load (hasFitted flag) to avoid re-centering on every 60s auto-refresh
+- MapVehicle.speed stored as km/h in GPS data, converted to mph for display in VehicleDetailSheet
 
 **Phase 35-02 decisions (Owner loads management):**
 - 4-tab status filter: `active` = DISPATCHED+PICKED_UP+IN_TRANSIT; `pending` = PENDING only; `delivered` = DELIVERED+INVOICED; `all` = no filter — corrects prior 2-tab (active|history) grouping
