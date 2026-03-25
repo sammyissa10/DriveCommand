@@ -15,7 +15,7 @@ import { s3Client, getBucketName } from '@/lib/storage/s3-client';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await validateMobileToken(req);
   if (!auth) return unauthorizedResponse();
@@ -24,7 +24,7 @@ export async function GET(
   }
 
   const { driverId } = auth;
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json({ error: 'Document ID is required' }, { status: 400 });

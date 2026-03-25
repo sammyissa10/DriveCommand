@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { generateUploadUrl } from '@/lib/storage/presigned';
-import { nanoid } from 'nanoid';
 
 /**
  * Compute document expiry status based on expiry date.
@@ -23,8 +21,10 @@ function computeStatus(expiryDate: Date | null): 'VALID' | 'EXPIRING' | 'EXPIRED
  * GET /api/mobile/driver/documents
  *
  * Returns all documents for the authenticated driver, sorted with
- * expired first, then expiring, then valid. Within each group,
- * sorted by expiryDate asc (null/no-expiry at the end).
+ * expired first, then expiring, then valid.
+ *
+ * Note: mobile document type key is stored in the `description` field.
+ * The `documentType` field returns the mobile type key (from description).
  *
  * Returns: { documents: DriverDocument[] }
  */
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
           s3Key: true,
           contentType: true,
           sizeBytes: true,
-          documentType: true,
+          description: true, // stores mobile document type key (e.g. "CDL", "MEDICAL_CARD")
           expiryDate: true,
           notes: true,
           createdAt: true,
@@ -58,15 +58,21 @@ export async function GET(req: NextRequest) {
     }, TX_OPTIONS);
 
     // Add computed status and sort: EXPIRED first, then EXPIRING, then VALID
-    const statusOrder = { EXPIRED: 0, EXPIRING: 1, VALID: 2 };
+    const statusOrder: Record<string, number> = { EXPIRED: 0, EXPIRING: 1, VALID: 2 };
     const withStatus = documents.map((doc) => ({
-      ...doc,
+      id: doc.id,
+      fileName: doc.fileName,
+      s3Key: doc.s3Key,
+      contentType: doc.contentType,
+      sizeBytes: doc.sizeBytes,
+      documentType: doc.description ?? null, // mobile doc type key stored in description
       expiryDate: doc.expiryDate ? doc.expiryDate.toISOString() : null,
+      notes: doc.notes ?? null,
       createdAt: doc.createdAt.toISOString(),
       status: computeStatus(doc.expiryDate),
     }));
 
-    withStatus.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+    withStatus.sort((a, b) => (statusOrder[a.status] ?? 2) - (statusOrder[b.status] ?? 2));
 
     return NextResponse.json({ documents: withStatus });
   } catch (err) {
@@ -101,6 +107,10 @@ const ALLOWED_CONTENT_TYPES: Record<string, boolean> = {
  * The file must already be uploaded to S3 before calling this endpoint.
  *
  * Body: { type, name, expiryDate?, s3Key, contentType, sizeBytes }
+ *
+ * Implementation note: the mobile document type key (e.g. "CDL") is stored in the
+ * `description` field since the DB `documentType` enum is for web-side categories.
+ * The `documentType` field in the DB is set to 'GENERAL' for all mobile uploads.
  *
  * Returns 201 with { document: DriverDocument }
  */
@@ -181,7 +191,8 @@ export async function POST(req: NextRequest) {
           s3Key: s3Key as string,
           contentType: contentType as string,
           sizeBytes: sizeBytes as number,
-          documentType: type as string,
+          documentType: 'GENERAL', // DB enum — mobile type key stored in description
+          description: type as string, // stores "CDL", "MEDICAL_CARD", etc.
           expiryDate: expiryDateParsed,
           uploadedBy: driverId, // driver is uploading their own document
         },
@@ -191,7 +202,7 @@ export async function POST(req: NextRequest) {
           s3Key: true,
           contentType: true,
           sizeBytes: true,
-          documentType: true,
+          description: true,
           expiryDate: true,
           notes: true,
           createdAt: true,
@@ -200,8 +211,14 @@ export async function POST(req: NextRequest) {
     }, TX_OPTIONS);
 
     const response = {
-      ...document,
+      id: document.id,
+      fileName: document.fileName,
+      s3Key: document.s3Key,
+      contentType: document.contentType,
+      sizeBytes: document.sizeBytes,
+      documentType: document.description ?? null,
       expiryDate: document.expiryDate ? document.expiryDate.toISOString() : null,
+      notes: document.notes ?? null,
       createdAt: document.createdAt.toISOString(),
       status: computeStatus(document.expiryDate),
     };

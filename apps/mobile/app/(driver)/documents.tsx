@@ -212,7 +212,6 @@ export default function DriverDocuments() {
       ) : (
         <FlashList
           data={documents}
-          estimatedItemSize={72}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <DocumentRow
