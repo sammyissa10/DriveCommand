@@ -28,6 +28,7 @@ import RecipientSelector, {
 } from '../../components/owner/RecipientSelector'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { haptic } from '../../lib/haptics'
+import { MessageSkeleton } from '../../components/skeletons/MessageSkeleton'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -318,8 +319,11 @@ export default function OwnerFleetScreen() {
         {activeTab === 'history' && (
           <View style={styles.historyPanel}>
             {messagesLoading ? (
-              <View style={styles.centerWrap}>
-                <ActivityIndicator color="#38bdf8" />
+              <View>
+                <MessageSkeleton isDriver={false} />
+                <MessageSkeleton isDriver={false} />
+                <MessageSkeleton isDriver={false} />
+                <MessageSkeleton isDriver={false} />
               </View>
             ) : messages.length === 0 ? (
               <View style={styles.centerWrap}>
