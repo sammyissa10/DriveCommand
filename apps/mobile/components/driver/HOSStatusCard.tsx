@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import { Moon, BedDouble, Truck, Briefcase } from 'lucide-react-native'
 import type { HOSStatus } from '@drivecommand/api-client'
 
@@ -53,6 +53,7 @@ export function HOSStatusCard({ status, label, isActive, onPress }: HOSStatusCar
   return (
     <Pressable
       onPress={onPress}
+      android_ripple={Platform.OS === 'android' ? { color: 'rgba(255,255,255,0.1)', borderless: false } : undefined}
       style={[
         {
           flex: 1,

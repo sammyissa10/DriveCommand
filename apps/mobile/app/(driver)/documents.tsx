@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import {
+  Platform,
   Pressable,
   RefreshControl,
   Text,
@@ -100,6 +101,7 @@ function DocumentRow({ document, onPress }: DocumentRowProps) {
   return (
     <Pressable
       onPress={onPress}
+      android_ripple={Platform.OS === 'android' ? { color: 'rgba(255,255,255,0.1)', borderless: false } : undefined}
       className="bg-slate-800 border-b border-slate-700 px-4 py-4 active:bg-slate-700/80 flex-row items-center"
       style={{ minHeight: 72 }}
     >

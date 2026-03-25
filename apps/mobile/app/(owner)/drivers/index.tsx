@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react'
 import {
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -109,6 +110,7 @@ function DriverCard({ driver, onPress }: DriverCardProps) {
   return (
     <Pressable
       onPress={onPress}
+      android_ripple={Platform.OS === 'android' ? { color: 'rgba(255,255,255,0.1)', borderless: false } : undefined}
       style={({ pressed }) => ({
         backgroundColor: pressed ? '#1e3a5f' : '#1e293b',
         borderWidth: 1,

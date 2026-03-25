@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import { ArrowRight, ChevronRight } from 'lucide-react-native'
 import { Badge } from '../ui/Badge'
 import type { LoadSummary } from '@drivecommand/api-client'
@@ -48,6 +48,7 @@ export function LoadCard({ load, onPress }: LoadCardProps) {
   return (
     <Pressable
       onPress={onPress}
+      android_ripple={Platform.OS === 'android' ? { color: 'rgba(255,255,255,0.1)', borderless: false } : undefined}
       className="bg-slate-800 border-b border-slate-700 px-4 py-4 active:bg-slate-700/80"
       style={{ minHeight: 80 }}
     >

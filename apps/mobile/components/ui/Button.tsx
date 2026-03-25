@@ -1,5 +1,5 @@
 import React from 'react'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native'
 
 interface ButtonProps {
   title: string
@@ -37,6 +37,14 @@ const sizeTextStyles: Record<string, string> = {
   lg: 'text-lg',
 }
 
+/** Ripple color per variant — subtle light ripple on dark buttons */
+const variantRipple: Record<string, string> = {
+  primary: 'rgba(255,255,255,0.2)',
+  secondary: 'rgba(255,255,255,0.1)',
+  destructive: 'rgba(255,255,255,0.15)',
+  ghost: 'rgba(255,255,255,0.08)',
+}
+
 export function Button({
   title,
   onPress,
@@ -52,7 +60,12 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={isDisabled}
-      className={`flex-row items-center justify-center rounded-xl ${variantStyles[variant]} ${sizeStyles[size]} ${isDisabled ? 'opacity-50' : 'active:opacity-80'}`}
+      android_ripple={
+        Platform.OS === 'android'
+          ? { color: variantRipple[variant], borderless: false }
+          : undefined
+      }
+      className={`flex-row items-center justify-center rounded-xl overflow-hidden ${variantStyles[variant]} ${sizeStyles[size]} ${isDisabled ? 'opacity-50' : 'active:opacity-80'}`}
     >
       {isLoading ? (
         <ActivityIndicator color="#ffffff" size="small" />
