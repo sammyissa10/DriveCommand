@@ -40,6 +40,7 @@ export interface OwnerLoadSummary {
   customer: { id: string; companyName: string }
   truck: { id: string; make: string; model: string; licensePlate: string } | null
   driver: { id: string; name: string } | null
+  rate?: number | null
   createdAt: string
   updatedAt: string
 }
@@ -65,6 +66,7 @@ export interface OwnerLoadDetail {
   pickupDate?: string | null
   deliveryDate?: string | null
   rate?: number | null
+  notes?: string | null
   customer: { id: string; companyName: string; email?: string; phone?: string }
   truck: { id: string; make: string; model: string; licensePlate: string } | null
   driver: { id: string; name: string } | null
@@ -97,6 +99,32 @@ export interface FleetPosition {
   loadNumber: string | null
 }
 
+export interface CustomerOption {
+  id: string
+  name: string
+}
+
+export interface DriverOption {
+  id: string
+  name: string
+}
+
+export interface CreateLoadPayload {
+  customerId?: string
+  customerName?: string
+  origin: string
+  destination: string
+  pickupDate?: string
+  rate?: number
+  driverId?: string
+}
+
+export interface UpdateLoadPayload {
+  status?: string
+  driverId?: string | null
+  notes?: string
+}
+
 // ---------------------------------------------------------------------------
 // API client
 // ---------------------------------------------------------------------------
@@ -105,11 +133,25 @@ export const ownerApi = {
   getDashboard: (token: string) =>
     apiRequest<OwnerDashboardData>('/api/mobile/owner/dashboard', { token }),
 
-  getLoads: (token: string, status: 'active' | 'history') =>
+  getLoads: (token: string, status: 'all' | 'active' | 'pending' | 'delivered') =>
     apiRequest<OwnerLoadSummary[]>(`/api/mobile/owner/loads?status=${status}`, { token }),
+
+  createLoad: (token: string, payload: CreateLoadPayload) =>
+    apiRequest<{ load: OwnerLoadSummary }>('/api/mobile/owner/loads', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getLoad: (token: string, id: string) =>
     apiRequest<OwnerLoadDetail>(`/api/mobile/owner/loads/${id}`, { token }),
+
+  updateLoad: (token: string, id: string, payload: UpdateLoadPayload) =>
+    apiRequest<{ load: OwnerLoadDetail }>(`/api/mobile/owner/loads/${id}`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   assignTruck: (token: string, loadId: string, truckId: string | null) =>
     apiRequest<{ success: boolean; load: OwnerLoadDetail }>(
@@ -123,6 +165,12 @@ export const ownerApi = {
 
   getTrucks: (token: string) =>
     apiRequest<TruckOption[]>('/api/mobile/owner/trucks', { token }),
+
+  getCustomers: (token: string) =>
+    apiRequest<CustomerOption[]>('/api/mobile/owner/customers', { token }),
+
+  getActiveDrivers: (token: string) =>
+    apiRequest<DriverOption[]>('/api/mobile/owner/drivers/active', { token }),
 
   getFleetPositions: (token: string) =>
     apiRequest<FleetPosition[]>('/api/mobile/owner/fleet-positions', { token }),
