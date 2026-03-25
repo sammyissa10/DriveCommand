@@ -178,6 +178,20 @@ export interface MapVehicle {
   loadNumber: string | null
 }
 
+export interface FleetMessageSummary {
+  id: string
+  recipientName: string
+  body: string
+  isBroadcast: boolean
+  createdAt: string
+}
+
+export interface SendFleetMessagePayload {
+  recipientId?: string
+  body: string
+  isBroadcast?: boolean
+}
+
 export interface CreateLoadPayload {
   customerId?: string
   customerName?: string
@@ -252,4 +266,14 @@ export const ownerApi = {
 
   getMapVehicles: (token: string) =>
     apiRequest<{ vehicles: MapVehicle[] }>('/api/mobile/owner/map/vehicles', { token }),
+
+  getFleetMessages: (token: string) =>
+    apiRequest<{ messages: FleetMessageSummary[] }>('/api/mobile/owner/fleet/messages', { token }),
+
+  sendFleetMessage: (token: string, payload: SendFleetMessagePayload) =>
+    apiRequest<{ message: FleetMessageSummary }>('/api/mobile/owner/fleet/messages', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 }
