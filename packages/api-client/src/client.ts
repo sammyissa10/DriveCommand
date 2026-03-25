@@ -1,6 +1,13 @@
 import type { AuthSession, AuthUser, GPSLocation } from '@drivecommand/types'
 
+let _configuredBaseUrl: string | null = null
+
+export const configureApiClient = (config: { baseUrl: string }) => {
+  _configuredBaseUrl = config.baseUrl
+}
+
 const getBaseUrl = () => {
+  if (_configuredBaseUrl) return _configuredBaseUrl
   if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL
   if (typeof window !== 'undefined') return ''
   return 'http://localhost:3000'

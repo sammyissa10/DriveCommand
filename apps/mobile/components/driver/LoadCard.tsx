@@ -1,6 +1,6 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
-import { ArrowRight } from 'lucide-react-native'
+import { ArrowRight, ChevronRight } from 'lucide-react-native'
 import { Badge } from '../ui/Badge'
 import type { LoadSummary } from '@drivecommand/api-client'
 
@@ -68,7 +68,7 @@ export function LoadCard({ load, onPress }: LoadCardProps) {
         </Text>
       </View>
 
-      {/* Row 3: Customer name + Created date */}
+      {/* Row 3: Customer name + Created date + chevron */}
       <View className="flex-row items-center justify-between">
         <Text className="text-xs text-slate-500" numberOfLines={1} style={{ flex: 1 }}>
           {load.customer.companyName}
@@ -76,6 +76,7 @@ export function LoadCard({ load, onPress }: LoadCardProps) {
         <Text className="text-xs text-slate-500 ml-2 flex-shrink-0">
           {formatDate(load.createdAt)}
         </Text>
+        <ChevronRight color="#475569" size={14} style={{ marginLeft: 6, flexShrink: 0 }} />
       </View>
     </Pressable>
   )

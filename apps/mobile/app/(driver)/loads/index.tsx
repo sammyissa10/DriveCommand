@@ -41,7 +41,7 @@ export default function LoadsScreen() {
   const keyExtractor = useCallback((item: LoadSummary) => item.id, [])
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900">
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       {/* Screen header */}
       <View className="px-4 pt-4 pb-3">
         <Text className="text-2xl font-bold text-white">Loads</Text>
@@ -91,7 +91,6 @@ export default function LoadsScreen() {
             data={data ?? []}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
-            estimatedItemSize={88}
             showsVerticalScrollIndicator={false}
             refreshing={isRefetching}
             onRefresh={onRefresh}

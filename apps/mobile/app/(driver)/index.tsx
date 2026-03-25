@@ -65,7 +65,7 @@ export default function DriverDashboard() {
   // Loading state
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center">
+      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center" edges={['bottom', 'left', 'right']}>
         <ActivityIndicator size="large" color="#0ea5e9" />
         <Text className="text-slate-400 mt-3 text-sm">Loading dashboard...</Text>
       </SafeAreaView>
@@ -75,7 +75,7 @@ export default function DriverDashboard() {
   // Error state
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6">
+      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6" edges={['bottom', 'left', 'right']}>
         <AlertTriangle color="#f87171" size={40} />
         <Text className="text-white text-lg font-semibold mt-4 text-center">
           Failed to load dashboard
@@ -96,10 +96,10 @@ export default function DriverDashboard() {
   const { activeLoad, stopsCompleted, hosHoursRemaining, todayMiles, recentAlerts } = data!
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900">
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -189,7 +189,7 @@ export default function DriverDashboard() {
         {/* Report Incident Quick Action */}
         <Pressable
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push('/(driver)/incidents/new' as any)}
+          onPress={() => router.push('/(driver)/incidents' as any)}
           className="mb-5 active:opacity-80 rounded-xl overflow-hidden"
           style={{
             backgroundColor: 'rgba(127,29,29,0.3)',

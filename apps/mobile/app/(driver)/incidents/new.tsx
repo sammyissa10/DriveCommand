@@ -190,7 +190,7 @@ export default function NewIncidentScreen() {
   // ---------------------------------------------------------------------------
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900">
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

@@ -40,7 +40,7 @@ function getRevertAction(dbStatus: string): RevertAction | null {
     case 'IN_TRANSIT':
       return { label: 'Revert to En Route' }
     default:
-      // DISPATCHED -> cannot revert to Pending (owner-only)
+      // DISPATCHED → cannot revert to Pending (owner-only)
       // All terminal statuses: no revert
       return null
   }

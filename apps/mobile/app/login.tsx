@@ -7,10 +7,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
+  StyleSheet,
 } from 'react-native'
 import { useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { useAuthContext } from '../context/AuthContext'
+import { DCLogo } from '../components/shared/DCLogo'
 
 export default function LoginScreen() {
   const { login } = useAuthContext()
@@ -49,96 +52,208 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-slate-900"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <ImageBackground
+      source={require('../assets/images/login-bg.jpeg')}
+      style={styles.bg}
+      resizeMode="cover"
     >
-      <ScrollView
-        contentContainerClassName="flex-grow justify-center px-6 py-12"
-        keyboardShouldPersistTaps="handled"
+      {/* Dark overlay — matches web's bg-black/40 */}
+      <View style={styles.overlay} />
+
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        {/* Logo / brand */}
-        <View className="items-center mb-10">
-          <View className="w-16 h-16 rounded-2xl bg-blue-600 items-center justify-center mb-4">
-            <Text className="text-white text-2xl font-bold">DC</Text>
-          </View>
-          <Text className="text-white text-3xl font-semibold tracking-tight">
-            DriveCommand
-          </Text>
-          <Text className="text-slate-400 text-sm mt-1">
-            Fleet management, simplified
-          </Text>
-        </View>
-
-        {/* Form card */}
-        <View className="bg-slate-800 rounded-2xl p-6 gap-4">
-          <Text className="text-white text-xl font-semibold mb-2">Sign In</Text>
-
-          {/* Email */}
-          <View>
-            <Text className="text-slate-300 text-sm mb-1.5 font-medium">Email</Text>
-            <TextInput
-              className="bg-slate-700 text-white rounded-xl px-4 py-3 text-base border border-slate-600 focus:border-blue-500"
-              placeholder="you@company.com"
-              placeholderTextColor="#94a3b8"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoFocus
-              returnKeyType="next"
-              value={email}
-              onChangeText={(v) => { setEmail(v); clearError() }}
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              editable={!isLoading}
-            />
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo / brand */}
+          <View style={styles.brand}>
+            <DCLogo iconSize={64} variant="light" showWordmark={false} />
+            <Text style={styles.wordmark}>
+              <Text style={styles.wordmarkBold}>D</Text>
+              <Text style={styles.wordmarkRegular}>riveCommand</Text>
+            </Text>
           </View>
 
-          {/* Password */}
-          <View>
-            <Text className="text-slate-300 text-sm mb-1.5 font-medium">Password</Text>
-            <TextInput
-              ref={passwordRef}
-              className="bg-slate-700 text-white rounded-xl px-4 py-3 text-base border border-slate-600 focus:border-blue-500"
-              placeholder="••••••••"
-              placeholderTextColor="#94a3b8"
-              secureTextEntry
-              returnKeyType="go"
-              value={password}
-              onChangeText={(v) => { setPassword(v); clearError() }}
-              onSubmitEditing={handleSubmit}
-              editable={!isLoading}
-            />
-          </View>
+          {/* Form card — white, matching web */}
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Sign in to your account</Text>
 
-          {/* Error */}
-          {error && (
-            <View className="bg-red-900/40 border border-red-700 rounded-xl px-4 py-3">
-              <Text className="text-red-400 text-sm">{error}</Text>
+            {/* Email */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="you@example.com"
+                placeholderTextColor="#9ca3af"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoFocus
+                returnKeyType="next"
+                value={email}
+                onChangeText={(v) => { setEmail(v); clearError() }}
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                editable={!isLoading}
+              />
             </View>
-          )}
 
-          {/* Submit button */}
-          <TouchableOpacity
-            className={`rounded-xl py-4 items-center mt-2 ${
-              isLoading ? 'bg-blue-700/60' : 'bg-blue-600 active:bg-blue-700'
-            }`}
-            onPress={handleSubmit}
-            disabled={isLoading}
-            activeOpacity={0.8}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <Text className="text-white font-semibold text-base">Sign In</Text>
+            {/* Password */}
+            <View style={styles.field}>
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                ref={passwordRef}
+                style={styles.input}
+                placeholder="••••••••"
+                placeholderTextColor="#9ca3af"
+                secureTextEntry
+                returnKeyType="go"
+                value={password}
+                onChangeText={(v) => { setPassword(v); clearError() }}
+                onSubmitEditing={handleSubmit}
+                editable={!isLoading}
+              />
+            </View>
+
+            {/* Error */}
+            {error && (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
             )}
-          </TouchableOpacity>
-        </View>
 
-        {/* Footer */}
-        <Text className="text-slate-500 text-xs text-center mt-8">
-          Contact your administrator to reset your password
-        </Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            {/* Submit */}
+            <TouchableOpacity
+              style={[styles.btn, isLoading && styles.btnDisabled]}
+              onPress={handleSubmit}
+              disabled={isLoading}
+              activeOpacity={0.85}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.btnText}>Sign in</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Footer */}
+          <Text style={styles.footer}>
+            Contact your administrator to reset your password
+          </Text>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   )
 }
+
+const styles = StyleSheet.create({
+  bg: {
+    flex: 1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.42)',
+  },
+  flex: {
+    flex: 1,
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 48,
+  },
+  brand: {
+    alignItems: 'center',
+    marginBottom: 28,
+    gap: 12,
+  },
+  wordmark: {
+    color: '#ffffff',
+  },
+  wordmarkBold: {
+    fontFamily: 'Poppins-ExtraBold',
+    fontSize: 28,
+    color: '#ffffff',
+  },
+  wordmarkRegular: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 28,
+    color: '#ffffff',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    gap: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  field: {
+    gap: 6,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  input: {
+    backgroundColor: '#f9fafb',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#111827',
+  },
+  errorBox: {
+    backgroundColor: 'rgba(239,68,68,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.25)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  errorText: {
+    color: '#dc2626',
+    fontSize: 13,
+  },
+  btn: {
+    backgroundColor: '#2563eb',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  btnDisabled: {
+    opacity: 0.6,
+  },
+  btnText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  footer: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 24,
+  },
+})

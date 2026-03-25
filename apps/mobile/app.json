@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "drivecommand",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -42,7 +42,14 @@
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
         "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
+        "VIBRATE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
       "predictiveBackGestureEnabled": false
     },
@@ -68,10 +75,18 @@
           "color": "#0f172a"
         }
       ],
-      "expo-image"
+      "expo-image",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "010aaae1-a5ad-455a-bb42-a1d6637e4cf7"
+      }
+    },
+    "owner": "onesquad-drivecommand"
   }
 }

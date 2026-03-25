@@ -56,7 +56,6 @@ export function HOSStatusCard({ status, label, isActive, onPress }: HOSStatusCar
       style={[
         {
           flex: 1,
-          minWidth: '45%' as unknown as number,
           minHeight: 80,
           borderRadius: 12,
           padding: 16,

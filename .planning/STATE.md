@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 35 Owner Core Screens — IN PROGRESS
 Current Plan: 35-03 complete — next is 35-04
 Status: 35-03 complete — owner driver list (FlashList, compliance dots, filter tabs), driver detail (current load, documents, contact deep links, incidents, quick actions), 2 REST endpoints (GET drivers + GET drivers/[id]), tappable dashboard driver chips
-Last activity: 2026-03-25 - Completed Phase 35-03: Owner driver management
+Last activity: 2026-03-25 - Completed quick task 105: Revert status + rate confirmation PDF on mobile driver load detail
 Stopped at: Phase 35, Plan 03 complete — next is 35-04
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -657,6 +657,7 @@ None blocking immediate progress.
 | 102 | Move fleet messaging from Routes to Loads | 2026-03-24 | 871462b | [102-move-fleet-messaging-from-routes-to-load](./quick/102-move-fleet-messaging-from-routes-to-load/) |
 | 103 | Add truck selection to individual loads on mobile | 2026-03-25 | 3bfa105 | [103-add-truck-selection-to-individual-loads-](./quick/103-add-truck-selection-to-individual-loads-/) |
 | 104 | Edit truck on load + fleet map live driver positions | 2026-03-25 | beaf249 | [104-edit-truck-on-load-fleet-map-live-driver](./quick/104-edit-truck-on-load-fleet-map-live-driver/) |
+| 105 | Revert status + rate confirmation PDF on mobile driver load detail | 2026-03-25 | a64b8d3 | [105-revert-status-rate-confirmation-pdf-on-m](./quick/105-revert-status-rate-confirmation-pdf-on-m/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected

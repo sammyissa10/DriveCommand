@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -79,7 +80,7 @@ export default function DriverHOS() {
   const [notes, setNotes] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, isRefetching, refetch } = useQuery({
     queryKey: ['driver-hos'],
     queryFn: () => driverApi.getHOS(token!),
     enabled: !!token,
@@ -138,7 +139,7 @@ export default function DriverHOS() {
   // --- Loading state ---
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
           <LoadingSpinner />
           <Text style={{ color: '#94a3b8', fontSize: 14 }}>Loading HOS data...</Text>
@@ -150,7 +151,7 @@ export default function DriverHOS() {
   // --- Error state ---
   if (isError || !data) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, paddingHorizontal: 24 }}>
           <Text style={{ color: '#f87171', fontSize: 16, fontWeight: '600', textAlign: 'center' }}>
             Failed to load HOS data
@@ -169,10 +170,13 @@ export default function DriverHOS() {
   const currentMeta = STATUS_META[data.currentStatus]
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#0ea5e9" colors={['#0ea5e9']} />
+        }
       >
         {/* Screen title */}
         <Text style={{ fontSize: 24, fontWeight: '700', color: '#ffffff', marginBottom: 20 }}>
@@ -211,23 +215,29 @@ export default function DriverHOS() {
         <Text style={{ fontSize: 13, fontWeight: '600', color: '#64748b', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
           Change Status
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 12,
-            marginBottom: 28,
-          }}
-        >
-          {STATUS_ORDER.map((status) => (
-            <HOSStatusCard
-              key={status}
-              status={status}
-              label={STATUS_META[status].label}
-              isActive={status === data.currentStatus}
-              onPress={() => handleStatusPress(status)}
-            />
-          ))}
+        <View style={{ marginBottom: 28 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+            {STATUS_ORDER.slice(0, 2).map((status) => (
+              <HOSStatusCard
+                key={status}
+                status={status}
+                label={STATUS_META[status].label}
+                isActive={status === data.currentStatus}
+                onPress={() => handleStatusPress(status)}
+              />
+            ))}
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {STATUS_ORDER.slice(2, 4).map((status) => (
+              <HOSStatusCard
+                key={status}
+                status={status}
+                label={STATUS_META[status].label}
+                isActive={status === data.currentStatus}
+                onPress={() => handleStatusPress(status)}
+              />
+            ))}
+          </View>
         </View>
 
         {/* ── 3. Daily Log ── */}

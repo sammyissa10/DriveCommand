@@ -1,12 +1,15 @@
 import { Slot, useRouter } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import * as Notifications from 'expo-notifications'
-import { useFonts, Poppins_600SemiBold } from '@expo-google-fonts/poppins'
+import { useFonts, Poppins_600SemiBold, Poppins_800ExtraBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
 import { AuthProvider } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
-import { setUnauthorizedHandler } from '@drivecommand/api-client'
+import { setUnauthorizedHandler, configureApiClient } from '@drivecommand/api-client'
+
+// Configure API URL for mobile — Android emulator uses 10.0.2.2 to reach host machine
+configureApiClient({ baseUrl: process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000' })
 import { useAuthContext } from '../context/AuthContext'
 import Toast from 'react-native-toast-message'
 import '../global.css'
@@ -60,6 +63,7 @@ function AuthGuard() {
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     'Poppins-SemiBold': Poppins_600SemiBold,
+    'Poppins-ExtraBold': Poppins_800ExtraBold,
   })
 
   useEffect(() => {
