@@ -17,6 +17,7 @@ import {
   Package,
   Truck,
   UserCheck,
+  Users,
 } from 'lucide-react-native'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
