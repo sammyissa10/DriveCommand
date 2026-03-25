@@ -54,6 +54,22 @@ export interface TruckOption {
   inMaintenance: boolean
 }
 
+export interface FleetPosition {
+  truckId: string
+  latitude: number
+  longitude: number
+  speed: number | null
+  heading: number | null
+  timestamp: string
+  truck: {
+    make: string
+    model: string
+    licensePlate: string
+  }
+  driverName: string | null
+  loadNumber: string | null
+}
+
 // ---------------------------------------------------------------------------
 // API client
 // ---------------------------------------------------------------------------
@@ -77,4 +93,7 @@ export const ownerApi = {
 
   getTrucks: (token: string) =>
     apiRequest<TruckOption[]>('/api/mobile/owner/trucks', { token }),
+
+  getFleetPositions: (token: string) =>
+    apiRequest<FleetPosition[]>('/api/mobile/owner/fleet-positions', { token }),
 }
