@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 36 Owner Map and Fleet — COMPLETE ✅
-Current Plan: Phase 37 (next)
-Status: Phase 36 complete — live map + fleet messaging backend + fleet messaging UI all shipped. Human verification pending: dark map style, marker tap sheet, push notification delivery, pre-select driver navigation.
-Last activity: 2026-03-25 - Completed Phase 36: Owner Map + Fleet Communication
-Stopped at: Phase 36 complete — ready for Phase 37
+Phase: Phase 37 Polish and Performance — IN PROGRESS
+Current Plan: Phase 37 Plan 02 (next)
+Status: Phase 37 Plan 01 complete — touch targets audited (48px enforced), all FlatList replaced with FlashList, skeleton loaders on all 11 data-fetching screens.
+Last activity: 2026-03-25 - Completed Phase 37 Plan 01: Touch Targets, FlashList Audit, Skeleton Loaders
+Stopped at: Completed 37-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -78,6 +78,7 @@ Progress: [███████████████████████
 - Phase 36-01 (2026-03-25): Owner live map — GET /api/mobile/owner/map/vehicles with MOVING/IDLE/OFFLINE status computation, VehicleMarker (status-colored circle), VehicleDetailSheet (Modal bottom sheet with stats grid), full-screen MapView with dark style on Android, 60s auto-refresh, manual refresh button — 3 tasks, 6 files, 241s
 - Phase 36-02a (2026-03-25): Fleet messaging backend — FleetMessage schema extended (recipientId + isBroadcast + senderId index), GET/POST /api/mobile/owner/fleet/messages with push notification delivery (broadcast + targeted), FleetMessageSummary + SendFleetMessagePayload types + ownerApi methods in api-client — 3 tasks, 4 files, 184s
 - Phase 36-02b (2026-03-25): Fleet messaging UI — RecipientSelector bottom sheet (All Drivers broadcast + individual driver list), fleet.tsx compose/history toggle (char counter, loading send, pre-select from driverId param, pull-to-refresh history) — 2 tasks, 2 files, 151s
+- Phase 37-01 (2026-03-25): Touch targets + FlashList audit + skeleton loaders — 48px touch targets enforced on 5 elements, FlatList→FlashList in messages+fleet, Skeleton base component + 5 skeleton variants, spinners→skeletons on 11 screens — 6 tasks, 20 files, 439s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -545,6 +546,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 35-01]: openAlertsCount = expiring docs (30 days) + trucks in maintenance, no separate alerts model
 - [Phase 35-01]: revenueThisMonth uses updatedAt on DELIVERED/INVOICED loads as proxy for completion month
 - [Phase 36]: RecipientSelector uses Modal bottom sheet (VehicleDetailSheet pattern) — consistent with codebase, no new dependencies
+- [Phase 37]: Skeleton base component uses opacity pulse (0.3→0.8 repeat) via react-native-reanimated; map loading overlay keeps ActivityIndicator since skeleton doesn't apply over MapView
 
 ### Pending Todos
 
@@ -731,6 +733,7 @@ None blocking immediate progress.
 | Phase 33-driver-native-features P03 | 133 | 7 tasks | 7 files |
 | Phase 35-owner-core-screens P01 | 203 | 5 tasks | 6 files |
 | Phase 36 P02b | 151 | 2 tasks | 2 files |
+| Phase 37 P01 | 439 | 6 tasks | 20 files |
 
 ## Session Continuity
 
