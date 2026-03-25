@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Tabs } from 'expo-router'
-import { LayoutDashboard, Map, Package, Users, MessageSquare } from 'lucide-react-native'
+import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { haptic } from '../../lib/haptics'
 
@@ -62,13 +62,22 @@ export default function OwnerLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
-          name="fleet"
+          name="more"
           options={{
-            tabBarLabel: 'Messages',
-            tabBarIcon: ({ color }) => <MessageSquare color={color} size={24} />,
+            tabBarLabel: 'More',
+            tabBarIcon: ({ color }) => <Grid2X2 color={color} size={24} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+        {/* Hidden screens - not visible in tab bar */}
+        <Tabs.Screen name="fleet" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="invoices" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="crm" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="payroll" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="ai-documents" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="trucks" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="compliance" options={{ href: null, headerShown: false }} />
+        <Tabs.Screen name="settings" options={{ href: null, headerShown: false }} />
       </Tabs>
     </Fragment>
   )
