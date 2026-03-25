@@ -12,25 +12,24 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import {
   AlertTriangle,
-  ArrowRight,
   DollarSign,
   Package,
+  Plus,
   Truck,
   UserCheck,
   Users,
 } from 'lucide-react-native'
-
-const SCREEN_WIDTH = Dimensions.get('window').width
-// 2-column grid: 16px padding each side + 8px gap between columns
-const CHIP_WIDTH = (SCREEN_WIDTH - 16 - 16 - 8) / 2
 import { useAuthContext } from '../../context/AuthContext'
 import { ownerApi } from '@drivecommand/api-client'
 import { KPICard } from '../../components/owner/KPICard'
 import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
-import { Badge } from '../../components/ui/Badge'
+import { DashboardLoadCard } from '../../components/owner/DashboardLoadCard'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { haptic } from '../../lib/haptics'
+
+const SCREEN_WIDTH = Dimensions.get('window').width
+const CHIP_WIDTH = (SCREEN_WIDTH - 16 - 16 - 8) / 2
 
 // ---------------------------------------------------------------------------
 // Types
@@ -67,27 +66,6 @@ interface OwnerDashboardData {
 // Helpers
 // ---------------------------------------------------------------------------
 
-type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
-
-function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
-  switch (status) {
-    case 'PENDING':
-      return { label: 'Pending', variant: 'muted' }
-    case 'DISPATCHED':
-      return { label: 'Accepted', variant: 'info' }
-    case 'PICKED_UP':
-    case 'IN_TRANSIT':
-      return { label: 'En Route', variant: 'warning' }
-    case 'DELIVERED':
-      return { label: 'Delivered', variant: 'success' }
-    case 'INVOICED':
-      return { label: 'Invoiced', variant: 'success' }
-    case 'CANCELLED':
-      return { label: 'Cancelled', variant: 'danger' }
-    default:
-      return { label: status, variant: 'muted' }
-  }
-}
 
 function formatRevenue(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`
@@ -177,13 +155,15 @@ export default function OwnerDashboard() {
           <KPICard
             label="Active Loads"
             value={kpis.activeLoadsCount}
-            icon={<Package color="#475569" size={18} />}
+            valueColor="#38bdf8"
+            icon={<Package color="#38bdf8" size={16} />}
             onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
           />
           <KPICard
             label="Available"
             value={availableDriversCount}
-            icon={<UserCheck color="#475569" size={18} />}
+            valueColor="#38bdf8"
+            icon={<UserCheck color="#38bdf8" size={16} />}
             onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
           />
         </View>
@@ -191,13 +171,15 @@ export default function OwnerDashboard() {
           <KPICard
             label="Revenue (MTD)"
             value={formatRevenue(kpis.revenueThisMonth)}
-            icon={<DollarSign color="#475569" size={18} />}
+            valueColor="#10b981"
+            icon={<DollarSign color="#10b981" size={16} />}
             onPress={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
           />
           <KPICard
             label="Open Alerts"
             value={kpis.openAlertsCount}
-            icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={18} />}
+            valueColor={kpis.openAlertsCount > 0 ? '#fbbf24' : '#94a3b8'}
+            icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={16} />}
             onPress={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
           />
         </View>
@@ -222,54 +204,19 @@ export default function OwnerDashboard() {
             <Text className="text-slate-400 text-sm mt-3 text-center">No active loads right now</Text>
           </View>
         ) : (
-          <View style={{ marginBottom: 20, gap: 8 }}>
-            {activeLoads.map((load) => {
-              const badge = getStatusBadge(load.status)
-              return (
-                <Pressable
-                  key={load.id}
-                  onPress={() => { haptic.light(); router.push(`/(owner)/loads/${load.id}` as any) }}
-                  android_ripple={{ color: 'rgba(14,165,233,0.1)', borderless: false }}
-                  style={({ pressed }) => ({
-                    backgroundColor: pressed ? '#263348' : '#1e293b',
-                    borderRadius: 12,
-                    overflow: 'hidden',
-                  })}
-                >
-                  <View style={{
-                    borderWidth: 1,
-                    borderColor: '#475569',
-                    borderRadius: 12,
-                    paddingHorizontal: 14,
-                    paddingVertical: 12,
-                  }}>
-                  {/* Row 1: Load number + badge */}
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
-                      #{load.loadNumber}
-                    </Text>
-                    <Badge label={badge.label} variant={badge.variant} />
-                  </View>
-
-                  {/* Row 2: Origin → Destination */}
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 3 }}>
-                    <Text style={{ color: '#cbd5e1', fontSize: 12, flex: 1 }} numberOfLines={1}>
-                      {load.origin}
-                    </Text>
-                    <ArrowRight color="#64748b" size={11} style={{ marginHorizontal: 5, flexShrink: 0 }} />
-                    <Text style={{ color: '#cbd5e1', fontSize: 12, flex: 1, textAlign: 'right' }} numberOfLines={1}>
-                      {load.destination}
-                    </Text>
-                  </View>
-
-                  {/* Row 3: Driver name */}
-                  <Text style={{ color: '#64748b', fontSize: 11 }} numberOfLines={1}>
-                    {load.driverName ?? 'Unassigned'}
-                  </Text>
-                  </View>
-                </Pressable>
-              )
-            })}
+          <View style={{ marginBottom: 20, gap: 10 }}>
+            {activeLoads.map((load) => (
+              <DashboardLoadCard
+                key={load.id}
+                id={load.id}
+                loadNumber={load.loadNumber}
+                status={load.status}
+                origin={load.origin}
+                destination={load.destination}
+                driverName={load.driverName}
+                onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
+              />
+            ))}
           </View>
         )}
 
@@ -316,6 +263,29 @@ export default function OwnerDashboard() {
           )
         })()}
       </ScrollView>
+
+      {/* FAB — Quick Create Load */}
+      <Pressable
+        onPress={() => { haptic.medium(); router.push('/(owner)/loads' as any) }}
+        style={{
+          position: 'absolute',
+          bottom: 24,
+          right: 20,
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          backgroundColor: '#0ea5e9',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#0ea5e9',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.4,
+          shadowRadius: 8,
+          elevation: 8,
+        }}
+      >
+        <Plus color="#ffffff" size={24} />
+      </Pressable>
       </AnimatedScreen>
     </SafeAreaView>
   )

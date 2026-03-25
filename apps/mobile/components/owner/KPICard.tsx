@@ -6,6 +6,7 @@ interface KPICardProps {
   label: string
   value: string | number
   icon: React.ReactNode
+  valueColor?: string
   trend?: { direction: 'up' | 'down' | 'neutral'; label: string }
   onPress?: () => void
 }
@@ -18,7 +19,7 @@ const cardStyle = {
   padding: 12,
 }
 
-export const KPICard = memo(function KPICard({ label, value, icon, trend, onPress }: KPICardProps) {
+export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress }: KPICardProps) {
   const trendColor =
     trend?.direction === 'up' ? '#34d399' :
     trend?.direction === 'down' ? '#f87171' : '#94a3b8'
@@ -31,7 +32,7 @@ export const KPICard = memo(function KPICard({ label, value, icon, trend, onPres
     <>
       <View style={{ position: 'absolute', top: 10, right: 10 }}>{icon}</View>
       <Text
-        style={{ fontSize: 24, fontWeight: 'bold', color: '#ffffff', marginTop: 2, marginBottom: 2 }}
+        style={{ fontSize: 26, fontWeight: 'bold', color: valueColor, marginTop: 2, marginBottom: 2 }}
         numberOfLines={1}
         adjustsFontSizeToFit
       >

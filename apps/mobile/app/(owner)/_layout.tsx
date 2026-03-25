@@ -25,8 +25,9 @@ export default function OwnerLayout() {
             paddingBottom: 10,
             paddingTop: 6,
           },
-          tabBarActiveTintColor: '#0ea5e9',
-          tabBarInactiveTintColor: '#64748b',
+          tabBarActiveTintColor: '#38bdf8',
+          tabBarInactiveTintColor: '#475569',
+          tabBarActiveBackgroundColor: 'rgba(14,165,233,0.08)',
         }}
       >
         <Tabs.Screen
