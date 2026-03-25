@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 34 Driver Documents + Messaging — IN PROGRESS
 Current Plan: 34-02 complete — next is 34-03 (or next phase)
 Status: 34-02 complete — driver messaging screen, unread badge, 30s polling, MMKV last-read tracking, 2 new REST endpoints
-Last activity: 2026-03-25 - Completed quick task 103: Add truck selection to individual loads on mobile
+Last activity: 2026-03-25 - Completed quick task 104: Edit truck on load + fleet map live driver positions
 Stopped at: Phase 34, Plan 02 complete — next is 34-03 (if exists) or Phase 35
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -644,6 +644,7 @@ None blocking immediate progress.
 | 101 | Add driver ↔ dispatcher messaging to the mobile app | 2026-03-24 | 37fa5b9 | [101-add-driver-dispatcher-messaging-to-the-m](./quick/101-add-driver-dispatcher-messaging-to-the-m/) |
 | 102 | Move fleet messaging from Routes to Loads | 2026-03-24 | 871462b | [102-move-fleet-messaging-from-routes-to-load](./quick/102-move-fleet-messaging-from-routes-to-load/) |
 | 103 | Add truck selection to individual loads on mobile | 2026-03-25 | 3bfa105 | [103-add-truck-selection-to-individual-loads-](./quick/103-add-truck-selection-to-individual-loads-/) |
+| 104 | Edit truck on load + fleet map live driver positions | 2026-03-25 | beaf249 | [104-edit-truck-on-load-fleet-map-live-driver](./quick/104-edit-truck-on-load-fleet-map-live-driver/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
