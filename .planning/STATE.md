@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 35 Owner Core Screens — COMPLETE (2026-03-24)
 Current Plan: Phase 36 is next
 Status: Phase 35 complete — owner dashboard (KPI grid, driver chips, 60s refresh), loads management (4-tab filter, create form, owner actions), driver management (compliance dots, detail screen, contact deep links)
-Last activity: 2026-03-24 - Completed Phase 35: Owner Core Screens (3 plans, 9/9 verification checks passed)
+Last activity: 2026-03-25 - Completed quick task 107: Fix GPS report endpoint to accept mobile Bearer token auth
 Stopped at: Phase 35 complete — ready for Phase 36
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -658,6 +658,7 @@ None blocking immediate progress.
 | 103 | Add truck selection to individual loads on mobile | 2026-03-25 | 3bfa105 | [103-add-truck-selection-to-individual-loads-](./quick/103-add-truck-selection-to-individual-loads-/) |
 | 104 | Edit truck on load + fleet map live driver positions | 2026-03-25 | beaf249 | [104-edit-truck-on-load-fleet-map-live-driver](./quick/104-edit-truck-on-load-fleet-map-live-driver/) |
 | 105 | Revert status + rate confirmation PDF on mobile driver load detail | 2026-03-25 | a64b8d3 | [105-revert-status-rate-confirmation-pdf-on-m](./quick/105-revert-status-rate-confirmation-pdf-on-m/) |
+| 107 | Fix GPS report endpoint to accept mobile Bearer token auth | 2026-03-25 | 699dc96 | [107-fix-gps-report-endpoint-to-accept-mobile](./quick/107-fix-gps-report-endpoint-to-accept-mobile/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
