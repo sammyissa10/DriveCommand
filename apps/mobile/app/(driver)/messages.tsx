@@ -17,6 +17,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type FleetMessage } from '@drivecommand/api-client'
 import { kvStorage } from '../../lib/storage'
 import { MessageSkeleton } from '../../components/skeletons/MessageSkeleton'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 const POLL_INTERVAL_MS = 30_000
 const LAST_READ_KEY = 'messages_last_read_at'
@@ -169,6 +170,7 @@ export default function DriverMessages() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Header */}
       <View className="px-4 pt-4 pb-3">
         <Text className="text-2xl font-bold text-white">Messages</Text>
@@ -254,6 +256,7 @@ export default function DriverMessages() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

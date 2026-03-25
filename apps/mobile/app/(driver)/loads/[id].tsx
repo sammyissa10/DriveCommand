@@ -22,6 +22,7 @@ import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { StatusUpdateButton } from '../../../components/driver/StatusUpdateButton'
 import { LoadStatusTimeline } from '../../../components/driver/LoadStatusTimeline'
 import { Skeleton } from '../../../components/ui/Skeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -175,6 +176,7 @@ export default function LoadDetailScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
         <Pressable
@@ -301,6 +303,7 @@ export default function LoadDetailScreen() {
           <StatusUpdateButton load={load} onStatusUpdated={onStatusUpdated} />
         </View>
       )}
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

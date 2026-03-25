@@ -11,6 +11,7 @@ import { EmptyState } from '../../../components/ui/EmptyState'
 import { Badge } from '../../../components/ui/Badge'
 import { CreateLoadSheet } from '../../../components/owner/CreateLoadSheet'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 type TabType = 'all' | 'active' | 'pending' | 'delivered'
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -151,6 +152,7 @@ export default function OwnerLoadsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Screen header */}
       <View className="px-4 pt-4 pb-3">
         <Text className="text-2xl font-bold text-white">Loads</Text>
@@ -238,6 +240,7 @@ export default function OwnerLoadsScreen() {
         onClose={() => setCreateSheetVisible(false)}
         onCreated={handleLoadCreated}
       />
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

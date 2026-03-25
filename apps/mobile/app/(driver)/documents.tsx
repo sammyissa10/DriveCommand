@@ -22,6 +22,7 @@ import { Badge } from '../../components/ui/Badge'
 import { DocumentDetailSheet } from '../../components/driver/DocumentDetailSheet'
 import { DocumentUploadSheet } from '../../components/driver/DocumentUploadSheet'
 import { DocumentRowSkeleton } from '../../components/skeletons/DocumentRowSkeleton'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -192,6 +193,7 @@ export default function DriverDocuments() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Header */}
       <View className="px-4 pt-4 pb-3 border-b border-slate-800">
         <Text className="text-2xl font-bold text-white">Documents</Text>
@@ -280,6 +282,7 @@ export default function DriverDocuments() {
         onClose={() => setShowUpload(false)}
         onSuccess={handleUploadSuccess}
       />
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

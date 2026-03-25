@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type DashboardData } from '@drivecommand/api-client'
 import { Badge } from '../../components/ui/Badge'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { StatChip } from '../../components/driver/StatChip'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 
@@ -92,6 +93,7 @@ export default function DriverDashboard() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingBottom: 32 }}
@@ -234,6 +236,7 @@ export default function DriverDashboard() {
           )}
         </View>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

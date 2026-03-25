@@ -29,6 +29,7 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverDetail, type OwnerDriverDocument } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
 import { Skeleton } from '../../../components/ui/Skeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -264,6 +265,7 @@ export default function DriverDetailScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Top bar with back button */}
       <View
         style={{
@@ -597,6 +599,7 @@ export default function DriverDetailScreen() {
           </Pressable>
         </View>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

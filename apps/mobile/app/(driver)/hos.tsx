@@ -20,6 +20,7 @@ import { HOSStatusCard } from '../../components/driver/HOSStatusCard'
 import { HOSDayBar } from '../../components/driver/HOSDayBar'
 import { HOSClock } from '../../components/driver/HOSClock'
 import { Skeleton } from '../../components/ui/Skeleton'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 // --- Status metadata ---
 
@@ -191,6 +192,7 @@ export default function DriverHOS() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
@@ -285,6 +287,7 @@ export default function DriverHOS() {
           />
         </View>
       </ScrollView>
+      </AnimatedScreen>
 
       {/* ── Status Change Confirmation Modal ── */}
       <Modal

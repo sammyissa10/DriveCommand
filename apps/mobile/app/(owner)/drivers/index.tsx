@@ -14,6 +14,7 @@ import { AlertTriangle, Users } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverSummary } from '@drivecommand/api-client'
 import { DriverCardSkeleton } from '../../../components/skeletons/DriverCardSkeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -262,6 +263,7 @@ export default function OwnerDriversScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
         <Text style={{ color: '#f1f5f9', fontSize: 22, fontWeight: '700' }}>Drivers</Text>
@@ -363,6 +365,7 @@ export default function OwnerDriversScreen() {
           contentContainerStyle={{ paddingTop: 4, paddingBottom: 32 }}
         />
       )}
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

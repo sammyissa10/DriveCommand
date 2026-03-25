@@ -20,6 +20,7 @@ import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { TruckPickerSheet } from '../../../components/owner/TruckPickerSheet'
 import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { Skeleton } from '../../../components/ui/Skeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -420,6 +421,7 @@ export default function OwnerLoadDetailScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
         <Pressable
@@ -648,6 +650,7 @@ export default function OwnerLoadDetailScreen() {
         isPending={isUpdating}
         loadNumber={load.loadNumber}
       />
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

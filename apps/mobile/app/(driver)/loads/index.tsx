@@ -10,6 +10,7 @@ import { driverApi, type LoadSummary } from '@drivecommand/api-client'
 import { LoadCard } from '../../../components/driver/LoadCard'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 type TabType = 'active' | 'history'
 
@@ -42,6 +43,7 @@ export default function LoadsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       {/* Screen header */}
       <View className="px-4 pt-4 pb-3">
         <Text className="text-2xl font-bold text-white">Loads</Text>
@@ -110,6 +112,7 @@ export default function LoadsScreen() {
           />
         </View>
       )}
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

@@ -23,6 +23,7 @@ import { KPICard } from '../../components/owner/KPICard'
 import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
 import { Badge } from '../../components/ui/Badge'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -139,6 +140,7 @@ export default function OwnerDashboard() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingBottom: 32 }}
@@ -293,6 +295,7 @@ export default function OwnerDashboard() {
           </View>
         )}
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

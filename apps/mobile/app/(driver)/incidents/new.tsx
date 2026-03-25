@@ -21,6 +21,7 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { SeverityToggle } from '../../../components/driver/SeverityToggle'
 import { IncidentPhotoCapture } from '../../../components/driver/IncidentPhotoCapture'
 import { uploadPhotoToS3 } from '../../../lib/upload'
+import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Category data
@@ -191,6 +192,7 @@ export default function NewIncidentScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <AnimatedScreen>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -370,6 +372,7 @@ export default function NewIncidentScreen() {
           </View>
         </View>
       </Modal>
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }

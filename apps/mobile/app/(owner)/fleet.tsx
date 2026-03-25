@@ -24,6 +24,7 @@ import {
 import RecipientSelector, {
   type RecipientOption,
 } from '../../components/owner/RecipientSelector'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -195,6 +196,7 @@ export default function OwnerFleetScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <AnimatedScreen>
       <View style={styles.container}>
         {/* Page header */}
         <Text style={styles.pageTitle}>Fleet Messages</Text>
@@ -349,6 +351,7 @@ export default function OwnerFleetScreen() {
         drivers={drivers}
         loading={driversLoading}
       />
+      </AnimatedScreen>
     </SafeAreaView>
   )
 }
