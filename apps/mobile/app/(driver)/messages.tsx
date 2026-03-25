@@ -117,8 +117,11 @@ export default function DriverMessages() {
     setSending(true)
     setInputText('')
 
+    // Attach loadId from the active conversation so replies appear in the owner's load detail
+    const activeLoadId = messages.find((m) => m.loadId)?.loadId ?? undefined
+
     try {
-      const newMessage = await driverApi.sendMessage(token, text)
+      const newMessage = await driverApi.sendMessage(token, text, activeLoadId)
       setMessages((prev) => [...prev, newMessage])
     } catch {
       // Restore input text on failure
@@ -127,7 +130,7 @@ export default function DriverMessages() {
     } finally {
       setSending(false)
     }
-  }, [inputText, token, sending])
+  }, [inputText, token, sending, messages])
 
   const isEmpty = messages.length === 0
 
