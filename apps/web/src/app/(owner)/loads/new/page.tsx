@@ -10,8 +10,10 @@ export default async function NewLoadPage() {
   let customers: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let drivers: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let trucks: any[] = [];
   try {
-    [customers, drivers] = await Promise.all([
+    [customers, drivers, trucks] = await Promise.all([
       prisma.customer.findMany({
         where: { status: 'ACTIVE' },
         select: { id: true, companyName: true },
@@ -21,6 +23,11 @@ export default async function NewLoadPage() {
         where: { role: 'DRIVER', isActive: true },
         select: { id: true, firstName: true, lastName: true },
         orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
+      }),
+      prisma.truck.findMany({
+        where: { archivedAt: null },
+        select: { id: true, year: true, make: true, model: true, licensePlate: true },
+        orderBy: [{ year: 'desc' }, { make: 'asc' }],
       }),
     ]);
   } catch {
@@ -36,7 +43,7 @@ export default async function NewLoadPage() {
         <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
         <p className="mt-1 text-muted-foreground">Add a new load to your board</p>
       </div>
-      <LoadForm action={createLoad} customers={customers} drivers={drivers} submitLabel="Create Load" />
+      <LoadForm action={createLoad} customers={customers} drivers={drivers} trucks={trucks} submitLabel="Create Load" />
     </div>
   );
 }
