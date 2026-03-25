@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 02 (next)
-Status: Phase 37 Plan 01 complete — touch targets audited (48px enforced), all FlatList replaced with FlashList, skeleton loaders on all 11 data-fetching screens.
-Last activity: 2026-03-25 - Completed Phase 37 Plan 01: Touch Targets, FlashList Audit, Skeleton Loaders
-Stopped at: Completed 37-01-PLAN.md
+Current Plan: Phase 37 Plan 03 (next)
+Status: Phase 37 Plan 02 complete — Reanimated FadeIn on all 15 screens, spring BottomSheet, haptics on all 10 tabs + key actions, dark/light ScreenWrapper, Android ripple on all Pressables, KAV fixes on fleet+HOS modal, React.memo on list components.
+Last activity: 2026-03-25 - Completed Phase 37 Plan 02: Animations, Haptics, and Dark Mode
+Stopped at: Completed 37-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -79,6 +79,7 @@ Progress: [███████████████████████
 - Phase 36-02a (2026-03-25): Fleet messaging backend — FleetMessage schema extended (recipientId + isBroadcast + senderId index), GET/POST /api/mobile/owner/fleet/messages with push notification delivery (broadcast + targeted), FleetMessageSummary + SendFleetMessagePayload types + ownerApi methods in api-client — 3 tasks, 4 files, 184s
 - Phase 36-02b (2026-03-25): Fleet messaging UI — RecipientSelector bottom sheet (All Drivers broadcast + individual driver list), fleet.tsx compose/history toggle (char counter, loading send, pre-select from driverId param, pull-to-refresh history) — 2 tasks, 2 files, 151s
 - Phase 37-01 (2026-03-25): Touch targets + FlashList audit + skeleton loaders — 48px touch targets enforced on 5 elements, FlatList→FlashList in messages+fleet, Skeleton base component + 5 skeleton variants, spinners→skeletons on 11 screens — 6 tasks, 20 files, 439s
+- Phase 37-02 (2026-03-25): Animations, haptics, dark mode — AnimatedScreen FadeIn on 15 screens, spring BottomSheet, haptics.ts with 14 trigger points, dark/light ScreenWrapper, Android ripple on all Pressables, KAV on fleet+HOS modal, React.memo on LoadCard/KPICard/DriverStatusChip — 8 tasks, 25 files, 817s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
