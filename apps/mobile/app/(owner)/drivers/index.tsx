@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
 import { AlertTriangle, Users } from 'lucide-react-native'
-import { useAuthContext } from '../../context/AuthContext'
+import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverSummary } from '@drivecommand/api-client'
 
 // ---------------------------------------------------------------------------
