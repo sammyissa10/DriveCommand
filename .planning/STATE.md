@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 36 Owner Map and Fleet — IN PROGRESS
-Current Plan: 36-02 (Plan 1/3 complete)
-Status: Phase 36 plan 01 complete — live map screen with MOVING/IDLE/OFFLINE vehicle markers, VehicleMarker + VehicleDetailSheet components, GET /api/mobile/owner/map/vehicles endpoint, 60s auto-refresh, dark map style on Android
-Last activity: 2026-03-25 - Completed Phase 36-01: Owner Live Map Screen
-Stopped at: Phase 36-01 complete — ready for 36-02
+Current Plan: 36-02b (Plan 2/3 complete)
+Status: Phase 36 plan 02a complete — FleetMessage schema extended with recipientId/isBroadcast, GET/POST fleet messages endpoint with push notifications, typed api-client methods
+Last activity: 2026-03-25 - Completed Phase 36-02a: Fleet Messaging Backend
+Stopped at: Phase 36-02a complete — ready for 36-02b
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -76,6 +76,7 @@ Progress: [███████████████████████
 - Phase 35-02 (2026-03-24): Owner loads management — 4-tab filtered loads list (All/Active/Pending/Delivered) + FAB, CreateLoadSheet (customer/driver pickers + date/rate), POST create load, PATCH status/driver/notes, GET customers + GET active drivers endpoints, load detail with assign driver/change status/cancel actions — 6 tasks, 9 files, 317s
 - Phase 35-03 (2026-03-25): Owner driver management — driver list screen (FlashList, compliance dots, filter tabs), driver detail (current load card, compliance docs, mailto/tel deep links, incidents, quick actions), GET /drivers + GET /drivers/[id] endpoints with compliance computation, tappable dashboard driver chips — 5 tasks, 8 files, 421s
 - Phase 36-01 (2026-03-25): Owner live map — GET /api/mobile/owner/map/vehicles with MOVING/IDLE/OFFLINE status computation, VehicleMarker (status-colored circle), VehicleDetailSheet (Modal bottom sheet with stats grid), full-screen MapView with dark style on Android, 60s auto-refresh, manual refresh button — 3 tasks, 6 files, 241s
+- Phase 36-02a (2026-03-25): Fleet messaging backend — FleetMessage schema extended (recipientId + isBroadcast + senderId index), GET/POST /api/mobile/owner/fleet/messages with push notification delivery (broadcast + targeted), FleetMessageSummary + SendFleetMessagePayload types + ownerApi methods in api-client — 3 tasks, 4 files, 184s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
