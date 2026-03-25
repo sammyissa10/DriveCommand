@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { MessageSquare, Send } from 'lucide-react-native'
@@ -17,6 +16,7 @@ import { useFocusEffect } from 'expo-router'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type FleetMessage } from '@drivecommand/api-client'
 import { kvStorage } from '../../lib/storage'
+import { MessageSkeleton } from '../../components/skeletons/MessageSkeleton'
 
 const POLL_INTERVAL_MS = 30_000
 const LAST_READ_KEY = 'messages_last_read_at'
@@ -179,10 +179,13 @@ export default function DriverMessages() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-        {/* Loading state */}
+        {/* Loading state — skeleton messages */}
         {loading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#0ea5e9" />
+          <View className="flex-1 pt-2">
+            <MessageSkeleton isDriver={false} />
+            <MessageSkeleton isDriver={true} />
+            <MessageSkeleton isDriver={false} />
+            <MessageSkeleton isDriver={true} />
           </View>
         ) : isEmpty ? (
           /* Empty state */

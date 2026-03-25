@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -15,6 +14,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type DashboardData } from '@drivecommand/api-client'
 import { Badge } from '../../components/ui/Badge'
 import { StatChip } from '../../components/driver/StatChip'
+import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 
 // Map DB status values to driver-friendly display labels and badge variants
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -62,14 +62,9 @@ export default function DriverDashboard() {
     refetch()
   }, [refetch])
 
-  // Loading state
+  // Loading state — show skeleton instead of spinner
   if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center" edges={['bottom', 'left', 'right']}>
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading dashboard...</Text>
-      </SafeAreaView>
-    )
+    return <DashboardSkeleton />
   }
 
   // Error state

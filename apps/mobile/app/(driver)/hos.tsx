@@ -19,7 +19,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { HOSStatusCard } from '../../components/driver/HOSStatusCard'
 import { HOSDayBar } from '../../components/driver/HOSDayBar'
 import { HOSClock } from '../../components/driver/HOSClock'
-import { LoadingSpinner } from '../../components/ui/LoadingSpinner'
+import { Skeleton } from '../../components/ui/Skeleton'
 
 // --- Status metadata ---
 
@@ -136,13 +136,33 @@ export default function DriverHOS() {
     }
   }
 
-  // --- Loading state ---
+  // --- Loading state — skeleton ---
   if (isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <LoadingSpinner />
-          <Text style={{ color: '#94a3b8', fontSize: 14 }}>Loading HOS data...</Text>
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, gap: 20 }}>
+          {/* Title */}
+          <Skeleton width={180} height={24} />
+          {/* Status badge area */}
+          <Skeleton width="100%" height={90} borderRadius={16} />
+          {/* Section label */}
+          <Skeleton width={120} height={13} />
+          {/* 2x2 status grid */}
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <Skeleton width="47%" height={80} borderRadius={12} />
+            <Skeleton width="47%" height={80} borderRadius={12} />
+          </View>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <Skeleton width="47%" height={80} borderRadius={12} />
+            <Skeleton width="47%" height={80} borderRadius={12} />
+          </View>
+          {/* Day bar */}
+          <Skeleton width="100%" height={48} borderRadius={8} />
+          {/* Clocks */}
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <Skeleton width="47%" height={80} borderRadius={12} />
+            <Skeleton width="47%" height={80} borderRadius={12} />
+          </View>
         </View>
       </SafeAreaView>
     )

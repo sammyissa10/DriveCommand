@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,6 +13,7 @@ import { FlashList } from '@shopify/flash-list'
 import { AlertTriangle, Users } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverSummary } from '@drivecommand/api-client'
+import { DriverCardSkeleton } from '../../../components/skeletons/DriverCardSkeleton'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -219,15 +219,19 @@ export default function OwnerDriversScreen() {
         ? data
         : data.filter((d) => d.status === activeTab)
 
-  // Loading
+  // Loading — show skeleton instead of spinner
   if (isLoading) {
     return (
-      <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center"
-        edges={['bottom', 'left', 'right']}
-      >
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading drivers...</Text>
+      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
+          <View style={{ width: 80, height: 22, backgroundColor: '#334155', borderRadius: 6, marginBottom: 6 }} />
+          <View style={{ width: 140, height: 13, backgroundColor: '#1e293b', borderRadius: 4 }} />
+        </View>
+        <DriverCardSkeleton />
+        <DriverCardSkeleton />
+        <DriverCardSkeleton />
+        <DriverCardSkeleton />
+        <DriverCardSkeleton />
       </SafeAreaView>
     )
   }

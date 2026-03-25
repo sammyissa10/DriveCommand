@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -23,6 +22,7 @@ import { ownerApi } from '@drivecommand/api-client'
 import { KPICard } from '../../components/owner/KPICard'
 import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
 import { Badge } from '../../components/ui/Badge'
+import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -106,17 +106,9 @@ export default function OwnerDashboard() {
     refetch()
   }, [refetch])
 
-  // Loading state
+  // Loading state — show skeleton instead of spinner
   if (isLoading) {
-    return (
-      <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center"
-        edges={['bottom', 'left', 'right']}
-      >
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading dashboard...</Text>
-      </SafeAreaView>
-    )
+    return <DashboardSkeleton />
   }
 
   // Error state

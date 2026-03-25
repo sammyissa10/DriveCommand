@@ -8,9 +8,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerLoadSummary } from '@drivecommand/api-client'
 import { EmptyState } from '../../../components/ui/EmptyState'
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner'
 import { Badge } from '../../../components/ui/Badge'
 import { CreateLoadSheet } from '../../../components/owner/CreateLoadSheet'
+import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 
 type TabType = 'all' | 'active' | 'pending' | 'delivered'
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -186,9 +186,10 @@ export default function OwnerLoadsScreen() {
 
       {/* Content */}
       {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <LoadingSpinner />
-          <Text className="text-slate-400 mt-3 text-sm">Loading loads...</Text>
+        <View className="flex-1">
+          <LoadCardSkeleton />
+          <LoadCardSkeleton />
+          <LoadCardSkeleton />
         </View>
       ) : isError ? (
         <View className="flex-1 items-center justify-center px-6">

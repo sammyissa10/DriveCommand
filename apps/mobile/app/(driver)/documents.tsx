@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   Text,
@@ -22,6 +21,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { Badge } from '../../components/ui/Badge'
 import { DocumentDetailSheet } from '../../components/driver/DocumentDetailSheet'
 import { DocumentUploadSheet } from '../../components/driver/DocumentUploadSheet'
+import { DocumentRowSkeleton } from '../../components/skeletons/DocumentRowSkeleton'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -158,12 +158,19 @@ export default function DriverDocuments() {
     })
   }
 
-  // Loading state
+  // Loading state — show skeleton instead of spinner
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center" edges={['bottom', 'left', 'right']}>
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading documents...</Text>
+      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+        <View className="px-4 pt-4 pb-3 border-b border-slate-800">
+          <View style={{ width: 120, height: 24, backgroundColor: '#334155', borderRadius: 6, marginBottom: 6 }} />
+          <View style={{ width: 80, height: 14, backgroundColor: '#1e293b', borderRadius: 4 }} />
+        </View>
+        <DocumentRowSkeleton />
+        <DocumentRowSkeleton />
+        <DocumentRowSkeleton />
+        <DocumentRowSkeleton />
+        <DocumentRowSkeleton />
       </SafeAreaView>
     )
   }

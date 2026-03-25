@@ -9,7 +9,7 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { driverApi, type LoadSummary } from '@drivecommand/api-client'
 import { LoadCard } from '../../../components/driver/LoadCard'
 import { EmptyState } from '../../../components/ui/EmptyState'
-import { LoadingSpinner } from '../../../components/ui/LoadingSpinner'
+import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 
 type TabType = 'active' | 'history'
 
@@ -81,9 +81,10 @@ export default function LoadsScreen() {
 
       {/* Content */}
       {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <LoadingSpinner />
-          <Text className="text-slate-400 mt-3 text-sm">Loading loads...</Text>
+        <View className="flex-1">
+          <LoadCardSkeleton />
+          <LoadCardSkeleton />
+          <LoadCardSkeleton />
         </View>
       ) : (
         <View className="flex-1">

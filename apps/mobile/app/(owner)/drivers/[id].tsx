@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  ActivityIndicator,
   Linking,
   Pressable,
   RefreshControl,
@@ -29,6 +28,7 @@ import {
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverDetail, type OwnerDriverDocument } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
+import { Skeleton } from '../../../components/ui/Skeleton'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -188,11 +188,35 @@ export default function DriverDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text style={{ color: '#64748b', marginTop: 12, fontSize: 14 }}>Loading driver...</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
+        {/* Header bar skeleton */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingTop: insets.top + 8,
+            paddingBottom: 8,
+            borderBottomWidth: 1,
+            borderBottomColor: '#1e293b',
+            gap: 12,
+          }}
+        >
+          <Skeleton width={28} height={28} borderRadius={6} />
+          <Skeleton width={160} height={18} />
+        </View>
+        {/* Avatar + content skeleton */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 20, alignItems: 'center', gap: 12 }}>
+          <Skeleton width={80} height={80} borderRadius={40} />
+          <Skeleton width={140} height={20} />
+          <Skeleton width={80} height={24} borderRadius={12} />
+        </View>
+        <View style={{ paddingHorizontal: 16, paddingTop: 28, gap: 12 }}>
+          <Skeleton width={120} height={13} />
+          <Skeleton width="100%" height={72} borderRadius={10} />
+          <Skeleton width={160} height={13} style={{ marginTop: 8 }} />
+          <Skeleton width="100%" height={56} borderRadius={10} />
+        </View>
       </SafeAreaView>
     )
   }
