@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 36 Owner Map and Fleet — IN PROGRESS
-Current Plan: 36-02b (Plan 2/3 complete)
-Status: Phase 36 plan 02a complete — FleetMessage schema extended with recipientId/isBroadcast, GET/POST fleet messages endpoint with push notifications, typed api-client methods
-Last activity: 2026-03-25 - Completed Phase 36-02a: Fleet Messaging Backend
-Stopped at: Phase 36-02a complete — ready for 36-02b
+Current Plan: 36-03 (Plan 3/3 in progress)
+Status: Phase 36 plan 02b complete — Fleet messaging UI: RecipientSelector bottom sheet, compose/history toggle, char counter, pre-select driver from navigation param
+Last activity: 2026-03-25 - Completed Phase 36-02b: Fleet Messaging UI
+Stopped at: Phase 36-02b complete — ready for 36-03
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -77,6 +77,7 @@ Progress: [███████████████████████
 - Phase 35-03 (2026-03-25): Owner driver management — driver list screen (FlashList, compliance dots, filter tabs), driver detail (current load card, compliance docs, mailto/tel deep links, incidents, quick actions), GET /drivers + GET /drivers/[id] endpoints with compliance computation, tappable dashboard driver chips — 5 tasks, 8 files, 421s
 - Phase 36-01 (2026-03-25): Owner live map — GET /api/mobile/owner/map/vehicles with MOVING/IDLE/OFFLINE status computation, VehicleMarker (status-colored circle), VehicleDetailSheet (Modal bottom sheet with stats grid), full-screen MapView with dark style on Android, 60s auto-refresh, manual refresh button — 3 tasks, 6 files, 241s
 - Phase 36-02a (2026-03-25): Fleet messaging backend — FleetMessage schema extended (recipientId + isBroadcast + senderId index), GET/POST /api/mobile/owner/fleet/messages with push notification delivery (broadcast + targeted), FleetMessageSummary + SendFleetMessagePayload types + ownerApi methods in api-client — 3 tasks, 4 files, 184s
+- Phase 36-02b (2026-03-25): Fleet messaging UI — RecipientSelector bottom sheet (All Drivers broadcast + individual driver list), fleet.tsx compose/history toggle (char counter, loading send, pre-select from driverId param, pull-to-refresh history) — 2 tasks, 2 files, 151s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -543,6 +544,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 33]: SyncStatusBar mounted at driver layout root for app-wide offline visibility without per-screen wiring
 - [Phase 35-01]: openAlertsCount = expiring docs (30 days) + trucks in maintenance, no separate alerts model
 - [Phase 35-01]: revenueThisMonth uses updatedAt on DELIVERED/INVOICED loads as proxy for completion month
+- [Phase 36]: RecipientSelector uses Modal bottom sheet (VehicleDetailSheet pattern) — consistent with codebase, no new dependencies
 
 ### Pending Todos
 
@@ -728,6 +730,7 @@ None blocking immediate progress.
 | Phase 33 P01 | 257 | 7 tasks | 7 files |
 | Phase 33-driver-native-features P03 | 133 | 7 tasks | 7 files |
 | Phase 35-owner-core-screens P01 | 203 | 5 tasks | 6 files |
+| Phase 36 P02b | 151 | 2 tasks | 2 files |
 
 ## Session Continuity
 
