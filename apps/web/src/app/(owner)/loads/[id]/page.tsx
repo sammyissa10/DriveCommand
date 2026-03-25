@@ -3,9 +3,10 @@ import Link from 'next/link';
 import { ArrowLeft, Pencil, Package, MapPin, Calendar, Weight, Truck, User, FileText, Plus } from 'lucide-react';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
-import { dispatchLoad, deleteLoad, updateLoadStatus, revertLoadStatus } from '@/app/(owner)/actions/loads';
+import { dispatchLoad, deleteLoad, updateLoadStatus, revertLoadStatus, reassignTruck } from '@/app/(owner)/actions/loads';
 import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { DispatchModal } from '@/components/loads/dispatch-modal';
+import { ChangeTruckModal } from '@/components/loads/change-truck-modal';
 import { StatusUpdateButton } from '@/components/loads/status-update-button';
 import { DeleteLoadButton } from '@/components/loads/delete-load-button';
 import { CopyTrackingLinkButton } from '@/components/loads/copy-tracking-link';
@@ -63,6 +64,8 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
   let availableTrucks: Array<{ id: string; make: string; model: string; licensePlate: string }> = [];
   let availableRoutes: Array<{ id: string; name: string | null; origin: string; destination: string }> = [];
 
+  const canReassignTruck = ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'].includes(load.status);
+
   if (load.status === 'PENDING') {
     [availableDrivers, availableTrucks, availableRoutes] = await Promise.all([
       prisma.user.findMany({
@@ -80,6 +83,11 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
         orderBy: { scheduledDate: 'desc' },
       }).catch(() => []),
     ]);
+  } else if (canReassignTruck) {
+    availableTrucks = await prisma.truck.findMany({
+      select: { id: true, make: true, model: true, licensePlate: true },
+      orderBy: { make: 'asc' },
+    }).catch(() => []);
   }
 
   // Fetch linked invoices
@@ -98,6 +106,7 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
   const loadMessages = await getLoadMessages(id);
 
   const boundDispatchLoad = dispatchLoad.bind(null, id);
+  const boundReassignTruck = reassignTruck.bind(null, id);
   const canEdit = !['INVOICED', 'CANCELLED'].includes(load.status);
   const canDelete = ['PENDING', 'CANCELLED'].includes(load.status);
 
@@ -309,6 +318,14 @@ export default async function LoadDetailPage({ params }: { params: Promise<{ id:
                     {load.truck.year} {load.truck.make} {load.truck.model}
                   </dd>
                   <dd className="text-muted-foreground">{load.truck.licensePlate}</dd>
+                  {canReassignTruck && (
+                    <ChangeTruckModal
+                      loadId={id}
+                      currentTruckId={load.truck.id}
+                      trucks={availableTrucks}
+                      reassignAction={boundReassignTruck}
+                    />
+                  )}
                 </div>
               )}
             </dl>

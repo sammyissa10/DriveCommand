@@ -338,6 +338,52 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
   redirect(`/loads/${id}`);
 }
 
+/**
+ * Reassign the truck on an active load (DISPATCHED, PICKED_UP, IN_TRANSIT).
+ * Does not change the driver or load status — only swaps the truck.
+ */
+export async function reassignTruck(loadId: string, prevState: any, formData: FormData) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+
+  const truckId = (formData.get('truckId') as string | null)?.trim();
+  if (!truckId) {
+    return { error: 'Please select a truck.' };
+  }
+
+  const userId = await requireAuth();
+  const prisma = await getTenantPrisma();
+
+  try {
+    const load = await prisma.load.findUnique({
+      where: { id: loadId },
+      select: { status: true },
+    });
+
+    if (!load) {
+      return { error: 'Load not found.' };
+    }
+
+    const allowedStatuses = ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'];
+    if (!allowedStatuses.includes(load.status)) {
+      return { error: 'Truck can only be reassigned on dispatched or in-transit loads.' };
+    }
+
+    await prisma.load.update({
+      where: { id: loadId },
+      data: { truckId, updatedById: userId },
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return { error: 'Load not found.' };
+    }
+    return { error: 'Failed to reassign truck. Please try again.' };
+  }
+
+  revalidatePath('/loads');
+  revalidatePath(`/loads/${loadId}`);
+  return { success: true };
+}
+
 // Allowed status transitions
 const STATUS_TRANSITIONS: Record<string, string[]> = {
   DISPATCHED: ['PICKED_UP', 'CANCELLED'],
