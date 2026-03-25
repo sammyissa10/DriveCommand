@@ -69,6 +69,11 @@ export default function OwnerLayout() {
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+        {/* Hidden nested routes — href: null removes from tab bar */}
+        <Tabs.Screen name="loads/index" options={{ href: null }} />
+        <Tabs.Screen name="loads/[id]" options={{ href: null }} />
+        <Tabs.Screen name="drivers/index" options={{ href: null }} />
+        <Tabs.Screen name="drivers/[id]" options={{ href: null }} />
       </Tabs>
     </Fragment>
   )
