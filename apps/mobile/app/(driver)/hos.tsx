@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -298,6 +300,10 @@ export default function DriverHOS() {
         animationType="slide"
         onRequestClose={handleCloseModal}
       >
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
         {/* Backdrop */}
         <Pressable
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }}
@@ -445,6 +451,7 @@ export default function DriverHOS() {
             </Pressable>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   )

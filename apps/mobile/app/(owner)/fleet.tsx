@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -200,6 +202,10 @@ export default function OwnerFleetScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <AnimatedScreen>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <View style={styles.container}>
         {/* Page header */}
         <Text style={styles.pageTitle}>Fleet Messages</Text>
@@ -354,6 +360,7 @@ export default function OwnerFleetScreen() {
         drivers={drivers}
         loading={driversLoading}
       />
+      </KeyboardAvoidingView>
       </AnimatedScreen>
     </SafeAreaView>
   )
