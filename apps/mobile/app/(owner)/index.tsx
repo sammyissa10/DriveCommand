@@ -231,16 +231,21 @@ export default function OwnerDashboard() {
               return (
                 <Pressable
                   key={load.id}
-                  onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
+                  onPress={() => { haptic.light(); router.push(`/(owner)/loads/${load.id}` as any) }}
+                  android_ripple={{ color: 'rgba(14,165,233,0.1)', borderless: false }}
                   style={({ pressed }) => ({
                     backgroundColor: pressed ? '#263348' : '#1e293b',
-                    borderColor: pressed ? '#0ea5e9' : '#475569',
+                    borderRadius: 12,
+                    overflow: 'hidden',
+                  })}
+                >
+                  <View style={{
                     borderWidth: 1,
+                    borderColor: '#475569',
                     borderRadius: 12,
                     paddingHorizontal: 14,
                     paddingVertical: 12,
-                  })}
-                >
+                  }}>
                   {/* Row 1: Load number + badge */}
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                     <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 14 }}>
@@ -264,6 +269,7 @@ export default function OwnerDashboard() {
                   <Text style={{ color: '#64748b', fontSize: 11 }} numberOfLines={1}>
                     {load.driverName ?? 'Unassigned'}
                   </Text>
+                  </View>
                 </Pressable>
               )
             })}
