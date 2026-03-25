@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   ActivityIndicator,
   Pressable,
@@ -9,9 +9,12 @@ import {
 } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, ArrowLeft, Package } from 'lucide-react-native'
+import { AlertTriangle, ArrowLeft, FileText, Package } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import * as FileSystem from 'expo-file-system/legacy'
+import * as Sharing from 'expo-sharing'
+import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
@@ -82,6 +85,7 @@ export default function LoadDetailScreen() {
   const router = useRouter()
   const { token } = useAuthContext()
   const insets = useSafeAreaInsets()
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false)
 
   const { data: load, isLoading, isError, error, refetch, isRefetching } = useQuery({
     queryKey: ['driver-load', id],
@@ -96,6 +100,30 @@ export default function LoadDetailScreen() {
   const onStatusUpdated = useCallback(() => {
     refetch()
   }, [refetch])
+
+  async function handleRateConfirmation() {
+    if (!token || isDownloadingPDF || !load) return
+    setIsDownloadingPDF(true)
+    try {
+      const result = await driverApi.getRateConfirmation(token, load.id)
+      const fileUri = (FileSystem.documentDirectory ?? '') + result.filename
+      await FileSystem.writeAsStringAsync(fileUri, result.pdf, {
+        encoding: FileSystem.EncodingType.Base64,
+      })
+      await Sharing.shareAsync(fileUri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Rate Confirmation',
+      })
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        text1: 'Download Failed',
+        text2: err instanceof Error ? err.message : 'Could not download rate confirmation',
+      })
+    } finally {
+      setIsDownloadingPDF(false)
+    }
+  }
 
   // Loading state
   if (isLoading) {
@@ -131,6 +159,8 @@ export default function LoadDetailScreen() {
   const badge = getStatusBadge(load.status)
   const hasStatusButton =
     !['DELIVERED', 'INVOICED', 'CANCELLED'].includes(load.status)
+  const canViewRateConfirmation =
+    ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(load.status)
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
@@ -193,6 +223,24 @@ export default function LoadDetailScreen() {
               <InfoField label="Customer" value={load.customer.companyName} />
             </View>
           </View>
+
+          {/* Rate Confirmation PDF button */}
+          {canViewRateConfirmation && (
+            <Pressable
+              onPress={handleRateConfirmation}
+              disabled={isDownloadingPDF}
+              className="flex-row items-center justify-center border border-slate-600 rounded-lg py-3 mt-3 active:bg-slate-700/50"
+            >
+              {isDownloadingPDF ? (
+                <ActivityIndicator size="small" color="#94a3b8" />
+              ) : (
+                <>
+                  <FileText color="#94a3b8" size={16} style={{ marginRight: 8 }} />
+                  <Text className="text-slate-300 font-medium text-sm">Rate Confirmation PDF</Text>
+                </>
+              )}
+            </Pressable>
+          )}
         </View>
 
         {/* Stop Timeline */}
