@@ -192,13 +192,13 @@ export default function OwnerDashboard() {
             label="Revenue (MTD)"
             value={formatRevenue(kpis.revenueThisMonth)}
             icon={<DollarSign color="#475569" size={18} />}
-            onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
+            onPress={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
           />
           <KPICard
             label="Open Alerts"
             value={kpis.openAlertsCount}
             icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={18} />}
-            onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
+            onPress={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
           />
         </View>
 

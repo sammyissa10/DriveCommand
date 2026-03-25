@@ -33,19 +33,19 @@ export const KPICard = memo(function KPICard({ label, value, icon, trend, onPres
         borderWidth: 1,
         borderColor: '#334155',
         borderRadius: 12,
-        padding: 16,
+        padding: 12,
       }}
     >
       {/* Icon top-right */}
-      <View style={{ position: 'absolute', top: 12, right: 12 }}>{icon}</View>
+      <View style={{ position: 'absolute', top: 10, right: 10 }}>{icon}</View>
 
       {/* Value */}
       <Text
         style={{
-          fontSize: 30,
+          fontSize: 24,
           fontWeight: 'bold',
           color: '#ffffff',
-          marginTop: 4,
+          marginTop: 2,
           marginBottom: 2,
         }}
         numberOfLines={1}
@@ -55,7 +55,7 @@ export const KPICard = memo(function KPICard({ label, value, icon, trend, onPres
       </Text>
 
       {/* Label */}
-      <Text style={{ fontSize: 12, color: '#94a3b8', marginBottom: trend ? 6 : 0 }}>
+      <Text style={{ fontSize: 11, color: '#94a3b8', marginBottom: trend ? 4 : 0 }}>
         {label}
       </Text>
 
