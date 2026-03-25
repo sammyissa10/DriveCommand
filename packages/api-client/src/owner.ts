@@ -80,7 +80,10 @@ export interface TruckOption {
   model: string
   year: number
   licensePlate: string
+  odometer: number
   inMaintenance: boolean
+  status: 'In Use' | 'In Maintenance' | 'Expired Docs' | 'Ready to Use'
+  variant: 'blue' | 'amber' | 'red' | 'green'
 }
 
 export interface FleetPosition {
@@ -186,6 +189,132 @@ export interface FleetMessageSummary {
   createdAt: string
 }
 
+// ---------------------------------------------------------------------------
+// Invoices
+// ---------------------------------------------------------------------------
+
+export interface InvoiceStats {
+  total: number
+  draft: number
+  overdue: number
+  outstandingAmount: number
+  paidAmount: number
+}
+
+export interface InvoiceSummary {
+  id: string
+  invoiceNumber: string
+  status: string
+  totalAmount: number
+  customerName: string
+  dueDate: string | null
+  createdAt: string
+}
+
+export interface InvoicesResponse {
+  stats: InvoiceStats
+  invoices: InvoiceSummary[]
+}
+
+export interface InvoiceLineItem {
+  id: string
+  description: string
+  quantity: number
+  unitPrice: number
+  amount: number
+}
+
+export interface InvoiceDetail {
+  id: string
+  invoiceNumber: string
+  status: string
+  customerName: string
+  issueDate: string
+  dueDate: string
+  paidDate: string | null
+  notes: string | null
+  subtotal: number
+  tax: number
+  totalAmount: number
+  items: InvoiceLineItem[]
+  createdByName: string | null
+  createdAt: string
+  updatedByName: string | null
+  updatedAt: string
+}
+
+// ---------------------------------------------------------------------------
+// CRM
+// ---------------------------------------------------------------------------
+
+export interface CRMStats {
+  total: number
+  active: number
+  vip: number
+}
+
+export interface CustomerSummary {
+  id: string
+  companyName: string
+  status: string
+  priority: string
+  phone: string | null
+  email: string | null
+}
+
+export interface CRMResponse {
+  stats: CRMStats
+  customers: CustomerSummary[]
+}
+
+// ---------------------------------------------------------------------------
+// Payroll
+// ---------------------------------------------------------------------------
+
+export interface PayrollStats {
+  total: number
+  draft: number
+  approved: number
+  totalPaid: number
+}
+
+export interface PayrollRecordSummary {
+  id: string
+  status: string
+  periodStart: string
+  periodEnd: string
+  totalPay: number
+  driverName: string
+}
+
+export interface PayrollResponse {
+  stats: PayrollStats
+  records: PayrollRecordSummary[]
+}
+
+// ---------------------------------------------------------------------------
+// Compliance
+// ---------------------------------------------------------------------------
+
+export interface ComplianceSummary {
+  expiredCount: number
+  expiringSoonCount: number
+  totalDriversTracked: number
+  totalTrucksTracked: number
+}
+
+export interface ComplianceAlert {
+  entityName: string
+  documentType: string
+  status: 'EXPIRED' | 'EXPIRING_SOON'
+  daysUntilExpiry: number | null
+}
+
+export interface ComplianceResponse {
+  summary: ComplianceSummary
+  alerts: ComplianceAlert[]
+}
+
 export interface SendFleetMessagePayload {
   recipientId?: string
   body: string
@@ -276,4 +405,19 @@ export const ownerApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  getInvoices: (token: string) =>
+    apiRequest<InvoicesResponse>('/api/mobile/owner/invoices', { token }),
+
+  getInvoice: (token: string, id: string) =>
+    apiRequest<InvoiceDetail>(`/api/mobile/owner/invoices/${id}`, { token }),
+
+  getCRM: (token: string) =>
+    apiRequest<CRMResponse>('/api/mobile/owner/crm', { token }),
+
+  getPayroll: (token: string) =>
+    apiRequest<PayrollResponse>('/api/mobile/owner/payroll', { token }),
+
+  getCompliance: (token: string) =>
+    apiRequest<ComplianceResponse>('/api/mobile/owner/compliance', { token }),
 }

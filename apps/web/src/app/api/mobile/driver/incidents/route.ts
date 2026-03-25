@@ -7,6 +7,46 @@ const VALID_CATEGORIES: IncidentCategory[] = ['ACCIDENT', 'VIOLATION', 'MECHANIC
 const VALID_SEVERITIES: IncidentSeverity[] = ['LOW', 'MEDIUM', 'HIGH'];
 
 /**
+ * GET /api/mobile/driver/incidents
+ *
+ * Returns paginated list of the driver's incidents, newest first.
+ */
+export async function GET(req: NextRequest) {
+  const auth = await validateMobileToken(req);
+  if (!auth) return unauthorizedResponse();
+  if (!auth.driverId) {
+    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
+  }
+
+  const { driverId, tenantId } = auth;
+
+  try {
+    const incidents = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.driverIncident.findMany({
+        where: { driverId, tenantId },
+        orderBy: { reportedAt: 'desc' },
+        take: 50,
+        select: {
+          id: true,
+          category: true,
+          severity: true,
+          description: true,
+          latitude: true,
+          longitude: true,
+          reportedAt: true,
+        },
+      });
+    }, TX_OPTIONS);
+
+    return NextResponse.json({ incidents });
+  } catch (err) {
+    console.error('[mobile/driver/incidents GET] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+/**
  * POST /api/mobile/driver/incidents
  *
  * Creates a DriverIncident record for the authenticated driver.

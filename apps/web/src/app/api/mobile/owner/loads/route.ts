@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { LoadStatus } from '@/generated/prisma';
 
 /**
  * GET /api/mobile/owner/loads?status=all|active|pending|delivered
@@ -29,13 +30,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const statusParam = searchParams.get('status') ?? 'active';
 
-  let statusFilter: string[] | undefined;
+  let statusFilter: LoadStatus[] | undefined;
   if (statusParam === 'active') {
-    statusFilter = ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'];
+    statusFilter = [LoadStatus.DISPATCHED, LoadStatus.PICKED_UP, LoadStatus.IN_TRANSIT];
   } else if (statusParam === 'pending') {
-    statusFilter = ['PENDING'];
+    statusFilter = [LoadStatus.PENDING];
   } else if (statusParam === 'delivered') {
-    statusFilter = ['DELIVERED', 'INVOICED'];
+    statusFilter = [LoadStatus.DELIVERED, LoadStatus.INVOICED];
   }
   // 'all' → no filter (statusFilter remains undefined)
 

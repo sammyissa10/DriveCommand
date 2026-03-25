@@ -1066,19 +1066,22 @@ model DriverRouteJoin {
 // ─── Fleet Messaging Models ──────────────────────────────────
 
 model FleetMessage {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId   String   @db.Uuid
-  routeId    String?  @db.Uuid
-  loadId     String?  @db.Uuid
-  senderId   String   @db.Uuid
-  senderRole String
-  body       String
-  createdAt  DateTime @default(now()) @db.Timestamptz
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @db.Uuid
+  routeId     String?  @db.Uuid
+  loadId      String?  @db.Uuid
+  senderId    String   @db.Uuid
+  senderRole  String
+  body        String
+  recipientId String?  @db.Uuid
+  isBroadcast Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz
 
   @@index([tenantId])
   @@index([routeId])
   @@index([loadId])
   @@index([createdAt])
+  @@index([senderId])
 }
 
 // ─── Push Token Models ───────────────────────────────────────

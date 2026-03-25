@@ -9,6 +9,10 @@ import { apiClient } from '@drivecommand/api-client'
  * If the user denies notification permission, this silently returns.
  */
 export async function registerPushToken(authToken: string): Promise<void> {
+  // Skip push token registration in development — requires Firebase (google-services.json)
+  // which is not available in local dev builds
+  if (__DEV__) return
+
   try {
     // Request permission — if already granted this resolves immediately
     const { status } = await Notifications.requestPermissionsAsync()

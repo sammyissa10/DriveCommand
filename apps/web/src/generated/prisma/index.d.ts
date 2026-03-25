@@ -47411,6 +47411,8 @@ export namespace Prisma {
     senderId: string | null
     senderRole: string | null
     body: string | null
+    recipientId: string | null
+    isBroadcast: boolean | null
     createdAt: Date | null
   }
 
@@ -47422,6 +47424,8 @@ export namespace Prisma {
     senderId: string | null
     senderRole: string | null
     body: string | null
+    recipientId: string | null
+    isBroadcast: boolean | null
     createdAt: Date | null
   }
 
@@ -47433,6 +47437,8 @@ export namespace Prisma {
     senderId: number
     senderRole: number
     body: number
+    recipientId: number
+    isBroadcast: number
     createdAt: number
     _all: number
   }
@@ -47446,6 +47452,8 @@ export namespace Prisma {
     senderId?: true
     senderRole?: true
     body?: true
+    recipientId?: true
+    isBroadcast?: true
     createdAt?: true
   }
 
@@ -47457,6 +47465,8 @@ export namespace Prisma {
     senderId?: true
     senderRole?: true
     body?: true
+    recipientId?: true
+    isBroadcast?: true
     createdAt?: true
   }
 
@@ -47468,6 +47478,8 @@ export namespace Prisma {
     senderId?: true
     senderRole?: true
     body?: true
+    recipientId?: true
+    isBroadcast?: true
     createdAt?: true
     _all?: true
   }
@@ -47552,6 +47564,8 @@ export namespace Prisma {
     senderId: string
     senderRole: string
     body: string
+    recipientId: string | null
+    isBroadcast: boolean
     createdAt: Date
     _count: FleetMessageCountAggregateOutputType | null
     _min: FleetMessageMinAggregateOutputType | null
@@ -47580,6 +47594,8 @@ export namespace Prisma {
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
+    recipientId?: boolean
+    isBroadcast?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["fleetMessage"]>
 
@@ -47591,6 +47607,8 @@ export namespace Prisma {
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
+    recipientId?: boolean
+    isBroadcast?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["fleetMessage"]>
 
@@ -47602,6 +47620,8 @@ export namespace Prisma {
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
+    recipientId?: boolean
+    isBroadcast?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["fleetMessage"]>
 
@@ -47613,10 +47633,12 @@ export namespace Prisma {
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
+    recipientId?: boolean
+    isBroadcast?: boolean
     createdAt?: boolean
   }
 
-  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "senderId" | "senderRole" | "body" | "createdAt", ExtArgs["result"]["fleetMessage"]>
+  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "senderId" | "senderRole" | "body" | "recipientId" | "isBroadcast" | "createdAt", ExtArgs["result"]["fleetMessage"]>
 
   export type $FleetMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FleetMessage"
@@ -47629,6 +47651,8 @@ export namespace Prisma {
       senderId: string
       senderRole: string
       body: string
+      recipientId: string | null
+      isBroadcast: boolean
       createdAt: Date
     }, ExtArgs["result"]["fleetMessage"]>
     composites: {}
@@ -48060,6 +48084,8 @@ export namespace Prisma {
     readonly senderId: FieldRef<"FleetMessage", 'String'>
     readonly senderRole: FieldRef<"FleetMessage", 'String'>
     readonly body: FieldRef<"FleetMessage", 'String'>
+    readonly recipientId: FieldRef<"FleetMessage", 'String'>
+    readonly isBroadcast: FieldRef<"FleetMessage", 'Boolean'>
     readonly createdAt: FieldRef<"FleetMessage", 'DateTime'>
   }
     
@@ -52457,6 +52483,8 @@ export namespace Prisma {
     senderId: 'senderId',
     senderRole: 'senderRole',
     body: 'body',
+    recipientId: 'recipientId',
+    isBroadcast: 'isBroadcast',
     createdAt: 'createdAt'
   };
 
@@ -56524,6 +56552,8 @@ export namespace Prisma {
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
+    recipientId?: UuidNullableFilter<"FleetMessage"> | string | null
+    isBroadcast?: BoolFilter<"FleetMessage"> | boolean
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
   }
 
@@ -56535,6 +56565,8 @@ export namespace Prisma {
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
+    recipientId?: SortOrderInput | SortOrder
+    isBroadcast?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -56549,6 +56581,8 @@ export namespace Prisma {
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
+    recipientId?: UuidNullableFilter<"FleetMessage"> | string | null
+    isBroadcast?: BoolFilter<"FleetMessage"> | boolean
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
   }, "id">
 
@@ -56560,6 +56594,8 @@ export namespace Prisma {
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
+    recipientId?: SortOrderInput | SortOrder
+    isBroadcast?: SortOrder
     createdAt?: SortOrder
     _count?: FleetMessageCountOrderByAggregateInput
     _max?: FleetMessageMaxOrderByAggregateInput
@@ -56577,6 +56613,8 @@ export namespace Prisma {
     senderId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     senderRole?: StringWithAggregatesFilter<"FleetMessage"> | string
     body?: StringWithAggregatesFilter<"FleetMessage"> | string
+    recipientId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
+    isBroadcast?: BoolWithAggregatesFilter<"FleetMessage"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"FleetMessage"> | Date | string
   }
 
@@ -60653,6 +60691,8 @@ export namespace Prisma {
     senderId: string
     senderRole: string
     body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
     createdAt?: Date | string
   }
 
@@ -60664,6 +60704,8 @@ export namespace Prisma {
     senderId: string
     senderRole: string
     body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
     createdAt?: Date | string
   }
 
@@ -60675,6 +60717,8 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60686,6 +60730,8 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60697,6 +60743,8 @@ export namespace Prisma {
     senderId: string
     senderRole: string
     body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
     createdAt?: Date | string
   }
 
@@ -60708,6 +60756,8 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -60719,6 +60769,8 @@ export namespace Prisma {
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -64036,6 +64088,8 @@ export namespace Prisma {
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
+    recipientId?: SortOrder
+    isBroadcast?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -64047,6 +64101,8 @@ export namespace Prisma {
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
+    recipientId?: SortOrder
+    isBroadcast?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -64058,6 +64114,8 @@ export namespace Prisma {
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
+    recipientId?: SortOrder
+    isBroadcast?: SortOrder
     createdAt?: SortOrder
   }
 

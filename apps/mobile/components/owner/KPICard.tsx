@@ -16,7 +16,11 @@ const cardStyle = {
   borderWidth: 1,
   borderColor: '#334155',
   borderRadius: 12,
+}
+
+const innerStyle = {
   padding: 12,
+  flex: 1,
 }
 
 export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress }: KPICardProps) {
@@ -52,15 +56,17 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
 
   if (onPress) {
     return (
-      <Pressable
-        style={{ flex: 1, ...cardStyle }}
-        android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
-        onPress={onPress}
-      >
-        {inner}
-      </Pressable>
+      <View style={{ flex: 1, ...cardStyle, overflow: 'hidden' }}>
+        <Pressable
+          style={innerStyle}
+          android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
+          onPress={onPress}
+        >
+          {inner}
+        </Pressable>
+      </View>
     )
   }
 
-  return <View style={{ flex: 1, ...cardStyle }}>{inner}</View>
+  return <View style={{ flex: 1, ...cardStyle, padding: 12 }}>{inner}</View>
 })

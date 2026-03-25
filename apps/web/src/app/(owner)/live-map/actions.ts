@@ -102,8 +102,8 @@ export async function getVehicleDiagnostics(truckId: string) {
 
   const db = await getTenantPrisma();
 
-  // Fetch truck data, latest GPS, and latest fuel in parallel
-  const [truck, latestGPS, latestFuel] = await Promise.all([
+  // Fetch truck data, latest GPS, latest fuel, and active load in parallel
+  const [truck, latestGPS, latestFuel, activeLoad] = await Promise.all([
     // @ts-ignore - Prisma 7 extension type issue
     db.truck.findUnique({
       where: { id: truckId },
@@ -135,6 +135,29 @@ export async function getVehicleDiagnostics(truckId: string) {
         quantity: true,
         timestamp: true,
         odometer: true,
+      },
+    }),
+    // @ts-ignore - Prisma 7 extension type issue
+    db.load.findFirst({
+      where: {
+        truckId,
+        status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
+      },
+      orderBy: { pickupDate: 'desc' },
+      select: {
+        id: true,
+        loadNumber: true,
+        origin: true,
+        destination: true,
+        status: true,
+        pickupDate: true,
+        deliveryDate: true,
+        driver: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     }),
   ]);
@@ -187,5 +210,19 @@ export async function getVehicleDiagnostics(truckId: string) {
       : null,
     engineState,
     estimatedFuelLevel,
+    activeLoad: activeLoad
+      ? {
+          id: activeLoad.id,
+          loadNumber: activeLoad.loadNumber,
+          origin: activeLoad.origin,
+          destination: activeLoad.destination,
+          status: activeLoad.status as string,
+          pickupDate: activeLoad.pickupDate,
+          deliveryDate: activeLoad.deliveryDate,
+          driverName: activeLoad.driver
+            ? `${activeLoad.driver.firstName} ${activeLoad.driver.lastName}`
+            : null,
+        }
+      : null,
   };
 }

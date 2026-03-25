@@ -46,7 +46,7 @@ function computeComplianceStatus(documents: Array<{ expiryDate: Date | null }>):
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await validateMobileToken(req);
   if (!auth) return unauthorizedResponse();
@@ -56,7 +56,7 @@ export async function GET(
   }
 
   const { tenantId } = auth;
-  const { id: driverId } = params;
+  const { id: driverId } = await params;
 
   try {
     const driver = await prisma.$transaction(async (tx) => {

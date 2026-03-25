@@ -16,6 +16,9 @@ import {
   Clock,
   Activity,
   Truck as TruckIcon,
+  Package,
+  ArrowRight,
+  User,
 } from 'lucide-react';
 
 interface VehicleDetailsSheetProps {
@@ -46,6 +49,16 @@ interface DiagnosticsData {
   } | null;
   engineState: 'running' | 'idle' | 'off';
   estimatedFuelLevel: number;
+  activeLoad: {
+    id: string;
+    loadNumber: string;
+    origin: string;
+    destination: string;
+    status: string;
+    pickupDate: Date;
+    deliveryDate: Date | null;
+    driverName: string | null;
+  } | null;
 }
 
 export default function VehicleDetailsSheet({
@@ -140,6 +153,53 @@ export default function VehicleDetailsSheet({
             </SheetHeader>
 
             <div className="space-y-6 mt-6">
+              {/* Active Load Section */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Package className="h-4 w-4" />
+                  Active Load
+                </div>
+                {diagnostics.activeLoad ? (
+                  <div className="rounded-lg border p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-sm">
+                        {diagnostics.activeLoad.loadNumber}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium capitalize">
+                        {diagnostics.activeLoad.status
+                          .replace(/_/g, ' ')
+                          .toLowerCase()
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <span className="truncate">{diagnostics.activeLoad.origin}</span>
+                      <ArrowRight className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{diagnostics.activeLoad.destination}</span>
+                    </div>
+                    {diagnostics.activeLoad.driverName && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <User className="h-3 w-3" />
+                        <span>{diagnostics.activeLoad.driverName}</span>
+                      </div>
+                    )}
+                    {diagnostics.activeLoad.deliveryDate && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        <span>
+                          ETA:{' '}
+                          {new Date(
+                            diagnostics.activeLoad.deliveryDate
+                          ).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No active load</p>
+                )}
+              </div>
+
               {/* Location Section */}
               {diagnostics.latestGPS && (
                 <div className="space-y-2">

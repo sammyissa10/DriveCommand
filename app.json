@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "1f60c40b-f112-43aa-af49-17821a98992e"
+      }
+    },
+    "android": {
+      "package": "com.drivecommand.app"
+    }
+  }
+}

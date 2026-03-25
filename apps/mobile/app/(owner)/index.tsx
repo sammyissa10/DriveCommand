@@ -195,7 +195,6 @@ export default function OwnerDashboard() {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
           <Truck color="#64748b" size={15} style={{ marginRight: 6 }} />
           <Text className="text-white font-semibold text-base">Active Loads</Text>
-          <Text className="text-slate-500 text-xs ml-2">(top 5)</Text>
         </View>
 
         {activeLoads.length === 0 ? (
@@ -204,7 +203,7 @@ export default function OwnerDashboard() {
             <Text className="text-slate-400 text-sm mt-3 text-center">No active loads right now</Text>
           </View>
         ) : (
-          <View style={{ marginBottom: 20, gap: 10 }}>
+          <View style={{ marginBottom: 20 }}>
             {activeLoads.map((load) => (
               <DashboardLoadCard
                 key={load.id}

@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { MoveRight } from 'lucide-react-native'
 import { Badge } from '../ui/Badge'
 import { haptic } from '../../lib/haptics'
 
@@ -17,24 +18,26 @@ interface DashboardLoadCardProps {
 
 function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
   switch (status) {
-    case 'PENDING':    return { label: 'Pending',    variant: 'muted' }
-    case 'DISPATCHED': return { label: 'Accepted',   variant: 'info' }
+    case 'PENDING':    return { label: 'Pending',   variant: 'muted' }
+    case 'DISPATCHED': return { label: 'Accepted',  variant: 'info' }
     case 'PICKED_UP':
-    case 'IN_TRANSIT': return { label: 'En Route',   variant: 'warning' }
-    case 'DELIVERED':  return { label: 'Delivered',  variant: 'success' }
-    case 'INVOICED':   return { label: 'Invoiced',   variant: 'success' }
-    case 'CANCELLED':  return { label: 'Cancelled',  variant: 'danger' }
-    default:           return { label: status,       variant: 'muted' }
+    case 'IN_TRANSIT': return { label: 'En Route',  variant: 'warning' }
+    case 'DELIVERED':  return { label: 'Delivered', variant: 'success' }
+    case 'INVOICED':   return { label: 'Invoiced',  variant: 'success' }
+    case 'CANCELLED':  return { label: 'Cancelled', variant: 'danger' }
+    default:           return { label: status,      variant: 'muted' }
   }
 }
 
-// Strip state abbreviation / zip for cleaner display
-function formatCity(address: string): string {
-  const parts = address.split(',')
-  if (parts.length >= 2) {
-    return parts.slice(0, 2).join(',').trim()
-  }
+function extractCity(address: string): string {
+  const parts = address.split(',').map(p => p.trim())
+  if (parts.length >= 3) return parts[1]
+  if (parts.length === 2) return parts[0]
   return address
+}
+
+function toTitleCase(str: string): string {
+  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
 }
 
 export const DashboardLoadCard = memo(function DashboardLoadCard({
@@ -47,75 +50,51 @@ export const DashboardLoadCard = memo(function DashboardLoadCard({
 }: DashboardLoadCardProps) {
   const badge = getStatusBadge(status)
   const isActive = status === 'IN_TRANSIT' || status === 'PICKED_UP' || status === 'DISPATCHED'
+  const from = extractCity(origin)
+  const to = extractCity(destination)
 
   return (
-    <Pressable
-      onPress={() => { haptic.light(); onPress() }}
-      android_ripple={{ color: 'rgba(14,165,233,0.08)', borderless: false }}
-      style={({ pressed }) => ({
-        backgroundColor: pressed ? '#263348' : '#1e293b',
-        borderWidth: 1,
-        borderColor: isActive ? '#0ea5e933' : '#334155',
-        borderRadius: 16,
-        padding: 14,
-        minHeight: 88,
-      })}
-    >
-      {/* Header row */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 14, letterSpacing: 0.3 }}>
-          #{loadNumber}
-        </Text>
-        <Badge label={badge.label} variant={badge.variant} />
-      </View>
-
-      {/* Vertical stepper */}
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        {/* Line + dots column */}
-        <View style={{ alignItems: 'center', width: 12, paddingTop: 3 }}>
-          {/* Origin dot */}
-          <View style={{
-            width: 10, height: 10, borderRadius: 5,
-            backgroundColor: '#0ea5e9',
-            borderWidth: 2, borderColor: '#38bdf8',
-          }} />
-          {/* Dashed connecting line */}
-          <View style={{ flex: 1, width: 1.5, marginVertical: 3 }}>
-            {[0,1,2,3,4].map(i => (
-              <View key={i} style={{
-                height: 4, width: 1.5,
-                backgroundColor: '#475569',
-                marginBottom: 3,
-                alignSelf: 'center',
-              }} />
-            ))}
+    <View style={{
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: isActive ? '#0ea5e966' : '#334155',
+      backgroundColor: '#1e293b',
+      marginBottom: 12,
+      overflow: 'hidden',
+    }}>
+      <Pressable
+        onPress={() => { haptic.light(); onPress() }}
+        android_ripple={{ color: 'rgba(14,165,233,0.08)', borderless: false }}
+        style={({ pressed }) => ({ backgroundColor: pressed ? '#1a2d45' : 'transparent' })}
+      >
+        <View style={{ paddingHorizontal: 20, paddingTop: 11, paddingBottom: 12 }}>
+          {/* Header: load number + badge */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 14, letterSpacing: 0.3 }}>
+              #{loadNumber}
+            </Text>
+            <Badge label={badge.label} variant={badge.variant} />
           </View>
-          {/* Destination dot */}
-          <View style={{
-            width: 10, height: 10, borderRadius: 5,
-            backgroundColor: '#334155',
-            borderWidth: 2, borderColor: '#64748b',
-          }} />
-        </View>
 
-        {/* Address text column */}
-        <View style={{ flex: 1, justifyContent: 'space-between' }}>
-          <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 13, lineHeight: 18 }} numberOfLines={1}>
-            {formatCity(origin)}
-          </Text>
-          <View style={{ height: 8 }} />
-          <Text style={{ color: '#94a3b8', fontWeight: '500', fontSize: 13, lineHeight: 18 }} numberOfLines={1}>
-            {formatCity(destination)}
-          </Text>
-        </View>
-      </View>
+          {/* Route: single inline line */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 15 }} numberOfLines={1}>
+              {from}
+            </Text>
+            <MoveRight color="#475569" size={14} />
+            <Text style={{ color: '#94a3b8', fontWeight: '500', fontSize: 15, flex: 1 }} numberOfLines={1}>
+              {to}
+            </Text>
+          </View>
 
-      {/* Driver footer */}
-      {driverName && (
-        <Text style={{ color: '#475569', fontSize: 11, marginTop: 10, fontWeight: '500' }}>
-          {driverName}
-        </Text>
-      )}
-    </Pressable>
+          {/* Driver name */}
+          {driverName && (
+            <Text style={{ color: '#475569', fontSize: 12, fontWeight: '500', marginTop: 8 }} numberOfLines={1}>
+              {toTitleCase(driverName)}
+            </Text>
+          )}
+        </View>
+      </Pressable>
+    </View>
   )
 })

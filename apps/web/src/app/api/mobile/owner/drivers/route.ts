@@ -106,9 +106,11 @@ export async function GET(req: NextRequest) {
 
       const complianceStatus = computeComplianceStatus(driver.driverDocuments);
 
-      // Status: DRIVING or ON_DUTY = on duty, else off duty
+      // Status: on duty if HOS is active OR if driver has an active load
       const status =
-        hosStatus === 'DRIVING' || hosStatus === 'ON_DUTY' ? 'on_duty' : 'off_duty';
+        hosStatus === 'DRIVING' || hosStatus === 'ON_DUTY' || currentLoadNumber !== null
+          ? 'on_duty'
+          : 'off_duty';
 
       return {
         id: driver.id,

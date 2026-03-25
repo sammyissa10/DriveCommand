@@ -26,8 +26,8 @@ export default function OwnerLayout() {
             paddingTop: 6,
           },
           tabBarActiveTintColor: '#38bdf8',
-          tabBarInactiveTintColor: '#475569',
-          tabBarActiveBackgroundColor: 'rgba(14,165,233,0.08)',
+          tabBarInactiveTintColor: '#3d5068',
+          tabBarActiveBackgroundColor: 'rgba(56,189,248,0.12)',
         }}
       >
         <Tabs.Screen
@@ -70,15 +70,6 @@ export default function OwnerLayout() {
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
-        {/* Hidden screens - not visible in tab bar */}
-        <Tabs.Screen name="fleet" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="invoices" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="crm" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="payroll" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="ai-documents" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="trucks" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="compliance" options={{ href: null, headerShown: false }} />
-        <Tabs.Screen name="settings" options={{ href: null, headerShown: false }} />
       </Tabs>
     </Fragment>
   )
