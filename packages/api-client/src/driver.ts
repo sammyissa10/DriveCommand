@@ -3,6 +3,43 @@ import type { HOSData, HOSStatus, HOSEntry, CreateIncidentPayload, Incident } fr
 
 export type { HOSData, HOSStatus, HOSEntry, CreateIncidentPayload, Incident, IncidentCategory, IncidentSeverity } from '@drivecommand/types'
 
+// ---------------------------------------------------------------------------
+// Documents
+// ---------------------------------------------------------------------------
+
+export type DocumentStatus = 'VALID' | 'EXPIRING' | 'EXPIRED'
+
+export type DocumentType =
+  | 'CDL'
+  | 'MEDICAL_CARD'
+  | 'HAZMAT'
+  | 'INSURANCE'
+  | 'REGISTRATION'
+  | 'INSPECTION'
+  | 'OTHER'
+
+export interface DriverDocument {
+  id: string
+  fileName: string
+  s3Key: string
+  contentType: string
+  sizeBytes: number
+  documentType: string | null
+  expiryDate: string | null
+  notes: string | null
+  createdAt: string
+  status: DocumentStatus
+}
+
+export interface CreateDocumentPayload {
+  type: DocumentType
+  name: string
+  expiryDate?: string
+  s3Key: string
+  contentType: string
+  sizeBytes: number
+}
+
 export interface DashboardData {
   activeLoad: {
     id: string
@@ -133,5 +170,29 @@ export const driverApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ body, ...(loadId && { loadId }) }),
+    }),
+
+  // Documents
+  getDocuments: (token: string) =>
+    apiRequest<{ documents: DriverDocument[] }>('/api/mobile/driver/documents', { token }),
+
+  getDocumentUrl: (token: string, id: string) =>
+    apiRequest<{ url: string }>(`/api/mobile/driver/documents/${id}/url`, { token }),
+
+  getDocumentUploadUrl: (
+    token: string,
+    data: { fileName: string; contentType: string; sizeBytes: number }
+  ) =>
+    apiRequest<{ uploadUrl: string; s3Key: string }>('/api/mobile/driver/documents/upload-url', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(data),
+    }),
+
+  uploadDocument: (token: string, data: CreateDocumentPayload) =>
+    apiRequest<{ document: DriverDocument }>('/api/mobile/driver/documents', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(data),
     }),
 }
