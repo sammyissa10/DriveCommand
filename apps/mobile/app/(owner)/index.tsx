@@ -169,16 +169,26 @@ export default function OwnerDashboard() {
 
         {/* 2x2 KPI Grid */}
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-          <KPICard
-            label="Active Loads"
-            value={kpis.activeLoadsCount}
-            icon={<Package color="#475569" size={18} />}
-          />
-          <KPICard
-            label="On Duty"
-            value={kpis.driversOnDutyCount}
-            icon={<Users color="#475569" size={18} />}
-          />
+          <Pressable
+            style={({ pressed }) => ({ flex: 1, opacity: pressed ? 0.75 : 1 })}
+            onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
+          >
+            <KPICard
+              label="Active Loads"
+              value={kpis.activeLoadsCount}
+              icon={<Package color="#475569" size={18} />}
+            />
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => ({ flex: 1, opacity: pressed ? 0.75 : 1 })}
+            onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
+          >
+            <KPICard
+              label="On Duty"
+              value={kpis.driversOnDutyCount}
+              icon={<Users color="#475569" size={18} />}
+            />
+          </Pressable>
         </View>
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
           <KPICard
@@ -271,25 +281,35 @@ export default function OwnerDashboard() {
           <Text className="text-white font-semibold text-base">Driver Status</Text>
         </View>
 
-        {driverStatuses.length === 0 ? (
-          <Text className="text-slate-500 text-sm">No drivers in your fleet</Text>
-        ) : (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {driverStatuses.map((driver) => (
-              <Pressable
-                key={driver.id}
-                style={({ pressed }) => ({ width: CHIP_WIDTH, opacity: pressed ? 0.75 : 1 })}
-                onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
-              >
-                <DriverStatusChip
-                  name={driver.name}
-                  hosStatus={driver.hosStatus}
-                  activeLoadNumber={driver.activeLoadNumber}
-                />
-              </Pressable>
-            ))}
-          </View>
-        )}
+        {(() => {
+          const activeDrivers = driverStatuses.filter(
+            d => d.hosStatus === 'DRIVING' || d.hosStatus === 'ON_DUTY'
+          )
+          if (activeDrivers.length === 0) {
+            return (
+              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 items-center">
+                <Text className="text-slate-400 text-sm">All drivers are currently off duty</Text>
+              </View>
+            )
+          }
+          return (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {activeDrivers.map((driver) => (
+                <Pressable
+                  key={driver.id}
+                  style={({ pressed }) => ({ width: CHIP_WIDTH, opacity: pressed ? 0.75 : 1 })}
+                  onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
+                >
+                  <DriverStatusChip
+                    name={driver.name}
+                    hosStatus={driver.hosStatus}
+                    activeLoadNumber={driver.activeLoadNumber}
+                  />
+                </Pressable>
+              ))}
+            </View>
+          )
+        })()}
       </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>
