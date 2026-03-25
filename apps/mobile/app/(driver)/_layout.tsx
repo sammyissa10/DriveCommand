@@ -1,6 +1,6 @@
 import { useEffect, useState, Fragment, useCallback } from 'react'
 import { View, Text, StyleSheet, AppState } from 'react-native'
-import { Tabs, useFocusEffect } from 'expo-router'
+import { Tabs } from 'expo-router'
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
@@ -178,12 +178,6 @@ export default function DriverLayout() {
             tabBarIcon: ({ color }) => (
               <MessageTabIcon color={color} unreadCount={unreadCount} />
             ),
-            listeners: {
-              // Clear unread badge when the Messages tab is pressed
-              tabPress: () => {
-                setUnreadCount(0)
-              },
-            },
           }}
         />
         <Tabs.Screen
