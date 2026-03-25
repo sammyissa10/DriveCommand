@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Text, View } from 'react-native'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native'
 
@@ -9,7 +9,7 @@ interface KPICardProps {
   trend?: { direction: 'up' | 'down' | 'neutral'; label: string }
 }
 
-export function KPICard({ label, value, icon, trend }: KPICardProps) {
+export const KPICard = memo(function KPICard({ label, value, icon, trend }: KPICardProps) {
   const trendColor =
     trend?.direction === 'up'
       ? '#34d399'
@@ -67,4 +67,4 @@ export function KPICard({ label, value, icon, trend }: KPICardProps) {
       )}
     </View>
   )
-}
+})

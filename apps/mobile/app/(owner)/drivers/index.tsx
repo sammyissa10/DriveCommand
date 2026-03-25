@@ -215,6 +215,18 @@ export default function OwnerDriversScreen() {
     refetch()
   }, [refetch])
 
+  const renderDriverItem = useCallback(
+    ({ item }: { item: OwnerDriverSummary }) => (
+      <DriverCard
+        driver={item}
+        onPress={() => router.push(`/(owner)/drivers/${item.id}` as any)}
+      />
+    ),
+    [router]
+  )
+
+  const keyExtractor = useCallback((item: OwnerDriverSummary) => item.id, [])
+
   const filtered =
     !data
       ? []
@@ -348,7 +360,6 @@ export default function OwnerDriversScreen() {
       ) : (
         <FlashList
           data={filtered}
-          keyExtractor={(item) => item.id}
           estimatedItemSize={88}
           refreshControl={
             <RefreshControl
@@ -358,12 +369,8 @@ export default function OwnerDriversScreen() {
               colors={['#0ea5e9']}
             />
           }
-          renderItem={({ item }) => (
-            <DriverCard
-              driver={item}
-              onPress={() => router.push(`/(owner)/drivers/${item.id}` as any)}
-            />
-          )}
+          renderItem={renderDriverItem}
+          keyExtractor={keyExtractor}
           contentContainerStyle={{ paddingTop: 4, paddingBottom: 32 }}
         />
       )}

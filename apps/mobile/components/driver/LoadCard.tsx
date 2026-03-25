@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Platform, Pressable, Text, View } from 'react-native'
 import { ArrowRight, ChevronRight } from 'lucide-react-native'
 import { Badge } from '../ui/Badge'
@@ -42,7 +42,7 @@ interface LoadCardProps {
   onPress: () => void
 }
 
-export function LoadCard({ load, onPress }: LoadCardProps) {
+export const LoadCard = memo(function LoadCard({ load, onPress }: LoadCardProps) {
   const badge = getStatusBadge(load.status)
 
   return (
@@ -81,4 +81,4 @@ export function LoadCard({ load, onPress }: LoadCardProps) {
       </View>
     </Pressable>
   )
-}
+})

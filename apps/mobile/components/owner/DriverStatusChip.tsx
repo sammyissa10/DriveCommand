@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Text, View } from 'react-native'
 
 type HOSStatus = 'DRIVING' | 'ON_DUTY' | 'OFF_DUTY' | 'SLEEPER_BERTH'
@@ -37,7 +37,7 @@ function getStatusLabel(status: HOSStatus | string | null): string {
   }
 }
 
-export function DriverStatusChip({ name, hosStatus, activeLoadNumber }: DriverStatusChipProps) {
+export const DriverStatusChip = memo(function DriverStatusChip({ name, hosStatus, activeLoadNumber }: DriverStatusChipProps) {
   const dotColor = getDotColor(hosStatus)
 
   return (
@@ -83,4 +83,4 @@ export function DriverStatusChip({ name, hosStatus, activeLoadNumber }: DriverSt
       </View>
     </View>
   )
-}
+})
