@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Tabs } from 'expo-router'
-import { LayoutDashboard, Map, Package, Users, Radio } from 'lucide-react-native'
+import { LayoutDashboard, Map, Package, Users, MessageSquare } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { haptic } from '../../lib/haptics'
 
@@ -11,12 +11,19 @@ export default function OwnerLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '500',
+            marginTop: 2,
+            marginBottom: 0,
+          },
           tabBarStyle: {
             backgroundColor: '#1e293b',
             borderTopColor: '#334155',
-            height: 64,
-            paddingBottom: 8,
+            height: 72,
+            paddingBottom: 10,
+            paddingTop: 6,
           },
           tabBarActiveTintColor: '#0ea5e9',
           tabBarInactiveTintColor: '#64748b',
@@ -24,27 +31,42 @@ export default function OwnerLayout() {
       >
         <Tabs.Screen
           name="index"
-          options={{ tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Dashboard',
+            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="map"
-          options={{ tabBarIcon: ({ color }) => <Map color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Live Map',
+            tabBarIcon: ({ color }) => <Map color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="loads"
-          options={{ tabBarIcon: ({ color }) => <Package color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Loads',
+            tabBarIcon: ({ color }) => <Package color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="drivers"
-          options={{ tabBarIcon: ({ color }) => <Users color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Drivers',
+            tabBarIcon: ({ color }) => <Users color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="fleet"
-          options={{ tabBarIcon: ({ color }) => <Radio color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Messages',
+            tabBarIcon: ({ color }) => <MessageSquare color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
       </Tabs>
