@@ -214,8 +214,6 @@ export default function DriverLayout() {
         />
         {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
         <Tabs.Screen name="incidents" options={{ href: null }} />
-        <Tabs.Screen name="loads/index" options={{ href: null }} />
-        <Tabs.Screen name="loads/[id]" options={{ href: null }} />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}
