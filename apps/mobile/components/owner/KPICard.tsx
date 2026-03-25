@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react-native'
 
 interface KPICardProps {
@@ -7,9 +7,10 @@ interface KPICardProps {
   value: string | number
   icon: React.ReactNode
   trend?: { direction: 'up' | 'down' | 'neutral'; label: string }
+  onPress?: () => void
 }
 
-export const KPICard = memo(function KPICard({ label, value, icon, trend }: KPICardProps) {
+export const KPICard = memo(function KPICard({ label, value, icon, trend, onPress }: KPICardProps) {
   const trendColor =
     trend?.direction === 'up'
       ? '#34d399'
@@ -24,7 +25,7 @@ export const KPICard = memo(function KPICard({ label, value, icon, trend }: KPIC
         ? TrendingDown
         : Minus
 
-  return (
+  const content = (
     <View
       style={{
         flex: 1,
@@ -67,4 +68,18 @@ export const KPICard = memo(function KPICard({ label, value, icon, trend }: KPIC
       )}
     </View>
   )
+
+  if (onPress) {
+    return (
+      <Pressable
+        style={{ flex: 1 }}
+        android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
+        onPress={onPress}
+      >
+        {content}
+      </Pressable>
+    )
+  }
+
+  return <View style={{ flex: 1 }}>{content}</View>
 })

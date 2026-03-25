@@ -169,28 +169,18 @@ export default function OwnerDashboard() {
 
         {/* 2x2 KPI Grid */}
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-          <Pressable
-            style={{ flex: 1 }}
-            android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
+          <KPICard
+            label="Active Loads"
+            value={kpis.activeLoadsCount}
+            icon={<Package color="#475569" size={18} />}
             onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
-          >
-            <KPICard
-              label="Active Loads"
-              value={kpis.activeLoadsCount}
-              icon={<Package color="#475569" size={18} />}
-            />
-          </Pressable>
-          <Pressable
-            style={{ flex: 1 }}
-            android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
+          />
+          <KPICard
+            label="On Duty"
+            value={kpis.driversOnDutyCount}
+            icon={<Users color="#475569" size={18} />}
             onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
-          >
-            <KPICard
-              label="On Duty"
-              value={kpis.driversOnDutyCount}
-              icon={<Users color="#475569" size={18} />}
-            />
-          </Pressable>
+          />
         </View>
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
           <KPICard
