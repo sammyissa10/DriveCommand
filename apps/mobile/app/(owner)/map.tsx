@@ -15,6 +15,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { ownerApi, type MapVehicle } from '@drivecommand/api-client'
 import VehicleMarker from '../../components/owner/VehicleMarker'
 import VehicleDetailSheet from '../../components/owner/VehicleDetailSheet'
+import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -92,6 +93,7 @@ export default function OwnerMapScreen() {
   }
 
   return (
+    <AnimatedScreen>
     <View style={styles.root}>
       {/* Full-screen map */}
       <MapView
@@ -173,6 +175,7 @@ export default function OwnerMapScreen() {
         onClose={handleSheetClose}
       />
     </View>
+    </AnimatedScreen>
   )
 }
 
