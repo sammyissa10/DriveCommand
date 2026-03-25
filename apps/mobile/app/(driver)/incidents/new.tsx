@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import * as Location from 'expo-location'
-import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
+import { haptic } from '../../../lib/haptics'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AlertOctagon, AlertTriangle, ChevronLeft, HelpCircle, ShieldAlert, Wrench } from 'lucide-react-native'
 import { driverApi, type IncidentCategory, type IncidentSeverity } from '@drivecommand/api-client'
@@ -151,7 +151,7 @@ export default function NewIncidentScreen() {
         photoS3Key,
       })
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      await haptic.success()
 
       Toast.show({
         type: 'success',
@@ -161,6 +161,7 @@ export default function NewIncidentScreen() {
 
       router.back()
     } catch (err) {
+      haptic.error()
       Toast.show({
         type: 'error',
         text1: 'Submission Failed',

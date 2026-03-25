@@ -24,6 +24,7 @@ import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
 import { Badge } from '../../components/ui/Badge'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { haptic } from '../../lib/haptics'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -104,6 +105,7 @@ export default function OwnerDashboard() {
   })
 
   const onRefresh = useCallback(() => {
+    haptic.light()
     refetch()
   }, [refetch])
 

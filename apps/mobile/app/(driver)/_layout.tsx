@@ -10,6 +10,7 @@ import { kvStorage } from '../../lib/storage'
 import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
 import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import { AppHeader } from '../../components/shared/AppHeader'
+import { haptic } from '../../lib/haptics'
 import type { HOSStatus } from '@drivecommand/types'
 
 const LAST_READ_KEY = 'messages_last_read_at'
@@ -157,11 +158,18 @@ export default function DriverLayout() {
       >
         <Tabs.Screen
           name="loads"
-          options={{ tabBarIcon: ({ color }) => <Truck color={color} size={24} /> }}
+          options={{
+            tabBarIcon: ({ color }) => <Truck color={color} size={24} />,
+            tabBarButtonTestID: 'tab-loads',
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="hos"
-          options={{ tabBarIcon: ({ color }) => <Clock color={color} size={24} /> }}
+          options={{
+            tabBarIcon: ({ color }) => <Clock color={color} size={24} />,
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
         />
         {/* Home/Dashboard — center tab */}
         <Tabs.Screen
@@ -175,6 +183,7 @@ export default function DriverLayout() {
               </View>
             ),
           }}
+          listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="messages"
@@ -183,10 +192,12 @@ export default function DriverLayout() {
               <MessageTabIcon color={color} unreadCount={unreadCount} />
             ),
           }}
+          listeners={{ tabPress: () => haptic.light() }}
         />
         <Tabs.Screen
           name="documents"
           options={{ tabBarIcon: ({ color }) => <FileText color={color} size={24} /> }}
+          listeners={{ tabPress: () => haptic.light() }}
         />
         {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
         <Tabs.Screen name="incidents" options={{ href: null }} />

@@ -25,6 +25,7 @@ import RecipientSelector, {
   type RecipientOption,
 } from '../../components/owner/RecipientSelector'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { haptic } from '../../lib/haptics'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -152,12 +153,14 @@ export default function OwnerFleetScreen() {
       })
     },
     onSuccess: () => {
+      haptic.success()
       Alert.alert('Message sent!', `Message delivered to ${recipient?.name}.`)
       setRecipient(null)
       setBody('')
       queryClient.invalidateQueries({ queryKey: ['fleet-messages'] })
     },
     onError: (err: Error) => {
+      haptic.error()
       Alert.alert('Send failed', err.message ?? 'Could not send message. Try again.')
     },
   })

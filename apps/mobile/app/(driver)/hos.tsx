@@ -11,8 +11,8 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
+import { haptic } from '../../lib/haptics'
 import { driverApi } from '@drivecommand/api-client'
 import type { HOSStatus } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
@@ -99,6 +99,7 @@ export default function DriverHOS() {
       return
     }
 
+    haptic.medium()
     setPendingStatus(status)
     setNotes('')
   }
@@ -115,7 +116,7 @@ export default function DriverHOS() {
     setIsSubmitting(true)
     try {
       await driverApi.updateHOSStatus(token, pendingStatus, notes.trim() || undefined)
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      await haptic.success()
       setPendingStatus(null)
       setNotes('')
       await queryClient.invalidateQueries({ queryKey: ['driver-hos'] })
@@ -125,6 +126,7 @@ export default function DriverHOS() {
         text2: `Now: ${STATUS_META[pendingStatus].label}`,
       })
     } catch (err) {
+      haptic.error()
       setPendingStatus(null)
       setNotes('')
       Toast.show({

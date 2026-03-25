@@ -23,6 +23,7 @@ import { DocumentDetailSheet } from '../../components/driver/DocumentDetailSheet
 import { DocumentUploadSheet } from '../../components/driver/DocumentUploadSheet'
 import { DocumentRowSkeleton } from '../../components/skeletons/DocumentRowSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { haptic } from '../../lib/haptics'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -150,6 +151,7 @@ export default function DriverDocuments() {
   const documents = data?.documents ?? []
 
   function handleUploadSuccess() {
+    haptic.success()
     setShowUpload(false)
     queryClient.invalidateQueries({ queryKey: ['driver-documents'] })
     Toast.show({

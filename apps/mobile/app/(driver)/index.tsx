@@ -14,6 +14,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type DashboardData } from '@drivecommand/api-client'
 import { Badge } from '../../components/ui/Badge'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { haptic } from '../../lib/haptics'
 import { StatChip } from '../../components/driver/StatChip'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 
@@ -60,6 +61,7 @@ export default function DriverDashboard() {
   })
 
   const onRefresh = useCallback(() => {
+    haptic.light()
     refetch()
   }, [refetch])
 

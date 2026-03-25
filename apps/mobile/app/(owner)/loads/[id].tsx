@@ -21,6 +21,7 @@ import { TruckPickerSheet } from '../../../components/owner/TruckPickerSheet'
 import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { Skeleton } from '../../../components/ui/Skeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { haptic } from '../../../lib/haptics'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -318,6 +319,7 @@ export default function OwnerLoadDetailScreen() {
     mutationFn: (payload: { status?: string; driverId?: string | null; notes?: string }) =>
       ownerApi.updateLoad(token!, id!, payload),
     onSuccess: (_data, variables) => {
+      haptic.success()
       invalidateLoad()
       const msg = variables.status === 'CANCELLED'
         ? 'Load has been cancelled.'
@@ -337,6 +339,7 @@ export default function OwnerLoadDetailScreen() {
       setCancelConfirmVisible(false)
     },
     onError: (error: Error) => {
+      haptic.error()
       Toast.show({
         type: 'error',
         text1: 'Update failed',
@@ -589,7 +592,7 @@ export default function OwnerLoadDetailScreen() {
 
             {/* Cancel Load — destructive */}
             <Pressable
-              onPress={() => setCancelConfirmVisible(true)}
+              onPress={() => { haptic.warning(); setCancelConfirmVisible(true) }}
               disabled={isUpdating}
               className="flex-row items-center gap-3 p-3 bg-red-950/40 rounded-xl border border-red-900/50 active:opacity-75"
             >
