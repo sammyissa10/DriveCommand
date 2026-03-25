@@ -162,8 +162,8 @@ export default function OwnerLoadsScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="mb-3"
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+        style={{ flexGrow: 0, marginBottom: 12 }}
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 8, alignItems: 'center' }}
       >
         {STATUS_TABS.map((tab) => (
           <Pressable
