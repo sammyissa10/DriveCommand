@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 36 Owner Map and Fleet — IN PROGRESS
-Current Plan: 36-03 (Plan 3/3 in progress)
-Status: Phase 36 plan 02b complete — Fleet messaging UI: RecipientSelector bottom sheet, compose/history toggle, char counter, pre-select driver from navigation param
-Last activity: 2026-03-25 - Completed Phase 36-02b: Fleet Messaging UI
-Stopped at: Phase 36-02b complete — ready for 36-03
+Phase: Phase 36 Owner Map and Fleet — COMPLETE ✅
+Current Plan: Phase 37 (next)
+Status: Phase 36 complete — live map + fleet messaging backend + fleet messaging UI all shipped. Human verification pending: dark map style, marker tap sheet, push notification delivery, pre-select driver navigation.
+Last activity: 2026-03-25 - Completed Phase 36: Owner Map + Fleet Communication
+Stopped at: Phase 36 complete — ready for Phase 37
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 

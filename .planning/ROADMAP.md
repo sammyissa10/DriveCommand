@@ -331,15 +331,16 @@ Plans:
 
 ---
 
-### Phase 36: Owner Map + Fleet Communication — Live map with vehicle markers and fleet messaging
+### Phase 36: Owner Map + Fleet Communication — Live map with vehicle markers and fleet messaging ✅ 2026-03-25
 
 **Goal:** Build the live map screen showing all vehicles as positioned markers using react-native-maps (replaces Leaflet which is web-only), with tap-to-select vehicle detail. Build the fleet communication screen where owners compose and send messages to individual drivers or broadcast to all drivers, with delivery status tracking.
 **Depends on:** Phase 35 (owner screens established)
-**Plans:** 2 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] 36-01-PLAN.md — Live map: react-native-maps MapView with vehicle markers (custom callout showing truck number + driver name + speed + status), marker color by status (moving=green, idle=yellow, offline=grey), tap marker → vehicle detail bottom sheet (full diagnostics: odometer, fuel level, engine state, current load), 30-second poll to refresh positions from existing /api/gps/locations endpoint, map auto-fits to show all vehicles on mount, locate-me button re-centers, clustering via react-native-map-clustering for dense fleets
-- [ ] 36-02-PLAN.md — Fleet communication: message compose screen (recipient select: individual driver or "All Drivers" broadcast, message body textarea, send button), sent messages list (FlashList, each row: recipient, preview, timestamp, delivery badge), message detail with thread replies; calls existing fleet-messages server actions; send triggers push notification to recipient driver(s) via existing push token system; unread indicator on Fleet tab icon for owner replies received
+- [x] 36-01-PLAN.md — Live map: full-screen MapView with status-colored VehicleMarker components, VehicleDetailSheet bottom sheet, 60s auto-refresh, fitToCoordinates on load, dark Google Maps style on Android
+- [x] 36-02a-PLAN.md — Fleet messaging backend: FleetMessage schema (recipientId, isBroadcast), GET/POST endpoints with push notifications, typed api-client methods
+- [x] 36-02b-PLAN.md — Fleet messaging UI: RecipientSelector bottom sheet, compose/history toggle, character counter, pre-select driver via navigation param
 
 ---
 
