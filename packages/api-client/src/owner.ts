@@ -109,6 +109,61 @@ export interface DriverOption {
   name: string
 }
 
+export interface OwnerDriverSummary {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  status: 'on_duty' | 'off_duty'
+  currentLoadNumber: string | null
+  hosStatus: string | null
+  complianceStatus: 'ok' | 'warning' | 'critical'
+  expiringDocCount: number
+  expiredDocCount: number
+}
+
+export interface OwnerDriverDocument {
+  id: string
+  fileName: string
+  documentType: string | null
+  expiryDate: string | null
+  notes: string | null
+  createdAt: string
+  status: 'VALID' | 'EXPIRING' | 'EXPIRED'
+}
+
+export interface OwnerDriverIncident {
+  id: string
+  category: string
+  severity: string
+  description: string
+  reportedAt: string
+}
+
+export interface OwnerDriverCurrentLoad {
+  id: string
+  loadNumber: string
+  status: string
+  origin: string
+  destination: string
+  pickupDate: string | null
+  deliveryDate: string | null
+  rate: number | null
+}
+
+export interface OwnerDriverDetail {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  hosStatus: string | null
+  hosStartTime: string | null
+  complianceStatus: 'ok' | 'warning' | 'critical'
+  currentLoad: OwnerDriverCurrentLoad | null
+  documents: OwnerDriverDocument[]
+  recentIncidents: OwnerDriverIncident[]
+}
+
 export interface CreateLoadPayload {
   customerId?: string
   customerName?: string
@@ -174,4 +229,10 @@ export const ownerApi = {
 
   getFleetPositions: (token: string) =>
     apiRequest<FleetPosition[]>('/api/mobile/owner/fleet-positions', { token }),
+
+  getDrivers: (token: string) =>
+    apiRequest<OwnerDriverSummary[]>('/api/mobile/owner/drivers', { token }),
+
+  getDriverDetail: (token: string, id: string) =>
+    apiRequest<OwnerDriverDetail>(`/api/mobile/owner/drivers/${id}`, { token }),
 }
