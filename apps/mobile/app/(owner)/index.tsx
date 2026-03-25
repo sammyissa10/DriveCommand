@@ -170,7 +170,8 @@ export default function OwnerDashboard() {
         {/* 2x2 KPI Grid */}
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
           <Pressable
-            style={({ pressed }) => ({ flex: 1, opacity: pressed ? 0.75 : 1 })}
+            style={{ flex: 1 }}
+            android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
             onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
           >
             <KPICard
@@ -180,7 +181,8 @@ export default function OwnerDashboard() {
             />
           </Pressable>
           <Pressable
-            style={({ pressed }) => ({ flex: 1, opacity: pressed ? 0.75 : 1 })}
+            style={{ flex: 1 }}
+            android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
             onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
           >
             <KPICard
@@ -232,7 +234,7 @@ export default function OwnerDashboard() {
                   onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
                   style={({ pressed }) => ({
                     backgroundColor: pressed ? '#263348' : '#1e293b',
-                    borderColor: '#334155',
+                    borderColor: pressed ? '#0ea5e9' : '#475569',
                     borderWidth: 1,
                     borderRadius: 12,
                     paddingHorizontal: 14,
@@ -283,7 +285,7 @@ export default function OwnerDashboard() {
 
         {(() => {
           const activeDrivers = driverStatuses.filter(
-            d => d.hosStatus === 'DRIVING' || d.hosStatus === 'ON_DUTY'
+            d => d.hosStatus === 'DRIVING' || d.hosStatus === 'ON_DUTY' || d.activeLoadNumber !== null
           )
           if (activeDrivers.length === 0) {
             return (
