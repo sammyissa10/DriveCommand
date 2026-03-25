@@ -138,13 +138,19 @@ export default function DriverLayout() {
       <Tabs
         screenOptions={{
           headerShown: false,
-          tabBarShowLabel: false,
+          tabBarShowLabel: true,
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '500',
+            marginTop: 2,
+            marginBottom: 0,
+          },
           tabBarStyle: {
             backgroundColor: '#1e293b',
             borderTopColor: '#334155',
-            height: 64,
+            height: 72,
             paddingBottom: 10,
-            paddingTop: 10,
+            paddingTop: 6,
           },
           tabBarItemStyle: {
             flex: 1,
@@ -159,6 +165,7 @@ export default function DriverLayout() {
         <Tabs.Screen
           name="loads"
           options={{
+            tabBarLabel: 'Loads',
             tabBarIcon: ({ color }) => <Truck color={color} size={24} />,
             tabBarButtonTestID: 'tab-loads',
           }}
@@ -167,6 +174,7 @@ export default function DriverLayout() {
         <Tabs.Screen
           name="hos"
           options={{
+            tabBarLabel: 'HOS',
             tabBarIcon: ({ color }) => <Clock color={color} size={24} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
@@ -175,6 +183,7 @@ export default function DriverLayout() {
         <Tabs.Screen
           name="index"
           options={{
+            tabBarLabel: 'Home',
             tabBarIcon: ({ color }) => (
               <View style={styles.iconWrapper}>
                 <House color={color} size={24} />
@@ -188,6 +197,7 @@ export default function DriverLayout() {
         <Tabs.Screen
           name="messages"
           options={{
+            tabBarLabel: 'Messages',
             tabBarIcon: ({ color }) => (
               <MessageTabIcon color={color} unreadCount={unreadCount} />
             ),
@@ -196,7 +206,10 @@ export default function DriverLayout() {
         />
         <Tabs.Screen
           name="documents"
-          options={{ tabBarIcon: ({ color }) => <FileText color={color} size={24} /> }}
+          options={{
+            tabBarLabel: 'Docs',
+            tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+          }}
           listeners={{ tabPress: () => haptic.light() }}
         />
         {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
