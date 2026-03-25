@@ -10,10 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 33 Driver Native Features — COMPLETE
-Status: Phase 33 complete — all 3 plans verified (9/9 must-haves). Background GPS, push notifications, offline mutation queue all shipped.
-Last activity: 2026-03-24 - Completed quick task 102: Move fleet messaging from Routes to Loads
-Stopped at: Phase 33 complete — next is Phase 34
+Phase: Phase 34 Driver Documents + Messaging — IN PROGRESS
+Current Plan: 34-01 complete — next is 34-02
+Status: 34-01 complete — driver documents screen, S3 upload flow, detail sheet, 4 REST endpoints
+Last activity: 2026-03-25 - Completed 34-01: Driver Documents Screen
+Stopped at: Phase 34, Plan 01 complete — next is 34-02
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -69,6 +70,7 @@ Progress: [███████████████████████
 - Phase 33-01 (2026-03-23): Background GPS reporting — expo-task-manager background task, useBackgroundGPS hook (adaptive intervals: 30s/5min/10min), GPSPermissionModal, GET /api/mobile/driver/tracking-token, GPS status dot in tab bar — 7 tasks, 7 files, 257s
 - Phase 33-02 (2026-03-23): Push notifications — PushToken model, /api/push-tokens endpoint, sendPushToUser (expo-server-sdk), fleet message + load dispatch triggers, registerPushToken hook, deep-link tap handler, NotificationPermissionModal — 7 tasks, 10 files, 333s
 - Phase 33-03 (2026-03-23): Offline mutation queue — MMKV offlineQueue, flushQueue (exponential backoff), callOrQueue wrapper, SyncStatusBar (amber/blue/red), useOfflineSync (NetInfo auto-flush on reconnect), StatusUpdateButton offline-wired — 7 tasks, 7 files, 133s
+- Phase 34-01 (2026-03-25): Driver documents screen — 4 REST endpoints (GET list, GET presigned URL, POST upload-url, POST create), DriverDocument types in api-client, FlashList screen with FAB, DocumentDetailSheet (expo-web-browser), DocumentUploadSheet (S3 upload + progress) — 7 tasks, 8 files, ~7min
 
 **Combined:**
 - Total: 22 phases complete, 53 plans
@@ -117,6 +119,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 34-01 decisions (Driver documents):**
+- Mobile document type (CDL, MEDICAL_CARD etc.) stored in Document.description field — DB DocumentType enum (DRIVER_LICENSE, GENERAL etc.) is for web portal categories only
+- Date input uses YYYY-MM-DD text field — @react-native-community/datetimepicker not installed, text input avoids native module dependency
+- Driver uploads set uploadedBy = driverId — drivers upload their own documents, no need for separate uploader user ID
+- s3Key ownership validated with tenant-{tenantId}/drivers/ prefix check in both upload-url and POST /documents endpoints
 
 **Phase 33-02 decisions (Push notifications):**
 - Used db push instead of migrate dev — accumulated schema drift from prior phases blocks migrate dev; db push syncs schema directly (consistent with Phase 32-01 approach)
