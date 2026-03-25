@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 34 Driver Documents + Messaging — IN PROGRESS
-Current Plan: 34-02 complete — next is 34-03 (or next phase)
-Status: 34-02 complete — driver messaging screen, unread badge, 30s polling, MMKV last-read tracking, 2 new REST endpoints
-Last activity: 2026-03-25 - Completed quick task 104: Edit truck on load + fleet map live driver positions
-Stopped at: Phase 34, Plan 02 complete — next is 34-03 (if exists) or Phase 35
+Phase: Phase 35 Owner Core Screens — IN PROGRESS
+Current Plan: 35-01 complete — next is 35-02
+Status: 35-01 complete — owner dashboard screen, KPICard + DriverStatusChip components, dashboard REST endpoint with KPI aggregates
+Last activity: 2026-03-24 - Completed Phase 35-01: Owner dashboard
+Stopped at: Phase 35, Plan 01 complete — next is 35-02
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -523,6 +523,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 33]: GPSStatusDot overlaid on home tab icon (not separate header bar) — minimal UI footprint
 - [Phase 33]: callOrQueue returns null when offline so callers show 'saved offline' feedback without structural error handling changes
 - [Phase 33]: SyncStatusBar mounted at driver layout root for app-wide offline visibility without per-screen wiring
+- [Phase 35-01]: openAlertsCount = expiring docs (30 days) + trucks in maintenance, no separate alerts model
+- [Phase 35-01]: revenueThisMonth uses updatedAt on DELIVERED/INVOICED loads as proxy for completion month
 
 ### Pending Todos
 
@@ -705,6 +707,7 @@ None blocking immediate progress.
 | Phase 31-03 P03 | 325 | 3 tasks | 10 files |
 | Phase 33 P01 | 257 | 7 tasks | 7 files |
 | Phase 33-driver-native-features P03 | 133 | 7 tasks | 7 files |
+| Phase 35-owner-core-screens P01 | 203 | 5 tasks | 6 files |
 
 ## Session Continuity
 
