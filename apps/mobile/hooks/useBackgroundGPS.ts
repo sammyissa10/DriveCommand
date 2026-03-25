@@ -6,7 +6,7 @@ import type { HOSStatus } from '@drivecommand/types'
 
 export type GPSStatus = 'active' | 'paused' | 'no-permission' | 'off'
 
-export function useBackgroundGPS(hosStatus?: HOSStatus) {
+export function useBackgroundGPS(hosStatus?: HOSStatus, hasActiveLoad = false) {
   const [gpsStatus, setGPSStatus] = useState<GPSStatus>('off')
 
   const getInterval = useCallback(async (): Promise<number> => {
@@ -66,14 +66,18 @@ export function useBackgroundGPS(hosStatus?: HOSStatus) {
     setGPSStatus('off')
   }, [])
 
-  // Start GPS when hook mounts; stop on unmount
+  // Start GPS only when driver has an active load; stop when they don't
   useEffect(() => {
-    startGPS()
+    if (hasActiveLoad) {
+      startGPS()
+    } else {
+      stopGPS()
+    }
     return () => {
       stopGPS()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [hasActiveLoad])
 
   // Restart with updated interval when HOS status changes
   useEffect(() => {

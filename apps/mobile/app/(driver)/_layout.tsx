@@ -53,6 +53,7 @@ export default function DriverLayout() {
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
   const [showNotifModal, setShowNotifModal] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [hasActiveLoad, setHasActiveLoad] = useState(false)
 
   // Show notification permission modal on first login
   useEffect(() => {
@@ -72,14 +73,17 @@ export default function DriverLayout() {
       .then((data) => setHOSStatus(data.currentStatus))
       .catch(() => { /* HOS fetch is best-effort — GPS still starts with default interval */ })
 
-    // Store active load tracking token for GPS reports (supplementary context)
+    // Store active load tracking token + detect whether driver has an active load
     driverApi.getTrackingToken(token)
       .then(({ trackingToken }) => {
         if (trackingToken) {
           kvStorage.setString('gps_tracking_token', trackingToken)
+          setHasActiveLoad(true)
+        } else {
+          setHasActiveLoad(false)
         }
       })
-      .catch(() => { /* Best-effort — GPS works without tracking token */ })
+      .catch(() => { /* Best-effort */ })
   }, [token])
 
   // Fetch unread count — uses lastReadAt from MMKV as the `since` parameter
@@ -115,7 +119,7 @@ export default function DriverLayout() {
     return () => sub.remove()
   }, [fetchUnreadCount])
 
-  const { gpsStatus } = useBackgroundGPS(hosStatus)
+  const { gpsStatus } = useBackgroundGPS(hosStatus, hasActiveLoad)
   const { isOnline, isSyncing, pendingCount, failedCount, retryFailed } = useOfflineSync()
 
   return (

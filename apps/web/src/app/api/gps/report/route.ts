@@ -60,10 +60,24 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Look up active route to get truckId (bypass RLS in API route)
-    const route = await prisma.$transaction(async (tx) => {
+    // 5. Resolve truckId — check active Load first (mobile), then fall back to Route (web)
+    const truckId = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.route.findFirst({
+
+      const load = await tx.load.findFirst({
+        where: {
+          driverId: session.userId,
+          tenantId: session.tenantId,
+          status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
+          truckId: { not: null },
+          archivedAt: null,
+        },
+        select: { truckId: true },
+        orderBy: { pickupDate: 'asc' },
+      });
+      if (load?.truckId) return load.truckId;
+
+      const route = await tx.route.findFirst({
         where: {
           driverId: session.userId,
           tenantId: session.tenantId,
@@ -71,10 +85,11 @@ export async function POST(req: NextRequest) {
         },
         select: { truckId: true },
       });
+      return route?.truckId ?? null;
     }, TX_OPTIONS);
 
-    if (!route) {
-      return NextResponse.json({ error: 'No active route' }, { status: 404 });
+    if (!truckId) {
+      return NextResponse.json({ error: 'No active load or route' }, { status: 404 });
     }
 
     // 6. Create GPSLocation record
@@ -83,7 +98,7 @@ export async function POST(req: NextRequest) {
       await tx.gPSLocation.create({
         data: {
           tenantId: session.tenantId,
-          truckId: route.truckId,
+          truckId,
           latitude,
           longitude,
           speed: speed != null ? Math.round(speed) : null,
@@ -99,7 +114,7 @@ export async function POST(req: NextRequest) {
     checkGeofenceAndAlert({
       tenantId: session.tenantId,
       driverId: session.userId,
-      truckId: route.truckId,
+      truckId,
       latitude,
       longitude,
     }).catch((e) => console.error('Geofence check error:', e));
