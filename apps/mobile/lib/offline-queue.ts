@@ -2,7 +2,7 @@ import { kvStorage } from './storage'
 
 export interface PendingMutation {
   id: string
-  type: 'UPDATE_LOAD_STATUS' | 'CREATE_HOS_ENTRY' | 'CREATE_INCIDENT'
+  type: 'UPDATE_LOAD_STATUS' | 'REVERT_LOAD_STATUS' | 'CREATE_HOS_ENTRY' | 'CREATE_INCIDENT'
   endpoint: string
   method: 'POST' | 'PUT' | 'PATCH'
   body: string  // JSON serialized

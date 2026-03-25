@@ -207,4 +207,16 @@ export const driverApi = {
       token,
       body: JSON.stringify(data),
     }),
+
+  revertLoadStatus: (token: string, id: string) =>
+    apiRequest<{ success: boolean; load: LoadDetail }>(
+      `/api/mobile/driver/loads/${id}/revert`,
+      { method: 'PATCH', token }
+    ),
+
+  getRateConfirmation: (token: string, id: string) =>
+    apiRequest<{ pdf: string; filename: string }>(
+      `/api/mobile/driver/loads/${id}/rate-confirmation`,
+      { token }
+    ),
 }
