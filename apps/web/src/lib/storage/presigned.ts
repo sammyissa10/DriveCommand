@@ -44,7 +44,7 @@ export async function generateUploadUrl(
     Bucket: getBucketName(),
     Key: s3Key,
     ContentType: contentType,
-    ContentLength: fileSize,
+    // ContentLength omitted — Supabase S3 compat rejects presigned URLs with signed ContentLength
   });
 
   // 5-minute expiry for upload URL
