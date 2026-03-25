@@ -1,4 +1,7 @@
 export { apiClient, apiRequest, setUnauthorizedHandler, configureApiClient } from './client'
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType } from './driver'
+export { ownerApi } from './owner'
+export type { OwnerLoadSummary, OwnerLoadDetail, TruckOption } from './owner'
+export type { RouteStop as OwnerRouteStop } from './owner'
 export type * from '@drivecommand/types'
