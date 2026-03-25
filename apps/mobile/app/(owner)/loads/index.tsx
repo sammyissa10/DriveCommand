@@ -169,7 +169,7 @@ export default function OwnerLoadsScreen() {
           <Pressable
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
-            className={`rounded-full px-4 py-2 ${
+            className={`rounded-full px-4 py-3 ${
               activeTab === tab.key
                 ? 'bg-sky-600'
                 : 'bg-slate-800 border border-slate-700'
