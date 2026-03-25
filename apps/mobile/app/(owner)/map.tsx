@@ -130,6 +130,7 @@ export default function OwnerMapScreen() {
             style={[styles.refreshButton, isFetching && styles.refreshButtonActive]}
             onPress={handleManualRefresh}
             disabled={isFetching}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
           >
             <RefreshCw
               size={18}

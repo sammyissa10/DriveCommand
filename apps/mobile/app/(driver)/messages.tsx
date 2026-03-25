@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  FlatList,
   TextInput,
   TouchableOpacity,
   Alert,
@@ -10,6 +9,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { MessageSquare, Send } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -77,7 +77,7 @@ export default function DriverMessages() {
   const [refreshing, setRefreshing] = useState(false)
   const [sending, setSending] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const flatListRef = useRef<FlatList<FleetMessage>>(null)
+  const flatListRef = useRef<FlashList<FleetMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const markAllRead = useCallback(async () => {
@@ -197,12 +197,12 @@ export default function DriverMessages() {
           </View>
         ) : (
           /* Message list */
-          <FlatList
+          <FlashList
             ref={flatListRef}
             data={messages}
             keyExtractor={(item) => item.id}
+            estimatedItemSize={60}
             renderItem={({ item }) => <MessageBubble message={item} />}
-            className="flex-1"
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}
             refreshControl={
               <RefreshControl
@@ -239,6 +239,7 @@ export default function DriverMessages() {
           <TouchableOpacity
             onPress={handleSend}
             disabled={!inputText.trim() || sending}
+            hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             className={`rounded-xl p-3 ${
               inputText.trim() && !sending ? 'bg-sky-500' : 'bg-slate-700'
             }`}

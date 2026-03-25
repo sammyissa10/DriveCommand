@@ -51,7 +51,7 @@ export default function LoadsScreen() {
       <View className="flex-row mx-4 mb-3 bg-slate-800 rounded-lg p-1">
         <Pressable
           onPress={() => setActiveTab('active')}
-          className={`flex-1 rounded-md py-2 items-center ${
+          className={`flex-1 rounded-md py-3 items-center ${
             activeTab === 'active' ? 'bg-sky-600' : 'bg-transparent'
           }`}
         >
@@ -65,7 +65,7 @@ export default function LoadsScreen() {
         </Pressable>
         <Pressable
           onPress={() => setActiveTab('history')}
-          className={`flex-1 rounded-md py-2 items-center ${
+          className={`flex-1 rounded-md py-3 items-center ${
             activeTab === 'history' ? 'bg-sky-600' : 'bg-transparent'
           }`}
         >
@@ -91,6 +91,7 @@ export default function LoadsScreen() {
             data={data ?? []}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
+            estimatedItemSize={88}
             showsVerticalScrollIndicator={false}
             refreshing={isRefetching}
             onRefresh={onRefresh}

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Pressable,
   RefreshControl,
   StyleSheet,
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -315,9 +315,10 @@ export default function OwnerFleetScreen() {
                 <Text style={styles.emptyText}>No messages sent yet</Text>
               </View>
             ) : (
-              <FlatList
+              <FlashList
                 data={messages}
                 keyExtractor={(item) => item.id}
+                estimatedItemSize={60}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                   <RefreshControl
@@ -383,7 +384,7 @@ const styles = StyleSheet.create({
   },
   toggleBtn: {
     flex: 1,
-    paddingVertical: 9,
+    paddingVertical: 12,
     alignItems: 'center',
     borderRadius: 8,
   },

@@ -205,7 +205,8 @@ export default function NewIncidentScreen() {
           <View className="flex-row items-center mb-6">
             <Pressable
               onPress={() => router.back()}
-              className="mr-3 p-1 active:opacity-60"
+              className="mr-3 p-2 active:opacity-60"
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               <ChevronLeft color="#94a3b8" size={24} />
             </Pressable>
