@@ -119,6 +119,7 @@ export async function createLoad(prevState: any, formData: FormData) {
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
+    truckId: (formData.get('truckId') as string) || '',
     origin: formData.get('origin') as string,
     destination: formData.get('destination') as string,
     pickupDate: formData.get('pickupDate') as string,
@@ -155,6 +156,7 @@ export async function createLoad(prevState: any, formData: FormData) {
         loadNumber,
         customerId: result.data.customerId,
         driverId: result.data.driverId || null,
+        truckId: result.data.truckId || null,
         origin: result.data.origin,
         destination: result.data.destination,
         pickupDate: new Date(result.data.pickupDate),
@@ -192,6 +194,7 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
+    truckId: (formData.get('truckId') as string) || '',
     origin: formData.get('origin') as string,
     destination: formData.get('destination') as string,
     pickupDate: formData.get('pickupDate') as string,
@@ -221,6 +224,7 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
       data: {
         customerId: result.data.customerId,
         driverId: result.data.driverId || null,
+        truckId: result.data.truckId || null,
         origin: result.data.origin,
         destination: result.data.destination,
         pickupDate: new Date(result.data.pickupDate),
