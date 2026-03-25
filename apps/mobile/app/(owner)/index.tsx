@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native'
+import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -92,6 +93,7 @@ function formatRevenue(amount: number): string {
 
 export default function OwnerDashboard() {
   const { token } = useAuthContext()
+  const router = useRouter()
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDashboardData>({
     queryKey: ['owner-dashboard'],
@@ -284,13 +286,17 @@ export default function OwnerDashboard() {
         ) : (
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {driverStatuses.map((driver) => (
-              <View key={driver.id} style={{ width: '47%' }}>
+              <Pressable
+                key={driver.id}
+                style={({ pressed }) => ({ width: '47%', opacity: pressed ? 0.75 : 1 })}
+                onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
+              >
                 <DriverStatusChip
                   name={driver.name}
                   hosStatus={driver.hosStatus}
                   activeLoadNumber={driver.activeLoadNumber}
                 />
-              </View>
+              </Pressable>
             ))}
           </View>
         )}
