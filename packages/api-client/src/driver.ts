@@ -172,6 +172,18 @@ export const driverApi = {
       body: JSON.stringify({ body, ...(loadId && { loadId }) }),
     }),
 
+  getUnreadCount: (token: string, since?: string) =>
+    apiRequest<{ count: number }>(
+      `/api/mobile/driver/messages/unread-count${since ? `?since=${encodeURIComponent(since)}` : ''}`,
+      { token }
+    ),
+
+  markMessagesRead: (token: string) =>
+    apiRequest<{ success: boolean }>('/api/mobile/driver/messages/mark-read', {
+      method: 'POST',
+      token,
+    }),
+
   // Documents
   getDocuments: (token: string) =>
     apiRequest<{ documents: DriverDocument[] }>('/api/mobile/driver/documents', { token }),
