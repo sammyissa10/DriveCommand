@@ -1,26 +1,35 @@
 import React, { useCallback, useState } from 'react'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
-import { Truck } from 'lucide-react-native'
+import { Plus, Truck } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerLoadSummary } from '@drivecommand/api-client'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner'
 import { Badge } from '../../../components/ui/Badge'
+import { CreateLoadSheet } from '../../../components/owner/CreateLoadSheet'
 
-type TabType = 'active' | 'history'
+type TabType = 'all' | 'active' | 'pending' | 'delivered'
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
+
+const STATUS_TABS: { key: TabType; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'active', label: 'Active' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'delivered', label: 'Delivered' },
+]
 
 function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
   switch (status) {
     case 'PENDING':
       return { label: 'Pending', variant: 'muted' }
     case 'DISPATCHED':
-      return { label: 'Accepted', variant: 'info' }
+      return { label: 'Dispatched', variant: 'info' }
     case 'PICKED_UP':
+      return { label: 'Picked Up', variant: 'warning' }
     case 'IN_TRANSIT':
       return { label: 'En Route', variant: 'warning' }
     case 'DELIVERED':
@@ -34,6 +43,11 @@ function getStatusBadge(status: string): { label: string; variant: BadgeVariant 
   }
 }
 
+function formatCurrency(value: number | null | undefined): string {
+  if (value == null) return ''
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
+}
+
 interface OwnerLoadCardProps {
   load: OwnerLoadSummary
   onPress: () => void
@@ -41,47 +55,43 @@ interface OwnerLoadCardProps {
 
 function OwnerLoadCard({ load, onPress }: OwnerLoadCardProps) {
   const badge = getStatusBadge(load.status)
-  const truckLabel = load.truck
-    ? `${load.truck.make} ${load.truck.model} · ${load.truck.licensePlate}`
-    : 'No truck assigned'
-  const driverLabel = load.driver ? load.driver.name : 'No driver assigned'
+  const driverLabel = load.driver ? load.driver.name : 'Unassigned'
+  const isUnassigned = !load.driver
+  const rateFormatted = formatCurrency(load.rate)
 
   return (
     <Pressable
       onPress={onPress}
       className="bg-slate-800 border border-slate-700 rounded-xl mx-4 mb-3 p-4 active:opacity-75"
     >
-      {/* Top row: load number + badge */}
+      {/* Top row: load number + rate + badge */}
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-white font-semibold text-base">
-          #{load.loadNumber}
-        </Text>
-        <Badge label={badge.label} variant={badge.variant} />
+        <Text className="text-white font-semibold text-base">#{load.loadNumber}</Text>
+        <View className="flex-row items-center gap-2">
+          {rateFormatted ? (
+            <Text className="text-emerald-400 text-sm font-semibold">{rateFormatted}</Text>
+          ) : null}
+          <Badge label={badge.label} variant={badge.variant} />
+        </View>
       </View>
 
-      {/* Origin → Destination */}
-      <Text className="text-slate-300 text-sm mb-1" numberOfLines={1}>
-        {load.origin} → {load.destination}
-      </Text>
-
-      {/* Customer */}
-      <Text className="text-slate-400 text-xs mb-2" numberOfLines={1}>
+      {/* Customer name */}
+      <Text className="text-slate-300 text-sm font-medium mb-1" numberOfLines={1}>
         {load.customer.companyName}
       </Text>
 
-      {/* Truck + Driver */}
-      <View className="flex-row flex-wrap gap-x-4">
+      {/* Origin → Destination */}
+      <Text className="text-slate-400 text-xs mb-2" numberOfLines={1}>
+        {load.origin} → {load.destination}
+      </Text>
+
+      {/* Driver */}
+      <View className="flex-row items-center">
         <Text
-          className={`text-xs ${load.truck ? 'text-sky-400' : 'text-slate-500'}`}
+          className={`text-xs font-medium ${isUnassigned ? 'text-amber-400' : 'text-slate-400'}`}
           numberOfLines={1}
         >
-          {truckLabel}
-        </Text>
-        <Text
-          className={`text-xs ${load.driver ? 'text-slate-400' : 'text-slate-500'}`}
-          numberOfLines={1}
-        >
-          {driverLabel}
+          {isUnassigned ? '⚠ Unassigned' : `Driver: ${driverLabel}`}
         </Text>
       </View>
     </Pressable>
@@ -91,7 +101,9 @@ function OwnerLoadCard({ load, onPress }: OwnerLoadCardProps) {
 export default function OwnerLoadsScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<TabType>('active')
+  const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useState<TabType>('all')
+  const [createSheetVisible, setCreateSheetVisible] = useState(false)
 
   const { data, isLoading, isError, isRefetching, refetch } = useQuery({
     queryKey: ['owner-loads', activeTab],
@@ -102,6 +114,12 @@ export default function OwnerLoadsScreen() {
   const onRefresh = useCallback(() => {
     refetch()
   }, [refetch])
+
+  const handleLoadCreated = useCallback(() => {
+    // Invalidate all tab caches so the new load appears
+    queryClient.invalidateQueries({ queryKey: ['owner-loads'] })
+    setCreateSheetVisible(false)
+  }, [queryClient])
 
   const renderItem = useCallback(
     ({ item }: { item: OwnerLoadSummary }) => (
@@ -115,6 +133,22 @@ export default function OwnerLoadsScreen() {
 
   const keyExtractor = useCallback((item: OwnerLoadSummary) => item.id, [])
 
+  const emptyTitle = activeTab === 'all'
+    ? 'No loads yet'
+    : activeTab === 'active'
+    ? 'No active loads'
+    : activeTab === 'pending'
+    ? 'No pending loads'
+    : 'No delivered loads'
+
+  const emptySubtitle = activeTab === 'all'
+    ? 'Create your first load using the + button below.'
+    : activeTab === 'active'
+    ? 'Dispatched and in-transit loads will appear here.'
+    : activeTab === 'pending'
+    ? 'New loads awaiting dispatch will appear here.'
+    : 'Completed loads will appear here.'
+
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       {/* Screen header */}
@@ -122,37 +156,33 @@ export default function OwnerLoadsScreen() {
         <Text className="text-2xl font-bold text-white">Loads</Text>
       </View>
 
-      {/* Active / History toggle tabs */}
-      <View className="flex-row mx-4 mb-3 bg-slate-800 rounded-lg p-1">
-        <Pressable
-          onPress={() => setActiveTab('active')}
-          className={`flex-1 rounded-md py-2 items-center ${
-            activeTab === 'active' ? 'bg-sky-600' : 'bg-transparent'
-          }`}
-        >
-          <Text
-            className={`text-sm font-semibold ${
-              activeTab === 'active' ? 'text-white' : 'text-slate-400'
+      {/* Status filter tabs — horizontally scrollable */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="mb-3"
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+      >
+        {STATUS_TABS.map((tab) => (
+          <Pressable
+            key={tab.key}
+            onPress={() => setActiveTab(tab.key)}
+            className={`rounded-full px-4 py-2 ${
+              activeTab === tab.key
+                ? 'bg-sky-600'
+                : 'bg-slate-800 border border-slate-700'
             }`}
           >
-            Active
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setActiveTab('history')}
-          className={`flex-1 rounded-md py-2 items-center ${
-            activeTab === 'history' ? 'bg-sky-600' : 'bg-transparent'
-          }`}
-        >
-          <Text
-            className={`text-sm font-semibold ${
-              activeTab === 'history' ? 'text-white' : 'text-slate-400'
-            }`}
-          >
-            History
-          </Text>
-        </Pressable>
-      </View>
+            <Text
+              className={`text-sm font-semibold ${
+                activeTab === tab.key ? 'text-white' : 'text-slate-400'
+              }`}
+            >
+              {tab.label}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
       {/* Content */}
       {isLoading ? (
@@ -179,20 +209,34 @@ export default function OwnerLoadsScreen() {
             showsVerticalScrollIndicator={false}
             refreshing={isRefetching}
             onRefresh={onRefresh}
+            estimatedItemSize={120}
+            contentContainerStyle={{ paddingBottom: 80 }}
             ListEmptyComponent={
               <EmptyState
                 icon={<Truck color="#475569" size={40} />}
-                title={activeTab === 'active' ? 'No active loads' : 'No completed loads'}
-                subtitle={
-                  activeTab === 'active'
-                    ? 'No loads in progress for your fleet.'
-                    : 'Completed loads will appear here.'
-                }
+                title={emptyTitle}
+                subtitle={emptySubtitle}
               />
             }
           />
         </View>
       )}
+
+      {/* FAB — create load */}
+      <Pressable
+        onPress={() => setCreateSheetVisible(true)}
+        className="absolute bottom-6 right-6 w-14 h-14 bg-sky-600 rounded-full items-center justify-center shadow-lg active:opacity-80 active:scale-95"
+        style={{ elevation: 4 }}
+      >
+        <Plus color="white" size={26} />
+      </Pressable>
+
+      {/* Create load bottom sheet */}
+      <CreateLoadSheet
+        visible={createSheetVisible}
+        onClose={() => setCreateSheetVisible(false)}
+        onCreated={handleLoadCreated}
+      />
     </SafeAreaView>
   )
 }
