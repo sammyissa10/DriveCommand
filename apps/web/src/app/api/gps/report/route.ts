@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
+import { validateMobileToken } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { checkGeofenceAndAlert } from '@/lib/geofencing/geofence-check';
 
@@ -9,11 +10,16 @@ import { checkGeofenceAndAlert } from '@/lib/geofencing/geofence-check';
  * Accepts GPS coordinates from authenticated drivers and writes
  * GPSLocation records. The driver's truckId is resolved from their
  * active route (PLANNED or IN_PROGRESS).
+ *
+ * Supports dual authentication:
+ *   - Mobile app: Authorization: Bearer <token>
+ *   - Web app: cookie-based session via getSession()
  */
 export async function POST(req: NextRequest) {
   try {
-    // 1. Authenticate
-    const session = await getSession();
+    // 1. Authenticate — try mobile Bearer token first, fall back to cookie session
+    const mobileAuth = await validateMobileToken(req);
+    const session = mobileAuth ?? (await getSession());
     if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
@@ -22,6 +28,9 @@ export async function POST(req: NextRequest) {
     if (session.role !== 'DRIVER') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
+    // Normalize auth fields — both MobileAuthContext and SessionPayload expose userId/tenantId/role
+    const { userId, tenantId } = session;
 
     // 3. Parse and validate body
     const body = await req.json();
@@ -66,8 +75,8 @@ export async function POST(req: NextRequest) {
 
       const load = await tx.load.findFirst({
         where: {
-          driverId: session.userId,
-          tenantId: session.tenantId,
+          driverId: userId,
+          tenantId: tenantId,
           status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
           truckId: { not: null },
           archivedAt: null,
@@ -79,8 +88,8 @@ export async function POST(req: NextRequest) {
 
       const route = await tx.route.findFirst({
         where: {
-          driverId: session.userId,
-          tenantId: session.tenantId,
+          driverId: userId,
+          tenantId: tenantId,
           status: { in: ['PLANNED', 'IN_PROGRESS'] },
         },
         select: { truckId: true },
@@ -97,7 +106,7 @@ export async function POST(req: NextRequest) {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       await tx.gPSLocation.create({
         data: {
-          tenantId: session.tenantId,
+          tenantId: tenantId,
           truckId,
           latitude,
           longitude,
@@ -112,8 +121,8 @@ export async function POST(req: NextRequest) {
 
     // 7. Fire geofence check — fire-and-forget, never blocks GPS response
     checkGeofenceAndAlert({
-      tenantId: session.tenantId,
-      driverId: session.userId,
+      tenantId: tenantId,
+      driverId: userId,
       truckId,
       latitude,
       longitude,
