@@ -13,8 +13,13 @@ import {
 import { MessageSquare, Send } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useFocusEffect } from 'expo-router'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type FleetMessage } from '@drivecommand/api-client'
+import { kvStorage } from '../../lib/storage'
+
+const POLL_INTERVAL_MS = 30_000
+const LAST_READ_KEY = 'messages_last_read_at'
 
 function formatTime(iso: string): string {
   const date = new Date(iso)
@@ -73,6 +78,15 @@ export default function DriverMessages() {
   const [sending, setSending] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
   const flatListRef = useRef<FlatList<FleetMessage>>(null)
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const markAllRead = useCallback(async () => {
+    if (!token) return
+    // Store current timestamp as last-read in MMKV
+    kvStorage.setString(LAST_READ_KEY, new Date().toISOString())
+    // Best-effort server acknowledgement
+    driverApi.markMessagesRead(token).catch(() => { /* ignore */ })
+  }, [token])
 
   const fetchMessages = useCallback(
     async (showLoading = false) => {
@@ -92,9 +106,28 @@ export default function DriverMessages() {
     [token]
   )
 
+  // Initial fetch
   useEffect(() => {
     fetchMessages(true)
   }, [fetchMessages])
+
+  // Poll every 30s for new messages
+  useEffect(() => {
+    pollTimerRef.current = setInterval(() => {
+      fetchMessages(false)
+    }, POLL_INTERVAL_MS)
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current)
+    }
+  }, [fetchMessages])
+
+  // Mark all as read when screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      markAllRead()
+    }, [markAllRead])
+  )
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -135,7 +168,7 @@ export default function DriverMessages() {
   const isEmpty = messages.length === 0
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       {/* Header */}
       <View className="px-4 pt-4 pb-3">
         <Text className="text-2xl font-bold text-white">Messages</Text>
