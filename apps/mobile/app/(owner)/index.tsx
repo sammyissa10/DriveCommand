@@ -16,7 +16,7 @@ import {
   DollarSign,
   Package,
   Truck,
-  Users,
+  UserCheck,
 } from 'lucide-react-native'
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -145,6 +145,10 @@ export default function OwnerDashboard() {
 
   const { kpis, activeLoads, driverStatuses } = data!
 
+  const availableDriversCount = driverStatuses.filter(
+    d => d.activeLoadNumber === null && (d.hosStatus === 'OFF_DUTY' || d.hosStatus === 'SLEEPER_BERTH' || d.hosStatus === null)
+  ).length
+
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -176,9 +180,9 @@ export default function OwnerDashboard() {
             onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
           />
           <KPICard
-            label="On Duty"
-            value={kpis.driversOnDutyCount}
-            icon={<Users color="#475569" size={18} />}
+            label="Available"
+            value={availableDriversCount}
+            icon={<UserCheck color="#475569" size={18} />}
             onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
           />
         </View>
@@ -187,11 +191,13 @@ export default function OwnerDashboard() {
             label="Revenue (MTD)"
             value={formatRevenue(kpis.revenueThisMonth)}
             icon={<DollarSign color="#475569" size={18} />}
+            onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
           />
           <KPICard
             label="Open Alerts"
             value={kpis.openAlertsCount}
             icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={18} />}
+            onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
           />
         </View>
 
