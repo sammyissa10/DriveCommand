@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 03 (next)
-Status: Phase 37 Plan 02 complete — Reanimated FadeIn on all 15 screens, spring BottomSheet, haptics on all 10 tabs + key actions, dark/light ScreenWrapper, Android ripple on all Pressables, KAV fixes on fleet+HOS modal, React.memo on list components.
-Last activity: 2026-03-25 - Completed Phase 37 Plan 02: Animations, Haptics, and Dark Mode
-Stopped at: Completed 37-02-PLAN.md
+Current Plan: Phase 37 Plan 04 (next)
+Status: Phase 37 Plan 03 complete — Tab labels on both driver+owner tab bars (height 64→72px), LoadCard 80→96px, AppHeader avatar 34→40px, login button blue-600→sky-500, owner loads pill tap targets py-2→py-3.
+Last activity: 2026-03-25 - Completed Phase 37 Plan 03: Thumb-Friendliness & Navigation Clarity
+Stopped at: Completed 37-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -80,6 +80,7 @@ Progress: [███████████████████████
 - Phase 36-02b (2026-03-25): Fleet messaging UI — RecipientSelector bottom sheet (All Drivers broadcast + individual driver list), fleet.tsx compose/history toggle (char counter, loading send, pre-select from driverId param, pull-to-refresh history) — 2 tasks, 2 files, 151s
 - Phase 37-01 (2026-03-25): Touch targets + FlashList audit + skeleton loaders — 48px touch targets enforced on 5 elements, FlatList→FlashList in messages+fleet, Skeleton base component + 5 skeleton variants, spinners→skeletons on 11 screens — 6 tasks, 20 files, 439s
 - Phase 37-02 (2026-03-25): Animations, haptics, dark mode — AnimatedScreen FadeIn on 15 screens, spring BottomSheet, haptics.ts with 14 trigger points, dark/light ScreenWrapper, Android ripple on all Pressables, KAV on fleet+HOS modal, React.memo on LoadCard/KPICard/DriverStatusChip — 8 tasks, 25 files, 817s
+- Phase 37-03 (2026-03-25): Thumb-friendliness & navigation clarity — tab labels on both portals (height 72px), LoadCard 96px, avatar 40px, login sky-500, owner pill targets py-3 — 8 tasks, 6 files, ~8min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -128,6 +129,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 37-03 decisions (Thumb-friendliness):**
+- Avatar enlarged to 40x40px (Option A) rather than hitSlop approach — cleaner visually, no invisible tap zones
+- Owner fleet tab icon changed from Radio to MessageSquare — Radio was ambiguous without a label, MessageSquare aligns with the messaging function
+- Driver loads toggle already at py-3 (no change needed); owner loads pills upgraded py-2→py-3 for ≥44px compliance
+- Send button in driver messages already compliant (p-3 + hitSlop) — no change needed
 
 **Phase 36-01 decisions (Owner live map):**
 - Used React Native Modal (built-in) for bottom sheet instead of @gorhom/bottom-sheet — avoids native module dependency; animationType="slide" provides native sheet feel
