@@ -21,6 +21,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { StatusUpdateButton } from '../../../components/driver/StatusUpdateButton'
 import { LoadStatusTimeline } from '../../../components/driver/LoadStatusTimeline'
+import { Skeleton } from '../../../components/ui/Skeleton'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -125,12 +126,22 @@ export default function LoadDetailScreen() {
     }
   }
 
-  // Loading state
+  // Loading state — skeleton
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center" edges={['bottom', 'left', 'right']}>
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading load details...</Text>
+      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+        {/* Header skeleton */}
+        <View className="flex-row items-center px-4 py-3 border-b border-slate-800 gap-3">
+          <Skeleton width={28} height={28} borderRadius={6} />
+          <Skeleton width={160} height={18} />
+          <Skeleton width={64} height={22} borderRadius={10} style={{ marginLeft: 'auto' }} />
+        </View>
+        {/* Content skeleton */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, gap: 12 }}>
+          <Skeleton width="100%" height={48} borderRadius={8} />
+          <Skeleton width="100%" height={180} borderRadius={12} />
+          <Skeleton width="100%" height={120} borderRadius={12} />
+        </View>
       </SafeAreaView>
     )
   }

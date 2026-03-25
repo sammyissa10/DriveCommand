@@ -19,6 +19,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { TruckPickerSheet } from '../../../components/owner/TruckPickerSheet'
 import { BottomSheet } from '../../../components/ui/BottomSheet'
+import { Skeleton } from '../../../components/ui/Skeleton'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -366,15 +367,25 @@ export default function OwnerLoadDetailScreen() {
     refetch()
   }, [refetch])
 
-  // Loading state
+  // Loading state — skeleton
   if (isLoading) {
     return (
-      <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center"
-        edges={['bottom', 'left', 'right']}
-      >
-        <ActivityIndicator size="large" color="#0ea5e9" />
-        <Text className="text-slate-400 mt-3 text-sm">Loading load details...</Text>
+      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+        {/* Header skeleton */}
+        <View
+          className="flex-row items-center px-4 border-b border-slate-800 gap-3"
+          style={{ paddingVertical: 12 }}
+        >
+          <Skeleton width={28} height={28} borderRadius={6} />
+          <Skeleton width={160} height={18} />
+          <Skeleton width={64} height={22} borderRadius={10} style={{ marginLeft: 'auto' }} />
+        </View>
+        {/* Content skeleton */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 16, gap: 12 }}>
+          <Skeleton width="100%" height={56} borderRadius={12} />
+          <Skeleton width="100%" height={200} borderRadius={12} />
+          <Skeleton width="100%" height={100} borderRadius={12} />
+        </View>
       </SafeAreaView>
     )
   }
