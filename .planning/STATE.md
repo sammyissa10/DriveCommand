@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 35 Owner Core Screens — IN PROGRESS
-Current Plan: 35-01 complete — next is 35-02
-Status: 35-01 complete — owner dashboard screen, KPICard + DriverStatusChip components, dashboard REST endpoint with KPI aggregates
-Last activity: 2026-03-24 - Completed Phase 35-01: Owner dashboard
-Stopped at: Phase 35, Plan 01 complete — next is 35-02
+Current Plan: 35-02 complete — next is 35-03
+Status: 35-02 complete — owner loads list (4-tab filter + FAB), CreateLoadSheet, load detail with assign driver/status change/cancel actions, REST endpoints for loads CRUD, customers + drivers/active endpoints
+Last activity: 2026-03-24 - Completed Phase 35-02: Owner loads management
+Stopped at: Phase 35, Plan 02 complete — next is 35-03
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -72,9 +72,11 @@ Progress: [███████████████████████
 - Phase 33-03 (2026-03-23): Offline mutation queue — MMKV offlineQueue, flushQueue (exponential backoff), callOrQueue wrapper, SyncStatusBar (amber/blue/red), useOfflineSync (NetInfo auto-flush on reconnect), StatusUpdateButton offline-wired — 7 tasks, 7 files, 133s
 - Phase 34-01 (2026-03-25): Driver documents screen — 4 REST endpoints (GET list, GET presigned URL, POST upload-url, POST create), DriverDocument types in api-client, FlashList screen with FAB, DocumentDetailSheet (expo-web-browser), DocumentUploadSheet (S3 upload + progress) — 7 tasks, 8 files, ~7min
 - Phase 34-02 (2026-03-25): Driver messaging screen — unread-count + mark-read REST endpoints, getUnreadCount + markMessagesRead in api-client, 30s polling in messages screen, MMKV last-read tracking, unread badge on Messages tab icon, AppState foreground refresh — 6 tasks, 5 files, 237s
+- Phase 35-01 (2026-03-24): Owner dashboard — KPI aggregates REST endpoint, KPICard + DriverStatusChip components, owner dashboard screen with 4 KPI tiles + driver status list — 3 tasks, 6 files, ~4min
+- Phase 35-02 (2026-03-24): Owner loads management — 4-tab filtered loads list (All/Active/Pending/Delivered) + FAB, CreateLoadSheet (customer/driver pickers + date/rate), POST create load, PATCH status/driver/notes, GET customers + GET active drivers endpoints, load detail with assign driver/change status/cancel actions — 6 tasks, 9 files, 317s
 
 **Combined:**
-- Total: 22 phases complete, 54 plans
+- Total: 23 phases complete, 56 plans
 - Total project LOC: 71,500+ TypeScript
 
 **Quick tasks:**
@@ -120,6 +122,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 35-02 decisions (Owner loads management):**
+- 4-tab status filter: `active` = DISPATCHED+PICKED_UP+IN_TRANSIT; `pending` = PENDING only; `delivered` = DELIVERED+INVOICED; `all` = no filter — corrects prior 2-tab (active|history) grouping
+- Load number generation in POST endpoint uses same LD-NNNN pattern as web owner portal — consistent across channels
+- Owner can change load to any status (no sequential restriction) — more permissive than driver flow
+- Nested BottomSheet for customer/driver pickers in CreateLoadSheet — separate Modal overlays to avoid z-index conflicts
+- Cancel confirmation is a distinct sheet from status picker — prevents accidental cancellation
 
 **Phase 34-02 decisions (Driver messaging):**
 - Used MMKV client-side last-read timestamp instead of DB readAt field — avoids schema migration; unread count computed as non-driver messages newer than stored ISO timestamp passed as ?since= query param
