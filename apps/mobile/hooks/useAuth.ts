@@ -1,10 +1,25 @@
 import { useState, useEffect, useCallback } from 'react'
 import { AppState } from 'react-native'
 import { useRouter } from 'expo-router'
-import { apiClient } from '@drivecommand/api-client'
-import { sessionStorage } from '../lib/storage'
+import { supabase } from '../lib/supabase'
+import { signIn, signOut, onAuthStateChange } from '../lib/auth'
 import { registerPushToken } from './usePushNotifications'
-import type { AuthUser } from '@drivecommand/types'
+import type { AuthUser, UserRole } from '@drivecommand/types'
+import type { Session } from '@supabase/supabase-js'
+
+/** Map a Supabase session → the shared AuthUser shape used throughout the app. */
+function toAuthUser(session: Session): AuthUser {
+  const { user } = session
+  const meta = user.user_metadata || {}
+  return {
+    id: user.id,
+    email: user.email!,
+    name: meta.name || meta.full_name || user.email!,
+    role: (meta.role as UserRole) || 'DRIVER',
+    tenantId: meta.tenantId || '',
+    companyName: meta.companyName || '',
+  }
+}
 
 export function useAuth() {
   const [user, setUser] = useState<AuthUser | null>(null)
@@ -12,50 +27,63 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-  // Load session on mount
+  // Load persisted session from SecureStore on mount + subscribe to auth changes.
   useEffect(() => {
-    const session = sessionStorage.get()
-    if (session) {
-      setToken(session.token)
-      setUser(session.user)
-    }
-    setIsLoading(false)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser(toAuthUser(session))
+        setToken(session.access_token)
+      }
+      setIsLoading(false)
+    })
+
+    // Handles: SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, USER_UPDATED
+    const unsubscribe = onAuthStateChange((event, session) => {
+      if (session) {
+        setUser(toAuthUser(session))
+        setToken(session.access_token)
+      } else {
+        setUser(null)
+        setToken(null)
+      }
+      if (event === 'SIGNED_OUT') {
+        router.replace('/login')
+      }
+    })
+
+    return unsubscribe
   }, [])
 
-  // Validate token when app comes to foreground
+  // Pause/resume Supabase token auto-refresh with app foreground state.
+  // This is the recommended React Native pattern — avoids background network calls.
   useEffect(() => {
-    const sub = AppState.addEventListener('change', async (state) => {
-      if (state === 'active' && token) {
-        try {
-          const freshUser = await apiClient.me(token)
-          setUser(freshUser)
-        } catch {
-          // Token invalid or expired — logout
-          logout()
-        }
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        supabase.auth.startAutoRefresh()
+      } else {
+        supabase.auth.stopAutoRefresh()
       }
     })
     return () => sub.remove()
-  }, [token])
-
-  const login = useCallback(async (email: string, password: string) => {
-    const session = await apiClient.login(email, password)
-    sessionStorage.set(session)
-    setToken(session.token)
-    setUser(session.user)
-
-    // Register push token after login — non-blocking, best-effort
-    void registerPushToken(session.token)
-
-    return session.user
   }, [])
 
+  const login = useCallback(async (email: string, password: string): Promise<AuthUser> => {
+    const { session } = await signIn(email, password)
+    if (!session) throw new Error('Sign in failed — no session returned')
+
+    const authUser = toAuthUser(session)
+
+    // Register push token after login — non-blocking, best-effort
+    void registerPushToken(session.access_token)
+
+    return authUser
+  }, [])
+
+  // Typed as () => void to match AuthContextValue — signOut fires async, state
+  // clears via the onAuthStateChange SIGNED_OUT handler above.
   const logout = useCallback(() => {
-    sessionStorage.clear()
-    setToken(null)
-    setUser(null)
-    router.replace('/login')
-  }, [router])
+    void signOut()
+  }, [])
 
   return { user, token, isLoading, login, logout }
 }
