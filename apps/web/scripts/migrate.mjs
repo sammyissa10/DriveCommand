@@ -5,7 +5,8 @@ import pg from 'pg';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
-const url = process.env.DATABASE_URL;
+// Prefer direct connection for migrations (bypasses pooler limitations)
+const url = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 if (!url) {
   console.log('No DATABASE_URL set, skipping migrations');
