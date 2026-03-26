@@ -112,9 +112,9 @@ Output: All auth flows (login, logout, session validation, middleware, mobile to
 
     **2. Add env vars to .env.local** (append, do not overwrite existing):
     ```
-    NEXT_PUBLIC_SUPABASE_URL=https://oqdhberkghtnszrkdvfm.supabase.co
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZGhiZXJrZ2h0bnN6cmtkdmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTY3MzgsImV4cCI6MjA4OTk3MjczOH0.Y4R8ZqOeQCfUVQR-5_sQ_gx3e1tF5hft7xfd_TZOXas
-    SUPABASE_SERVICE_ROLE_KEY=placeholder-user-must-add-real-key
+    NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+    SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
     ```
     Also update .env.example with placeholder versions of these 3 vars.
 
