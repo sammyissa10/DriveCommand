@@ -77,3 +77,7 @@ apps/mobile/android/
 apps/mobile/ios/
 apps/mobile/dist/
 apps/mobile/google-play-key.json
+
+# prevent accidental root-level expo prebuild output
+/android/
+/ios/
