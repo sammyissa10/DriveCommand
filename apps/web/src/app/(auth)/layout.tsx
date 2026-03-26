@@ -11,7 +11,7 @@ export default function AuthLayout({
       style={{ backgroundImage: "url('/login-bg.jpeg')", backgroundSize: "cover", backgroundPosition: "center" }}
     >
       {/* Overlay to ensure form readability */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
       <div className="relative z-10 flex flex-col items-center w-full">
         <div className="mb-6 flex flex-col items-center gap-2">
           <AppLogo size={56} variant="light" className="drop-shadow-md" />
