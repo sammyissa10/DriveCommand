@@ -56,22 +56,12 @@ export async function requireRole(allowedRoles: UserRole[]): Promise<UserRole> {
 
 /**
  * Check if the current user is a system administrator.
+ * Reads from Supabase JWT user_metadata (fast path — no DB call needed).
  * Returns false if not authenticated or not a system admin.
- *
- * This requires a database call, so use sparingly.
- * For most role checks, use getRole() or requireRole() instead.
  */
 export async function isSystemAdmin(): Promise<boolean> {
   const session = await getSession();
-  if (!session) {
-    return false;
-  }
-
-  // $queryRaw bypasses RLS entirely — no set_config dance needed.
-  const rows = await prisma.$queryRaw<{ isSystemAdmin: boolean }[]>`
-    SELECT "isSystemAdmin" FROM "User" WHERE id = ${session.userId}::uuid LIMIT 1
-  `;
-  return rows[0]?.isSystemAdmin ?? false;
+  return session?.isSystemAdmin ?? false;
 }
 
 /**

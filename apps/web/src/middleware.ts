@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { decrypt } from '@/lib/auth/session';
+import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions';
 
 /**
- * Next.js middleware that resolves tenant context from the session cookie
+ * Next.js middleware that resolves tenant context from the Supabase session
  * and injects it as a request header for downstream API routes and server actions.
  *
  * Flow:
@@ -21,6 +21,7 @@ const PUBLIC_PATHS = [
   '/api/auth/login',
   '/api/auth/logout',
   '/api/auth/accept-invitation',
+  '/api/auth/callback',
   '/api/warmup',
   '/api/debug',
   '/api/webhooks',
@@ -67,19 +68,21 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Read session cookie directly from request (not next/headers)
-  const sessionToken = request.cookies.get('session')?.value;
-  const session = await decrypt(sessionToken);
+  // Create Supabase middleware client — also refreshes session cookies
+  const { supabase, response } = await createMiddlewareClient(request);
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Unauthenticated on protected route - redirect to sign-in
-  if (!session) {
+  if (!user) {
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect_url', request.url);
     return NextResponse.redirect(signInUrl);
   }
 
+  const meta = user.user_metadata || {};
+
   // User is authenticated but has no tenant assigned
-  if (!session.tenantId) {
+  if (!meta.tenantId) {
     const isOnboardingPath = pathname.startsWith('/onboarding');
     const isApiPath = pathname.startsWith('/api');
 
@@ -87,12 +90,12 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/onboarding', request.url));
     }
 
-    return NextResponse.next();
+    return response;
   }
 
   // System admin guard: restrict to admin portal paths only
   const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/unauthorized', '/onboarding', '/api'];
-  if (session.isSystemAdmin) {
+  if (meta.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {
       return NextResponse.redirect(new URL('/admin-support', request.url));
@@ -100,32 +103,38 @@ export default async function middleware(request: NextRequest) {
   }
 
   // Driver guard: redirect DRIVER role away from owner-only paths
-  if (session.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
+  if (meta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/my-route', request.url));
   }
 
   // MANAGER permission guard: check granular permissions for gated paths
-  if (session.role === 'MANAGER') {
+  if (meta.role === 'MANAGER') {
     const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
       pathname.startsWith(g.path)
     );
     if (gatedRoute) {
-      const permissions = (session.permissions ?? {}) as UserPermissions;
+      const permissions = (meta.permissions ?? {}) as UserPermissions;
       if (!permissions[gatedRoute.permission]) {
         return NextResponse.redirect(new URL('/unauthorized', request.url));
       }
     }
   }
 
-  // User has tenant - inject tenant ID into request headers
+  // Inject tenant ID into request headers for downstream consumers
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', session.tenantId);
+  requestHeaders.set('x-tenant-id', meta.tenantId);
 
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
+  // Build final response: preserve Supabase session cookies + inject tenant header
+  const finalResponse = NextResponse.next({
+    request: { headers: requestHeaders },
   });
+
+  // Copy Supabase cookie headers from the middleware response
+  response.cookies.getAll().forEach((cookie) => {
+    finalResponse.cookies.set(cookie.name, cookie.value, cookie);
+  });
+
+  return finalResponse;
 }
 
 export const config = {

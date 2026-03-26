@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { setSession } from '@/lib/auth/session';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
   console.warn(
@@ -64,8 +64,8 @@ export async function GET(req: NextRequest) {
  * POST /api/auth/accept-invitation
  *
  * Accepts { invitationId, password } JSON body.
- * Validates the invitation, creates a User with DRIVER role,
- * marks the invitation as ACCEPTED, sets session, and returns redirect URL.
+ * Validates the invitation, creates a Supabase Auth user + Prisma User record,
+ * marks the invitation as ACCEPTED, signs the user in, and returns redirect URL.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -119,35 +119,66 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 12);
-
-    // Create user and update invitation in a single transaction
-    const user = await prisma.$transaction(async (tx) => {
+    // Check for existing user with same email in the tenant
+    const existingUser = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
-      // Check for existing user with same email in the tenant
-      const existingUser = await tx.user.findFirst({
+      return tx.user.findFirst({
         where: {
           email: invitation.email.toLowerCase().trim(),
           tenantId: invitation.tenantId,
         },
       });
+    }, TX_OPTIONS);
 
-      if (existingUser) {
-        throw new Error('EMAIL_CONFLICT');
-      }
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists. Please sign in instead.' },
+        { status: 409 }
+      );
+    }
+
+    const userRole = invitation.role || 'DRIVER';
+    const userEmail = invitation.email.toLowerCase().trim();
+
+    // Create Supabase Auth user (admin client — sets email_confirm: true for immediate sign-in)
+    const admin = createAdminClient();
+    const { data: authData, error: authError } = await admin.auth.admin.createUser({
+      email: userEmail,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        role: userRole,
+        tenantId: invitation.tenantId,
+        firstName: invitation.firstName,
+        lastName: invitation.lastName,
+        isSystemAdmin: false,
+        permissions: userRole === 'MANAGER' ? (invitation.permissions ?? null) : null,
+      },
+    });
+
+    if (authError || !authData.user) {
+      console.error('Supabase Auth user creation failed:', authError);
+      return NextResponse.json(
+        { error: 'An error occurred while creating your account. Please try again.' },
+        { status: 500 }
+      );
+    }
+
+    // Create Prisma User record using the Supabase Auth user ID
+    const user = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const newUser = await tx.user.create({
         data: {
+          id: authData.user.id, // Use Supabase Auth UUID
           tenantId: invitation.tenantId,
-          email: invitation.email.toLowerCase().trim(),
-          passwordHash,
-          role: invitation.role || 'DRIVER',
+          email: userEmail,
+          passwordHash: '', // Password managed by Supabase Auth
+          role: userRole,
           firstName: invitation.firstName,
           lastName: invitation.lastName,
-          licenseNumber: invitation.role === 'DRIVER' ? invitation.licenseNumber : null,
-          permissions: invitation.role === 'MANAGER' ? (invitation.permissions ?? undefined) : undefined,
+          licenseNumber: userRole === 'DRIVER' ? invitation.licenseNumber : null,
+          permissions: userRole === 'MANAGER' ? (invitation.permissions ?? undefined) : undefined,
           isActive: true,
         },
       });
@@ -164,15 +195,9 @@ export async function POST(req: NextRequest) {
       return newUser;
     }, TX_OPTIONS);
 
-    // Set session for the new driver
-    await setSession({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      tenantId: user.tenantId,
-      firstName: user.firstName ?? undefined,
-      lastName: user.lastName ?? undefined,
-    });
+    // Sign the user in — Supabase sets session cookies via @supabase/ssr
+    const supabase = await createSupabaseServerClient();
+    await supabase.auth.signInWithPassword({ email: userEmail, password });
 
     const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/dashboard' : '/my-route';
 
@@ -181,13 +206,6 @@ export async function POST(req: NextRequest) {
       redirectUrl,
     });
   } catch (error: any) {
-    if (error?.message === 'EMAIL_CONFLICT') {
-      return NextResponse.json(
-        { error: 'An account with this email already exists. Please sign in instead.' },
-        { status: 409 }
-      );
-    }
-
     console.error('Accept invitation error:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating your account. Please try again.' },

@@ -2,13 +2,16 @@
  * Mobile Bearer token validator.
  *
  * Shared utility used by all /api/mobile/* route handlers.
- * Validates the AES-256-GCM Bearer token issued by /api/auth/login
- * and returns the authenticated user context.
+ * Validates the Supabase access_token issued by /api/auth/login
+ * and returns the authenticated user context (from user_metadata — no DB lookup).
+ *
+ * Note: user.isActive is no longer checked on every request. Supabase handles
+ * session validity. To deactivate a user, call supabase.auth.admin.updateUserById
+ * with { banned: true } in addition to setting isActive=false in the User table.
  */
 
 import { NextResponse } from 'next/server';
-import { decrypt } from '@/lib/auth/session';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type { UserRole } from '../../generated/prisma';
 
 export interface MobileAuthContext {
@@ -22,8 +25,7 @@ export interface MobileAuthContext {
 /**
  * Validate the Authorization: Bearer <token> header from a mobile request.
  *
- * Returns the authenticated user context or null if the token is missing,
- * invalid, or the user is inactive.
+ * Returns the authenticated user context or null if the token is missing or invalid.
  *
  * Usage:
  *   const auth = await validateMobileToken(req);
@@ -35,29 +37,20 @@ export async function validateMobileToken(req: Request): Promise<MobileAuthConte
 
   if (!token) return null;
 
-  const session = await decrypt(token);
-  if (!session) return null;
-
   try {
-    // Verify user is still active in DB (prevents revoked accounts from continuing)
-    const user = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.user.findUnique({
-        where: { id: session.userId },
-        select: { id: true, tenantId: true, role: true, isActive: true },
-      });
-    }, TX_OPTIONS);
+    const admin = createAdminClient();
+    const { data: { user }, error } = await admin.auth.getUser(token);
+    if (error || !user) return null;
 
-    if (!user || !user.isActive) return null;
-
+    const meta = user.user_metadata || {};
     const ctx: MobileAuthContext = {
       userId: user.id,
-      tenantId: user.tenantId,
-      role: user.role,
+      tenantId: meta.tenantId,
+      role: meta.role as UserRole,
     };
 
     // For DRIVER role, driverId is the same as userId (drivers are User records)
-    if (user.role === 'DRIVER') {
+    if (meta.role === 'DRIVER') {
       ctx.driverId = user.id;
     }
 

@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { setSession, encrypt } from '@/lib/auth/session';
-import { getPermissions } from '@/lib/auth/permissions';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * POST /api/auth/login
  *
  * Accepts { email, password } JSON body.
- * Looks up user by email (bypassing RLS), verifies bcrypt password hash.
- * On success, sets an encrypted session cookie and returns redirect URL.
+ * Authenticates via Supabase Auth (signInWithPassword).
+ * Session cookie is set automatically by @supabase/ssr.
+ * Returns redirect URL and Supabase access_token for mobile app.
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, password } = body as { email?: string; password?: string };
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -23,73 +20,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Look up user by email (with tenant), bypassing RLS
-    const user = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.user.findFirst({
-        where: {
-          email: email.toLowerCase().trim(),
-          isActive: true,
-        },
-        include: { tenant: { select: { name: true } } },
-      });
-    }, TX_OPTIONS);
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.toLowerCase().trim(),
+      password,
+    });
 
-    if (!user || !user.passwordHash) {
+    if (error || !data.user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Verify password
-    const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
-      );
-    }
-
-    // Compute permissions based on role and stored permissions field
-    const permissions = getPermissions({ role: user.role, permissions: user.permissions });
-
-    const sessionPayload = {
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      tenantId: user.tenantId,
-      firstName: user.firstName ?? undefined,
-      lastName: user.lastName ?? undefined,
-      isSystemAdmin: user.isSystemAdmin,
-      permissions,
-    };
-
-    // Set encrypted session cookie (for web app)
-    await setSession(sessionPayload);
-
-    // Also generate a token for the mobile app (same encrypted payload)
-    const token = await encrypt(sessionPayload);
-
-    const name = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email;
-    const companyName = user.tenant.name;
+    const meta = data.user.user_metadata || {};
+    const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || data.user.email;
 
     let redirectUrl = '/dashboard';
-    if (user.isSystemAdmin) redirectUrl = '/admin-dashboard';
-    else if (user.role === 'DRIVER') redirectUrl = '/my-route';
+    if (meta.isSystemAdmin) redirectUrl = '/admin-dashboard';
+    else if (meta.role === 'DRIVER') redirectUrl = '/my-route';
 
     return NextResponse.json({
       success: true,
       redirectUrl,
-      // Mobile app reads these fields:
-      token,
+      // Mobile app reads these:
+      token: data.session?.access_token,
+      refreshToken: data.session?.refresh_token,
       user: {
-        id: user.id,
-        email: user.email,
+        id: data.user.id,
+        email: data.user.email,
         name,
-        role: user.role,
-        tenantId: user.tenantId,
-        companyName,
+        role: meta.role,
+        tenantId: meta.tenantId,
+        companyName: meta.companyName || '',
       },
     });
   } catch (error) {
