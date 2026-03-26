@@ -1,3 +1,6 @@
+import { setDefaultResultOrder } from 'dns';
+setDefaultResultOrder('ipv4first');
+
 import pg from 'pg';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
