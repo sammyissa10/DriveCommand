@@ -23,7 +23,6 @@ const PUBLIC_PATHS = [
   '/api/auth/accept-invitation',
   '/api/auth/callback',
   '/api/warmup',
-  '/api/debug',
   '/api/webhooks',
   '/track',
   '/_next/static',
@@ -72,8 +71,13 @@ export default async function middleware(request: NextRequest) {
   const { supabase, response } = await createMiddlewareClient(request);
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Unauthenticated on protected route - redirect to sign-in
+  // Unauthenticated on protected route
   if (!user) {
+    // API routes handle their own auth (mobile uses Bearer tokens, not cookies).
+    // Pass through so the route handler can validate Authorization header itself.
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.next();
+    }
     const signInUrl = new URL('/sign-in', request.url);
     signInUrl.searchParams.set('redirect_url', request.url);
     return NextResponse.redirect(signInUrl);
