@@ -420,4 +420,10 @@ export const ownerApi = {
 
   getCompliance: (token: string) =>
     apiRequest<ComplianceResponse>('/api/mobile/owner/compliance', { token }),
+
+  inviteDriver: (token: string, payload: { firstName: string; lastName: string; email: string; licenseNumber?: string }) =>
+    apiRequest<{ success: boolean; invitationId: string; emailSent: boolean; message: string }>(
+      '/api/mobile/owner/drivers/invite',
+      { method: 'POST', token, body: JSON.stringify(payload) }
+    ),
 }
