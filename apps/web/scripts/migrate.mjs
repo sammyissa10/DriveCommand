@@ -80,8 +80,13 @@ try {
 
   console.log(ranCount > 0 ? `Migrations complete (${ranCount} applied)` : 'Database up to date');
 } catch (e) {
+  const isConnectError = e.code === 'ENETUNREACH' || e.code === 'ECONNREFUSED' || e.code === 'ETIMEDOUT' || e.message?.includes('connect');
+  if (isConnectError) {
+    console.warn('Migration skipped: could not reach database at build time. Assuming migrations are already applied.');
+    process.exit(0);
+  }
   console.error('Migration error:', e.message);
   process.exit(1);
 } finally {
-  await client.end();
+  await client.end().catch(() => {});
 }
