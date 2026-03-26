@@ -7,9 +7,9 @@ import { UserRole } from '@/lib/auth/roles';
 import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';
 
 /**
- * Get messages for the current driver's active route.
- * Returns all FleetMessages (from both driver and owner) for the route,
- * ordered chronologically.
+ * Get messages for the current driver.
+ * Returns all FleetMessages the driver is involved in — across loads, routes, and unscoped.
+ * Ordered chronologically. Never blocks on route/load assignment.
  */
 export async function getDriverMessages() {
   await requireRole([UserRole.DRIVER]);
@@ -19,19 +19,31 @@ export async function getDriverMessages() {
 
   const prisma = await getTenantPrisma();
 
-  // Find the driver's active route
-  const route = await prisma.route.findFirst({
-    where: {
-      driverId: user.id,
-      status: { in: ['PLANNED', 'IN_PROGRESS'] },
-    },
+  // Collect all load IDs assigned to this driver
+  const driverLoads = await prisma.load.findMany({
+    where: { driverId: user.id },
     select: { id: true },
   });
+  const loadIds = driverLoads.map((l) => l.id);
 
-  if (!route) return [];
+  // Collect all route IDs assigned to this driver (legacy route-scoped messages)
+  const driverRoutes = await prisma.route.findMany({
+    where: { driverId: user.id },
+    select: { id: true },
+  });
+  const routeIds = driverRoutes.map((r) => r.id);
 
   const messages = await prisma.fleetMessage.findMany({
-    where: { routeId: route.id },
+    where: {
+      OR: [
+        // Messages on loads assigned to this driver
+        ...(loadIds.length > 0 ? [{ loadId: { in: loadIds } }] : []),
+        // Legacy unscoped messages sent by this driver
+        { loadId: null, routeId: null, senderId: user.id },
+        // Legacy route-scoped messages for this driver
+        ...(routeIds.length > 0 ? [{ routeId: { in: routeIds } }] : []),
+      ],
+    },
     orderBy: { createdAt: 'asc' },
   });
 
@@ -40,7 +52,7 @@ export async function getDriverMessages() {
 
 /**
  * Send a message from the driver to dispatch.
- * Persists to FleetMessage table scoped to the driver's active route.
+ * Not scoped to any route or load — any authenticated driver can send at any time.
  */
 export async function sendDriverMessage(prevState: any, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
@@ -57,25 +69,9 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
 
   const prisma = await getTenantPrisma();
 
-  // Find the driver's active route
-  const route = await prisma.route.findFirst({
-    where: {
-      driverId: user.id,
-      status: { in: ['PLANNED', 'IN_PROGRESS'] },
-    },
-    select: { id: true, name: true },
-  });
-
-  if (!route) {
-    return {
-      error: 'No active route found. You must have an assigned route to send messages.',
-    };
-  }
-
   await prisma.fleetMessage.create({
     data: {
       tenantId: user.tenantId,
-      routeId: route.id,
       senderId: user.id,
       senderRole: 'DRIVER',
       body: message.trim(),
@@ -88,7 +84,7 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
       driverName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
       messageBody: message.trim(),
       tenantId: user.tenantId,
-      routeName: route.name ?? undefined,
+      routeName: undefined,
     });
   } catch (emailError) {
     console.error('[sendDriverMessage] owner notification email failed:', emailError);

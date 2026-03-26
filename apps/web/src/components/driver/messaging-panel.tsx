@@ -7,7 +7,8 @@ import { sendDriverMessage, getDriverMessages } from '@/app/(driver)/actions/dri
 type FleetMessage = {
   id: string;
   tenantId: string;
-  routeId: string;
+  routeId?: string | null;
+  loadId?: string | null;
   senderId: string;
   senderRole: string;
   body: string;
