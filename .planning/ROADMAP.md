@@ -383,6 +383,17 @@ Plans:
 
 ---
 
+### Phase 41: Supabase Auth Migration — Replace custom bcrypt/JWT session system with Supabase Auth
+
+**Goal:** Migrate all authentication from the current custom bcrypt password hashing + AES-256-GCM encrypted cookie session system to Supabase Auth. Web login/logout/session, mobile Bearer token auth, driver/owner invitation flows, and password management all move to Supabase Auth. The existing User table and multi-tenant RLS structure is preserved — Supabase Auth users are linked to the existing User records via the auth.users UUID. Both web and mobile apps are updated to use Supabase Auth tokens.
+**Depends on:** Supabase project active (oqdhberkghtnszrkdvfm), Phase 30 (mobile auth exists)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
 ## v6.0 Owner Portal Permissions
 
 ### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
