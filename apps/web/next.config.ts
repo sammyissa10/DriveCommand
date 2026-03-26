@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -21,4 +22,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "onesquad-drivecommand",
+  project: "drivecommand-web",
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  disableLogger: true,
+});

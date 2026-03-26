@@ -4,15 +4,21 @@ import * as Notifications from 'expo-notifications'
 import { useFonts, Poppins_600SemiBold, Poppins_800ExtraBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect } from 'react'
-import { AuthProvider } from '../context/AuthContext'
+import { AuthProvider, useAuthContext } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler, configureApiClient } from '@drivecommand/api-client'
+import * as Sentry from '@sentry/react-native'
+import Toast from 'react-native-toast-message'
+import '../global.css'
+
+Sentry.init({
+  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+  tracesSampleRate: 0.1,
+  enabled: !__DEV__,
+})
 
 // Configure API URL for mobile — Android emulator uses 10.0.2.2 to reach host machine
 configureApiClient({ baseUrl: process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000' })
-import { useAuthContext } from '../context/AuthContext'
-import Toast from 'react-native-toast-message'
-import '../global.css'
 
 // Show notifications even when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -60,7 +66,7 @@ function AuthGuard() {
   return <Slot />
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     'Poppins-SemiBold': Poppins_600SemiBold,
     'Poppins-ExtraBold': Poppins_800ExtraBold,
@@ -91,3 +97,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   )
 }
+
+export default Sentry.wrap(RootLayout)
