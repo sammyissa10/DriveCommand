@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  ci:
+    name: Typecheck & Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # TypeScript — check all apps and packages from the root tsconfig
+      - name: TypeScript (apps/web)
+        run: npx tsc --noEmit
+        working-directory: apps/web
+
+      - name: TypeScript (packages/validation)
+        run: npx tsc --noEmit
+        working-directory: packages/validation
+
+      # Unit tests
+      - name: Vitest
+        run: npx vitest run
+        working-directory: apps/web
+        env:
+          # Vitest needs a DATABASE_URL even if tests are mocked; use a dummy value
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
