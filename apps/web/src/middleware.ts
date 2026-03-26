@@ -22,6 +22,7 @@ const PUBLIC_PATHS = [
   '/api/auth/logout',
   '/api/auth/accept-invitation',
   '/api/warmup',
+  '/api/debug',
   '/api/webhooks',
   '/track',
   '/_next/static',
