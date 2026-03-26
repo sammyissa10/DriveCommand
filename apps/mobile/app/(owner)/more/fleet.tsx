@@ -1,27 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   RefreshControl,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { useLocalSearchParams } from 'expo-router'
+import { useFocusEffect, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Megaphone, Send, User, X } from 'lucide-react-native'
+import { ChevronLeft, Megaphone, MessageSquare, PenSquare, Send } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import {
   ownerApi,
+  type ConversationMessage,
+  type ConversationSummary,
   type DriverOption,
-  type FleetMessageSummary,
 } from '@drivecommand/api-client'
 import RecipientSelector, {
   type RecipientOption,
@@ -34,7 +33,11 @@ import { MessageSkeleton } from '../../../components/skeletons/MessageSkeleton'
 // Types
 // ---------------------------------------------------------------------------
 
-type TabKey = 'compose' | 'history'
+interface ActiveConversation {
+  recipientId: string
+  recipientName: string
+  isBroadcast: boolean
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -44,51 +47,98 @@ function timeAgo(isoString: string): string {
   const diffMs = Date.now() - new Date(isoString).getTime()
   if (diffMs < 60_000) return 'just now'
   const diffMin = Math.floor(diffMs / 60_000)
-  if (diffMin < 60) return `${diffMin} min ago`
+  if (diffMin < 60) return `${diffMin}m`
   const diffHr = Math.floor(diffMin / 60)
-  if (diffHr < 24) return `${diffHr}h ago`
-  return `${Math.floor(diffHr / 24)}d ago`
+  if (diffHr < 24) return `${diffHr}h`
+  const diffDay = Math.floor(diffHr / 24)
+  if (diffDay < 7) return `${diffDay}d`
+  return new Date(isoString).toLocaleDateString([], { month: 'short', day: 'numeric' })
 }
 
-const MAX_LENGTH = 500
-const WARN_THRESHOLD = 450
+function formatTime(isoString: string): string {
+  return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(' ')
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  return name.slice(0, 2).toUpperCase()
+}
 
 // ---------------------------------------------------------------------------
-// MessageHistoryRow
+// ConversationRow
 // ---------------------------------------------------------------------------
 
-interface MessageHistoryRowProps {
-  message: FleetMessageSummary
+interface ConversationRowProps {
+  conversation: ConversationSummary
   onPress: () => void
 }
 
-function MessageHistoryRow({ message, onPress }: MessageHistoryRowProps) {
-  const preview =
-    message.body.length > 80
-      ? message.body.slice(0, 80) + '…'
-      : message.body
+function ConversationRow({ conversation, onPress }: ConversationRowProps) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.75}
+      className="flex-row items-center px-4 py-3 border-b border-slate-800"
+    >
+      {/* Avatar */}
+      <View
+        className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
+          conversation.isBroadcast ? 'bg-sky-600' : 'bg-slate-700'
+        }`}
+      >
+        {conversation.isBroadcast ? (
+          <Megaphone size={18} color="#ffffff" />
+        ) : (
+          <Text className="text-white text-xs font-bold">
+            {getInitials(conversation.recipientName)}
+          </Text>
+        )}
+      </View>
+
+      {/* Content */}
+      <View className="flex-1 min-w-0">
+        <Text className="text-sm font-semibold text-white" numberOfLines={1}>
+          {conversation.recipientName}
+        </Text>
+        <Text className="text-xs text-slate-400 mt-0.5" numberOfLines={1}>
+          {conversation.lastMessage}
+        </Text>
+      </View>
+
+      {/* Timestamp */}
+      <Text className="text-xs text-slate-500 ml-2 flex-shrink-0">
+        {timeAgo(conversation.lastMessageAt)}
+      </Text>
+    </TouchableOpacity>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// MessageBubble
+// ---------------------------------------------------------------------------
+
+interface MessageBubbleProps {
+  message: ConversationMessage
+}
+
+function MessageBubble({ message }: MessageBubbleProps) {
+  const isOwner = message.senderRole.toUpperCase() === 'OWNER'
 
   return (
-    <TouchableOpacity style={styles.historyRow} onPress={onPress} activeOpacity={0.75}>
-      <View style={styles.historyRowLeft}>
-        <View style={styles.historyIconWrap}>
-          {message.isBroadcast ? (
-            <Megaphone size={16} color="#38bdf8" />
-          ) : (
-            <User size={16} color="#94a3b8" />
-          )}
-        </View>
-        <View style={styles.historyRowContent}>
-          <Text style={styles.historyRecipient} numberOfLines={1}>
-            {message.recipientName}
-          </Text>
-          <Text style={styles.historyPreview} numberOfLines={2}>
-            {preview}
-          </Text>
-        </View>
+    <View className={`mb-3 px-4 ${isOwner ? 'items-end' : 'items-start'}`}>
+      <Text className="text-xs text-slate-400 mb-1">{message.senderName}</Text>
+      <View
+        className={`max-w-[80%] px-4 py-3 ${
+          isOwner
+            ? 'bg-sky-600 rounded-2xl rounded-br-sm'
+            : 'bg-slate-700 rounded-2xl rounded-bl-sm'
+        }`}
+      >
+        <Text className="text-white text-sm leading-5">{message.body}</Text>
       </View>
-      <Text style={styles.historyTime}>{timeAgo(message.createdAt)}</Text>
-    </TouchableOpacity>
+      <Text className="text-xs text-slate-500 mt-1">{formatTime(message.createdAt)}</Text>
+    </View>
   )
 }
 
@@ -101,15 +151,36 @@ export default function OwnerFleetScreen() {
   const queryClient = useQueryClient()
   const { driverId } = useLocalSearchParams<{ driverId?: string }>()
 
-  const [activeTab, setActiveTab] = useState<TabKey>('compose')
-  const [recipient, setRecipient] = useState<RecipientOption | null>(null)
-  const [body, setBody] = useState('')
+  const [activeConversation, setActiveConversation] = useState<ActiveConversation | null>(null)
   const [selectorVisible, setSelectorVisible] = useState(false)
+  const [inputText, setInputText] = useState('')
+  const [threadMessages, setThreadMessages] = useState<ConversationMessage[]>([])
 
-  // Pre-select driver from navigation params
+  const flatListRef = useRef<FlashList<ConversationMessage>>(null)
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const didPreSelect = useRef(false)
 
-  // Fetch active drivers (for RecipientSelector)
+  // ---------------------------------------------------------------------------
+  // Conversation list query
+  // ---------------------------------------------------------------------------
+
+  const {
+    data: conversationsData,
+    isLoading: convsLoading,
+    refetch: refetchConvs,
+    isRefetching: convsRefetching,
+  } = useQuery({
+    queryKey: ['fleet-conversations'],
+    queryFn: () => ownerApi.getFleetConversations(token!),
+    enabled: !!token,
+  })
+
+  const conversations: ConversationSummary[] = conversationsData?.conversations ?? []
+
+  // ---------------------------------------------------------------------------
+  // Active drivers (for RecipientSelector + driverId pre-select)
+  // ---------------------------------------------------------------------------
+
   const { data: driversData, isLoading: driversLoading } = useQuery({
     queryKey: ['active-drivers'],
     queryFn: () => ownerApi.getActiveDrivers(token!),
@@ -125,457 +196,275 @@ export default function OwnerFleetScreen() {
 
     const found = drivers.find((d) => d.id === driverId)
     if (found) {
-      setRecipient({ id: found.id, name: found.name, isBroadcast: false })
-      setActiveTab('compose')
+      setActiveConversation({ recipientId: found.id, recipientName: found.name, isBroadcast: false })
       didPreSelect.current = true
     }
   }, [driverId, drivers])
 
-  // Fetch message history
-  const {
-    data: messagesData,
-    isLoading: messagesLoading,
-    refetch: refetchMessages,
-    isRefetching,
-  } = useQuery({
-    queryKey: ['fleet-messages'],
-    queryFn: () => ownerApi.getFleetMessages(token!),
-    enabled: !!token,
-  })
+  // ---------------------------------------------------------------------------
+  // Thread query (when conversation is open)
+  // ---------------------------------------------------------------------------
 
-  const messages: FleetMessageSummary[] = messagesData?.messages ?? []
+  const fetchThread = useCallback(async () => {
+    if (!token || !activeConversation) return
+    try {
+      const data = await ownerApi.getConversationThread(token, activeConversation.recipientId)
+      setThreadMessages(data.messages)
+    } catch {
+      // Silent background refresh failure
+    }
+  }, [token, activeConversation])
 
+  useFocusEffect(
+    useCallback(() => {
+      if (activeConversation) {
+        fetchThread()
+      }
+    }, [activeConversation, fetchThread])
+  )
+
+  // Initial thread load when conversation opens
+  useEffect(() => {
+    if (activeConversation) {
+      setThreadMessages([])
+      fetchThread()
+    }
+  }, [activeConversation?.recipientId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-scroll to bottom when thread messages change
+  useEffect(() => {
+    if (threadMessages.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true })
+      }, 100)
+    }
+  }, [threadMessages.length])
+
+  // Poll every 15s when in chat view
+  useEffect(() => {
+    if (!activeConversation) {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current)
+        pollTimerRef.current = null
+      }
+      return
+    }
+
+    pollTimerRef.current = setInterval(() => {
+      fetchThread()
+    }, 15_000)
+
+    return () => {
+      if (pollTimerRef.current) {
+        clearInterval(pollTimerRef.current)
+        pollTimerRef.current = null
+      }
+    }
+  }, [activeConversation, fetchThread])
+
+  // ---------------------------------------------------------------------------
   // Send mutation
+  // ---------------------------------------------------------------------------
+
   const { mutate: sendMessage, isPending: isSending } = useMutation({
-    mutationFn: () => {
-      if (!recipient) throw new Error('No recipient selected')
-      return ownerApi.sendFleetMessage(token!, {
-        body,
-        isBroadcast: recipient.isBroadcast || undefined,
-        recipientId: recipient.isBroadcast ? undefined : (recipient.id ?? undefined),
-      })
+    mutationFn: (body: string) => {
+      if (!activeConversation) throw new Error('No active conversation')
+      return ownerApi.sendConversationMessage(token!, activeConversation.recipientId, body)
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       haptic.success()
-      Alert.alert('Message sent!', `Message delivered to ${recipient?.name}.`)
-      setRecipient(null)
-      setBody('')
-      queryClient.invalidateQueries({ queryKey: ['fleet-messages'] })
+      setThreadMessages((prev) => [...prev, data.message])
+      setInputText('')
+      queryClient.invalidateQueries({ queryKey: ['fleet-conversations'] })
     },
-    onError: (err: Error) => {
+    onError: (err: Error, variables) => {
       haptic.error()
+      setInputText(variables)
       Alert.alert('Send failed', err.message ?? 'Could not send message. Try again.')
     },
   })
 
-  const canSend = !!recipient && body.trim().length > 0 && !isSending
-
   function handleSend() {
-    if (!canSend) return
-    sendMessage()
+    const text = inputText.trim()
+    if (!text || isSending) return
+    sendMessage(text)
   }
+
+  // ---------------------------------------------------------------------------
+  // Recipient selector
+  // ---------------------------------------------------------------------------
 
   function handleRecipientSelect(r: RecipientOption) {
-    setRecipient(r)
     setSelectorVisible(false)
+    setActiveConversation({
+      recipientId: r.isBroadcast ? 'broadcast' : (r.id ?? 'broadcast'),
+      recipientName: r.name,
+      isBroadcast: r.isBroadcast,
+    })
   }
 
-  function handleClearRecipient() {
-    setRecipient(null)
-  }
+  // ---------------------------------------------------------------------------
+  // Render: Conversation List
+  // ---------------------------------------------------------------------------
 
-  function handleMessageRowPress(message: FleetMessageSummary) {
-    Alert.alert(
-      message.recipientName,
-      `${message.body}\n\nSent: ${new Date(message.createdAt).toLocaleString()}`,
-      [{ text: 'OK' }]
+  if (!activeConversation) {
+    return (
+      <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
+        <AnimatedScreen>
+          {/* Header */}
+          <View className="flex-row items-center justify-between px-4 pt-3 pb-4">
+            <Text className="text-2xl font-bold text-white">Messages</Text>
+            <TouchableOpacity
+              onPress={() => setSelectorVisible(true)}
+              className="w-9 h-9 items-center justify-center rounded-xl bg-slate-800"
+              hitSlop={8}
+            >
+              <PenSquare size={18} color="#38bdf8" />
+            </TouchableOpacity>
+          </View>
+
+          {/* List */}
+          {convsLoading ? (
+            <View>
+              <MessageSkeleton isDriver={false} />
+              <MessageSkeleton isDriver={false} />
+              <MessageSkeleton isDriver={false} />
+              <MessageSkeleton isDriver={false} />
+            </View>
+          ) : conversations.length === 0 ? (
+            <View className="flex-1 items-center justify-center px-8">
+              <MessageSquare color="#334155" size={52} />
+              <Text className="text-white text-lg font-semibold mt-4 text-center">
+                No conversations yet
+              </Text>
+              <Text className="text-slate-500 text-sm mt-2 text-center">
+                Tap the compose button to start messaging
+              </Text>
+            </View>
+          ) : (
+            <FlashList
+              data={conversations}
+              keyExtractor={(item) =>
+                item.isBroadcast ? 'broadcast' : (item.recipientId ?? 'unknown')
+              }
+              estimatedItemSize={68}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={convsRefetching}
+                  onRefresh={refetchConvs}
+                  tintColor="#38bdf8"
+                  colors={['#38bdf8']}
+                />
+              }
+              renderItem={({ item }) => (
+                <ConversationRow
+                  conversation={item}
+                  onPress={() =>
+                    setActiveConversation({
+                      recipientId: item.isBroadcast ? 'broadcast' : (item.recipientId ?? 'broadcast'),
+                      recipientName: item.recipientName,
+                      isBroadcast: item.isBroadcast,
+                    })
+                  }
+                />
+              )}
+            />
+          )}
+
+          {/* Recipient selector bottom sheet */}
+          <RecipientSelector
+            visible={selectorVisible}
+            onSelect={handleRecipientSelect}
+            onClose={() => setSelectorVisible(false)}
+            drivers={drivers}
+            loading={driversLoading}
+          />
+        </AnimatedScreen>
+      </SafeAreaView>
     )
   }
 
-  const charCount = body.length
-  const charCountColor =
-    charCount >= WARN_THRESHOLD ? '#f97316' : '#64748b'
+  // ---------------------------------------------------------------------------
+  // Render: Chat Detail
+  // ---------------------------------------------------------------------------
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  const canSend = inputText.trim().length > 0 && !isSending
+  const isThreadLoading = threadMessages.length === 0
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
       <AnimatedScreen>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-      <View style={styles.container}>
-        {/* Page header */}
-        <Text style={styles.pageTitle}>Fleet Messages</Text>
-
-        {/* Toggle bar */}
-        <View style={styles.toggleBar}>
-          {(['compose', 'history'] as TabKey[]).map((tab) => (
-            <TouchableOpacity
-              key={tab}
-              style={[
-                styles.toggleBtn,
-                activeTab === tab && styles.toggleBtnActive,
-              ]}
-              onPress={() => setActiveTab(tab)}
-            >
-              <Text
-                style={[
-                  styles.toggleBtnText,
-                  activeTab === tab && styles.toggleBtnTextActive,
-                ]}
-              >
-                {tab === 'compose' ? 'Compose' : 'History'}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        {/* Header bar */}
+        <View className="flex-row items-center bg-slate-900 border-b border-slate-800 py-3 px-4">
+          <Pressable
+            onPress={() => setActiveConversation(null)}
+            className="mr-2 p-1"
+            hitSlop={8}
+          >
+            <ChevronLeft size={24} color="#94a3b8" />
+          </Pressable>
+          <Text className="flex-1 text-lg font-semibold text-white text-center mr-8" numberOfLines={1}>
+            {activeConversation.recipientName}
+          </Text>
         </View>
 
-        {/* Compose panel */}
-        {activeTab === 'compose' && (
-          <View style={styles.composePanel}>
-            {/* Recipient field */}
-            <Text style={styles.fieldLabel}>Recipient</Text>
-            {recipient ? (
-              <View style={styles.recipientChip}>
-                {recipient.isBroadcast ? (
-                  <Megaphone size={14} color="#38bdf8" />
-                ) : (
-                  <User size={14} color="#94a3b8" />
-                )}
-                <Text style={styles.recipientChipText} numberOfLines={1}>
-                  {recipient.name}
-                </Text>
-                <TouchableOpacity onPress={handleClearRecipient} hitSlop={8}>
-                  <X size={14} color="#64748b" />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <Pressable
-                style={styles.recipientPlaceholder}
-                onPress={() => setSelectorVisible(true)}
-              >
-                <Text style={styles.recipientPlaceholderText}>
-                  Select recipient...
-                </Text>
-              </Pressable>
-            )}
-            {!recipient && (
-              <TouchableOpacity
-                style={styles.selectBtn}
-                onPress={() => setSelectorVisible(true)}
-              >
-                <Text style={styles.selectBtnText}>Choose Recipient</Text>
-              </TouchableOpacity>
-            )}
-
-            {/* Message body */}
-            <Text style={[styles.fieldLabel, { marginTop: 20 }]}>Message</Text>
-            <TextInput
-              style={styles.messageInput}
-              value={body}
-              onChangeText={setBody}
-              placeholder="Type your message..."
-              placeholderTextColor="#475569"
-              multiline
-              numberOfLines={4}
-              maxLength={MAX_LENGTH}
-              textAlignVertical="top"
+        <KeyboardAvoidingView
+          className="flex-1"
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          {/* Loading state */}
+          {isThreadLoading ? (
+            <View className="flex-1 pt-2">
+              <MessageSkeleton isDriver={false} />
+              <MessageSkeleton isDriver={true} />
+              <MessageSkeleton isDriver={false} />
+              <MessageSkeleton isDriver={true} />
+            </View>
+          ) : threadMessages.length === 0 ? (
+            <View className="flex-1 items-center justify-center px-8">
+              <MessageSquare color="#334155" size={44} />
+              <Text className="text-slate-500 text-sm mt-3 text-center">
+                No messages yet. Say hello!
+              </Text>
+            </View>
+          ) : (
+            <FlashList
+              ref={flatListRef}
+              data={threadMessages}
+              keyExtractor={(item) => item.id}
+              estimatedItemSize={70}
+              renderItem={({ item }) => <MessageBubble message={item} />}
+              contentContainerStyle={{ paddingTop: 12, paddingBottom: 8 }}
+              onContentSizeChange={() => {
+                flatListRef.current?.scrollToEnd({ animated: false })
+              }}
             />
-            <Text style={[styles.charCounter, { color: charCountColor }]}>
-              {charCount} / {MAX_LENGTH}
-            </Text>
+          )}
 
-            {/* Send button */}
+          {/* Input bar */}
+          <View className="px-4 py-3 border-t border-slate-800 flex-row items-end gap-2">
+            <TextInput
+              className="flex-1 bg-slate-800 text-white rounded-xl px-4 py-3 text-sm"
+              placeholder="Type a message..."
+              placeholderTextColor="#64748b"
+              value={inputText}
+              onChangeText={setInputText}
+              multiline
+              maxLength={500}
+              returnKeyType="default"
+            />
             <TouchableOpacity
-              style={[styles.sendBtn, !canSend && styles.sendBtnDisabled]}
               onPress={handleSend}
               disabled={!canSend}
-              activeOpacity={0.8}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              className={`rounded-xl p-3 ${canSend ? 'bg-sky-500' : 'bg-slate-700'}`}
             >
-              {isSending ? (
-                <ActivityIndicator color="#0f172a" size="small" />
-              ) : (
-                <>
-                  <Send size={16} color={canSend ? '#0f172a' : '#64748b'} />
-                  <Text
-                    style={[
-                      styles.sendBtnText,
-                      !canSend && styles.sendBtnTextDisabled,
-                    ]}
-                  >
-                    Send Message
-                  </Text>
-                </>
-              )}
+              <Send size={20} color={canSend ? '#ffffff' : '#475569'} />
             </TouchableOpacity>
           </View>
-        )}
-
-        {/* History panel */}
-        {activeTab === 'history' && (
-          <View style={styles.historyPanel}>
-            {messagesLoading ? (
-              <View>
-                <MessageSkeleton isDriver={false} />
-                <MessageSkeleton isDriver={false} />
-                <MessageSkeleton isDriver={false} />
-                <MessageSkeleton isDriver={false} />
-              </View>
-            ) : messages.length === 0 ? (
-              <View style={styles.centerWrap}>
-                <Text style={styles.emptyText}>No messages sent yet</Text>
-              </View>
-            ) : (
-              <FlashList
-                data={messages}
-                keyExtractor={(item) => item.id}
-                estimatedItemSize={60}
-                showsVerticalScrollIndicator={false}
-                refreshControl={
-                  <RefreshControl
-                    refreshing={isRefetching}
-                    onRefresh={refetchMessages}
-                    tintColor="#38bdf8"
-                    colors={['#38bdf8']}
-                  />
-                }
-                renderItem={({ item }) => (
-                  <MessageHistoryRow
-                    message={item}
-                    onPress={() => handleMessageRowPress(item)}
-                  />
-                )}
-                contentContainerStyle={styles.historyList}
-              />
-            )}
-          </View>
-        )}
-      </View>
-
-      {/* Recipient selector bottom sheet */}
-      <RecipientSelector
-        visible={selectorVisible}
-        onSelect={handleRecipientSelect}
-        onClose={() => setSelectorVisible(false)}
-        drivers={drivers}
-        loading={driversLoading}
-      />
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
       </AnimatedScreen>
     </SafeAreaView>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-  },
-  pageTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#f1f5f9',
-    marginBottom: 16,
-  },
-
-  // Toggle bar
-  toggleBar: {
-    flexDirection: 'row',
-    backgroundColor: '#1e293b',
-    borderRadius: 10,
-    padding: 3,
-    marginBottom: 20,
-  },
-  toggleBtn: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    borderRadius: 8,
-  },
-  toggleBtnActive: {
-    backgroundColor: '#38bdf8',
-  },
-  toggleBtnText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748b',
-  },
-  toggleBtnTextActive: {
-    color: '#0f172a',
-  },
-
-  // Compose panel
-  composePanel: {
-    flex: 1,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 8,
-  },
-  recipientChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#334155',
-    alignSelf: 'flex-start',
-    maxWidth: '80%',
-  },
-  recipientChipText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#e2e8f0',
-    flex: 1,
-  },
-  recipientPlaceholder: {
-    backgroundColor: '#1e293b',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-    marginBottom: 10,
-  },
-  recipientPlaceholderText: {
-    fontSize: 14,
-    color: '#475569',
-  },
-  selectBtn: {
-    backgroundColor: '#1e3a5f',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#38bdf8',
-    marginTop: 8,
-  },
-  selectBtnText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#38bdf8',
-  },
-  messageInput: {
-    backgroundColor: '#1e293b',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#334155',
-    padding: 14,
-    fontSize: 15,
-    color: '#e2e8f0',
-    minHeight: 110,
-    textAlignVertical: 'top',
-  },
-  charCounter: {
-    fontSize: 12,
-    textAlign: 'right',
-    marginTop: 6,
-    marginBottom: 20,
-  },
-  sendBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    backgroundColor: '#38bdf8',
-    paddingVertical: 15,
-    borderRadius: 12,
-  },
-  sendBtnDisabled: {
-    backgroundColor: '#1e293b',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  sendBtnText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#0f172a',
-  },
-  sendBtnTextDisabled: {
-    color: '#64748b',
-  },
-
-  // History panel
-  historyPanel: {
-    flex: 1,
-  },
-  historyList: {
-    paddingBottom: 24,
-  },
-  historyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1e293b',
-    gap: 12,
-  },
-  historyRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 10,
-  },
-  historyIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#1e293b',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  historyRowContent: {
-    flex: 1,
-  },
-  historyRecipient: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#f1f5f9',
-    marginBottom: 2,
-  },
-  historyPreview: {
-    fontSize: 12,
-    color: '#64748b',
-    lineHeight: 16,
-  },
-  historyTime: {
-    fontSize: 11,
-    color: '#475569',
-    flexShrink: 0,
-  },
-
-  // Shared
-  centerWrap: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 15,
-    color: '#475569',
-  },
-})
