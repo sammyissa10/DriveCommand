@@ -36,8 +36,8 @@ export async function GET(
           customerId: true,
           createdAt: true,
           updatedAt: true,
-          createdBy: { select: { name: true } },
-          updatedBy: { select: { name: true } },
+          createdBy: { select: { firstName: true, lastName: true } },
+          updatedBy: { select: { firstName: true, lastName: true } },
           items: {
             select: {
               id: true,
@@ -78,9 +78,9 @@ export async function GET(
           unitPrice: Number(item.unitPrice),
           amount: Number(item.amount),
         })),
-        createdByName: invoice.createdBy?.name ?? null,
+        createdByName: invoice.createdBy ? `${invoice.createdBy.firstName ?? ''} ${invoice.createdBy.lastName ?? ''}`.trim() || null : null,
         createdAt: invoice.createdAt.toISOString(),
-        updatedByName: invoice.updatedBy?.name ?? null,
+        updatedByName: invoice.updatedBy ? `${invoice.updatedBy.firstName ?? ''} ${invoice.updatedBy.lastName ?? ''}`.trim() || null : null,
         updatedAt: invoice.updatedAt.toISOString(),
       };
     }, TX_OPTIONS);
