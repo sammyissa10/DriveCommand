@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
 Current Plan: Phase 37 Plan 04 (next)
 Status: Phase 37 Plan 03 complete — Tab labels on both driver+owner tab bars (height 64→72px), LoadCard 80→96px, AppHeader avatar 34→40px, login button blue-600→sky-500, owner loads pill tap targets py-2→py-3.
-Last activity: 2026-03-26 - Completed quick task 111: Fix production dark overlay blocking UI on drive-command.vercel.app
+Last activity: 2026-03-26 - Completed quick task 112: Redesign mobile Fleet Messages screen to iMessage/WhatsApp style chat UI
 Stopped at: Completed 37-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -682,6 +682,7 @@ None blocking immediate progress.
 | 108 | Build More hub tab for mobile owner portal with sub-screens and settings | 2026-03-25 | af50acc | [108-build-more-hub-tab-for-mobile-owner-port](./quick/108-build-more-hub-tab-for-mobile-owner-port/) |
 | 110 | Remove route requirement for fleet messaging in web and mobile | 2026-03-26 | 020b306 | [110-remove-route-requirement-for-fleet-messa](./quick/110-remove-route-requirement-for-fleet-messa/) |
 | 111 | Fix production dark overlay blocking UI on drive-command.vercel.app | 2026-03-26 | 7118f9b | [111-fix-production-dark-overlay-blocking-ui-](./quick/111-fix-production-dark-overlay-blocking-ui-/) |
+| 112 | Redesign mobile Fleet Messages screen to iMessage/WhatsApp style chat UI | 2026-03-26 | 7e98c3a | [112-redesign-mobile-fleet-messages-screen-to](./quick/112-redesign-mobile-fleet-messages-screen-to/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
