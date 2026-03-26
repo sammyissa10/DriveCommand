@@ -1,3 +1,7 @@
+import { setDefaultResultOrder } from 'dns';
+// Force IPv4 DNS resolution — Vercel iad1 can't reach Supabase via IPv6
+setDefaultResultOrder('ipv4first');
+
 import { PrismaClient } from '../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
