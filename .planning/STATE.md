@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
 Current Plan: Phase 37 Plan 04 (next)
 Status: Phase 37 Plan 03 complete — Tab labels on both driver+owner tab bars (height 64→72px), LoadCard 80→96px, AppHeader avatar 34→40px, login button blue-600→sky-500, owner loads pill tap targets py-2→py-3.
-Last activity: 2026-03-26 - Completed quick task 112: Redesign mobile Fleet Messages screen to iMessage/WhatsApp style chat UI
-Stopped at: Completed 37-03-PLAN.md
+Last activity: 2026-03-26 - Completed quick task 113: Production readiness hardening (debug route deletion, rate limiting, Sentry, EAS OTA)
+Stopped at: Completed quick-113-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -116,6 +116,7 @@ Progress: [███████████████████████
 - Quick-58 (2026-03-13): TKT-0016 Add Route Name column to routes list page — 1 task, 2 files
 - Quick-59 (2026-03-14): TKT-0017 DriverRouteJoin payment tracking — 375s, 3 tasks, 8 files
 - Quick-98 (2026-03-22): TKT-0044 Screenshot auto-capture on support ticket — ~25min, 3 tasks, 4 files
+- Quick-113 (2026-03-26): Production readiness hardening — debug route deleted, Upstash rate limiting (auth/GPS/mobile), Sentry web+mobile, EAS OTA — ~5min, 3 tasks, 13 files
 
 ## Accumulated Context
 
@@ -129,6 +130,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-113 decisions (Production readiness hardening):**
+- Rate limiters return null when env vars absent so local dev works without Redis
+- GPS limiter keyed by userId (not IP) because drivers share IPs via fleet networks
+- Auth limiter keyed by IP to catch credential-stuffing before userId is known
+- Sentry enabled only in production (NODE_ENV=production / !__DEV__) to reduce dev noise
+- EAS Update uses appVersion runtime policy for predictable native/JS compatibility
 
 **Phase 37-03 decisions (Thumb-friendliness):**
 - Avatar enlarged to 40x40px (Option A) rather than hitSlop approach — cleaner visually, no invisible tap zones
