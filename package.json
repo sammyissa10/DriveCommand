@@ -5,6 +5,7 @@
     "apps/*",
     "packages/*"
   ],
+  "packageManager": "npm@11.6.2",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",

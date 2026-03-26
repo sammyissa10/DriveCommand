@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { authLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/auth/login
@@ -11,6 +12,14 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
  */
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit by IP: 5 attempts per 15 minutes
+    const ip =
+      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+      req.headers.get('x-real-ip') ??
+      'unknown';
+    const limited = await applyRateLimit(authLimiter, ip);
+    if (limited) return limited;
+
     const { email, password } = await req.json();
 
     if (!email || !password) {

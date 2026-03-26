@@ -3,6 +3,7 @@ import { getSession } from '@/lib/auth/session';
 import { validateMobileToken } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { checkGeofenceAndAlert } from '@/lib/geofencing/geofence-check';
+import { gpsLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/gps/report
@@ -31,6 +32,10 @@ export async function POST(req: NextRequest) {
 
     // Normalize auth fields — both MobileAuthContext and SessionPayload expose userId/tenantId/role
     const { userId, tenantId } = session;
+
+    // Rate limit by userId: 1 request per 5 seconds per driver
+    const gpsLimited = await applyRateLimit(gpsLimiter, userId);
+    if (gpsLimited) return gpsLimited;
 
     // 3. Parse and validate body
     const body = await req.json();

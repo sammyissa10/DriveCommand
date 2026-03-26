@@ -40,6 +40,8 @@
     "@tanstack/react-table": "^8.21.3",
     "@turf/bbox": "^7.3.4",
     "@turf/helpers": "^7.3.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
