@@ -6,8 +6,8 @@ import { sendPushToUser } from '@/lib/notifications/send-push';
 /**
  * GET /api/mobile/owner/fleet/messages
  *
- * Returns the authenticated owner's sent fleet message history, ordered newest first.
- * Resolves recipient name from User table (or "All Drivers" for broadcasts).
+ * Returns conversations grouped by recipient, each with the last message preview
+ * and timestamp. Captures both sent and received messages for the owner.
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
@@ -27,12 +27,17 @@ export async function GET(req: NextRequest) {
 
       return tx.fleetMessage.findMany({
         where: {
-          senderId: userId,
           tenantId,
+          OR: [
+            { senderId: userId },
+            { recipientId: userId },
+            { isBroadcast: true },
+          ],
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: 'asc' },
         select: {
           id: true,
+          senderId: true,
           recipientId: true,
           body: true,
           isBroadcast: true,
@@ -41,37 +46,92 @@ export async function GET(req: NextRequest) {
       });
     }, TX_OPTIONS);
 
-    // Collect recipient IDs that need name resolution
-    const recipientIds = messages
-      .filter((m) => !m.isBroadcast && m.recipientId)
-      .map((m) => m.recipientId as string);
+    // Collect all participant IDs that need name resolution
+    const participantIds = new Set<string>();
+    for (const m of messages) {
+      if (!m.isBroadcast) {
+        if (m.senderId && m.senderId !== userId) participantIds.add(m.senderId);
+        if (m.recipientId && m.recipientId !== userId) participantIds.add(m.recipientId);
+      }
+    }
 
-    // Bulk-fetch recipient names in a single query
-    const recipientMap = new Map<string, string>();
-    if (recipientIds.length > 0) {
+    const nameMap = new Map<string, string>();
+    if (participantIds.size > 0) {
       const users = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findMany({
-          where: { id: { in: recipientIds } },
+          where: { id: { in: Array.from(participantIds) } },
           select: { id: true, firstName: true, lastName: true },
         });
       }, TX_OPTIONS);
 
       for (const u of users) {
         const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
-        recipientMap.set(u.id, name);
+        nameMap.set(u.id, name);
       }
     }
 
-    const result = messages.map((m) => ({
-      id: m.id,
-      recipientName: m.isBroadcast ? 'All Drivers' : (recipientMap.get(m.recipientId ?? '') ?? 'Unknown Driver'),
-      body: m.body,
-      isBroadcast: m.isBroadcast,
-      createdAt: m.createdAt.toISOString(),
+    // Group messages into conversations keyed by the other participant
+    interface ConvBucket {
+      recipientId: string | null;
+      recipientName: string;
+      isBroadcast: boolean;
+      lastMessage: string;
+      lastMessageAt: string;
+    }
+
+    const convMap = new Map<string, ConvBucket>();
+
+    for (const m of messages) {
+      let key: string;
+      let recipientId: string | null;
+      let recipientName: string;
+      let isBroadcast: boolean;
+
+      if (m.isBroadcast) {
+        key = 'broadcast';
+        recipientId = null;
+        recipientName = 'All Drivers';
+        isBroadcast = true;
+      } else {
+        // The "other" participant
+        const otherId = m.senderId === userId ? m.recipientId : m.senderId;
+        key = otherId ?? 'unknown';
+        recipientId = otherId ?? null;
+        recipientName = otherId ? (nameMap.get(otherId) ?? 'Unknown Driver') : 'Unknown Driver';
+        isBroadcast = false;
+      }
+
+      const existing = convMap.get(key);
+      const msgAt = m.createdAt.toISOString();
+      const preview = m.body.length > 100 ? m.body.slice(0, 100) + '…' : m.body;
+
+      if (!existing || msgAt > existing.lastMessageAt) {
+        convMap.set(key, {
+          recipientId,
+          recipientName,
+          isBroadcast,
+          lastMessage: preview,
+          lastMessageAt: msgAt,
+        });
+      }
+    }
+
+    // Sort by lastMessageAt descending
+    const conversations = Array.from(convMap.values()).sort(
+      (a, b) => (a.lastMessageAt > b.lastMessageAt ? -1 : 1)
+    );
+
+    const result = conversations.map((c) => ({
+      recipientId: c.recipientId,
+      recipientName: c.recipientName,
+      isBroadcast: c.isBroadcast,
+      lastMessage: c.lastMessage,
+      lastMessageAt: c.lastMessageAt,
+      unreadCount: 0,
     }));
 
-    return NextResponse.json({ messages: result });
+    return NextResponse.json({ conversations: result });
   } catch (err) {
     console.error('[mobile/owner/fleet/messages GET] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

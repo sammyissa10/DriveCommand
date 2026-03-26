@@ -189,6 +189,25 @@ export interface FleetMessageSummary {
   createdAt: string
 }
 
+export interface ConversationSummary {
+  recipientId: string | null
+  recipientName: string
+  isBroadcast: boolean
+  lastMessage: string
+  lastMessageAt: string
+  unreadCount: number
+}
+
+export interface ConversationMessage {
+  id: string
+  senderId: string
+  senderRole: string
+  senderName: string
+  body: string
+  isBroadcast: boolean
+  createdAt: string
+}
+
 // ---------------------------------------------------------------------------
 // Invoices
 // ---------------------------------------------------------------------------
@@ -405,6 +424,25 @@ export const ownerApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  getFleetConversations: (token: string) =>
+    apiRequest<{ conversations: ConversationSummary[] }>('/api/mobile/owner/fleet/messages', { token }),
+
+  getConversationThread: (token: string, recipientId: string) =>
+    apiRequest<{ messages: ConversationMessage[]; recipientName: string }>(
+      `/api/mobile/owner/fleet/messages/${recipientId}`,
+      { token }
+    ),
+
+  sendConversationMessage: (token: string, recipientId: string, body: string) =>
+    apiRequest<{ message: ConversationMessage }>(
+      `/api/mobile/owner/fleet/messages/${recipientId}`,
+      {
+        method: 'POST',
+        token,
+        body: JSON.stringify({ body }),
+      }
+    ),
 
   getInvoices: (token: string) =>
     apiRequest<InvoicesResponse>('/api/mobile/owner/invoices', { token }),
