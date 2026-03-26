@@ -1,7 +1,7 @@
 {
   "installCommand": "cd ../.. && npm install --legacy-peer-deps",
   "buildCommand": "node scripts/migrate.mjs && prisma generate && next build",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web packages",
+  "ignoreCommand": "! git diff --quiet HEAD^ HEAD -- apps/web packages",
   "crons": [
     {
       "path": "/api/cron/send-reminders",
