@@ -6,6 +6,15 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "drivecommand",
+    "updates": {
+      "url": "https://u.expo.dev/010aaae1-a5ad-455a-bb42-a1d6637e4cf7",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 5000
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {

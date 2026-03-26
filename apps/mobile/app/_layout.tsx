@@ -8,6 +8,7 @@ import { AuthProvider, useAuthContext } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler, configureApiClient } from '@drivecommand/api-client'
 import * as Sentry from '@sentry/react-native'
+import * as Updates from 'expo-updates'
 import Toast from 'react-native-toast-message'
 import '../global.css'
 
@@ -75,6 +76,23 @@ function RootLayout() {
   useEffect(() => {
     if (fontError) throw fontError
   }, [fontError])
+
+  useEffect(() => {
+    async function checkForOTAUpdate() {
+      if (__DEV__) return // skip in development
+      try {
+        const update = await Updates.checkForUpdateAsync()
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync()
+          await Updates.reloadAsync()
+        }
+      } catch (e) {
+        // Silently fail — don't block app launch
+        console.warn('OTA update check failed:', e)
+      }
+    }
+    checkForOTAUpdate()
+  }, [])
 
   useEffect(() => {
     if (fontsLoaded) {
