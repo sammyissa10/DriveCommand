@@ -65,63 +65,41 @@ function PayrollRow({ record }: { record: PayrollRecordSummary }) {
   const period = `${formatDateShort(record.periodStart)} – ${formatDateShort(record.periodEnd)}`
 
   return (
-    <View
-      style={{
-        marginHorizontal: 16,
-        marginBottom: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        backgroundColor: '#1e293b',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
-    >
+    <View className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 flex-row items-center">
       {/* Avatar */}
       <View
-        style={{
-          width: 42,
-          height: 42,
-          borderRadius: 21,
-          backgroundColor: '#8b5cf620',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: 14,
-          flexShrink: 0,
-        }}
+        className="w-[42px] h-[42px] rounded-full items-center justify-center mr-3.5 shrink-0"
+        style={{ backgroundColor: '#8b5cf620' }}
       >
         <Text style={{ color: '#8b5cf6', fontWeight: '700', fontSize: 14 }}>{initials}</Text>
       </View>
 
       {/* Info */}
-      <View style={{ flex: 1, minWidth: 0 }}>
+      <View className="flex-1 min-w-0">
         <Text
-          style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15, marginBottom: 3 }}
+          className="text-slate-100 font-bold text-[15px] mb-0.5"
           numberOfLines={1}
         >
           {record.driverName}
         </Text>
-        <Text style={{ color: '#64748b', fontSize: 13 }} numberOfLines={1}>
+        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
           {period}
         </Text>
       </View>
 
       {/* Right side */}
-      <View style={{ alignItems: 'flex-end', flexShrink: 0, marginLeft: 10 }}>
-        <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 16, marginBottom: 4 }}>
+      <View className="items-end shrink-0 ml-2.5">
+        <Text className="text-white font-bold text-base mb-1">
           {formatCurrency(record.totalPay)}
         </Text>
         <View
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 3,
-            borderRadius: 20,
-            backgroundColor: statusColor + '22',
-          }}
+          className="px-2.5 py-0.5 rounded-[20px]"
+          style={{ backgroundColor: statusColor + '22' }}
         >
-          <Text style={{ color: statusColor, fontSize: 11, fontWeight: '600' }}>
+          <Text
+            className="text-[11px] font-semibold"
+            style={{ color: statusColor }}
+          >
             {getStatusLabel(record.status)}
           </Text>
         </View>
@@ -144,23 +122,14 @@ function StatCard({
   valueColor?: string
 }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#1e293b',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        padding: 14,
-        alignItems: 'center',
-      }}
-    >
-      <Text style={{ color: valueColor ?? '#f1f5f9', fontSize: 18, fontWeight: '700' }}>
+    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+      <Text
+        className="text-lg font-bold"
+        style={{ color: valueColor ?? '#f1f5f9' }}
+      >
         {value}
       </Text>
-      <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2, textAlign: 'center' }}>
-        {label}
-      </Text>
+      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
     </View>
   )
 }
@@ -183,64 +152,34 @@ export default function PayrollScreen() {
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderBottomWidth: 1,
-            borderBottomColor: '#334155',
-          }}
-        >
-          <Pressable onPress={() => router.back()} style={{ marginRight: 12 }} hitSlop={8}>
+        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={8}>
             <ChevronLeft color="#f1f5f9" size={24} />
           </Pressable>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#f1f5f9' }}>Payroll</Text>
+          <Text className="text-lg font-bold text-slate-100">Payroll</Text>
         </View>
 
         {isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View className="flex-1 items-center justify-center bg-slate-950">
             <ActivityIndicator color="#38bdf8" size="large" />
           </View>
         ) : isError ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 24,
-            }}
-          >
+          <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text
-              style={{
-                color: '#f1f5f9',
-                fontSize: 17,
-                fontWeight: '600',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
+            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
               Failed to load payroll
             </Text>
-            <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+            <Text className="text-slate-500 text-sm mt-1.5 text-center">
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#0ea5e9',
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 10,
-              }}
+              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+              <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
         ) : (
@@ -256,8 +195,8 @@ export default function PayrollScreen() {
             contentContainerStyle={{ paddingBottom: 32 }}
           >
             {/* Stats grid 2x2 */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-              <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+            <View className="px-4 pt-4 pb-2">
+              <View className="flex-row gap-3 mb-3">
                 <StatCard value={data?.stats.total ?? 0} label="Total Records" />
                 <StatCard
                   value={data?.stats.draft ?? 0}
@@ -265,7 +204,7 @@ export default function PayrollScreen() {
                   valueColor="#64748b"
                 />
               </View>
-              <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View className="flex-row gap-3">
                 <StatCard
                   value={data?.stats.approved ?? 0}
                   label="Approved"
@@ -280,25 +219,16 @@ export default function PayrollScreen() {
             </View>
 
             {/* Records section header */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10 }}>
-              <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+            <View className="px-4 pt-4 pb-2.5">
+              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
                 Recent Records
               </Text>
             </View>
 
             {(data?.records.length ?? 0) === 0 ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 24,
-                  paddingTop: 40,
-                }}
-              >
+              <View className="items-center justify-center px-6 pt-10">
                 <DollarSign color="#334155" size={48} />
-                <Text
-                  style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}
-                >
+                <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   No payroll records yet
                 </Text>
               </View>

@@ -57,54 +57,35 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
 
   return (
     <View
-      style={{
-        marginHorizontal: 16,
-        marginBottom: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: isVIP ? '#f59e0b40' : '#334155',
-        backgroundColor: '#1e293b',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
+      className="mx-4 mb-3 rounded-xl border bg-slate-800 px-4 py-3.5 flex-row items-center"
+      style={{ borderColor: isVIP ? '#f59e0b40' : '#334155' }}
     >
       {/* Avatar */}
       <View
-        style={{
-          width: 42,
-          height: 42,
-          borderRadius: 10,
-          backgroundColor: '#0ea5e920',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: 14,
-          flexShrink: 0,
-        }}
+        className="w-[42px] h-[42px] rounded-[10px] items-center justify-center mr-3.5 shrink-0"
+        style={{ backgroundColor: '#0ea5e920' }}
       >
-        <Text style={{ color: '#0ea5e9', fontWeight: '700', fontSize: 14 }}>{initials}</Text>
+        <Text className="text-sky-500 font-bold text-sm">{initials}</Text>
       </View>
 
       {/* Info */}
-      <View style={{ flex: 1, minWidth: 0 }}>
+      <View className="flex-1 min-w-0">
         <Text
-          style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15, marginBottom: 4 }}
+          className="text-slate-100 font-bold text-[15px] mb-1"
           numberOfLines={1}
         >
           {customer.companyName}
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <View className="flex-row items-center gap-2 flex-wrap">
           {/* Status badge */}
           <View
-            style={{
-              paddingHorizontal: 8,
-              paddingVertical: 2,
-              borderRadius: 10,
-              backgroundColor: statusColor + '22',
-            }}
+            className="px-2 py-0.5 rounded-[10px]"
+            style={{ backgroundColor: statusColor + '22' }}
           >
-            <Text style={{ color: statusColor, fontSize: 11, fontWeight: '600' }}>
+            <Text
+              className="text-[11px] font-semibold"
+              style={{ color: statusColor }}
+            >
               {customer.status.charAt(0) + customer.status.slice(1).toLowerCase()}
             </Text>
           </View>
@@ -112,14 +93,13 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
           {/* VIP / Priority badge */}
           {customer.priority !== 'MEDIUM' && customer.priority !== 'LOW' && (
             <View
-              style={{
-                paddingHorizontal: 8,
-                paddingVertical: 2,
-                borderRadius: 10,
-                backgroundColor: priorityColor + '22',
-              }}
+              className="px-2 py-0.5 rounded-[10px]"
+              style={{ backgroundColor: priorityColor + '22' }}
             >
-              <Text style={{ color: priorityColor, fontSize: 11, fontWeight: '600' }}>
+              <Text
+                className="text-[11px] font-semibold"
+                style={{ color: priorityColor }}
+              >
                 {customer.priority}
               </Text>
             </View>
@@ -127,9 +107,9 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
 
           {/* Phone */}
           {customer.phone && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View className="flex-row items-center gap-1">
               <Phone color="#64748b" size={11} />
-              <Text style={{ color: '#64748b', fontSize: 12 }} numberOfLines={1}>
+              <Text className="text-slate-500 text-xs" numberOfLines={1}>
                 {customer.phone}
               </Text>
             </View>
@@ -154,23 +134,14 @@ function StatCard({
   valueColor?: string
 }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#1e293b',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        padding: 14,
-        alignItems: 'center',
-      }}
-    >
-      <Text style={{ color: valueColor ?? '#f1f5f9', fontSize: 22, fontWeight: '700' }}>
+    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+      <Text
+        className="text-[22px] font-bold"
+        style={{ color: valueColor ?? '#f1f5f9' }}
+      >
         {value}
       </Text>
-      <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2, textAlign: 'center' }}>
-        {label}
-      </Text>
+      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
     </View>
   )
 }
@@ -193,64 +164,34 @@ export default function CRMScreen() {
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderBottomWidth: 1,
-            borderBottomColor: '#334155',
-          }}
-        >
-          <Pressable onPress={() => router.back()} style={{ marginRight: 12 }} hitSlop={8}>
+        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={8}>
             <ChevronLeft color="#f1f5f9" size={24} />
           </Pressable>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#f1f5f9' }}>CRM</Text>
+          <Text className="text-lg font-bold text-slate-100">CRM</Text>
         </View>
 
         {isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View className="flex-1 items-center justify-center bg-slate-950">
             <ActivityIndicator color="#38bdf8" size="large" />
           </View>
         ) : isError ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 24,
-            }}
-          >
+          <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text
-              style={{
-                color: '#f1f5f9',
-                fontSize: 17,
-                fontWeight: '600',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
+            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
               Failed to load customers
             </Text>
-            <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+            <Text className="text-slate-500 text-sm mt-1.5 text-center">
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#0ea5e9',
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 10,
-              }}
+              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+              <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
         ) : (
@@ -266,8 +207,8 @@ export default function CRMScreen() {
             contentContainerStyle={{ paddingBottom: 32 }}
           >
             {/* Stats — 3 stats in a row */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View className="px-4 pt-4 pb-2">
+              <View className="flex-row gap-2.5">
                 <StatCard value={data?.stats.total ?? 0} label="Total" />
                 <StatCard
                   value={data?.stats.active ?? 0}
@@ -283,25 +224,16 @@ export default function CRMScreen() {
             </View>
 
             {/* Customers section header */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 10 }}>
-              <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+            <View className="px-4 pt-4 pb-2.5">
+              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
                 Customers
               </Text>
             </View>
 
             {(data?.customers.length ?? 0) === 0 ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 24,
-                  paddingTop: 40,
-                }}
-              >
+              <View className="items-center justify-center px-6 pt-10">
                 <Building2 color="#334155" size={48} />
-                <Text
-                  style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}
-                >
+                <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   No customers yet
                 </Text>
               </View>

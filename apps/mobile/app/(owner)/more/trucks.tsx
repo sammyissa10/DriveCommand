@@ -30,60 +30,37 @@ function TruckCard({ truck }: { truck: TruckOption }) {
   const colors = STATUS_COLORS[truck.status] ?? STATUS_COLORS['Ready to Use']
 
   return (
-    <View
-      style={{
-        marginHorizontal: 16,
-        marginBottom: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        backgroundColor: '#1e293b',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}
-    >
+    <View className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 flex-row items-center">
       {/* Icon */}
       <View
-        style={{
-          width: 42,
-          height: 42,
-          borderRadius: 10,
-          backgroundColor: colors.bg,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: 14,
-          flexShrink: 0,
-        }}
+        className="w-[42px] h-[42px] rounded-[10px] items-center justify-center mr-3.5 shrink-0"
+        style={{ backgroundColor: colors.bg }}
       >
         <Truck color={colors.text} size={20} />
       </View>
 
       {/* Info */}
-      <View style={{ flex: 1, minWidth: 0 }}>
+      <View className="flex-1 min-w-0">
         <Text
-          style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15, marginBottom: 3 }}
+          className="text-slate-100 font-bold text-[15px] mb-0.5"
           numberOfLines={1}
         >
           {truck.year} {truck.make} {truck.model}
         </Text>
-        <Text style={{ color: '#64748b', fontSize: 13 }} numberOfLines={1}>
+        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
           {truck.licensePlate}
         </Text>
       </View>
 
       {/* Status badge */}
       <View
-        style={{
-          paddingHorizontal: 10,
-          paddingVertical: 4,
-          borderRadius: 20,
-          backgroundColor: colors.bg,
-          flexShrink: 0,
-        }}
+        className="px-2.5 py-1 rounded-[20px] shrink-0"
+        style={{ backgroundColor: colors.bg }}
       >
-        <Text style={{ color: colors.text, fontSize: 12, fontWeight: '600' }}>
+        <Text
+          className="text-xs font-semibold"
+          style={{ color: colors.text }}
+        >
           {truck.status}
         </Text>
       </View>
@@ -114,64 +91,34 @@ export default function TrucksScreen() {
   const expiredDocsCount = data?.filter((t) => t.status === 'Expired Docs').length ?? 0
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderBottomWidth: 1,
-            borderBottomColor: '#334155',
-          }}
-        >
-          <Pressable onPress={() => router.back()} style={{ marginRight: 12 }} hitSlop={8}>
+        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={8}>
             <ChevronLeft color="#f1f5f9" size={24} />
           </Pressable>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#f1f5f9' }}>Trucks</Text>
+          <Text className="text-lg font-bold text-slate-100">Trucks</Text>
         </View>
 
         {isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View className="flex-1 items-center justify-center bg-slate-950">
             <ActivityIndicator color="#38bdf8" size="large" />
           </View>
         ) : isError ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 24,
-            }}
-          >
+          <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text
-              style={{
-                color: '#f1f5f9',
-                fontSize: 17,
-                fontWeight: '600',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
+            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
               Failed to load trucks
             </Text>
-            <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+            <Text className="text-slate-500 text-sm mt-1.5 text-center">
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#0ea5e9',
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 10,
-              }}
+              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+              <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
         ) : (
@@ -187,26 +134,26 @@ export default function TrucksScreen() {
             contentContainerStyle={{ paddingBottom: 32 }}
           >
             {/* Stats grid */}
-            <View style={{ paddingHorizontal: 16, paddingVertical: 16, gap: 10 }}>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View className="px-4 py-4 gap-2.5">
+              <View className="flex-row gap-2.5">
                 {[
                   { label: 'Total', value: totalCount, color: '#f1f5f9' },
                   { label: 'In Use', value: inUseCount, color: '#38bdf8' },
                 ].map((s) => (
-                  <View key={s.label} style={{ flex: 1, backgroundColor: '#1e293b', borderRadius: 12, borderWidth: 1, borderColor: '#334155', padding: 14, alignItems: 'center' }}>
-                    <Text style={{ color: s.color, fontSize: 22, fontWeight: '700' }}>{s.value}</Text>
-                    <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>{s.label}</Text>
+                  <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                    <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
+                    <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
                   </View>
                 ))}
               </View>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
+              <View className="flex-row gap-2.5">
                 {[
                   { label: 'In Maint.', value: maintenanceCount, color: maintenanceCount > 0 ? '#f59e0b' : '#64748b' },
                   { label: 'Expired Docs', value: expiredDocsCount, color: expiredDocsCount > 0 ? '#ef4444' : '#64748b' },
                 ].map((s) => (
-                  <View key={s.label} style={{ flex: 1, backgroundColor: '#1e293b', borderRadius: 12, borderWidth: 1, borderColor: '#334155', padding: 14, alignItems: 'center' }}>
-                    <Text style={{ color: s.color, fontSize: 22, fontWeight: '700' }}>{s.value}</Text>
-                    <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>{s.label}</Text>
+                  <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                    <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
+                    <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
                   </View>
                 ))}
               </View>
@@ -214,25 +161,16 @@ export default function TrucksScreen() {
 
             {/* List */}
             {totalCount === 0 ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 24,
-                  paddingTop: 60,
-                }}
-              >
+              <View className="items-center justify-center px-6 pt-[60px]">
                 <Truck color="#334155" size={48} />
-                <Text
-                  style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}
-                >
+                <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   No trucks in your fleet
                 </Text>
               </View>
             ) : (
               <>
-                <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
-                  <Text style={{ color: '#64748b', fontSize: 13 }}>
+                <View className="px-4 pb-2.5">
+                  <Text className="text-slate-500 text-[13px]">
                     {totalCount} truck{totalCount !== 1 ? 's' : ''} in fleet
                   </Text>
                 </View>

@@ -5,7 +5,6 @@ import {
   RefreshControl,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native'
 
@@ -63,38 +62,26 @@ function InvoiceRow({ invoice, onPress }: { invoice: InvoiceSummary; onPress: ()
   const statusColor = getStatusColor(invoice.status)
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.7}
-      style={{
-        marginHorizontal: 16,
-        marginBottom: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        backgroundColor: '#1e293b',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-      }}
+      className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 active:opacity-75"
     >
       {/* Top row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+      <View className="flex-row items-center mb-2">
         <Text
-          style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15, flex: 1 }}
+          className="text-slate-100 font-bold text-[15px] flex-1"
           numberOfLines={1}
         >
           #{invoice.invoiceNumber}
         </Text>
         <View
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: 20,
-            backgroundColor: statusColor + '22',
-            marginRight: 8,
-          }}
+          className="px-2.5 py-1 rounded-[20px] mr-2"
+          style={{ backgroundColor: statusColor + '22' }}
         >
-          <Text style={{ color: statusColor, fontSize: 12, fontWeight: '600' }}>
+          <Text
+            className="text-xs font-semibold"
+            style={{ color: statusColor }}
+          >
             {getStatusLabel(invoice.status)}
           </Text>
         </View>
@@ -102,22 +89,22 @@ function InvoiceRow({ invoice, onPress }: { invoice: InvoiceSummary; onPress: ()
       </View>
 
       {/* Bottom row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1, minWidth: 0 }}>
-          <Text style={{ color: '#94a3b8', fontSize: 13 }} numberOfLines={1}>
+      <View className="flex-row items-center">
+        <View className="flex-1 min-w-0">
+          <Text className="text-slate-400 text-[13px]" numberOfLines={1}>
             {invoice.customerName}
           </Text>
           {invoice.dueDate && (
-            <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>
+            <Text className="text-slate-500 text-xs mt-0.5">
               Due {formatDate(invoice.dueDate)}
             </Text>
           )}
         </View>
-        <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 16, marginLeft: 12 }}>
+        <Text className="text-slate-100 font-bold text-base ml-3">
           ${invoice.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
         </Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -139,26 +126,27 @@ function StatCard({
   onPress?: () => void
 }) {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={onPress ? 0.7 : 1}
+      className="flex-1 rounded-xl border p-3.5 items-center active:opacity-75"
       style={{
-        flex: 1,
         backgroundColor: active ? '#1e3a5f' : '#1e293b',
-        borderRadius: 12,
-        borderWidth: 1,
         borderColor: active ? '#38bdf8' : '#334155',
-        padding: 14,
-        alignItems: 'center',
       }}
     >
-      <Text style={{ color: valueColor ?? '#f1f5f9', fontSize: 18, fontWeight: '700' }}>
+      <Text
+        className="text-lg font-bold"
+        style={{ color: valueColor ?? '#f1f5f9' }}
+      >
         {value}
       </Text>
-      <Text style={{ color: active ? '#38bdf8' : '#64748b', fontSize: 12, marginTop: 2, textAlign: 'center' }}>
+      <Text
+        className="text-xs mt-0.5 text-center"
+        style={{ color: active ? '#38bdf8' : '#64748b' }}
+      >
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -196,64 +184,34 @@ export default function InvoicesScreen() {
     : (data?.invoices ?? []).filter((inv) => inv.status === activeFilter)
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderBottomWidth: 1,
-            borderBottomColor: '#334155',
-          }}
-        >
-          <Pressable onPress={() => router.back()} style={{ marginRight: 12 }} hitSlop={8}>
+        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={8}>
             <ChevronLeft color="#f1f5f9" size={24} />
           </Pressable>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#f1f5f9' }}>Invoices</Text>
+          <Text className="text-lg font-bold text-slate-100">Invoices</Text>
         </View>
 
         {isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View className="flex-1 items-center justify-center bg-slate-950">
             <ActivityIndicator color="#38bdf8" size="large" />
           </View>
         ) : isError ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 24,
-            }}
-          >
+          <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text
-              style={{
-                color: '#f1f5f9',
-                fontSize: 17,
-                fontWeight: '600',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
+            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
               Failed to load invoices
             </Text>
-            <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+            <Text className="text-slate-500 text-sm mt-1.5 text-center">
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#0ea5e9',
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 10,
-              }}
+              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+              <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
         ) : (
@@ -269,8 +227,8 @@ export default function InvoicesScreen() {
             contentContainerStyle={{ paddingBottom: 32 }}
           >
             {/* Stats grid 2x2 */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-              <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
+            <View className="px-4 pt-4 pb-2">
+              <View className="flex-row gap-3 mb-3">
                 <StatCard
                   value={data?.stats.total ?? 0}
                   label="Total"
@@ -285,7 +243,7 @@ export default function InvoicesScreen() {
                   onPress={() => setActiveFilter('DRAFT')}
                 />
               </View>
-              <View style={{ flexDirection: 'row', gap: 12 }}>
+              <View className="flex-row gap-3">
                 <StatCard
                   value={formatCurrency(data?.stats.outstandingAmount ?? 0)}
                   label="Outstanding"
@@ -304,54 +262,43 @@ export default function InvoicesScreen() {
             </View>
 
             {/* Filter chips — flat row, evenly distributed */}
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, gap: 6 }}>
+            <View className="flex-row px-4 pt-3 pb-1 gap-1.5">
               {FILTERS.map((f) => {
                 const active = activeFilter === f.key
                 return (
-                  <TouchableOpacity
+                  <Pressable
                     key={f.key}
                     onPress={() => setActiveFilter(f.key)}
+                    className="flex-1 py-[7px] rounded-[20px] border items-center active:opacity-75"
                     style={{
-                      flex: 1,
-                      paddingVertical: 7,
-                      borderRadius: 20,
                       backgroundColor: active ? '#38bdf8' : '#1e293b',
-                      borderWidth: 1,
                       borderColor: active ? '#38bdf8' : '#334155',
-                      alignItems: 'center',
                     }}
-                    activeOpacity={0.7}
                   >
-                    <Text style={{ color: active ? '#0f172a' : '#94a3b8', fontSize: 11, fontWeight: '600' }}>
+                    <Text
+                      className="text-[11px] font-semibold"
+                      style={{ color: active ? '#0f172a' : '#94a3b8' }}
+                    >
                       {f.label}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 )
               })}
             </View>
 
             {/* Invoices section header */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 }}>
-              <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+            <View className="px-4 pt-3.5 pb-2.5">
+              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
                 {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
                 {' '}
-                <Text style={{ color: '#475569' }}>({filteredInvoices.length})</Text>
+                <Text className="text-slate-600">({filteredInvoices.length})</Text>
               </Text>
             </View>
 
             {filteredInvoices.length === 0 ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 24,
-                  paddingTop: 40,
-                }}
-              >
+              <View className="items-center justify-center px-6 pt-10">
                 <FileText color="#334155" size={48} />
-                <Text
-                  style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}
-                >
+                <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   {activeFilter === 'ALL' ? 'No invoices yet' : `No ${FILTERS.find(f => f.key === activeFilter)?.label.toLowerCase()} invoices`}
                 </Text>
               </View>
