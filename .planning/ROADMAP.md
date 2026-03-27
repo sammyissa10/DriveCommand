@@ -109,7 +109,7 @@ Plans:
 
 **Goal:** Allow dispatchers to build routes with multiple pickup and delivery stops in a defined sequence. Each stop tracks its own status (pending → arrived → departed), scheduled time, and coordinates. Geofencing auto-marks arrival when a driver's GPS ping falls within the stop radius. The driver app shows the active stop with navigation context.
 **Depends on:** None (extends existing Route model)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
@@ -122,7 +122,7 @@ Plans:
 
 **Goal:** Calculate driver pay automatically from completed loads based on configurable pay structures (per-mile, percentage of load rate, or flat per-load), generate itemized settlement statements covering a pay period, and link settlements to the payroll module. Eliminates manual pay calculation — dispatcher marks loads delivered, system computes what each driver is owed.
 **Depends on:** Phase 19 (multi-stop loads have more complex mileage), but can run independently
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 20-01-PLAN.md — Data model: DriverPayConfig model (driverId, payType enum PER_MILE/PERCENTAGE/FLAT, rateValue, effectiveFrom), DriverSettlement model (driverId, tenantId, periodStart, periodEnd, status DRAFT/APPROVED/PAID, totalPay Decimal), SettlementLine model (settlementId, loadId, description, miles, grossRate, payAmount), migration SQL, RLS, schema.prisma update
@@ -135,7 +135,7 @@ Plans:
 
 **Goal:** Connect a tenant's QuickBooks Online account via OAuth2, then automatically sync DriveCommand financial records to QBO: invoices become QBO invoices (with line items and customer mapping), route expenses sync as QBO expenses, and driver settlements sync as vendor bills or journal entries. Eliminates double-entry for bookkeeping. The integration framework and TenantIntegration model already exist — this wires in the actual QBO API.
 **Depends on:** Phase 20 (settlements), existing invoice/expense modules
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 21-01-PLAN.md — OAuth2 connect flow: QBO app credentials in env vars, /api/integrations/qbo/connect initiates OAuth2 code flow (redirect to Intuit), /api/integrations/qbo/callback exchanges code for access+refresh tokens, stores encrypted tokens in TenantIntegration.configJson, connect/disconnect UI on integrations settings page with connection status badge
@@ -148,7 +148,7 @@ Plans:
 
 **Goal:** Tenant owners can submit support tickets from within the owner portal (subject, description, category, priority), view ticket history, and receive replies in-thread. The DriveCommand team manages all tickets from the super-admin portal (Phase 23). Email notifications alert the owner on reply and the DriveCommand team on new ticket submission. Replaces ad-hoc email support with a trackable, in-product support channel.
 **Depends on:** None (standalone module)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 22-01-PLAN.md — Extension migration: add SupportTicketCategory/Priority/TicketMessageSenderType enums, WAITING_ON_CUSTOMER status value, category+priority columns to SupportTicket (drop type column), create TicketMessage table with FK to SupportTicket, update prisma/schema.prisma
@@ -161,7 +161,7 @@ Plans:
 
 **Goal:** A fully separate super-admin portal at /admin/* accessible only to DriveCommand team members via a hardcoded ADMIN_SECRET_KEY environment variable (not the tenant session system). Provides tenant list with key metrics, ability to create new tenants directly (bypassing the self-signup flow), suspend/reactivate tenants, view tenant details, and manage support tickets (Phase 22) across all tenants. This is the internal operations tool for running DriveCommand as a business.
 **Depends on:** Phase 22 (support ticket management is the primary admin workflow)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 23-01-PLAN.md — Admin auth layer: ADMIN_SECRET_KEY env var, /admin/login page with password form (hash comparison, no rate-limit bypass — brute-force resistant), admin session stored as separate signed cookie (admin_session, 8-hour expiry), adminMiddleware guards all /admin/* routes and redirects to /admin/login if not authenticated, admin session has no tenantId (reads across all tenants using bypass_rls pattern), logout endpoint clears cookie
@@ -186,7 +186,7 @@ Plans:
 
 **Goal:** Enable DriveCommand to bill tenants directly from the sysadmin portal. Admin can create invoices for any tenant (subscription fees, setup fees, etc.), set line items, amount, and due date, and send the invoice via email to the tenant owner. Admins can track payment status (unpaid/paid/overdue), mark invoices as paid, and view billing history per tenant on the tenant detail page. This is DriveCommand's own billing system, separate from the invoice module tenants use for their customers.
 **Depends on:** Phase 23 (sysadmin portal)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 25-01-PLAN.md — Data layer: SysAdminInvoice + SysAdminInvoiceItem models, migration SQL with RLS, generateInvoiceNumber (SINV-XXXX), all server actions (CRUD + markPaid + void + archive + markOverdueInvoices)
@@ -199,7 +199,7 @@ Plans:
 
 **Goal:** Produce step-by-step manual QA test scripts (markdown files in docs/qa/) covering every major feature across all three portals. Coworkers follow these scripts to manually test the app. Each test case specifies preconditions, numbered steps with exact field values, expected results, and Pass/Fail checkboxes. Includes a smoke test section per portal and a README with test environment setup instructions.
 **Depends on:** Phase 25 (all features complete before QA scripts are written)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 26-01-PLAN.md — SysAdmin portal test scripts: docs/qa/sysadmin-tests.md covering auth (ADMIN_SECRET_KEY), dashboard, tenant management (create/suspend/reactivate), support ticket queue, and billing/invoicing lifecycle (DRAFT→SENT→PAID→VOID) — ~50 test cases with smoke tests
@@ -224,7 +224,7 @@ Plans:
 
 **Goal:** Implement a complete Playwright end-to-end test suite covering all three portals (SysAdmin, Owner/Manager, Driver) and all critical user flows. Auth fixtures for all 3 roles eliminate per-test login overhead. Builds on existing e2e/tkt-fixes.spec.ts. App is considered production-ready when the full suite passes with a clean HTML report.
 **Depends on:** Phase 26 (QA Test Scripts serve as source of truth for what to automate)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 27-01-PLAN.md — Playwright setup + auth fixtures + SysAdmin tests: playwright.config.ts, e2e/fixtures/ with storageState for sysadmin/owner/driver roles, e2e/sysadmin/ tests covering login, dashboard, tenant CRUD, support tickets, invoicing lifecycle
@@ -245,7 +245,7 @@ Plans:
 
 **Goal:** Transform the existing single Next.js repo into a Turborepo monorepo. Move the web app to apps/web. Extract shared TypeScript types and Zod validation schemas into packages/ that both web and mobile import. Scaffold the Expo app at apps/mobile with Expo Router, NativeWind v4, and EAS configuration. Running `npx expo start` in apps/mobile produces a working blank app on a physical device.
 **Depends on:** None (additive — web app untouched, just moved/restructured)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 29-01-PLAN.md — Turborepo setup: root package.json with workspaces, turbo.json pipeline (build/lint/test tasks), move existing Next.js app into apps/web/, update all internal import paths, verify `turbo run build` succeeds for apps/web
@@ -270,7 +270,7 @@ Plans:
 
 **Goal:** Build the primary screens a driver uses daily: a dashboard showing active load summary and today's snapshot, a loads list with active and completed tabs, a load detail screen with multi-stop timeline, and the status update flow (accept → en route → delivered) with confirmation and haptic feedback.
 **Depends on:** Phase 30 (driver navigation shell)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 31-01-PLAN.md — Bearer token validator (validateMobileToken) + 4 REST endpoints: dashboard, loads list (active/history), load detail with stops/truck/customer, status update with transition validation
@@ -297,7 +297,7 @@ Plans:
 
 **Goal:** Implement the three core native capabilities that make the driver app indispensable: background GPS reporting to the existing /api/gps/report endpoint (runs even when app is backgrounded), push notifications for dispatch alerts and HOS warnings via FCM/APNs, and an offline mutation queue that buffers status updates and HOS entries when the driver has no signal and flushes them automatically on reconnect.
 **Depends on:** Phase 31 (load status updates exist to queue), Phase 32 (HOS entries exist to queue)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 33-01-PLAN.md — Background GPS: expo-location background location task (BACKGROUND_LOCATION_TASK), permission request flow (foreground then background, explain why), report interval 30s on-duty / 5min off-duty based on current HOS status, POST to /api/gps/report with driver tracking token (existing token system), battery-aware: reduce frequency when battery < 20%, GPS status indicator in driver dashboard header (green dot = active, grey = paused)
@@ -322,7 +322,7 @@ Plans:
 
 **Goal:** Build the three primary owner screens: a dashboard with at-a-glance fleet KPIs, a loads management screen where owners can view all loads and create new ones, and a driver management screen showing driver status and compliance at a glance.
 **Depends on:** Phase 30 (owner navigation shell)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 35-01-PLAN.md — Owner dashboard: KPI cards row (active loads count, drivers on duty, revenue this month, open alerts), active loads mini-list (top 5, each showing driver name + route + status badge), driver status grid (all drivers, colored dot for on-duty/off-duty/no-load), recent alerts list (maintenance due, expiring documents, incidents); calls existing getDashboardData + getActiveLoads actions via api-client; pull-to-refresh; skeleton loaders
@@ -335,7 +335,7 @@ Plans:
 
 **Goal:** Build the live map screen showing all vehicles as positioned markers using react-native-maps (replaces Leaflet which is web-only), with tap-to-select vehicle detail. Build the fleet communication screen where owners compose and send messages to individual drivers or broadcast to all drivers, with delivery status tracking.
 **Depends on:** Phase 35 (owner screens established)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 36-01-PLAN.md — Live map: full-screen MapView with status-colored VehicleMarker components, VehicleDetailSheet bottom sheet, 60s auto-refresh, fitToCoordinates on load, dark Google Maps style on Android
@@ -344,16 +344,19 @@ Plans:
 
 ---
 
-### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere ✅ COMPLETE 2026-03-25
+### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere — IN PROGRESS
 
 **Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
 **Depends on:** Phases 31-36 (all screens built)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 37-01-PLAN.md — Touch targets, FlashList audit, skeleton loaders
 - [x] 37-02-PLAN.md — Animations, haptics, dark mode
 - [x] 37-03-PLAN.md — Thumb-friendliness, tab labels, brand fixes
+- [ ] 37-04-PLAN.md — NativeWind migration (login + owner secondary screens)
+- [ ] 37-05-PLAN.md — Skeleton loaders (owner portal + load detail)
+- [ ] 37-06-PLAN.md — Accessibility labels (FABs, back buttons, KPI cards)
 
 ---
 
@@ -361,7 +364,7 @@ Plans:
 
 **Goal:** Set up the complete build and distribution infrastructure: EAS code signing for both platforms, GitHub Actions workflows for automated lint/test/build/deploy, TestFlight external beta for iOS, and Google Play Internal Track + open testing for Android. At the end of this phase, any push to main automatically ships an OTA update to beta testers, and tagged releases trigger full native builds submitted to stores.
 **Depends on:** Phase 37 (all screens polished and stable)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 38-01-PLAN.md — EAS build setup: eas.json with development (simulator + device, debug), preview (internal distribution, production JS), production (App Store/Play Store submission) profiles; iOS code signing: Apple Developer account credentials in EAS secrets, auto-managed provisioning profiles; Android signing: generate upload keystore, store in EAS secrets; run first production build for both platforms (eas build --platform all --profile production); verify .ipa and .aab are generated without errors
@@ -374,7 +377,7 @@ Plans:
 
 **Goal:** Prepare all store assets (icon, screenshots, descriptions, privacy policy), submit to both App Store and Google Play, manage review feedback, and execute a staged rollout. App is live on both stores with a 1.0.0 production release. Includes a rejection response playbook so review issues are resolved within 24 hours.
 **Depends on:** Phase 38 (production builds exist, beta testing complete)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 39-01-PLAN.md — Store assets: app icon 1024�—1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732�—2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024�—500; all screenshots show realistic data (use seed data), no placeholder text
