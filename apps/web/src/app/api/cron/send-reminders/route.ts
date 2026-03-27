@@ -55,10 +55,8 @@ export async function GET(request: NextRequest) {
   // 2. Get all active tenants (bypass RLS - system operation)
   let tenants: Array<{ id: string; name: string }>;
   try {
-    tenants = await prisma.$transaction(async (tx) => {
-      // @ts-ignore - Prisma 7 type issue
+    tenants = await prisma.$transaction(async (tx: any) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      // @ts-ignore - Prisma 7 type issue
       return tx.tenant.findMany({
         where: { isActive: true },
         select: { id: true, name: true },
@@ -84,11 +82,9 @@ export async function GET(request: NextRequest) {
 
     try {
       // Get tenant-scoped Prisma client
-      // @ts-ignore - Prisma 7 type issue
-      const tenantPrisma = prisma.$extends(withTenantRLS(tenant.id));
+      const tenantPrisma: any = prisma.$extends(withTenantRLS(tenant.id));
 
       // Find OWNER-role users (notification recipients)
-      // @ts-ignore - Extended client type inference
       const owners = await tenantPrisma.user.findMany({
         where: { role: 'OWNER', isActive: true },
         select: { email: true },
