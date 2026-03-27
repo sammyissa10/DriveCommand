@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,6 +13,7 @@ import { AlertTriangle, ChevronLeft, ShieldCheck } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type ComplianceResponse, type ComplianceAlert } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { ComplianceRowSkeleton } from '../../../components/skeletons/ComplianceRowSkeleton'
 
 // ---------------------------------------------------------------------------
 // AlertRow Component
@@ -135,8 +135,10 @@ export default function ComplianceScreen() {
         </View>
 
         {isLoading ? (
-          <View className="flex-1 items-center justify-center bg-slate-950">
-            <ActivityIndicator color="#38bdf8" size="large" />
+          <View className="pt-3">
+            <ComplianceRowSkeleton />
+            <ComplianceRowSkeleton />
+            <ComplianceRowSkeleton />
           </View>
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">

@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -15,6 +14,7 @@ import { AlertTriangle, ChevronLeft, ChevronRight, FileText } from 'lucide-react
 import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi, type InvoicesResponse, type InvoiceSummary } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
+import { InvoiceRowSkeleton } from '../../../../components/skeletons/InvoiceRowSkeleton'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -195,8 +195,10 @@ export default function InvoicesScreen() {
         </View>
 
         {isLoading ? (
-          <View className="flex-1 items-center justify-center bg-slate-950">
-            <ActivityIndicator color="#38bdf8" size="large" />
+          <View className="pt-3">
+            <InvoiceRowSkeleton />
+            <InvoiceRowSkeleton />
+            <InvoiceRowSkeleton />
           </View>
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">

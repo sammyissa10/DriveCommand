@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,6 +13,7 @@ import { AlertTriangle, ChevronLeft, DollarSign } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type PayrollResponse, type PayrollRecordSummary } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { PayrollRowSkeleton } from '../../../components/skeletons/PayrollRowSkeleton'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -163,8 +163,10 @@ export default function PayrollScreen() {
         </View>
 
         {isLoading ? (
-          <View className="flex-1 items-center justify-center bg-slate-950">
-            <ActivityIndicator color="#38bdf8" size="large" />
+          <View className="pt-3">
+            <PayrollRowSkeleton />
+            <PayrollRowSkeleton />
+            <PayrollRowSkeleton />
           </View>
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
