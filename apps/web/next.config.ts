@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(nextConfig, {
-  org: "onesquad-drivecommand",
+  org: "onesquad",
   project: "drivecommand-web",
   silent: !process.env.CI,
   widenClientFileUpload: true,
