@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 06 (next)
-Status: Phase 37 Plan 05 complete — Created 6 owner portal skeleton components (TruckCard, InvoiceRow, ComplianceRow, PayrollRow, CRMCard, LoadDetail); replaced ActivityIndicator spinners in all 5 owner list screens + load detail; confirmed fleet.tsx messages uses 4x MessageSkeleton.
-Last activity: 2026-03-27 - Completed 37-05: Owner portal skeleton loaders for compliance, CRM, trucks, payroll, invoices, load detail screens
-Stopped at: Completed 37-05-PLAN.md
+Current Plan: Phase 37 Plan 07 (next)
+Status: Phase 37 Plan 06 complete — Accessibility label coverage pass: added accessibilityLabel + accessibilityRole to all icon-only FABs, back buttons, send/compose buttons across both portals; KPICard composite labels with live data values; auto-fixed SyncStatusBar invalid accessibilityRole.
+Last activity: 2026-03-27 - Completed 37-06: Accessibility labels on all icon-only interactive elements and KPI cards
+Stopped at: Completed 37-06-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -83,6 +83,7 @@ Progress: [███████████████████████
 - Phase 37-03 (2026-03-25): Thumb-friendliness & navigation clarity — tab labels on both portals (height 72px), LoadCard 96px, avatar 40px, login sky-500, owner pill targets py-3 — 8 tasks, 6 files, ~8min
 - Phase 37-04 (2026-03-27): StyleSheet-to-NativeWind migration for 7 owner/shared screens (login, more/index, crm, trucks, compliance, payroll, invoices) — 3 tasks, 7 files
 - Phase 37-05 (2026-03-27): Owner portal skeleton loaders — 6 skeleton components (TruckCard, InvoiceRow, ComplianceRow, PayrollRow, CRMCard, LoadDetail), replaced ActivityIndicator spinners in 5 list screens + load detail — 2 tasks, 12 files, ~8min
+- Phase 37-06 (2026-03-27): Accessibility label coverage — accessibilityLabel + accessibilityRole on all icon-only FABs, back buttons, send/compose buttons; KPICard composite labels with live data values; auto-fixed SyncStatusBar invalid role — 2 tasks, 11 files, 3min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -139,6 +140,11 @@ Progress: [███████████████████████
 - Auth limiter keyed by IP to catch credential-stuffing before userId is known
 - Sentry enabled only in production (NODE_ENV=production / !__DEV__) to reduce dev noise
 - EAS Update uses appVersion runtime policy for predictable native/JS compatibility
+
+**Phase 37-06 decisions (Accessibility label coverage):**
+- Incidents "Report" button skipped — has Text child "Report" so screen reader reads it automatically; adding accessibilityLabel would be redundant
+- fleet.tsx compose (PenSquare) and chat back (ChevronLeft) buttons added even though not listed in plan — icon-only interactives that clearly need labels
+- SyncStatusBar accessibilityRole="status" auto-fixed to "alert" — "status" is not a valid RN AccessibilityRole type
 
 **Phase 37-04 decisions (StyleSheet-to-NativeWind migration):**
 - Dynamic hex+alpha colors (statusColor+'22', '#f59e0b40') cannot be expressed in NativeWind at runtime; kept as style props
