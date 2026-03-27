@@ -4,6 +4,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { RateConfirmationDocument, type RateConfirmationData } from '@/lib/pdf/rate-confirmation';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * GET /api/mobile/driver/loads/[id]/rate-confirmation
@@ -31,6 +32,9 @@ export async function GET(
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { id } = await params;
   const { driverId, tenantId } = auth;

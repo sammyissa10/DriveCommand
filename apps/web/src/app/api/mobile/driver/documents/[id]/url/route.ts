@@ -4,6 +4,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * GET /api/mobile/driver/documents/[id]/url
@@ -22,6 +23,9 @@ export async function GET(
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { driverId } = auth;
   const { id } = await params;

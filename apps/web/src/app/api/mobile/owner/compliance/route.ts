@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { documentMetadataSchema } from '@drivecommand/validation';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * GET /api/mobile/owner/compliance
@@ -20,6 +21,9 @@ export async function GET(req: NextRequest) {
   if (auth.role !== 'OWNER') {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId } = auth;
 

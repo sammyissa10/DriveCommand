@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 type Params = { params: Promise<{ recipientId: string }> };
 
@@ -20,6 +21,9 @@ export async function GET(req: NextRequest, { params }: Params) {
   if (auth.role !== 'OWNER') {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId, userId } = auth;
   const { recipientId } = await params;
@@ -133,6 +137,9 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (auth.role !== 'OWNER') {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId, userId } = auth;
   const { recipientId } = await params;

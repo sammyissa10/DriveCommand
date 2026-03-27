@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse, forbiddenResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * PATCH /api/mobile/driver/loads/[id]/revert
@@ -37,6 +38,9 @@ export async function PATCH(
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { id } = await params;
   const { driverId, tenantId } = auth;

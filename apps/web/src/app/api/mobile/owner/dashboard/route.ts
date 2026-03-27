@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
-  // TODO: Apply mobileLimiter to all /api/mobile/* routes
   const limited = await applyRateLimit(mobileLimiter, auth.userId);
   if (limited) return limited;
 
