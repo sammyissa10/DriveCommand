@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 04 (next)
-Status: Phase 37 Plan 03 complete — Tab labels on both driver+owner tab bars (height 64→72px), LoadCard 80→96px, AppHeader avatar 34→40px, login button blue-600→sky-500, owner loads pill tap targets py-2→py-3.
-Last activity: 2026-03-27 - Completed quick task 114: Add rate limiting to all /api/mobile/* routes and fix @ts-ignore in the send-reminders cron endpoint
-Stopped at: Completed quick-113-PLAN.md
+Current Plan: Phase 37 Plan 05 (next)
+Status: Phase 37 Plan 04 complete — Migrated login.tsx, more/index.tsx, crm, trucks, compliance, payroll, invoices screens from StyleSheet to NativeWind className. TouchableOpacity replaced with Pressable. Dynamic runtime colors kept as style props.
+Last activity: 2026-03-27 - Completed 37-04: StyleSheet-to-NativeWind migration for 7 owner/shared screens (login, more/index, crm, trucks, compliance, payroll, invoices)
+Stopped at: Completed 37-04-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -137,6 +137,12 @@ Progress: [███████████████████████
 - Auth limiter keyed by IP to catch credential-stuffing before userId is known
 - Sentry enabled only in production (NODE_ENV=production / !__DEV__) to reduce dev noise
 - EAS Update uses appVersion runtime policy for predictable native/JS compatibility
+
+**Phase 37-04 decisions (StyleSheet-to-NativeWind migration):**
+- Dynamic hex+alpha colors (statusColor+'22', '#f59e0b40') cannot be expressed in NativeWind at runtime; kept as style props
+- contentContainerStyle left as inline style object — NativeWind className does not apply to contentContainerStyle prop
+- map.tsx already had AnimatedScreen wrap in place; plan anticipated adding it but it was pre-existing (no-op)
+- Custom font families (Poppins-ExtraBold/SemiBold) kept as style prop — className cannot set custom fontFamily in RN
 
 **Phase 37-03 decisions (Thumb-friendliness):**
 - Avatar enlarged to 40x40px (Option A) rather than hitSlop approach — cleaner visually, no invisible tap zones
