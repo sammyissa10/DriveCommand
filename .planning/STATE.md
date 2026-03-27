@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 07 (next)
-Status: Phase 37 Plan 06 complete — Accessibility label coverage pass: added accessibilityLabel + accessibilityRole to all icon-only FABs, back buttons, send/compose buttons across both portals; KPICard composite labels with live data values; auto-fixed SyncStatusBar invalid accessibilityRole.
-Last activity: 2026-03-27 - Completed 37-06: Accessibility labels on all icon-only interactive elements and KPI cards
-Stopped at: Completed 37-06-PLAN.md
+Current Plan: Phase 37 complete — all 7 plans done
+Status: Phase 37 Plan 07 complete — Form validation UI standardized: text-red-500 on all validation text in CreateLoadSheet; border-red-500 conditional borders added to incidents/new.tsx category + description fields; DocumentUploadSheet file picker borderColor inline style migrated to NativeWind className.
+Last activity: 2026-03-27 - Completed 37-07: Form validation UI standardization across CreateLoadSheet, incidents/new.tsx, DocumentUploadSheet
+Stopped at: Completed 37-07-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -140,6 +140,12 @@ Progress: [███████████████████████
 - Auth limiter keyed by IP to catch credential-stuffing before userId is known
 - Sentry enabled only in production (NODE_ENV=production / !__DEV__) to reduce dev noise
 - EAS Update uses appVersion runtime policy for predictable native/JS compatibility
+
+**Phase 37-07 decisions (Form validation standardization):**
+- text-red-500 is the canonical validation color; text-red-400 was incorrect in CreateLoadSheet (all 8 occurrences fixed)
+- borderStyle: 'dashed' must remain as inline style (NativeWind does not support dashed borders); only borderColor migrated to className
+- expiryDate in DocumentUploadSheet is optional — no error-state border needed; left with hardcoded border
+- setField clears per-field errors onChange in CreateLoadSheet — acceptable; "submit-only" means errors SET only on submit, not triggered by input
 
 **Phase 37-06 decisions (Accessibility label coverage):**
 - Incidents "Report" button skipped — has Text child "Report" so screen reader reads it automatically; adding accessibilityLabel would be redundant
