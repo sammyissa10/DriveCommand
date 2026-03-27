@@ -1,9 +1,8 @@
 import React from 'react'
 import {
+  Pressable,
   ScrollView,
-  StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -138,44 +137,48 @@ export default function MoreScreen() {
   const router = useRouter()
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20 }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.pageHeader}>
-            <Text style={styles.pageTitle}>More</Text>
-            <Text style={styles.pageSubtitle}>Features & settings</Text>
+          <View className="mb-5">
+            <Text className="text-2xl font-extrabold text-slate-100">More</Text>
+            <Text className="text-[13px] text-slate-500 mt-0.5">Features & settings</Text>
           </View>
 
           {SECTIONS.map((section, sectionIndex) => (
-            <View key={section.header} style={sectionIndex > 0 ? styles.sectionGap : undefined}>
-              <Text style={styles.sectionHeader}>{section.header}</Text>
-              <View style={styles.card}>
+            <View key={section.header} className={sectionIndex > 0 ? 'mt-6' : ''}>
+              <Text className="text-[11px] font-semibold text-slate-500 tracking-widest uppercase mb-2">
+                {section.header}
+              </Text>
+              <View className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
                 {section.rows.map((row, rowIndex) => (
                   <View key={row.route}>
-                    <TouchableOpacity
-                      style={styles.row}
+                    <Pressable
+                      className="flex-row items-center px-3.5 py-3.5 active:opacity-75"
                       onPress={() => {
                         haptic.light()
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         router.push(row.route as any)
                       }}
-                      activeOpacity={0.7}
                     >
-                      <View style={[styles.iconWrap, { backgroundColor: row.iconBg }]}>
+                      <View
+                        className="w-10 h-10 rounded-[10px] items-center justify-center mr-3.5 shrink-0"
+                        style={{ backgroundColor: row.iconBg }}
+                      >
                         <row.Icon color={row.iconColor} size={20} />
                       </View>
-                      <View style={styles.rowText}>
-                        <Text style={styles.rowLabel}>{row.label}</Text>
-                        <Text style={styles.rowSubtitle}>{row.subtitle}</Text>
+                      <View className="flex-1">
+                        <Text className="text-[15px] font-semibold text-slate-100">{row.label}</Text>
+                        <Text className="text-xs text-slate-500 mt-0.5">{row.subtitle}</Text>
                       </View>
                       <ChevronRight color="#475569" size={18} />
-                    </TouchableOpacity>
+                    </Pressable>
                     {rowIndex < section.rows.length - 1 && (
-                      <View style={styles.separator} />
+                      <View className="h-px bg-slate-700 ml-[68px]" />
                     )}
                   </View>
                 ))}
@@ -183,90 +186,9 @@ export default function MoreScreen() {
             </View>
           ))}
 
-          <View style={styles.bottomPad} />
+          <View className="h-8" />
         </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-  },
-  pageHeader: {
-    marginBottom: 20,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#f1f5f9',
-  },
-  pageSubtitle: {
-    fontSize: 13,
-    color: '#64748b',
-    marginTop: 2,
-  },
-  sectionGap: {
-    marginTop: 24,
-  },
-  sectionHeader: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748b',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-  },
-  iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-    flexShrink: 0,
-  },
-  rowText: {
-    flex: 1,
-  },
-  rowLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#f1f5f9',
-  },
-  rowSubtitle: {
-    fontSize: 12,
-    color: '#64748b',
-    marginTop: 1,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#334155',
-    marginLeft: 68,
-  },
-  bottomPad: {
-    height: 32,
-  },
-})
