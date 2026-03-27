@@ -206,7 +206,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
           {/* 1. Customer */}
           <View className="mb-4">
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Customer <Text className="text-red-400">*</Text>
+              Customer <Text className="text-red-500">*</Text>
             </Text>
             <Pressable
               onPress={() => setCustomerPickerOpen(true)}
@@ -223,14 +223,14 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               <ChevronDown color="#64748b" size={16} />
             </Pressable>
             {errors.customerId && (
-              <Text className="text-red-400 text-xs mt-1">{errors.customerId}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.customerId}</Text>
             )}
           </View>
 
           {/* 2. Origin */}
           <View className="mb-4">
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Origin <Text className="text-red-400">*</Text>
+              Origin <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
               value={form.origin}
@@ -243,14 +243,14 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               autoCorrect={false}
             />
             {errors.origin && (
-              <Text className="text-red-400 text-xs mt-1">{errors.origin}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.origin}</Text>
             )}
           </View>
 
           {/* 3. Destination */}
           <View className="mb-4">
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Destination <Text className="text-red-400">*</Text>
+              Destination <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
               value={form.destination}
@@ -263,7 +263,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               autoCorrect={false}
             />
             {errors.destination && (
-              <Text className="text-red-400 text-xs mt-1">{errors.destination}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.destination}</Text>
             )}
           </View>
 
@@ -284,7 +284,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               } rounded-xl px-4 py-3 text-white text-sm`}
             />
             {errors.pickupDate && (
-              <Text className="text-red-400 text-xs mt-1">{errors.pickupDate}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.pickupDate}</Text>
             )}
           </View>
 
@@ -307,7 +307,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               />
             </View>
             {errors.rate && (
-              <Text className="text-red-400 text-xs mt-1">{errors.rate}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.rate}</Text>
             )}
           </View>
 
