@@ -227,6 +227,8 @@ export default function OwnerLoadsScreen() {
 
       {/* FAB — create load */}
       <Pressable
+        accessibilityLabel="Create load"
+        accessibilityRole="button"
         onPress={() => setCreateSheetVisible(true)}
         className="absolute bottom-6 right-6 w-14 h-14 bg-sky-600 rounded-full items-center justify-center shadow-lg active:opacity-80 active:scale-95"
         style={{ elevation: 4 }}

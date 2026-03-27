@@ -315,6 +315,8 @@ export default function OwnerFleetScreen() {
           <View className="flex-row items-center justify-between px-4 pt-3 pb-4">
             <Text className="text-2xl font-bold text-white">Messages</Text>
             <TouchableOpacity
+              accessibilityLabel="Compose message"
+              accessibilityRole="button"
               onPress={() => setSelectorVisible(true)}
               className="w-9 h-9 items-center justify-center rounded-xl bg-slate-800"
               hitSlop={8}
@@ -398,6 +400,8 @@ export default function OwnerFleetScreen() {
         {/* Header bar */}
         <View className="flex-row items-center bg-slate-900 border-b border-slate-800 py-3 px-4">
           <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
             onPress={() => setActiveConversation(null)}
             className="mr-2 p-1"
             hitSlop={8}
@@ -455,6 +459,8 @@ export default function OwnerFleetScreen() {
               returnKeyType="default"
             />
             <TouchableOpacity
+              accessibilityLabel="Send message"
+              accessibilityRole="button"
               onPress={handleSend}
               disabled={!canSend}
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}

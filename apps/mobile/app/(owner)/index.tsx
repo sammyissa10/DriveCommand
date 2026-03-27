@@ -265,6 +265,8 @@ export default function OwnerDashboard() {
 
       {/* FAB — Quick Create Load */}
       <Pressable
+        accessibilityLabel="Create load"
+        accessibilityRole="button"
         onPress={() => { haptic.medium(); router.push('/(owner)/loads' as any) }}
         style={{
           position: 'absolute',

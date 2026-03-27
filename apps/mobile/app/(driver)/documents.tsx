@@ -248,6 +248,8 @@ export default function DriverDocuments() {
       {/* FAB */}
       {documents.length > 0 && (
         <Pressable
+          accessibilityLabel="Add document"
+          accessibilityRole="button"
           onPress={() => setShowUpload(true)}
           style={{
             position: 'absolute',

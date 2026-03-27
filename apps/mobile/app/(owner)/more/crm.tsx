@@ -168,7 +168,13 @@ export default function CRMScreen() {
       <AnimatedScreen>
         {/* Header */}
         <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
-          <Pressable onPress={() => router.back()} className="mr-3" hitSlop={8}>
+          <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            onPress={() => router.back()}
+            className="mr-3"
+            hitSlop={8}
+          >
             <ChevronLeft color="#f1f5f9" size={24} />
           </Pressable>
           <Text className="text-lg font-bold text-slate-100">CRM</Text>
