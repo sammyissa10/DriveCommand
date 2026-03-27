@@ -335,7 +335,9 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
                 placeholder="e.g. CDL Class A"
                 placeholderTextColor="#475569"
                 editable={!isSubmitting}
-                className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm"
+                className={`bg-slate-800 border rounded-xl px-4 py-3 text-white text-sm ${
+                  errors.docName ? 'border-red-500' : 'border-slate-600'
+                }`}
               />
               {errors.docName ? <Text className="text-red-500 text-xs mt-1">{errors.docName}</Text> : null}
             </View>
@@ -380,7 +382,6 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
                   disabled={isSubmitting}
                   style={{
                     borderWidth: 1.5,
-                    borderColor: errors.file ? '#ef4444' : '#334155',
                     borderStyle: 'dashed',
                     borderRadius: 14,
                     paddingVertical: 28,
@@ -388,7 +389,7 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
                     gap: 8,
                     backgroundColor: '#0f172a',
                   }}
-                  className="active:opacity-70"
+                  className={`active:opacity-70 ${errors.file ? 'border-red-500' : 'border-slate-700'}`}
                 >
                   <Image color="#38bdf8" size={28} />
                   <Text style={{ color: '#38bdf8', fontWeight: '600', fontSize: 15 }}>Add Photo or File</Text>

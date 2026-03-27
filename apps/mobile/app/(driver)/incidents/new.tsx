@@ -226,7 +226,9 @@ export default function NewIncidentScreen() {
             </Text>
             <Pressable
               onPress={() => setCategoryModalVisible(true)}
-              className="flex-row items-center justify-between bg-slate-800 border border-slate-600 rounded-xl px-4 py-3.5 active:opacity-80"
+              className={`flex-row items-center justify-between bg-slate-800 border rounded-xl px-4 py-3.5 active:opacity-80 ${
+                errors.category ? 'border-red-500' : 'border-slate-600'
+              }`}
             >
               {selectedCategory ? (
                 <View className="flex-row items-center gap-2">
@@ -271,7 +273,9 @@ export default function NewIncidentScreen() {
               maxLength={500}
               placeholder="Describe the incident..."
               placeholderTextColor="#64748b"
-              className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-base"
+              className={`bg-slate-800 border rounded-xl px-4 py-3 text-white text-base ${
+                errors.description ? 'border-red-500' : 'border-slate-600'
+              }`}
               style={{ minHeight: 100, textAlignVertical: 'top' }}
             />
             <View className="flex-row justify-between mt-1">
