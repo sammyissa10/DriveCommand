@@ -9,6 +9,7 @@ interface KPICardProps {
   valueColor?: string
   trend?: { direction: 'up' | 'down' | 'neutral'; label: string }
   onPress?: () => void
+  accessibilityLabel?: string
 }
 
 const cardStyle = {
@@ -23,7 +24,7 @@ const innerStyle = {
   flex: 1,
 }
 
-export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress }: KPICardProps) {
+export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress, accessibilityLabel }: KPICardProps) {
   const trendColor =
     trend?.direction === 'up' ? '#34d399' :
     trend?.direction === 'down' ? '#f87171' : '#94a3b8'
@@ -58,6 +59,8 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
     return (
       <View style={{ flex: 1, ...cardStyle, overflow: 'hidden' }}>
         <Pressable
+          accessibilityLabel={accessibilityLabel}
+          accessibilityRole="button"
           style={innerStyle}
           android_ripple={{ color: 'rgba(255,255,255,0.05)', borderless: false }}
           onPress={onPress}
@@ -68,5 +71,13 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
     )
   }
 
-  return <View style={{ flex: 1, ...cardStyle, padding: 12 }}>{inner}</View>
+  return (
+    <View
+      accessibilityLabel={accessibilityLabel}
+      accessibilityRole="text"
+      style={{ flex: 1, ...cardStyle, padding: 12 }}
+    >
+      {inner}
+    </View>
+  )
 })

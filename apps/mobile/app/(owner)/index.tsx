@@ -157,6 +157,7 @@ export default function OwnerDashboard() {
             value={kpis.activeLoadsCount}
             valueColor="#38bdf8"
             icon={<Package color="#38bdf8" size={16} />}
+            accessibilityLabel={`${kpis.activeLoadsCount} active loads. Tap to view loads.`}
             onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
           />
           <KPICard
@@ -164,6 +165,7 @@ export default function OwnerDashboard() {
             value={availableDriversCount}
             valueColor="#38bdf8"
             icon={<UserCheck color="#38bdf8" size={16} />}
+            accessibilityLabel={`${availableDriversCount} available drivers. Tap to view drivers.`}
             onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
           />
         </View>
@@ -173,6 +175,7 @@ export default function OwnerDashboard() {
             value={formatRevenue(kpis.revenueThisMonth)}
             valueColor="#10b981"
             icon={<DollarSign color="#10b981" size={16} />}
+            accessibilityLabel={`${formatRevenue(kpis.revenueThisMonth)} revenue this month. Tap to view invoices.`}
             onPress={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
           />
           <KPICard
@@ -180,6 +183,7 @@ export default function OwnerDashboard() {
             value={kpis.openAlertsCount}
             valueColor={kpis.openAlertsCount > 0 ? '#fbbf24' : '#94a3b8'}
             icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={16} />}
+            accessibilityLabel={`${kpis.openAlertsCount} open compliance alerts. Tap to view compliance.`}
             onPress={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
           />
         </View>

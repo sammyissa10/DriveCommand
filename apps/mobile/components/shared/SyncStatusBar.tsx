@@ -36,7 +36,7 @@ export function SyncStatusBar({
       <View
         className="bg-sky-700 flex-row items-center justify-center"
         style={{ height: 32 }}
-        accessibilityRole="status"
+        accessibilityRole="alert"
         accessibilityLabel={`Syncing ${pendingCount} updates`}
       >
         <Text className="text-white text-xs font-semibold">
@@ -68,7 +68,7 @@ export function SyncStatusBar({
       <View
         className="bg-amber-600 flex-row items-center justify-center"
         style={{ height: 32 }}
-        accessibilityRole="status"
+        accessibilityRole="alert"
         accessibilityLabel={`Offline, ${pendingCount} updates pending`}
       >
         <Text className="text-white text-xs font-semibold">
