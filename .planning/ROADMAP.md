@@ -109,7 +109,7 @@ Plans:
 
 **Goal:** Allow dispatchers to build routes with multiple pickup and delivery stops in a defined sequence. Each stop tracks its own status (pending → arrived → departed), scheduled time, and coordinates. Geofencing auto-marks arrival when a driver's GPS ping falls within the stop radius. The driver app shows the active stop with navigation context.
 **Depends on:** None (extends existing Route model)
-**Plans:** 6 plans
+**Plans:** 7 plans
 
 Plans:
 - [x] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
@@ -348,15 +348,16 @@ Plans:
 
 **Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
 **Depends on:** Phases 31-36 (all screens built)
-**Plans:** 6 plans
+**Plans:** 7 plans
 
 Plans:
 - [x] 37-01-PLAN.md — Touch targets, FlashList audit, skeleton loaders
 - [x] 37-02-PLAN.md — Animations, haptics, dark mode
 - [x] 37-03-PLAN.md — Thumb-friendliness, tab labels, brand fixes
-- [ ] 37-04-PLAN.md — NativeWind migration (login + owner secondary screens)
-- [ ] 37-05-PLAN.md — Skeleton loaders (owner portal + load detail)
+- [ ] 37-04-PLAN.md — NativeWind migration (login + owner secondary screens + map.tsx AnimatedScreen)
+- [ ] 37-05-PLAN.md — Skeleton loaders (owner portal + load detail + fleet.tsx messages)
 - [ ] 37-06-PLAN.md — Accessibility labels (FABs, back buttons, KPI cards)
+- [ ] 37-07-PLAN.md — Form validation standardization (border-red-500 + text-red-500)
 
 ---
 
