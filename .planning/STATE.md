@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 Plan 05 (next)
-Status: Phase 37 Plan 04 complete — Migrated login.tsx, more/index.tsx, crm, trucks, compliance, payroll, invoices screens from StyleSheet to NativeWind className. TouchableOpacity replaced with Pressable. Dynamic runtime colors kept as style props.
-Last activity: 2026-03-27 - Completed 37-04: StyleSheet-to-NativeWind migration for 7 owner/shared screens (login, more/index, crm, trucks, compliance, payroll, invoices)
-Stopped at: Completed 37-04-PLAN.md
+Current Plan: Phase 37 Plan 06 (next)
+Status: Phase 37 Plan 05 complete — Created 6 owner portal skeleton components (TruckCard, InvoiceRow, ComplianceRow, PayrollRow, CRMCard, LoadDetail); replaced ActivityIndicator spinners in all 5 owner list screens + load detail; confirmed fleet.tsx messages uses 4x MessageSkeleton.
+Last activity: 2026-03-27 - Completed 37-05: Owner portal skeleton loaders for compliance, CRM, trucks, payroll, invoices, load detail screens
+Stopped at: Completed 37-05-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -81,6 +81,8 @@ Progress: [███████████████████████
 - Phase 37-01 (2026-03-25): Touch targets + FlashList audit + skeleton loaders — 48px touch targets enforced on 5 elements, FlatList→FlashList in messages+fleet, Skeleton base component + 5 skeleton variants, spinners→skeletons on 11 screens — 6 tasks, 20 files, 439s
 - Phase 37-02 (2026-03-25): Animations, haptics, dark mode — AnimatedScreen FadeIn on 15 screens, spring BottomSheet, haptics.ts with 14 trigger points, dark/light ScreenWrapper, Android ripple on all Pressables, KAV on fleet+HOS modal, React.memo on LoadCard/KPICard/DriverStatusChip — 8 tasks, 25 files, 817s
 - Phase 37-03 (2026-03-25): Thumb-friendliness & navigation clarity — tab labels on both portals (height 72px), LoadCard 96px, avatar 40px, login sky-500, owner pill targets py-3 — 8 tasks, 6 files, ~8min
+- Phase 37-04 (2026-03-27): StyleSheet-to-NativeWind migration for 7 owner/shared screens (login, more/index, crm, trucks, compliance, payroll, invoices) — 3 tasks, 7 files
+- Phase 37-05 (2026-03-27): Owner portal skeleton loaders — 6 skeleton components (TruckCard, InvoiceRow, ComplianceRow, PayrollRow, CRMCard, LoadDetail), replaced ActivityIndicator spinners in 5 list screens + load detail — 2 tasks, 12 files, ~8min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
