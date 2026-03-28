@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37 Polish and Performance — IN PROGRESS
 Current Plan: Phase 37 complete — all 7 plans done
 Status: Phase 37 Plan 07 complete — Form validation UI standardized: text-red-500 on all validation text in CreateLoadSheet; border-red-500 conditional borders added to incidents/new.tsx category + description fields; DocumentUploadSheet file picker borderColor inline style migrated to NativeWind className.
-Last activity: 2026-03-28 - Completed quick task 115: Enable RLS on _prisma_migrations and Tenant tables to fix Supabase security advisor warnings
+Last activity: 2026-03-28 - Completed quick task 116: Fix Unknown Driver name in mobile messages list
 Stopped at: Completed 37-07-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -714,6 +714,7 @@ None blocking immediate progress.
 | 113 | Production readiness hardening (debug route deletion, rate limiting, Sentry, EAS OTA) | 2026-03-26 | 5f6cf1c | [113-production-readiness-hardening](./quick/113-production-readiness-hardening/) |
 | 114 | Add rate limiting to all /api/mobile/* routes and fix @ts-ignore in the send-reminders cron endpoint | 2026-03-27 | 21a84e9 | [114-add-rate-limiting-to-all-api-mobile-rout](./quick/114-add-rate-limiting-to-all-api-mobile-rout/) |
 | 115 | Enable RLS on _prisma_migrations and Tenant tables to fix Supabase security advisor warnings | 2026-03-28 | ff323b6 | [115-enable-rls-on-prisma-migrations-and-tena](./quick/115-enable-rls-on-prisma-migrations-and-tena/) |
+| 116 | Fix Unknown Driver name in mobile messages list | 2026-03-28 | 534adb5 | [116-fix-unknown-driver-name-in-mobile-messag](./quick/116-fix-unknown-driver-name-in-mobile-messag/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
