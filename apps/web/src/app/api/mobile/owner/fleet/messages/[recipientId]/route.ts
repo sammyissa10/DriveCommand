@@ -10,7 +10,10 @@ type Params = { params: Promise<{ recipientId: string }> };
  * GET /api/mobile/owner/fleet/messages/[recipientId]
  *
  * Returns the full message thread between the owner and the specified recipient.
- * Special case: recipientId = "broadcast" returns all broadcast messages.
+ * Special cases:
+ *   - recipientId = "broadcast" returns all broadcast messages
+ *   - recipientId = "load:{uuid}" returns all messages for that load
+ *   - recipientId = "route:{uuid}" returns all messages for that route
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
@@ -28,14 +31,50 @@ export async function GET(req: NextRequest, { params }: Params) {
   const { tenantId, userId } = auth;
   const { recipientId } = await params;
   const isBroadcastThread = recipientId === 'broadcast';
+  const isLoadThread = recipientId.startsWith('load:');
+  const isRouteThread = recipientId.startsWith('route:');
 
   try {
+    let recipientName = 'All Drivers';
+
     const messages = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       if (isBroadcastThread) {
         return tx.fleetMessage.findMany({
           where: { tenantId, isBroadcast: true },
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            senderId: true,
+            senderRole: true,
+            body: true,
+            isBroadcast: true,
+            createdAt: true,
+          },
+        });
+      }
+
+      if (isLoadThread) {
+        const loadId = recipientId.slice(5); // after "load:"
+        return tx.fleetMessage.findMany({
+          where: { tenantId, loadId },
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            senderId: true,
+            senderRole: true,
+            body: true,
+            isBroadcast: true,
+            createdAt: true,
+          },
+        });
+      }
+
+      if (isRouteThread) {
+        const routeId = recipientId.slice(6); // after "route:"
+        return tx.fleetMessage.findMany({
+          where: { tenantId, routeId },
           orderBy: { createdAt: 'asc' },
           select: {
             id: true,
@@ -89,8 +128,29 @@ export async function GET(req: NextRequest, { params }: Params) {
     }
 
     // Resolve recipient name
-    let recipientName = 'All Drivers';
-    if (!isBroadcastThread) {
+    if (isLoadThread) {
+      const loadId = recipientId.slice(5);
+      const load = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.load.findUnique({
+          where: { id: loadId },
+          select: { loadNumber: true },
+        });
+      }, TX_OPTIONS);
+      recipientName = load ? `Load #${load.loadNumber}` : 'Load Thread';
+    } else if (isRouteThread) {
+      const routeId = recipientId.slice(6);
+      const route = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.route.findUnique({
+          where: { id: routeId },
+          select: { name: true, origin: true, destination: true },
+        });
+      }, TX_OPTIONS);
+      recipientName = route
+        ? route.name || `Route: ${route.origin} → ${route.destination}`
+        : 'Route Thread';
+    } else if (!isBroadcastThread) {
       const recipient = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findUnique({
@@ -124,7 +184,10 @@ export async function GET(req: NextRequest, { params }: Params) {
  * POST /api/mobile/owner/fleet/messages/[recipientId]
  *
  * Creates a new fleet message in this thread and sends a push notification.
- * Special case: recipientId = "broadcast" sends a broadcast message.
+ * Special cases:
+ *   - recipientId = "broadcast" sends a broadcast message
+ *   - recipientId = "load:{uuid}" creates a message with loadId set (no push)
+ *   - recipientId = "route:{uuid}" creates a message with routeId set (no push)
  *
  * Body: { body: string }
  *
@@ -144,6 +207,8 @@ export async function POST(req: NextRequest, { params }: Params) {
   const { tenantId, userId } = auth;
   const { recipientId } = await params;
   const isBroadcast = recipientId === 'broadcast';
+  const isLoadThread = recipientId.startsWith('load:');
+  const isRouteThread = recipientId.startsWith('route:');
 
   let reqBody: unknown;
   try {
@@ -177,18 +242,42 @@ export async function POST(req: NextRequest, { params }: Params) {
       ? [sender.firstName, sender.lastName].filter(Boolean).join(' ') || sender.email || 'Owner'
       : 'Owner';
 
+    // Build create data based on thread type
+    type MessageCreateData = {
+      tenantId: string;
+      senderId: string;
+      senderRole: string;
+      body: string;
+      recipientId: string | null;
+      isBroadcast: boolean;
+      loadId?: string;
+      routeId?: string;
+    };
+
+    const createData: MessageCreateData = {
+      tenantId,
+      senderId: userId,
+      senderRole: 'OWNER',
+      body: messageBody,
+      recipientId: null,
+      isBroadcast: false,
+    };
+
+    if (isBroadcast) {
+      createData.isBroadcast = true;
+    } else if (isLoadThread) {
+      createData.loadId = recipientId.slice(5); // after "load:"
+    } else if (isRouteThread) {
+      createData.routeId = recipientId.slice(6); // after "route:"
+    } else {
+      createData.recipientId = recipientId;
+    }
+
     const created = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       return tx.fleetMessage.create({
-        data: {
-          tenantId,
-          senderId: userId,
-          senderRole: 'OWNER',
-          body: messageBody,
-          recipientId: isBroadcast ? null : recipientId,
-          isBroadcast,
-        },
+        data: createData,
         select: {
           id: true,
           senderId: true,
@@ -201,6 +290,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     }, TX_OPTIONS);
 
     // Send push notifications — fire and forget
+    // Load/route threads have no single recipient so skip push for those
     const pushTitle = 'Fleet Message';
     const pushBodyText = messageBody.slice(0, 100);
 
@@ -216,7 +306,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       for (const driver of drivers) {
         void sendPushToUser(driver.id, { title: pushTitle, body: pushBodyText });
       }
-    } else {
+    } else if (!isLoadThread && !isRouteThread) {
       void sendPushToUser(recipientId, { title: pushTitle, body: pushBodyText });
     }
 

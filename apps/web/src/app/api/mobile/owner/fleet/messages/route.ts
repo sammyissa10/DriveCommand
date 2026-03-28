@@ -8,7 +8,8 @@ import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
  * GET /api/mobile/owner/fleet/messages
  *
  * Returns conversations grouped by recipient, each with the last message preview
- * and timestamp. Captures both sent and received messages for the owner.
+ * and timestamp. Captures both sent and received messages for the owner, plus
+ * load-scoped and route-scoped messages (loadId/routeId set, recipientId null).
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
@@ -36,6 +37,8 @@ export async function GET(req: NextRequest) {
             { senderId: userId },
             { recipientId: userId },
             { isBroadcast: true },
+            { loadId: { not: null } },
+            { routeId: { not: null } },
           ],
         },
         orderBy: { createdAt: 'asc' },
@@ -43,6 +46,8 @@ export async function GET(req: NextRequest) {
           id: true,
           senderId: true,
           recipientId: true,
+          loadId: true,
+          routeId: true,
           body: true,
           isBroadcast: true,
           createdAt: true,
@@ -53,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Collect all participant IDs that need name resolution
     const participantIds = new Set<string>();
     for (const m of messages) {
-      if (!m.isBroadcast) {
+      if (!m.isBroadcast && !m.loadId && !m.routeId) {
         if (m.senderId && m.senderId !== userId) participantIds.add(m.senderId);
         if (m.recipientId && m.recipientId !== userId) participantIds.add(m.recipientId);
       }
@@ -72,6 +77,41 @@ export async function GET(req: NextRequest) {
       for (const u of users) {
         const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
         nameMap.set(u.id, name);
+      }
+    }
+
+    // Collect unique loadIds and routeIds for name resolution
+    const loadIds = [...new Set(messages.filter((m) => m.loadId).map((m) => m.loadId as string))];
+    const routeIds = [...new Set(messages.filter((m) => m.routeId).map((m) => m.routeId as string))];
+
+    const loadNameMap = new Map<string, string>();
+    const routeNameMap = new Map<string, string>();
+
+    if (loadIds.length > 0) {
+      const loads = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.load.findMany({
+          where: { id: { in: loadIds } },
+          select: { id: true, loadNumber: true },
+        });
+      }, TX_OPTIONS);
+
+      for (const l of loads) {
+        loadNameMap.set(l.id, `Load #${l.loadNumber}`);
+      }
+    }
+
+    if (routeIds.length > 0) {
+      const routes = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.route.findMany({
+          where: { id: { in: routeIds } },
+          select: { id: true, name: true, origin: true, destination: true },
+        });
+      }, TX_OPTIONS);
+
+      for (const r of routes) {
+        routeNameMap.set(r.id, r.name || `Route: ${r.origin} → ${r.destination}`);
       }
     }
 
@@ -97,8 +137,20 @@ export async function GET(req: NextRequest) {
         recipientId = null;
         recipientName = 'All Drivers';
         isBroadcast = true;
+      } else if (m.loadId && !m.recipientId) {
+        // Load-scoped message: group by load
+        key = `load:${m.loadId}`;
+        recipientId = `load:${m.loadId}`;
+        recipientName = loadNameMap.get(m.loadId) ?? 'Load Thread';
+        isBroadcast = false;
+      } else if (m.routeId && !m.recipientId) {
+        // Route-scoped message: group by route
+        key = `route:${m.routeId}`;
+        recipientId = `route:${m.routeId}`;
+        recipientName = routeNameMap.get(m.routeId) ?? 'Route Thread';
+        isBroadcast = false;
       } else {
-        // The "other" participant
+        // The "other" participant (direct message, possibly with loadId/routeId set)
         const otherId = m.senderId === userId ? m.recipientId : m.senderId;
         key = otherId ?? 'unknown';
         recipientId = otherId ?? null;
