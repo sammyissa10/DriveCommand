@@ -14,7 +14,7 @@ import { FlashList } from '@shopify/flash-list'
 import { useFocusEffect, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft, Megaphone, MessageSquare, PenSquare, Send } from 'lucide-react-native'
+import { ChevronLeft, MapPin, Megaphone, MessageSquare, Package, PenSquare, Send } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import {
   ownerApi,
@@ -75,6 +75,14 @@ interface ConversationRowProps {
 }
 
 function ConversationRow({ conversation, onPress }: ConversationRowProps) {
+  const isLoad = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('load:')
+  const isRoute = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('route:')
+
+  let avatarBg = 'bg-slate-700'
+  if (conversation.isBroadcast) avatarBg = 'bg-sky-600'
+  else if (isLoad) avatarBg = 'bg-emerald-600'
+  else if (isRoute) avatarBg = 'bg-amber-600'
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -82,13 +90,13 @@ function ConversationRow({ conversation, onPress }: ConversationRowProps) {
       className="flex-row items-center px-4 py-3 border-b border-slate-800"
     >
       {/* Avatar */}
-      <View
-        className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
-          conversation.isBroadcast ? 'bg-sky-600' : 'bg-slate-700'
-        }`}
-      >
+      <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${avatarBg}`}>
         {conversation.isBroadcast ? (
           <Megaphone size={18} color="#ffffff" />
+        ) : isLoad ? (
+          <Package size={18} color="#ffffff" />
+        ) : isRoute ? (
+          <MapPin size={18} color="#ffffff" />
         ) : (
           <Text className="text-white text-xs font-bold">
             {getInitials(conversation.recipientName)}
@@ -155,6 +163,7 @@ export default function OwnerFleetScreen() {
   const [selectorVisible, setSelectorVisible] = useState(false)
   const [inputText, setInputText] = useState('')
   const [threadMessages, setThreadMessages] = useState<ConversationMessage[]>([])
+  const [threadLoading, setThreadLoading] = useState(false)
 
   const flatListRef = useRef<FlashList<ConversationMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -207,11 +216,14 @@ export default function OwnerFleetScreen() {
 
   const fetchThread = useCallback(async () => {
     if (!token || !activeConversation) return
+    setThreadLoading(true)
     try {
       const data = await ownerApi.getConversationThread(token, activeConversation.recipientId)
       setThreadMessages(data.messages)
     } catch {
       // Silent background refresh failure
+    } finally {
+      setThreadLoading(false)
     }
   }, [token, activeConversation])
 
@@ -227,6 +239,7 @@ export default function OwnerFleetScreen() {
   useEffect(() => {
     if (activeConversation) {
       setThreadMessages([])
+      setThreadLoading(true)
       fetchThread()
     }
   }, [activeConversation?.recipientId]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -392,7 +405,6 @@ export default function OwnerFleetScreen() {
   // ---------------------------------------------------------------------------
 
   const canSend = inputText.trim().length > 0 && !isSending
-  const isThreadLoading = threadMessages.length === 0
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
@@ -418,7 +430,7 @@ export default function OwnerFleetScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
           {/* Loading state */}
-          {isThreadLoading ? (
+          {threadLoading ? (
             <View className="flex-1 pt-2">
               <MessageSkeleton isDriver={false} />
               <MessageSkeleton isDriver={true} />
