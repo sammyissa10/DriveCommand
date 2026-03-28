@@ -256,31 +256,41 @@ export async function getAllTickets(filters?: {
   if (tickets.length === 0) return [];
 
   const userIds = [...new Set(tickets.map((t) => t.submittedBy))];
-  const tenantIds = [...new Set(tickets.map((t) => t.tenantId))];
+  const tenantIds = [...new Set(tickets.map((t) => t.tenantId).filter(Boolean))] as string[];
 
   type RawUser = { id: string; email: string; firstName: string | null; lastName: string | null };
   type RawTenant = { id: string; name: string };
+  type RawAuthUser = { id: string; email: string; raw_user_meta_data: { firstName?: string; lastName?: string } };
 
-  const [users, tenants] = await Promise.all([
+  const [users, tenants, authUsers] = await Promise.all([
     prisma.$queryRaw<RawUser[]>`
       SELECT id, email, "firstName", "lastName" FROM "User" WHERE id = ANY(${userIds}::uuid[])
     `,
-    prisma.$queryRaw<RawTenant[]>`
-      SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])
+    tenantIds.length > 0
+      ? prisma.$queryRaw<RawTenant[]>`SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])`
+      : Promise.resolve([] as RawTenant[]),
+    prisma.$queryRaw<RawAuthUser[]>`
+      SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(${userIds}::uuid[])
     `,
   ]);
 
   const userMap = new Map(users.map((u) => [u.id, u]));
   const tenantMap = new Map(tenants.map((t) => [t.id, t]));
+  const authUserMap = new Map(authUsers.map((u) => [u.id, u]));
 
   return tickets.map((ticket) => {
     const user = userMap.get(ticket.submittedBy);
-    const tenant = tenantMap.get(ticket.tenantId);
+    const authUser = authUserMap.get(ticket.submittedBy);
+    const tenant = ticket.tenantId ? tenantMap.get(ticket.tenantId) : null;
+    const meta = authUser?.raw_user_meta_data ?? {};
+    const nameFromAuth = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || authUser?.email;
     return {
       ...ticket,
-      submitterEmail: user?.email ?? 'Unknown',
-      submitterName: user ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email : 'Unknown',
-      tenantName: tenant?.name ?? 'Unknown',
+      submitterEmail: user?.email ?? authUser?.email ?? 'Unknown',
+      submitterName: user
+        ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email
+        : nameFromAuth ?? 'Unknown',
+      tenantName: tenant?.name ?? (ticket.tenantId ? 'Unknown' : 'DriveCommand (Admin)'),
     };
   });
 }
