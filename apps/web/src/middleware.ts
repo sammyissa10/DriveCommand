@@ -86,7 +86,8 @@ export default async function middleware(request: NextRequest) {
   const meta = user.user_metadata || {};
 
   // User is authenticated but has no tenant assigned
-  if (!meta.tenantId) {
+  // System admins have no tenantId by design — skip onboarding redirect for them
+  if (!meta.tenantId && !meta.isSystemAdmin) {
     const isOnboardingPath = pathname.startsWith('/onboarding');
     const isApiPath = pathname.startsWith('/api');
 
