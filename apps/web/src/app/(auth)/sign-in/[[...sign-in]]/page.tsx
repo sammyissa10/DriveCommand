@@ -103,16 +103,6 @@ export default function SignInPage() {
         </form>
       </div>
 
-      {/* Demo credentials box */}
-      <div className="w-full rounded-lg border border-status-info/30 bg-status-info-bg p-4 text-sm">
-        <p className="mb-2 font-semibold text-status-info-foreground">Demo Credentials</p>
-        <p className="text-status-info-foreground/80">
-          <span className="font-medium">Email:</span> demo@drivecommand.com
-        </p>
-        <p className="text-status-info-foreground/80">
-          <span className="font-medium">Password:</span> demo1234
-        </p>
-      </div>
     </div>
   );
 }
