@@ -65,12 +65,12 @@ export async function GET(req: NextRequest) {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findMany({
           where: { id: { in: Array.from(participantIds) } },
-          select: { id: true, firstName: true, lastName: true },
+          select: { id: true, firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
 
       for (const u of users) {
-        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
+        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
         nameMap.set(u.id, name);
       }
     }
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
         const otherId = m.senderId === userId ? m.recipientId : m.senderId;
         key = otherId ?? 'unknown';
         recipientId = otherId ?? null;
-        recipientName = otherId ? (nameMap.get(otherId) ?? 'Unknown Driver') : 'Unknown Driver';
+        recipientName = otherId ? (nameMap.get(otherId) ?? 'Driver') : 'Driver';
         isBroadcast = false;
       }
 
@@ -228,11 +228,11 @@ export async function POST(req: NextRequest) {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findUnique({
           where: { id: recipientId },
-          select: { firstName: true, lastName: true },
+          select: { firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
       if (recipient) {
-        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
+        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || recipient.email || 'Driver';
       }
     }
 

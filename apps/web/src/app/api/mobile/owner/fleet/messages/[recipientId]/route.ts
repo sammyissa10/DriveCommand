@@ -78,12 +78,12 @@ export async function GET(req: NextRequest, { params }: Params) {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findMany({
           where: { id: { in: senderIds } },
-          select: { id: true, firstName: true, lastName: true },
+          select: { id: true, firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
 
       for (const u of users) {
-        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown';
+        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || 'Driver';
         nameMap.set(u.id, name);
       }
     }
@@ -95,11 +95,11 @@ export async function GET(req: NextRequest, { params }: Params) {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findUnique({
           where: { id: recipientId },
-          select: { firstName: true, lastName: true },
+          select: { firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
       if (recipient) {
-        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
+        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || recipient.email || 'Driver';
       }
     }
 
@@ -107,7 +107,7 @@ export async function GET(req: NextRequest, { params }: Params) {
       id: m.id,
       senderId: m.senderId,
       senderRole: m.senderRole,
-      senderName: nameMap.get(m.senderId) ?? 'Unknown',
+      senderName: nameMap.get(m.senderId) ?? 'Driver',
       body: m.body,
       isBroadcast: m.isBroadcast,
       createdAt: m.createdAt.toISOString(),
@@ -169,12 +169,12 @@ export async function POST(req: NextRequest, { params }: Params) {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.user.findUnique({
         where: { id: userId },
-        select: { firstName: true, lastName: true },
+        select: { firstName: true, lastName: true, email: true },
       });
     }, TX_OPTIONS);
 
     const senderName = sender
-      ? [sender.firstName, sender.lastName].filter(Boolean).join(' ') || 'Owner'
+      ? [sender.firstName, sender.lastName].filter(Boolean).join(' ') || sender.email || 'Owner'
       : 'Owner';
 
     const created = await prisma.$transaction(async (tx) => {
