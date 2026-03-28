@@ -77,8 +77,8 @@ export function SupportTicketModal() {
   const [capturing, setCapturing] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  // Only render for authenticated users
-  if (!user) return null;
+  // Only render for authenticated users with a tenant (sysadmins have no tenantId)
+  if (!user || !user.tenantId) return null;
 
   function resetForm() {
     setCategory('GENERAL');
