@@ -140,7 +140,7 @@ export async function createSupportTicket(data: {
   }
 
   const { category, priority, title, description, fromPage, platform, attachmentUrl, attachmentKey, screenshotKey } = validation.data;
-  const tenantId = session.tenantId;
+  const tenantId = session.tenantId || null;
 
   try {
     const ticketNumber = await generateTicketNumber();
