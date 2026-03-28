@@ -42956,7 +42956,7 @@ export namespace Prisma {
   export type SupportTicketGroupByOutputType = {
     id: string
     ticketNumber: string
-    tenantId: string
+    tenantId: string | null
     submittedBy: string
     fromPage: string
     category: $Enums.SupportTicketCategory
@@ -43083,7 +43083,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ticketNumber: string
-      tenantId: string
+      tenantId: string | null
       submittedBy: string
       fromPage: string
       category: $Enums.SupportTicketCategory
@@ -56154,7 +56154,7 @@ export namespace Prisma {
     NOT?: SupportTicketWhereInput | SupportTicketWhereInput[]
     id?: UuidFilter<"SupportTicket"> | string
     ticketNumber?: StringFilter<"SupportTicket"> | string
-    tenantId?: UuidFilter<"SupportTicket"> | string
+    tenantId?: UuidNullableFilter<"SupportTicket"> | string | null
     submittedBy?: UuidFilter<"SupportTicket"> | string
     fromPage?: StringFilter<"SupportTicket"> | string
     category?: EnumSupportTicketCategoryFilter<"SupportTicket"> | $Enums.SupportTicketCategory
@@ -56175,7 +56175,7 @@ export namespace Prisma {
   export type SupportTicketOrderByWithRelationInput = {
     id?: SortOrder
     ticketNumber?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     submittedBy?: SortOrder
     fromPage?: SortOrder
     category?: SortOrder
@@ -56199,7 +56199,7 @@ export namespace Prisma {
     AND?: SupportTicketWhereInput | SupportTicketWhereInput[]
     OR?: SupportTicketWhereInput[]
     NOT?: SupportTicketWhereInput | SupportTicketWhereInput[]
-    tenantId?: UuidFilter<"SupportTicket"> | string
+    tenantId?: UuidNullableFilter<"SupportTicket"> | string | null
     submittedBy?: UuidFilter<"SupportTicket"> | string
     fromPage?: StringFilter<"SupportTicket"> | string
     category?: EnumSupportTicketCategoryFilter<"SupportTicket"> | $Enums.SupportTicketCategory
@@ -56220,7 +56220,7 @@ export namespace Prisma {
   export type SupportTicketOrderByWithAggregationInput = {
     id?: SortOrder
     ticketNumber?: SortOrder
-    tenantId?: SortOrder
+    tenantId?: SortOrderInput | SortOrder
     submittedBy?: SortOrder
     fromPage?: SortOrder
     category?: SortOrder
@@ -56247,7 +56247,7 @@ export namespace Prisma {
     NOT?: SupportTicketScalarWhereWithAggregatesInput | SupportTicketScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"SupportTicket"> | string
     ticketNumber?: StringWithAggregatesFilter<"SupportTicket"> | string
-    tenantId?: UuidWithAggregatesFilter<"SupportTicket"> | string
+    tenantId?: UuidNullableWithAggregatesFilter<"SupportTicket"> | string | null
     submittedBy?: UuidWithAggregatesFilter<"SupportTicket"> | string
     fromPage?: StringWithAggregatesFilter<"SupportTicket"> | string
     category?: EnumSupportTicketCategoryWithAggregatesFilter<"SupportTicket"> | $Enums.SupportTicketCategory
@@ -60236,7 +60236,7 @@ export namespace Prisma {
   export type SupportTicketCreateInput = {
     id?: string
     ticketNumber: string
-    tenantId: string
+    tenantId?: string | null
     submittedBy: string
     fromPage: string
     category?: $Enums.SupportTicketCategory
@@ -60257,7 +60257,7 @@ export namespace Prisma {
   export type SupportTicketUncheckedCreateInput = {
     id?: string
     ticketNumber: string
-    tenantId: string
+    tenantId?: string | null
     submittedBy: string
     fromPage: string
     category?: $Enums.SupportTicketCategory
@@ -60278,7 +60278,7 @@ export namespace Prisma {
   export type SupportTicketUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketNumber?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     submittedBy?: StringFieldUpdateOperationsInput | string
     fromPage?: StringFieldUpdateOperationsInput | string
     category?: EnumSupportTicketCategoryFieldUpdateOperationsInput | $Enums.SupportTicketCategory
@@ -60299,7 +60299,7 @@ export namespace Prisma {
   export type SupportTicketUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketNumber?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     submittedBy?: StringFieldUpdateOperationsInput | string
     fromPage?: StringFieldUpdateOperationsInput | string
     category?: EnumSupportTicketCategoryFieldUpdateOperationsInput | $Enums.SupportTicketCategory
@@ -60320,7 +60320,7 @@ export namespace Prisma {
   export type SupportTicketCreateManyInput = {
     id?: string
     ticketNumber: string
-    tenantId: string
+    tenantId?: string | null
     submittedBy: string
     fromPage: string
     category?: $Enums.SupportTicketCategory
@@ -60341,7 +60341,7 @@ export namespace Prisma {
   export type SupportTicketUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketNumber?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     submittedBy?: StringFieldUpdateOperationsInput | string
     fromPage?: StringFieldUpdateOperationsInput | string
     category?: EnumSupportTicketCategoryFieldUpdateOperationsInput | $Enums.SupportTicketCategory
@@ -60362,7 +60362,7 @@ export namespace Prisma {
   export type SupportTicketUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     ticketNumber?: StringFieldUpdateOperationsInput | string
-    tenantId?: StringFieldUpdateOperationsInput | string
+    tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     submittedBy?: StringFieldUpdateOperationsInput | string
     fromPage?: StringFieldUpdateOperationsInput | string
     category?: EnumSupportTicketCategoryFieldUpdateOperationsInput | $Enums.SupportTicketCategory

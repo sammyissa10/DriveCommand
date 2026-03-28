@@ -966,7 +966,7 @@ enum TicketMessageSenderType {
 model SupportTicket {
   id           String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   ticketNumber String                @unique
-  tenantId     String                @db.Uuid
+  tenantId     String?               @db.Uuid
   submittedBy  String                @db.Uuid
   fromPage     String
   category     SupportTicketCategory @default(GENERAL)
