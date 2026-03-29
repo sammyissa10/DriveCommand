@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-29 - Completed quick-121: support ticket page label mapping + screenshot attachment
+Last activity: 2026-03-29 - Completed quick-123: Mobile owner dashboard visual refresh — native depth and elevation
 Stopped at: Completed quick-121-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -733,6 +733,9 @@ None blocking immediate progress.
 | 118 | Add routeId FK to Load model so loads can be linked to routes. Migration, API update (route endpoint fetches linked loads), owner load creation/edit UI to assign a load to a route, and the My Route detail screen then shows real loads in the timeline. | 2026-03-29 | 5001517 | [118-add-routeid-fk-to-load-model-so-loads-ca](./quick/118-add-routeid-fk-to-load-model-so-loads-ca/) |
 | 119 | Add My Route card to driver home screen — emerald card above Active Load, shows route name/origin/destination/status badge, navigates to my-route screen, hidden when no route assigned | 2026-03-29 | 95d091f | [119-add-my-route-card-to-driver-home-screen-](./quick/119-add-my-route-card-to-driver-home-screen-/) |
 | 120 | Date conflict validation: block driver double-booking on same scheduledDate in route create/edit; amber warning in load form when load dates don't align with assigned route's scheduledDate | 2026-03-29 | 3249478 | [120-date-conflict-validation-1-when-creating](./quick/120-date-conflict-validation-1-when-creating/) |
+| 121 | Support ticket page label mapping and screenshot attachment to SupportTicketFAB | 2026-03-29 | d6cde24 | [121-support-ticket-improvements-1-convert-ra](./quick/121-support-ticket-improvements-1-convert-ra/) |
+| 122 | Rework SupportTicketFAB screenshot UX to pre-capture flow | 2026-03-29 | 38b0f64 | [122-rework-supportticketfab-screenshot-ux-re](./quick/122-rework-supportticketfab-screenshot-ux-re/) |
+| 123 | Mobile owner dashboard visual refresh — make the UI feel native mobile instead of web-browsery | 2026-03-29 | c212088 | [123-mobile-owner-dashboard-visual-refresh-ma](./quick/123-mobile-owner-dashboard-visual-refresh-ma/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
