@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
+  Animated,
   Dimensions,
   Pressable,
   RefreshControl,
@@ -12,12 +13,16 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import {
   AlertTriangle,
+  Building2,
   DollarSign,
+  FileText,
   Package,
   Plus,
   Truck,
   UserCheck,
+  UserPlus,
   Users,
+  X,
 } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { ownerApi } from '@drivecommand/api-client'
@@ -77,9 +82,35 @@ function formatRevenue(amount: number): string {
 // Screen
 // ---------------------------------------------------------------------------
 
+const CREATE_ACTIONS = [
+  { key: 'load',     label: 'New Load',      icon: Package,   route: '/(owner)/loads?create=1',       color: '#38bdf8' },
+  { key: 'driver',   label: 'Invite Driver', icon: UserPlus,  route: '/(owner)/drivers/invite',       color: '#a78bfa' },
+  { key: 'customer', label: 'New Customer',  icon: Building2, route: '/(owner)/more/crm/new',         color: '#34d399' },
+  { key: 'invoice',  label: 'New Invoice',   icon: FileText,  route: '/(owner)/more/invoices/new',    color: '#fbbf24' },
+  { key: 'truck',    label: 'Add Truck',     icon: Truck,     route: '/(owner)/more/trucks/new',      color: '#f87171' },
+] as const
+
 export default function OwnerDashboard() {
   const { token } = useAuthContext()
   const router = useRouter()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const fadeAnim = React.useRef(new Animated.Value(0)).current
+
+  function openMenu() {
+    haptic.medium()
+    setMenuOpen(true)
+    Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start()
+  }
+
+  function closeMenu() {
+    Animated.timing(fadeAnim, { toValue: 0, duration: 140, useNativeDriver: true }).start(() => setMenuOpen(false))
+  }
+
+  function handleAction(route: string) {
+    closeMenu()
+    haptic.light()
+    setTimeout(() => router.push(route as any), 150)
+  }
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDashboardData>({
     queryKey: ['owner-dashboard'],
@@ -102,7 +133,8 @@ export default function OwnerDashboard() {
   if (isError) {
     return (
       <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center px-6"
+        style={{ flex: 1, backgroundColor: '#080f1a' }}
+        className="items-center justify-center px-6"
         edges={['bottom', 'left', 'right']}
       >
         <AlertTriangle color="#f87171" size={40} />
@@ -129,7 +161,7 @@ export default function OwnerDashboard() {
   ).length
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#080f1a' }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       <ScrollView
         className="flex-1"
@@ -146,8 +178,8 @@ export default function OwnerDashboard() {
       >
         {/* Header */}
         <View className="mb-5">
-          <Text className="text-2xl font-bold text-white">Dashboard</Text>
-          <Text className="text-slate-400 text-sm mt-0.5">Fleet overview</Text>
+          <Text className="text-3xl font-bold text-white">Dashboard</Text>
+          <Text className="text-slate-500 text-sm mt-0.5">Fleet overview</Text>
         </View>
 
         {/* 2x2 KPI Grid */}
@@ -192,17 +224,17 @@ export default function OwnerDashboard() {
         <View
           style={{
             height: 1,
-            backgroundColor: '#334155',
+            backgroundColor: '#1e293b',
             marginBottom: 14,
           }}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Truck color="#64748b" size={15} style={{ marginRight: 6 }} />
-          <Text className="text-white font-semibold text-base">Active Loads</Text>
+          <Truck color="#38bdf8" size={15} style={{ marginRight: 6 }} />
+          <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' }}>Active Loads</Text>
         </View>
 
         {activeLoads.length === 0 ? (
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-5 items-center mb-5">
+          <View style={{ backgroundColor: '#111827', borderWidth: 0, borderRadius: 12, padding: 20, alignItems: 'center', marginBottom: 20 }}>
             <Package color="#475569" size={32} />
             <Text className="text-slate-400 text-sm mt-3 text-center">No active loads right now</Text>
           </View>
@@ -227,13 +259,13 @@ export default function OwnerDashboard() {
         <View
           style={{
             height: 1,
-            backgroundColor: '#334155',
+            backgroundColor: '#1e293b',
             marginBottom: 14,
           }}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Users color="#64748b" size={15} style={{ marginRight: 6 }} />
-          <Text className="text-white font-semibold text-base">Driver Status</Text>
+          <Users color="#a78bfa" size={15} style={{ marginRight: 6 }} />
+          <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' }}>Driver Status</Text>
         </View>
 
         {(() => {
@@ -242,7 +274,7 @@ export default function OwnerDashboard() {
           )
           if (activeDrivers.length === 0) {
             return (
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 items-center">
+              <View style={{ backgroundColor: '#111827', borderWidth: 0, borderRadius: 12, padding: 16, alignItems: 'center' }}>
                 <Text className="text-slate-400 text-sm">All drivers are currently off duty</Text>
               </View>
             )
@@ -267,11 +299,78 @@ export default function OwnerDashboard() {
         })()}
       </ScrollView>
 
-      {/* FAB — Quick Create Load */}
+      {/* Speed-dial backdrop */}
+      {menuOpen && (
+        <Pressable
+          onPress={closeMenu}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        >
+          <Animated.View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.55)',
+              opacity: fadeAnim,
+            }}
+          />
+        </Pressable>
+      )}
+
+      {/* Speed-dial action items */}
+      {menuOpen && (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            bottom: 88,
+            right: 20,
+            gap: 10,
+            alignItems: 'flex-end',
+            opacity: fadeAnim,
+            transform: [{
+              translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }),
+            }],
+          }}
+        >
+          {CREATE_ACTIONS.map((action) => {
+            const Icon = action.icon
+            return (
+              <Pressable
+                key={action.key}
+                onPress={() => handleAction(action.route)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
+              >
+                <View style={{
+                  backgroundColor: '#1e293b',
+                  borderRadius: 8,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderWidth: 1,
+                  borderColor: '#334155',
+                }}>
+                  <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 14 }}>{action.label}</Text>
+                </View>
+                <View style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 21,
+                  backgroundColor: action.color + '22',
+                  borderWidth: 1,
+                  borderColor: action.color + '55',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Icon color={action.color} size={18} />
+                </View>
+              </Pressable>
+            )
+          })}
+        </Animated.View>
+      )}
+
+      {/* FAB — toggle speed dial */}
       <Pressable
-        accessibilityLabel="Create load"
+        accessibilityLabel="Quick create"
         accessibilityRole="button"
-        onPress={() => { haptic.medium(); router.push('/(owner)/loads' as any) }}
+        onPress={menuOpen ? closeMenu : openMenu}
         style={{
           position: 'absolute',
           bottom: 24,
@@ -279,7 +378,7 @@ export default function OwnerDashboard() {
           width: 52,
           height: 52,
           borderRadius: 26,
-          backgroundColor: '#0ea5e9',
+          backgroundColor: menuOpen ? '#475569' : '#0ea5e9',
           alignItems: 'center',
           justifyContent: 'center',
           shadowColor: '#0ea5e9',
@@ -289,7 +388,7 @@ export default function OwnerDashboard() {
           elevation: 8,
         }}
       >
-        <Plus color="#ffffff" size={24} />
+        {menuOpen ? <X color="#ffffff" size={22} /> : <Plus color="#ffffff" size={24} />}
       </Pressable>
       </AnimatedScreen>
     </SafeAreaView>
