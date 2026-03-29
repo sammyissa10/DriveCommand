@@ -18,57 +18,10 @@ import { driverApi, type FleetMessage } from '@drivecommand/api-client'
 import { kvStorage } from '../../lib/storage'
 import { MessageSkeleton } from '../../components/skeletons/MessageSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { MessageBubble } from '../../components/driver/MessageBubble'
 
 const POLL_INTERVAL_MS = 30_000
 const LAST_READ_KEY = 'messages_last_read_at'
-
-function formatTime(iso: string): string {
-  const date = new Date(iso)
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function getRoleLabel(senderRole: string): string {
-  switch (senderRole.toUpperCase()) {
-    case 'DRIVER':
-      return 'You'
-    case 'OWNER':
-      return 'Owner'
-    case 'MANAGER':
-      return 'Manager'
-    case 'DISPATCHER':
-      return 'Dispatcher'
-    default:
-      return senderRole
-  }
-}
-
-interface MessageBubbleProps {
-  message: FleetMessage
-}
-
-function MessageBubble({ message }: MessageBubbleProps) {
-  const isDriver = message.senderRole.toUpperCase() === 'DRIVER'
-
-  return (
-    <View className={`mb-3 px-4 ${isDriver ? 'items-end' : 'items-start'}`}>
-      <Text className="text-xs text-slate-400 mb-1">
-        {getRoleLabel(message.senderRole)}
-      </Text>
-      <View
-        className={`max-w-[80%] px-4 py-3 ${
-          isDriver
-            ? 'bg-sky-600 rounded-2xl rounded-br-sm'
-            : 'bg-slate-700 rounded-2xl rounded-bl-sm'
-        }`}
-      >
-        <Text className="text-white text-sm leading-5">{message.body}</Text>
-      </View>
-      <Text className="text-xs text-slate-500 mt-1">
-        {formatTime(message.createdAt)}
-      </Text>
-    </View>
-  )
-}
 
 export default function DriverMessages() {
   const { token } = useAuthContext()
