@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { generateUploadUrl } from '@/lib/storage/presigned';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { nanoid } from 'nanoid';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 /**
  * POST /api/mobile/support/upload-screenshot
  *
- * Generates a presigned S3 upload URL for a support ticket screenshot.
- * Available to both driver and owner roles.
- * Mobile client uploads directly to S3 using the returned URL.
+ * Accepts a multipart form upload (field: "screenshot") and stores it
+ * directly in S3 server-side. Returns { s3Key } on success.
  *
- * Body: { fileName, contentType, sizeBytes }
- * Returns: { uploadUrl, s3Key }
+ * Server-side upload avoids presigned-URL signature issues and binary
+ * body corruption that occur when uploading directly from React Native.
  *
  * Requires: Authorization: Bearer <token>
  */
@@ -23,63 +26,45 @@ export async function POST(req: NextRequest) {
   const limited = await applyRateLimit(mobileLimiter, auth.userId);
   if (limited) return limited;
 
-  const { tenantId } = auth;
-
-  let body: unknown;
+  let formData: FormData;
   try {
-    body = await req.json();
+    formData = await req.formData();
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    return NextResponse.json({ error: 'Expected multipart/form-data body' }, { status: 400 });
   }
 
-  const { fileName, contentType, sizeBytes } = body as Record<string, unknown>;
+  const file = formData.get('screenshot') as File | null;
 
-  if (!fileName || typeof fileName !== 'string') {
-    return NextResponse.json({ error: 'fileName is required' }, { status: 400 });
+  if (!file || file.size === 0) {
+    return NextResponse.json({ error: 'No screenshot provided' }, { status: 400 });
   }
 
-  if (!contentType || typeof contentType !== 'string') {
-    return NextResponse.json({ error: 'contentType is required' }, { status: 400 });
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: 'Screenshot must be 10MB or less' }, { status: 400 });
   }
 
-  if (!sizeBytes || typeof sizeBytes !== 'number') {
-    return NextResponse.json({ error: 'sizeBytes must be a number' }, { status: 400 });
-  }
-
-  // Validate content type — allow JPEG and PNG only
-  const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+  const contentType = file.type || 'image/jpeg';
   if (!ALLOWED_TYPES.includes(contentType)) {
-    return NextResponse.json(
-      { error: 'contentType must be image/jpeg or image/png' },
-      { status: 400 }
-    );
-  }
-
-  // Limit screenshot size to 10MB
-  const MAX_SIZE = 10 * 1024 * 1024;
-  if (sizeBytes > MAX_SIZE) {
-    return NextResponse.json(
-      { error: 'Screenshot size must be 10MB or less' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Only JPEG and PNG screenshots are accepted' }, { status: 400 });
   }
 
   try {
     const fileId = nanoid();
-    const sanitizedFileName = (fileName as string).replace(/[/\\]/g, '-');
+    const ext = contentType === 'image/png' ? 'png' : 'jpg';
+    const s3Key = `tenant-${auth.tenantId}/support/${fileId}-screenshot.${ext}`;
+    const body = Buffer.from(await file.arrayBuffer());
 
-    const { uploadUrl, s3Key } = await generateUploadUrl(
-      tenantId,
-      'support',
-      fileId,
-      sanitizedFileName,
-      contentType,
-      sizeBytes
-    );
+    await s3Client.send(new PutObjectCommand({
+      Bucket: getBucketName(),
+      Key: s3Key,
+      Body: body,
+      ContentType: contentType,
+      ContentLength: file.size,
+    }));
 
-    return NextResponse.json({ uploadUrl, s3Key });
+    return NextResponse.json({ s3Key });
   } catch (err) {
-    console.error('[mobile/support/upload-screenshot] error:', err);
-    return NextResponse.json({ error: 'Failed to generate upload URL' }, { status: 500 });
+    console.error('[mobile/support/upload-screenshot] S3 upload error:', err);
+    return NextResponse.json({ error: 'Failed to upload screenshot' }, { status: 500 });
   }
 }

@@ -92,39 +92,29 @@ async function uploadScreenshot(uri: string, token: string): Promise<string> {
     throw new Error('Screenshot file not found')
   }
 
-  const sizeBytes = fileInfo.size
   const fileName = uri.split('/').pop() ?? 'screenshot.jpg'
-  const contentType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
+  const mimeType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
 
-  const initRes = await fetch(`${getBaseUrl()}/api/mobile/support/upload-screenshot`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ fileName, contentType, sizeBytes }),
-  })
+  // POST the file as multipart to our server — server uploads to S3 directly.
+  // This avoids presigned PUT URL issues (signature mismatches, binary body
+  // corruption) that occur when uploading straight from React Native to S3.
+  const result = await uploadAsync(
+    `${getBaseUrl()}/api/mobile/support/upload-screenshot`,
+    uri,
+    {
+      httpMethod: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      uploadType: FileSystemUploadType.MULTIPART,
+      fieldName: 'screenshot',
+      mimeType,
+    }
+  )
 
-  if (!initRes.ok) {
-    const err = await initRes.json().catch(() => ({ error: 'Failed to get upload URL' }))
-    throw new Error((err as { error?: string }).error ?? `HTTP ${initRes.status}`)
+  if (result.status < 200 || result.status >= 300) {
+    throw new Error(`Screenshot upload failed: HTTP ${result.status}`)
   }
 
-  const { uploadUrl, s3Key } = (await initRes.json()) as { uploadUrl: string; s3Key: string }
-
-  // Use expo-file-system uploadAsync — React Native's fetch cannot reliably send
-  // Uint8Array as a binary body (data gets corrupted). uploadAsync with BINARY_CONTENT
-  // reads the file and streams raw bytes directly, which S3 presigned PUTs require.
-  const uploadResult = await uploadAsync(uploadUrl, uri, {
-    httpMethod: 'PUT',
-    headers: { 'Content-Type': contentType },
-    uploadType: FileSystemUploadType.BINARY_CONTENT,
-  })
-
-  if (uploadResult.status < 200 || uploadResult.status >= 300) {
-    throw new Error(`S3 upload failed: HTTP ${uploadResult.status}`)
-  }
-
+  const { s3Key } = JSON.parse(result.body) as { s3Key: string }
   return s3Key
 }
 
