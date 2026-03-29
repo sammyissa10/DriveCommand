@@ -11,14 +11,9 @@ import {
 } from 'react-native'
 import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
-import { Camera, LifeBuoy, X } from 'lucide-react-native'
+import { LifeBuoy, X } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
-import {
-  launchCameraAsync,
-  launchImageLibraryAsync,
-  requestCameraPermissionsAsync,
-  requestMediaLibraryPermissionsAsync,
-} from 'expo-image-picker'
+import { captureScreen } from 'react-native-view-shot'
 import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
 import { BottomSheet } from '../ui/BottomSheet'
 import { createSupportTicket } from '@drivecommand/api-client'
@@ -253,54 +248,30 @@ export function SupportTicketFAB() {
     setForm(DEFAULT_FORM)
   }
 
-  const handleAttachScreenshot = () => {
-    Alert.alert('Attach Screenshot', 'Choose source', [
-      {
-        text: 'Take Photo',
-        onPress: async () => {
-          const { status } = await requestCameraPermissionsAsync()
-          if (status !== 'granted') {
-            Toast.show({
-              type: 'error',
-              text1: 'Camera permission denied',
-              text2: 'Please enable camera access in settings.',
-            })
-            return
-          }
-          const result = await launchCameraAsync({
-            mediaTypes: 'images',
-            quality: 0.7,
-            allowsEditing: false,
-          })
-          if (!result.canceled && result.assets[0]) {
-            setForm((f) => ({ ...f, screenshotUri: result.assets[0].uri }))
-          }
+  const handleFabPress = () => {
+    Alert.alert(
+      'Screenshot this screen?',
+      'Capture the current screen before opening the support form?',
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+              const uri = await captureScreen({ format: 'jpg', quality: 0.8 })
+              setForm((f) => ({ ...f, screenshotUri: uri }))
+            } catch {
+              // Silently continue — screenshot is optional
+            }
+            setVisible(true)
+          },
         },
-      },
-      {
-        text: 'Choose from Gallery',
-        onPress: async () => {
-          const { status } = await requestMediaLibraryPermissionsAsync()
-          if (status !== 'granted') {
-            Toast.show({
-              type: 'error',
-              text1: 'Gallery permission denied',
-              text2: 'Please enable media library access in settings.',
-            })
-            return
-          }
-          const result = await launchImageLibraryAsync({
-            mediaTypes: 'images',
-            quality: 0.7,
-            allowsEditing: false,
-          })
-          if (!result.canceled && result.assets[0]) {
-            setForm((f) => ({ ...f, screenshotUri: result.assets[0].uri }))
-          }
+        {
+          text: 'No',
+          onPress: () => setVisible(true),
         },
-      },
-      { text: 'Cancel', style: 'cancel' },
-    ])
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    )
   }
 
   const getSubmitLabel = () => {
@@ -313,7 +284,7 @@ export function SupportTicketFAB() {
       {/* Floating action button */}
       <Pressable
         style={styles.fab}
-        onPress={() => setVisible(true)}
+        onPress={handleFabPress}
         accessibilityLabel="Open support ticket form"
         accessibilityRole="button"
       >
@@ -420,18 +391,6 @@ export function SupportTicketFAB() {
             <Text style={styles.charCount}>
               {form.description.length}/2000
             </Text>
-          </View>
-
-          {/* Attach screenshot */}
-          <View style={styles.attachRow}>
-            <Pressable
-              style={styles.attachButton}
-              onPress={handleAttachScreenshot}
-              accessibilityLabel="Attach screenshot"
-            >
-              <Camera color="#94a3b8" size={16} />
-              <Text style={styles.attachButtonText}>Attach Screenshot</Text>
-            </Pressable>
           </View>
 
           {/* Thumbnail preview */}
@@ -563,28 +522,6 @@ const styles = StyleSheet.create({
   charCount: {
     color: '#64748b',
     fontSize: 11,
-  },
-  attachRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 16,
-    gap: 8,
-  },
-  attachButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#1e293b',
-    borderWidth: 1,
-    borderColor: '#334155',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  attachButtonText: {
-    color: '#94a3b8',
-    fontSize: 13,
-    fontWeight: '500',
   },
   previewContainer: {
     marginTop: 12,
