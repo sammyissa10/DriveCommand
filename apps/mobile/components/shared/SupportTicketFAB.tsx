@@ -8,10 +8,24 @@ export function SupportTicketFAB() {
   const pathname = usePathname()
   const { open } = useSupportTicket()
 
-  // Hide on dashboard — the speed dial's "Get Support" item replaces the FAB there
-  // Expo Router strips group segments from pathnames, so (owner)/index → "/"
-  const isDashboard = pathname === '/' || pathname === '/(owner)' || pathname === '/(owner)/index'
-  if (isDashboard) return null
+  // Hide on pages that have Get Support built into their PageSpeedDial.
+  // Expo Router strips group segments from pathnames, so (owner)/index → "/".
+  const SPEED_DIAL_PAGES = new Set([
+    '/',
+    '/(owner)',
+    '/(owner)/index',
+    '/loads',
+    '/loads/index',
+    '/drivers',
+    '/drivers/index',
+    '/more/invoices',
+    '/more/invoices/index',
+    '/more/trucks',
+    '/more/trucks/index',
+    '/more/crm',
+    '/more/crm/index',
+  ])
+  if (SPEED_DIAL_PAGES.has(pathname)) return null
 
   return (
     <Pressable
