@@ -106,6 +106,31 @@ export async function createRoute(prevState: any, formData: FormData) {
       };
     }
 
+    // Check for driver scheduling conflict on the same date
+    const scheduledDay = new Date(scheduledDate);
+    scheduledDay.setUTCHours(0, 0, 0, 0);
+    const nextDay = new Date(scheduledDay);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+    const conflictingRoute = await prisma.route.findFirst({
+      where: {
+        driverId,
+        status: { not: 'COMPLETED' },
+        archivedAt: null,
+        scheduledDate: { gte: scheduledDay, lt: nextDay },
+      },
+      select: { id: true, name: true, origin: true, destination: true },
+    });
+
+    if (conflictingRoute) {
+      const label = conflictingRoute.name || `${conflictingRoute.origin} -> ${conflictingRoute.destination}`;
+      return {
+        error: {
+          driverId: [`Driver already has a route on this date: "${label}"`],
+        },
+      };
+    }
+
     // Validate truck exists
     const truck = await prisma.truck.findUnique({
       where: { id: truckId },
@@ -253,6 +278,12 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   let updatedRouteId: string;
 
   try {
+    // Fetch existing route to resolve effective driverId and scheduledDate for conflict check
+    const existingRoute = await prisma.route.findUnique({
+      where: { id },
+      select: { driverId: true, scheduledDate: true },
+    });
+
     // Validate driver if provided
     if (result.data.driverId) {
       const driver = await prisma.user.findUnique({
@@ -273,6 +304,39 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
             driverId: ['Selected user is not a driver'],
           },
         };
+      }
+    }
+
+    // Check for driver scheduling conflict when driverId or scheduledDate is being changed
+    if (result.data.driverId || result.data.scheduledDate) {
+      const effectiveDriverId = result.data.driverId || existingRoute?.driverId;
+      const effectiveScheduledDate = result.data.scheduledDate || existingRoute?.scheduledDate?.toISOString();
+
+      if (effectiveDriverId && effectiveScheduledDate) {
+        const scheduledDay = new Date(effectiveScheduledDate);
+        scheduledDay.setUTCHours(0, 0, 0, 0);
+        const nextDay = new Date(scheduledDay);
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+        const conflictingRoute = await prisma.route.findFirst({
+          where: {
+            driverId: effectiveDriverId,
+            status: { not: 'COMPLETED' },
+            archivedAt: null,
+            scheduledDate: { gte: scheduledDay, lt: nextDay },
+            id: { not: id },
+          },
+          select: { id: true, name: true, origin: true, destination: true },
+        });
+
+        if (conflictingRoute) {
+          const label = conflictingRoute.name || `${conflictingRoute.origin} -> ${conflictingRoute.destination}`;
+          return {
+            error: {
+              driverId: [`Driver already has a route on this date: "${label}"`],
+            },
+          };
+        }
       }
     }
 
