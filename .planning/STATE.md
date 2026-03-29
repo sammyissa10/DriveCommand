@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37 Polish and Performance — IN PROGRESS
-Current Plan: Phase 37 complete — all 7 plans done
-Status: Phase 37 Plan 07 complete — Form validation UI standardized: text-red-500 on all validation text in CreateLoadSheet; border-red-500 conditional borders added to incidents/new.tsx category + description fields; DocumentUploadSheet file picker borderColor inline style migrated to NativeWind className.
-Last activity: 2026-03-28 - Completed quick task 117: Fix owner mobile Messages tab to show load and route scoped messages with working thread view
-Stopped at: Completed 37-07-PLAN.md
+Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
+Current Plan: Plan 2 of 3 (37.1-01 complete)
+Status: 37.1-01 complete — Route API, route-thread messages API, RouteCard, RouteLoadTimelineItem, Loads tab wired. Ready for 37.1-02 (route detail screen).
+Last activity: 2026-03-29 - Completed 37.1-01: My Route backend + RouteCard
+Stopped at: Completed 37.1-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -133,6 +133,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 37.1-01 decisions (My Route backend + RouteCard):**
+- Route endpoint returns { route: null } with 200 (not 404) when no active route assigned — consistent with dashboard pattern, prevents error states in mobile client
+- route-thread is a separate endpoint from general messages — scoped exclusively to routeId to avoid conflating load and route message threads
+- ListHeaderComponent memoized with useMemo to prevent FlashList re-render loops (per research pitfall 7)
+- api-client dist must be rebuilt after source changes — tsc -p packages/api-client/tsconfig.json needed before mobile tsc verification
 
 **Quick-113 decisions (Production readiness hardening):**
 - Rate limiters return null when env vars absent so local dev works without Redis
