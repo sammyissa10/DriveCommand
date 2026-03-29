@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useRef, useState } from 'react'
 import {
-  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -249,32 +248,24 @@ export function SupportTicketProvider({ children }: { children: React.ReactNode 
     setForm(DEFAULT_FORM)
   }
 
-  const open = () => {
-    Alert.alert(
-      'Screenshot this screen?',
-      'Capture the current screen before opening the support form?',
-      [
-        {
-          text: 'Yes',
-          onPress: async () => {
-            try {
-              // eslint-disable-next-line @typescript-eslint/no-var-requires
-              const { captureScreen } = require('react-native-view-shot')
-              const uri = await captureScreen({ format: 'jpg', quality: 0.8 })
-              setForm((f) => ({ ...f, screenshotUri: uri }))
-            } catch {
-              // Native module not available yet — screenshot is optional
-            }
-            setVisible(true)
-          },
-        },
-        {
-          text: 'No',
-          onPress: () => setVisible(true),
-        },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    )
+  const open = async () => {
+    // Pre-capture while the current screen is clean (before any overlay appears).
+    // Capturing after an Alert closes fails on Android due to animation timing.
+    let screenshotUri: string | null = null
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { captureScreen } = require('react-native-view-shot')
+      screenshotUri = await captureScreen({ format: 'jpg', quality: 0.8 })
+    } catch {
+      Toast.show({
+        type: 'info',
+        text1: 'Screenshot unavailable',
+        text2: 'You can still submit a ticket without one.',
+        visibilityTime: 2500,
+      })
+    }
+    setForm((f) => ({ ...f, screenshotUri }))
+    setVisible(true)
   }
 
   const getSubmitLabel = () => {
