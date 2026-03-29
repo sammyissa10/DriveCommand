@@ -239,7 +239,7 @@ export default function MyRouteScreen() {
             {/* ------------------------------------------------------------------ */}
             {/* Section 1: Loads on this Route                                      */}
             {/* ------------------------------------------------------------------ */}
-            <Text className="text-lg font-semibold text-white mb-3">Loads on this Route</Text>
+            <Text className="text-lg font-semibold text-white mb-3">Route Legs</Text>
 
             {loadList.length === 0 ? (
               <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
@@ -254,6 +254,7 @@ export default function MyRouteScreen() {
                     key={load.id}
                     load={load}
                     isLast={index === loadList.length - 1}
+                    legNumber={load.sequence !== null && load.sequence !== undefined ? load.sequence : index + 1}
                     onPress={() => router.push(`/(driver)/loads/${load.id}`)}
                   />
                 ))}

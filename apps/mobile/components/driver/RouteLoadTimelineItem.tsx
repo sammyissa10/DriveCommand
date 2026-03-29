@@ -6,6 +6,7 @@ import { Badge } from '../ui/Badge'
 interface RouteLoadTimelineItemProps {
   load: DriverRouteLoad
   isLast: boolean
+  legNumber: number
   onPress: () => void
 }
 
@@ -44,7 +45,7 @@ function formatStatusLabel(status: string): string {
     .join(' ')
 }
 
-export function RouteLoadTimelineItem({ load, isLast, onPress }: RouteLoadTimelineItemProps) {
+export function RouteLoadTimelineItem({ load, isLast, legNumber, onPress }: RouteLoadTimelineItemProps) {
   const dotColor = getLoadDotColor(load.status)
 
   return (
@@ -77,9 +78,13 @@ export function RouteLoadTimelineItem({ load, isLast, onPress }: RouteLoadTimeli
 
       {/* Right column: load details */}
       <View className="flex-1 pb-4 pl-3">
+        {/* Leg label */}
+        <Text className="text-sm font-bold text-sky-400 mb-0.5">
+          Leg {legNumber}
+        </Text>
         {/* Load number label */}
         <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-0.5">
-          {load.loadNumber}
+          #{load.loadNumber}
         </Text>
 
         {/* Origin → Destination */}
