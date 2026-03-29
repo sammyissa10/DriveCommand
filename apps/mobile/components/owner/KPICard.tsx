@@ -10,21 +10,27 @@ interface KPICardProps {
   trend?: { direction: 'up' | 'down' | 'neutral'; label: string }
   onPress?: () => void
   accessibilityLabel?: string
+  accentColor?: string
 }
 
 const cardStyle = {
-  backgroundColor: '#1e293b',
-  borderWidth: 1,
-  borderColor: '#334155',
+  backgroundColor: '#162032',
   borderRadius: 12,
+  shadowColor: '#000000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.3,
+  shadowRadius: 4,
+  elevation: 4,
 }
 
 const innerStyle = {
-  padding: 12,
+  paddingVertical: 12,
+  paddingLeft: 16,
+  paddingRight: 12,
   flex: 1,
 }
 
-export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress, accessibilityLabel }: KPICardProps) {
+export const KPICard = memo(function KPICard({ label, value, icon, valueColor = '#ffffff', trend, onPress, accessibilityLabel, accentColor }: KPICardProps) {
   const trendColor =
     trend?.direction === 'up' ? '#34d399' :
     trend?.direction === 'down' ? '#f87171' : '#94a3b8'
@@ -32,6 +38,18 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
   const TrendIcon =
     trend?.direction === 'up' ? TrendingUp :
     trend?.direction === 'down' ? TrendingDown : Minus
+
+  const accentStrip = accentColor ? (
+    <View style={{
+      position: 'absolute',
+      left: 0,
+      top: 8,
+      bottom: 8,
+      width: 3,
+      borderRadius: 2,
+      backgroundColor: accentColor,
+    }} />
+  ) : null
 
   const inner = (
     <>
@@ -58,6 +76,7 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
   if (onPress) {
     return (
       <View style={{ flex: 1, ...cardStyle, overflow: 'hidden' }}>
+        {accentStrip}
         <Pressable
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
@@ -75,8 +94,9 @@ export const KPICard = memo(function KPICard({ label, value, icon, valueColor = 
     <View
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="text"
-      style={{ flex: 1, ...cardStyle, padding: 12 }}
+      style={{ flex: 1, ...cardStyle, paddingVertical: 12, paddingLeft: 16, paddingRight: 12 }}
     >
+      {accentStrip}
       {inner}
     </View>
   )
