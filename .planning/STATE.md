@@ -597,6 +597,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 35-01]: revenueThisMonth uses updatedAt on DELIVERED/INVOICED loads as proxy for completion month
 - [Phase 36]: RecipientSelector uses Modal bottom sheet (VehicleDetailSheet pattern) — consistent with codebase, no new dependencies
 - [Phase 37]: Skeleton base component uses opacity pulse (0.3→0.8 repeat) via react-native-reanimated; map loading overlay keeps ActivityIndicator since skeleton doesn't apply over MapView
+- [Phase quick-126]: Load sequence uses onBlur server action pattern for inline editing without form submission
 
 ### Pending Todos
 
