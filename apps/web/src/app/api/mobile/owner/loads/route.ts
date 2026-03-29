@@ -122,6 +122,7 @@ export async function POST(req: NextRequest) {
     pickupDate?: string;
     rate?: number;
     driverId?: string;
+    routeId?: string;
   };
 
   try {
@@ -130,7 +131,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { customerId, customerName, origin, destination, pickupDate, rate, driverId } = body;
+  const { customerId, customerName, origin, destination, pickupDate, rate, driverId, routeId } = body;
 
   if (!origin || !destination) {
     return NextResponse.json(
@@ -170,6 +171,17 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Validate routeId belongs to tenant if provided
+      if (routeId) {
+        const route = await tx.route.findFirst({
+          where: { id: routeId, tenantId, archivedAt: null },
+          select: { id: true },
+        });
+        if (!route) {
+          throw new Error('Route not found');
+        }
+      }
+
       // Generate load number
       const latestLoad = await tx.load.findFirst({
         where: { tenantId },
@@ -197,6 +209,7 @@ export async function POST(req: NextRequest) {
           rate: rate ?? 0,
           status: 'PENDING',
           driverId: driverId ?? null,
+          routeId: routeId ?? null,
         },
         include: {
           customer: { select: { id: true, companyName: true } },
