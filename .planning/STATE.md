@@ -731,6 +731,8 @@ None blocking immediate progress.
 | 116 | Fix Unknown Driver name in mobile messages list | 2026-03-28 | 534adb5 | [116-fix-unknown-driver-name-in-mobile-messag](./quick/116-fix-unknown-driver-name-in-mobile-messag/) |
 | 117 | Fix owner mobile Messages tab to show load and route scoped messages with working thread view | 2026-03-28 | f13449c | [117-fix-owner-mobile-messages-tab-to-show-lo](./quick/117-fix-owner-mobile-messages-tab-to-show-lo/) |
 | 118 | Add routeId FK to Load model so loads can be linked to routes. Migration, API update (route endpoint fetches linked loads), owner load creation/edit UI to assign a load to a route, and the My Route detail screen then shows real loads in the timeline. | 2026-03-29 | 5001517 | [118-add-routeid-fk-to-load-model-so-loads-ca](./quick/118-add-routeid-fk-to-load-model-so-loads-ca/) |
+| 119 | Add My Route card to driver home screen — emerald card above Active Load, shows route name/origin/destination/status badge, navigates to my-route screen, hidden when no route assigned | 2026-03-29 | 95d091f | [119-add-my-route-card-to-driver-home-screen-](./quick/119-add-my-route-card-to-driver-home-screen-/) |
+| 120 | Date conflict validation: block driver double-booking on same scheduledDate in route create/edit; amber warning in load form when load dates don't align with assigned route's scheduledDate | 2026-03-29 | 3249478 | [120-date-conflict-validation-1-when-creating](./quick/120-date-conflict-validation-1-when-creating/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
