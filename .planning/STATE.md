@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-28 - Completed 37.1-03: Support Ticket FAB
-Stopped at: Completed 37.1-03-PLAN.md
+Last activity: 2026-03-29 - Completed quick-118: routeId FK on load create/edit
+Stopped at: Completed quick-118-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -122,6 +122,7 @@ Progress: [███████████████████████
 - Quick-59 (2026-03-14): TKT-0017 DriverRouteJoin payment tracking — 375s, 3 tasks, 8 files
 - Quick-98 (2026-03-22): TKT-0044 Screenshot auto-capture on support ticket — ~25min, 3 tasks, 4 files
 - Quick-113 (2026-03-26): Production readiness hardening — debug route deleted, Upstash rate limiting (auth/GPS/mobile), Sentry web+mobile, EAS OTA — ~5min, 3 tasks, 13 files
+- Quick-118 (2026-03-29): Add routeId FK to load create/edit — Route dropdown on web form + mobile API accepts routeId — ~4min, 2 tasks, 6 files
 
 ## Accumulated Context
 
