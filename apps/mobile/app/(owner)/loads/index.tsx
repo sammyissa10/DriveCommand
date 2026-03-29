@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
-import { Plus, Truck } from 'lucide-react-native'
+import { Package, Truck } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerLoadSummary } from '@drivecommand/api-client'
@@ -12,6 +12,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { CreateLoadSheet } from '../../../components/owner/CreateLoadSheet'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { PageSpeedDial } from '../../../components/ui/PageSpeedDial'
 
 type TabType = 'all' | 'active' | 'pending' | 'delivered'
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -103,8 +104,9 @@ export default function OwnerLoadsScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { create } = useLocalSearchParams<{ create?: string }>()
   const [activeTab, setActiveTab] = useState<TabType>('all')
-  const [createSheetVisible, setCreateSheetVisible] = useState(false)
+  const [createSheetVisible, setCreateSheetVisible] = useState(create === '1')
 
   const { data, isLoading, isError, isRefetching, refetch } = useQuery({
     queryKey: ['owner-loads', activeTab],
@@ -225,16 +227,12 @@ export default function OwnerLoadsScreen() {
         </View>
       )}
 
-      {/* FAB — create load */}
-      <Pressable
-        accessibilityLabel="Create load"
-        accessibilityRole="button"
-        onPress={() => setCreateSheetVisible(true)}
-        className="absolute bottom-6 right-6 w-14 h-14 bg-sky-600 rounded-full items-center justify-center shadow-lg active:opacity-80 active:scale-95"
-        style={{ elevation: 4 }}
-      >
-        <Plus color="white" size={26} />
-      </Pressable>
+      <PageSpeedDial
+        primaryLabel="New Load"
+        primaryIcon={Package}
+        primaryColor="#38bdf8"
+        onPrimaryPress={() => setCreateSheetVisible(true)}
+      />
 
       {/* Create load bottom sheet */}
       <CreateLoadSheet

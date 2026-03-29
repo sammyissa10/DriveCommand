@@ -14,6 +14,7 @@ import { AlertTriangle, ChevronLeft, ChevronRight, FileText } from 'lucide-react
 import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi, type InvoicesResponse, type InvoiceSummary } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
+import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
 import { InvoiceRowSkeleton } from '../../../../components/skeletons/InvoiceRowSkeleton'
 
 // ---------------------------------------------------------------------------
@@ -321,6 +322,13 @@ export default function InvoicesScreen() {
             )}
           </ScrollView>
         )}
+
+        <PageSpeedDial
+          primaryLabel="New Invoice"
+          primaryIcon={FileText}
+          primaryColor="#fbbf24"
+          onPrimaryPress={() => router.push('/(owner)/more/invoices/new' as never)}
+        />
       </AnimatedScreen>
     </SafeAreaView>
   )
