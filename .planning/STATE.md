@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-29 - Completed quick-124: Move Support button into dashboard Quick Create speed dial
+Last activity: 2026-03-29 - Completed quick-125: Add Get Support to every owner page FAB as a speed dial
 Stopped at: Completed quick-121-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -737,6 +737,7 @@ None blocking immediate progress.
 | 122 | Rework SupportTicketFAB screenshot UX to pre-capture flow | 2026-03-29 | 38b0f64 | [122-rework-supportticketfab-screenshot-ux-re](./quick/122-rework-supportticketfab-screenshot-ux-re/) |
 | 123 | Mobile owner dashboard visual refresh — make the UI feel native mobile instead of web-browsery | 2026-03-29 | c212088 | [123-mobile-owner-dashboard-visual-refresh-ma](./quick/123-mobile-owner-dashboard-visual-refresh-ma/) |
 | 124 | Move Support button into dashboard Quick Create speed dial | 2026-03-29 | 95eeaae | [124-move-support-button-into-dashboard-quick](./quick/124-move-support-button-into-dashboard-quick/) |
+| 125 | Add Get Support to every owner page FAB as a speed dial | 2026-03-29 | 510126d | [125-add-get-support-to-every-owner-page-fab-](./quick/125-add-get-support-to-every-owner-page-fab-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
