@@ -9,7 +9,8 @@ export function SupportTicketFAB() {
   const { open } = useSupportTicket()
 
   // Hide on dashboard — the speed dial's "Get Support" item replaces the FAB there
-  const isDashboard = /^\/(owner)(\/index)?$/.test(pathname)
+  // Expo Router strips group segments from pathnames, so (owner)/index → "/"
+  const isDashboard = pathname === '/' || pathname === '/(owner)' || pathname === '/(owner)/index'
   if (isDashboard) return null
 
   return (
