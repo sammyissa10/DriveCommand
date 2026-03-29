@@ -274,6 +274,7 @@ export const driverApi = {
       title: string
       description: string
       fromPage: string
+      screenshotKey?: string
     }
   ) =>
     apiRequest<{ ticketNumber: string }>('/api/mobile/support/ticket', {

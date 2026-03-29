@@ -19,6 +19,7 @@ export function createSupportTicket(
     title: string
     description: string
     fromPage: string
+    screenshotKey?: string
   }
 ): Promise<{ ticketNumber: string }> {
   return _driverApi.createSupportTicket(token, data)

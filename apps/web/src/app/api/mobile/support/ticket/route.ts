@@ -20,6 +20,7 @@ const createTicketSchema = z.object({
     .min(10, 'Description must be at least 10 characters')
     .max(2000, 'Description must be at most 2000 characters'),
   fromPage: z.string().min(1, 'Page path is required'),
+  screenshotKey: z.string().optional(),
 });
 
 // ─── Ticket number helper ────────────────────────────────────────────────────
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { category, priority, title, description, fromPage } = validation.data;
+  const { category, priority, title, description, fromPage, screenshotKey } = validation.data;
 
   try {
     const ticketNumber = await generateTicketNumber();
@@ -97,6 +98,7 @@ export async function POST(req: NextRequest) {
           description,
           platform: 'MOBILE',
           status: 'OPEN',
+          ...(screenshotKey ? { screenshotKey } : {}),
         },
       });
     }, TX_OPTIONS);

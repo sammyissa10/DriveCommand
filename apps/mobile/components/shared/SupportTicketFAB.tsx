@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import {
+  Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,11 +11,132 @@ import {
 } from 'react-native'
 import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
-import { LifeBuoy } from 'lucide-react-native'
+import { Camera, LifeBuoy, X } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
+import {
+  launchCameraAsync,
+  launchImageLibraryAsync,
+  requestCameraPermissionsAsync,
+  requestMediaLibraryPermissionsAsync,
+} from 'expo-image-picker'
+import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
 import { BottomSheet } from '../ui/BottomSheet'
 import { createSupportTicket } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
+
+// ─── Pathname → human-readable label ─────────────────────────────────────────
+
+type RouteEntry = { pattern: RegExp; label: string }
+
+const ROUTE_MAP: RouteEntry[] = [
+  // Owner — specific before general
+  { pattern: /^\/(owner)\/more\/settings\/account$/, label: 'Account Settings' },
+  { pattern: /^\/(owner)\/more\/settings\/team$/, label: 'Team Settings' },
+  { pattern: /^\/(owner)\/more\/settings(\/index)?$/, label: 'Settings' },
+  { pattern: /^\/(owner)\/more\/trucks\/new$/, label: 'New Truck' },
+  { pattern: /^\/(owner)\/more\/trucks\/[^/]+$/, label: 'Truck Details' },
+  { pattern: /^\/(owner)\/more\/trucks(\/index)?$/, label: 'Trucks' },
+  { pattern: /^\/(owner)\/more\/invoices\/new$/, label: 'New Invoice' },
+  { pattern: /^\/(owner)\/more\/invoices\/[^/]+$/, label: 'Invoice Details' },
+  { pattern: /^\/(owner)\/more\/invoices(\/index)?$/, label: 'Invoices' },
+  { pattern: /^\/(owner)\/more\/crm\/new$/, label: 'New Customer' },
+  { pattern: /^\/(owner)\/more\/crm(\/index)?$/, label: 'CRM' },
+  { pattern: /^\/(owner)\/more\/fleet$/, label: 'Fleet' },
+  { pattern: /^\/(owner)\/more\/compliance$/, label: 'Compliance' },
+  { pattern: /^\/(owner)\/more\/payroll$/, label: 'Payroll' },
+  { pattern: /^\/(owner)\/more\/ai-documents$/, label: 'AI Documents' },
+  { pattern: /^\/(owner)\/more(\/index)?$/, label: 'More' },
+  { pattern: /^\/(owner)\/loads\/[^/]+$/, label: 'Load Details' },
+  { pattern: /^\/(owner)\/loads(\/index)?$/, label: 'Loads' },
+  { pattern: /^\/(owner)\/drivers\/invite$/, label: 'Invite Driver' },
+  { pattern: /^\/(owner)\/drivers\/[^/]+$/, label: 'Driver Details' },
+  { pattern: /^\/(owner)\/drivers(\/index)?$/, label: 'Drivers' },
+  { pattern: /^\/(owner)\/map$/, label: 'Map' },
+  { pattern: /^\/(owner)(\/index)?$/, label: 'Dashboard' },
+  // Driver — specific before general
+  { pattern: /^\/(driver)\/loads\/my-route$/, label: 'My Route' },
+  { pattern: /^\/(driver)\/loads\/[^/]+$/, label: 'Load Details' },
+  { pattern: /^\/(driver)\/loads(\/index)?$/, label: 'Loads' },
+  { pattern: /^\/(driver)\/documents$/, label: 'Documents' },
+  { pattern: /^\/(driver)\/hos$/, label: 'Hours of Service' },
+  { pattern: /^\/(driver)\/incidents\/new$/, label: 'New Incident' },
+  { pattern: /^\/(driver)\/incidents(\/index)?$/, label: 'Incidents' },
+  { pattern: /^\/(driver)\/messages$/, label: 'Messages' },
+  { pattern: /^\/(driver)(\/index)?$/, label: 'Dashboard' },
+]
+
+function getPageLabel(pathname: string): string {
+  for (const entry of ROUTE_MAP) {
+    if (entry.pattern.test(pathname)) {
+      return entry.label
+    }
+  }
+
+  // Fallback: strip group prefix, capitalize each segment, join with " > "
+  const stripped = pathname
+    .replace(/^\/(owner|driver)\//, '')
+    .replace(/^\/(owner|driver)$/, '')
+  if (!stripped) return 'Dashboard'
+
+  return stripped
+    .split('/')
+    .filter(Boolean)
+    .map((seg) => seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' '))
+    .join(' > ')
+}
+
+// ─── S3 upload helper ─────────────────────────────────────────────────────────
+
+const getBaseUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL
+  return 'http://localhost:3000'
+}
+
+async function uploadScreenshot(uri: string, token: string): Promise<string> {
+  const fileInfo = await getInfoAsync(uri)
+  if (!fileInfo.exists) {
+    throw new Error('Screenshot file not found')
+  }
+
+  const sizeBytes = fileInfo.size
+  const fileName = uri.split('/').pop() ?? 'screenshot.jpg'
+  const contentType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
+
+  const initRes = await fetch(`${getBaseUrl()}/api/mobile/support/upload-screenshot`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ fileName, contentType, sizeBytes }),
+  })
+
+  if (!initRes.ok) {
+    const err = await initRes.json().catch(() => ({ error: 'Failed to get upload URL' }))
+    throw new Error((err as { error?: string }).error ?? `HTTP ${initRes.status}`)
+  }
+
+  const { uploadUrl, s3Key } = (await initRes.json()) as { uploadUrl: string; s3Key: string }
+
+  const base64 = await readAsStringAsync(uri, { encoding: EncodingType.Base64 })
+  const binaryString = atob(base64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+
+  const uploadRes = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body: bytes,
+  })
+
+  if (!uploadRes.ok) {
+    throw new Error(`S3 upload failed: HTTP ${uploadRes.status}`)
+  }
+
+  return s3Key
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -43,6 +166,7 @@ interface FormState {
   description: string
   titleTouched: boolean
   descriptionTouched: boolean
+  screenshotUri: string | null
 }
 
 const DEFAULT_FORM: FormState = {
@@ -52,6 +176,7 @@ const DEFAULT_FORM: FormState = {
   description: '',
   titleTouched: false,
   descriptionTouched: false,
+  screenshotUri: null,
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -61,6 +186,7 @@ export function SupportTicketFAB() {
   const pathname = usePathname()
   const [visible, setVisible] = useState(false)
   const [form, setForm] = useState<FormState>(DEFAULT_FORM)
+  const uploadPhaseRef = useRef(false)
 
   const titleError =
     form.titleTouched && form.title.trim().length < 3
@@ -80,26 +206,40 @@ export function SupportTicketFAB() {
     Error,
     void
   >({
-    mutationFn: () => {
+    mutationFn: async () => {
       if (!token) throw new Error('Not authenticated')
+
+      let screenshotKey: string | undefined
+
+      if (form.screenshotUri) {
+        uploadPhaseRef.current = true
+        screenshotKey = await uploadScreenshot(form.screenshotUri, token)
+        uploadPhaseRef.current = false
+      }
+
+      const label = getPageLabel(pathname)
       return createSupportTicket(token, {
         category: form.category,
         priority: form.priority,
         title: form.title.trim(),
         description: form.description.trim(),
-        fromPage: pathname,
+        fromPage: `${pathname} (${label})`,
+        ...(screenshotKey ? { screenshotKey } : {}),
       })
     },
     onSuccess: (data) => {
+      const label = getPageLabel(pathname)
       Toast.show({
         type: 'success',
         text1: `Ticket #${data.ticketNumber} submitted!`,
-        text2: "We'll be in touch soon.",
+        text2: `Submitted from ${label}`,
       })
       setVisible(false)
       setForm(DEFAULT_FORM)
+      uploadPhaseRef.current = false
     },
     onError: () => {
+      uploadPhaseRef.current = false
       Toast.show({
         type: 'error',
         text1: 'Failed to submit ticket',
@@ -111,6 +251,61 @@ export function SupportTicketFAB() {
   const handleClose = () => {
     setVisible(false)
     setForm(DEFAULT_FORM)
+  }
+
+  const handleAttachScreenshot = () => {
+    Alert.alert('Attach Screenshot', 'Choose source', [
+      {
+        text: 'Take Photo',
+        onPress: async () => {
+          const { status } = await requestCameraPermissionsAsync()
+          if (status !== 'granted') {
+            Toast.show({
+              type: 'error',
+              text1: 'Camera permission denied',
+              text2: 'Please enable camera access in settings.',
+            })
+            return
+          }
+          const result = await launchCameraAsync({
+            mediaTypes: 'images',
+            quality: 0.7,
+            allowsEditing: false,
+          })
+          if (!result.canceled && result.assets[0]) {
+            setForm((f) => ({ ...f, screenshotUri: result.assets[0].uri }))
+          }
+        },
+      },
+      {
+        text: 'Choose from Gallery',
+        onPress: async () => {
+          const { status } = await requestMediaLibraryPermissionsAsync()
+          if (status !== 'granted') {
+            Toast.show({
+              type: 'error',
+              text1: 'Gallery permission denied',
+              text2: 'Please enable media library access in settings.',
+            })
+            return
+          }
+          const result = await launchImageLibraryAsync({
+            mediaTypes: 'images',
+            quality: 0.7,
+            allowsEditing: false,
+          })
+          if (!result.canceled && result.assets[0]) {
+            setForm((f) => ({ ...f, screenshotUri: result.assets[0].uri }))
+          }
+        },
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ])
+  }
+
+  const getSubmitLabel = () => {
+    if (!isPending) return 'Submit Ticket'
+    return uploadPhaseRef.current ? 'Uploading screenshot...' : 'Submitting...'
   }
 
   return (
@@ -227,6 +422,36 @@ export function SupportTicketFAB() {
             </Text>
           </View>
 
+          {/* Attach screenshot */}
+          <View style={styles.attachRow}>
+            <Pressable
+              style={styles.attachButton}
+              onPress={handleAttachScreenshot}
+              accessibilityLabel="Attach screenshot"
+            >
+              <Camera color="#94a3b8" size={16} />
+              <Text style={styles.attachButtonText}>Attach Screenshot</Text>
+            </Pressable>
+          </View>
+
+          {/* Thumbnail preview */}
+          {form.screenshotUri ? (
+            <View style={styles.previewContainer}>
+              <Image
+                source={{ uri: form.screenshotUri }}
+                style={styles.previewImage}
+                resizeMode="cover"
+              />
+              <Pressable
+                style={styles.removeButton}
+                onPress={() => setForm((f) => ({ ...f, screenshotUri: null }))}
+                accessibilityLabel="Remove screenshot"
+              >
+                <X color="#ffffff" size={14} />
+              </Pressable>
+            </View>
+          ) : null}
+
           {/* Submit button */}
           <Pressable
             style={[
@@ -237,7 +462,7 @@ export function SupportTicketFAB() {
             disabled={!isFormValid || isPending}
           >
             <Text style={styles.submitButtonText}>
-              {isPending ? 'Submitting...' : 'Submit Ticket'}
+              {getSubmitLabel()}
             </Text>
           </Pressable>
         </ScrollView>
@@ -338,6 +563,49 @@ const styles = StyleSheet.create({
   charCount: {
     color: '#64748b',
     fontSize: 11,
+  },
+  attachRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    gap: 8,
+  },
+  attachButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#1e293b',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  attachButtonText: {
+    color: '#94a3b8',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  previewContainer: {
+    marginTop: 12,
+    position: 'relative',
+  },
+  previewImage: {
+    height: 120,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  removeButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   submitButton: {
     marginTop: 24,
