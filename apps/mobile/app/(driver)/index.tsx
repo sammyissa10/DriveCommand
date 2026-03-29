@@ -18,9 +18,26 @@ import { haptic } from '../../lib/haptics'
 import { StatChip } from '../../components/driver/StatChip'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 
-// Map DB status values to driver-friendly display labels and badge variants
+// Map route status values to badge variants
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
+function getRouteBadge(status: string): { label: string; variant: BadgeVariant } {
+  switch (status) {
+    case 'PENDING':
+      return { label: 'Pending', variant: 'muted' }
+    case 'ACTIVE':
+    case 'IN_PROGRESS':
+      return { label: 'Active', variant: 'info' }
+    case 'COMPLETED':
+      return { label: 'Completed', variant: 'success' }
+    case 'CANCELLED':
+      return { label: 'Cancelled', variant: 'danger' }
+    default:
+      return { label: status, variant: 'muted' }
+  }
+}
+
+// Map DB status values to driver-friendly display labels and badge variants
 function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
   switch (status) {
     case 'DISPATCHED':
@@ -60,10 +77,17 @@ export default function DriverDashboard() {
     enabled: !!token,
   })
 
+  const { data: routeData, refetch: refetchRoute } = useQuery({
+    queryKey: ['driver-route'],
+    queryFn: () => driverApi.getMyRoute(token!),
+    enabled: !!token,
+  })
+
   const onRefresh = useCallback(() => {
     haptic.light()
     refetch()
-  }, [refetch])
+    refetchRoute()
+  }, [refetch, refetchRoute])
 
   // Loading state — show skeleton instead of spinner
   if (isLoading) {
@@ -114,6 +138,49 @@ export default function DriverDashboard() {
           <Text className="text-2xl font-bold text-white">Dashboard</Text>
           <Text className="text-slate-400 text-sm mt-0.5">Your shift at a glance</Text>
         </View>
+
+        {/* My Route Card — visible only when a route is assigned */}
+        {routeData?.route ? (
+          <Pressable
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onPress={() => { haptic.light(); router.push('/(driver)/loads/my-route' as any) }}
+            className="mb-5 bg-slate-800 border border-emerald-700 rounded-xl p-4 active:opacity-80"
+          >
+            {/* Brand accent bar */}
+            <View className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-l-xl" />
+
+            <View className="pl-2">
+              <View className="flex-row items-center justify-between mb-2">
+                <Text className="text-xs text-slate-400 font-medium uppercase tracking-wide">
+                  My Route
+                </Text>
+                {(() => {
+                  const badge = getRouteBadge(routeData.route!.status)
+                  return <Badge label={badge.label} variant={badge.variant} />
+                })()}
+              </View>
+
+              <Text className="text-lg font-bold text-white mb-1">
+                {routeData.route.name ?? 'Unnamed Route'}
+              </Text>
+
+              <View className="flex-row items-center mt-2">
+                <Text className="text-sm text-slate-400 flex-1" numberOfLines={1}>
+                  {routeData.route.origin}
+                </Text>
+                <ArrowRight color="#64748b" size={14} style={{ marginHorizontal: 6 }} />
+                <Text className="text-sm text-slate-400 flex-1 text-right" numberOfLines={1}>
+                  {routeData.route.destination}
+                </Text>
+              </View>
+
+              <View className="flex-row items-center justify-end mt-3">
+                <Text className="text-xs text-emerald-400 font-medium mr-1">View Route</Text>
+                <ArrowRight color="#34d399" size={12} />
+              </View>
+            </View>
+          </Pressable>
+        ) : null}
 
         {/* Active Load Card */}
         {activeLoad ? (
