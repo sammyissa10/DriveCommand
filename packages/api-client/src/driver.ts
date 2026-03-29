@@ -115,6 +115,34 @@ export interface FleetMessage {
   createdAt: string
 }
 
+export interface DriverRouteTruck {
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+}
+
+export interface DriverRouteLoad {
+  id: string
+  loadNumber: string
+  origin: string
+  destination: string
+  status: string
+}
+
+export interface DriverRoute {
+  id: string
+  name: string | null
+  origin: string
+  destination: string
+  status: string
+  scheduledDate: string
+  completedAt: string | null
+  loads: DriverRouteLoad[]
+  truck: DriverRouteTruck
+}
+
 export const driverApi = {
   getDashboard: (token: string) =>
     apiRequest<DashboardData>('/api/mobile/driver/dashboard', { token }),
@@ -219,4 +247,21 @@ export const driverApi = {
       `/api/mobile/driver/loads/${id}/rate-confirmation`,
       { token }
     ),
+
+  // Route
+  getMyRoute: (token: string) =>
+    apiRequest<{ route: DriverRoute | null }>('/api/mobile/driver/route', { token }),
+
+  getRouteMessages: (token: string, routeId: string) =>
+    apiRequest<FleetMessage[]>(
+      `/api/mobile/driver/messages/route-thread?routeId=${encodeURIComponent(routeId)}`,
+      { token }
+    ),
+
+  sendRouteMessage: (token: string, routeId: string, body: string) =>
+    apiRequest<FleetMessage>('/api/mobile/driver/messages/route-thread', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ routeId, body }),
+    }),
 }
