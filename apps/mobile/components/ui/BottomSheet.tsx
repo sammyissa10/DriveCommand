@@ -56,7 +56,7 @@ export function BottomSheet({
       statusBarTranslucent
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
         style={{ flex: 1 }}
       >
         {/* Backdrop with fade */}
@@ -70,7 +70,7 @@ export function BottomSheet({
 
         {/* Sheet with spring slide-up */}
         <Animated.View
-          entering={SlideInDown.springify().damping(18).stiffness(200)}
+          entering={SlideInDown.springify().damping(32).stiffness(200)}
           exiting={SlideOutDown.duration(200)}
           style={{
             height: snapFraction === 1 ? '100%' : `${Math.round(snapFraction * 100)}%` as any,

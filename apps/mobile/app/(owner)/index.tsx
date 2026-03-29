@@ -376,7 +376,7 @@ export default function OwnerDashboard() {
 
           {/* Get Support item */}
           <Pressable
-            onPress={() => { closeMenu(); haptic.light(); openSupport() }}
+            onPress={() => { closeMenu(); haptic.light(); setTimeout(openSupport, 160) }}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
           >
             <View style={{
