@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Tabs } from 'expo-router'
 import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
+import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { haptic } from '../../lib/haptics'
 
 export default function OwnerLayout() {
@@ -71,6 +72,9 @@ export default function OwnerLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
       </Tabs>
+
+      {/* Support ticket FAB — persistent on all owner screens */}
+      <SupportTicketFAB />
     </Fragment>
   )
 }

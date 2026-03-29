@@ -10,6 +10,7 @@ import { kvStorage } from '../../lib/storage'
 import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
 import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import { AppHeader } from '../../components/shared/AppHeader'
+import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { haptic } from '../../lib/haptics'
 import type { HOSStatus } from '@drivecommand/types'
 
@@ -221,6 +222,9 @@ export default function DriverLayout() {
         visible={showNotifModal}
         onDismiss={() => setShowNotifModal(false)}
       />
+
+      {/* Support ticket FAB — persistent on all driver screens */}
+      <SupportTicketFAB />
     </Fragment>
   )
 }
