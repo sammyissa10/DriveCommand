@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-29 - Completed quick-118: routeId assignment UI on load create/edit forms
-Stopped at: Completed quick-118-PLAN.md
+Last activity: 2026-03-29 - Completed quick-121: support ticket page label mapping + screenshot attachment
+Stopped at: Completed quick-121-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
