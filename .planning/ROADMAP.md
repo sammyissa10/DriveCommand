@@ -92,6 +92,16 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 29. Monorepo Foundation + Expo Scaffold | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 31. Driver Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 32. Driver HOS + Incident Reporting | v5.0 | 4/4 | ✓ Complete | 2026-03-23 |
+| 33. Driver Native Features | v5.0 | 3/3 | ✓ Complete | 2026-03-23 |
+| 34. Driver Documents + Messaging | v5.0 | 2/2 | ✓ Complete | 2026-03-25 |
+| 35. Owner Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-24 |
+| 36. Owner Map + Fleet Communication | v5.0 | 3/3 | ✓ Complete | 2026-03-25 |
+| 37. Polish + Performance | v5.0 | 7/7 | ✓ Complete | 2026-03-28 |
+| 37.1. Driver Portal Gaps | v5.0 | 0/3 | ○ Not started | — |
+| 37.2. Owner Route + Maintenance Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.3. Owner Financial Tools Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.4. Owner Analytics + Support Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.5. Mobile UI/UX Design Overhaul | v5.0 | 0/? | ○ Not started | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -358,6 +368,65 @@ Plans:
 - [ ] 37-05-PLAN.md — Skeleton loaders (owner portal + load detail + fleet.tsx messages)
 - [ ] 37-06-PLAN.md — Accessibility labels (FABs, back buttons, KPI cards)
 - [ ] 37-07-PLAN.md — Form validation standardization (border-red-500 + text-red-500)
+
+---
+
+### Phase 37.1: Driver Portal Gaps — My Route screen and driver support tickets
+
+**Goal:** Close the two remaining gaps in the driver mobile portal. Build the My Route screen showing the driver's currently assigned route with full multi-stop timeline, route details, and status context. Build the driver support ticket FAB: persistent floating action button on all mobile screens that opens a submit-only support ticket form (category, priority, title, description).
+**Depends on:** Phase 37 (driver portal polished)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 37.1-01-PLAN.md — My Route API endpoints + RouteCard + timeline components
+- [ ] 37.1-02-PLAN.md — My Route detail screen (loads timeline, route details, route messages)
+- [ ] 37.1-03-PLAN.md — Support Ticket FAB + bottom sheet form + API endpoint
+
+
+
+---
+
+### Phase 37.2: Owner Route + Maintenance Mobile — Route management and truck maintenance on mobile
+
+**Goal:** Bring route management and truck maintenance to the owner mobile portal. Route management: list all routes, view route detail (stops, assigned driver/truck, status), create new route, edit existing route. Truck maintenance: view service history per truck, log a new service event (date, type, mileage, notes), schedule upcoming service with due date/mileage trigger.
+**Depends on:** Phase 37.1
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.3: Owner Financial Tools Mobile — Fuel tracking and expense settings
+
+**Goal:** Add fuel tracking and expense configuration to the owner mobile portal. Fuel tracking: log fuel fill-ups (truck, gallons, cost, odometer, location), view fuel history with cost-per-mile stats. Expense settings: manage expense categories (create/edit/delete) and expense templates (reusable line-item sets for common expense patterns).
+**Depends on:** Phase 37.2
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.4: Owner Analytics + Support Mobile — Safety metrics, profit predictor, and support tickets
+
+**Goal:** Port the remaining owner portal features to mobile. Safety metrics: safety score overview, recent safety events, driver safety rankings. Profit predictor: revenue forecast inputs and output summary. Owner support tickets: same flow as driver (list, detail with thread, submit new ticket).
+**Depends on:** Phase 37.3
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.5: Mobile UI/UX Design Overhaul — Layout, color, typography, and visual polish across both portals
+
+**Goal:** Full design overhaul of both driver and owner mobile portals. Audit and improve layout structure, color palette, typography, spacing, and component consistency. Establish a cohesive visual identity across all screens. Target: the app looks and feels premium — something drivers are proud to use and owners trust as a professional tool.
+**Depends on:** Phase 37.4 (all screens built before design pass)
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
 
 ---
 
