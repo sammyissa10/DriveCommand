@@ -16,6 +16,7 @@ import {
   Building2,
   DollarSign,
   FileText,
+  LifeBuoy,
   Package,
   Plus,
   Truck,
@@ -25,6 +26,7 @@ import {
   X,
 } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
+import { useSupportTicket } from '../../context/SupportTicketContext'
 import { ownerApi } from '@drivecommand/api-client'
 import { KPICard } from '../../components/owner/KPICard'
 import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
@@ -92,6 +94,7 @@ const CREATE_ACTIONS = [
 
 export default function OwnerDashboard() {
   const { token } = useAuthContext()
+  const { open: openSupport } = useSupportTicket()
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const fadeAnim = React.useRef(new Animated.Value(0)).current
@@ -367,6 +370,38 @@ export default function OwnerDashboard() {
               </Pressable>
             )
           })}
+
+          {/* Separator above Get Support */}
+          <View style={{ height: 1, backgroundColor: '#475569', width: 160, alignSelf: 'flex-end', marginVertical: 2 }} />
+
+          {/* Get Support item */}
+          <Pressable
+            onPress={() => { closeMenu(); haptic.light(); openSupport() }}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
+          >
+            <View style={{
+              backgroundColor: '#1e293b',
+              borderRadius: 8,
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderWidth: 1,
+              borderColor: '#334155',
+            }}>
+              <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 14 }}>Get Support</Text>
+            </View>
+            <View style={{
+              width: 42,
+              height: 42,
+              borderRadius: 21,
+              backgroundColor: '#f59e0b22',
+              borderWidth: 1,
+              borderColor: '#f59e0b55',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <LifeBuoy color="#f59e0b" size={18} />
+            </View>
+          </Pressable>
         </Animated.View>
       )}
 
