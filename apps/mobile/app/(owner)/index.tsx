@@ -86,10 +86,10 @@ function formatRevenue(amount: number): string {
 
 const CREATE_ACTIONS = [
   { key: 'load',     label: 'New Load',      icon: Package,   route: '/(owner)/loads?create=1',       color: '#38bdf8' },
+  { key: 'truck',    label: 'Add Truck',     icon: Truck,     route: '/(owner)/more/trucks/new',      color: '#f87171' },
   { key: 'driver',   label: 'Invite Driver', icon: UserPlus,  route: '/(owner)/drivers/invite',       color: '#a78bfa' },
   { key: 'customer', label: 'New Customer',  icon: Building2, route: '/(owner)/more/crm/new',         color: '#34d399' },
   { key: 'invoice',  label: 'New Invoice',   icon: FileText,  route: '/(owner)/more/invoices/new',    color: '#fbbf24' },
-  { key: 'truck',    label: 'Add Truck',     icon: Truck,     route: '/(owner)/more/trucks/new',      color: '#f87171' },
 ] as const
 
 export default function OwnerDashboard() {
