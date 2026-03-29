@@ -20,15 +20,21 @@ export default function OwnerLayout() {
             marginBottom: 0,
           },
           tabBarStyle: {
-            backgroundColor: '#1e293b',
-            borderTopColor: '#334155',
+            backgroundColor: '#0c1524',
+            borderTopWidth: 0,
+            borderTopColor: 'transparent',
             height: 72,
             paddingBottom: 10,
             paddingTop: 6,
+            shadowColor: '#000000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 8,
           },
           tabBarActiveTintColor: '#38bdf8',
-          tabBarInactiveTintColor: '#3d5068',
-          tabBarActiveBackgroundColor: 'rgba(56,189,248,0.12)',
+          tabBarInactiveTintColor: '#4a5e78',
+          tabBarActiveBackgroundColor: 'rgba(56,189,248,0.18)',
         }}
       >
         <Tabs.Screen
