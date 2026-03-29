@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { driverApi, type LoadSummary } from '@drivecommand/api-client'
 import { LoadCard } from '../../../components/driver/LoadCard'
+import { RouteCard } from '../../../components/driver/RouteCard'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
@@ -25,6 +26,18 @@ export default function LoadsScreen() {
     enabled: !!token,
   })
 
+  const { data: routeData } = useQuery({
+    queryKey: ['driver-route'],
+    queryFn: () => driverApi.getMyRoute(token!),
+    enabled: !!token,
+  })
+
+  const route = routeData?.route ?? null
+
+  const handleRoutePress = useCallback(() => {
+    router.push('/(driver)/loads/my-route' as never)
+  }, [router])
+
   const onRefresh = useCallback(() => {
     refetch()
   }, [refetch])
@@ -40,6 +53,14 @@ export default function LoadsScreen() {
   )
 
   const keyExtractor = useCallback((item: LoadSummary) => item.id, [])
+
+  const listHeader = useMemo(
+    () =>
+      route ? (
+        <RouteCard route={route} onPress={handleRoutePress} />
+      ) : null,
+    [route, handleRoutePress]
+  )
 
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
@@ -98,6 +119,7 @@ export default function LoadsScreen() {
             showsVerticalScrollIndicator={false}
             refreshing={isRefetching}
             onRefresh={onRefresh}
+            ListHeaderComponent={listHeader}
             ListEmptyComponent={
               <EmptyState
                 icon={<Truck color="#475569" size={40} />}
