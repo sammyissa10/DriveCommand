@@ -5,3 +5,21 @@ export { ownerApi } from './owner'
 export type { OwnerDashboardData, OwnerLoadSummary, OwnerLoadDetail, TruckOption, TruckDetail, CreateTruckPayload, FleetPosition, CustomerOption, DriverOption, CreateLoadPayload, UpdateLoadPayload, OwnerDriverSummary, OwnerDriverDetail, OwnerDriverDocument, OwnerDriverIncident, OwnerDriverCurrentLoad, MapVehicle, FleetMessageSummary, SendFleetMessagePayload, ConversationSummary, ConversationMessage, InvoiceStats, InvoiceSummary, InvoicesResponse, InvoiceLineItem, InvoiceDetail, CRMStats, CustomerSummary, CRMResponse, PayrollStats, PayrollRecordSummary, PayrollResponse, ComplianceSummary, ComplianceAlert, ComplianceResponse, CreateCustomerPayload, CreateInvoicePayload } from './owner'
 export type { RouteStop as OwnerRouteStop } from './owner'
 export type * from '@drivecommand/types'
+
+import { driverApi as _driverApi } from './driver'
+
+// Re-export createSupportTicket unconditionally so both driver and owner portals
+// can access it via @drivecommand/api-client without importing from driver module directly.
+// The SupportTicketFAB is a shared component used in both layouts.
+export function createSupportTicket(
+  token: string,
+  data: {
+    category: 'BILLING' | 'BUG' | 'FEATURE' | 'GENERAL'
+    priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT'
+    title: string
+    description: string
+    fromPage: string
+  }
+): Promise<{ ticketNumber: string }> {
+  return _driverApi.createSupportTicket(token, data)
+}

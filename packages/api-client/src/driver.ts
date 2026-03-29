@@ -264,4 +264,21 @@ export const driverApi = {
       token,
       body: JSON.stringify({ routeId, body }),
     }),
+
+  // Support tickets — shared across driver and owner portals
+  createSupportTicket: (
+    token: string,
+    data: {
+      category: 'BILLING' | 'BUG' | 'FEATURE' | 'GENERAL'
+      priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT'
+      title: string
+      description: string
+      fromPage: string
+    }
+  ) =>
+    apiRequest<{ ticketNumber: string }>('/api/mobile/support/ticket', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(data),
+    }),
 }
