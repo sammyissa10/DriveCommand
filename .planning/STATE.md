@@ -84,6 +84,7 @@ Progress: [███████████████████████
 - Phase 37-04 (2026-03-27): StyleSheet-to-NativeWind migration for 7 owner/shared screens (login, more/index, crm, trucks, compliance, payroll, invoices) — 3 tasks, 7 files
 - Phase 37-05 (2026-03-27): Owner portal skeleton loaders — 6 skeleton components (TruckCard, InvoiceRow, ComplianceRow, PayrollRow, CRMCard, LoadDetail), replaced ActivityIndicator spinners in 5 list screens + load detail — 2 tasks, 12 files, ~8min
 - Phase 37-06 (2026-03-27): Accessibility label coverage — accessibilityLabel + accessibilityRole on all icon-only FABs, back buttons, send/compose buttons; KPICard composite labels with live data values; auto-fixed SyncStatusBar invalid role — 2 tasks, 11 files, 3min
+- Phase 37.1-02 (2026-03-29): My Route detail screen + MessageBubble extraction — loads timeline, route/truck details card, route messages thread with send, MessageBubble shared component — 2 tasks, 3 files, 128s
 - Phase 37.1-03 (2026-03-28): Support Ticket FAB — POST /api/mobile/support/ticket, SupportTicketFAB (LifeBuoy FAB + BottomSheet form), wired in driver + owner layouts — 2 tasks, 6 files, ~5min
 
 **Combined:**
