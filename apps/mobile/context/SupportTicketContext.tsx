@@ -13,7 +13,7 @@ import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
 import { X } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
-import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
+import { getInfoAsync, uploadAsync, FileSystemUploadType } from 'expo-file-system/legacy'
 import { BottomSheet } from '../components/ui/BottomSheet'
 import { createSupportTicket } from '@drivecommand/api-client'
 import { useAuthContext } from './AuthContext'
@@ -112,21 +112,17 @@ async function uploadScreenshot(uri: string, token: string): Promise<string> {
 
   const { uploadUrl, s3Key } = (await initRes.json()) as { uploadUrl: string; s3Key: string }
 
-  const base64 = await readAsStringAsync(uri, { encoding: EncodingType.Base64 })
-  const binaryString = atob(base64)
-  const bytes = new Uint8Array(binaryString.length)
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
-
-  const uploadRes = await fetch(uploadUrl, {
-    method: 'PUT',
+  // Use expo-file-system uploadAsync — React Native's fetch cannot reliably send
+  // Uint8Array as a binary body (data gets corrupted). uploadAsync with BINARY_CONTENT
+  // reads the file and streams raw bytes directly, which S3 presigned PUTs require.
+  const uploadResult = await uploadAsync(uploadUrl, uri, {
+    httpMethod: 'PUT',
     headers: { 'Content-Type': contentType },
-    body: bytes,
+    uploadType: FileSystemUploadType.BINARY_CONTENT,
   })
 
-  if (!uploadRes.ok) {
-    throw new Error(`S3 upload failed: HTTP ${uploadRes.status}`)
+  if (uploadResult.status < 200 || uploadResult.status >= 300) {
+    throw new Error(`S3 upload failed: HTTP ${uploadResult.status}`)
   }
 
   return s3Key
