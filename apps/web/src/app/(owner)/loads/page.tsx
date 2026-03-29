@@ -86,7 +86,7 @@ export default async function LoadsPage() {
         </div>
       </div>
 
-      <LoadList loads={loads} />
+      <LoadList loads={loads.map((l: any) => ({ ...l, rate: Number(l.rate) }))} />
     </div>
   );
 }
