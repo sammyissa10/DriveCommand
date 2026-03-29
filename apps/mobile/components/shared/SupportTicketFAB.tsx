@@ -13,7 +13,6 @@ import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
 import { LifeBuoy, X } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
-import { captureScreen } from 'react-native-view-shot'
 import { getInfoAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
 import { BottomSheet } from '../ui/BottomSheet'
 import { createSupportTicket } from '@drivecommand/api-client'
@@ -257,10 +256,12 @@ export function SupportTicketFAB() {
           text: 'Yes',
           onPress: async () => {
             try {
+              // eslint-disable-next-line @typescript-eslint/no-var-requires
+              const { captureScreen } = require('react-native-view-shot')
               const uri = await captureScreen({ format: 'jpg', quality: 0.8 })
               setForm((f) => ({ ...f, screenshotUri: uri }))
             } catch {
-              // Silently continue — screenshot is optional
+              // Native module not available yet — screenshot is optional
             }
             setVisible(true)
           },
