@@ -3,12 +3,14 @@ import { Tabs } from 'expo-router'
 import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
+import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
 
 export default function OwnerLayout() {
   return (
     <Fragment>
       <AppHeader />
+      <SupportTicketProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -79,8 +81,9 @@ export default function OwnerLayout() {
         />
       </Tabs>
 
-      {/* Support ticket FAB — persistent on all owner screens */}
+      {/* Support ticket FAB — persistent on all owner screens (hidden on dashboard) */}
       <SupportTicketFAB />
+      </SupportTicketProvider>
     </Fragment>
   )
 }
