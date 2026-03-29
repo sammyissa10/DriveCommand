@@ -10,6 +10,7 @@ interface LoadFormProps {
     customerId?: string;
     driverId?: string | null;
     truckId?: string | null;
+    routeId?: string | null;
     origin?: string;
     destination?: string;
     pickupDate?: string;
@@ -23,6 +24,7 @@ interface LoadFormProps {
   customers: Array<{ id: string; companyName: string }>;
   drivers?: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks?: Array<{ id: string; year: number; make: string; model: string; licensePlate: string }>;
+  routes?: Array<{ id: string; name: string | null; origin: string; destination: string }>;
 }
 
 const inputClass =
@@ -31,7 +33,7 @@ const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
 interface Coords { lat: number; lng: number }
 
-export function LoadForm({ action, initialData, submitLabel, customers, drivers = [], trucks = [] }: LoadFormProps) {
+export function LoadForm({ action, initialData, submitLabel, customers, drivers = [], trucks = [], routes = [] }: LoadFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
@@ -119,6 +121,26 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             {trucks.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.year} {t.make} {t.model} — {t.licensePlate}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="routeId" className={labelClass}>
+            Route <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </label>
+          <select
+            id="routeId"
+            name="routeId"
+            defaultValue={initialData?.routeId || ''}
+            disabled={isPending}
+            className={inputClass}
+          >
+            <option value="">No route assigned</option>
+            {routes.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name || `${r.origin} \u2192 ${r.destination}`}
               </option>
             ))}
           </select>
