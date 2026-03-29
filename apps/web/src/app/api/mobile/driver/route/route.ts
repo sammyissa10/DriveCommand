@@ -52,7 +52,9 @@ export async function GET(req: NextRequest) {
               origin: true,
               destination: true,
               status: true,
+              sequence: true,
             },
+            orderBy: [{ sequence: 'asc' }, { pickupDate: 'asc' }],
           },
           truck: {
             select: {

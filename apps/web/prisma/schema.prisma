@@ -871,6 +871,7 @@ model Load {
   loadNumber    String
   customerId    String     @db.Uuid
   routeId       String?    @db.Uuid
+  sequence      Int?
   driverId      String?    @db.Uuid
   truckId       String?    @db.Uuid
   origin        String
@@ -914,6 +915,7 @@ model Load {
   @@index([pickupDate])
   @@index([trackingToken])
   @@index([archivedAt])
+  @@index([routeId, sequence])
 }
 
 // ─── Integration Models ──────────────────────────────────────

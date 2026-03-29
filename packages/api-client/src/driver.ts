@@ -129,6 +129,7 @@ export interface DriverRouteLoad {
   origin: string
   destination: string
   status: string
+  sequence: number | null
 }
 
 export interface DriverRoute {

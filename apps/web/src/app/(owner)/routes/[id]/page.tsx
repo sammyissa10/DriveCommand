@@ -90,10 +90,13 @@ export default async function RouteDetailPage({
         status: true,
         rate: true,
         pickupDate: true,
+        sequence: true,
         customer: { select: { companyName: true } },
       },
-      orderBy: { pickupDate: 'asc' },
-    }).catch(() => [] as any[]),
+      orderBy: [{ sequence: 'asc' }, { pickupDate: 'asc' }],
+    }).then((loads) =>
+      loads.map((l) => ({ ...l, rate: l.rate.toNumber() }))
+    ).catch(() => [] as any[]),
   ]);
 
   if (!route) {
