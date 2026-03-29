@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-29 - Completed quick-118: routeId FK on load create/edit
+Last activity: 2026-03-29 - Completed quick-118: routeId assignment UI on load create/edit forms
 Stopped at: Completed quick-118-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -730,6 +730,7 @@ None blocking immediate progress.
 | 115 | Enable RLS on _prisma_migrations and Tenant tables to fix Supabase security advisor warnings | 2026-03-28 | ff323b6 | [115-enable-rls-on-prisma-migrations-and-tena](./quick/115-enable-rls-on-prisma-migrations-and-tena/) |
 | 116 | Fix Unknown Driver name in mobile messages list | 2026-03-28 | 534adb5 | [116-fix-unknown-driver-name-in-mobile-messag](./quick/116-fix-unknown-driver-name-in-mobile-messag/) |
 | 117 | Fix owner mobile Messages tab to show load and route scoped messages with working thread view | 2026-03-28 | f13449c | [117-fix-owner-mobile-messages-tab-to-show-lo](./quick/117-fix-owner-mobile-messages-tab-to-show-lo/) |
+| 118 | Add routeId FK to Load model so loads can be linked to routes. Migration, API update (route endpoint fetches linked loads), owner load creation/edit UI to assign a load to a route, and the My Route detail screen then shows real loads in the timeline. | 2026-03-29 | 5001517 | [118-add-routeid-fk-to-load-model-so-loads-ca](./quick/118-add-routeid-fk-to-load-model-so-loads-ca/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
