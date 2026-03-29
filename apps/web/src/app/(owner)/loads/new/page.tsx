@@ -13,7 +13,7 @@ export default async function NewLoadPage() {
   let drivers: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let trucks: any[] = [];
-  let routes: Array<{ id: string; name: string | null; origin: string; destination: string }> = [];
+  let routes: Array<{ id: string; name: string | null; origin: string; destination: string; scheduledDate: string }> = [];
   try {
     [customers, drivers, trucks, routes] = await Promise.all([
       prisma.customer.findMany({
@@ -32,7 +32,7 @@ export default async function NewLoadPage() {
         orderBy: [{ year: 'desc' }, { make: 'asc' }],
       }),
       listRoutes().then((rs) =>
-        rs.map((r) => ({ id: r.id, name: r.name, origin: r.origin, destination: r.destination }))
+        rs.map((r) => ({ id: r.id, name: r.name, origin: r.origin, destination: r.destination, scheduledDate: r.scheduledDate.toISOString() }))
       ).catch(() => []),
     ]);
   } catch {

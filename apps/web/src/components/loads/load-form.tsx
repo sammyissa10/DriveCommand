@@ -24,7 +24,7 @@ interface LoadFormProps {
   customers: Array<{ id: string; companyName: string }>;
   drivers?: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks?: Array<{ id: string; year: number; make: string; model: string; licensePlate: string }>;
-  routes?: Array<{ id: string; name: string | null; origin: string; destination: string }>;
+  routes?: Array<{ id: string; name: string | null; origin: string; destination: string; scheduledDate: string }>;
 }
 
 const inputClass =
@@ -37,6 +37,22 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
   const [state, formAction, isPending] = useActionState(action, null);
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<string>(initialData?.routeId || '');
+  const [pickupDateVal, setPickupDateVal] = useState<string>(initialData?.pickupDate || '');
+  const [deliveryDateVal, setDeliveryDateVal] = useState<string>(initialData?.deliveryDate || '');
+
+  // Compute date mismatch warning (informational only — does not block submission)
+  const selectedRoute = routes.find((r) => r.id === selectedRouteId);
+  let dateWarning: string | null = null;
+  if (selectedRoute && pickupDateVal) {
+    const routeDate = selectedRoute.scheduledDate.slice(0, 10);
+    const mismatches: string[] = [];
+    if (pickupDateVal !== routeDate) mismatches.push(`pickup date (${pickupDateVal})`);
+    if (deliveryDateVal && deliveryDateVal !== routeDate) mismatches.push(`delivery date (${deliveryDateVal})`);
+    if (mismatches.length > 0) {
+      dateWarning = `Warning: ${mismatches.join(' and ')} ${mismatches.length === 1 ? 'does' : 'do'} not match the route scheduled date (${routeDate}). The load can still be saved.`;
+    }
+  }
 
   const distance =
     originCoords && destCoords
@@ -133,7 +149,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
           <select
             id="routeId"
             name="routeId"
-            defaultValue={initialData?.routeId || ''}
+            value={selectedRouteId}
+            onChange={(e) => setSelectedRouteId(e.target.value)}
             disabled={isPending}
             className={inputClass}
           >
@@ -145,6 +162,12 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             ))}
           </select>
         </div>
+
+        {dateWarning && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40 px-4 py-2.5">
+            <p className="text-sm text-amber-700 dark:text-amber-300">{dateWarning}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -248,7 +271,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               type="date"
               id="pickupDate"
               name="pickupDate"
-              defaultValue={initialData?.pickupDate || ''}
+              value={pickupDateVal}
+              onChange={(e) => setPickupDateVal(e.target.value)}
               disabled={isPending}
               className={inputClass}
               required
@@ -265,7 +289,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               type="date"
               id="deliveryDate"
               name="deliveryDate"
-              defaultValue={initialData?.deliveryDate || ''}
+              value={deliveryDateVal}
+              onChange={(e) => setDeliveryDateVal(e.target.value)}
               disabled={isPending}
               className={inputClass}
             />
