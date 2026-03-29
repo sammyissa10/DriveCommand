@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, X, Package } from 'lucide-react';
+import { ArrowLeft, Pencil, X, Package, AlertTriangle } from 'lucide-react';
 import { LoadStatusBadge } from '@/components/loads/load-status-badge';
 import { RouteDetail } from '@/components/routes/route-detail';
 import { RouteStatusActions } from '@/components/routes/route-status-actions';
@@ -17,6 +17,7 @@ import { RouteDocumentsSection } from './route-documents-section';
 import { DriverAssignmentsSection } from './driver-assignments-section';
 import { RouteMessagesSection } from './route-messages-section';
 import { updateRouteStatus } from '@/app/(owner)/actions/routes';
+import { updateLoadSequence } from '@/app/(owner)/actions/loads';
 import type { FleetMessageWithSender } from '@/app/(owner)/actions/fleet-messages';
 
 interface RoutePageClientProps {
@@ -110,6 +111,7 @@ interface RoutePageClientProps {
     status: string;
     rate: any;
     pickupDate: Date;
+    sequence: number | null;
     customer: { companyName: string };
   }>;
 }
@@ -234,28 +236,71 @@ export function RoutePageClient({
             initialAssignments={driverAssignments}
           />
 
-          {/* Loads on this Route */}
+          {/* Loads on this Route — Edit Mode */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-card-foreground mb-1 flex items-center gap-2">
               <Package className="h-5 w-5" />
               Loads on this Route
             </h2>
+            <p className="text-xs text-muted-foreground mb-4">Set leg numbers to define the order drivers work these loads.</p>
             {linkedLoads.length > 0 ? (
-              <div className="divide-y divide-border">
-                {linkedLoads.map((load) => (
-                  <div key={load.id} className="flex items-center justify-between py-3 text-sm gap-4 flex-wrap">
-                    <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
-                      #{load.loadNumber}
-                    </Link>
-                    <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
-                    <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
-                    <LoadStatusBadge status={load.status} />
-                    <span className="font-semibold ml-auto shrink-0">
-                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="divide-y divide-border">
+                  {linkedLoads.map((load) => (
+                    <div key={load.id} className="flex items-center gap-3 py-3 text-sm flex-wrap">
+                      {/* Leg number input */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <label htmlFor={`seq-${load.id}`} className="text-xs text-muted-foreground whitespace-nowrap">Leg</label>
+                        <input
+                          id={`seq-${load.id}`}
+                          type="number"
+                          min="1"
+                          defaultValue={load.sequence ?? ''}
+                          placeholder="—"
+                          className="w-16 rounded-md border border-input bg-background px-2 py-1 text-sm text-center tabular-nums focus:outline-none focus:ring-2 focus:ring-ring"
+                          onBlur={async (e) => {
+                            const raw = e.target.value.trim();
+                            const val = raw === '' ? null : parseInt(raw, 10);
+                            if (!isNaN(val as number) || val === null) {
+                              await updateLoadSequence(load.id, val);
+                            }
+                          }}
+                        />
+                      </div>
+                      <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
+                        #{load.loadNumber}
+                      </Link>
+                      <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
+                      <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
+                      <LoadStatusBadge status={load.status} />
+                      <span className="font-semibold ml-auto shrink-0">
+                        ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Continuity warnings */}
+                {(() => {
+                  const sequenced = linkedLoads.filter((l) => l.sequence !== null).sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+                  const warnings: React.ReactNode[] = [];
+                  for (let i = 0; i < sequenced.length - 1; i++) {
+                    const curr = sequenced[i];
+                    const next = sequenced[i + 1];
+                    if (curr.destination.trim().toLowerCase() !== next.origin.trim().toLowerCase()) {
+                      warnings.push(
+                        <div key={`${curr.id}-${next.id}`} className="flex items-start gap-2 rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">
+                          <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                          <span>
+                            <span className="font-semibold">Gap between Leg {curr.sequence} and Leg {next.sequence}:</span>{' '}
+                            Load #{curr.loadNumber} delivers to <span className="font-medium">{curr.destination}</span> but Load #{next.loadNumber} picks up from <span className="font-medium">{next.origin}</span>.
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+                  return warnings.length > 0 ? <div className="mt-3 space-y-2">{warnings}</div> : null;
+                })()}
+              </>
             ) : (
               <p className="text-sm text-muted-foreground">No loads linked to this route. Link loads by selecting this route when dispatching.</p>
             )}
@@ -350,28 +395,56 @@ export function RoutePageClient({
             initialAssignments={driverAssignments}
           />
 
-          {/* Loads on this Route */}
+          {/* Loads on this Route — View Mode */}
           <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-card-foreground mb-4 flex items-center gap-2">
               <Package className="h-5 w-5" />
               Loads on this Route
             </h2>
             {linkedLoads.length > 0 ? (
-              <div className="divide-y divide-border">
-                {linkedLoads.map((load) => (
-                  <div key={load.id} className="flex items-center justify-between py-3 text-sm gap-4 flex-wrap">
-                    <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
-                      #{load.loadNumber}
-                    </Link>
-                    <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
-                    <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
-                    <LoadStatusBadge status={load.status} />
-                    <span className="font-semibold ml-auto shrink-0">
-                      ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="divide-y divide-border">
+                  {linkedLoads.map((load) => (
+                    <div key={load.id} className="flex items-center gap-4 py-3 text-sm flex-wrap">
+                      {load.sequence !== null && (
+                        <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary shrink-0">
+                          Leg {load.sequence}
+                        </span>
+                      )}
+                      <Link href={`/loads/${load.id}`} className="font-medium text-primary hover:underline shrink-0">
+                        #{load.loadNumber}
+                      </Link>
+                      <span className="text-muted-foreground shrink-0">{load.customer.companyName}</span>
+                      <span className="text-muted-foreground">{load.origin} &rarr; {load.destination}</span>
+                      <LoadStatusBadge status={load.status} />
+                      <span className="font-semibold ml-auto shrink-0">
+                        ${Number(load.rate).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Continuity warnings */}
+                {(() => {
+                  const sequenced = linkedLoads.filter((l) => l.sequence !== null).sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+                  const warnings: React.ReactNode[] = [];
+                  for (let i = 0; i < sequenced.length - 1; i++) {
+                    const curr = sequenced[i];
+                    const next = sequenced[i + 1];
+                    if (curr.destination.trim().toLowerCase() !== next.origin.trim().toLowerCase()) {
+                      warnings.push(
+                        <div key={`${curr.id}-${next.id}`} className="flex items-start gap-2 rounded-lg bg-amber-500/10 border border-amber-500/30 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">
+                          <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                          <span>
+                            <span className="font-semibold">Gap between Leg {curr.sequence} and Leg {next.sequence}:</span>{' '}
+                            Load #{curr.loadNumber} delivers to <span className="font-medium">{curr.destination}</span> but Load #{next.loadNumber} picks up from <span className="font-medium">{next.origin}</span>.
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+                  return warnings.length > 0 ? <div className="mt-3 space-y-2">{warnings}</div> : null;
+                })()}
+              </>
             ) : (
               <p className="text-sm text-muted-foreground">No loads linked to this route. Link loads by selecting this route when dispatching.</p>
             )}

@@ -484,6 +484,30 @@ export async function updateLoadStatus(id: string, newStatus: string) {
 }
 
 /**
+ * Update the sequence (leg number) of a load on a route.
+ * Passing null clears the sequence.
+ */
+export async function updateLoadSequence(loadId: string, sequence: number | null) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  try {
+    await prisma.load.update({
+      where: { id: loadId },
+      data: { sequence },
+    });
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      return { error: 'Load not found.' };
+    }
+    return { error: 'Failed to update load sequence.' };
+  }
+
+  revalidatePath('/routes');
+  return { success: true };
+}
+
+/**
  * Revert a load's status one step back in the lifecycle.
  * Does NOT send customer notifications — this is a dispatcher correction, not a customer-facing event.
  * When reverting from DISPATCHED back to PENDING, clears driverId, truckId, and trackingToken.
