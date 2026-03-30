@@ -4,6 +4,29 @@ This document describes DriveCommand's system design: how its three portals are 
 
 ---
 
+## Monorepo Architecture
+
+DriveCommand is a Turborepo monorepo. The web app (`apps/web`) is one of two apps:
+
+```
+drivecommand/
+  apps/
+    web/      # This app — Next.js 16, serves web portals AND mobile API
+    mobile/   # Expo/React Native mobile app
+  packages/
+    types/        # @drivecommand/types — shared TypeScript interfaces
+    validation/   # @drivecommand/validation — shared Zod schemas
+    api-client/   # @drivecommand/api-client — mobile HTTP client
+```
+
+**The web app is the single backend.** It serves:
+1. Web portals (owner, driver, sysadmin) via Next.js pages and server actions
+2. REST API for the mobile app via `src/app/api/mobile/` route handlers
+
+Mobile API routes are secured with Supabase JWT verification (not the custom session cookie used by web portals). See [Mobile app docs](../../mobile/docs/architecture.md) for mobile auth details.
+
+---
+
 ## System Overview
 
 DriveCommand is a Next.js App Router application with three distinct user portals sharing a single PostgreSQL database. Each portal is implemented as a route group under `src/app/`:
@@ -103,6 +126,7 @@ src/
     (driver)/      # Driver portal pages and server actions
     (admin)/       # SysAdmin portal pages
     api/           # API routes (auth, cron, GPS, documents, webhooks, etc.)
+      mobile/      # REST API for mobile app (owner/*, driver/*, support/*)
   lib/
     auth/          # session.ts, server.ts, roles.ts
     db/            # prisma.ts (singleton Prisma client + connection pool)

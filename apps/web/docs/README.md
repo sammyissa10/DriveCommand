@@ -1,6 +1,8 @@
-# DriveCommand — Developer Documentation
+# DriveCommand — Web App Developer Documentation
 
 DriveCommand is a multi-tenant SaaS fleet management platform for trucking operators. It provides three separate portals: an Owner portal for fleet owners/managers, a Driver portal for drivers, and a SysAdmin portal for the DriveCommand team.
+
+This is the **web app** (`apps/web`) within a Turborepo monorepo. See [Monorepo Context](#monorepo-context) below.
 
 ---
 
@@ -8,7 +10,7 @@ DriveCommand is a multi-tenant SaaS fleet management platform for trucking opera
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
 | Database | PostgreSQL via Supabase |
 | ORM | Prisma 7 with @prisma/adapter-pg |
@@ -59,6 +61,28 @@ Pages: `/admin-dashboard`, `/admin-support`, `/tenants`, `/admin`
 
 ---
 
+## Monorepo Context
+
+This web app is one of two apps in the DriveCommand Turborepo monorepo. It serves as both the web frontend AND the API backend for the mobile app.
+
+| Workspace | Description |
+|---|---|
+| `apps/web` | This app — Next.js 16 web portals + API backend for mobile |
+| `apps/mobile` | Expo/React Native mobile app |
+| `packages/types` | Shared TypeScript interfaces (`@drivecommand/types`) |
+| `packages/validation` | Shared Zod schemas (`@drivecommand/validation`) |
+| `packages/api-client` | Typed HTTP client for mobile → web API (`@drivecommand/api-client`) |
+
+Mobile-specific API routes live under `src/app/api/mobile/` and are consumed by `@drivecommand/api-client` from the mobile app.
+
+**Related documentation:**
+- [Monorepo root README](../../../README.md) — monorepo overview, shared packages, dev commands
+- [Mobile app docs](../../mobile/docs/) — mobile architecture, auth flow, navigation, build process
+
+---
+
 ## Quick Start
 
 See [Local Setup](./setup.md) to get the app running locally.
+
+For running the full monorepo (web + mobile together), use `npm run dev` from the monorepo root.
