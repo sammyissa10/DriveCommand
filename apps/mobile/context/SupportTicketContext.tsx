@@ -10,9 +10,10 @@ import {
 } from 'react-native'
 import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
-import { X } from 'lucide-react-native'
+import { ImagePlus, X } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
-import { getInfoAsync, uploadAsync, FileSystemUploadType } from 'expo-file-system/legacy'
+import { readAsStringAsync, EncodingType } from 'expo-file-system/legacy'
+import * as ImagePicker from 'expo-image-picker'
 import { BottomSheet } from '../components/ui/BottomSheet'
 import { createSupportTicket } from '@drivecommand/api-client'
 import { useAuthContext } from './AuthContext'
@@ -86,34 +87,29 @@ const getBaseUrl = () => {
 }
 
 async function uploadScreenshot(uri: string, token: string): Promise<string> {
-  const fileInfo = await getInfoAsync(uri)
-  if (!fileInfo.exists) {
-    throw new Error('Screenshot file not found')
-  }
-
   const fileName = uri.split('/').pop() ?? 'screenshot.jpg'
   const mimeType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
 
-  // POST the file as multipart to our server — server uploads to S3 directly.
-  // This avoids presigned PUT URL issues (signature mismatches, binary body
-  // corruption) that occur when uploading straight from React Native to S3.
-  const result = await uploadAsync(
-    `${getBaseUrl()}/api/mobile/support/upload-screenshot`,
-    uri,
-    {
-      httpMethod: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      uploadType: FileSystemUploadType.MULTIPART,
-      fieldName: 'screenshot',
-      mimeType,
-    }
-  )
+  // Read the file as base64 and send as JSON — fetch with JSON body is the
+  // most reliable transport from React Native (same path used for ticket submit).
+  // uploadAsync MULTIPART silently fails to reach the local dev server.
+  const base64 = await readAsStringAsync(uri, { encoding: EncodingType.Base64 })
 
-  if (result.status < 200 || result.status >= 300) {
-    throw new Error(`Screenshot upload failed: HTTP ${result.status}`)
+  const res = await fetch(`${getBaseUrl()}/api/mobile/support/upload-screenshot`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ base64, mimeType, fileName }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`Screenshot upload failed: HTTP ${res.status} ${text}`)
   }
 
-  const { s3Key } = JSON.parse(result.body) as { s3Key: string }
+  const { s3Key } = (await res.json()) as { s3Key: string }
   return s3Key
 }
 
@@ -248,29 +244,34 @@ export function SupportTicketProvider({ children }: { children: React.ReactNode 
     setForm(DEFAULT_FORM)
   }
 
-  const open = async () => {
-    // Pre-capture while the current screen is clean (before any overlay appears).
-    // Capturing after an Alert closes fails on Android due to animation timing.
-    let screenshotUri: string | null = null
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { captureScreen } = require('react-native-view-shot')
-      screenshotUri = await captureScreen({ format: 'jpg', quality: 0.8 })
-    } catch {
-      Toast.show({
-        type: 'info',
-        text1: 'Screenshot unavailable',
-        text2: 'You can still submit a ticket without one.',
-        visibilityTime: 2500,
-      })
-    }
-    setForm((f) => ({ ...f, screenshotUri }))
+  const open = () => {
     setVisible(true)
+  }
+
+  const pickScreenshot = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status !== 'granted') {
+      Toast.show({
+        type: 'error',
+        text1: 'Permission required',
+        text2: 'Allow photo access to attach a screenshot.',
+        visibilityTime: 3000,
+      })
+      return
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false,
+      quality: 0.8,
+    })
+    if (!result.canceled && result.assets[0]) {
+      setForm((f) => ({ ...f, screenshotUri: result.assets[0].uri }))
+    }
   }
 
   const getSubmitLabel = () => {
     if (!isPending) return 'Submit Ticket'
-    return uploadPhaseRef.current ? 'Uploading screenshot...' : 'Submitting...'
+    return uploadPhaseRef.current ? 'Uploading...' : 'Submitting...'
   }
 
   return (
@@ -379,7 +380,7 @@ export function SupportTicketProvider({ children }: { children: React.ReactNode 
             </Text>
           </View>
 
-          {/* Thumbnail preview */}
+          {/* Screenshot attachment */}
           {form.screenshotUri ? (
             <View style={styles.previewContainer}>
               <Image
@@ -395,7 +396,12 @@ export function SupportTicketProvider({ children }: { children: React.ReactNode 
                 <X color="#ffffff" size={14} />
               </Pressable>
             </View>
-          ) : null}
+          ) : (
+            <Pressable style={styles.attachButton} onPress={pickScreenshot}>
+              <ImagePlus color="#94a3b8" size={16} />
+              <Text style={styles.attachButtonText}>Attach Screenshot</Text>
+            </Pressable>
+          )}
 
           {/* Submit button */}
           <Pressable
@@ -511,6 +517,22 @@ const styles = StyleSheet.create({
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  attachButton: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#0f172a',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  attachButtonText: {
+    color: '#94a3b8',
+    fontSize: 14,
   },
   submitButton: {
     marginTop: 24,

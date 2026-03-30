@@ -82,6 +82,80 @@ function InfoField({ label, value }: InfoFieldProps) {
   )
 }
 
+// ─── Status timeline ────────────────────────────────────────────────────────
+
+const STATUS_LIFECYCLE = ['PENDING', 'DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'INVOICED']
+const STATUS_TIMELINE_LABELS: Record<string, string> = {
+  PENDING: 'Pending',
+  DISPATCHED: 'Dispatched',
+  PICKED_UP: 'Picked Up',
+  IN_TRANSIT: 'In Transit',
+  DELIVERED: 'Delivered',
+  INVOICED: 'Invoiced',
+}
+
+function StatusTimeline({ status }: { status: string }) {
+  const isCancelled = status === 'CANCELLED'
+  const currentIndex = STATUS_LIFECYCLE.indexOf(status)
+
+  return (
+    <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+      <Text className="text-white font-semibold text-base mb-4">Status Timeline</Text>
+      {isCancelled ? (
+        <View className="flex-row items-center gap-3">
+          <View className="w-8 h-8 rounded-full bg-red-900/50 border border-red-700 items-center justify-center">
+            <Text className="text-red-400 text-xs font-bold">✕</Text>
+          </View>
+          <Text className="text-red-400 text-sm font-medium">Cancelled</Text>
+        </View>
+      ) : (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View className="flex-row items-start">
+            {STATUS_LIFECYCLE.map((s, index) => {
+              const isCompleted = currentIndex > index
+              const isCurrent = currentIndex === index
+              return (
+                <View key={s} className="flex-row items-center">
+                  <View className="items-center" style={{ minWidth: 64 }}>
+                    <View
+                      className={`w-8 h-8 rounded-full items-center justify-center ${
+                        isCompleted
+                          ? 'bg-green-500'
+                          : isCurrent
+                          ? 'bg-sky-500'
+                          : 'bg-slate-700 border border-slate-600'
+                      }`}
+                      style={isCurrent ? { shadowColor: '#0ea5e9', shadowOpacity: 0.4, shadowRadius: 6, elevation: 3 } : undefined}
+                    >
+                      <Text className={`text-xs font-bold ${isCompleted || isCurrent ? 'text-white' : 'text-slate-400'}`}>
+                        {isCompleted ? '✓' : index + 1}
+                      </Text>
+                    </View>
+                    <Text
+                      className={`text-xs text-center mt-1.5 font-medium ${
+                        isCurrent ? 'text-sky-400' : isCompleted ? 'text-green-400' : 'text-slate-500'
+                      }`}
+                      style={{ width: 64 }}
+                    >
+                      {STATUS_TIMELINE_LABELS[s]}
+                    </Text>
+                  </View>
+                  {index < STATUS_LIFECYCLE.length - 1 && (
+                    <View
+                      className={`h-0.5 ${currentIndex > index ? 'bg-green-500' : 'bg-slate-700'}`}
+                      style={{ width: 20, marginBottom: 20 }}
+                    />
+                  )}
+                </View>
+              )
+            })}
+          </View>
+        </ScrollView>
+      )}
+    </View>
+  )
+}
+
 // ─── Status options ordered for owner ──────────────────────────────────────
 
 const ALL_STATUSES = [
@@ -467,6 +541,9 @@ export default function OwnerLoadDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* Status Timeline */}
+        <StatusTimeline status={load.status} />
 
         {/* Stop Timeline */}
         {load.stops.length > 0 && (

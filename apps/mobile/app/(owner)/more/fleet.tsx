@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, MapPin, Megaphone, MessageSquare, Package, PenSquare, Send } from 'lucide-react-native'
@@ -157,6 +157,7 @@ function MessageBubble({ message }: MessageBubbleProps) {
 export default function OwnerFleetScreen() {
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const { driverId } = useLocalSearchParams<{ driverId?: string }>()
 
   const [activeConversation, setActiveConversation] = useState<ActiveConversation | null>(null)
@@ -326,7 +327,18 @@ export default function OwnerFleetScreen() {
         <AnimatedScreen>
           {/* Header */}
           <View className="flex-row items-center justify-between px-4 pt-3 pb-4">
-            <Text className="text-2xl font-bold text-white">Messages</Text>
+            <View className="flex-row items-center gap-2">
+              <TouchableOpacity
+                accessibilityLabel="Go back"
+                accessibilityRole="button"
+                onPress={() => router.back()}
+                hitSlop={8}
+                className="mr-1"
+              >
+                <ChevronLeft size={24} color="#94a3b8" />
+              </TouchableOpacity>
+              <Text className="text-2xl font-bold text-white">Messages</Text>
+            </View>
             <TouchableOpacity
               accessibilityLabel="Compose message"
               accessibilityRole="button"

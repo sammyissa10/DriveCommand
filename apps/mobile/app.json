@@ -96,6 +96,12 @@
         }
       ],
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "DriveCommand needs photo access to attach screenshots to support tickets."
+        }
+      ],
       "expo-sharing",
       "expo-secure-store",
       "@sentry/react-native"
