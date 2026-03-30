@@ -758,6 +758,7 @@ None blocking immediate progress.
 | 128 | Update docs folder fix stale content README email row database missing models | 2026-03-30 | a3a9b36 | [128-update-docs-folder-fix-stale-content-rea](./quick/128-update-docs-folder-fix-stale-content-rea/) |
 | 129 | Update technical documentation to reflect current state | 2026-03-30 | d5c4306 | [129-update-technical-documentation-to-reflec](./quick/129-update-technical-documentation-to-reflec/) |
 | 130 | Make DriveCommand mobile app look more like a native mobile app with better mobile UX patterns | 2026-03-30 | 8d52523 | [130-make-drivecommand-mobile-app-look-more-l](./quick/130-make-drivecommand-mobile-app-look-more-l/) |
+| 131 | Rebuild driver and owner dashboards with proper native mobile layout structure | 2026-03-30 | 62d2280 | [131-rebuild-driver-and-owner-dashboards-with](./quick/131-rebuild-driver-and-owner-dashboards-with/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
