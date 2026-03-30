@@ -78,6 +78,7 @@ export function RouteForm({
 
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [stopCoords, setStopCoords] = useState<Map<string, Coords>>(new Map());
   const [selectedDriverId, setSelectedDriverId] = useState<string>(initialData?.driverId || '');
   const [coDriverIds, setCoDriverIds] = useState<string[]>(initialCoDriverIds ?? []);
 
@@ -182,6 +183,8 @@ export function RouteForm({
           <input type="hidden" name={`stops_${idx}_type`} value={stop.type} />
           <input type="hidden" name={`stops_${idx}_scheduledAt`} value={stop.scheduledAt} />
           <input type="hidden" name={`stops_${idx}_notes`} value={stop.notes} />
+          <input type="hidden" name={`stops_${idx}_lat`} value={stopCoords.get(stop.clientId)?.lat ?? ''} />
+          <input type="hidden" name={`stops_${idx}_lng`} value={stopCoords.get(stop.clientId)?.lng ?? ''} />
         </span>
       ))}
 
@@ -361,7 +364,14 @@ export function RouteForm({
                   disabled={isPending}
                   placeholder="Enter stop address..."
                   className={inputClass}
-                  onPlaceSelect={(place) => updateStop(stop.clientId, 'address', place.displayName)}
+                  onPlaceSelect={(place) => {
+                    updateStop(stop.clientId, 'address', place.displayName);
+                    setStopCoords((prev) => {
+                      const next = new Map(prev);
+                      next.set(stop.clientId, { lat: place.lat, lng: place.lng });
+                      return next;
+                    });
+                  }}
                 />
               </div>
 

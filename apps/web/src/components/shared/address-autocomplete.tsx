@@ -77,45 +77,24 @@ export function AddressAutocomplete({
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const params = new URLSearchParams({
-          q: val,
-          format: 'json',
-          limit: '6',
-          countrycodes: 'us',
-          addressdetails: '1',
-        });
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-          headers: { Accept: 'application/json' },
+        const res = await fetch('/api/geocoding/autocomplete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: val }),
         });
         if (!res.ok) return;
         const data: Array<{
-          display_name: string;
-          lat: string;
-          lon: string;
-          address: {
-            house_number?: string;
-            road?: string;
-            city?: string;
-            town?: string;
-            village?: string;
-            state?: string;
-            postcode?: string;
-          };
+          formatted_address: string;
+          latitude: number;
+          longitude: number;
+          place_id: string;
         }> = await res.json();
         setSuggestions(
-          data.map((d) => {
-            const a = d.address ?? {};
-            const street = [a.house_number, a.road].filter(Boolean).join(' ');
-            const city = a.city || a.town || a.village || '';
-            const state = a.state || '';
-            const zip = a.postcode || '';
-            const parts = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean);
-            return {
-              displayName: parts.join(', '),
-              lat: parseFloat(d.lat),
-              lng: parseFloat(d.lon),
-            };
-          })
+          data.map((result) => ({
+            displayName: result.formatted_address,
+            lat: result.latitude,
+            lng: result.longitude,
+          }))
         );
         setIsOpen(data.length > 0);
       } catch {

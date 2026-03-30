@@ -58,7 +58,7 @@ export async function createRoute(prevState: any, formData: FormData) {
   const { origin, destination, scheduledDate, driverId, truckId, notes } = result.data;
 
   // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
-  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string; lat?: string; lng?: string }> = [];
   let si = 0;
   while (formData.get(`stops_${si}_address`)) {
     stopInputs.push({
@@ -66,6 +66,8 @@ export async function createRoute(prevState: any, formData: FormData) {
       address: formData.get(`stops_${si}_address`) as string,
       scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
       notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+      lat: (formData.get(`stops_${si}_lat`) as string) || undefined,
+      lng: (formData.get(`stops_${si}_lng`) as string) || undefined,
     });
     si++;
   }
@@ -168,6 +170,8 @@ export async function createRoute(prevState: any, formData: FormData) {
             address: stop.address,
             scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
             notes: stop.notes || null,
+            lat: stop.lat ? parseFloat(stop.lat) : null,
+            lng: stop.lng ? parseFloat(stop.lng) : null,
           })),
         },
       },
@@ -241,7 +245,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
   // Use hidden field stops_submitted=true to distinguish "no stops section" from "stops cleared"
   const stopsSubmitted = formData.get('stops_submitted') === 'true';
-  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string; lat?: string; lng?: string }> = [];
   let si = 0;
   while (formData.get(`stops_${si}_address`)) {
     stopInputs.push({
@@ -249,6 +253,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
       address: formData.get(`stops_${si}_address`) as string,
       scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
       notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+      lat: (formData.get(`stops_${si}_lat`) as string) || undefined,
+      lng: (formData.get(`stops_${si}_lng`) as string) || undefined,
     });
     si++;
   }
@@ -419,6 +425,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
             address: stop.address,
             scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
             notes: stop.notes || null,
+            lat: stop.lat ? parseFloat(stop.lat) : null,
+            lng: stop.lng ? parseFloat(stop.lng) : null,
           })),
         });
       }
