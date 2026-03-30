@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-29 - Completed quick-126: Add multi-leg load sequencing to routes
-Stopped at: Completed quick-121-PLAN.md
+Last activity: 2026-03-30 - Completed quick-127-01: Geocoding proxy + web autocomplete fix + RouteStop coordinates
+Stopped at: Completed quick-127-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -124,6 +124,7 @@ Progress: [███████████████████████
 - Quick-113 (2026-03-26): Production readiness hardening — debug route deleted, Upstash rate limiting (auth/GPS/mobile), Sentry web+mobile, EAS OTA — ~5min, 3 tasks, 13 files
 - Quick-118 (2026-03-29): Add routeId FK to load create/edit — Route dropdown on web form + mobile API accepts routeId — ~4min, 2 tasks, 6 files
 - Quick-126 (2026-03-29): Add multi-leg load sequencing to routes — sequence Int? on Load, migration, route-page-client.tsx leg labels + sequence editing + continuity warnings, mobile driver "Leg N" timeline — 3 tasks, ~6 files
+- Quick-127-01 (2026-03-30): Server-side Nominatim proxy at /api/geocoding/autocomplete with 60s in-memory cache, web AddressAutocomplete switched from direct Nominatim to proxy, RouteStop lat/lng coordinates now populated in DB — 2 tasks, 5 files
 
 ## Accumulated Context
 
@@ -137,6 +138,13 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-127-01 decisions (Geocoding proxy + RouteStop coordinates):**
+- Proxy uses 60s in-memory Map cache keyed by lowercase-trimmed query; response gets Cache-Control: public, max-age=300
+- Internal Place interface in address-autocomplete.tsx left unchanged to avoid breaking all consumers; proxy response mapped at call site
+- stopCoords stored as Map<clientId, Coords> so stop reordering doesn't corrupt coordinate associations
+- Graceful degradation: proxy returns empty array on any upstream error, never propagates 500 to client
+- packages/types dist is gitignored; must run npm run build in packages/types before tsc --noEmit on apps/web
 
 **Phase 37.1-01 decisions (My Route backend + RouteCard):**
 - Route endpoint returns { route: null } with 200 (not 404) when no active route assigned — consistent with dashboard pattern, prevents error states in mobile client
