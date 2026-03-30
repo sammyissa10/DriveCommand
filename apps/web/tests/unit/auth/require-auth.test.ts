@@ -20,6 +20,7 @@ describe('requireAuth', () => {
       userId: 'user-123',
       tenantId: 'tenant-456',
       role: 'OWNER',
+      email: 'owner@example.com',
       isSystemAdmin: false,
     });
 

@@ -20,6 +20,7 @@ describe('requireRole', () => {
       userId: 'user-123',
       tenantId: 'tenant-456',
       role: 'OWNER',
+      email: 'owner@example.com',
       isSystemAdmin: false,
     });
 
@@ -32,6 +33,7 @@ describe('requireRole', () => {
       userId: 'user-123',
       tenantId: 'tenant-456',
       role: 'MANAGER',
+      email: 'manager@example.com',
       isSystemAdmin: false,
     });
 
@@ -44,6 +46,7 @@ describe('requireRole', () => {
       userId: 'user-123',
       tenantId: 'tenant-456',
       role: 'DRIVER',
+      email: 'driver@example.com',
       isSystemAdmin: false,
     });
 
@@ -55,6 +58,7 @@ describe('requireRole', () => {
       userId: 'user-123',
       tenantId: 'tenant-456',
       role: 'DRIVER',
+      email: 'driver@example.com',
       isSystemAdmin: false,
     });
 
