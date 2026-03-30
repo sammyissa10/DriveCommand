@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Alert, Modal, Pressable, Text, View } from 'react-native'
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../context/AuthContext'
 import { DCChevronIcon } from './DCLogo'
+import { colors, radii, typography } from '../../constants/tokens'
 
 /**
  * Persistent top bar shown on every screen.
@@ -33,23 +34,16 @@ export function AppHeader() {
   return (
     <>
       <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          paddingTop: top + 8,
-          paddingBottom: 10,
-          backgroundColor: '#0f172a',
-          borderBottomWidth: 1,
-          borderBottomColor: '#1e293b',
-        }}
+        style={[
+          styles.header,
+          { paddingTop: top + 8 },
+        ]}
       >
         {/* Chevron icon + company name */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+        <View style={styles.titleRow}>
           <DCChevronIcon size={26} variant="light" />
           <Text
-            style={{ color: '#e2e8f0', fontSize: 15, fontWeight: '600', letterSpacing: 0.2, flexShrink: 1 }}
+            style={styles.companyName}
             numberOfLines={1}
           >
             {user?.companyName ?? 'DriveCommand'}
@@ -59,18 +53,9 @@ export function AppHeader() {
         {/* Avatar button */}
         <Pressable
           onPress={() => setShowProfile(true)}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: '#0c4a6e',
-            borderWidth: 2,
-            borderColor: '#0ea5e9',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          style={styles.avatar}
         >
-          <Text style={{ color: '#38bdf8', fontSize: 13, fontWeight: '700' }}>{initials}</Text>
+          <Text style={styles.avatarText}>{initials}</Text>
         </Pressable>
       </View>
 
@@ -81,105 +66,51 @@ export function AppHeader() {
         animationType="fade"
         onRequestClose={() => setShowProfile(false)}
       >
-        <View style={{ flex: 1 }}>
+        <View style={StyleSheet.absoluteFillObject}>
           {/* Backdrop */}
           <Pressable
-            style={{
-              position: 'absolute',
-              top: 0, left: 0, right: 0, bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.35)',
-            }}
+            style={[StyleSheet.absoluteFillObject, styles.backdrop]}
             onPress={() => setShowProfile(false)}
           />
 
           {/* Card — anchored top-right */}
-          <View
-            style={{
-              position: 'absolute',
-              top: 56,
-              right: 16,
-              width: 220,
-              borderRadius: 14,
-              borderWidth: 1,
-              borderColor: '#334155',
-              backgroundColor: '#1e293b',
-              elevation: 16,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.5,
-              shadowRadius: 16,
-            }}
-          >
+          <View style={styles.profileCard}>
             {/* User info */}
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 12,
-                paddingVertical: 12,
-                gap: 10,
-              }}
-            >
-              <View
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 18,
-                  backgroundColor: '#0c4a6e',
-                  borderWidth: 2,
-                  borderColor: '#0ea5e9',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
-              >
-                <Text style={{ color: '#38bdf8', fontSize: 13, fontWeight: '700' }}>{initials}</Text>
+            <View style={styles.profileUserRow}>
+              <View style={styles.profileAvatar}>
+                <Text style={styles.profileAvatarText}>{initials}</Text>
               </View>
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text
-                  style={{ color: '#ffffff', fontSize: 13, fontWeight: '600' }}
-                  numberOfLines={1}
-                >
+              <View style={styles.profileUserInfo}>
+                <Text style={styles.profileName} numberOfLines={1}>
                   {user?.name ?? 'User'}
                 </Text>
-                <Text
-                  style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}
-                  numberOfLines={1}
-                >
+                <Text style={styles.profileEmail} numberOfLines={1}>
                   {user?.email ?? ''}
                 </Text>
-                <Text
-                  style={{ color: '#475569', fontSize: 10, marginTop: 2, textTransform: 'capitalize' }}
-                  numberOfLines={1}
-                >
+                <Text style={styles.profileRole} numberOfLines={1}>
                   {user?.role?.toLowerCase() ?? ''}
                 </Text>
               </View>
             </View>
 
             {/* Company row */}
-            <View style={{ height: 1, backgroundColor: '#334155' }} />
-            <View style={{ paddingHorizontal: 12, paddingVertical: 8 }}>
-              <Text style={{ color: '#475569', fontSize: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
-                Company
-              </Text>
-              <Text
-                style={{ color: '#94a3b8', fontSize: 12, marginTop: 2 }}
-                numberOfLines={1}
-              >
+            <View style={styles.divider} />
+            <View style={styles.companyRow}>
+              <Text style={styles.companyLabel}>Company</Text>
+              <Text style={styles.companyValue} numberOfLines={1}>
                 {user?.companyName ?? '—'}
               </Text>
             </View>
 
             {/* Divider + Sign Out */}
-            <View style={{ height: 1, backgroundColor: '#334155' }} />
-            <View style={{ borderBottomLeftRadius: 14, borderBottomRightRadius: 14, overflow: 'hidden' }}>
+            <View style={styles.divider} />
+            <View style={styles.signOutWrapper}>
               <Pressable
                 onPress={handleSignOut}
                 android_ripple={{ color: 'rgba(248,113,113,0.15)', borderless: false }}
-                style={{ paddingVertical: 12, alignItems: 'center' }}
+                style={styles.signOutButton}
               >
-                <Text style={{ color: '#f87171', fontSize: 13, fontWeight: '600' }}>Sign Out</Text>
+                <Text style={styles.signOutText}>Sign Out</Text>
               </Pressable>
             </View>
           </View>
@@ -188,3 +119,139 @@ export function AppHeader() {
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    backgroundColor: colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    minWidth: 0,
+  },
+  companyName: {
+    color: colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+    flexShrink: 1,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.brandSubtle,
+    borderWidth: 2,
+    borderColor: colors.brand,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: {
+    color: colors.brandLight,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  profileCard: {
+    position: 'absolute',
+    top: 56,
+    right: 16,
+    width: 220,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceCard,
+    elevation: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+  },
+  profileUserRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  profileAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.brandSubtle,
+    borderWidth: 2,
+    borderColor: colors.brand,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  profileAvatarText: {
+    color: colors.brandLight,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  profileUserInfo: {
+    flex: 1,
+    minWidth: 0,
+  },
+  profileName: {
+    color: colors.textPrimary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  profileEmail: {
+    color: colors.textTertiary,
+    fontSize: 11,
+    marginTop: 2,
+  },
+  profileRole: {
+    color: colors.textMuted,
+    fontSize: 10,
+    marginTop: 2,
+    textTransform: 'capitalize',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  companyRow: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  companyLabel: {
+    color: colors.textMuted,
+    fontSize: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  companyValue: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  signOutWrapper: {
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    overflow: 'hidden',
+  },
+  signOutButton: {
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  signOutText: {
+    color: colors.danger,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+})

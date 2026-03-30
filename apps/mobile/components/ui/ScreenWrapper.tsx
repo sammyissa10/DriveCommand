@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, useColorScheme, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
+import { colors, spacing } from '../../constants/tokens'
 
 interface ScreenWrapperProps {
   children: React.ReactNode
@@ -14,19 +15,13 @@ export function ScreenWrapper({
   scrollable = false,
   className = '',
 }: ScreenWrapperProps) {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme !== 'light'
-
-  const bgClass = isDark ? 'bg-slate-900' : 'bg-white'
-  const innerClass = `flex-1 px-4 py-4 ${className}`
-
   if (scrollable) {
     return (
-      <SafeAreaView className={`flex-1 ${bgClass}`}>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="light" />
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 16 }}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -37,9 +32,29 @@ export function ScreenWrapper({
   }
 
   return (
-    <SafeAreaView className={`flex-1 ${bgClass}`}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
-      <View className={innerClass}>{children}</View>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar style="light" />
+      <View style={styles.inner}>{children}</View>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+  },
+  inner: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+  },
+})

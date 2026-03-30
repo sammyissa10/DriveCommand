@@ -1,25 +1,48 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import { colors, radii, typography } from '../../constants/tokens'
 
 interface BadgeProps {
   label: string
   variant: 'success' | 'warning' | 'danger' | 'info' | 'muted'
 }
 
-const variantStyles: Record<string, { container: string; text: string }> = {
-  success: { container: 'bg-emerald-900/60 border border-emerald-700', text: 'text-emerald-400' },
-  warning: { container: 'bg-amber-900/60 border border-amber-700', text: 'text-amber-400' },
-  danger: { container: 'bg-red-900/60 border border-red-700', text: 'text-red-400' },
-  info: { container: 'bg-sky-900/60 border border-sky-700', text: 'text-sky-400' },
-  muted: { container: 'bg-slate-700 border border-slate-600', text: 'text-slate-400' },
-}
+const bgStyles = {
+  success: { backgroundColor: colors.successBg },
+  warning: { backgroundColor: colors.warningBg },
+  danger:  { backgroundColor: colors.dangerBg },
+  info:    { backgroundColor: colors.infoBg },
+  muted:   { backgroundColor: colors.mutedBg },
+} as const
+
+const textStyles = {
+  success: { color: colors.success },
+  warning: { color: colors.warning },
+  danger:  { color: colors.danger },
+  info:    { color: colors.info },
+  muted:   { color: colors.textTertiary },
+} as const
 
 export function Badge({ label, variant }: BadgeProps) {
-  const styles = variantStyles[variant]
-
   return (
-    <View className={`self-start rounded-full px-2.5 py-0.5 ${styles.container}`}>
-      <Text className={`text-xs font-medium ${styles.text}`}>{label}</Text>
+    <View style={[styles.base, bgStyles[variant]]}>
+      <Text style={[styles.label, textStyles[variant]]}>
+        {label}
+      </Text>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  base: {
+    alignSelf: 'flex-start',
+    borderRadius: radii.full,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  label: {
+    fontSize: typography.caption2.fontSize,
+    lineHeight: typography.caption2.lineHeight,
+    fontWeight: '500',
+  },
+})

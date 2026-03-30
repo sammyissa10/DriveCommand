@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import {
   KeyboardAvoidingView,
   Modal,
@@ -11,10 +11,8 @@ import Animated, {
   FadeOut,
   SlideInDown,
   SlideOutDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
 } from 'react-native-reanimated'
+import { colors, radii, spacing, typography } from '../../constants/tokens'
 
 interface BottomSheetProps {
   visible: boolean
@@ -22,13 +20,6 @@ interface BottomSheetProps {
   title?: string
   children: React.ReactNode
   snapPoint?: '40%' | '60%' | '80%' | 'full'
-}
-
-const snapPointHeights: Record<string, `${number}%` | 'full'> = {
-  '40%': '40%',
-  '60%': '60%',
-  '80%': '80%',
-  full: 'full',
 }
 
 const snapPointValues: Record<string, number> = {
@@ -74,11 +65,11 @@ export function BottomSheet({
           exiting={SlideOutDown.duration(200)}
           style={{
             height: snapFraction === 1 ? '100%' : `${Math.round(snapFraction * 100)}%` as any,
-            backgroundColor: '#1e293b',
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            backgroundColor: colors.surfaceCard,
+            borderTopLeftRadius: radii.xl,
+            borderTopRightRadius: radii.xl,
             borderTopWidth: 1,
-            borderColor: '#334155',
+            borderColor: colors.border,
           }}
         >
           {/* Handle */}
@@ -88,7 +79,7 @@ export function BottomSheet({
                 width: 40,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: '#475569',
+                backgroundColor: colors.textMuted,
               }}
             />
           </Animated.View>
@@ -100,25 +91,29 @@ export function BottomSheet({
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                paddingHorizontal: 16,
+                paddingHorizontal: spacing.lg,
                 paddingBottom: 12,
                 borderBottomWidth: 1,
-                borderBottomColor: '#334155',
+                borderBottomColor: colors.border,
               }}
             >
               <Text
-                style={{ fontFamily: 'Poppins-SemiBold', color: '#ffffff', fontSize: 18 }}
+                style={{
+                  fontFamily: 'Poppins-SemiBold',
+                  color: colors.textPrimary,
+                  ...typography.title3,
+                }}
               >
                 {title}
               </Text>
               <Pressable onPress={onClose} style={{ padding: 4 }}>
-                <Text style={{ color: '#94a3b8', fontSize: 16 }}>✕</Text>
+                <Text style={{ color: colors.textSecondary, fontSize: 16 }}>✕</Text>
               </Pressable>
             </Animated.View>
           )}
 
           {/* Content */}
-          <Animated.View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+          <Animated.View style={{ flex: 1, paddingHorizontal: spacing.lg, paddingTop: spacing.lg }}>
             {children}
           </Animated.View>
         </Animated.View>
