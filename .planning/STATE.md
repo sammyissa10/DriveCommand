@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-30 - Completed quick-128: Update docs folder - fix stale content, add 8 missing models to database.md
+Last activity: 2026-03-30 - Completed quick task 129: Update technical documentation to reflect current state
 Stopped at: Completed quick-127-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -749,6 +749,7 @@ None blocking immediate progress.
 | 124 | Move Support button into dashboard Quick Create speed dial | 2026-03-29 | 95eeaae | [124-move-support-button-into-dashboard-quick](./quick/124-move-support-button-into-dashboard-quick/) |
 | 125 | Add Get Support to every owner page FAB as a speed dial | 2026-03-29 | 510126d | [125-add-get-support-to-every-owner-page-fab-](./quick/125-add-get-support-to-every-owner-page-fab-/) |
 | 128 | Update docs folder fix stale content README email row database missing models | 2026-03-30 | a3a9b36 | [128-update-docs-folder-fix-stale-content-rea](./quick/128-update-docs-folder-fix-stale-content-rea/) |
+| 129 | Update technical documentation to reflect current state | 2026-03-30 | d5c4306 | [129-update-technical-documentation-to-reflec](./quick/129-update-technical-documentation-to-reflec/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
