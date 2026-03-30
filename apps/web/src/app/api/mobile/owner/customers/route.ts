@@ -46,3 +46,66 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+/**
+ * POST /api/mobile/owner/customers
+ *
+ * Creates a new customer for the owner's tenant.
+ *
+ * Body: { companyName, contactName?, email?, phone? }
+ * Returns: { customer: { id, companyName } } with status 201
+ *
+ * Requires: Authorization: Bearer <token> (role must be OWNER)
+ */
+export async function POST(req: NextRequest) {
+  const auth = await validateMobileToken(req);
+  if (!auth) return unauthorizedResponse();
+
+  if (auth.role !== 'OWNER') {
+    return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
+  }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
+  const { tenantId } = auth;
+
+  let body: { companyName?: string; contactName?: string; email?: string; phone?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const companyName = body.companyName?.trim();
+  if (!companyName) {
+    return NextResponse.json({ error: 'companyName is required' }, { status: 400 });
+  }
+
+  try {
+    const customer = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      return tx.customer.create({
+        data: {
+          tenantId,
+          companyName,
+          contactName: body.contactName?.trim() || null,
+          email: body.email?.trim() || null,
+          phone: body.phone?.trim() || null,
+          status: 'ACTIVE',
+          priority: 'MEDIUM',
+        },
+        select: { id: true, companyName: true },
+      });
+    }, TX_OPTIONS);
+
+    return NextResponse.json({ customer }, { status: 201 });
+  } catch (err: any) {
+    if (err?.code === 'P2002') {
+      return NextResponse.json({ error: 'A customer with this name already exists' }, { status: 409 });
+    }
+    console.error('[mobile/owner/customers POST] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

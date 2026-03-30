@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { nanoid } from 'nanoid';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -11,11 +10,11 @@ const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 /**
  * POST /api/mobile/support/upload-screenshot
  *
- * Accepts a multipart form upload (field: "screenshot") and stores it
- * directly in S3 server-side. Returns { s3Key } on success.
+ * Accepts a JSON body { base64: string, mimeType: string } and stores the
+ * decoded image in Supabase Storage via the admin client (service role).
  *
- * Server-side upload avoids presigned-URL signature issues and binary
- * body corruption that occur when uploading directly from React Native.
+ * Uses the Supabase JS SDK which handles sb_secret_* key format normalization
+ * internally. Returns { s3Key }.
  *
  * Requires: Authorization: Bearer <token>
  */
@@ -26,45 +25,52 @@ export async function POST(req: NextRequest) {
   const limited = await applyRateLimit(mobileLimiter, auth.userId);
   if (limited) return limited;
 
-  let formData: FormData;
+  let body: { base64?: unknown; mimeType?: unknown };
   try {
-    formData = await req.formData();
+    body = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Expected multipart/form-data body' }, { status: 400 });
+    return NextResponse.json({ error: 'Expected JSON body' }, { status: 400 });
   }
 
-  const file = formData.get('screenshot') as File | null;
+  const { base64, mimeType: rawMimeType } = body;
 
-  if (!file || file.size === 0) {
-    return NextResponse.json({ error: 'No screenshot provided' }, { status: 400 });
+  if (typeof base64 !== 'string' || !base64) {
+    return NextResponse.json({ error: 'Missing base64 field' }, { status: 400 });
   }
 
-  if (file.size > MAX_SIZE) {
+  const mimeType = typeof rawMimeType === 'string' ? rawMimeType : 'image/jpeg';
+  const contentType = ALLOWED_TYPES.includes(mimeType) ? mimeType : 'image/jpeg';
+
+  const imageBuffer = Buffer.from(base64, 'base64');
+
+  if (imageBuffer.byteLength === 0) {
+    return NextResponse.json({ error: 'Empty screenshot' }, { status: 400 });
+  }
+
+  if (imageBuffer.byteLength > MAX_SIZE) {
     return NextResponse.json({ error: 'Screenshot must be 10MB or less' }, { status: 400 });
-  }
-
-  const contentType = file.type || 'image/jpeg';
-  if (!ALLOWED_TYPES.includes(contentType)) {
-    return NextResponse.json({ error: 'Only JPEG and PNG screenshots are accepted' }, { status: 400 });
   }
 
   try {
     const fileId = nanoid();
     const ext = contentType === 'image/png' ? 'png' : 'jpg';
     const s3Key = `tenant-${auth.tenantId}/support/${fileId}-screenshot.${ext}`;
-    const body = Buffer.from(await file.arrayBuffer());
+    const bucket = process.env.S3_BUCKET || 'driver-documents';
 
-    await s3Client.send(new PutObjectCommand({
-      Bucket: getBucketName(),
-      Key: s3Key,
-      Body: body,
-      ContentType: contentType,
-      ContentLength: file.size,
-    }));
+    const supabase = createAdminClient();
+    const { error } = await supabase.storage.from(bucket).upload(s3Key, imageBuffer, {
+      contentType,
+      upsert: false,
+    });
+
+    if (error) {
+      console.error('[mobile/support/upload-screenshot] Supabase upload failed:', error);
+      return NextResponse.json({ error: 'Failed to upload screenshot' }, { status: 500 });
+    }
 
     return NextResponse.json({ s3Key });
   } catch (err) {
-    console.error('[mobile/support/upload-screenshot] S3 upload error:', err);
+    console.error('[mobile/support/upload-screenshot] unexpected error:', err);
     return NextResponse.json({ error: 'Failed to upload screenshot' }, { status: 500 });
   }
 }

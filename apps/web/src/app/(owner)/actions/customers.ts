@@ -58,6 +58,9 @@ export async function createCustomer(prevState: any, formData: FormData) {
     });
     createdId = customer.id;
   } catch (error: any) {
+    console.error('[CC-CODE]', error?.code ?? 'none');
+    console.error('[CC-MSG]', String(error?.message ?? '').slice(0, 300));
+    console.error('[CC-META]', JSON.stringify(error?.meta ?? {}));
     if (error?.code === 'P2002') {
       return { error: { companyName: ['A customer with this name already exists'] } };
     }

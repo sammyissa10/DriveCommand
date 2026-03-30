@@ -16,6 +16,7 @@
  */
 
 import { NextRequest } from 'next/server';
+import { getAppBaseUrl } from '@/lib/app-url';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
@@ -132,7 +133,7 @@ export async function GET(request: NextRequest) {
             });
 
             // Send email
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/trucks/${item.truckId}/maintenance`;
+            const dashboardUrl = `${getAppBaseUrl()}/trucks/${item.truckId}/maintenance`;
             const result = await sendMaintenanceReminder(owner.email, {
               truckName: item.truckName,
               serviceType: item.serviceType,
@@ -192,7 +193,7 @@ export async function GET(request: NextRequest) {
             });
 
             // Send email
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/trucks/${item.truckId}`;
+            const dashboardUrl = `${getAppBaseUrl()}/trucks/${item.truckId}`;
             const result = await sendDocumentExpiryReminder(owner.email, {
               truckName: item.truckName,
               documentType: item.documentType,
@@ -245,7 +246,7 @@ export async function GET(request: NextRequest) {
               emailSubject: `Document Expiring: ${formatDocumentType(item.documentType)} - ${item.driverName}`,
             });
 
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/drivers/${item.driverId}`;
+            const dashboardUrl = `${getAppBaseUrl()}/drivers/${item.driverId}`;
             const result = await sendDriverDocumentExpiryReminder(owner.email, {
               driverName: item.driverName,
               documentType: formatDocumentType(item.documentType),

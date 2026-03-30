@@ -1,5 +1,6 @@
 'use server';
 
+import { getAppBaseUrl } from '@/lib/app-url';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
@@ -148,7 +149,7 @@ export async function inviteTeamMember(data: {
     },
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = getAppBaseUrl();
   const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
   try {

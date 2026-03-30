@@ -91,3 +91,77 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+/**
+ * POST /api/mobile/owner/invoices
+ *
+ * Creates a new draft invoice for the owner's tenant.
+ *
+ * Body: { customerId?, description, amount, dueDate? }
+ * Returns: { invoice: { id, invoiceNumber } } with status 201
+ *
+ * Requires: Authorization: Bearer <token> (role must be OWNER)
+ */
+export async function POST(req: NextRequest) {
+  const auth = await validateMobileToken(req);
+  if (!auth) return unauthorizedResponse();
+
+  if (auth.role !== 'OWNER') {
+    return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
+  }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
+  const { tenantId, userId } = auth;
+
+  let body: { customerId?: string; description?: string; amount?: number; dueDate?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const description = body.description?.trim();
+  if (!description) {
+    return NextResponse.json({ error: 'description is required' }, { status: 400 });
+  }
+
+  const amount = Number(body.amount);
+  if (isNaN(amount) || amount <= 0) {
+    return NextResponse.json({ error: 'amount must be a number greater than 0' }, { status: 400 });
+  }
+
+  const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`;
+
+  try {
+    const invoice = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const invoiceData: any = {
+        tenantId,
+        invoiceNumber,
+        status: 'DRAFT',
+        amount,
+        tax: 0,
+        totalAmount: amount,
+        issueDate: new Date(),
+        createdById: userId,
+        updatedById: userId,
+        items: {
+          create: [{ tenantId, description, quantity: 1, unitPrice: amount, amount }],
+        },
+      };
+      if (body.customerId) invoiceData.customerId = body.customerId;
+      if (body.dueDate) invoiceData.dueDate = new Date(body.dueDate);
+
+      return tx.invoice.create({ data: invoiceData, select: { id: true, invoiceNumber: true } });
+    }, TX_OPTIONS);
+
+    return NextResponse.json({ invoice }, { status: 201 });
+  } catch (err) {
+    console.error('[mobile/owner/invoices POST] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

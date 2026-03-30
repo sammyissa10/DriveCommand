@@ -3,6 +3,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { getAppBaseUrl } from '@/lib/app-url';
 
 /**
  * POST /api/mobile/owner/drivers/invite
@@ -103,7 +104,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Send invitation email
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = getAppBaseUrl();
     const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
     let emailSent = false;

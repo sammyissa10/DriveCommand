@@ -1,17 +1,16 @@
 'use server';
 
+import { getAppBaseUrl } from '@/lib/app-url';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
 import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNotification } from '@/lib/email/send-support-notifications';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { nanoid } from 'nanoid';
+import { createAdminClient } from '@/lib/supabase/admin';
 // ─── Validation schemas ──────────────────────────────────────
 
 const createTicketSchema = z.object({
@@ -62,16 +61,20 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
     }
 
     const fileId = nanoid();
+    const bucket = process.env.S3_BUCKET || 'driver-documents';
     const s3Key = `tenant-${tenantId}/support/${fileId}-screenshot.png`;
     const body = Buffer.from(await file.arrayBuffer());
 
-    await s3Client.send(new PutObjectCommand({
-      Bucket: getBucketName(),
-      Key: s3Key,
-      Body: body,
-      ContentType: 'image/png',
-      ContentLength: file.size,
-    }));
+    const supabase = createAdminClient();
+    const { error } = await supabase.storage.from(bucket).upload(s3Key, body, {
+      contentType: 'image/png',
+      upsert: false,
+    });
+
+    if (error) {
+      console.error('[uploadSupportScreenshot] Supabase upload failed:', error);
+      return { error: 'Failed to upload screenshot' };
+    }
 
     return { s3Key };
   } catch (error) {
@@ -175,7 +178,7 @@ export async function createSupportTicket(data: {
         priority: validation.data.priority,
         submitterEmail: session.email,
         tenantId: tenantId ?? '',
-        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+        ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
       console.error('[createSupportTicket] team notification email failed:', emailError);
@@ -419,7 +422,7 @@ export async function addOwnerReply(
         title: ticketTitle,
         body: trimmedBody,
         submitterEmail: session.email,
-        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+        ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
       console.error('[addOwnerReply] team notification email failed:', emailError);
@@ -496,7 +499,7 @@ export async function addAdminReply(
           title: ticketTitle,
           body: trimmedBody,
           ownerEmail,
-          ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/support/${ticketId}`,
+          ticketUrl: `${getAppBaseUrl()}/support/${ticketId}`,
         });
       } catch (emailError) {
         console.error('[addAdminReply] owner notification email failed:', emailError);
@@ -562,12 +565,13 @@ export async function getUnreadAdminReplyCount(): Promise<number> {
 }
 
 /**
- * Generate a presigned download URL for a support ticket attachment.
- * Any authenticated user can request a download URL (auth gate only — no tenant check needed
- * since s3Key is scoped to the tenant prefix by the upload route).
+ * Returns a URL to view a support ticket screenshot or attachment.
+ * Uses the admin proxy route (/api/admin/support/screenshot) which fetches
+ * the file server-side from Supabase Storage — no signed URL quirks,
+ * no CORS issues, works with any Supabase key format.
  */
 export async function getAttachmentDownloadUrl(s3Key: string): Promise<string> {
   await requireAuth();
-  return generateDownloadUrl(s3Key);
+  return `/api/admin/support/screenshot?key=${encodeURIComponent(s3Key)}`;
 }
 

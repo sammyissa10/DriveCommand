@@ -1,5 +1,6 @@
 'use server';
 
+import { getAppBaseUrl } from '@/lib/app-url';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
@@ -117,7 +118,7 @@ export async function createTenant(formData: FormData) {
     revalidatePath('/tenants');
 
     // Send owner invitation email (non-blocking — warning if fails)
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppBaseUrl();
     const acceptUrl = `${appUrl}/accept-invitation?id=${invitation.id}`;
 
     try {
@@ -309,7 +310,7 @@ export async function resendOwnerInvitation(tenantId: string) {
       data: { status: 'PENDING', expiresAt },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppBaseUrl();
     const acceptUrl = `${appUrl}/accept-invitation?id=${invitation.id}`;
 
     try {
