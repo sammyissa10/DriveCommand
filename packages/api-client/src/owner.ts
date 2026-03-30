@@ -74,6 +74,39 @@ export interface OwnerLoadDetail {
   createdAt: string
 }
 
+export interface TruckDetail {
+  id: string
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+  odometer: number
+  inMaintenance: boolean
+  status: string
+  documentMetadata: {
+    registrationNumber?: string
+    registrationExpiry?: string
+    insuranceNumber?: string
+    insuranceExpiry?: string
+  } | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTruckPayload {
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+  odometer: number
+  registrationNumber?: string
+  registrationExpiry?: string
+  insuranceNumber?: string
+  insuranceExpiry?: string
+}
+
 export interface TruckOption {
   id: string
   make: string
@@ -266,6 +299,20 @@ export interface InvoiceDetail {
 // CRM
 // ---------------------------------------------------------------------------
 
+export interface CreateCustomerPayload {
+  companyName: string
+  contactName?: string
+  email?: string
+  phone?: string
+}
+
+export interface CreateInvoicePayload {
+  customerId?: string
+  description: string
+  amount: number
+  dueDate?: string
+}
+
 export interface CRMStats {
   total: number
   active: number
@@ -397,8 +444,25 @@ export const ownerApi = {
   getTrucks: (token: string) =>
     apiRequest<TruckOption[]>('/api/mobile/owner/trucks', { token }),
 
+  getTruck: (token: string, id: string) =>
+    apiRequest<TruckDetail>(`/api/mobile/owner/trucks/${id}`, { token }),
+
+  createTruck: (token: string, payload: CreateTruckPayload) =>
+    apiRequest<{ truck: { id: string } }>('/api/mobile/owner/trucks', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
   getCustomers: (token: string) =>
     apiRequest<CustomerOption[]>('/api/mobile/owner/customers', { token }),
+
+  createCustomer: (token: string, payload: CreateCustomerPayload) =>
+    apiRequest<{ customer: { id: string; companyName: string } }>('/api/mobile/owner/customers', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getActiveDrivers: (token: string) =>
     apiRequest<DriverOption[]>('/api/mobile/owner/drivers/active', { token }),
@@ -449,6 +513,13 @@ export const ownerApi = {
 
   getInvoice: (token: string, id: string) =>
     apiRequest<InvoiceDetail>(`/api/mobile/owner/invoices/${id}`, { token }),
+
+  createInvoice: (token: string, payload: CreateInvoicePayload) =>
+    apiRequest<{ invoice: { id: string; invoiceNumber: string } }>('/api/mobile/owner/invoices', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getCRM: (token: string) =>
     apiRequest<CRMResponse>('/api/mobile/owner/crm', { token }),
