@@ -193,6 +193,14 @@ export interface GPSLocation {
   status: 'MOVING' | 'IDLE' | 'OFFLINE'
 }
 
+// Geocoding
+export interface AddressResult {
+  formatted_address: string
+  latitude: number
+  longitude: number
+  place_id: string // Nominatim's place_id as string
+}
+
 // Dashboard
 export interface OwnerDashboardData {
   activeLoadsCount: number
