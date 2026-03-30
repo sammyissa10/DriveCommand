@@ -50,7 +50,6 @@ export async function createMaintenanceEvent(
   // Get tenant ID and create maintenance event via tenant-scoped Prisma client
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.maintenanceEvent.create({
     data: {
       ...result.data,
@@ -73,7 +72,6 @@ export async function listMaintenanceEvents(truckId: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   return prisma.maintenanceEvent.findMany({
     where: { truckId },
     orderBy: { serviceDate: 'desc' },
@@ -89,7 +87,6 @@ export async function deleteMaintenanceEvent(id: string, truckId: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.maintenanceEvent.delete({
     where: { id },
   });
@@ -136,7 +133,6 @@ export async function createScheduledService(
   // Get tenant ID and create scheduled service via tenant-scoped Prisma client
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.scheduledService.create({
     data: {
       ...result.data,
@@ -171,7 +167,6 @@ export async function listScheduledServices(truckId: string) {
   }
 
   // Fetch active scheduled services
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   const schedules = await prisma.scheduledService.findMany({
     where: { truckId, isCompleted: false },
     orderBy: { createdAt: 'desc' },
@@ -193,7 +188,6 @@ export async function deleteScheduledService(id: string, truckId: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.scheduledService.delete({
     where: { id },
   });
@@ -213,7 +207,6 @@ export async function getScheduledService(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   return prisma.scheduledService.findUnique({ where: { id } });
 }
 
@@ -252,7 +245,6 @@ export async function updateScheduledService(
   }
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.scheduledService.update({
     where: { id: serviceId },
     data: { ...result.data },

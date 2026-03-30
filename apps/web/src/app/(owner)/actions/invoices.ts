@@ -6,7 +6,7 @@ import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
 import { invoiceCreateSchema, invoiceUpdateSchema } from '@drivecommand/validation';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, InvoiceStatus } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -78,7 +78,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
         amount: subtotal,
         tax,
         totalAmount,
-        status: result.data.status as any,
+        status: result.data.status as InvoiceStatus,
         issueDate: new Date(result.data.issueDate),
         dueDate: new Date(result.data.dueDate),
         paidDate: result.data.status === 'PAID' ? new Date() : null,
@@ -173,7 +173,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
           amount: subtotal,
           tax,
           totalAmount,
-          status: result.data.status as any,
+          status: result.data.status as InvoiceStatus,
           issueDate: new Date(result.data.issueDate),
           dueDate: new Date(result.data.dueDate),
           paidDate: result.data.status === 'PAID' ? new Date() : null,
@@ -225,7 +225,7 @@ export async function markInvoicePaid(id: string) {
     await prisma.invoice.update({
       where: { id },
       data: {
-        status: 'PAID' as any,
+        status: InvoiceStatus.PAID,
         paidDate: new Date(),
       },
     });

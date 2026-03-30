@@ -4,9 +4,8 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { getSession } from '@/lib/auth/session';
-import { prisma as globalPrisma } from '@/lib/db/prisma';
-import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { Prisma } from '@/generated/prisma';
+import { createTenantClient } from '@/lib/db/tenant-client';
 import { logger } from '@/lib/logger';
 
 // ─── Auth helper ──────────────────────────────────────────────
@@ -85,7 +84,7 @@ function formatCurrency(amount: Prisma.Decimal | null): string {
 // ─── Data fetchers ────────────────────────────────────────────
 
 async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationAlert[]> {
-    const db = globalPrisma.$extends(withTenantRLS(tenantId));
+    const db = createTenantClient(tenantId);
 
     const now = new Date();
     const msPerDay = 1000 * 60 * 60 * 24;
@@ -93,7 +92,6 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
 
     const [truckDocAlerts, driverDocuments, overdueInvoices, recentSafetyEvents] = await Promise.all([
       // --- Truck documents: read documentMetadata JSONB from trucks ---
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       (db.truck.findMany({
         select: {
           id: true,
@@ -111,7 +109,6 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
       }>>),
 
       // --- Driver documents expiring within 60 days (or already expired) ---
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       (db.document.findMany({
         where: {
           driverId: { not: null },
@@ -140,7 +137,6 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
       }>>),
 
       // --- Overdue invoices ---
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       (db.invoice.findMany({
         where: { status: 'OVERDUE', paidDate: null },
         select: {
@@ -159,7 +155,6 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
       }>>),
 
       // --- Safety events from last 7 days ---
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       (db.safetyEvent.findMany({
         where: { timestamp: { gte: sevenDaysAgo } },
         select: {
@@ -308,7 +303,7 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
 }
 
 async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetrics> {
-    const db = globalPrisma.$extends(withTenantRLS(tenantId));
+    const db = createTenantClient(tenantId);
 
     const [
       activeDriversCount,
@@ -319,18 +314,15 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
       activeLoadsCount,
       completedRoutes,
     ] = await Promise.all([
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.user.count({
         where: { role: 'DRIVER', isActive: true },
       }) as Promise<number>,
 
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.route.count({
         where: { status: { in: ['PLANNED', 'IN_PROGRESS'] } },
       }) as Promise<number>,
 
       // Late loads: active status but past their delivery date
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.load.count({
         where: {
           status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
@@ -340,7 +332,6 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
       }) as Promise<number>,
 
       // All unpaid invoices (DRAFT, SENT, OVERDUE)
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.invoice.findMany({
         where: {
           status: { in: ['DRAFT', 'SENT', 'OVERDUE'] },
@@ -350,7 +341,6 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
       }) as Promise<Array<{ totalAmount: Prisma.Decimal; status: string }>>,
 
       // Overdue invoices only (subset)
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.invoice.findMany({
         where: {
           status: 'OVERDUE',
@@ -360,13 +350,11 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
       }) as Promise<Array<{ totalAmount: Prisma.Decimal }>>,
 
       // Active loads: DISPATCHED + PICKED_UP + IN_TRANSIT
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.load.count({
         where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
       }) as Promise<number>,
 
       // Completed routes with odometer data for revenue per mile — last 90 days only
-      // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
       db.route.findMany({
         where: {
           status: 'COMPLETED',
@@ -468,10 +456,8 @@ export async function getFleetStats(): Promise<FleetStats> {
 
   const db = await getTenantPrisma();
 
-  // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
   const totalTrucks = db.truck.count();
 
-  // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
   const activeDrivers = db.user.count({
     where: {
       role: 'DRIVER',
@@ -479,7 +465,6 @@ export async function getFleetStats(): Promise<FleetStats> {
     },
   });
 
-  // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
   const activeRoutes = db.route.count({
     where: {
       status: {
@@ -488,7 +473,6 @@ export async function getFleetStats(): Promise<FleetStats> {
     },
   });
 
-  // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
   const maintenanceAlerts = db.scheduledService.count({
     where: {
       isCompleted: false,

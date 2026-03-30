@@ -4,6 +4,7 @@ import { getAppBaseUrl } from '@/lib/app-url';
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { Prisma } from '@/generated/prisma';
 import {
   UserPermissions,
   DEFAULT_MANAGER_PERMISSIONS,
@@ -84,7 +85,7 @@ export async function updateUserPermissions(
 
   await prisma.user.update({
     where: { id: userId },
-    data: { permissions: permissions as any },
+    data: { permissions: permissions as unknown as Prisma.JsonObject },
   });
 
   revalidatePath('/settings/team-permissions');
@@ -144,7 +145,7 @@ export async function inviteTeamMember(data: {
       lastName: data.lastName.trim(),
       fullName: `${data.firstName.trim()} ${data.lastName.trim()}`,
       role: UserRole.MANAGER,
-      permissions: data.permissions as any,
+      permissions: data.permissions as unknown as Prisma.JsonObject,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       status: 'PENDING',
     },

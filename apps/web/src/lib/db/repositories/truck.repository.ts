@@ -11,7 +11,6 @@ export class TruckRepository extends TenantRepository {
    * Find all trucks for the current tenant, ordered by creation date (newest first).
    */
   async findAll() {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -22,7 +21,6 @@ export class TruckRepository extends TenantRepository {
    * Returns null if not found or belongs to different tenant (RLS).
    */
   async findById(id: string) {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.findUnique({
       where: { id },
     });
@@ -33,7 +31,6 @@ export class TruckRepository extends TenantRepository {
    * Returns null if not found or belongs to different tenant (RLS).
    */
   async findByVin(vin: string) {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.findFirst({
       where: { vin },
     });
@@ -43,7 +40,6 @@ export class TruckRepository extends TenantRepository {
    * Create a new truck for the current tenant.
    */
   async create(data: Prisma.TruckCreateInput) {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.create({
       data,
     });
@@ -54,7 +50,6 @@ export class TruckRepository extends TenantRepository {
    * RLS ensures only trucks in the current tenant can be updated.
    */
   async update(id: string, data: Prisma.TruckUpdateInput) {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.update({
       where: { id },
       data,
@@ -66,7 +61,6 @@ export class TruckRepository extends TenantRepository {
    * RLS ensures only trucks in the current tenant can be deleted.
    */
   async delete(id: string) {
-    // @ts-ignore - Extended Prisma client type inference issue
     return this.db.truck.delete({
       where: { id },
     });

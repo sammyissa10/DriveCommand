@@ -5,7 +5,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@drivecommand/validation';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, PayrollStatus } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -61,7 +61,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
         totalPay,
         milesLogged: result.data.milesLogged,
         loadsCompleted: result.data.loadsCompleted,
-        status: result.data.status as any,
+        status: result.data.status as PayrollStatus,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
         createdById: userId,
@@ -126,7 +126,7 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
         totalPay,
         milesLogged: result.data.milesLogged,
         loadsCompleted: result.data.loadsCompleted,
-        status: result.data.status as any,
+        status: result.data.status as PayrollStatus,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
         updatedById: userId,

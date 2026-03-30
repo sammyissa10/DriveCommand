@@ -167,7 +167,6 @@ export async function syncSamsaraLocations(
   if (gpsRecords.length > 0) {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
-      // @ts-ignore - Prisma 7 extension type issue
       await tx.gPSLocation.createMany({ data: gpsRecords });
     }, TX_OPTIONS);
   }

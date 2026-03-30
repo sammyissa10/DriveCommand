@@ -39,7 +39,6 @@ export async function createTag(formData: FormData) {
   const prisma = await getTenantPrisma();
 
   try {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
     const tag = await prisma.tag.create({
       data: {
         ...result.data,
@@ -75,7 +74,6 @@ export async function deleteTag(tagId: string) {
 
   // Delete tag via tenant-scoped Prisma client
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.tag.delete({
     where: { id: tagId },
   });
@@ -95,7 +93,6 @@ export async function listTags() {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   return prisma.tag.findMany({
     orderBy: { name: 'asc' },
   });
@@ -110,7 +107,6 @@ export async function listTagsWithAssignments() {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   return prisma.tag.findMany({
     orderBy: { name: 'asc' },
     include: {
@@ -167,7 +163,6 @@ export async function assignTag(formData: FormData) {
   const prisma = await getTenantPrisma();
 
   try {
-    // @ts-ignore - Prisma 7 withTenantRLS extension type issue
     const assignment = await prisma.tagAssignment.create({
       data: {
         tagId: result.data.tagId,
@@ -202,7 +197,6 @@ export async function unassignTag(assignmentId: string) {
 
   // Delete assignment via tenant-scoped Prisma client
   const prisma = await getTenantPrisma();
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   await prisma.tagAssignment.delete({
     where: { id: assignmentId },
   });
@@ -229,7 +223,6 @@ export async function getTagsForEntity(
   const whereClause =
     entityType === 'truck' ? { truckId: entityId } : { userId: entityId };
 
-  // @ts-ignore - Prisma 7 withTenantRLS extension type issue
   return prisma.tagAssignment.findMany({
     where: whereClause,
     include: {

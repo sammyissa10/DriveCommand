@@ -4,7 +4,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, DriverPaymentMethod } from '@/generated/prisma';
 import {
   driverRouteJoinCreateSchema,
   driverRouteJoinUpdateSchema,
@@ -138,7 +138,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
         routeId,
         driverId,
         isMainDriver,
-        paymentMethod: paymentMethod as any,
+        paymentMethod: paymentMethod as DriverPaymentMethod,
         fixedAmount,
         hourlyRate,
         numberOfHours,
@@ -240,7 +240,7 @@ export async function updateDriverRouteJoin(
           isMainDriver: result.data.isMainDriver,
         }),
         ...(paymentMethod !== undefined && {
-          paymentMethod: paymentMethod as any,
+          paymentMethod: paymentMethod as DriverPaymentMethod,
         }),
         ...monetaryFields,
       },

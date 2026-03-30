@@ -66,7 +66,6 @@ const _fetchUpcomingMaintenance = unstable_cache(
   async (tenantId: string): Promise<UpcomingMaintenanceItem[]> => {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
-    // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     const schedules = await db.scheduledService.findMany({
       where: { isCompleted: false },
       include: {
@@ -132,7 +131,6 @@ const _fetchExpiringDocuments = unstable_cache(
   async (tenantId: string): Promise<ExpiringDocumentItem[]> => {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
-    // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     const trucks = await db.truck.findMany({
       select: {
         id: true,

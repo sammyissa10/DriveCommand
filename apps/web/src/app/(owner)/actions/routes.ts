@@ -9,6 +9,7 @@ import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@drivecommand/validation';
+import { RouteStatus } from '@/generated/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { logger } from '@/lib/logger';
@@ -492,7 +493,7 @@ export async function updateRouteStatus(routeId: string, newStatus: string) {
 
   // Build update data
   const updateData: any = {
-    status: newStatus as any,
+    status: newStatus as RouteStatus,
   };
 
   // Set completedAt when transitioning to COMPLETED

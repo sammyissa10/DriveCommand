@@ -69,7 +69,6 @@ export async function getVehicleRouteHistory(
   const db = await getTenantPrisma();
   const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000);
 
-  // @ts-ignore - Prisma 7 extension type issue
   const locations = await db.gPSLocation.findMany({
     where: {
       truckId,
@@ -104,7 +103,6 @@ export async function getVehicleDiagnostics(truckId: string) {
 
   // Fetch truck data, latest GPS, latest fuel, and active load in parallel
   const [truck, latestGPS, latestFuel, activeLoad] = await Promise.all([
-    // @ts-ignore - Prisma 7 extension type issue
     db.truck.findUnique({
       where: { id: truckId },
       select: {
@@ -115,7 +113,6 @@ export async function getVehicleDiagnostics(truckId: string) {
         odometer: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.gPSLocation.findFirst({
       where: { truckId },
       orderBy: { timestamp: 'desc' },
@@ -127,7 +124,6 @@ export async function getVehicleDiagnostics(truckId: string) {
         timestamp: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.fuelRecord.findFirst({
       where: { truckId },
       orderBy: { timestamp: 'desc' },
@@ -137,7 +133,6 @@ export async function getVehicleDiagnostics(truckId: string) {
         odometer: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.load.findFirst({
       where: {
         truckId,

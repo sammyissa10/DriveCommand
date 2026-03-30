@@ -3,8 +3,7 @@
  * Finds driver documents (licenses, applications) expiring at 30/60/90 day milestones or already expired.
  */
 
-import { prisma } from '../db/prisma';
-import { withTenantRLS } from '../db/extensions/tenant-rls';
+import { createTenantClient } from '../db/tenant-client';
 
 export interface ExpiringDriverDocumentItem {
   driverId: string;
@@ -16,29 +15,20 @@ export interface ExpiringDriverDocumentItem {
 }
 
 /**
- * Helper to create a tenant-scoped Prisma client for cron context.
- */
-function getTenantPrismaForCron(tenantId: string) {
-  // @ts-ignore - Prisma 7 type issue with extended client
-  return prisma.$extends(withTenantRLS(tenantId));
-}
-
-/**
  * Find driver documents expiring at specific milestones (90, 60, 30, 0 days) or already expired.
  * Milestone filter ensures notifications only at key intervals, not every day.
  */
 export async function findExpiringDriverDocuments(
   tenantId: string
 ): Promise<ExpiringDriverDocumentItem[]> {
-  const tenantPrisma = getTenantPrismaForCron(tenantId);
+  const db = createTenantClient(tenantId);
 
   const now = new Date();
   const ninetyDaysFromNow = new Date(now);
   ninetyDaysFromNow.setDate(ninetyDaysFromNow.getDate() + 90);
 
   // Query all driver documents expiring within 90 days or already expired
-  // @ts-ignore - Extended client type inference
-  const documents = await tenantPrisma.document.findMany({
+  const documents = await db.document.findMany({
     where: {
       driverId: { not: null },
       expiryDate: { not: null, lte: ninetyDaysFromNow },
