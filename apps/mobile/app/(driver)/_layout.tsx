@@ -12,6 +12,7 @@ import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { haptic } from '../../lib/haptics'
+import { colors, shadows, tabBar } from '../../constants/tokens'
 import type { HOSStatus } from '@drivecommand/types'
 
 const LAST_READ_KEY = 'messages_last_read_at'
@@ -23,10 +24,10 @@ const UNREAD_POLL_INTERVAL_MS = 30_000
  */
 function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission' | 'off' }) {
   const color = {
-    active: '#22c55e',       // green — tracking
-    paused: '#94a3b8',       // grey — user paused
-    'no-permission': '#ef4444', // red — permission denied
-    off: '#94a3b8',          // grey — not started
+    active: colors.success,       // green — tracking
+    paused: colors.textSecondary, // grey — user paused
+    'no-permission': colors.danger, // red — permission denied
+    off: colors.textSecondary,    // grey — not started
   }[status]
 
   return <View style={[styles.gpsDot, { backgroundColor: color }]} />
@@ -38,7 +39,7 @@ function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission
 function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: number }) {
   return (
     <View style={styles.iconWrapper}>
-      <MessageSquare color={color} size={24} />
+      <MessageSquare color={color} size={tabBar.iconSize} />
       {unreadCount > 0 && (
         <View style={styles.unreadBadge}>
           <Text style={styles.unreadBadgeText}>
@@ -140,18 +141,13 @@ export default function DriverLayout() {
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: true,
-          tabBarLabelStyle: {
-            fontSize: 10,
-            fontWeight: '500',
-            marginTop: 2,
-            marginBottom: 0,
-          },
           tabBarStyle: {
-            backgroundColor: '#1e293b',
-            borderTopColor: '#334155',
-            height: 72,
-            paddingBottom: 10,
+            backgroundColor: colors.tabBarBg,
+            borderTopColor: colors.tabBarBorder,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            height: tabBar.height,
             paddingTop: 6,
+            ...shadows.tabBar,
           },
           tabBarItemStyle: {
             flex: 1,
@@ -159,15 +155,21 @@ export default function DriverLayout() {
             justifyContent: 'center',
             paddingHorizontal: 0,
           },
-          tabBarActiveTintColor: '#0ea5e9',
-          tabBarInactiveTintColor: '#64748b',
+          tabBarActiveTintColor: colors.tabActive,
+          tabBarInactiveTintColor: colors.tabInactive,
+          tabBarLabelStyle: {
+            fontSize: tabBar.labelSize,
+            fontWeight: '500',
+            marginTop: 2,
+            marginBottom: 0,
+          },
         }}
       >
         <Tabs.Screen
           name="loads"
           options={{
             tabBarLabel: 'Loads',
-            tabBarIcon: ({ color }) => <Truck color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Truck color={color} size={tabBar.iconSize} />,
             tabBarButtonTestID: 'tab-loads',
           }}
           listeners={{ tabPress: () => haptic.light() }}
@@ -176,7 +178,7 @@ export default function DriverLayout() {
           name="hos"
           options={{
             tabBarLabel: 'HOS',
-            tabBarIcon: ({ color }) => <Clock color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Clock color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -187,7 +189,7 @@ export default function DriverLayout() {
             tabBarLabel: 'Home',
             tabBarIcon: ({ color }) => (
               <View style={styles.iconWrapper}>
-                <House color={color} size={24} />
+                <House color={color} size={tabBar.iconSize} />
                 {/* GPS status dot overlaid on the home tab icon */}
                 <GPSStatusDot status={gpsStatus} />
               </View>
@@ -209,7 +211,7 @@ export default function DriverLayout() {
           name="documents"
           options={{
             tabBarLabel: 'Docs',
-            tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+            tabBarIcon: ({ color }) => <FileText color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -243,13 +245,13 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: colors.tabBarBg,
   },
   unreadBadge: {
     position: 'absolute',
     top: -4,
     right: -8,
-    backgroundColor: '#ef4444',
+    backgroundColor: colors.danger,
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -258,7 +260,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   unreadBadgeText: {
-    color: '#ffffff',
+    color: colors.textPrimary,
     fontSize: 10,
     fontWeight: '700',
     lineHeight: 14,

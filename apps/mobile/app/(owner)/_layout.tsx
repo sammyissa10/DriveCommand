@@ -1,10 +1,12 @@
 import { Fragment } from 'react'
+import { StyleSheet } from 'react-native'
 import { Tabs } from 'expo-router'
 import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
+import { colors, shadows, tabBar } from '../../constants/tokens'
 
 export default function OwnerLayout() {
   return (
@@ -16,34 +18,28 @@ export default function OwnerLayout() {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarLabelStyle: {
-            fontSize: 10,
+            fontSize: tabBar.labelSize,
             fontWeight: '500',
             marginTop: 2,
             marginBottom: 0,
           },
           tabBarStyle: {
-            backgroundColor: '#0c1524',
-            borderTopWidth: 0,
-            borderTopColor: 'transparent',
-            height: 72,
-            paddingBottom: 10,
+            backgroundColor: colors.tabBarBg,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: colors.tabBarBorder,
+            height: tabBar.height,
             paddingTop: 6,
-            shadowColor: '#000000',
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 4,
-            elevation: 8,
+            ...shadows.tabBar,
           },
-          tabBarActiveTintColor: '#38bdf8',
-          tabBarInactiveTintColor: '#4a5e78',
-          tabBarActiveBackgroundColor: 'rgba(56,189,248,0.18)',
+          tabBarActiveTintColor: colors.tabActive,
+          tabBarInactiveTintColor: colors.tabInactive,
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             tabBarLabel: 'Dashboard',
-            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={24} />,
+            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -51,7 +47,7 @@ export default function OwnerLayout() {
           name="map"
           options={{
             tabBarLabel: 'Live Map',
-            tabBarIcon: ({ color }) => <Map color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Map color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -59,7 +55,7 @@ export default function OwnerLayout() {
           name="loads"
           options={{
             tabBarLabel: 'Loads',
-            tabBarIcon: ({ color }) => <Package color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Package color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -67,7 +63,7 @@ export default function OwnerLayout() {
           name="drivers"
           options={{
             tabBarLabel: 'Drivers',
-            tabBarIcon: ({ color }) => <Users color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Users color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -75,7 +71,7 @@ export default function OwnerLayout() {
           name="more"
           options={{
             tabBarLabel: 'More',
-            tabBarIcon: ({ color }) => <Grid2X2 color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Grid2X2 color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
