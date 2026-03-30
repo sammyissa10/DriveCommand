@@ -12,10 +12,12 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "seed": "tsx prisma/seed.ts",
-    "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts"
+    "seed:fleet": "tsx prisma/seeds/seed-fleet-intelligence.ts",
+    "generate:openapi": "npx tsx scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.77.0",
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@aws-sdk/client-s3": "^3.990.0",
     "@aws-sdk/s3-request-presigner": "^3.990.0",
     "@drivecommand/types": "*",

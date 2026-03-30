@@ -1,0 +1,483 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "DriveCommand Mobile API",
+    "description": "REST API consumed by the DriveCommand React Native mobile app. All endpoints require Bearer token authentication.",
+    "contact": {
+      "name": "DriveCommand Support",
+      "url": "https://drivecommand.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "API server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Supabase JWT",
+        "description": "Bearer token issued by POST /api/auth/login"
+      }
+    },
+    "schemas": {
+      "LoadCreate": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pickupDate": {
+            "type": "string"
+          },
+          "deliveryDate": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "customerId",
+          "origin",
+          "destination",
+          "pickupDate",
+          "rate"
+        ],
+        "title": "LoadCreate",
+        "description": "Payload for creating a new load"
+      },
+      "RouteCreate": {
+        "type": "object",
+        "properties": {
+          "origin": {
+            "type": "string",
+            "minLength": 1
+          },
+          "destination": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scheduledDate": {
+            "type": "string"
+          },
+          "driverId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "truckId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "origin",
+          "destination",
+          "scheduledDate",
+          "driverId",
+          "truckId"
+        ],
+        "title": "RouteCreate",
+        "description": "Payload for creating a new route"
+      },
+      "TruckCreate": {
+        "type": "object",
+        "properties": {
+          "make": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model": {
+            "type": "string",
+            "minLength": 1
+          },
+          "year": {
+            "type": "integer",
+            "minimum": 1900
+          },
+          "licensePlate": {
+            "type": "string",
+            "minLength": 1
+          },
+          "vin": {
+            "type": "string",
+            "minLength": 17,
+            "maxLength": 17
+          },
+          "odometer": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "make",
+          "model",
+          "year",
+          "licensePlate",
+          "vin",
+          "odometer"
+        ],
+        "title": "TruckCreate",
+        "description": "Payload for registering a new truck"
+      },
+      "DriverInvite": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "firstName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "licenseNumber": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "licenseNumber"
+        ],
+        "title": "DriverInvite",
+        "description": "Payload for inviting a new driver"
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/mobile/driver/dashboard": {
+      "get": {
+        "summary": "Get driver dashboard data",
+        "description": "Returns active load, today miles, stops completed, HOS hours remaining, and alerts.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Driver dashboard data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activeLoad": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "origin": {
+                          "type": "string"
+                        },
+                        "destination": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "origin",
+                        "destination",
+                        "status"
+                      ]
+                    },
+                    "todayMiles": {
+                      "type": "number"
+                    },
+                    "stopsCompleted": {
+                      "type": "number"
+                    },
+                    "hosHoursRemaining": {
+                      "type": "number"
+                    },
+                    "recentAlerts": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  },
+                  "required": [
+                    "activeLoad",
+                    "todayMiles",
+                    "stopsCompleted",
+                    "hosHoursRemaining",
+                    "recentAlerts"
+                  ],
+                  "title": "DriverDashboardResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid Bearer token"
+          },
+          "403": {
+            "description": "Forbidden — OWNER role used driver endpoint"
+          }
+        }
+      }
+    },
+    "/api/mobile/driver/loads": {
+      "get": {
+        "summary": "List loads for the authenticated driver",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Driver loads",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "loads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "origin": {
+                            "type": "string"
+                          },
+                          "destination": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "pickupDate": {
+                            "type": "string"
+                          },
+                          "deliveryDate": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "rate": {
+                            "type": "number"
+                          },
+                          "customer": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "properties": {
+                              "companyName": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "companyName"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "origin",
+                          "destination",
+                          "status",
+                          "pickupDate",
+                          "deliveryDate",
+                          "rate",
+                          "customer"
+                        ]
+                      },
+                      "title": "DriverLoadsList"
+                    }
+                  },
+                  "required": [
+                    "loads"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/mobile/driver/loads/{id}/status": {
+      "patch": {
+        "summary": "Update load status",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "PICKED_UP",
+                      "IN_TRANSIT",
+                      "DELIVERED"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "title": "LoadStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated successfully"
+          },
+          "400": {
+            "description": "Invalid status transition"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden — not your load"
+          },
+          "404": {
+            "description": "Load not found"
+          }
+        }
+      }
+    },
+    "/api/mobile/owner/dashboard": {
+      "get": {
+        "summary": "Get owner dashboard KPIs",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner dashboard KPIs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalTrucks": {
+                      "type": "number"
+                    },
+                    "activeDrivers": {
+                      "type": "number"
+                    },
+                    "activeLoads": {
+                      "type": "number"
+                    },
+                    "pendingInvoicesTotal": {
+                      "type": "number"
+                    },
+                    "driversStatus": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "ACTIVE",
+                              "INACTIVE",
+                              "ON_ROUTE"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "status"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "totalTrucks",
+                    "activeDrivers",
+                    "activeLoads",
+                    "pendingInvoicesTotal",
+                    "driversStatus"
+                  ],
+                  "title": "OwnerDashboardResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}
