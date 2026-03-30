@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-30 - Completed quick task 131: Rebuild driver and owner dashboards with extracted components
-Stopped at: Completed quick-131-01-PLAN.md
+Last activity: 2026-03-30 - Completed quick task 132: Security & reliability improvements (CSRF, logging, TypeScript safety, OpenAPI, unit tests)
+Stopped at: Completed quick-132-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -126,6 +126,7 @@ Progress: [███████████████████████
 - Quick-126 (2026-03-29): Add multi-leg load sequencing to routes — sequence Int? on Load, migration, route-page-client.tsx leg labels + sequence editing + continuity warnings, mobile driver "Leg N" timeline — 3 tasks, ~6 files
 - Quick-127-01 (2026-03-30): Server-side Nominatim proxy at /api/geocoding/autocomplete with 60s in-memory cache, web AddressAutocomplete switched from direct Nominatim to proxy, RouteStop lat/lng coordinates now populated in DB — 2 tasks, 5 files
 - Quick-131-01 (2026-03-30): Rebuild driver and owner dashboards with extracted components — TripCard, StatsRow, KPIGrid, SpeedDial extracted; dashboards rebuilt with StyleSheet + tokens; CHIP_WIDTH removed, FAB safe-area insets — 2 tasks, 6 files, ~5min
+- Quick-132 (2026-03-30): Security & reliability improvements — CSRF Origin validation, structured logger (222 console.* replaced), bypass_rls JSDoc, createTenantClient() wrapper, zero @ts-ignore (32 removed), Prisma enum type casts, OpenAPI 3.1 spec (4 paths), EAS env docs, 31 Vitest unit tests, mobile jest-expo setup — 15 items, 130+ files, ~45min
 
 ## Accumulated Context
 
