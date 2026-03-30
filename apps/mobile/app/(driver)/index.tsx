@@ -3,20 +3,23 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, ArrowRight, Truck } from 'lucide-react-native'
+import { AlertTriangle, Truck } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type DashboardData } from '@drivecommand/api-client'
-import { Badge } from '../../components/ui/Badge'
+import { SectionHeader } from '../../components/ui/SectionHeader'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { TripCard } from '../../components/driver/TripCard'
+import { StatsRow } from '../../components/driver/StatsRow'
 import { haptic } from '../../lib/haptics'
-import { StatChip } from '../../components/driver/StatChip'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
+import { colors, radii, spacing, typography } from '../../constants/tokens'
 
 // Map route status values to badge variants
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -97,19 +100,14 @@ export default function DriverDashboard() {
   // Error state
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6" edges={['bottom', 'left', 'right']}>
-        <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
-          Failed to load dashboard
-        </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+      <SafeAreaView style={styles.errorContainer} edges={['bottom', 'left', 'right']}>
+        <AlertTriangle color={colors.danger} size={40} />
+        <Text style={styles.errorTitle}>Failed to load dashboard</Text>
+        <Text style={styles.errorMessage}>
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </Text>
-        <Pressable
-          onPress={() => refetch()}
-          className="mt-6 bg-sky-600 px-6 py-3 rounded-lg active:opacity-80"
-        >
-          <Text className="text-white font-semibold">Retry</Text>
+        <Pressable onPress={() => refetch()} style={styles.retryButton}>
+          <Text style={styles.retryText}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -118,194 +116,292 @@ export default function DriverDashboard() {
   const { activeLoad, stopsCompleted, hosHoursRemaining, todayMiles, recentAlerts } = data!
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.screen} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={onRefresh}
-            tintColor="#0ea5e9"
-            colors={['#0ea5e9']}
-          />
-        }
-      >
-        {/* Header */}
-        <View className="mb-5">
-          <Text className="text-2xl font-bold text-white">Dashboard</Text>
-          <Text className="text-slate-400 text-sm mt-0.5">Your shift at a glance</Text>
-        </View>
-
-        {/* My Route Card — visible only when a route is assigned */}
-        {routeData?.route ? (
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPress={() => { haptic.light(); router.push('/(driver)/loads/my-route' as any) }}
-            className="mb-5 bg-slate-800 border border-emerald-700 rounded-xl p-4 active:opacity-80"
-          >
-            {/* Brand accent bar */}
-            <View className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-l-xl" />
-
-            <View className="pl-2">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-xs text-slate-400 font-medium uppercase tracking-wide">
-                  My Route
-                </Text>
-                {(() => {
-                  const badge = getRouteBadge(routeData.route!.status)
-                  return <Badge label={badge.label} variant={badge.variant} />
-                })()}
-              </View>
-
-              <Text className="text-lg font-bold text-white mb-1">
-                {routeData.route.name ?? 'Unnamed Route'}
-              </Text>
-
-              <View className="flex-row items-center mt-2">
-                <Text className="text-sm text-slate-400 flex-1" numberOfLines={1}>
-                  {routeData.route.origin}
-                </Text>
-                <ArrowRight color="#64748b" size={14} style={{ marginHorizontal: 6 }} />
-                <Text className="text-sm text-slate-400 flex-1 text-right" numberOfLines={1}>
-                  {routeData.route.destination}
-                </Text>
-              </View>
-
-              <View className="flex-row items-center justify-end mt-3">
-                <Text className="text-xs text-emerald-400 font-medium mr-1">View Route</Text>
-                <ArrowRight color="#34d399" size={12} />
-              </View>
-            </View>
-          </Pressable>
-        ) : null}
-
-        {/* Active Load Card */}
-        {activeLoad ? (
-          <Pressable
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onPress={() => router.push('/(driver)/loads' as any)}
-            className="mb-5 bg-slate-800 border border-sky-700 rounded-xl p-4 active:opacity-80"
-          >
-            {/* Brand accent bar */}
-            <View className="absolute left-0 top-0 bottom-0 w-1 bg-sky-500 rounded-l-xl" />
-
-            <View className="pl-2">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-xs text-slate-400 font-medium uppercase tracking-wide">
-                  Active Load
-                </Text>
-                {(() => {
-                  const badge = getStatusBadge(activeLoad.status)
-                  return <Badge label={badge.label} variant={badge.variant} />
-                })()}
-              </View>
-
-              <Text className="text-lg font-bold text-white mb-1">
-                #{activeLoad.loadNumber}
-              </Text>
-
-              <Text className="text-sm text-slate-300 mb-0.5">
-                {activeLoad.customer.companyName}
-              </Text>
-
-              <View className="flex-row items-center mt-2">
-                <Text className="text-sm text-slate-400 flex-1" numberOfLines={1}>
-                  {activeLoad.origin}
-                </Text>
-                <ArrowRight color="#64748b" size={14} style={{ marginHorizontal: 6 }} />
-                <Text className="text-sm text-slate-400 flex-1 text-right" numberOfLines={1}>
-                  {activeLoad.destination}
-                </Text>
-              </View>
-
-              <View className="flex-row items-center justify-end mt-3">
-                <Text className="text-xs text-sky-400 font-medium mr-1">View Details</Text>
-                <ArrowRight color="#38bdf8" size={12} />
-              </View>
-            </View>
-          </Pressable>
-        ) : (
-          /* Empty state — no active load */
-          <View className="mb-5 bg-slate-800 border border-slate-700 rounded-xl p-6 items-center">
-            <Truck color="#475569" size={36} />
-            <Text className="text-white text-base font-semibold mt-3">No active load</Text>
-            <Text className="text-slate-400 text-sm mt-1 text-center">
-              You have no load in progress right now.
-            </Text>
-            <Pressable
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onPress={() => router.push('/(driver)/loads' as any)}
-              className="mt-4 bg-sky-600 px-5 py-2.5 rounded-lg active:opacity-80"
-            >
-              <Text className="text-white font-semibold text-sm">View All Loads</Text>
-            </Pressable>
-          </View>
-        )}
-
-        {/* Stats Row */}
-        <View className="flex-row gap-2 mb-5">
-          <StatChip value={todayMiles} label="Miles Today" />
-          <StatChip value={stopsCompleted} label="Stops Done" />
-          <StatChip value={`${hosHoursRemaining}h`} label="HOS Left" />
-        </View>
-
-        {/* Report Incident Quick Action */}
-        <Pressable
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onPress={() => router.push('/(driver)/incidents' as any)}
-          className="mb-5 active:opacity-80 rounded-xl overflow-hidden"
-          style={{
-            backgroundColor: 'rgba(127,29,29,0.3)',
-            borderWidth: 1,
-            borderColor: 'rgba(153,27,27,0.5)',
-            borderRadius: 12,
-          }}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={onRefresh}
+              tintColor={colors.brand}
+              colors={[colors.brand]}
+            />
+          }
         >
-          <View className="flex-row items-center p-4 gap-3">
-            <AlertTriangle color="#f87171" size={22} />
-            <View className="flex-1">
-              <Text className="text-red-400 font-semibold text-base">Report Incident</Text>
-              <Text className="text-slate-500 text-sm mt-0.5">
-                Submit accident, violation, or hazard report
-              </Text>
-            </View>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Dashboard</Text>
+            <Text style={styles.headerSubtitle}>Your shift at a glance</Text>
           </View>
-        </Pressable>
 
-        {/* Recent Alerts */}
-        <View>
-          <Text className="text-white font-semibold text-base mb-3">Recent Alerts</Text>
+          {/* My Route Card — visible only when a route is assigned */}
+          {routeData?.route ? (
+            <TripCard
+              accentColor={colors.success}
+              label="My Route"
+              title={routeData.route.name ?? 'Unnamed Route'}
+              statusBadge={getRouteBadge(routeData.route.status)}
+              origin={routeData.route.origin}
+              destination={routeData.route.destination}
+              linkText="View Route"
+              linkColor={colors.success}
+              onPress={() => { haptic.light(); router.push('/(driver)/loads/my-route' as any) }}
+            />
+          ) : null}
 
-          {recentAlerts.length === 0 ? (
-            <Text className="text-slate-500 text-sm">No recent alerts</Text>
+          {/* Active Load Card */}
+          {activeLoad ? (
+            <TripCard
+              accentColor={colors.brandLight}
+              label="Active Load"
+              title={`#${activeLoad.loadNumber}`}
+              statusBadge={getStatusBadge(activeLoad.status)}
+              subtitle={activeLoad.customer.companyName}
+              origin={activeLoad.origin}
+              destination={activeLoad.destination}
+              linkText="View Details"
+              linkColor={colors.brandLight}
+              onPress={() => router.push('/(driver)/loads' as any)}
+            />
           ) : (
-            <View className="gap-2">
-              {recentAlerts.map((alert: DashboardData['recentAlerts'][number]) => (
-                <View
-                  key={alert.id}
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 flex-row items-start"
-                >
-                  <AlertTriangle
-                    color={alert.type === 'danger' ? '#f87171' : '#fbbf24'}
-                    size={16}
-                    style={{ marginTop: 2, marginRight: 10, flexShrink: 0 }}
-                  />
-                  <View className="flex-1">
-                    <Text className="text-slate-200 text-sm">{alert.message}</Text>
-                    <Text className="text-slate-500 text-xs mt-0.5">
-                      {formatAlertTime(alert.createdAt)}
-                    </Text>
-                  </View>
-                </View>
-              ))}
+            /* Empty state — no active load */
+            <View style={styles.emptyCard}>
+              <Truck color={colors.textMuted} size={36} />
+              <Text style={styles.emptyTitle}>No active load</Text>
+              <Text style={styles.emptySubtitle}>
+                You have no load in progress right now.
+              </Text>
+              <Pressable
+                onPress={() => router.push('/(driver)/loads' as any)}
+                style={styles.viewLoadsButton}
+              >
+                <Text style={styles.viewLoadsText}>View All Loads</Text>
+              </Pressable>
             </View>
           )}
-        </View>
-      </ScrollView>
+
+          {/* Stats Row */}
+          <View style={styles.statsRow}>
+            <StatsRow
+              miles={todayMiles}
+              stops={stopsCompleted}
+              hosHours={`${hosHoursRemaining}h`}
+            />
+          </View>
+
+          {/* Report Incident Quick Action */}
+          <Pressable
+            onPress={() => router.push('/(driver)/incidents' as any)}
+            style={styles.incidentButton}
+          >
+            <View style={styles.incidentInner}>
+              <AlertTriangle color={colors.danger} size={22} />
+              <View style={styles.incidentText}>
+                <Text style={styles.incidentTitle}>Report Incident</Text>
+                <Text style={styles.incidentSubtitle}>
+                  Submit accident, violation, or hazard report
+                </Text>
+              </View>
+            </View>
+          </Pressable>
+
+          {/* Recent Alerts */}
+          <View>
+            <View style={styles.sectionHeaderWrap}>
+              <SectionHeader title="Recent Alerts" />
+            </View>
+
+            {recentAlerts.length === 0 ? (
+              <Text style={styles.noAlerts}>No recent alerts</Text>
+            ) : (
+              <View style={styles.alertList}>
+                {recentAlerts.map((alert: DashboardData['recentAlerts'][number]) => (
+                  <View key={alert.id} style={styles.alertCard}>
+                    <View style={styles.alertRow}>
+                      <AlertTriangle
+                        color={alert.type === 'danger' ? colors.danger : colors.warning}
+                        size={16}
+                        style={styles.alertIcon}
+                      />
+                      <View style={styles.alertContent}>
+                        <Text style={styles.alertMessage}>{alert.message}</Text>
+                        <Text style={styles.alertTime}>
+                          {formatAlertTime(alert.createdAt)}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    paddingBottom: 32,
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xxl,
+  },
+  errorTitle: {
+    ...typography.headline,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: spacing.xxl,
+    backgroundColor: colors.brandDark,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.md,
+    borderRadius: radii.md,
+  },
+  retryText: {
+    ...typography.subhead,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  header: {
+    marginBottom: spacing.xl,
+  },
+  headerTitle: {
+    ...typography.title2,
+    color: colors.textPrimary,
+  },
+  headerSubtitle: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  emptyCard: {
+    marginBottom: spacing.xl,
+    alignItems: 'center',
+    paddingVertical: spacing.xxl,
+    paddingHorizontal: spacing.lg,
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  emptyTitle: {
+    ...typography.callout,
+    color: colors.textPrimary,
+    fontWeight: '600',
+    marginTop: spacing.md,
+  },
+  emptySubtitle: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+    textAlign: 'center',
+  },
+  viewLoadsButton: {
+    marginTop: spacing.lg,
+    backgroundColor: colors.brandDark,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: 10,
+    borderRadius: radii.md,
+  },
+  viewLoadsText: {
+    ...typography.footnote,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  statsRow: {
+    marginBottom: spacing.xl,
+  },
+  incidentButton: {
+    marginBottom: spacing.xl,
+    backgroundColor: colors.dangerBg,
+    borderWidth: 1,
+    borderColor: colors.danger + '80',
+    borderRadius: radii.xl,
+    overflow: 'hidden',
+  },
+  incidentInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  incidentText: {
+    flex: 1,
+  },
+  incidentTitle: {
+    ...typography.callout,
+    color: colors.danger,
+    fontWeight: '600',
+  },
+  incidentSubtitle: {
+    ...typography.footnote,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  noAlerts: {
+    ...typography.footnote,
+    color: colors.textMuted,
+    paddingHorizontal: spacing.lg,
+  },
+  sectionHeaderWrap: {
+    marginHorizontal: -spacing.lg,
+  },
+  alertList: {
+    gap: spacing.sm,
+  },
+  alertCard: {
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  alertRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  alertIcon: {
+    marginTop: 2,
+    marginRight: spacing.sm,
+    flexShrink: 0,
+  },
+  alertContent: {
+    flex: 1,
+  },
+  alertMessage: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+  },
+  alertTime: {
+    ...typography.caption2,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+})

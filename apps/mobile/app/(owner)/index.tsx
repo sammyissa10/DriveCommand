@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import {
-  Animated,
-  Dimensions,
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native'
@@ -14,29 +13,24 @@ import { useQuery } from '@tanstack/react-query'
 import {
   AlertTriangle,
   Building2,
-  DollarSign,
   FileText,
-  LifeBuoy,
   Package,
-  Plus,
   Truck,
-  UserCheck,
   UserPlus,
   Users,
-  X,
 } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { useSupportTicket } from '../../context/SupportTicketContext'
 import { ownerApi } from '@drivecommand/api-client'
-import { KPICard } from '../../components/owner/KPICard'
 import { DriverStatusChip } from '../../components/owner/DriverStatusChip'
 import { DashboardLoadCard } from '../../components/owner/DashboardLoadCard'
+import { KPIGrid } from '../../components/owner/KPIGrid'
+import { SpeedDial } from '../../components/owner/SpeedDial'
+import { SectionHeader } from '../../components/ui/SectionHeader'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { haptic } from '../../lib/haptics'
-
-const SCREEN_WIDTH = Dimensions.get('window').width
-const CHIP_WIDTH = (SCREEN_WIDTH - 16 - 16 - 8) / 2
+import { colors, radii, spacing, typography } from '../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -73,7 +67,6 @@ interface OwnerDashboardData {
 // Helpers
 // ---------------------------------------------------------------------------
 
-
 function formatRevenue(amount: number): string {
   if (amount >= 1_000_000) return `$${(amount / 1_000_000).toFixed(1)}M`
   if (amount >= 1_000) return `$${(amount / 1_000).toFixed(1)}K`
@@ -96,24 +89,6 @@ export default function OwnerDashboard() {
   const { token } = useAuthContext()
   const { open: openSupport } = useSupportTicket()
   const router = useRouter()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const fadeAnim = React.useRef(new Animated.Value(0)).current
-
-  function openMenu() {
-    haptic.medium()
-    setMenuOpen(true)
-    Animated.timing(fadeAnim, { toValue: 1, duration: 180, useNativeDriver: true }).start()
-  }
-
-  function closeMenu() {
-    Animated.timing(fadeAnim, { toValue: 0, duration: 140, useNativeDriver: true }).start(() => setMenuOpen(false))
-  }
-
-  function handleAction(route: string) {
-    closeMenu()
-    haptic.light()
-    setTimeout(() => router.push(route as any), 150)
-  }
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDashboardData>({
     queryKey: ['owner-dashboard'],
@@ -135,23 +110,14 @@ export default function OwnerDashboard() {
   // Error state
   if (isError) {
     return (
-      <SafeAreaView
-        style={{ flex: 1, backgroundColor: '#080f1a' }}
-        className="items-center justify-center px-6"
-        edges={['bottom', 'left', 'right']}
-      >
-        <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
-          Failed to load dashboard
-        </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+      <SafeAreaView style={styles.errorContainer} edges={['bottom', 'left', 'right']}>
+        <AlertTriangle color={colors.danger} size={40} />
+        <Text style={styles.errorTitle}>Failed to load dashboard</Text>
+        <Text style={styles.errorMessage}>
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </Text>
-        <Pressable
-          onPress={() => refetch()}
-          className="mt-6 bg-sky-600 px-6 py-3 rounded-lg active:opacity-80"
-        >
-          <Text className="text-white font-semibold">Retry</Text>
+        <Pressable onPress={() => refetch()} style={styles.retryButton}>
+          <Text style={styles.retryText}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -164,272 +130,207 @@ export default function OwnerDashboard() {
   ).length
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#080f1a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.screen} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, paddingBottom: 32 }}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={onRefresh}
-            tintColor="#0ea5e9"
-            colors={['#0ea5e9']}
-          />
-        }
-      >
-        {/* Header */}
-        <View className="mb-5">
-          <Text className="text-3xl font-bold text-white">Dashboard</Text>
-          <Text className="text-slate-500 text-sm mt-0.5">Fleet overview</Text>
-        </View>
-
-        {/* 2x2 KPI Grid */}
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
-          <KPICard
-            label="Active Loads"
-            value={kpis.activeLoadsCount}
-            valueColor="#38bdf8"
-            icon={<Package color="#38bdf8" size={16} />}
-            accentColor="#38bdf8"
-            accessibilityLabel={`${kpis.activeLoadsCount} active loads. Tap to view loads.`}
-            onPress={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
-          />
-          <KPICard
-            label="Available"
-            value={availableDriversCount}
-            valueColor="#38bdf8"
-            icon={<UserCheck color="#38bdf8" size={16} />}
-            accentColor="#38bdf8"
-            accessibilityLabel={`${availableDriversCount} available drivers. Tap to view drivers.`}
-            onPress={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
-          />
-        </View>
-        <View style={{ flexDirection: 'row', gap: 10, marginBottom: 20 }}>
-          <KPICard
-            label="Revenue (MTD)"
-            value={formatRevenue(kpis.revenueThisMonth)}
-            valueColor="#10b981"
-            icon={<DollarSign color="#10b981" size={16} />}
-            accentColor="#10b981"
-            accessibilityLabel={`${formatRevenue(kpis.revenueThisMonth)} revenue this month. Tap to view invoices.`}
-            onPress={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
-          />
-          <KPICard
-            label="Open Alerts"
-            value={kpis.openAlertsCount}
-            valueColor={kpis.openAlertsCount > 0 ? '#fbbf24' : '#94a3b8'}
-            icon={<AlertTriangle color={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'} size={16} />}
-            accentColor={kpis.openAlertsCount > 0 ? '#fbbf24' : '#475569'}
-            accessibilityLabel={`${kpis.openAlertsCount} open compliance alerts. Tap to view compliance.`}
-            onPress={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
-          />
-        </View>
-
-        {/* Active Loads Section */}
-        <View
-          style={{
-            height: 1,
-            backgroundColor: '#1e293b',
-            marginBottom: 14,
-          }}
-        />
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Truck color="#38bdf8" size={15} style={{ marginRight: 6 }} />
-          <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' }}>Active Loads</Text>
-        </View>
-
-        {activeLoads.length === 0 ? (
-          <View style={{ backgroundColor: '#111827', borderWidth: 0, borderRadius: 12, padding: 20, alignItems: 'center', marginBottom: 20 }}>
-            <Package color="#475569" size={32} />
-            <Text className="text-slate-400 text-sm mt-3 text-center">No active loads right now</Text>
-          </View>
-        ) : (
-          <View style={{ marginBottom: 20 }}>
-            {activeLoads.map((load) => (
-              <DashboardLoadCard
-                key={load.id}
-                id={load.id}
-                loadNumber={load.loadNumber}
-                status={load.status}
-                origin={load.origin}
-                destination={load.destination}
-                driverName={load.driverName}
-                onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
-              />
-            ))}
-          </View>
-        )}
-
-        {/* Driver Status Section */}
-        <View
-          style={{
-            height: 1,
-            backgroundColor: '#1e293b',
-            marginBottom: 14,
-          }}
-        />
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Users color="#a78bfa" size={15} style={{ marginRight: 6 }} />
-          <Text style={{ color: '#ffffff', fontWeight: '600', fontSize: 12, letterSpacing: 0.8, textTransform: 'uppercase' }}>Driver Status</Text>
-        </View>
-
-        {(() => {
-          const activeDrivers = driverStatuses.filter(
-            d => d.hosStatus === 'DRIVING' || d.hosStatus === 'ON_DUTY' || d.activeLoadNumber !== null
-          )
-          if (activeDrivers.length === 0) {
-            return (
-              <View style={{ backgroundColor: '#111827', borderWidth: 0, borderRadius: 12, padding: 16, alignItems: 'center' }}>
-                <Text className="text-slate-400 text-sm">All drivers are currently off duty</Text>
-              </View>
-            )
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefetching}
+              onRefresh={onRefresh}
+              tintColor={colors.brand}
+              colors={[colors.brand]}
+            />
           }
-          return (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {activeDrivers.map((driver) => (
-                <Pressable
-                  key={driver.id}
-                  style={({ pressed }) => ({ width: CHIP_WIDTH, opacity: pressed ? 0.75 : 1 })}
-                  onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
-                >
-                  <DriverStatusChip
-                    name={driver.name}
-                    hosStatus={driver.hosStatus}
-                    activeLoadNumber={driver.activeLoadNumber}
-                  />
-                </Pressable>
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Dashboard</Text>
+            <Text style={styles.headerSubtitle}>Fleet overview</Text>
+          </View>
+
+          {/* 2x2 KPI Grid */}
+          <KPIGrid
+            kpis={{
+              activeLoads: kpis.activeLoadsCount,
+              availableDrivers: availableDriversCount,
+              revenue: formatRevenue(kpis.revenueThisMonth),
+              openAlerts: kpis.openAlertsCount,
+            }}
+            onPressLoads={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
+            onPressDrivers={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
+            onPressRevenue={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
+            onPressAlerts={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
+          />
+
+          {/* Active Loads Section */}
+          <View style={styles.divider} />
+          <View style={styles.sectionHeaderWrap}>
+            <SectionHeader title="Active Loads" />
+          </View>
+
+          {activeLoads.length === 0 ? (
+            <View style={styles.emptySection}>
+              <Package color={colors.textMuted} size={32} />
+              <Text style={styles.emptySectionText}>No active loads right now</Text>
+            </View>
+          ) : (
+            <View style={styles.loadList}>
+              {activeLoads.map((load) => (
+                <DashboardLoadCard
+                  key={load.id}
+                  id={load.id}
+                  loadNumber={load.loadNumber}
+                  status={load.status}
+                  origin={load.origin}
+                  destination={load.destination}
+                  driverName={load.driverName}
+                  onPress={() => router.push(`/(owner)/loads/${load.id}` as any)}
+                />
               ))}
             </View>
-          )
-        })()}
-      </ScrollView>
+          )}
 
-      {/* Speed-dial backdrop */}
-      {menuOpen && (
-        <Pressable
-          onPress={closeMenu}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-        >
-          <Animated.View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.55)',
-              opacity: fadeAnim,
-            }}
-          />
-        </Pressable>
-      )}
+          {/* Driver Status Section */}
+          <View style={styles.divider} />
+          <View style={styles.sectionHeaderWrap}>
+            <SectionHeader title="Driver Status" />
+          </View>
 
-      {/* Speed-dial action items */}
-      {menuOpen && (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            bottom: 88,
-            right: 20,
-            gap: 10,
-            alignItems: 'flex-end',
-            opacity: fadeAnim,
-            transform: [{
-              translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }),
-            }],
-          }}
-        >
-          {CREATE_ACTIONS.map((action) => {
-            const Icon = action.icon
-            return (
-              <Pressable
-                key={action.key}
-                onPress={() => handleAction(action.route)}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
-              >
-                <View style={{
-                  backgroundColor: '#1e293b',
-                  borderRadius: 8,
-                  paddingHorizontal: 14,
-                  paddingVertical: 8,
-                  borderWidth: 1,
-                  borderColor: '#334155',
-                }}>
-                  <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 14 }}>{action.label}</Text>
-                </View>
-                <View style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 21,
-                  backgroundColor: action.color + '22',
-                  borderWidth: 1,
-                  borderColor: action.color + '55',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <Icon color={action.color} size={18} />
-                </View>
-              </Pressable>
+          {(() => {
+            const activeDrivers = driverStatuses.filter(
+              d => d.hosStatus === 'DRIVING' || d.hosStatus === 'ON_DUTY' || d.activeLoadNumber !== null
             )
-          })}
+            if (activeDrivers.length === 0) {
+              return (
+                <View style={styles.emptySection}>
+                  <Text style={styles.emptySectionText}>All drivers are currently off duty</Text>
+                </View>
+              )
+            }
+            return (
+              <View style={styles.chipGrid}>
+                {activeDrivers.map((driver) => (
+                  <Pressable
+                    key={driver.id}
+                    style={({ pressed }) => [styles.chipItem, pressed && styles.chipPressed]}
+                    onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
+                  >
+                    <DriverStatusChip
+                      name={driver.name}
+                      hosStatus={driver.hosStatus}
+                      activeLoadNumber={driver.activeLoadNumber}
+                    />
+                  </Pressable>
+                ))}
+              </View>
+            )
+          })()}
+        </ScrollView>
 
-          {/* Separator above Get Support */}
-          <View style={{ height: 1, backgroundColor: '#475569', width: 160, alignSelf: 'flex-end', marginVertical: 2 }} />
-
-          {/* Get Support item */}
-          <Pressable
-            onPress={() => { closeMenu(); haptic.light(); setTimeout(openSupport, 160) }}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
-          >
-            <View style={{
-              backgroundColor: '#1e293b',
-              borderRadius: 8,
-              paddingHorizontal: 14,
-              paddingVertical: 8,
-              borderWidth: 1,
-              borderColor: '#334155',
-            }}>
-              <Text style={{ color: '#f1f5f9', fontWeight: '600', fontSize: 14 }}>Get Support</Text>
-            </View>
-            <View style={{
-              width: 42,
-              height: 42,
-              borderRadius: 21,
-              backgroundColor: '#f59e0b22',
-              borderWidth: 1,
-              borderColor: '#f59e0b55',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <LifeBuoy color="#f59e0b" size={18} />
-            </View>
-          </Pressable>
-        </Animated.View>
-      )}
-
-      {/* FAB — toggle speed dial */}
-      <Pressable
-        accessibilityLabel="Quick create"
-        accessibilityRole="button"
-        onPress={menuOpen ? closeMenu : openMenu}
-        style={{
-          position: 'absolute',
-          bottom: 24,
-          right: 20,
-          width: 52,
-          height: 52,
-          borderRadius: 26,
-          backgroundColor: menuOpen ? '#475569' : '#0ea5e9',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: '#0ea5e9',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.4,
-          shadowRadius: 8,
-          elevation: 8,
-        }}
-      >
-        {menuOpen ? <X color="#ffffff" size={22} /> : <Plus color="#ffffff" size={24} />}
-      </Pressable>
+        <SpeedDial
+          actions={CREATE_ACTIONS}
+          onAction={(route) => { haptic.light(); router.push(route as any) }}
+          onSupportPress={openSupport}
+        />
       </AnimatedScreen>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    paddingBottom: 100,
+  },
+  errorContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xxl,
+  },
+  errorTitle: {
+    ...typography.headline,
+    color: colors.textPrimary,
+    marginTop: spacing.lg,
+    textAlign: 'center',
+  },
+  errorMessage: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    marginTop: spacing.sm,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: spacing.xxl,
+    backgroundColor: colors.brandDark,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.md,
+    borderRadius: radii.md,
+  },
+  retryText: {
+    ...typography.subhead,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+  header: {
+    marginBottom: spacing.xl,
+  },
+  headerTitle: {
+    ...typography.title1,
+    color: colors.textPrimary,
+  },
+  headerSubtitle: {
+    ...typography.footnote,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: colors.divider,
+    marginBottom: spacing.sm,
+  },
+  sectionHeaderWrap: {
+    marginHorizontal: -spacing.lg,
+  },
+  loadList: {
+    marginBottom: spacing.xl,
+  },
+  emptySection: {
+    backgroundColor: colors.surfaceCard,
+    borderRadius: radii.md,
+    padding: spacing.xl,
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+    gap: spacing.md,
+  },
+  emptySectionText: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  chipGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  chipItem: {
+    flexBasis: '48%',
+    flex: 0,
+  },
+  chipPressed: {
+    opacity: 0.75,
+  },
+})
