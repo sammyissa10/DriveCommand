@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
-  console.warn(
+  logger.warn(
     '[accept-invitation] NEXT_PUBLIC_APP_URL is not set. Invitation links will use http://localhost:3000. Set this env var in production.'
   );
 }
@@ -26,6 +27,15 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  /**
+   * @bypass_rls reason: pre-auth
+   * WHY: An unauthenticated user arriving via an invitation link needs to look up the
+   *      invitation record to pre-populate the sign-up form. No session exists yet,
+   *      so RLS would block this read entirely.
+   * SCOPE: Reads a single DriverInvitation row by primary key (invitation ID from URL).
+   * SAFETY: Returns only non-sensitive fields (email, firstName) to the client.
+   *         The invitation ID is a UUID — not guessable by brute force.
+   */
   const invitation = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
     return tx.driverInvitation.findUnique({
@@ -90,6 +100,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: No session exists at this point — the user is in the process of accepting
+     *      an invitation (creating their account). RLS requires a session context.
+     * SCOPE: Reads a single DriverInvitation by invitationId (UUID from request body).
+     * SAFETY: invitationId is validated as a UUID. The invitation must be PENDING.
+     */
     // Look up invitation bypassing RLS (no session yet)
     const invitation = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -119,6 +136,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: Checking for email uniqueness before creating the user — still no session.
+     * SCOPE: Read-only check on User.email within a specific tenantId.
+     * SAFETY: Only uses email + tenantId from the verified invitation record.
+     */
     // Check for existing user with same email in the tenant
     const existingUser = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -157,13 +180,21 @@ export async function POST(req: NextRequest) {
     });
 
     if (authError || !authData.user) {
-      console.error('Supabase Auth user creation failed:', authError);
+      logger.error('Supabase Auth user creation failed:', authError);
       return NextResponse.json(
         { error: 'An error occurred while creating your account. Please try again.' },
         { status: 500 }
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: Creating the User record and updating the invitation — still no active
+     *      session (the user hasn't signed in yet, we're creating their account).
+     *      These writes must happen before the first sign-in.
+     * SCOPE: Creates one User record + updates one DriverInvitation record.
+     * SAFETY: All field values come from the verified invitation record, not raw user input.
+     */
     // Create Prisma User record using the Supabase Auth user ID
     const user = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -206,7 +237,7 @@ export async function POST(req: NextRequest) {
       redirectUrl,
     });
   } catch (error: any) {
-    console.error('Accept invitation error:', error);
+    logger.error('Accept invitation error:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating your account. Please try again.' },
       { status: 500 }

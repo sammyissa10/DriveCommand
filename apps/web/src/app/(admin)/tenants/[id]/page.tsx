@@ -8,6 +8,7 @@ import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
+import { logger } from '@/lib/logger';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -36,7 +37,7 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
   try {
     tenant = await getTenantById(id);
   } catch (err: any) {
-    console.error('[TenantDetailPage] getTenantById error:', err);
+    logger.error('[TenantDetailPage] getTenantById error:', err);
     fetchError = err.message || 'Failed to load tenant';
   }
 

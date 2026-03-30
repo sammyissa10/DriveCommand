@@ -11,6 +11,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { expenseCreateSchema, expenseUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -90,7 +91,7 @@ export async function createExpense(prevState: any, formData: FormData) {
       },
     });
   } catch (error) {
-    console.error('Failed to create expense:', error);
+    logger.error('Failed to create expense:', error);
     return { error: 'Failed to create expense. Please try again.' };
   }
 
@@ -202,7 +203,7 @@ export async function updateExpense(expenseId: string, prevState: any, formData:
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to update expense:', error);
+    logger.error('Failed to update expense:', error);
     return { error: 'Failed to update expense. Please try again.' };
   }
 }
@@ -258,7 +259,7 @@ export async function deleteExpense(expenseId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete expense:', error);
+    logger.error('Failed to delete expense:', error);
     return { error: 'Failed to delete expense. Please try again.' };
   }
 }

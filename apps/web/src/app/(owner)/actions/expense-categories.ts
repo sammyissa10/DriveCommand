@@ -11,6 +11,7 @@ import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { categoryCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 /**
  * Create a new custom expense category.
@@ -52,7 +53,7 @@ export async function createCategory(prevState: any, formData: FormData) {
       },
     });
   } catch (error: any) {
-    console.error('Failed to create category:', error);
+    logger.error('Failed to create category:', error);
 
     // Check for unique constraint violation (duplicate name)
     if (error.code === 'P2002') {
@@ -127,7 +128,7 @@ export async function deleteCategory(categoryId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete category:', error);
+    logger.error('Failed to delete category:', error);
     return { error: 'Failed to delete category. Please try again.' };
   }
 }

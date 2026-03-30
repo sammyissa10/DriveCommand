@@ -10,6 +10,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { documentCreateSchema } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[complete-upload] CAUGHT ERROR:', error instanceof Error ? error.stack : String(error));
+    logger.error('[complete-upload] CAUGHT ERROR:', error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
       { error: `[complete-upload] ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }

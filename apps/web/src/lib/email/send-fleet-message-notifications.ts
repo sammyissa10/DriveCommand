@@ -2,6 +2,7 @@ import React from 'react';
 import { sendEmail } from '@/lib/email/gmail-client';
 import { FleetMessageNotificationEmail } from '@/emails/fleet-message-notification';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { logger } from '@/lib/logger';
 
 export interface DriverMessageNotificationParams {
   driverName: string;
@@ -26,7 +27,7 @@ export async function sendDriverMessageNotification(
     });
 
     if (!owner || !owner.email) {
-      console.warn('[sendDriverMessageNotification] No owner email found for tenantId:', params.tenantId);
+      logger.warn('[sendDriverMessageNotification] No owner email found', { tenantId: params.tenantId });
       return;
     }
 
@@ -45,7 +46,7 @@ export async function sendDriverMessageNotification(
       }),
     });
   } catch (err) {
-    console.error('[sendDriverMessageNotification] Failed to send owner notification email:', err);
+    logger.error('[sendDriverMessageNotification] Failed to send owner notification email:', err);
   }
 }
 
@@ -72,7 +73,7 @@ export async function sendOwnerReplyNotification(
     });
 
     if (!driver || !driver.email) {
-      console.warn('[sendOwnerReplyNotification] No driver email found for driverId:', params.driverId);
+      logger.warn('[sendOwnerReplyNotification] No driver email found', { driverId: params.driverId });
       return;
     }
 
@@ -91,6 +92,6 @@ export async function sendOwnerReplyNotification(
       }),
     });
   } catch (err) {
-    console.error('[sendOwnerReplyNotification] Failed to send driver notification email:', err);
+    logger.error('[sendOwnerReplyNotification] Failed to send driver notification email:', err);
   }
 }

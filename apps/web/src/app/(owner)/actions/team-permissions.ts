@@ -11,6 +11,7 @@ import {
 } from '@/lib/auth/permissions';
 import { revalidatePath } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { logger } from '@/lib/logger';
 
 export interface TeamMember {
   id: string;
@@ -163,7 +164,7 @@ export async function inviteTeamMember(data: {
       }),
     });
   } catch (err) {
-    console.error('[inviteTeamMember] email failed:', err);
+    logger.error('[inviteTeamMember] email failed:', err);
     // Invitation exists — email can be resent. Don't fail the action.
   }
 

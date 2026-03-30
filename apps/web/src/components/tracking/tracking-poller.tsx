@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import TrackingMapWrapper from './tracking-map-wrapper';
+import { logger } from '@/lib/logger';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -87,7 +88,7 @@ export default function TrackingPoller({ token, initialData }: TrackingPollerPro
       setLastUpdated(new Date());
       setSecondsAgo(0);
     } catch (err) {
-      console.error('Tracking poll error:', err);
+      logger.error('Tracking poll error:', err);
     }
   };
 

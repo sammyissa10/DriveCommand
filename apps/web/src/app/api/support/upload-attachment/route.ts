@@ -10,6 +10,7 @@ import { requireAuth } from '@/lib/auth/server';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
 
 const SUPPORT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
     step = 'done';
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (error) {
-    console.error(`[support/upload-attachment] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[support/upload-attachment] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
       { error: `[upload-attachment:${step}] ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }

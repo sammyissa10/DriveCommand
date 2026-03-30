@@ -8,12 +8,13 @@ import Link from 'next/link';
 import { UserPlus } from 'lucide-react';
 import { listDrivers, deactivateDriver, reactivateDriver } from '@/app/(owner)/actions/drivers';
 import { DriverListWrapper } from './driver-list-wrapper';
+import { logger } from '@/lib/logger';
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
 async function DriverListSection() {
   const drivers = await listDrivers().catch((e) => {
-    console.error('[drivers] listDrivers failed:', e);
+    logger.error('[drivers] listDrivers failed:', e);
     return [];
   });
   return (

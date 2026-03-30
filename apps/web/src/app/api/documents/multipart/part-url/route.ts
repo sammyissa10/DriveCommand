@@ -10,6 +10,7 @@ import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { getPartUploadUrl } from '@/lib/storage/multipart';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ uploadUrl });
   } catch (error) {
-    console.error('Multipart part-url error:', error);
+    logger.error('Multipart part-url error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to generate part upload URL' },
       { status: 500 }

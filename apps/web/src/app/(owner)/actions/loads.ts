@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { sendLoadStatusEmail } from '@/lib/email/customer-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -83,7 +84,7 @@ async function sendNotificationAndLogInteraction(
     });
   } catch (error) {
     // Log but do NOT throw — email failure should not block load status change
-    console.error('Failed to send customer notification:', error);
+    logger.error('Failed to send customer notification:', error);
   }
 }
 
@@ -466,7 +467,7 @@ export async function updateLoadStatus(id: string, newStatus: string) {
           totalRevenue: { increment: load.rate },
           lastLoadDate: new Date(),
         },
-      }).catch((err) => console.error('Failed to update customer stats:', err));
+      }).catch((err) => logger.error('Failed to update customer stats:', err));
     }
   } catch (error: any) {
     if (error?.code === 'P2025') {

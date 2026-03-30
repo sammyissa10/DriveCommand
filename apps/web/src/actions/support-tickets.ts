@@ -11,6 +11,7 @@ import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } fro
 import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNotification } from '@/lib/email/send-support-notifications';
 import { nanoid } from 'nanoid';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { logger } from '@/lib/logger';
 // ─── Validation schemas ──────────────────────────────────────
 
 const createTicketSchema = z.object({
@@ -72,7 +73,7 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
     });
 
     if (error) {
-      console.error('[uploadSupportScreenshot] Supabase upload failed:', error);
+      logger.error('[uploadSupportScreenshot] Supabase upload failed:', error);
       return { error: 'Failed to upload screenshot' };
     }
 
@@ -85,7 +86,15 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
 // ─── Helper to generate ticket number ──────────────────────
 
 async function generateTicketNumber(): Promise<string> {
-  // Use bypass_rls transaction to query across tenants for uniqueness
+  /**
+   * @bypass_rls reason: cross-tenant
+   * WHY: Ticket numbers (TKT-NNNN) must be globally unique across all tenants.
+   *      Checking the latest ticket number requires querying the SupportTicket table
+   *      across all tenants to find the highest sequential number.
+   * SCOPE: Read-only query on SupportTicket.ticketNumber — no tenant data accessed.
+   * SAFETY: Returns only the ticketNumber field (select: { ticketNumber: true }),
+   *         no sensitive tenant data is exposed.
+   */
   const result = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
     // Find latest ticket number
@@ -148,7 +157,15 @@ export async function createSupportTicket(data: {
   try {
     const ticketNumber = await generateTicketNumber();
 
-    // Insert using bypass_rls (no RLS on SupportTicket)
+    /**
+     * @bypass_rls reason: cross-tenant
+     * WHY: SupportTickets span tenants — a ticket may be submitted by a user in any
+     *      tenant, and system admins need to see all tickets across all tenants.
+     *      RLS would prevent inserting a ticket that references a different tenant context.
+     * SCOPE: Writes a single SupportTicket record for the authenticated user's session.
+     * SAFETY: Gated by requireAuth() above — only runs for authenticated users.
+     *         tenantId is derived from the verified session cookie, not from user input.
+     */
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       await tx.supportTicket.create({
@@ -181,12 +198,12 @@ export async function createSupportTicket(data: {
         ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
-      console.error('[createSupportTicket] team notification email failed:', emailError);
+      logger.error('[createSupportTicket] team notification email failed:', emailError);
     }
 
     return { success: true, ticketNumber };
   } catch (error) {
-    console.error('[createSupportTicket] error:', error);
+    logger.error('[createSupportTicket] error:', error);
     return { success: false, error: 'Failed to create ticket. Please try again.' };
   }
 }
@@ -337,7 +354,7 @@ export async function updateTicketStatus(
 
     return { success: true };
   } catch (error) {
-    console.error('[updateTicketStatus] error:', error);
+    logger.error('[updateTicketStatus] error:', error);
     return { success: false, error: 'Failed to update ticket status.' };
   }
 }
@@ -425,12 +442,12 @@ export async function addOwnerReply(
         ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
-      console.error('[addOwnerReply] team notification email failed:', emailError);
+      logger.error('[addOwnerReply] team notification email failed:', emailError);
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[addOwnerReply] error:', error);
+    logger.error('[addOwnerReply] error:', error);
     return { success: false, error: 'Failed to submit reply. Please try again.' };
   }
 }
@@ -502,15 +519,15 @@ export async function addAdminReply(
           ticketUrl: `${getAppBaseUrl()}/support/${ticketId}`,
         });
       } catch (emailError) {
-        console.error('[addAdminReply] owner notification email failed:', emailError);
+        logger.error('[addAdminReply] owner notification email failed:', emailError);
       }
     } else {
-      console.warn('[addAdminReply] No email found for ticket submitter, skipping notification for ticket:', ticketNumber);
+      logger.warn('[addAdminReply] No email found for ticket submitter, skipping notification', { ticketNumber });
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[addAdminReply] error:', error);
+    logger.error('[addAdminReply] error:', error);
     return { success: false, error: 'Failed to submit reply.' };
   }
 }

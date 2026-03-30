@@ -13,6 +13,7 @@ import { TX_OPTIONS } from '@/lib/db/prisma';
 import { templateCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -82,7 +83,7 @@ export async function createTemplate(prevState: any, formData: FormData) {
       });
     }, TX_OPTIONS);
   } catch (error: any) {
-    console.error('Failed to create template:', error);
+    logger.error('Failed to create template:', error);
 
     // Check for unique constraint violation (duplicate name)
     if (error.code === 'P2002') {
@@ -126,7 +127,7 @@ export async function deleteTemplate(templateId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete template:', error);
+    logger.error('Failed to delete template:', error);
     return { error: 'Failed to delete template. Please try again.' };
   }
 }
@@ -230,7 +231,7 @@ export async function applyTemplate(routeId: string, templateId: string) {
       count: result.count,
     };
   } catch (error: any) {
-    console.error('Failed to apply template:', error);
+    logger.error('Failed to apply template:', error);
 
     if (error.message === 'Template not found') {
       return {

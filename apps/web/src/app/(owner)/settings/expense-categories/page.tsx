@@ -1,9 +1,10 @@
 import { listCategories } from '@/app/(owner)/actions/expense-categories';
 import { CategoryManager } from './category-manager';
+import { logger } from '@/lib/logger';
 
 export default async function ExpenseCategoriesPage() {
   const categories = await listCategories().catch((err: unknown) => {
-    console.error('[expense-categories] listCategories failed:', err);
+    logger.error('[expense-categories] listCategories failed:', err);
     return [] as Awaited<ReturnType<typeof listCategories>>;
   });
 

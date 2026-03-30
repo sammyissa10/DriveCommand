@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 export default function OwnerError({
   error,
@@ -12,7 +13,7 @@ export default function OwnerError({
 }) {
   useEffect(() => {
     // Log to browser console so it's visible in Vercel function logs and browser devtools
-    console.error('[owner-error-boundary] Server Component render error:', {
+    logger.error('[owner-error-boundary] Server Component render error:', {
       message: error.message,
       digest: error.digest,
       stack: error.stack,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/admin/support/screenshot?key=<s3Key>
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
     const { data, error } = await supabase.storage.from(bucket).download(s3Key);
 
     if (error || !data) {
-      console.error(`[admin/support/screenshot] Download failed for key: ${s3Key}`, error);
+      logger.error(`[admin/support/screenshot] Download failed for key: ${s3Key}`, error);
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error('[admin/support/screenshot] unexpected error:', err);
+    logger.error('[admin/support/screenshot] unexpected error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

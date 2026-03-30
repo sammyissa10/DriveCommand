@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { Route } from 'lucide-react';
 import { getMyAssignedRoute } from '@/app/(driver)/actions/driver-routes';
+import { logger } from '@/lib/logger';
 
 /**
  * Driver landing page.
@@ -13,7 +14,7 @@ export default async function DriverHomePage() {
   try {
     route = await getMyAssignedRoute();
   } catch (err) {
-    console.error('[DriverHomePage] Failed to fetch assigned route:', err);
+    logger.error('[DriverHomePage] Failed to fetch assigned route:', err);
   }
 
   // If driver has an assigned route, redirect to detail page

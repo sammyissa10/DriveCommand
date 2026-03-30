@@ -24,12 +24,13 @@ import { StatCard } from '@/components/dashboard/stat-card';
 import { UpcomingMaintenanceWidget } from '@/components/dashboard/upcoming-maintenance-widget';
 import { ExpiringDocumentsWidget } from '@/components/dashboard/expiring-documents-widget';
 import { NotificationsPanel } from '@/components/dashboard/notifications-panel';
+import { logger } from '@/lib/logger';
 
 // ─── Async data sections (each runs independently inside Suspense) ────────────
 
 async function StatCardsSection() {
   const metrics = await getDashboardMetrics().catch((e) => {
-    console.error('[dashboard] getDashboardMetrics failed:', e);
+    logger.error('[dashboard] getDashboardMetrics failed:', e);
     return null;
   });
 
@@ -65,7 +66,7 @@ async function StatCardsSection() {
 
 async function NotificationsPanelSection() {
   const alerts = await getNotificationAlerts().catch((e) => {
-    console.error('[dashboard] getNotificationAlerts failed:', e);
+    logger.error('[dashboard] getNotificationAlerts failed:', e);
     return [];
   });
   return <NotificationsPanel alerts={alerts} />;
@@ -73,7 +74,7 @@ async function NotificationsPanelSection() {
 
 async function MaintenanceSection() {
   const items = await getUpcomingMaintenance().catch((e) => {
-    console.error('[dashboard] getUpcomingMaintenance failed:', e);
+    logger.error('[dashboard] getUpcomingMaintenance failed:', e);
     return [];
   });
   return <UpcomingMaintenanceWidget items={items} />;
@@ -81,7 +82,7 @@ async function MaintenanceSection() {
 
 async function DocumentsSection() {
   const items = await getExpiringDocuments().catch((e) => {
-    console.error('[dashboard] getExpiringDocuments failed:', e);
+    logger.error('[dashboard] getExpiringDocuments failed:', e);
     return [];
   });
   return <ExpiringDocumentsWidget items={items} />;

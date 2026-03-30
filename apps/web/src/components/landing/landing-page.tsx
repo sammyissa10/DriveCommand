@@ -1,4 +1,6 @@
-"use client";
+// Removed "use client" — this component has no client-side hooks or event handlers.
+// It renders FadeIn (a client component) which is fine — server components can import client components.
+// Making this a server component reduces the client bundle size for the landing page.
 
 import Link from "next/link";
 import { DCChevronIcon, DriveCommandWordmark } from "@/components/navigation/app-logo";

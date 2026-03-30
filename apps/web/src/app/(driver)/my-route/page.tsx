@@ -14,6 +14,7 @@ import { MessagingPanel } from '@/components/driver/messaging-panel';
 import { formatDateInTenantTimezone } from '@/lib/utils/date';
 import { MapPin, Package } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 /**
  * Driver route detail page.
@@ -32,7 +33,7 @@ export default async function MyRoutePage() {
   try {
     route = await getMyAssignedRoute();
   } catch (err) {
-    console.error('[MyRoutePage] Failed to fetch assigned route:', err);
+    logger.error('[MyRoutePage] Failed to fetch assigned route:', err);
   }
 
   // Fetch completed routes regardless of active route status
@@ -40,7 +41,7 @@ export default async function MyRoutePage() {
   try {
     completedRoutes = await getMyCompletedRoutes();
   } catch (err) {
-    console.error('[MyRoutePage] Failed to fetch completed routes:', err);
+    logger.error('[MyRoutePage] Failed to fetch completed routes:', err);
   }
 
   // No route assigned - show empty state + history
@@ -70,7 +71,7 @@ export default async function MyRoutePage() {
       getMyTruckDocuments(),
     ]);
   } catch (err) {
-    console.error('[MyRoutePage] Failed to fetch documents:', err);
+    logger.error('[MyRoutePage] Failed to fetch documents:', err);
   }
 
   // Loads linked to this route via routeId FK

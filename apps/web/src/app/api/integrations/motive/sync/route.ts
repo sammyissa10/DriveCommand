@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { syncMotiveLocations } from '@/lib/integrations/motive';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { getSession } from '@/lib/auth/session';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +44,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Look up enabled Motive integration for this tenant (bypass RLS)
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const integration = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.tenantIntegration.findFirst({
@@ -77,7 +86,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error('[Motive Sync] Error:', error);
+    logger.error('[Motive Sync] Error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Sync failed' },
       { status: 500 }

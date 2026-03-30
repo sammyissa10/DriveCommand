@@ -5,6 +5,7 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/mobile/driver/documents/[id]/url
@@ -35,6 +36,14 @@ export async function GET(
   }
 
   try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const document = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.document.findUnique({
@@ -63,7 +72,7 @@ export async function GET(
 
     return NextResponse.json({ url });
   } catch (err) {
-    console.error('[mobile/driver/documents/[id]/url GET] error:', err);
+    logger.error('[mobile/driver/documents/[id]/url GET] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

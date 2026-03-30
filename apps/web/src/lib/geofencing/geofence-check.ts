@@ -6,11 +6,23 @@
  * If so: advances load status, notifies dispatcher, notifies customer.
  *
  * All operations are fire-and-forget — errors logged, never thrown.
+ *
+ * @bypass_rls reason: system-operation
+ * WHY: GPS ping processing is a system-level operation triggered by the GPS report
+ *      endpoint (/api/gps/report), which has no user session — only a device token.
+ *      The tenantId and driverId come from the validated GPS device token, not from
+ *      an HTTP session context that RLS could use.
+ * SCOPE: Reads Load + related models for the driver's active load, then writes
+ *        Load.status and creates notifications — all scoped to tenantId + driverId.
+ * SAFETY: tenantId and driverId are extracted from a cryptographically verified
+ *         device/driver token by the GPS endpoint before calling this function.
+ *         All write operations update only records matching tenantId + driverId.
  */
 
 import { distance, point } from '@turf/turf';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendGeofenceAlert } from '@/lib/email/send-geofence-alert';
+import { logger } from '@/lib/logger';
 
 const GEOFENCE_RADIUS_KM = 0.5; // 500 metres
 
@@ -124,11 +136,11 @@ export async function checkGeofenceAndAlert(params: {
               ? `${load.driver.firstName || ''} ${load.driver.lastName || ''}`.trim()
               : 'Driver',
             licensePlate: load.truck?.licensePlate ?? '',
-          }).catch((e) => console.error('Geofence dispatcher alert failed:', e));
+          }).catch((e) => logger.error('Geofence dispatcher alert failed:', e));
 
           // Notify customer via existing flow (non-blocking)
           notifyCustomer(load, 'PICKED_UP').catch((e) =>
-            console.error('Geofence customer notify failed:', e)
+            logger.error('Geofence customer notify failed:', e)
           );
         }
       }
@@ -179,10 +191,10 @@ export async function checkGeofenceAndAlert(params: {
               ? `${load.driver.firstName || ''} ${load.driver.lastName || ''}`.trim()
               : 'Driver',
             licensePlate: load.truck?.licensePlate ?? '',
-          }).catch((e) => console.error('Geofence dispatcher alert failed:', e));
+          }).catch((e) => logger.error('Geofence dispatcher alert failed:', e));
 
           notifyCustomer(load, 'DELIVERED').catch((e) =>
-            console.error('Geofence customer notify failed:', e)
+            logger.error('Geofence customer notify failed:', e)
           );
         }
       }
@@ -250,7 +262,7 @@ export async function checkGeofenceAndAlert(params: {
       }
     }
   } catch (error) {
-    console.error('Geofence check error:', error);
+    logger.error('Geofence check error:', error);
   }
 }
 

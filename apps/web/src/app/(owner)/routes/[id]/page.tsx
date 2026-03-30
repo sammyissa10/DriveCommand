@@ -12,6 +12,7 @@ import { listDriverRouteJoinsByRoute } from '@/app/(owner)/actions/driver-route-
 import { getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { RoutePageClient } from './route-page-client';
+import { logger } from '@/lib/logger';
 
 interface RouteDetailPageProps {
   params: Promise<{ id: string }>;
@@ -46,36 +47,36 @@ export default async function RouteDetailPage({
     linkedLoads,
   ] = await Promise.all([
     getRoute(id).catch((err: unknown) => {
-      console.error('[routes/[id]] getRoute failed:', err);
+      logger.error('[routes/[id]] getRoute failed:', err);
       return null;
     }),
     listDocuments('route', id).catch((err) => {
-      console.error('Failed to load route documents:', err);
+      logger.error('Failed to load route documents:', err);
       return [] as any[];
     }),
     listExpenses(id).catch((err) => {
-      console.error('Failed to load route expenses:', err);
+      logger.error('Failed to load route expenses:', err);
       return [] as any[];
     }),
     listPayments(id).catch((err) => {
-      console.error('Failed to load route payments:', err);
+      logger.error('Failed to load route payments:', err);
       return [] as any[];
     }),
     listExpenseCategories().catch(() => [] as any[]),
     listTemplates().catch(() => [] as any[]),
     getRouteFinancialAnalytics(id).catch((err) => {
-      console.error('Failed to load route analytics:', err);
+      logger.error('Failed to load route analytics:', err);
       return null;
     }),
     // Always fetch drivers and trucks — edit mode switches client-side (replaceState),
     // so a conditional server fetch would leave the dropdowns empty when the user
     // clicks "Edit Route" without a ?mode=edit in the initial URL.
     listDrivers().catch((err) => {
-      console.error('Failed to load drivers for route edit:', err);
+      logger.error('Failed to load drivers for route edit:', err);
       return [] as any[];
     }),
     listTrucks().catch((err) => {
-      console.error('Failed to load trucks for route edit:', err);
+      logger.error('Failed to load trucks for route edit:', err);
       return [] as any[];
     }),
     listDriverRouteJoinsByRoute(id).catch(() => [] as any[]),

@@ -20,6 +20,7 @@ import {
   ArrowRight,
   User,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface VehicleDetailsSheetProps {
   truckId: string;
@@ -83,7 +84,7 @@ export default function VehicleDetailsSheet({
           setDiagnostics(data as DiagnosticsData);
         }
       } catch (error) {
-        console.error('Failed to fetch diagnostics:', error);
+        logger.error('Failed to fetch diagnostics:', error);
         if (mounted) {
           setDiagnostics(null);
         }

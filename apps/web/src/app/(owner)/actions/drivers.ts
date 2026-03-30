@@ -12,6 +12,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { logger } from '@/lib/logger';
 
 /**
  * Invite a new driver.
@@ -132,7 +133,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       });
       emailSent = true;
     } catch (emailError) {
-      console.error('Failed to send invitation email:', emailError);
+      logger.error('Failed to send invitation email:', emailError);
       // Invitation record exists; email can be resent later
     }
 
@@ -152,7 +153,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       message: `Invitation sent to ${email}`,
     };
   } catch (error) {
-    console.error('Failed to create driver invitation:', error);
+    logger.error('Failed to create driver invitation:', error);
     return {
       error: 'Failed to create invitation. Please try again.',
     };

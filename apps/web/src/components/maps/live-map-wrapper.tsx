@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
 import { VehicleLocation } from '@/lib/maps/map-utils';
+import { logger } from '@/lib/logger';
 
 // Dynamic import of LiveMap with ssr: false (required for Leaflet)
 const LiveMapDynamic = dynamic(
@@ -50,7 +51,7 @@ export default function LiveMapWrapper({ initialVehicles, tagId }: LiveMapWrappe
       setLastUpdated(new Date());
       setSecondsAgo(0);
     } catch (err) {
-      console.error('GPS poll error:', err);
+      logger.error('GPS poll error:', err);
     }
   };
 

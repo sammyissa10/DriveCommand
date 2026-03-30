@@ -3,6 +3,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { nanoid } from 'nanoid';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { logger } from '@/lib/logger';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -64,13 +65,13 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      console.error('[mobile/support/upload-screenshot] Supabase upload failed:', error);
+      logger.error('[mobile/support/upload-screenshot] Supabase upload failed:', error);
       return NextResponse.json({ error: 'Failed to upload screenshot' }, { status: 500 });
     }
 
     return NextResponse.json({ s3Key });
   } catch (err) {
-    console.error('[mobile/support/upload-screenshot] unexpected error:', err);
+    logger.error('[mobile/support/upload-screenshot] unexpected error:', err);
     return NextResponse.json({ error: 'Failed to upload screenshot' }, { status: 500 });
   }
 }

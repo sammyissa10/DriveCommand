@@ -11,6 +11,7 @@ import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 /**
  * Valid status transitions for route state machine.
@@ -194,7 +195,7 @@ export async function createRoute(prevState: any, formData: FormData) {
       }
     }
   } catch (error) {
-    console.error('Failed to create route:', error);
+    logger.error('Failed to create route:', error);
     return { error: 'Failed to create route. Please try again.' };
   }
 
@@ -450,7 +451,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
       }
     }
   } catch (error) {
-    console.error('Failed to update route:', error);
+    logger.error('Failed to update route:', error);
     return { error: 'Failed to update route. Please try again.' };
   }
 
@@ -647,7 +648,7 @@ export async function updateRouteCoDrivers(routeId: string, coDriverIds: string[
         : []),
     ]);
   } catch (error) {
-    console.error('Failed to update co-drivers:', error);
+    logger.error('Failed to update co-drivers:', error);
     return { error: 'Failed to update co-drivers. Please try again.' };
   }
 

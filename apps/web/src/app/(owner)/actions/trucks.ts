@@ -15,6 +15,7 @@ import {
 } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 /**
  * Create a new truck.
@@ -98,7 +99,7 @@ export async function createTruck(prevState: any, formData: FormData) {
       }
       return { error: 'A truck with these details already exists. Please check for duplicates.' };
     }
-    console.error('Failed to create truck:', error);
+    logger.error('Failed to create truck:', error);
     return { error: 'Failed to create truck. Please try again.' };
   }
 
@@ -180,7 +181,7 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
     });
     updatedTruckId = truck.id;
   } catch (error: any) {
-    console.error('Failed to update truck:', error);
+    logger.error('Failed to update truck:', error);
     return { error: 'Failed to update truck. Please try again.' };
   }
 

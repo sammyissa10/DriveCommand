@@ -9,6 +9,7 @@ import {
   driverRouteJoinCreateSchema,
   driverRouteJoinUpdateSchema,
 } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -38,7 +39,7 @@ export async function listDriverRouteJoinsByRoute(routeId: string) {
 
     return joins;
   } catch (error) {
-    console.error('Error listing driver route joins by route:', error);
+    logger.error('Error listing driver route joins by route:', error);
     return [];
   }
 }
@@ -71,7 +72,7 @@ export async function listDriverRouteJoinsByDriver(driverId: string) {
 
     return joins;
   } catch (error) {
-    console.error('Error listing driver route joins by driver:', error);
+    logger.error('Error listing driver route joins by driver:', error);
     return [];
   }
 }
@@ -155,7 +156,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
     if (error?.code === 'P2002') {
       return { error: 'This driver is already assigned to this route' };
     }
-    console.error('Error creating driver route join:', error);
+    logger.error('Error creating driver route join:', error);
     return { error: 'Failed to create driver assignment' };
   }
 }
@@ -250,7 +251,7 @@ export async function updateDriverRouteJoin(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating driver route join:', error);
+    logger.error('Error updating driver route join:', error);
     return { error: 'Failed to update driver assignment' };
   }
 }
@@ -281,7 +282,7 @@ export async function listDriverPrimaryRoutes(driverId: string) {
 
     return routes;
   } catch (error) {
-    console.error('Error listing driver primary routes:', error);
+    logger.error('Error listing driver primary routes:', error);
     return [];
   }
 }
@@ -315,7 +316,7 @@ export async function deleteDriverRouteJoin(joinId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error deleting driver route join:', error);
+    logger.error('Error deleting driver route join:', error);
     return { error: 'Failed to delete driver assignment' };
   }
 }

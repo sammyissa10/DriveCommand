@@ -6,6 +6,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendOwnerReplyNotification } from '@/lib/email/send-fleet-message-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { logger } from '@/lib/logger';
 
 export type FleetMessageWithSender = {
   id: string;
@@ -210,7 +211,7 @@ export async function sendOwnerReply(prevState: any, formData: FormData) {
         routeName: route.name ?? undefined,
       });
     } catch (emailError) {
-      console.error('[sendOwnerReply] driver notification email failed:', emailError);
+      logger.error('[sendOwnerReply] driver notification email failed:', emailError);
     }
 
     // Push notification — best-effort, never blocks the action

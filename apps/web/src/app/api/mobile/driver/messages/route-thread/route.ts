@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/mobile/driver/messages/route-thread?routeId=<id>
@@ -32,6 +33,14 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const messages = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
@@ -57,7 +66,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(messages);
   } catch (err) {
-    console.error('[mobile/driver/messages/route-thread] GET error:', err);
+    logger.error('[mobile/driver/messages/route-thread] GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -131,7 +140,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(message, { status: 201 });
   } catch (err) {
-    console.error('[mobile/driver/messages/route-thread] POST error:', err);
+    logger.error('[mobile/driver/messages/route-thread] POST error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

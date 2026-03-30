@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/logger';
 
 interface ThresholdValues {
   harshBraking: number;
@@ -52,7 +53,7 @@ export function ThresholdConfig() {
         setThresholds(parsed);
       }
     } catch (error) {
-      console.error('Failed to load thresholds from localStorage:', error);
+      logger.error('Failed to load thresholds from localStorage:', error);
     }
   }, []);
 
@@ -62,7 +63,7 @@ export function ThresholdConfig() {
       setSavedMessage('Thresholds saved successfully');
       setTimeout(() => setSavedMessage(''), 2000);
     } catch (error) {
-      console.error('Failed to save thresholds to localStorage:', error);
+      logger.error('Failed to save thresholds to localStorage:', error);
       setSavedMessage('Failed to save thresholds');
       setTimeout(() => setSavedMessage(''), 2000);
     }

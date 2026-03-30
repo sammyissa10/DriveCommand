@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MapPin } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface GpsTrackerProps {
   truckId: string | null;
@@ -75,7 +76,7 @@ export function GpsTracker({ truckId }: GpsTrackerProps) {
           navigator.geolocation.getCurrentPosition(
             (pos) => sendPosition(pos),
             (err) => {
-              console.warn('GPS position error:', err.message);
+              logger.warn('GPS position error', { message: err.message });
             },
             GEO_OPTIONS
           );

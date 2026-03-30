@@ -11,6 +11,7 @@ import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { IntegrationProvider, IntegrationCategory } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 /**
  * List all TenantIntegration rows for the tenant.
@@ -64,7 +65,7 @@ export async function toggleIntegration(
     revalidatePath('/settings/integrations');
     return { success: true };
   } catch (error) {
-    console.error('Failed to toggle integration:', error);
+    logger.error('Failed to toggle integration:', error);
     return { error: 'Failed to update integration. Please try again.' };
   }
 }
@@ -120,7 +121,7 @@ export async function saveIntegrationConfig(
     revalidatePath('/settings/integrations');
     return { success: true };
   } catch (error) {
-    console.error('Failed to save integration config:', error);
+    logger.error('Failed to save integration config:', error);
     return { error: 'Failed to save configuration. Please try again.' };
   }
 }

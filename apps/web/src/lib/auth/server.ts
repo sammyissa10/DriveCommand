@@ -70,6 +70,14 @@ export async function isSystemAdmin(): Promise<boolean> {
  *
  * This requires a database call, so use sparingly.
  * For role checks, prefer getRole() which reads from the session cookie.
+ *
+ * @bypass_rls reason: pre-auth
+ * WHY: The User table has RLS policies scoped to tenant, but this function is called
+ *      during session bootstrap before the tenant context is set on the connection.
+ *      The user must be looked up to establish their tenant context in the first place.
+ * SCOPE: Reads a single User row by primary key (session.userId — the authenticated user's own ID).
+ * SAFETY: Gated by getSession() — only runs for authenticated users. The query is
+ *         scoped to a specific userId derived from the verified session cookie.
  */
 export async function getCurrentUser() {
   const session = await getSession();

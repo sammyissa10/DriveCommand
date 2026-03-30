@@ -1,12 +1,13 @@
 import { getDriverHOS } from '@/app/(driver)/actions/driver-hos';
 import { HOSDashboard } from '@/components/driver/hos-dashboard';
+import { logger } from '@/lib/logger';
 
 export default async function DriverHoursPage() {
   let hosData: Awaited<ReturnType<typeof getDriverHOS>> | null = null;
   try {
     hosData = await getDriverHOS();
   } catch (err) {
-    console.error('[DriverHoursPage] Failed to fetch HOS data:', err);
+    logger.error('[DriverHoursPage] Failed to fetch HOS data:', err);
   }
 
   if (!hosData) {

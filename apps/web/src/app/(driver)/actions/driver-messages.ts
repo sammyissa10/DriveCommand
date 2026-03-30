@@ -5,6 +5,7 @@ import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';
+import { logger } from '@/lib/logger';
 
 /**
  * Get messages for the current driver.
@@ -87,7 +88,7 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
       routeName: undefined,
     });
   } catch (emailError) {
-    console.error('[sendDriverMessage] owner notification email failed:', emailError);
+    logger.error('[sendDriverMessage] owner notification email failed:', emailError);
   }
 
   return { success: true, message: 'Message sent.' };

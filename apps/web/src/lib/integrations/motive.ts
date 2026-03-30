@@ -7,6 +7,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -149,7 +150,7 @@ export async function syncMotiveLocations(
       unmatched.push(
         `${vehicle.number || 'Unknown'} (VIN: ${vehicle.vin})`
       );
-      console.warn(
+      logger.warn(
         `[Motive Sync] Unmatched vehicle: ${vehicle.number} (VIN: ${vehicle.vin})`
       );
       continue;

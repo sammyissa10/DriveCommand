@@ -7,6 +7,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -142,7 +143,7 @@ export async function syncSamsaraLocations(
       unmatched.push(
         `${vehicle.name || 'Unknown'} (VIN: ${vehicle.vin})`
       );
-      console.warn(
+      logger.warn(
         `[Samsara Sync] Unmatched vehicle: ${vehicle.name} (VIN: ${vehicle.vin})`
       );
       continue;

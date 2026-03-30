@@ -1,5 +1,6 @@
 import { Expo, ExpoPushMessage } from 'expo-server-sdk';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 const expo = new Expo();
 
@@ -55,14 +56,14 @@ export async function sendPushToUser(
         // Log any delivery errors (token expired, invalid, etc.)
         for (const receipt of receipts) {
           if (receipt.status === 'error') {
-            console.error('[send-push] delivery error:', receipt.message, receipt.details);
+            logger.error('[send-push] delivery error:', receipt.message, receipt.details);
           }
         }
       } catch (chunkErr) {
-        console.error('[send-push] chunk send failed:', chunkErr);
+        logger.error('[send-push] chunk send failed:', chunkErr);
       }
     }
   } catch (err) {
-    console.error('[send-push] sendPushToUser failed for userId', userId, err);
+    logger.error('[send-push] sendPushToUser failed', err, { userId });
   }
 }

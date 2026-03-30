@@ -18,6 +18,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
@@ -123,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(`[upload] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[upload] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
       { error: `[upload:${step}] ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }

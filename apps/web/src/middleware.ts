@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions';
+import { validateOrigin } from '@/lib/security/csrf';
 
 /**
  * Next.js middleware that resolves tenant context from the Supabase session
@@ -65,6 +66,18 @@ export default async function middleware(request: NextRequest) {
   // Allow public paths without auth
   if (isPublicPath(pathname)) {
     return NextResponse.next();
+  }
+
+  // CSRF: validate Origin header on state-changing requests
+  // Skip for mobile API routes (Bearer token auth, not cookies) and GPS/webhook routes
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+    const isMobileRoute = pathname.startsWith('/api/mobile/') || pathname.startsWith('/api/gps/');
+    const isWebhookOrCron = pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/cron/');
+    if (!isMobileRoute && !isWebhookOrCron) {
+      if (!validateOrigin(request)) {
+        return new NextResponse('Forbidden', { status: 403 });
+      }
+    }
   }
 
   // Create Supabase middleware client — also refreshes session cookies

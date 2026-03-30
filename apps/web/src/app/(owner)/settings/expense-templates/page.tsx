@@ -1,15 +1,16 @@
 import { listTemplates } from '@/app/(owner)/actions/expense-templates';
 import { listCategories } from '@/app/(owner)/actions/expense-categories';
 import { TemplateManager } from './template-manager';
+import { logger } from '@/lib/logger';
 
 export default async function ExpenseTemplatesPage() {
   const [templates, categories] = await Promise.all([
     listTemplates().catch((err: unknown) => {
-      console.error('[expense-templates] listTemplates failed:', err);
+      logger.error('[expense-templates] listTemplates failed:', err);
       return [] as Awaited<ReturnType<typeof listTemplates>>;
     }),
     listCategories().catch((err: unknown) => {
-      console.error('[expense-templates] listCategories failed:', err);
+      logger.error('[expense-templates] listCategories failed:', err);
       return [] as Awaited<ReturnType<typeof listCategories>>;
     }),
   ]);

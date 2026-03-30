@@ -3,6 +3,7 @@
 import { useActionState, useState, useEffect, useRef } from 'react';
 import { Send, MessageSquare } from 'lucide-react';
 import { sendDriverMessage, getDriverMessages } from '@/app/(driver)/actions/driver-messages';
+import { logger } from '@/lib/logger';
 
 type FleetMessage = {
   id: string;
@@ -42,7 +43,7 @@ export function MessagingPanel() {
       const data = await getDriverMessages();
       setMessages(data as FleetMessage[]);
     } catch (err) {
-      console.error('[MessagingPanel] Failed to fetch messages:', err);
+      logger.error('[MessagingPanel] Failed to fetch messages:', err);
     } finally {
       setIsLoading(false);
     }

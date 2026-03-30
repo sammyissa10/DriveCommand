@@ -5,6 +5,7 @@ import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 import { sendNewTicketNotification } from '@/lib/email/send-support-notifications';
 import { getAppBaseUrl } from '@/lib/app-url';
+import { logger } from '@/lib/logger';
 
 // ─── Validation schema ───────────────────────────────────────────────────────
 
@@ -26,6 +27,14 @@ const createTicketSchema = z.object({
 // ─── Ticket number helper ────────────────────────────────────────────────────
 
 async function generateTicketNumber(): Promise<string> {
+  /**
+   * @bypass_rls reason: mobile-api
+   * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+   *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+   * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+   *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+   * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+   */
   const result = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
     return tx.supportTicket.findFirst({
@@ -115,12 +124,12 @@ export async function POST(req: NextRequest) {
         ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
-      console.error('[mobile/support/ticket] team notification email failed:', emailError);
+      logger.error('[mobile/support/ticket] team notification email failed:', emailError);
     }
 
     return NextResponse.json({ ticketNumber }, { status: 201 });
   } catch (err) {
-    console.error('[mobile/support/ticket] error:', err);
+    logger.error('[mobile/support/ticket] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

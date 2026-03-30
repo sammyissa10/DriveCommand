@@ -3,6 +3,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/mobile/driver/incidents/upload-photo
@@ -82,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (err) {
-    console.error('[mobile/driver/incidents/upload-photo] error:', err);
+    logger.error('[mobile/driver/incidents/upload-photo] error:', err);
     return NextResponse.json({ error: 'Failed to generate upload URL' }, { status: 500 });
   }
 }

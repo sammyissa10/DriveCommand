@@ -12,6 +12,7 @@ import { requireTenantId } from '@/lib/context/tenant-context';
 import { initiateMultipartUpload } from '@/lib/storage/multipart';
 import { ALLOWED_TYPES, MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
 
 const EXTENSION_MIME_MAP: Record<string, string> = {
   pdf: 'application/pdf',
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
       resolvedContentType,
     });
   } catch (error) {
-    console.error('Multipart initiate error:', error);
+    logger.error('Multipart initiate error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to initiate multipart upload' },
       { status: 500 }

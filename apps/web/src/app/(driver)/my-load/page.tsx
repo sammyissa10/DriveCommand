@@ -3,6 +3,7 @@ import { LoadStatusButton } from '@/components/driver/load-status-button';
 import { CompletedLoadHistory } from '@/components/driver/completed-load-history';
 import { Package, MapPin, Calendar, Weight } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 const DRIVER_STATUS_LIFECYCLE = [
   'PENDING',
@@ -32,7 +33,7 @@ export default async function MyLoadPage() {
   try {
     load = await getMyActiveLoad();
   } catch (err) {
-    console.error('[MyLoadPage] Failed to fetch active load:', err);
+    logger.error('[MyLoadPage] Failed to fetch active load:', err);
   }
 
   // Fetch completed loads regardless of active load status
@@ -40,7 +41,7 @@ export default async function MyLoadPage() {
   try {
     completedLoads = await getMyCompletedLoads();
   } catch (err) {
-    console.error('[MyLoadPage] Failed to fetch completed loads:', err);
+    logger.error('[MyLoadPage] Failed to fetch completed loads:', err);
   }
 
   // No active load — show empty state + history

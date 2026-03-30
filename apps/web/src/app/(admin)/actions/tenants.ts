@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 import { sendEmail } from '@/lib/email/gmail-client';
 import React from 'react';
+import { logger } from '@/lib/logger';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -134,7 +135,7 @@ export async function createTenant(formData: FormData) {
         }),
       });
     } catch (emailError: any) {
-      console.error('Failed to send owner invitation email:', emailError);
+      logger.error('Failed to send owner invitation email:', emailError);
       return {
         success: true,
         emailWarning: `Tenant created but invitation email could not be sent to ${validation.data.ownerEmail}. Please check your email configuration and resend manually.`,
@@ -326,7 +327,7 @@ export async function resendOwnerInvitation(tenantId: string) {
         }),
       });
     } catch (emailError: any) {
-      console.error('[resendOwnerInvitation] email send failed:', emailError);
+      logger.error('[resendOwnerInvitation] email send failed:', emailError);
       revalidatePath('/tenants/' + tenantId);
       return {
         success: true,
@@ -428,7 +429,7 @@ export async function updateOwnerEmail(
         ),
       });
     } catch (emailError) {
-      console.error('[updateOwnerEmail] notification email failed:', emailError);
+      logger.error('[updateOwnerEmail] notification email failed:', emailError);
     }
 
     return { success: true };

@@ -8,6 +8,7 @@ import { TruckDocumentsSection } from './truck-documents-section';
 import { TruckRoutesHistory } from './truck-routes-history';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
 import { MaintenanceToggleButton } from '@/components/trucks/maintenance-toggle-button';
+import { logger } from '@/lib/logger';
 
 interface TruckDetailPageProps {
   params: Promise<{ id: string }>;
@@ -26,7 +27,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   try {
     documents = await listDocuments('truck', id);
   } catch (error) {
-    console.error('Failed to load truck documents:', error);
+    logger.error('Failed to load truck documents:', error);
   }
 
   // Fetch routes for this truck (non-blocking - page renders even if this fails)
@@ -34,7 +35,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   try {
     truckRoutes = await listTruckRoutes(id);
   } catch (error) {
-    console.error('Failed to load truck routes:', error);
+    logger.error('Failed to load truck routes:', error);
   }
 
   // Parse and validate document metadata

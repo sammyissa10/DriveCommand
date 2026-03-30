@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/mobile/owner/loads/[id]
@@ -32,6 +33,14 @@ export async function GET(
   const { tenantId } = auth;
 
   try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const load = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
@@ -81,7 +90,7 @@ export async function GET(
       stops,
     });
   } catch (err) {
-    console.error('[mobile/owner/loads/[id]] error:', err);
+    logger.error('[mobile/owner/loads/[id]] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -194,7 +203,7 @@ export async function PATCH(
     if (err instanceof Error && err.message === 'NOT_FOUND') {
       return NextResponse.json({ error: 'Load not found' }, { status: 404 });
     }
-    console.error('[mobile/owner/loads/[id] PATCH] error:', err);
+    logger.error('[mobile/owner/loads/[id] PATCH] error:', err);
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });
   }

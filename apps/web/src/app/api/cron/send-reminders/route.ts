@@ -32,6 +32,7 @@ import {
   markNotificationSent,
   markNotificationFailed,
 } from '@/lib/notifications/notification-deduplication';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic'; // CRITICAL: Prevent Next.js caching
 
@@ -42,17 +43,25 @@ interface NotificationStats {
 }
 
 export async function GET(request: NextRequest) {
-  console.log('[CRON] send-reminders: Starting daily reminder processing');
+  logger.info('[CRON] send-reminders: Starting daily reminder processing');
 
   // 1. Verify CRON_SECRET
   const authHeader = request.headers.get('authorization');
   const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
 
   if (authHeader !== expectedAuth) {
-    console.error('[CRON] send-reminders: Unauthorized request');
+    logger.error('[CRON] send-reminders: Unauthorized request');
     return new Response('Unauthorized', { status: 401 });
   }
 
+  /**
+   * @bypass_rls reason: system-operation
+   * WHY: This cron job runs cross-tenant to send document expiry reminders for ALL
+   *      active tenants. It has no user context to scope RLS policies to a single tenant.
+   * SCOPE: Reads Tenant.id and Tenant.name for all active tenants, then queries
+   *        compliance documents per tenant in separate transactions.
+   * SAFETY: Gated by CRON_SECRET header check above — only callable by Vercel Cron.
+   */
   // 2. Get all active tenants (bypass RLS - system operation)
   let tenants: Array<{ id: string; name: string }>;
   try {
@@ -64,9 +73,9 @@ export async function GET(request: NextRequest) {
       });
     }, TX_OPTIONS);
 
-    console.log(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
+    logger.info(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
   } catch (error) {
-    console.error('[CRON] send-reminders: Failed to fetch tenants:', error);
+    logger.error('[CRON] send-reminders: Failed to fetch tenants:', error);
     return Response.json(
       { success: false, error: 'Failed to fetch tenants' },
       { status: 500 }
@@ -79,7 +88,7 @@ export async function GET(request: NextRequest) {
   const driverDocumentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
 
   for (const tenant of tenants) {
-    console.log(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
+    logger.info(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
 
     try {
       // Get tenant-scoped Prisma client
@@ -92,15 +101,15 @@ export async function GET(request: NextRequest) {
       });
 
       if (owners.length === 0) {
-        console.log(`[CRON] send-reminders: No active owners found for tenant ${tenant.name}, skipping`);
+        logger.info(`[CRON] send-reminders: No active owners found for tenant ${tenant.name}, skipping`);
         continue;
       }
 
-      console.log(`[CRON] send-reminders: Found ${owners.length} owner(s) for tenant ${tenant.name}`);
+      logger.info(`[CRON] send-reminders: Found ${owners.length} owner(s) for tenant ${tenant.name}`);
 
       // Process maintenance reminders
       const upcomingMaintenance = await findUpcomingMaintenance(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${upcomingMaintenance.length} upcoming maintenance item(s)`);
+      logger.info(`[CRON] send-reminders: Found ${upcomingMaintenance.length} upcoming maintenance item(s)`);
 
       for (const item of upcomingMaintenance) {
         const today = new Date();
@@ -113,7 +122,7 @@ export async function GET(request: NextRequest) {
         // Check if already sent today
         const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
         if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate maintenance reminder for ${item.truckName}`);
+          logger.info(`[CRON] send-reminders: Skipping duplicate maintenance reminder for ${item.truckName}`);
           maintenanceStats.skipped++;
           continue;
         }
@@ -148,10 +157,10 @@ export async function GET(request: NextRequest) {
 
             // Mark as SENT
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent maintenance reminder to ${owner.email} for ${item.truckName}`);
+            logger.info(`[CRON] send-reminders: Sent maintenance reminder to ${owner.email} for ${item.truckName}`);
             maintenanceStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send maintenance reminder to ${owner.email}:`, error);
+            logger.error(`[CRON] send-reminders: Failed to send maintenance reminder to ${owner.email}:`, error);
             // Mark as FAILED (if logId was created)
             maintenanceStats.failed++;
           }
@@ -160,7 +169,7 @@ export async function GET(request: NextRequest) {
 
       // Process document expiry reminders
       const expiringDocuments = await findExpiringDocuments(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${expiringDocuments.length} expiring document(s)`);
+      logger.info(`[CRON] send-reminders: Found ${expiringDocuments.length} expiring document(s)`);
 
       for (const item of expiringDocuments) {
         const today = new Date();
@@ -173,7 +182,7 @@ export async function GET(request: NextRequest) {
         // Check if already sent today
         const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
         if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate document reminder for ${item.truckName} ${item.documentType}`);
+          logger.info(`[CRON] send-reminders: Skipping duplicate document reminder for ${item.truckName} ${item.documentType}`);
           documentStats.skipped++;
           continue;
         }
@@ -204,10 +213,10 @@ export async function GET(request: NextRequest) {
 
             // Mark as SENT
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent document reminder to ${owner.email} for ${item.truckName}`);
+            logger.info(`[CRON] send-reminders: Sent document reminder to ${owner.email} for ${item.truckName}`);
             documentStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send document reminder to ${owner.email}:`, error);
+            logger.error(`[CRON] send-reminders: Failed to send document reminder to ${owner.email}:`, error);
             documentStats.failed++;
           }
         }
@@ -215,7 +224,7 @@ export async function GET(request: NextRequest) {
 
       // Process driver document expiry reminders
       const expiringDriverDocuments = await findExpiringDriverDocuments(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${expiringDriverDocuments.length} expiring driver document(s)`);
+      logger.info(`[CRON] send-reminders: Found ${expiringDriverDocuments.length} expiring driver document(s)`);
 
       for (const item of expiringDriverDocuments) {
         const today = new Date();
@@ -228,7 +237,7 @@ export async function GET(request: NextRequest) {
         // Check if already sent today
         const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
         if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate driver doc reminder for ${item.driverName} ${item.documentType}`);
+          logger.info(`[CRON] send-reminders: Skipping duplicate driver doc reminder for ${item.driverName} ${item.documentType}`);
           driverDocumentStats.skipped++;
           continue;
         }
@@ -256,16 +265,16 @@ export async function GET(request: NextRequest) {
             });
 
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent driver doc reminder to ${owner.email} for ${item.driverName}`);
+            logger.info(`[CRON] send-reminders: Sent driver doc reminder to ${owner.email} for ${item.driverName}`);
             driverDocumentStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send driver doc reminder to ${owner.email}:`, error);
+            logger.error(`[CRON] send-reminders: Failed to send driver doc reminder to ${owner.email}:`, error);
             driverDocumentStats.failed++;
           }
         }
       }
     } catch (error) {
-      console.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
+      logger.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
       // Continue with next tenant
       continue;
     }
@@ -280,6 +289,6 @@ export async function GET(request: NextRequest) {
     driverDocuments: driverDocumentStats,
   };
 
-  console.log('[CRON] send-reminders: Completed', summary);
+  logger.info('[CRON] send-reminders: Completed', summary);
   return Response.json(summary);
 }

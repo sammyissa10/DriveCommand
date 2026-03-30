@@ -13,6 +13,7 @@ import { completeMultipartUpload, abortMultipartUpload } from '@/lib/storage/mul
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { documentCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
         // If validation fails, abort the multipart upload to clean up
         await abortMultipartUpload(s3Key, uploadId).catch(() => {
           // Log but don't fail if abort fails
-          console.error('Failed to abort multipart upload after validation error');
+          logger.error('Failed to abort multipart upload after validation error');
         });
 
         return NextResponse.json({ error: result.error.flatten().fieldErrors }, { status: 400 });
@@ -115,13 +116,13 @@ export async function POST(req: NextRequest) {
     } catch (uploadError) {
       // If anything fails, attempt to abort the multipart upload
       await abortMultipartUpload(s3Key, uploadId).catch(() => {
-        console.error('Failed to abort multipart upload after error');
+        logger.error('Failed to abort multipart upload after error');
       });
 
       throw uploadError;
     }
   } catch (error) {
-    console.error('Multipart complete error:', error);
+    logger.error('Multipart complete error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to complete multipart upload' },
       { status: 500 }

@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { LifeBuoy, Ticket, Clock, CheckCircle } from 'lucide-react';
 import { AdminTicketList } from './ticket-list';
 import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 export default async function AdminSupportPage() {
   let tickets: Awaited<ReturnType<typeof getAllTickets>> = [];
@@ -13,7 +14,7 @@ export default async function AdminSupportPage() {
   try {
     tickets = await getAllTickets();
   } catch (err) {
-    console.error('[AdminSupportPage] getAllTickets error:', err);
+    logger.error('[AdminSupportPage] getAllTickets error:', err);
     fetchError = err instanceof Error ? err.message : 'Failed to load tickets';
   }
 
@@ -25,7 +26,7 @@ export default async function AdminSupportPage() {
       orderBy: { name: 'asc' },
     });
   } catch (err) {
-    console.error('[AdminSupportPage] tenant list error:', err);
+    logger.error('[AdminSupportPage] tenant list error:', err);
   }
 
   // Derive stats

@@ -8,12 +8,13 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { listTrucks, deleteTruck } from '@/app/(owner)/actions/trucks';
 import { TruckListWrapper } from './truck-list-wrapper';
+import { logger } from '@/lib/logger';
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
 async function TruckListSection() {
   const trucks = await listTrucks().catch((e) => {
-    console.error('[trucks] listTrucks failed:', e);
+    logger.error('[trucks] listTrucks failed:', e);
     return [];
   });
   return <TruckListWrapper initialTrucks={trucks} deleteAction={deleteTruck} />;

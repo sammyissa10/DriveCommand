@@ -8,6 +8,23 @@
  * Note: user.isActive is no longer checked on every request. Supabase handles
  * session validity. To deactivate a user, call supabase.auth.admin.updateUserById
  * with { banned: true } in addition to setting isActive=false in the User table.
+ *
+ * --- bypass_rls pattern for mobile API routes ---
+ *
+ * @bypass_rls reason: mobile-api
+ * WHY: All /api/mobile/* route handlers bypass Supabase RLS because they use
+ *      Bearer token authentication (not cookie sessions). The middleware does not
+ *      inject x-tenant-id for these routes, and the Prisma adapter does not call
+ *      set_config('app.current_user_id') from the HTTP context.
+ *      Instead, each route handler calls validateMobileToken() to extract
+ *      { userId, tenantId, role, driverId } from the verified JWT, then manually
+ *      sets set_config('app.bypass_rls', 'on') inside each transaction and uses
+ *      tenantId as a WHERE clause filter on every query.
+ * SCOPE: Each route accesses only data belonging to the authenticated user's tenant.
+ *        Driver routes additionally filter by driverId (= userId for DRIVER role).
+ * SAFETY: Gated by validateMobileToken() — only runs for requests with a valid
+ *         Supabase JWT. Tenant isolation is enforced via WHERE tenantId = auth.tenantId
+ *         on all queries, replacing RLS policy enforcement.
  */
 
 import { NextResponse } from 'next/server';

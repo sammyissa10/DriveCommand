@@ -33,6 +33,17 @@ export default async function DriverLayout({
     redirect("/unauthorized");
   }
 
+  /**
+   * @bypass_rls reason: pre-auth
+   * WHY: The driver layout runs during session bootstrap — the tenant context is
+   *      established from the session cookie, not from an RLS-scoped connection.
+   *      The middleware injects x-tenant-id, but server layouts use prisma directly
+   *      (not through the tenant-scoped repository layer).
+   * SCOPE: Reads one Route row for this driver's active route within their tenant.
+   *        Filtered by driverId = session.userId AND tenantId = session.tenantId.
+   * SAFETY: Gated by getSession() + getRole() checks above. Both driverId and
+   *         tenantId come from the verified session cookie, not user input.
+   */
   // Look up driver's active route to get truckId for GPS tracking
   let truckId: string | null = null;
   try {

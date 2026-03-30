@@ -7,6 +7,7 @@ import { getSession } from '@/lib/auth/session';
 import { prisma as globalPrisma } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { Prisma } from '@/generated/prisma';
+import { logger } from '@/lib/logger';
 
 // ─── Auth helper ──────────────────────────────────────────────
 // Validates role and extracts tenantId in a single getSession() call,
@@ -440,7 +441,10 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
  */
 export async function getNotificationAlerts(): Promise<NotificationAlert[]> {
   const { tenantId } = await getAuthContext();
-  return _fetchNotificationAlerts(tenantId);
+  const start = performance.now();
+  const result = await _fetchNotificationAlerts(tenantId);
+  logger.debug('dashboard: getNotificationAlerts', { durationMs: Math.round(performance.now() - start), count: result.length });
+  return result;
 }
 
 /**
@@ -449,7 +453,10 @@ export async function getNotificationAlerts(): Promise<NotificationAlert[]> {
  */
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const { tenantId } = await getAuthContext();
-  return _fetchDashboardMetrics(tenantId);
+  const start = performance.now();
+  const result = await _fetchDashboardMetrics(tenantId);
+  logger.debug('dashboard: getDashboardMetrics', { durationMs: Math.round(performance.now() - start) });
+  return result;
 }
 
 /**

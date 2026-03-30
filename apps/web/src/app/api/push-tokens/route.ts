@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 const registerSchema = z.object({
   pushToken: z.string().min(1, 'pushToken is required'),
@@ -41,6 +42,13 @@ export async function POST(req: NextRequest) {
 
   const { pushToken, platform } = parsed.data;
 
+  /**
+   * @bypass_rls reason: mobile-api
+   * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+   *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+   * SCOPE: Upserts one PushToken record for the authenticated user only.
+   * SAFETY: Gated by validateMobileToken() above. userId comes from the verified JWT.
+   */
   try {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -62,7 +70,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('[push-tokens] upsert failed:', err);
+    logger.error('[push-tokens] upsert failed:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

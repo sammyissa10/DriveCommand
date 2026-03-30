@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { UserRole } from '@/lib/auth/roles';
 import { getLatestVehicleLocations } from '@/app/(owner)/live-map/actions';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/gps/locations
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(vehicles);
   } catch (error) {
-    console.error('GPS locations error:', error);
+    logger.error('GPS locations error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

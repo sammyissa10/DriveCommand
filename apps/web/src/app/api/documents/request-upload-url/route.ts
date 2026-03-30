@@ -12,6 +12,7 @@ import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   let step = 'init';
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
     step = 'done';
     return NextResponse.json({ uploadUrl, s3Key, fileId, fileName, contentType, sizeBytes, entityType, entityId });
   } catch (error) {
-    console.error(`[request-upload-url] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[request-upload-url] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
       { error: `[request-url:${step}] ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }

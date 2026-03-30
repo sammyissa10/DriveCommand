@@ -9,6 +9,7 @@ import {
   paymentCreateSchema,
   paymentUpdateSchema,
 } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -87,7 +88,7 @@ export async function createPayment(prevState: any, formData: FormData) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error creating payment:', error);
+    logger.error('Error creating payment:', error);
     return { error: 'Failed to create payment' };
   }
 }
@@ -175,7 +176,7 @@ export async function updatePayment(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating payment:', error);
+    logger.error('Error updating payment:', error);
     return { error: 'Failed to update payment' };
   }
 }
@@ -216,7 +217,7 @@ export async function deletePayment(paymentId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error deleting payment:', error);
+    logger.error('Error deleting payment:', error);
     return { error: 'Failed to delete payment' };
   }
 }
@@ -240,7 +241,7 @@ export async function listPayments(routeId: string) {
 
     return payments;
   } catch (error) {
-    console.error('Error listing payments:', error);
+    logger.error('Error listing payments:', error);
     return [];
   }
 }

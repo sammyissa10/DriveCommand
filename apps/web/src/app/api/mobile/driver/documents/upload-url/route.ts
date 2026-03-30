@@ -3,6 +3,7 @@ import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-aut
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 const ALLOWED_CONTENT_TYPES: Record<string, boolean> = {
   'application/pdf': true,
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (err) {
-    console.error('[mobile/driver/documents/upload-url POST] error:', err);
+    logger.error('[mobile/driver/documents/upload-url POST] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

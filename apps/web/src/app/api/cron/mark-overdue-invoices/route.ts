@@ -5,6 +5,7 @@
  */
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,10 +27,10 @@ export async function GET(request: NextRequest) {
       data: { status: 'OVERDUE' },
     });
 
-    console.log(`[CRON] mark-overdue-invoices: Marked ${result.count} invoice(s) overdue`);
+    logger.info(`[CRON] mark-overdue-invoices: Marked ${result.count} invoice(s) overdue`);
     return Response.json({ success: true, markedOverdue: result.count });
   } catch (error) {
-    console.error('[CRON] mark-overdue-invoices: error:', error);
+    logger.error('[CRON] mark-overdue-invoices: error:', error);
     return Response.json({ success: false, error: String(error) }, { status: 500 });
   }
 }

@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
+import { logger } from '@/lib/logger';
 
 const TICKET_CATEGORIES = [
   { value: 'BILLING', label: 'Billing' },
@@ -159,7 +160,7 @@ export function SupportTicketModal() {
         );
       });
     } catch (err) {
-      console.error('[SupportTicketModal] Screenshot capture failed:', err);
+      logger.error('[SupportTicketModal] Screenshot capture failed:', err);
       toast.error('Screenshot capture failed — you can still submit without one.');
     } finally {
       setCapturing(false);
@@ -242,10 +243,10 @@ export function SupportTicketModal() {
         if ('s3Key' in result) {
           screenshotS3Key = result.s3Key;
         } else {
-          console.error('[SupportTicketModal] Screenshot upload failed:', result.error);
+          logger.error('[SupportTicketModal] Screenshot upload failed:', result.error);
         }
       } catch (err) {
-        console.error('[SupportTicketModal] Screenshot upload error:', err);
+        logger.error('[SupportTicketModal] Screenshot upload error:', err);
       }
       setUploading(false);
     }
