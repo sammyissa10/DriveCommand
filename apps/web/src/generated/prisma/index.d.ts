@@ -40067,6 +40067,7 @@ export namespace Prisma {
   }
 
   export type LoadAvgAggregateOutputType = {
+    sequence: number | null
     weight: number | null
     rate: Decimal | null
     pickupLat: Decimal | null
@@ -40076,6 +40077,7 @@ export namespace Prisma {
   }
 
   export type LoadSumAggregateOutputType = {
+    sequence: number | null
     weight: number | null
     rate: Decimal | null
     pickupLat: Decimal | null
@@ -40090,6 +40092,7 @@ export namespace Prisma {
     loadNumber: string | null
     customerId: string | null
     routeId: string | null
+    sequence: number | null
     driverId: string | null
     truckId: string | null
     origin: string | null
@@ -40119,6 +40122,7 @@ export namespace Prisma {
     loadNumber: string | null
     customerId: string | null
     routeId: string | null
+    sequence: number | null
     driverId: string | null
     truckId: string | null
     origin: string | null
@@ -40148,6 +40152,7 @@ export namespace Prisma {
     loadNumber: number
     customerId: number
     routeId: number
+    sequence: number
     driverId: number
     truckId: number
     origin: number
@@ -40175,6 +40180,7 @@ export namespace Prisma {
 
 
   export type LoadAvgAggregateInputType = {
+    sequence?: true
     weight?: true
     rate?: true
     pickupLat?: true
@@ -40184,6 +40190,7 @@ export namespace Prisma {
   }
 
   export type LoadSumAggregateInputType = {
+    sequence?: true
     weight?: true
     rate?: true
     pickupLat?: true
@@ -40198,6 +40205,7 @@ export namespace Prisma {
     loadNumber?: true
     customerId?: true
     routeId?: true
+    sequence?: true
     driverId?: true
     truckId?: true
     origin?: true
@@ -40227,6 +40235,7 @@ export namespace Prisma {
     loadNumber?: true
     customerId?: true
     routeId?: true
+    sequence?: true
     driverId?: true
     truckId?: true
     origin?: true
@@ -40256,6 +40265,7 @@ export namespace Prisma {
     loadNumber?: true
     customerId?: true
     routeId?: true
+    sequence?: true
     driverId?: true
     truckId?: true
     origin?: true
@@ -40373,6 +40383,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId: string | null
+    sequence: number | null
     driverId: string | null
     truckId: string | null
     origin: string
@@ -40422,6 +40433,7 @@ export namespace Prisma {
     loadNumber?: boolean
     customerId?: boolean
     routeId?: boolean
+    sequence?: boolean
     driverId?: boolean
     truckId?: boolean
     origin?: boolean
@@ -40462,6 +40474,7 @@ export namespace Prisma {
     loadNumber?: boolean
     customerId?: boolean
     routeId?: boolean
+    sequence?: boolean
     driverId?: boolean
     truckId?: boolean
     origin?: boolean
@@ -40499,6 +40512,7 @@ export namespace Prisma {
     loadNumber?: boolean
     customerId?: boolean
     routeId?: boolean
+    sequence?: boolean
     driverId?: boolean
     truckId?: boolean
     origin?: boolean
@@ -40536,6 +40550,7 @@ export namespace Prisma {
     loadNumber?: boolean
     customerId?: boolean
     routeId?: boolean
+    sequence?: boolean
     driverId?: boolean
     truckId?: boolean
     origin?: boolean
@@ -40560,7 +40575,7 @@ export namespace Prisma {
     archivedAt?: boolean
   }
 
-  export type LoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "loadNumber" | "customerId" | "routeId" | "driverId" | "truckId" | "origin" | "destination" | "pickupDate" | "deliveryDate" | "weight" | "commodity" | "rate" | "status" | "notes" | "pickupLat" | "pickupLng" | "deliveryLat" | "deliveryLng" | "geofenceFlags" | "trackingToken" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["load"]>
+  export type LoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "loadNumber" | "customerId" | "routeId" | "sequence" | "driverId" | "truckId" | "origin" | "destination" | "pickupDate" | "deliveryDate" | "weight" | "commodity" | "rate" | "status" | "notes" | "pickupLat" | "pickupLng" | "deliveryLat" | "deliveryLng" | "geofenceFlags" | "trackingToken" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["load"]>
   export type LoadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
@@ -40611,6 +40626,7 @@ export namespace Prisma {
       loadNumber: string
       customerId: string
       routeId: string | null
+      sequence: number | null
       driverId: string | null
       truckId: string | null
       origin: string
@@ -41070,6 +41086,7 @@ export namespace Prisma {
     readonly loadNumber: FieldRef<"Load", 'String'>
     readonly customerId: FieldRef<"Load", 'String'>
     readonly routeId: FieldRef<"Load", 'String'>
+    readonly sequence: FieldRef<"Load", 'Int'>
     readonly driverId: FieldRef<"Load", 'String'>
     readonly truckId: FieldRef<"Load", 'String'>
     readonly origin: FieldRef<"Load", 'String'>
@@ -52357,6 +52374,7 @@ export namespace Prisma {
     loadNumber: 'loadNumber',
     customerId: 'customerId',
     routeId: 'routeId',
+    sequence: 'sequence',
     driverId: 'driverId',
     truckId: 'truckId',
     origin: 'origin',
@@ -55894,6 +55912,7 @@ export namespace Prisma {
     loadNumber?: StringFilter<"Load"> | string
     customerId?: UuidFilter<"Load"> | string
     routeId?: UuidNullableFilter<"Load"> | string | null
+    sequence?: IntNullableFilter<"Load"> | number | null
     driverId?: UuidNullableFilter<"Load"> | string | null
     truckId?: UuidNullableFilter<"Load"> | string | null
     origin?: StringFilter<"Load"> | string
@@ -55933,6 +55952,7 @@ export namespace Prisma {
     loadNumber?: SortOrder
     customerId?: SortOrder
     routeId?: SortOrderInput | SortOrder
+    sequence?: SortOrderInput | SortOrder
     driverId?: SortOrderInput | SortOrder
     truckId?: SortOrderInput | SortOrder
     origin?: SortOrder
@@ -55977,6 +55997,7 @@ export namespace Prisma {
     loadNumber?: StringFilter<"Load"> | string
     customerId?: UuidFilter<"Load"> | string
     routeId?: UuidNullableFilter<"Load"> | string | null
+    sequence?: IntNullableFilter<"Load"> | number | null
     driverId?: UuidNullableFilter<"Load"> | string | null
     truckId?: UuidNullableFilter<"Load"> | string | null
     origin?: StringFilter<"Load"> | string
@@ -56015,6 +56036,7 @@ export namespace Prisma {
     loadNumber?: SortOrder
     customerId?: SortOrder
     routeId?: SortOrderInput | SortOrder
+    sequence?: SortOrderInput | SortOrder
     driverId?: SortOrderInput | SortOrder
     truckId?: SortOrderInput | SortOrder
     origin?: SortOrder
@@ -56053,6 +56075,7 @@ export namespace Prisma {
     loadNumber?: StringWithAggregatesFilter<"Load"> | string
     customerId?: UuidWithAggregatesFilter<"Load"> | string
     routeId?: UuidNullableWithAggregatesFilter<"Load"> | string | null
+    sequence?: IntNullableWithAggregatesFilter<"Load"> | number | null
     driverId?: UuidNullableWithAggregatesFilter<"Load"> | string | null
     truckId?: UuidNullableWithAggregatesFilter<"Load"> | string | null
     origin?: StringWithAggregatesFilter<"Load"> | string
@@ -59949,6 +59972,7 @@ export namespace Prisma {
   export type LoadCreateInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -59984,6 +60008,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -60013,6 +60038,7 @@ export namespace Prisma {
   export type LoadUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60048,6 +60074,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -60080,6 +60107,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -60107,6 +60135,7 @@ export namespace Prisma {
   export type LoadUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60133,6 +60162,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -63553,6 +63583,7 @@ export namespace Prisma {
     loadNumber?: SortOrder
     customerId?: SortOrder
     routeId?: SortOrder
+    sequence?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
     origin?: SortOrder
@@ -63578,6 +63609,7 @@ export namespace Prisma {
   }
 
   export type LoadAvgOrderByAggregateInput = {
+    sequence?: SortOrder
     weight?: SortOrder
     rate?: SortOrder
     pickupLat?: SortOrder
@@ -63592,6 +63624,7 @@ export namespace Prisma {
     loadNumber?: SortOrder
     customerId?: SortOrder
     routeId?: SortOrder
+    sequence?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
     origin?: SortOrder
@@ -63621,6 +63654,7 @@ export namespace Prisma {
     loadNumber?: SortOrder
     customerId?: SortOrder
     routeId?: SortOrder
+    sequence?: SortOrder
     driverId?: SortOrder
     truckId?: SortOrder
     origin?: SortOrder
@@ -63645,6 +63679,7 @@ export namespace Prisma {
   }
 
   export type LoadSumOrderByAggregateInput = {
+    sequence?: SortOrder
     weight?: SortOrder
     rate?: SortOrder
     pickupLat?: SortOrder
@@ -70751,6 +70786,7 @@ export namespace Prisma {
   export type LoadCreateWithoutTenantInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -70784,6 +70820,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -71876,6 +71913,7 @@ export namespace Prisma {
     loadNumber?: StringFilter<"Load"> | string
     customerId?: UuidFilter<"Load"> | string
     routeId?: UuidNullableFilter<"Load"> | string | null
+    sequence?: IntNullableFilter<"Load"> | number | null
     driverId?: UuidNullableFilter<"Load"> | string | null
     truckId?: UuidNullableFilter<"Load"> | string | null
     origin?: StringFilter<"Load"> | string
@@ -72487,6 +72525,7 @@ export namespace Prisma {
   export type LoadCreateWithoutDriverInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -72521,6 +72560,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     truckId?: string | null
     origin: string
     destination: string
@@ -72847,6 +72887,7 @@ export namespace Prisma {
   export type LoadCreateWithoutCreatedByInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -72881,6 +72922,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -72919,6 +72961,7 @@ export namespace Prisma {
   export type LoadCreateWithoutUpdatedByInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -72953,6 +72996,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -74396,6 +74440,7 @@ export namespace Prisma {
   export type LoadCreateWithoutTruckInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -74430,6 +74475,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     origin: string
     destination: string
@@ -75590,6 +75636,7 @@ export namespace Prisma {
   export type LoadCreateWithoutRouteInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -75623,6 +75670,7 @@ export namespace Prisma {
     tenantId: string
     loadNumber: string
     customerId: string
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -76895,6 +76943,7 @@ export namespace Prisma {
   export type LoadCreateWithoutDocumentsInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -76929,6 +76978,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -77362,6 +77412,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -77396,6 +77447,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -81758,6 +81810,7 @@ export namespace Prisma {
   export type LoadCreateWithoutCustomerInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -81791,6 +81844,7 @@ export namespace Prisma {
     tenantId: string
     loadNumber: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -82480,6 +82534,7 @@ export namespace Prisma {
   export type LoadCreateWithoutInvoicesInput = {
     id?: string
     loadNumber: string
+    sequence?: number | null
     origin: string
     destination: string
     pickupDate: Date | string
@@ -82514,6 +82569,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -82847,6 +82903,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutInvoicesInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82881,6 +82938,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -87511,6 +87569,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -88722,6 +88781,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -88755,6 +88815,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -88786,6 +88847,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -89187,6 +89249,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     truckId?: string | null
     origin: string
     destination: string
@@ -89301,6 +89364,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -89330,6 +89394,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -89829,6 +89894,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutDriverInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -89863,6 +89929,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
@@ -89894,6 +89961,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
@@ -90243,6 +90311,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutCreatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -90277,6 +90346,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -90308,6 +90378,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -90334,6 +90405,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutUpdatedByInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -90368,6 +90440,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -90399,6 +90472,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -90956,6 +91030,7 @@ export namespace Prisma {
     loadNumber: string
     customerId: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     origin: string
     destination: string
@@ -91373,6 +91448,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -91407,6 +91483,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
@@ -91438,6 +91515,7 @@ export namespace Prisma {
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
@@ -91527,6 +91605,7 @@ export namespace Prisma {
     tenantId: string
     loadNumber: string
     customerId: string
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -91777,6 +91856,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutRouteInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -91810,6 +91890,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -91841,6 +91922,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
     customerId?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -92145,6 +92227,7 @@ export namespace Prisma {
     tenantId: string
     loadNumber: string
     routeId?: string | null
+    sequence?: number | null
     driverId?: string | null
     truckId?: string | null
     origin: string
@@ -92205,6 +92288,7 @@ export namespace Prisma {
   export type LoadUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     origin?: StringFieldUpdateOperationsInput | string
     destination?: StringFieldUpdateOperationsInput | string
     pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92238,6 +92322,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string
@@ -92269,6 +92354,7 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     loadNumber?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
     driverId?: NullableStringFieldUpdateOperationsInput | string | null
     truckId?: NullableStringFieldUpdateOperationsInput | string | null
     origin?: StringFieldUpdateOperationsInput | string

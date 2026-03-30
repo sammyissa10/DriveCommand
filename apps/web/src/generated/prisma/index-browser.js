@@ -532,6 +532,7 @@ exports.Prisma.LoadScalarFieldEnum = {
   loadNumber: 'loadNumber',
   customerId: 'customerId',
   routeId: 'routeId',
+  sequence: 'sequence',
   driverId: 'driverId',
   truckId: 'truckId',
   origin: 'origin',
