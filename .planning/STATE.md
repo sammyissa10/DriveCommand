@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-30 - Completed quick task 130: Make DriveCommand mobile app look more like a native mobile app with better mobile UX patterns
-Stopped at: Completed quick-127-02-PLAN.md
+Last activity: 2026-03-30 - Completed quick task 131: Rebuild driver and owner dashboards with extracted components
+Stopped at: Completed quick-131-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -125,6 +125,7 @@ Progress: [███████████████████████
 - Quick-118 (2026-03-29): Add routeId FK to load create/edit — Route dropdown on web form + mobile API accepts routeId — ~4min, 2 tasks, 6 files
 - Quick-126 (2026-03-29): Add multi-leg load sequencing to routes — sequence Int? on Load, migration, route-page-client.tsx leg labels + sequence editing + continuity warnings, mobile driver "Leg N" timeline — 3 tasks, ~6 files
 - Quick-127-01 (2026-03-30): Server-side Nominatim proxy at /api/geocoding/autocomplete with 60s in-memory cache, web AddressAutocomplete switched from direct Nominatim to proxy, RouteStop lat/lng coordinates now populated in DB — 2 tasks, 5 files
+- Quick-131-01 (2026-03-30): Rebuild driver and owner dashboards with extracted components — TripCard, StatsRow, KPIGrid, SpeedDial extracted; dashboards rebuilt with StyleSheet + tokens; CHIP_WIDTH removed, FAB safe-area insets — 2 tasks, 6 files, ~5min
 
 ## Accumulated Context
 
@@ -156,6 +157,12 @@ Progress: [███████████████████████
 - platform hardcoded as MOBILE in API endpoint — not sent from client to prevent spoofing
 - createSupportTicket re-exported from api-client index.ts as a wrapper function (not direct re-export of driverApi method) to avoid module scope issue — used _driverApi import alias
 - api-client dist rebuilt via tsc after source changes — mobile TS resolves to dist/index.d.ts via symlinked workspace package
+
+**Quick-131-01 decisions (Dashboard component extraction):**
+- CREATE_ACTIONS accent colors kept as hex data props in owner dashboard — intentional color data values passed into SpeedDial, not structural inline styles
+- View wrappers used for empty state and alert cards instead of Card component — Card does not accept a style prop
+- SectionHeader wrapped with marginHorizontal: -spacing.lg to cancel ScrollView horizontal padding — prevents double-padding without modifying SectionHeader
+- Line count did not shrink to plan target (~150/~120) — switching from NativeWind className to StyleSheet.create adds style definition lines; functional JSX complexity reduction is the real measure
 
 **Quick-113 decisions (Production readiness hardening):**
 - Rate limiters return null when env vars absent so local dev works without Redis
