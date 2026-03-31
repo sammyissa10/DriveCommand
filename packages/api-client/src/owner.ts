@@ -403,6 +403,21 @@ export interface UpdateLoadPayload {
   notes?: string
 }
 
+export interface UpdateDriverPayload {
+  firstName?: string
+  lastName?: string
+  licenseNumber?: string | null
+}
+
+export interface UpdateTruckPayload {
+  make?: string
+  model?: string
+  year?: number
+  licensePlate?: string
+  vin?: string
+  odometer?: number
+}
+
 // ---------------------------------------------------------------------------
 // API client
 // ---------------------------------------------------------------------------
@@ -447,6 +462,12 @@ export const ownerApi = {
   getTruck: (token: string, id: string) =>
     apiRequest<TruckDetail>(`/api/mobile/owner/trucks/${id}`, { token }),
 
+  updateTruck: (token: string, id: string, payload: UpdateTruckPayload) =>
+    apiRequest<{ success: boolean; truck: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string; odometer: number } }>(
+      `/api/mobile/owner/trucks/${id}`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
+
   createTruck: (token: string, payload: CreateTruckPayload) =>
     apiRequest<{ truck: { id: string } }>('/api/mobile/owner/trucks', {
       method: 'POST',
@@ -475,6 +496,12 @@ export const ownerApi = {
 
   getDriverDetail: (token: string, id: string) =>
     apiRequest<OwnerDriverDetail>(`/api/mobile/owner/drivers/${id}`, { token }),
+
+  updateDriver: (token: string, id: string, payload: UpdateDriverPayload) =>
+    apiRequest<{ success: boolean; driver: { id: string; firstName: string; lastName: string; licenseNumber: string | null } }>(
+      `/api/mobile/owner/drivers/${id}`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
 
   getMapVehicles: (token: string) =>
     apiRequest<{ vehicles: MapVehicle[] }>('/api/mobile/owner/map/vehicles', { token }),
