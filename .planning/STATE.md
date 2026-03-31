@@ -615,6 +615,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 36]: RecipientSelector uses Modal bottom sheet (VehicleDetailSheet pattern) — consistent with codebase, no new dependencies
 - [Phase 37]: Skeleton base component uses opacity pulse (0.3→0.8 repeat) via react-native-reanimated; map loading overlay keeps ActivityIndicator since skeleton doesn't apply over MapView
 - [Phase quick-126]: Load sequence uses onBlur server action pattern for inline editing without form submission
+- [Phase quick-134]: Offset pagination (page/limit default 50) added to 5 mobile list APIs; cursor pagination on fleet messages
+- [Phase quick-134]: Dashboard queries parallelized into 2 Promise.all batches; cron uses single IN query for dedup; groupBy replaces full-table stats scans
+- [Phase quick-134]: 4 composite indexes: Load(tenantId,status,archivedAt), Invoice(tenantId,status), Document(tenantId,driverId), FleetMessage(tenantId,createdAt)
 
 ### Pending Todos
 
@@ -824,6 +827,7 @@ None blocking immediate progress.
 | Phase 35-owner-core-screens P01 | 203 | 5 tasks | 6 files |
 | Phase 36 P02b | 151 | 2 tasks | 2 files |
 | Phase 37 P01 | 439 | 6 tasks | 20 files |
+| Phase quick-134 P01 | 14 | 3 tasks | 29 files |
 
 ## Session Continuity
 
