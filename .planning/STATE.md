@@ -775,6 +775,7 @@ None blocking immediate progress.
 | 135 | Fix code quality audit findings: ActionState type, dead code removal, withMobileAuth wrapper, typed SQL, ESLint/Prettier, landing page split, not-found page | 2026-03-31 | cb0c893 | [135-fix-code-quality-audit-findings-actionst](./quick/135-fix-code-quality-audit-findings-actionst/) |
 | 136 | Add 3 missing composite indexes to Prisma schema and generate migration: User(tenantId, role, isActive), Route(tenantId, driverId, scheduledDate), DriverInvitation(tenantId, status) | 2026-03-31 | f6aaf1a | [136-add-3-missing-composite-indexes-to-prism](./quick/136-add-3-missing-composite-indexes-to-prism/) |
 | 137 | Three deployment hardening fixes: /api/health endpoint, Redis unavailability production warning, apps/mobile/.env.example template | 2026-03-31 | 6e8eedf | [137-three-deployment-hardening-fixes-1-add-u](./quick/137-three-deployment-hardening-fixes-1-add-u/) |
+| 138 | Fill documentation gaps: mobile API reference (52 endpoints), domain glossary (30+ terms), local dev guide, 3 ADRs, web + mobile troubleshooting guides, CONTRIBUTING.md | 2026-03-31 | 995a865 | [138-fill-documentation-gaps-mobile-api-docs-](./quick/138-fill-documentation-gaps-mobile-api-docs-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
