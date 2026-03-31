@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
-Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
-Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-31 - Completed quick task 138: Documentation gap fill — mobile API reference (52 endpoints), domain glossary (30+ terms), local dev guide, 3 ADRs, web + mobile troubleshooting guides, CONTRIBUTING.md
-Stopped at: Completed quick-138-PLAN.md
+Phase: Phase 37.6 Web Auth Migration to Supabase — IN PROGRESS
+Current Plan: Plan 1 of 1 complete — 37.6-01 DONE
+Status: 37.6-01 complete — Security claims (role, tenantId, isSystemAdmin, permissions) migrated to app_metadata in all 6 auth files. AUTH_SECRET removed. Docs updated.
+Last activity: 2026-03-31 - Completed 37.6-01: app_metadata security claims migration + AUTH_SECRET cleanup
+Stopped at: Completed 37.6-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -86,6 +86,7 @@ Progress: [███████████████████████
 - Phase 37-06 (2026-03-27): Accessibility label coverage — accessibilityLabel + accessibilityRole on all icon-only FABs, back buttons, send/compose buttons; KPICard composite labels with live data values; auto-fixed SyncStatusBar invalid role — 2 tasks, 11 files, 3min
 - Phase 37.1-02 (2026-03-29): My Route detail screen + MessageBubble extraction — loads timeline, route/truck details card, route messages thread with send, MessageBubble shared component — 2 tasks, 3 files, 128s
 - Phase 37.1-03 (2026-03-28): Support Ticket FAB — POST /api/mobile/support/ticket, SupportTicketFAB (LifeBuoy FAB + BottomSheet form), wired in driver + owner layouts — 2 tasks, 6 files, ~5min
+- Phase 37.6-01 (2026-03-31): Security claims to app_metadata — 6 auth files updated (accept-invitation, session, middleware, login, me, mobile-auth), AUTH_SECRET removed, docs updated — 2 tasks, 14 files, 372s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -141,6 +142,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 37.6-01 decisions (Web auth security migration):**
+- Security claims (role, tenantId, isSystemAdmin, permissions) moved to app_metadata — admin-only write, prevents user privilege escalation via supabase.auth.updateUser()
+- Display fields (firstName, lastName) remain in user_metadata — user-editable, no security impact
+- AUTH_SECRET fully removed — session encryption now handled by Supabase Auth, no custom AES needed
 
 **Quick-135 decisions (Code quality audit fixes):**
 - ActionState extended with warning?: string and values?: Record<string, unknown> — driver invite form uses warning for email-send failures; truck form uses values for field repopulation after validation error
