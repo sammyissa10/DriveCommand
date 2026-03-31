@@ -796,6 +796,7 @@ None blocking immediate progress.
 | 137 | Three deployment hardening fixes: /api/health endpoint, Redis unavailability production warning, apps/mobile/.env.example template | 2026-03-31 | 6e8eedf | [137-three-deployment-hardening-fixes-1-add-u](./quick/137-three-deployment-hardening-fixes-1-add-u/) |
 | 138 | Fill documentation gaps: mobile API reference (52 endpoints), domain glossary (30+ terms), local dev guide, 3 ADRs, web + mobile troubleshooting guides, CONTRIBUTING.md | 2026-03-31 | 995a865 | [138-fill-documentation-gaps-mobile-api-docs-](./quick/138-fill-documentation-gaps-mobile-api-docs-/) |
 | 139 | Fix mobile auth refresh token error and SupportTicketProvider context crash | 2026-03-31 | 0c591e9 | [139-fix-mobile-auth-refresh-token-error-and-](./quick/139-fix-mobile-auth-refresh-token-error-and-/) |
+| 140 | Mobile owner portal: add edit actions to Load, Driver, and Truck detail screens | 2026-03-31 | 39cdf75 | [140-mobile-owner-portal-add-edit-actions-to-](./quick/140-mobile-owner-portal-add-edit-actions-to-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
