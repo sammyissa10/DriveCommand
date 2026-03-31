@@ -29,16 +29,39 @@ export function useAuth() {
 
   // Load persisted session from SecureStore on mount + subscribe to auth changes.
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setUser(toAuthUser(session))
-        setToken(session.access_token)
+    const loadSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          setUser(toAuthUser(session))
+          setToken(session.access_token)
+        }
+      } catch (error) {
+        // Stale/expired refresh token stored in SecureStore — clear it so the
+        // user is sent to the login screen instead of crashing the app.
+        console.warn('Session recovery failed, clearing stale session:', error)
+        try {
+          await supabase.auth.signOut()
+        } catch {
+          // signOut is best-effort — ignore failures here
+        }
+        setUser(null)
+        setToken(null)
+      } finally {
+        setIsLoading(false)
       }
-      setIsLoading(false)
-    })
+    }
+
+    void loadSession()
 
     // Handles: SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, USER_UPDATED
     const unsubscribe = onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESHED' && !session) {
+        // Edge case: token refresh completed but returned no session — treat as sign-out
+        setUser(null)
+        setToken(null)
+        return
+      }
       if (session) {
         setUser(toAuthUser(session))
         setToken(session.access_token)
