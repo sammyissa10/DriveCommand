@@ -13,10 +13,16 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, ChevronLeft, Pencil, Truck } from 'lucide-react-native'
+import { AlertTriangle, ChevronLeft, Pencil, Truck, Wrench } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../../context/AuthContext'
-import { ownerApi, type TruckDetail, type UpdateTruckPayload } from '@drivecommand/api-client'
+import {
+  ownerApi,
+  type TruckDetail,
+  type UpdateTruckPayload,
+  type MaintenanceEventSummary,
+  type LogMaintenancePayload,
+} from '@drivecommand/api-client'
 import { BottomSheet } from '../../../../components/ui/BottomSheet'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../../lib/haptics'
@@ -39,6 +45,30 @@ function formatDate(iso: string | null | undefined): string {
   } catch {
     return '—'
   }
+}
+
+function formatDateShort(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  try {
+    return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  } catch {
+    return '—'
+  }
+}
+
+function formatCost(cost: string | null | undefined): string {
+  if (!cost) return ''
+  const num = parseFloat(cost)
+  if (isNaN(num)) return ''
+  return `$${num.toFixed(2)}`
+}
+
+function todayISO(): string {
+  const d = new Date()
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -244,6 +274,167 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
 }
 
 // ---------------------------------------------------------------------------
+// LogMaintenanceSheet
+// ---------------------------------------------------------------------------
+
+interface LogMaintenanceSheetProps {
+  visible: boolean
+  onClose: () => void
+  initialOdometer: number
+  onSave: (payload: LogMaintenancePayload) => void
+  isPending: boolean
+}
+
+function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPending }: LogMaintenanceSheetProps) {
+  const [serviceType, setServiceType] = useState('')
+  const [notes, setNotes] = useState('')
+  const [cost, setCost] = useState('')
+  const [odometer, setOdometer] = useState(String(initialOdometer))
+  const [serviceDate, setServiceDate] = useState(todayISO())
+
+  useEffect(() => {
+    if (visible) {
+      setServiceType('')
+      setNotes('')
+      setCost('')
+      setOdometer(String(initialOdometer))
+      setServiceDate(todayISO())
+    }
+  }, [visible, initialOdometer])
+
+  function handleSave() {
+    if (!serviceType.trim()) {
+      Toast.show({ type: 'error', text1: 'Missing service type', text2: 'Please enter the type of service.', visibilityTime: 3000 })
+      return
+    }
+    const odometerNum = parseInt(odometer, 10)
+    if (isNaN(odometerNum) || odometerNum < 0) {
+      Toast.show({ type: 'error', text1: 'Invalid odometer', text2: 'Odometer must be a non-negative number.', visibilityTime: 3000 })
+      return
+    }
+    const parsedDate = new Date(serviceDate)
+    if (isNaN(parsedDate.getTime())) {
+      Toast.show({ type: 'error', text1: 'Invalid date', text2: 'Please enter a valid date (YYYY-MM-DD).', visibilityTime: 3000 })
+      return
+    }
+
+    const payload: LogMaintenancePayload = {
+      serviceType: serviceType.trim(),
+      serviceDate: parsedDate.toISOString(),
+      odometerAtService: odometerNum,
+    }
+    if (cost.trim()) {
+      const costNum = parseFloat(cost)
+      if (!isNaN(costNum) && costNum >= 0) payload.cost = costNum
+    }
+    if (notes.trim()) payload.notes = notes.trim()
+
+    onSave(payload)
+  }
+
+  return (
+    <BottomSheet visible={visible} onClose={onClose} title="Log Maintenance" snapPoint="80%">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 16 }}
+        >
+          {/* Service Type */}
+          <View className="mb-4">
+            <Text className={labelClass}>Service Type</Text>
+            <TextInput
+              className={inputClass}
+              placeholder="e.g. Oil Change, Tire Rotation, Inspection..."
+              placeholderTextColor="#475569"
+              value={serviceType}
+              onChangeText={setServiceType}
+              autoCapitalize="words"
+              editable={!isPending}
+            />
+          </View>
+
+          {/* Service Date + Odometer row */}
+          <View className="flex-row gap-3 mb-4">
+            <View className="flex-1">
+              <Text className={labelClass}>Service Date</Text>
+              <TextInput
+                className={inputClass}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor="#475569"
+                value={serviceDate}
+                onChangeText={setServiceDate}
+                keyboardType="numeric"
+                editable={!isPending}
+              />
+            </View>
+            <View className="flex-1">
+              <Text className={labelClass}>Odometer (mi)</Text>
+              <TextInput
+                className={inputClass}
+                placeholder="150000"
+                placeholderTextColor="#475569"
+                value={odometer}
+                onChangeText={setOdometer}
+                keyboardType="numeric"
+                editable={!isPending}
+              />
+            </View>
+          </View>
+
+          {/* Cost */}
+          <View className="mb-4">
+            <Text className={labelClass}>Cost ($)</Text>
+            <TextInput
+              className={inputClass}
+              placeholder="0.00"
+              placeholderTextColor="#475569"
+              value={cost}
+              onChangeText={setCost}
+              keyboardType="numeric"
+              editable={!isPending}
+            />
+          </View>
+
+          {/* Notes */}
+          <View className="mb-6">
+            <Text className={labelClass}>Notes</Text>
+            <TextInput
+              className={inputClass}
+              placeholder="Describe the service performed..."
+              placeholderTextColor="#475569"
+              value={notes}
+              onChangeText={setNotes}
+              multiline
+              numberOfLines={3}
+              textAlignVertical="top"
+              style={{ minHeight: 72 }}
+              editable={!isPending}
+            />
+          </View>
+
+          {/* Save button */}
+          <Pressable
+            onPress={handleSave}
+            disabled={isPending}
+            className="rounded-xl py-4 items-center"
+            style={{ backgroundColor: isPending ? '#0c4a6e' : '#0284c7', opacity: isPending ? 0.7 : 1 }}
+          >
+            {isPending
+              ? <ActivityIndicator size="small" color="white" />
+              : <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>Save Record</Text>
+            }
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </BottomSheet>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
 
@@ -254,10 +445,17 @@ export default function TruckDetailScreen() {
   const queryClient = useQueryClient()
 
   const [editSheetVisible, setEditSheetVisible] = useState(false)
+  const [maintenanceSheetVisible, setMaintenanceSheetVisible] = useState(false)
 
   const { data: truck, isLoading, isError, error, refetch, isRefetching } = useQuery<TruckDetail>({
     queryKey: ['owner-truck', id],
     queryFn: () => ownerApi.getTruck(token!, id!),
+    enabled: !!token && !!id,
+  })
+
+  const { data: maintenance, isLoading: maintenanceLoading, refetch: refetchMaintenance } = useQuery<MaintenanceEventSummary[]>({
+    queryKey: ['owner-truck-maintenance', id],
+    queryFn: () => ownerApi.getTruckMaintenance(token!, id!),
     enabled: !!token && !!id,
   })
 
@@ -286,7 +484,24 @@ export default function TruckDetailScreen() {
     },
   })
 
-  const onRefresh = useCallback(() => { refetch() }, [refetch])
+  const { mutate: logMaintenance, isPending: isLogging } = useMutation({
+    mutationFn: (payload: LogMaintenancePayload) => ownerApi.logMaintenanceEvent(token!, id!, payload),
+    onSuccess: () => {
+      haptic.success()
+      queryClient.invalidateQueries({ queryKey: ['owner-truck-maintenance', id] })
+      Toast.show({ type: 'success', text1: 'Maintenance logged', text2: 'Service record saved.', visibilityTime: 3000 })
+      setMaintenanceSheetVisible(false)
+    },
+    onError: (err: Error) => {
+      haptic.error()
+      Toast.show({ type: 'error', text1: 'Failed to log', text2: err.message || 'Please try again.', visibilityTime: 4000 })
+    },
+  })
+
+  const onRefresh = useCallback(() => {
+    refetch()
+    refetchMaintenance()
+  }, [refetch, refetchMaintenance])
 
   const colors = STATUS_COLORS[truck?.status ?? ''] ?? STATUS_COLORS['Ready to Use']
   const docMeta = truck?.documentMetadata
@@ -425,6 +640,45 @@ export default function TruckDetailScreen() {
                 )}
               </View>
 
+              {/* Service History */}
+              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-row items-center gap-2">
+                    <Wrench color="#64748b" size={16} />
+                    <Text className="text-white font-semibold text-base">Service History</Text>
+                  </View>
+                  <Pressable
+                    onPress={() => { haptic.light(); setMaintenanceSheetVisible(true) }}
+                    hitSlop={8}
+                    className="active:opacity-75"
+                  >
+                    <Text style={{ color: '#0ea5e9', fontSize: 14, fontWeight: '600' }}>Log</Text>
+                  </Pressable>
+                </View>
+
+                {maintenanceLoading ? (
+                  <ActivityIndicator size="small" color="#38bdf8" />
+                ) : !maintenance || maintenance.length === 0 ? (
+                  <Text className="text-slate-500 text-sm">No maintenance records</Text>
+                ) : (
+                  maintenance.slice(0, 5).map((event, index) => (
+                    <View key={event.id}>
+                      {index > 0 && <View className="h-px bg-slate-700 my-3" />}
+                      <View className="flex-row items-start justify-between">
+                        <Text className="text-slate-100 font-semibold text-sm flex-1 mr-2">{event.serviceType}</Text>
+                        <Text className="text-slate-500 text-xs">{formatDateShort(event.serviceDate)}</Text>
+                      </View>
+                      <View className="flex-row gap-3 mt-1">
+                        {event.cost && (
+                          <Text className="text-slate-400 text-xs">{formatCost(event.cost)}</Text>
+                        )}
+                        <Text className="text-slate-400 text-xs">{event.odometerAtService.toLocaleString()} mi</Text>
+                      </View>
+                    </View>
+                  ))
+                )}
+              </View>
+
               {/* Record History */}
               <View className="bg-slate-800 border border-slate-700 rounded-xl p-4">
                 <Text className="text-white font-semibold text-base mb-4">Record History</Text>
@@ -453,6 +707,15 @@ export default function TruckDetailScreen() {
               }}
               onSave={updateTruck}
               isPending={isUpdating}
+            />
+
+            {/* Log Maintenance Sheet */}
+            <LogMaintenanceSheet
+              visible={maintenanceSheetVisible}
+              onClose={() => setMaintenanceSheetVisible(false)}
+              initialOdometer={truck.odometer}
+              onSave={logMaintenance}
+              isPending={isLogging}
             />
           </>
         ) : null}
