@@ -2,10 +2,10 @@ import React, { useCallback, useState } from 'react'
 import {
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -184,6 +184,13 @@ export default function InvoicesScreen() {
     ? (data?.invoices ?? [])
     : (data?.invoices ?? []).filter((inv) => inv.status === activeFilter)
 
+  const renderInvoice = useCallback(({ item: inv }: { item: InvoiceSummary }) => (
+    <InvoiceRow
+      invoice={inv}
+      onPress={() => router.push(`/(owner)/more/invoices/${inv.id}` as any)}
+    />
+  ), [router])
+
   return (
     <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -224,7 +231,11 @@ export default function InvoicesScreen() {
             </Pressable>
           </View>
         ) : (
-          <ScrollView
+          <FlashList
+            data={filteredInvoices}
+            renderItem={renderInvoice}
+            keyExtractor={(inv) => inv.id}
+            estimatedItemSize={88}
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
@@ -234,93 +245,87 @@ export default function InvoicesScreen() {
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            {/* Stats grid 2x2 */}
-            <View className="px-4 pt-4 pb-2">
-              <View className="flex-row gap-3 mb-3">
-                <StatCard
-                  value={data?.stats.total ?? 0}
-                  label="Total"
-                  active={activeFilter === 'ALL'}
-                  onPress={() => setActiveFilter('ALL')}
-                />
-                <StatCard
-                  value={data?.stats.draft ?? 0}
-                  label="Draft"
-                  valueColor={activeFilter === 'DRAFT' ? undefined : '#64748b'}
-                  active={activeFilter === 'DRAFT'}
-                  onPress={() => setActiveFilter('DRAFT')}
-                />
+            ListHeaderComponent={
+              <View>
+                {/* Stats grid 2x2 */}
+                <View className="px-4 pt-4 pb-2">
+                  <View className="flex-row gap-3 mb-3">
+                    <StatCard
+                      value={data?.stats.total ?? 0}
+                      label="Total"
+                      active={activeFilter === 'ALL'}
+                      onPress={() => setActiveFilter('ALL')}
+                    />
+                    <StatCard
+                      value={data?.stats.draft ?? 0}
+                      label="Draft"
+                      valueColor={activeFilter === 'DRAFT' ? undefined : '#64748b'}
+                      active={activeFilter === 'DRAFT'}
+                      onPress={() => setActiveFilter('DRAFT')}
+                    />
+                  </View>
+                  <View className="flex-row gap-3">
+                    <StatCard
+                      value={formatCurrency(data?.stats.outstandingAmount ?? 0)}
+                      label="Outstanding"
+                      valueColor={activeFilter === 'OVERDUE' ? undefined : '#f59e0b'}
+                      active={activeFilter === 'OVERDUE'}
+                      onPress={() => setActiveFilter('OVERDUE')}
+                    />
+                    <StatCard
+                      value={formatCurrency(data?.stats.paidAmount ?? 0)}
+                      label="Paid"
+                      valueColor={activeFilter === 'PAID' ? undefined : '#22c55e'}
+                      active={activeFilter === 'PAID'}
+                      onPress={() => setActiveFilter('PAID')}
+                    />
+                  </View>
+                </View>
+
+                {/* Filter chips — flat row, evenly distributed */}
+                <View className="flex-row px-4 pt-3 pb-1 gap-1.5">
+                  {FILTERS.map((f) => {
+                    const active = activeFilter === f.key
+                    return (
+                      <Pressable
+                        key={f.key}
+                        onPress={() => setActiveFilter(f.key)}
+                        className="flex-1 py-[7px] rounded-[20px] border items-center active:opacity-75"
+                        style={{
+                          backgroundColor: active ? '#38bdf8' : '#1e293b',
+                          borderColor: active ? '#38bdf8' : '#334155',
+                        }}
+                      >
+                        <Text
+                          className="text-[11px] font-semibold"
+                          style={{ color: active ? '#0f172a' : '#94a3b8' }}
+                        >
+                          {f.label}
+                        </Text>
+                      </Pressable>
+                    )
+                  })}
+                </View>
+
+                {/* Invoices section header */}
+                <View className="px-4 pt-3.5 pb-2.5">
+                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                    {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
+                    {' '}
+                    <Text className="text-slate-600">({filteredInvoices.length})</Text>
+                  </Text>
+                </View>
               </View>
-              <View className="flex-row gap-3">
-                <StatCard
-                  value={formatCurrency(data?.stats.outstandingAmount ?? 0)}
-                  label="Outstanding"
-                  valueColor={activeFilter === 'OVERDUE' ? undefined : '#f59e0b'}
-                  active={activeFilter === 'OVERDUE'}
-                  onPress={() => setActiveFilter('OVERDUE')}
-                />
-                <StatCard
-                  value={formatCurrency(data?.stats.paidAmount ?? 0)}
-                  label="Paid"
-                  valueColor={activeFilter === 'PAID' ? undefined : '#22c55e'}
-                  active={activeFilter === 'PAID'}
-                  onPress={() => setActiveFilter('PAID')}
-                />
-              </View>
-            </View>
-
-            {/* Filter chips — flat row, evenly distributed */}
-            <View className="flex-row px-4 pt-3 pb-1 gap-1.5">
-              {FILTERS.map((f) => {
-                const active = activeFilter === f.key
-                return (
-                  <Pressable
-                    key={f.key}
-                    onPress={() => setActiveFilter(f.key)}
-                    className="flex-1 py-[7px] rounded-[20px] border items-center active:opacity-75"
-                    style={{
-                      backgroundColor: active ? '#38bdf8' : '#1e293b',
-                      borderColor: active ? '#38bdf8' : '#334155',
-                    }}
-                  >
-                    <Text
-                      className="text-[11px] font-semibold"
-                      style={{ color: active ? '#0f172a' : '#94a3b8' }}
-                    >
-                      {f.label}
-                    </Text>
-                  </Pressable>
-                )
-              })}
-            </View>
-
-            {/* Invoices section header */}
-            <View className="px-4 pt-3.5 pb-2.5">
-              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
-                {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
-                {' '}
-                <Text className="text-slate-600">({filteredInvoices.length})</Text>
-              </Text>
-            </View>
-
-            {filteredInvoices.length === 0 ? (
+            }
+            ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
                 <FileText color="#334155" size={48} />
                 <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   {activeFilter === 'ALL' ? 'No invoices yet' : `No ${FILTERS.find(f => f.key === activeFilter)?.label.toLowerCase()} invoices`}
                 </Text>
               </View>
-            ) : (
-              filteredInvoices.map((inv) => (
-                <InvoiceRow
-                  key={inv.id}
-                  invoice={inv}
-                  onPress={() => router.push(`/(owner)/more/invoices/${inv.id}` as any)}
-                />
-              ))
-            )}
-          </ScrollView>
+            }
+          />
         )}
 
         <PageSpeedDial

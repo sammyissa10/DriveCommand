@@ -2,10 +2,10 @@ import React, { useCallback } from 'react'
 import {
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -123,6 +123,10 @@ export default function ComplianceScreen() {
 
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
+  const renderAlert = useCallback(({ item: alert, index: idx }: { item: ComplianceAlert; index: number }) => (
+    <AlertRow alert={alert} key={`${alert.entityName}-${alert.documentType}-${idx}`} />
+  ), [])
+
   return (
     <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -163,57 +167,54 @@ export default function ComplianceScreen() {
             </Pressable>
           </View>
         ) : (
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
-              />
+          <FlashList
+            data={data?.alerts ?? []}
+            renderItem={renderAlert}
+            keyExtractor={(alert, idx) => `${alert.entityName}-${alert.documentType}-${idx}`}
+            estimatedItemSize={72}
+            ListHeaderComponent={
+              <View>
+                {/* Stats grid 2x2 */}
+                <View className="px-4 pt-4 pb-2">
+                  <View className="flex-row gap-3 mb-3">
+                    <StatCard
+                      value={data?.summary.expiredCount ?? 0}
+                      label="Expired"
+                      valueColor={
+                        (data?.summary.expiredCount ?? 0) > 0 ? '#ef4444' : '#22c55e'
+                      }
+                    />
+                    <StatCard
+                      value={data?.summary.expiringSoonCount ?? 0}
+                      label="Expiring Soon"
+                      valueColor={
+                        (data?.summary.expiringSoonCount ?? 0) > 0 ? '#f59e0b' : '#22c55e'
+                      }
+                    />
+                  </View>
+                  <View className="flex-row gap-3">
+                    <StatCard
+                      value={data?.summary.totalDriversTracked ?? 0}
+                      label="Drivers Tracked"
+                      valueColor="#38bdf8"
+                    />
+                    <StatCard
+                      value={data?.summary.totalTrucksTracked ?? 0}
+                      label="Trucks Tracked"
+                      valueColor="#38bdf8"
+                    />
+                  </View>
+                </View>
+
+                {/* Alerts section header */}
+                <View className="px-4 pt-4 pb-2.5">
+                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                    Alerts
+                  </Text>
+                </View>
+              </View>
             }
-            contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            {/* Stats grid 2x2 */}
-            <View className="px-4 pt-4 pb-2">
-              <View className="flex-row gap-3 mb-3">
-                <StatCard
-                  value={data?.summary.expiredCount ?? 0}
-                  label="Expired"
-                  valueColor={
-                    (data?.summary.expiredCount ?? 0) > 0 ? '#ef4444' : '#22c55e'
-                  }
-                />
-                <StatCard
-                  value={data?.summary.expiringSoonCount ?? 0}
-                  label="Expiring Soon"
-                  valueColor={
-                    (data?.summary.expiringSoonCount ?? 0) > 0 ? '#f59e0b' : '#22c55e'
-                  }
-                />
-              </View>
-              <View className="flex-row gap-3">
-                <StatCard
-                  value={data?.summary.totalDriversTracked ?? 0}
-                  label="Drivers Tracked"
-                  valueColor="#38bdf8"
-                />
-                <StatCard
-                  value={data?.summary.totalTrucksTracked ?? 0}
-                  label="Trucks Tracked"
-                  valueColor="#38bdf8"
-                />
-              </View>
-            </View>
-
-            {/* Alerts section */}
-            <View className="px-4 pt-4 pb-2.5">
-              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
-                Alerts
-              </Text>
-            </View>
-
-            {(data?.alerts.length ?? 0) === 0 ? (
+            ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
                 <ShieldCheck color="#22c55e" size={48} />
                 <Text className="text-green-500 text-base font-semibold mt-3 text-center">
@@ -223,12 +224,17 @@ export default function ComplianceScreen() {
                   No compliance issues found
                 </Text>
               </View>
-            ) : (
-              data?.alerts.map((alert, idx) => (
-                <AlertRow key={`${alert.entityName}-${alert.documentType}-${idx}`} alert={alert} />
-              ))
-            )}
-          </ScrollView>
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={onRefresh}
+                tintColor="#38bdf8"
+                colors={['#38bdf8']}
+              />
+            }
+            contentContainerStyle={{ paddingBottom: 32 }}
+          />
         )}
       </AnimatedScreen>
     </SafeAreaView>

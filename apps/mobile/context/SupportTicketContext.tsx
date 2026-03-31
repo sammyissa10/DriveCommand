@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useRef, useState } from 'react'
 import {
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import { Image } from 'expo-image'
 import { usePathname } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
 import { ImagePlus, X } from 'lucide-react-native'
@@ -386,7 +386,8 @@ export function SupportTicketProvider({ children }: { children: React.ReactNode 
               <Image
                 source={{ uri: form.screenshotUri }}
                 style={styles.previewImage}
-                resizeMode="cover"
+                contentFit="cover"
+                cachePolicy="memory-disk"
               />
               <Pressable
                 style={styles.removeButton}

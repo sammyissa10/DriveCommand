@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
+import { Pressable, RefreshControl, Text, View } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { AlertTriangle, Plus } from 'lucide-react-native'
@@ -41,6 +42,51 @@ export default function IncidentsScreen() {
   const onRefresh = useCallback(() => { refetch() }, [refetch])
   const incidents = data?.incidents ?? []
 
+  const renderItem = useCallback(({ item: incident }: { item: Incident }) => (
+    <View
+      className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-3"
+    >
+      <View className="flex-row items-center justify-between mb-2">
+        <Text className="text-white font-semibold text-sm">
+          {CATEGORY_LABELS[incident.category] ?? incident.category}
+        </Text>
+        <View
+          style={{ backgroundColor: SEVERITY_COLORS[incident.severity] + '22', borderColor: SEVERITY_COLORS[incident.severity] + '66', borderWidth: 1 }}
+          className="px-2 py-0.5 rounded-full"
+        >
+          <Text style={{ color: SEVERITY_COLORS[incident.severity] }} className="text-xs font-semibold">
+            {incident.severity}
+          </Text>
+        </View>
+      </View>
+      <Text className="text-slate-300 text-sm mb-2" numberOfLines={2}>
+        {incident.description}
+      </Text>
+      <Text className="text-slate-500 text-xs">
+        {formatDate(incident.reportedAt)}
+      </Text>
+    </View>
+  ), [])
+
+  const ListEmptyComponent = useCallback(() => {
+    if (isLoading) {
+      return (
+        <View className="items-center justify-center py-20">
+          <Text className="text-slate-400 text-sm">Loading incidents...</Text>
+        </View>
+      )
+    }
+    return (
+      <View className="items-center justify-center py-20 px-8">
+        <AlertTriangle color="#334155" size={48} />
+        <Text className="text-white text-lg font-semibold mt-4 text-center">No incidents reported</Text>
+        <Text className="text-slate-500 text-sm mt-2 text-center">
+          Your submitted incident reports will appear here.
+        </Text>
+      </View>
+    )
+  }, [isLoading])
+
   return (
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       {/* Header */}
@@ -55,57 +101,18 @@ export default function IncidentsScreen() {
         </Pressable>
       </View>
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
+      <FlashList
+        data={incidents}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        estimatedItemSize={120}
+        ListEmptyComponent={ListEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor="#0ea5e9" colors={['#0ea5e9']} />
         }
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
-      >
-        {isLoading ? (
-          <View className="items-center justify-center py-20">
-            <Text className="text-slate-400 text-sm">Loading incidents...</Text>
-          </View>
-        ) : incidents.length === 0 ? (
-          <View className="items-center justify-center py-20 px-8">
-            <AlertTriangle color="#334155" size={48} />
-            <Text className="text-white text-lg font-semibold mt-4 text-center">No incidents reported</Text>
-            <Text className="text-slate-500 text-sm mt-2 text-center">
-              Your submitted incident reports will appear here.
-            </Text>
-          </View>
-        ) : (
-          <View className="gap-3 pt-2">
-            {incidents.map((incident: Incident) => (
-              <View
-                key={incident.id}
-                className="bg-slate-800 border border-slate-700 rounded-xl p-4"
-              >
-                <View className="flex-row items-center justify-between mb-2">
-                  <Text className="text-white font-semibold text-sm">
-                    {CATEGORY_LABELS[incident.category] ?? incident.category}
-                  </Text>
-                  <View
-                    style={{ backgroundColor: SEVERITY_COLORS[incident.severity] + '22', borderColor: SEVERITY_COLORS[incident.severity] + '66', borderWidth: 1 }}
-                    className="px-2 py-0.5 rounded-full"
-                  >
-                    <Text style={{ color: SEVERITY_COLORS[incident.severity] }} className="text-xs font-semibold">
-                      {incident.severity}
-                    </Text>
-                  </View>
-                </View>
-                <Text className="text-slate-300 text-sm mb-2" numberOfLines={2}>
-                  {incident.description}
-                </Text>
-                <Text className="text-slate-500 text-xs">
-                  {formatDate(incident.reportedAt)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-      </ScrollView>
+        contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 24 }}
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   )
 }

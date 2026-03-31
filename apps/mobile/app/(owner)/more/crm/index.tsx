@@ -2,10 +2,10 @@ import React, { useCallback } from 'react'
 import {
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -164,6 +164,10 @@ export default function CRMScreen() {
 
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
+  const renderCustomer = useCallback(({ item: c }: { item: CustomerSummary }) => (
+    <CustomerCard customer={c} />
+  ), [])
+
   return (
     <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -204,7 +208,11 @@ export default function CRMScreen() {
             </Pressable>
           </View>
         ) : (
-          <ScrollView
+          <FlashList
+            data={data?.customers ?? []}
+            renderItem={renderCustomer}
+            keyExtractor={(c) => c.id}
+            estimatedItemSize={80}
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
@@ -214,42 +222,42 @@ export default function CRMScreen() {
               />
             }
             contentContainerStyle={{ paddingBottom: 100 }}
-          >
-            {/* Stats — 3 stats in a row */}
-            <View className="px-4 pt-4 pb-2">
-              <View className="flex-row gap-2.5">
-                <StatCard value={data?.stats.total ?? 0} label="Total" />
-                <StatCard
-                  value={data?.stats.active ?? 0}
-                  label="Active"
-                  valueColor="#22c55e"
-                />
-                <StatCard
-                  value={data?.stats.vip ?? 0}
-                  label="VIP"
-                  valueColor="#f59e0b"
-                />
+            ListHeaderComponent={
+              <View>
+                {/* Stats — 3 stats in a row */}
+                <View className="px-4 pt-4 pb-2">
+                  <View className="flex-row gap-2.5">
+                    <StatCard value={data?.stats.total ?? 0} label="Total" />
+                    <StatCard
+                      value={data?.stats.active ?? 0}
+                      label="Active"
+                      valueColor="#22c55e"
+                    />
+                    <StatCard
+                      value={data?.stats.vip ?? 0}
+                      label="VIP"
+                      valueColor="#f59e0b"
+                    />
+                  </View>
+                </View>
+
+                {/* Customers section header */}
+                <View className="px-4 pt-4 pb-2.5">
+                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                    Customers
+                  </Text>
+                </View>
               </View>
-            </View>
-
-            {/* Customers section header */}
-            <View className="px-4 pt-4 pb-2.5">
-              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
-                Customers
-              </Text>
-            </View>
-
-            {(data?.customers.length ?? 0) === 0 ? (
+            }
+            ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
                 <Building2 color="#334155" size={48} />
                 <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   No customers yet
                 </Text>
               </View>
-            ) : (
-              data?.customers.map((c) => <CustomerCard key={c.id} customer={c} />)
-            )}
-          </ScrollView>
+            }
+          />
         )}
 
         <PageSpeedDial

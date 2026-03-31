@@ -2,10 +2,10 @@ import React, { useCallback } from 'react'
 import {
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -83,6 +83,13 @@ export default function TrucksScreen() {
 
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
+  const renderTruck = useCallback(({ item: truck }: { item: TruckOption }) => (
+    <TruckCard
+      truck={truck}
+      onPress={() => router.push(`/(owner)/more/trucks/${truck.id}` as never)}
+    />
+  ), [router])
+
   const totalCount = data?.length ?? 0
   const inUseCount = data?.filter((t) => t.status === 'In Use').length ?? 0
   const maintenanceCount = data?.filter((t) => t.status === 'In Maintenance').length ?? 0
@@ -128,7 +135,11 @@ export default function TrucksScreen() {
             </Pressable>
           </View>
         ) : (
-          <ScrollView
+          <FlashList
+            data={data ?? []}
+            renderItem={renderTruck}
+            keyExtractor={(truck) => truck.id}
+            estimatedItemSize={72}
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
@@ -138,35 +149,44 @@ export default function TrucksScreen() {
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            {/* Stats grid */}
-            <View className="px-4 py-4 gap-2.5">
-              <View className="flex-row gap-2.5">
-                {[
-                  { label: 'Total', value: totalCount, color: '#f1f5f9' },
-                  { label: 'In Use', value: inUseCount, color: '#38bdf8' },
-                ].map((s) => (
-                  <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
-                    <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
-                    <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+            ListHeaderComponent={
+              <View>
+                {/* Stats grid */}
+                <View className="px-4 py-4 gap-2.5">
+                  <View className="flex-row gap-2.5">
+                    {[
+                      { label: 'Total', value: totalCount, color: '#f1f5f9' },
+                      { label: 'In Use', value: inUseCount, color: '#38bdf8' },
+                    ].map((s) => (
+                      <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                        <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
+                        <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
-              <View className="flex-row gap-2.5">
-                {[
-                  { label: 'In Maint.', value: maintenanceCount, color: maintenanceCount > 0 ? '#f59e0b' : '#64748b' },
-                  { label: 'Expired Docs', value: expiredDocsCount, color: expiredDocsCount > 0 ? '#ef4444' : '#64748b' },
-                ].map((s) => (
-                  <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
-                    <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
-                    <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+                  <View className="flex-row gap-2.5">
+                    {[
+                      { label: 'In Maint.', value: maintenanceCount, color: maintenanceCount > 0 ? '#f59e0b' : '#64748b' },
+                      { label: 'Expired Docs', value: expiredDocsCount, color: expiredDocsCount > 0 ? '#ef4444' : '#64748b' },
+                    ].map((s) => (
+                      <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                        <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
+                        <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+                      </View>
+                    ))}
                   </View>
-                ))}
-              </View>
-            </View>
+                </View>
 
-            {/* List */}
-            {totalCount === 0 ? (
+                {totalCount > 0 && (
+                  <View className="px-4 pb-2.5">
+                    <Text className="text-slate-500 text-[13px]">
+                      {totalCount} truck{totalCount !== 1 ? 's' : ''} in fleet
+                    </Text>
+                  </View>
+                )}
+              </View>
+            }
+            ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-[60px]">
                 <Truck color="#334155" size={48} />
                 <Text className="text-slate-500 text-[15px] mt-3 text-center">
@@ -179,23 +199,8 @@ export default function TrucksScreen() {
                   <Text className="text-white font-semibold">Add First Truck</Text>
                 </Pressable>
               </View>
-            ) : (
-              <>
-                <View className="px-4 pb-2.5">
-                  <Text className="text-slate-500 text-[13px]">
-                    {totalCount} truck{totalCount !== 1 ? 's' : ''} in fleet
-                  </Text>
-                </View>
-                {data?.map((truck) => (
-                  <TruckCard
-                    key={truck.id}
-                    truck={truck}
-                    onPress={() => router.push(`/(owner)/more/trucks/${truck.id}` as never)}
-                  />
-                ))}
-              </>
-            )}
-          </ScrollView>
+            }
+          />
         )}
         <PageSpeedDial
           primaryLabel="Add Truck"

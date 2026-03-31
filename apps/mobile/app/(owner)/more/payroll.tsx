@@ -2,10 +2,10 @@ import React, { useCallback } from 'react'
 import {
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
@@ -151,6 +151,10 @@ export default function PayrollScreen() {
 
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
+  const renderRecord = useCallback(({ item: r }: { item: PayrollRecordSummary }) => (
+    <PayrollRow record={r} />
+  ), [])
+
   return (
     <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -191,7 +195,11 @@ export default function PayrollScreen() {
             </Pressable>
           </View>
         ) : (
-          <ScrollView
+          <FlashList
+            data={data?.records ?? []}
+            renderItem={renderRecord}
+            keyExtractor={(r) => r.id}
+            estimatedItemSize={80}
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
@@ -201,49 +209,49 @@ export default function PayrollScreen() {
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            {/* Stats grid 2x2 */}
-            <View className="px-4 pt-4 pb-2">
-              <View className="flex-row gap-3 mb-3">
-                <StatCard value={data?.stats.total ?? 0} label="Total Records" />
-                <StatCard
-                  value={data?.stats.draft ?? 0}
-                  label="Draft"
-                  valueColor="#64748b"
-                />
-              </View>
-              <View className="flex-row gap-3">
-                <StatCard
-                  value={data?.stats.approved ?? 0}
-                  label="Approved"
-                  valueColor="#38bdf8"
-                />
-                <StatCard
-                  value={formatCurrency(data?.stats.totalPaid ?? 0)}
-                  label="Total Paid"
-                  valueColor="#22c55e"
-                />
-              </View>
-            </View>
+            ListHeaderComponent={
+              <View>
+                {/* Stats grid 2x2 */}
+                <View className="px-4 pt-4 pb-2">
+                  <View className="flex-row gap-3 mb-3">
+                    <StatCard value={data?.stats.total ?? 0} label="Total Records" />
+                    <StatCard
+                      value={data?.stats.draft ?? 0}
+                      label="Draft"
+                      valueColor="#64748b"
+                    />
+                  </View>
+                  <View className="flex-row gap-3">
+                    <StatCard
+                      value={data?.stats.approved ?? 0}
+                      label="Approved"
+                      valueColor="#38bdf8"
+                    />
+                    <StatCard
+                      value={formatCurrency(data?.stats.totalPaid ?? 0)}
+                      label="Total Paid"
+                      valueColor="#22c55e"
+                    />
+                  </View>
+                </View>
 
-            {/* Records section header */}
-            <View className="px-4 pt-4 pb-2.5">
-              <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
-                Recent Records
-              </Text>
-            </View>
-
-            {(data?.records.length ?? 0) === 0 ? (
+                {/* Records section header */}
+                <View className="px-4 pt-4 pb-2.5">
+                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                    Recent Records
+                  </Text>
+                </View>
+              </View>
+            }
+            ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
                 <DollarSign color="#334155" size={48} />
                 <Text className="text-slate-500 text-[15px] mt-3 text-center">
                   No payroll records yet
                 </Text>
               </View>
-            ) : (
-              data?.records.map((r) => <PayrollRow key={r.id} record={r} />)
-            )}
-          </ScrollView>
+            }
+          />
         )}
       </AnimatedScreen>
     </SafeAreaView>
