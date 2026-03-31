@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { StyleSheet } from 'react-native'
 import { Tabs } from 'expo-router'
-import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
+import { LayoutDashboard, Map, Navigation, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { SupportTicketProvider } from '../../context/SupportTicketContext'
@@ -56,6 +56,14 @@ export default function OwnerLayout() {
           options={{
             tabBarLabel: 'Loads',
             tabBarIcon: ({ color }) => <Package color={color} size={tabBar.iconSize} />,
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+        <Tabs.Screen
+          name="routes"
+          options={{
+            tabBarLabel: 'Routes',
+            tabBarIcon: ({ color }) => <Navigation color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
