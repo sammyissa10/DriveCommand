@@ -1,15 +1,19 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
   Linking,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -18,14 +22,17 @@ import {
   Mail,
   MessageSquare,
   Package,
+  Pencil,
   Phone,
   ShieldAlert,
   ShieldCheck,
   ShieldX,
 } from 'lucide-react-native'
+import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
-import { ownerApi, type OwnerDriverDetail, type OwnerDriverDocument } from '@drivecommand/api-client'
+import { ownerApi, type OwnerDriverDetail, type OwnerDriverDocument, type UpdateDriverPayload } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
+import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { Skeleton } from '../../../components/ui/Skeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
@@ -104,6 +111,14 @@ function toTitleCase(str: string): string {
   return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
 }
 
+/** Parse a full name string into firstName / lastName parts. */
+function parseName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/)
+  if (parts.length === 0) return { firstName: '', lastName: '' }
+  if (parts.length === 1) return { firstName: parts[0], lastName: '' }
+  return { firstName: parts[0], lastName: parts.slice(1).join(' ') }
+}
+
 // ---------------------------------------------------------------------------
 // Section label
 // ---------------------------------------------------------------------------
@@ -126,6 +141,148 @@ function SectionLabel({ title }: { title: string }) {
 }
 
 // ---------------------------------------------------------------------------
+// EditDriverSheet
+// ---------------------------------------------------------------------------
+
+const inputStyle = {
+  backgroundColor: '#1e293b',
+  borderWidth: 1,
+  borderColor: '#334155',
+  color: '#fff',
+  borderRadius: 12,
+  paddingHorizontal: 16,
+  paddingVertical: 14,
+  fontSize: 14,
+} as const
+
+const labelStyle = {
+  color: '#94a3b8',
+  fontSize: 11,
+  fontWeight: '600' as const,
+  textTransform: 'uppercase' as const,
+  letterSpacing: 0.5,
+  marginBottom: 6,
+}
+
+interface EditDriverSheetProps {
+  visible: boolean
+  onClose: () => void
+  initialData: { firstName: string; lastName: string; licenseNumber: string | null }
+  onSave: (payload: UpdateDriverPayload) => void
+  isPending: boolean
+}
+
+function EditDriverSheet({ visible, onClose, initialData, onSave, isPending }: EditDriverSheetProps) {
+  const [firstName, setFirstName] = useState(initialData.firstName)
+  const [lastName, setLastName] = useState(initialData.lastName)
+  const [licenseNumber, setLicenseNumber] = useState(initialData.licenseNumber ?? '')
+
+  useEffect(() => {
+    if (visible) {
+      setFirstName(initialData.firstName)
+      setLastName(initialData.lastName)
+      setLicenseNumber(initialData.licenseNumber ?? '')
+    }
+  }, [visible])
+
+  function handleSave() {
+    if (!firstName.trim() || !lastName.trim()) {
+      Toast.show({
+        type: 'error',
+        text1: 'Missing fields',
+        text2: 'First name and last name are required.',
+        visibilityTime: 3000,
+      })
+      return
+    }
+    const payload: UpdateDriverPayload = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      licenseNumber: licenseNumber.trim() || null,
+    }
+    onSave(payload)
+  }
+
+  return (
+    <BottomSheet visible={visible} onClose={onClose} title="Edit Driver" snapPoint="80%">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ paddingBottom: 16 }}
+        >
+          {/* First Name + Last Name row */}
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 14 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={labelStyle}>First Name <Text style={{ color: '#f87171' }}>*</Text></Text>
+              <TextInput
+                style={inputStyle}
+                placeholder="John"
+                placeholderTextColor="#475569"
+                value={firstName}
+                onChangeText={setFirstName}
+                autoCapitalize="words"
+                editable={!isPending}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={labelStyle}>Last Name <Text style={{ color: '#f87171' }}>*</Text></Text>
+              <TextInput
+                style={inputStyle}
+                placeholder="Smith"
+                placeholderTextColor="#475569"
+                value={lastName}
+                onChangeText={setLastName}
+                autoCapitalize="words"
+                editable={!isPending}
+              />
+            </View>
+          </View>
+
+          {/* License Number */}
+          <View style={{ marginBottom: 24 }}>
+            <Text style={labelStyle}>
+              License Number{' '}
+              <Text style={{ color: '#475569', fontWeight: '400', textTransform: 'none' }}>(optional)</Text>
+            </Text>
+            <TextInput
+              style={inputStyle}
+              placeholder="DL-12345"
+              placeholderTextColor="#475569"
+              value={licenseNumber}
+              onChangeText={setLicenseNumber}
+              autoCapitalize="characters"
+              editable={!isPending}
+            />
+          </View>
+
+          {/* Save button */}
+          <Pressable
+            onPress={handleSave}
+            disabled={isPending}
+            style={{
+              backgroundColor: isPending ? '#0c4a6e' : '#0284c7',
+              borderRadius: 14,
+              paddingVertical: 16,
+              alignItems: 'center',
+              opacity: isPending ? 0.7 : 1,
+            }}
+          >
+            {isPending
+              ? <ActivityIndicator size="small" color="white" />
+              : <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>Save Changes</Text>
+            }
+          </Pressable>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </BottomSheet>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
 
@@ -134,11 +291,39 @@ export default function DriverDetailScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const queryClient = useQueryClient()
+
+  const [editSheetVisible, setEditSheetVisible] = useState(false)
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDriverDetail>({
     queryKey: ['owner-driver-detail', id],
     queryFn: () => ownerApi.getDriverDetail(token!, id!),
     enabled: !!token && !!id,
+  })
+
+  const { mutate: updateDriver, isPending: isUpdating } = useMutation({
+    mutationFn: (payload: UpdateDriverPayload) => ownerApi.updateDriver(token!, id!, payload),
+    onSuccess: () => {
+      haptic.success()
+      queryClient.invalidateQueries({ queryKey: ['owner-driver-detail', id] })
+      queryClient.invalidateQueries({ queryKey: ['owner-drivers'] })
+      Toast.show({
+        type: 'success',
+        text1: 'Driver updated',
+        text2: 'Changes saved successfully.',
+        visibilityTime: 3000,
+      })
+      setEditSheetVisible(false)
+    },
+    onError: (err: Error) => {
+      haptic.error()
+      Toast.show({
+        type: 'error',
+        text1: 'Update failed',
+        text2: err.message || 'Please try again.',
+        visibilityTime: 4000,
+      })
+    },
   })
 
   const onRefresh = useCallback(() => refetch(), [refetch])
@@ -188,6 +373,16 @@ export default function DriverDetailScreen() {
   const ComplianceIcon = data.complianceStatus === 'critical' ? ShieldX : data.complianceStatus === 'warning' ? ShieldAlert : ShieldCheck
   const complianceColor = data.complianceStatus === 'critical' ? '#ef4444' : data.complianceStatus === 'warning' ? '#f59e0b' : '#22c55e'
 
+  const { firstName: parsedFirstName, lastName: parsedLastName } = parseName(data.name)
+
+  // The API doesn't return licenseNumber in OwnerDriverDetail — we pass null as initial
+  // The PATCH will update it; on success the detail refreshes via query invalidation
+  const editInitialData = {
+    firstName: parsedFirstName,
+    lastName: parsedLastName,
+    licenseNumber: null as string | null,
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -211,6 +406,14 @@ export default function DriverDetailScreen() {
           <Text style={{ color: '#94a3b8', fontSize: 15, fontWeight: '500', flex: 1 }} numberOfLines={1}>
             Drivers
           </Text>
+          {/* Edit button */}
+          <Pressable
+            onPress={() => { haptic.light(); setEditSheetVisible(true) }}
+            hitSlop={12}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, marginRight: 12 })}
+          >
+            <Pencil color="#94a3b8" size={18} />
+          </Pressable>
           <ComplianceIcon color={complianceColor} size={20} />
         </View>
 
@@ -479,6 +682,15 @@ export default function DriverDetailScreen() {
             </Pressable>
           </View>
         </ScrollView>
+
+        {/* Edit Driver Sheet */}
+        <EditDriverSheet
+          visible={editSheetVisible}
+          onClose={() => setEditSheetVisible(false)}
+          initialData={editInitialData}
+          onSave={updateDriver}
+          isPending={isUpdating}
+        />
       </AnimatedScreen>
     </SafeAreaView>
   )
