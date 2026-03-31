@@ -3,6 +3,7 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
+import { applyRateLimit, authLimiter } from '@/lib/rate-limit';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
   logger.warn(
@@ -78,6 +79,11 @@ export async function GET(req: NextRequest) {
  * marks the invitation as ACCEPTED, signs the user in, and returns redirect URL.
  */
 export async function POST(req: NextRequest) {
+  // Rate limiting: prevent brute-force invitation acceptance attempts
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const rateLimited = await applyRateLimit(authLimiter, `accept-inv:${ip}`);
+  if (rateLimited) return rateLimited;
+
   try {
     const body = await req.json();
     const { invitationId, password } = body as {

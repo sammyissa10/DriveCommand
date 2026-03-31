@@ -37,6 +37,19 @@ export const gpsLimiter = redis
   : null;
 
 /**
+ * Geocoding limiter: 30 requests per minute per user (or IP fallback).
+ * Applied to POST /api/geocoding/autocomplete.
+ * Generous for autocomplete but prevents abuse of the Nominatim proxy.
+ */
+export const geocodingLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, '1 m'),
+      prefix: 'rl:geo',
+    })
+  : null;
+
+/**
  * Mobile API limiter: 60 requests per minute per user.
  * Applied to /api/mobile/* routes.
  */

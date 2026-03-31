@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { AddressResult } from '@drivecommand/types';
+import { getSession } from '@/lib/auth/session';
+import { validateMobileToken } from '@/lib/auth/mobile-auth';
+import { applyRateLimit, geocodingLimiter } from '@/lib/rate-limit';
 
 // In-memory cache: key = lowercase trimmed query, value = { data, timestamp }
 const cache = new Map<string, { data: AddressResult[]; timestamp: number }>();
@@ -31,6 +34,18 @@ function formatAddress(r: NominatimResult): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Auth: accept mobile Bearer token or web session cookie
+  const mobileAuth = await validateMobileToken(req);
+  const session = mobileAuth ?? (await getSession());
+  if (!session) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  // Rate limiting: 30 requests/minute per user (or IP as fallback)
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const rateLimited = await applyRateLimit(geocodingLimiter, `geo:${session.userId ?? ip}`);
+  if (rateLimited) return rateLimited;
+
   let body: unknown;
   try {
     body = await req.json();
