@@ -5,18 +5,15 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": { "simulator": false },
-      "env": { "EXPO_PUBLIC_API_URL": "http://localhost:3000" },
-      "prebuildCommand": "cd ../.. && npm run build --workspace=packages/api-client"
+      "env": { "EXPO_PUBLIC_API_URL": "http://localhost:3000" }
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" },
-      "prebuildCommand": "cd ../.. && npm run build --workspace=packages/api-client"
+      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" },
-      "prebuildCommand": "cd ../.. && npm run build --workspace=packages/api-client"
+      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" }
     }
   },
   "submit": {
