@@ -5,11 +5,11 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": { "simulator": false },
-      "env": { "EXPO_PUBLIC_API_URL": "http://localhost:3000" }
+      "env": { "EXPO_PUBLIC_API_URL": "http://localhost:3000", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
     },
     "production": {
       "autoIncrement": true,
