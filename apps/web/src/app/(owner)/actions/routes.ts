@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for route CRUD operations.
  * All actions enforce OWNER/MANAGER/DRIVER role authorization before any data access.
@@ -29,7 +31,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists before creating.
  */
-export async function createRoute(prevState: any, formData: FormData) {
+export async function createRoute(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -211,7 +213,7 @@ export async function createRoute(prevState: any, formData: FormData) {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists if either is updated.
  */
-export async function updateRoute(id: string, prevState: any, formData: FormData) {
+export async function updateRoute(id: string, prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -393,7 +395,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
           },
         });
         updatedRouteId = route.id;
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Prisma P2025 = Record to update not found (version mismatch)
         if (error?.code === 'P2025') {
           return {

@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole } from '@/lib/auth/server';
 import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
@@ -109,7 +111,7 @@ export async function getLoadMessages(loadId: string): Promise<FleetMessageWithS
 /**
  * Send a reply from the owner/manager to a driver on a load.
  */
-export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
+export async function sendOwnerLoadReply(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const loadId = formData.get('loadId') as string;
@@ -163,7 +165,7 @@ export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
 /**
  * Send a reply from the owner/manager to a driver on a route.
  */
-export async function sendOwnerReply(prevState: any, formData: FormData) {
+export async function sendOwnerReply(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const routeId = formData.get('routeId') as string;

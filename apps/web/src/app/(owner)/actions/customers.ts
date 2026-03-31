@@ -13,7 +13,7 @@ import { logger } from '@/lib/logger';
 /**
  * Create a new customer.
  */
-export async function createCustomer(prevState: any, formData: FormData) {
+export async function createCustomer(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewCRM');
 
@@ -58,7 +58,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
       },
     });
     createdId = customer.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('[CC-CODE]', error?.code ?? 'none');
     logger.error('[CC-MSG]', String(error?.message ?? '').slice(0, 300));
     logger.error('[CC-META]', JSON.stringify(error?.meta ?? {}));
@@ -75,7 +75,7 @@ export async function createCustomer(prevState: any, formData: FormData) {
 /**
  * Update a customer.
  */
-export async function updateCustomer(id: string, prevState: any, formData: FormData) {
+export async function updateCustomer(id: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewCRM');
 
@@ -116,7 +116,7 @@ export async function updateCustomer(id: string, prevState: any, formData: FormD
         notes: result.data.notes || null,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2002') {
       return { error: { companyName: ['A customer with this name already exists'] } };
     }
@@ -141,7 +141,7 @@ export async function deleteCustomer(id: string) {
 
   try {
     await prisma.customer.delete({ where: { id } });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Customer not found.' };
     }
@@ -155,7 +155,7 @@ export async function deleteCustomer(id: string) {
 /**
  * Add an interaction to a customer.
  */
-export async function addInteraction(prevState: any, formData: FormData) {
+export async function addInteraction(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewCRM');
 
@@ -184,7 +184,7 @@ export async function addInteraction(prevState: any, formData: FormData) {
         createdBy: session?.userId || null,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return { error: 'Failed to add interaction. Please try again.' };
   }
 

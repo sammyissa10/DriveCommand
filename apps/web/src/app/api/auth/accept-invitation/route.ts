@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
       success: true,
       redirectUrl,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Accept invitation error:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating your account. Please try again.' },

@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
@@ -17,7 +19,7 @@ const Decimal = Prisma.Decimal;
  * Create a new payment for a route.
  * OWNER/MANAGER only.
  */
-export async function createPayment(prevState: any, formData: FormData) {
+export async function createPayment(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -99,7 +101,7 @@ export async function createPayment(prevState: any, formData: FormData) {
  */
 export async function updatePayment(
   paymentId: string,
-  prevState: any,
+  prevState: ActionState,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

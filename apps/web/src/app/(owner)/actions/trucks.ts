@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for truck CRUD operations.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
@@ -21,7 +23,7 @@ import { logger } from '@/lib/logger';
  * Create a new truck.
  * Requires OWNER or MANAGER role.
  */
-export async function createTruck(prevState: any, formData: FormData) {
+export async function createTruck(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -90,7 +92,7 @@ export async function createTruck(prevState: any, formData: FormData) {
       },
     });
     truckId = truck.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN
     if (error?.code === 'P2002') {
       const target = error?.meta?.target;
@@ -113,7 +115,7 @@ export async function createTruck(prevState: any, formData: FormData) {
  * Update an existing truck.
  * Requires OWNER or MANAGER role.
  */
-export async function updateTruck(id: string, prevState: any, formData: FormData) {
+export async function updateTruck(id: string, prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -180,7 +182,7 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
       data: { ...result.data, updatedById: userId },
     });
     updatedTruckId = truck.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Failed to update truck:', error);
     return { error: 'Failed to update truck. Please try again.' };
   }

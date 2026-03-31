@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 
@@ -27,7 +29,7 @@ export async function getDriverHOS() {
 /**
  * Update driver's duty status.
  */
-export async function updateDutyStatus(prevState: any, formData: FormData) {
+export async function updateDutyStatus(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const status = formData.get('status') as string;

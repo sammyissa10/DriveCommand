@@ -19,7 +19,7 @@ import { logger } from '@/lib/logger';
  * Creates a DriverInvitation record in the database with PENDING status.
  * Requires OWNER or MANAGER role.
  */
-export async function inviteDriver(prevState: any, formData: FormData) {
+export async function inviteDriver(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -199,7 +199,7 @@ export async function getDriver(id: string) {
  * Update an existing driver.
  * Requires OWNER or MANAGER role.
  */
-export async function updateDriver(id: string, prevState: any, formData: FormData) {
+export async function updateDriver(id: string, prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 

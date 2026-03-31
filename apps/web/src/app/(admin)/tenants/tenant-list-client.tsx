@@ -75,8 +75,8 @@ export function TenantListClient({ tenants }: TenantListClientProps) {
       }
       router.refresh();
       setConfirmAction(null);
-    } catch (error: any) {
-      alert(error.message || 'An error occurred');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Unknown error' || 'An error occurred');
     }
   };
 

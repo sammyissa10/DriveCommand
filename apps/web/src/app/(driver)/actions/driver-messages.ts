@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole } from '@/lib/auth/server';
 import { getCurrentUser } from '@/lib/auth/server';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
@@ -55,7 +57,7 @@ export async function getDriverMessages() {
  * Send a message from the driver to dispatch.
  * Not scoped to any route or load — any authenticated driver can send at any time.
  */
-export async function sendDriverMessage(prevState: any, formData: FormData) {
+export async function sendDriverMessage(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const message = formData.get('message') as string;

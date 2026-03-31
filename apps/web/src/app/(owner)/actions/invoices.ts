@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
@@ -15,7 +17,7 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new invoice with line items.
  */
-export async function createInvoice(prevState: any, formData: FormData) {
+export async function createInvoice(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewInvoices');
 
@@ -97,7 +99,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
       },
     });
     createdId = invoice.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
@@ -112,7 +114,7 @@ export async function createInvoice(prevState: any, formData: FormData) {
 /**
  * Update an existing invoice.
  */
-export async function updateInvoice(id: string, prevState: any, formData: FormData) {
+export async function updateInvoice(id: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewInvoices');
 
@@ -191,7 +193,7 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
         },
       });
     }, TX_OPTIONS);
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
@@ -229,7 +231,7 @@ export async function markInvoicePaid(id: string) {
         paidDate: new Date(),
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
@@ -259,7 +261,7 @@ export async function deleteInvoice(id: string) {
       return { error: 'Only draft invoices can be archived.' };
     }
     await prisma.invoice.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }

@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for maintenance CRUD operations.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
@@ -22,7 +24,7 @@ import { redirect } from 'next/navigation';
  */
 export async function createMaintenanceEvent(
   truckId: string,
-  prevState: any,
+  prevState: ActionState,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -103,7 +105,7 @@ export async function deleteMaintenanceEvent(id: string, truckId: string) {
  */
 export async function createScheduledService(
   truckId: string,
-  prevState: any,
+  prevState: ActionState,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -217,7 +219,7 @@ export async function getScheduledService(id: string) {
 export async function updateScheduledService(
   truckId: string,
   serviceId: string,
-  prevState: any,
+  prevState: ActionState,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

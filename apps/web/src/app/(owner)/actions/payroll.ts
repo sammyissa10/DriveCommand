@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { requirePermission } from '@/lib/auth/require-permission';
@@ -14,7 +16,7 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new payroll record.
  */
-export async function createPayrollRecord(prevState: any, formData: FormData) {
+export async function createPayrollRecord(prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewPayroll');
 
@@ -69,7 +71,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
       },
     });
     createdId = record.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Driver not found.' };
     }
@@ -83,7 +85,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
 /**
  * Update an existing payroll record.
  */
-export async function updatePayrollRecord(id: string, prevState: any, formData: FormData) {
+export async function updatePayrollRecord(id: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewPayroll');
 
@@ -132,7 +134,7 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
         updatedById: userId,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
@@ -208,7 +210,7 @@ export async function deletePayrollRecord(id: string) {
       return { error: 'Only draft payroll records can be archived.' };
     }
     await prisma.payrollRecord.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }

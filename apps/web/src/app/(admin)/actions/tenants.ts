@@ -143,7 +143,7 @@ export async function createTenant(formData: FormData) {
     }
 
     return { success: true, tenant };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check for unique constraint violation on slug
     if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
       return {
@@ -337,7 +337,7 @@ export async function resendOwnerInvitation(tenantId: string) {
 
     revalidatePath('/tenants/' + tenantId);
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return { success: false, error: 'Failed to resend invitation. Please try again.' };
   }
 }
@@ -374,7 +374,7 @@ export async function updateTenant(
     revalidatePath('/tenants');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
       return { success: false, error: 'A tenant with this slug already exists' };
     }
@@ -433,7 +433,7 @@ export async function updateOwnerEmail(
     }
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
       return { success: false, error: 'This email is already in use by another account' };
     }
@@ -460,7 +460,7 @@ export async function deleteTenant(tenantId: string) {
     revalidatePath('/tenants');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check for foreign key constraint violation
     if (error.code === 'P2003') {
       return {

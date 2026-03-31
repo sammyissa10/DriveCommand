@@ -50,7 +50,7 @@ export async function createTag(formData: FormData) {
     revalidatePath('/tags');
 
     return { success: true, tag };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle unique constraint violation (duplicate tag name)
     if (error.code === 'P2002') {
       return {
@@ -176,7 +176,7 @@ export async function assignTag(formData: FormData) {
     revalidatePath('/tags');
 
     return { success: true, assignment };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Handle unique constraint violation (tag already assigned)
     if (error.code === 'P2002') {
       return {

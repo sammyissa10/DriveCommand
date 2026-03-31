@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
@@ -81,7 +83,7 @@ export async function listDriverRouteJoinsByDriver(driverId: string) {
  * Create a new DriverRouteJoin entry.
  * OWNER/MANAGER only.
  */
-export async function createDriverRouteJoin(prevState: any, formData: FormData) {
+export async function createDriverRouteJoin(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -151,7 +153,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
     revalidatePath(`/drivers/${driverId}`);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Unique constraint violation: driver already assigned to this route
     if (error?.code === 'P2002') {
       return { error: 'This driver is already assigned to this route' };
@@ -167,7 +169,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
  */
 export async function updateDriverRouteJoin(
   joinId: string,
-  prevState: any,
+  prevState: ActionState,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

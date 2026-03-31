@@ -1,3 +1,11 @@
+// Server action state
+export type ActionState = {
+  error?: Record<string, string[]>
+  success?: boolean
+  message?: string
+  data?: unknown
+}
+
 // User roles
 export type UserRole = 'OWNER' | 'DRIVER'
 

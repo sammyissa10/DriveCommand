@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
@@ -116,7 +118,7 @@ async function generateLoadNumber(prisma: any, tenantId: string): Promise<string
 /**
  * Create a new load.
  */
-export async function createLoad(prevState: any, formData: FormData) {
+export async function createLoad(prevState: ActionState, formData: FormData) {
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
@@ -178,7 +180,7 @@ export async function createLoad(prevState: any, formData: FormData) {
     });
 
     createdId = load.id;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const msg = error?.message || '';
     // Surface the real error so it's visible in the form
     return { error: msg || 'Failed to create load. Please try again.' };
@@ -191,7 +193,7 @@ export async function createLoad(prevState: any, formData: FormData) {
 /**
  * Update an existing load.
  */
-export async function updateLoad(id: string, prevState: any, formData: FormData) {
+export async function updateLoad(id: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
@@ -245,7 +247,7 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
         updatedById: userId,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -273,7 +275,7 @@ export async function deleteLoad(id: string) {
       return { error: 'Only pending or cancelled loads can be archived.' };
     }
     await prisma.load.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -287,7 +289,7 @@ export async function deleteLoad(id: string) {
 /**
  * Dispatch a load by assigning a driver and truck. Status moves to DISPATCHED.
  */
-export async function dispatchLoad(id: string, prevState: any, formData: FormData) {
+export async function dispatchLoad(id: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
@@ -336,7 +338,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
       body: `Load ${load.loadNumber}: ${load.origin} → ${load.destination}`,
       data: { screen: 'loads', loadId: id },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -351,7 +353,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
  * Reassign the truck on an active load (DISPATCHED, PICKED_UP, IN_TRANSIT).
  * Does not change the driver or load status — only swaps the truck.
  */
-export async function reassignTruck(loadId: string, prevState: any, formData: FormData) {
+export async function reassignTruck(loadId: string, prevState: ActionState, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const truckId = (formData.get('truckId') as string | null)?.trim();
@@ -381,7 +383,7 @@ export async function reassignTruck(loadId: string, prevState: any, formData: Fo
       where: { id: loadId },
       data: { truckId, updatedById: userId },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -469,7 +471,7 @@ export async function updateLoadStatus(id: string, newStatus: string) {
         },
       }).catch((err) => logger.error('Failed to update customer stats:', err));
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -497,7 +499,7 @@ export async function updateLoadSequence(loadId: string, sequence: number | null
       where: { id: loadId },
       data: { sequence },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }
@@ -541,7 +543,7 @@ export async function revertLoadStatus(id: string) {
       where: { id },
       data: updateData,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error?.code === 'P2025') {
       return { error: 'Load not found.' };
     }

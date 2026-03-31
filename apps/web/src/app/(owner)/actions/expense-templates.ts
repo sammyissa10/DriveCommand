@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for expense template management.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
@@ -22,7 +24,7 @@ const Decimal = Prisma.Decimal;
  * Requires OWNER or MANAGER role.
  * Uses a transaction to create template and items atomically.
  */
-export async function createTemplate(prevState: any, formData: FormData) {
+export async function createTemplate(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canManageSettings');
@@ -82,7 +84,7 @@ export async function createTemplate(prevState: any, formData: FormData) {
         })),
       });
     }, TX_OPTIONS);
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Failed to create template:', error);
 
     // Check for unique constraint violation (duplicate name)
@@ -230,10 +232,10 @@ export async function applyTemplate(routeId: string, templateId: string) {
       success: true,
       count: result.count,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Failed to apply template:', error);
 
-    if (error.message === 'Template not found') {
+    if (error instanceof Error ? error.message : 'Unknown error' === 'Template not found') {
       return {
         error: 'Template not found',
       };

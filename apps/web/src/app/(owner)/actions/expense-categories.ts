@@ -1,5 +1,7 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for expense category management.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
@@ -18,7 +20,7 @@ import { logger } from '@/lib/logger';
  * Requires OWNER or MANAGER role.
  * Categories are created with isSystemDefault: false.
  */
-export async function createCategory(prevState: any, formData: FormData) {
+export async function createCategory(prevState: ActionState, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canManageSettings');
@@ -52,7 +54,7 @@ export async function createCategory(prevState: any, formData: FormData) {
         isSystemDefault: false,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error('Failed to create category:', error);
 
     // Check for unique constraint violation (duplicate name)
