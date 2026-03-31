@@ -814,6 +814,7 @@ None blocking immediate progress.
 | 141 | Mobile owner portal: add Routes section with list, detail, edit, and navigation | 2026-03-31 | ef9b18b | [141-mobile-owner-portal-add-routes-section-w](./quick/141-mobile-owner-portal-add-routes-section-w/) |
 | 142 | Mobile owner portal: add Profit Predictor and Fuel log screens | 2026-03-31 | 8340114 | [142-mobile-owner-portal-add-profit-predictor](./quick/142-mobile-owner-portal-add-profit-predictor/) |
 | 143 | Mobile owner portal: complete CRM contact detail/edit and Payroll detail/create | 2026-03-31 | fa328ed | [143-mobile-owner-portal-complete-crm-contact](./quick/143-mobile-owner-portal-complete-crm-contact/) |
+| 144 | Mobile owner portal: add truck maintenance logging and safety alerts screen | 2026-03-31 | d82bdff | [144-mobile-owner-portal-add-truck-maintenanc](./quick/144-mobile-owner-portal-add-truck-maintenanc/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
