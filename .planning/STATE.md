@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed quick task 141: Mobile owner portal add routes section with list, detail, and edit screens
-Stopped at: Completed quick-141
+Last activity: 2026-03-31 - Completed quick task 142: Mobile owner portal add Profit Predictor and Fuel Log screens
+Stopped at: Completed quick-142
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -131,6 +131,8 @@ Progress: [███████████████████████
 - Quick-132 (2026-03-30): Security & reliability improvements — CSRF Origin validation, structured logger (222 console.* replaced), bypass_rls JSDoc, createTenantClient() wrapper, zero @ts-ignore (32 removed), Prisma enum type casts, OpenAPI 3.1 spec (4 paths), EAS env docs, 31 Vitest unit tests, mobile jest-expo setup — 15 items, 130+ files, ~45min
 - Quick-135 (2026-03-30): Code quality audit fixes — ActionState type (warning+values) in packages/types, all prevState:any/catch:any eliminated across 17 action files + 11 form components, withMobileAuth HOF (5 mobile routes refactored), typed SQL interfaces in fuel/live-map, landing-page.tsx split to 8 section components (936→26 lines), ESLint/Prettier config, dark 404 page — ~55 files, ~120min
 - Quick-140 (2026-03-31): Mobile owner portal edit actions — PATCH API routes for drivers/trucks, UpdateDriverPayload + UpdateTruckPayload types, ownerApi.updateDriver + ownerApi.updateTruck, EditDriverSheet + EditTruckSheet bottom sheets with pre-filled forms — 3 tasks, 6 files, ~25min
+- Quick-141 (2026-03-31): Mobile owner portal routes section — GET list/detail endpoints, OwnerRouteSummary + OwnerRouteDetail types, routes list screen with 4-tab filter, route detail screen, More menu entry — 3 tasks, 7 files, ~30min
+- Quick-142 (2026-03-31): Mobile owner portal Profit Predictor + Fuel Log — POST profit-predictor endpoint (lane+fleet avg Decimal math), GET+POST fuel endpoints, 5 new types in api-client, ProfitPredictor screen (useMutation + recommendation banner + stat grid), Fuel Log screen (FlashList + FAB + AddFuelModal + truck picker), FuelRowSkeleton, More menu entries — 2 tasks, 8 files, ~40min
 
 ## Accumulated Context
 
@@ -144,6 +146,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-142 decisions (Mobile Profit Predictor + Fuel Log):**
+- Replicated lane analytics and fleet avg cost-per-mile queries inline in the profit-predictor route rather than calling server actions — server actions use cookie-based requireRole which is incompatible with mobile Bearer token auth
+- Added Fuel Log to FLEET section (logical: fleet operations) and Profit Predictor to BUSINESS section (logical: financial decisions) in More menu
+- Used React Native Modal (slide-from-bottom) for fuel entry bottom sheet, matching the pattern used in other mobile screens
 
 **Quick-140 decisions (Mobile owner portal edit actions):**
 - BottomSheet snapPoint="80%" used for both sheets — component only accepts 40%/60%/80%/full; plan specified 70%/85% which are invalid
