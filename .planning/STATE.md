@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed quick task 142: Mobile owner portal add Profit Predictor and Fuel Log screens
-Stopped at: Completed quick-142
+Last activity: 2026-03-31 - Completed quick task 143: Mobile owner portal complete CRM contact detail/edit and payroll detail/create
+Stopped at: Completed quick-143
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -133,6 +133,7 @@ Progress: [███████████████████████
 - Quick-140 (2026-03-31): Mobile owner portal edit actions — PATCH API routes for drivers/trucks, UpdateDriverPayload + UpdateTruckPayload types, ownerApi.updateDriver + ownerApi.updateTruck, EditDriverSheet + EditTruckSheet bottom sheets with pre-filled forms — 3 tasks, 6 files, ~25min
 - Quick-141 (2026-03-31): Mobile owner portal routes section — GET list/detail endpoints, OwnerRouteSummary + OwnerRouteDetail types, routes list screen with 4-tab filter, route detail screen, More menu entry — 3 tasks, 7 files, ~30min
 - Quick-142 (2026-03-31): Mobile owner portal Profit Predictor + Fuel Log — POST profit-predictor endpoint (lane+fleet avg Decimal math), GET+POST fuel endpoints, 5 new types in api-client, ProfitPredictor screen (useMutation + recommendation banner + stat grid), Fuel Log screen (FlashList + FAB + AddFuelModal + truck picker), FuelRowSkeleton, More menu entries — 2 tasks, 8 files, ~40min
+- Quick-143 (2026-03-31): Mobile owner portal CRM contact detail/edit + payroll detail/create — GET+PATCH crm/[id], GET payroll/[id], POST payroll routes; 4 new api-client types+methods; crm/[id].tsx detail+edit screen; tappable CRM cards; payroll detail bottom sheet + create FAB form with driver picker — 3 tasks, 8 files, ~35min
 
 ## Accumulated Context
 
@@ -146,6 +147,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-143 decisions (Mobile CRM contact detail/edit + payroll detail/create):**
+- BottomSheet snapPoint="80%" for all edit/create sheets — component only accepts 40%/60%/80%/full; plan specified 85%/90% which are invalid
+- Pill-button selectors (Pressable rows in a row) for priority and status in CRM edit sheet — no nested BottomSheet needed
+- Full-field update on save (all fields sent in PATCH) rather than delta-only to avoid stale-data edge cases
+- New api-client types added to index.ts exports and dist rebuilt after finding mobile TypeScript errors
 
 **Quick-142 decisions (Mobile Profit Predictor + Fuel Log):**
 - Replicated lane analytics and fleet avg cost-per-mile queries inline in the profit-predictor route rather than calling server actions — server actions use cookie-based requireRole which is incompatible with mobile Bearer token auth
