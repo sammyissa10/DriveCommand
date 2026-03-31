@@ -1,46 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
-import { logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from 'next/server'
+import { withMobileAuth } from '@/lib/api/with-mobile-auth'
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
 
 /**
  * GET /api/mobile/driver/dashboard
  *
  * Returns the driver's dashboard data:
  * - activeLoad: first in-progress load (PENDING/DISPATCHED/PICKED_UP/IN_TRANSIT)
- * - todayMiles: 0 (no GPS source yet — placeholder for future HOS/ELD integration)
+ * - todayMiles: 0 (no GPS source yet — future HOS/ELD integration)
  * - stopsCompleted: count of RouteStops with status DEPARTED for this driver's routes today
- * - hosHoursRemaining: 11.0 (placeholder — no HOS tracking yet)
+ * - hosHoursRemaining: 11.0 (no HOS tracking yet)
  * - recentAlerts: empty array (no alerts model yet)
  *
  * Requires: Authorization: Bearer <token>
  */
-export async function GET(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const GET = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { driverId, tenantId } = auth
 
-  // Driver endpoints require DRIVER role with a driverId
-  if (!auth.driverId) {
-    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
-  }
-
-  const limited = await applyRateLimit(mobileLimiter, auth.userId);
-  if (limited) return limited;
-
-  const { driverId, tenantId } = auth;
-
-  try {
     /**
      * @bypass_rls reason: mobile-api
      * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
      *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
      * SCOPE: Accesses only data belonging to the authenticated user's tenant.
      *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
      */
     const data = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       // Active load: first load in any in-progress status for this driver
       const activeLoad = await tx.load.findFirst({
@@ -55,13 +42,13 @@ export async function GET(req: NextRequest) {
           truck: { select: { id: true, make: true, model: true, licensePlate: true } },
         },
         orderBy: { pickupDate: 'asc' },
-      });
+      })
 
       // Count RouteStops with DEPARTED status for driver's routes today
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
+      const todayStart = new Date()
+      todayStart.setHours(0, 0, 0, 0)
+      const todayEnd = new Date()
+      todayEnd.setHours(23, 59, 59, 999)
 
       const stopsCompleted = await tx.routeStop.count({
         where: {
@@ -72,20 +59,18 @@ export async function GET(req: NextRequest) {
             driverId,
           },
         },
-      });
+      })
 
-      return { activeLoad, stopsCompleted };
-    }, TX_OPTIONS);
+      return { activeLoad, stopsCompleted }
+    }, TX_OPTIONS)
 
     return NextResponse.json({
       activeLoad: data.activeLoad,
-      todayMiles: 0, // Placeholder — no GPS data source yet
+      todayMiles: 0, // TODO: awaiting GPS/ELD integration
       stopsCompleted: data.stopsCompleted,
-      hosHoursRemaining: 11.0, // Placeholder — no HOS tracking yet
-      recentAlerts: [], // Placeholder — no alerts model yet
-    });
-  } catch (err) {
-    logger.error('[mobile/driver/dashboard] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+      hosHoursRemaining: 11.0, // TODO: awaiting HOS tracking integration
+      recentAlerts: [], // TODO: awaiting alerts model
+    })
+  },
+  { allowedRoles: ['DRIVER'] }
+)

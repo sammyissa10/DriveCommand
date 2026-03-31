@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
-import { logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from 'next/server'
+import { withMobileAuth } from '@/lib/api/with-mobile-auth'
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
 
 /**
  * GET /api/mobile/driver/messages
@@ -13,42 +11,32 @@ import { logger } from '@/lib/logger';
  *
  * Requires: Authorization: Bearer <token>
  */
-export async function GET(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const GET = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { driverId, tenantId } = auth
 
-  if (!auth.driverId) {
-    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
-  }
+    const { searchParams } = new URL(req.url)
+    const cursor = searchParams.get('cursor') ?? undefined
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50))
 
-  const limited = await applyRateLimit(mobileLimiter, auth.userId);
-  if (limited) return limited;
-
-  const { driverId, tenantId } = auth;
-
-  const { searchParams } = new URL(req.url);
-  const cursor = searchParams.get('cursor') ?? undefined;
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
-
-  try {
     /**
      * @bypass_rls reason: mobile-api
      * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
      *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
      * SCOPE: Accesses only data belonging to the authenticated user's tenant.
      *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
      */
     const { messages, nextCursor } = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       // Find all loads assigned to this driver
       const driverLoads = await tx.load.findMany({
         where: { driverId, tenantId },
         select: { id: true },
-      });
+      })
 
-      const loadIds = driverLoads.map((l) => l.id);
+      const loadIds = driverLoads.map((l) => l.id)
 
       // Return messages scoped to the driver's loads, plus legacy unscoped messages from this driver
       // Cursor-based pagination ordered desc (newest first), then reverse for chat display
@@ -63,24 +51,22 @@ export async function GET(req: NextRequest) {
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
         take: limit + 1,
         orderBy: { createdAt: 'desc' },
-      });
+      })
 
-      let nextCursor: string | null = null;
+      let resolvedCursor: string | null = null
       if (rawMessages.length > limit) {
-        rawMessages.pop();
-        nextCursor = rawMessages[rawMessages.length - 1]?.id ?? null;
+        rawMessages.pop()
+        resolvedCursor = rawMessages[rawMessages.length - 1]?.id ?? null
       }
 
       // Reverse so oldest-first for chat display
-      return { messages: rawMessages.reverse(), nextCursor };
-    }, TX_OPTIONS);
+      return { messages: rawMessages.reverse(), nextCursor: resolvedCursor }
+    }, TX_OPTIONS)
 
-    return NextResponse.json({ messages, nextCursor });
-  } catch (err) {
-    logger.error('[mobile/driver/messages] GET error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    return NextResponse.json({ messages, nextCursor })
+  },
+  { allowedRoles: ['DRIVER'] }
+)
 
 /**
  * POST /api/mobile/driver/messages
@@ -90,46 +76,43 @@ export async function GET(req: NextRequest) {
  *
  * Requires: Authorization: Bearer <token>
  */
-export async function POST(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const POST = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { driverId, tenantId } = auth
 
-  if (!auth.driverId) {
-    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
-  }
+    let payload: { body?: unknown; loadId?: unknown }
+    try {
+      payload = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
 
-  const limited = await applyRateLimit(mobileLimiter, auth.userId);
-  if (limited) return limited;
+    const { body, loadId } = payload
 
-  const { driverId, tenantId } = auth;
+    if (!body || typeof body !== 'string' || body.trim().length === 0) {
+      return NextResponse.json({ error: 'Message body is required' }, { status: 400 })
+    }
 
-  let payload: { body?: unknown; loadId?: unknown };
-  try {
-    payload = await req.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
+    // Validate loadId type if provided
+    const resolvedLoadId = loadId && typeof loadId === 'string' ? loadId : null
 
-  const { body, loadId } = payload;
-
-  if (!body || typeof body !== 'string' || body.trim().length === 0) {
-    return NextResponse.json({ error: 'Message body is required' }, { status: 400 });
-  }
-
-  // Validate loadId type if provided
-  const resolvedLoadId = loadId && typeof loadId === 'string' ? loadId : null;
-
-  try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+     */
     const message = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       // If loadId is provided, verify the load exists and is assigned to this driver
       if (resolvedLoadId) {
         const load = await tx.load.findFirst({
           where: { id: resolvedLoadId, driverId },
-        });
+        })
         if (!load) {
-          return null;
+          return null
         }
       }
 
@@ -141,16 +124,14 @@ export async function POST(req: NextRequest) {
           body: body.trim(),
           loadId: resolvedLoadId,
         },
-      });
-    }, TX_OPTIONS);
+      })
+    }, TX_OPTIONS)
 
     if (!message) {
-      return NextResponse.json({ error: 'Load not found or not assigned to you' }, { status: 403 });
+      return NextResponse.json({ error: 'Load not found or not assigned to you' }, { status: 403 })
     }
 
-    return NextResponse.json(message, { status: 201 });
-  } catch (err) {
-    logger.error('[mobile/driver/messages] POST error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    return NextResponse.json(message, { status: 201 })
+  },
+  { allowedRoles: ['DRIVER'] }
+)

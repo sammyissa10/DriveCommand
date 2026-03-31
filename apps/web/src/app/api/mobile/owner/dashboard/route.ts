@@ -1,8 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
-import { logger } from '@/lib/logger';
+import { NextRequest, NextResponse } from 'next/server'
+import { withMobileAuth } from '@/lib/api/with-mobile-auth'
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
 
 /**
  * GET /api/mobile/owner/dashboard
@@ -17,38 +15,27 @@ import { logger } from '@/lib/logger';
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
-export async function GET(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const GET = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { tenantId } = auth
 
-  if (auth.role !== 'OWNER') {
-    return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
-  }
-
-  const limited = await applyRateLimit(mobileLimiter, auth.userId);
-  if (limited) return limited;
-
-  const { tenantId } = auth;
-
-  try {
     /**
      * @bypass_rls reason: mobile-api
      * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
      *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
      * SCOPE: Accesses only data belonging to the authenticated user's tenant.
-     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
-     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
      */
     const data = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-      const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const now = new Date()
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0)
+      const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-      const activeStatuses = ['PENDING', 'DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] as const;
+      const activeStatuses = ['PENDING', 'DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] as const
 
       // Batch 1: all independent queries run in parallel
       const [
@@ -131,14 +118,14 @@ export async function GET(req: NextRequest) {
             lastName: true,
           },
         }),
-      ]);
+      ])
 
-      const driversOnDutyCount = driversOnDuty.length;
-      const revenueThisMonth = Number(revenueResult._sum.rate ?? 0);
-      const openAlertsCount = expiringDocsCount + trucksInMaintenance;
+      const driversOnDutyCount = driversOnDuty.length
+      const revenueThisMonth = Number(revenueResult._sum.rate ?? 0)
+      const openAlertsCount = expiringDocsCount + trucksInMaintenance
 
       // Batch 2: queries that depend on driverIds from batch 1
-      const driverIds = drivers.map((d) => d.id);
+      const driverIds = drivers.map((d) => d.id)
       const [latestHOSEntries, driverActiveLoads] = await Promise.all([
         tx.driverHOSEntry.findMany({
           where: {
@@ -165,20 +152,20 @@ export async function GET(req: NextRequest) {
             loadNumber: true,
           },
         }),
-      ]);
+      ])
 
       // Deduplicate — keep only the latest entry per driver
-      const hosMap = new Map<string, { status: string; startTime: Date }>();
+      const hosMap = new Map<string, { status: string; startTime: Date }>()
       for (const entry of latestHOSEntries) {
         if (!hosMap.has(entry.driverId)) {
-          hosMap.set(entry.driverId, { status: entry.status, startTime: entry.startTime });
+          hosMap.set(entry.driverId, { status: entry.status, startTime: entry.startTime })
         }
       }
 
-      const driverLoadMap = new Map<string, string>();
+      const driverLoadMap = new Map<string, string>()
       for (const load of driverActiveLoads) {
         if (load.driverId && !driverLoadMap.has(load.driverId)) {
-          driverLoadMap.set(load.driverId, load.loadNumber);
+          driverLoadMap.set(load.driverId, load.loadNumber)
         }
       }
 
@@ -191,8 +178,8 @@ export async function GET(req: NextRequest) {
         drivers,
         hosMap,
         driverLoadMap,
-      };
-    }, TX_OPTIONS);
+      }
+    }, TX_OPTIONS)
 
     // Normalize active loads
     const normalizedActiveLoads = data.activeLoads.map((load) => ({
@@ -218,19 +205,19 @@ export async function GET(req: NextRequest) {
         : null,
       createdAt: load.createdAt,
       updatedAt: load.updatedAt,
-    }));
+    }))
 
     // Normalize driver statuses
     const driverStatuses = data.drivers.map((driver) => {
-      const hos = data.hosMap.get(driver.id);
+      const hos = data.hosMap.get(driver.id)
       return {
         id: driver.id,
         name:
           [driver.firstName, driver.lastName].filter(Boolean).join(' ') || 'Unknown Driver',
         hosStatus: (hos?.status ?? null) as string | null,
         activeLoadNumber: data.driverLoadMap.get(driver.id) ?? null,
-      };
-    });
+      }
+    })
 
     return NextResponse.json({
       kpis: {
@@ -241,9 +228,7 @@ export async function GET(req: NextRequest) {
       },
       activeLoads: normalizedActiveLoads,
       driverStatuses,
-    });
-  } catch (err) {
-    logger.error('[mobile/owner/dashboard] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    })
+  },
+  { allowedRoles: ['OWNER'] }
+)

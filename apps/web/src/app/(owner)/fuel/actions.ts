@@ -10,6 +10,52 @@ import {
   IDLE_COST_PER_HOUR,
 } from '@/lib/fuel/fuel-calculator';
 
+// ─── Typed SQL result row interfaces ─────────────────────────────────────────
+
+interface FuelSummaryRow {
+  totalGallons: number | null
+  totalCost: number | null
+  totalMiles: number | null
+  fillUpCount: number | null
+}
+
+interface FuelTrendRow {
+  date: Date
+  gallons: number | null
+  cost: number | null
+  miles: number | null
+}
+
+interface TruckFuelRow {
+  truckId: string
+  make: string
+  model: string
+  licensePlate: string
+  totalGallons: number | null
+  totalCost: number | null
+}
+
+interface TruckIdleRow {
+  truckId: string
+  make: string
+  model: string
+  licensePlate: string
+  totalPoints: number | null
+  idlePoints: number | null
+  movingPoints: number | null
+}
+
+interface TruckRankingRow {
+  truckId: string
+  make: string
+  model: string
+  licensePlate: string
+  totalGallons: number | null
+  totalCost: number | null
+  totalMiles: number | null
+  fillUpCount: number | null
+}
+
 /**
  * Get overall fleet fuel summary for the specified time period
  *
@@ -46,7 +92,7 @@ export async function getFleetFuelSummary(daysBack: number = 30, tagId?: string)
         `
   );
 
-  const row = (results as any[])[0];
+  const row = (results as FuelSummaryRow[])[0];
 
   // Extract values with defaults for empty result
   const totalGallons = row.totalGallons || 0;
@@ -127,7 +173,7 @@ export async function getFuelEfficiencyTrend(daysBack: number = 30, tagId?: stri
   }
 
   // Fill in actual data from query results
-  for (const row of results as any[]) {
+  for (const row of results as FuelTrendRow[]) {
     const dateStr = row.date.toISOString().split('T')[0];
     const dayData = dateMap.get(dateStr);
     if (dayData) {
@@ -196,7 +242,7 @@ export async function getCO2Emissions(daysBack: number = 30, tagId?: string) {
   let fleetTotalGallons = 0;
 
   // Calculate CO2 per truck
-  const trucks = (results as any[]).map((row) => {
+  const trucks = (results as TruckFuelRow[]).map((row) => {
     const totalGallons = row.totalGallons || 0;
     const co2Kg = calculateCO2Emissions(totalGallons);
 
@@ -267,7 +313,7 @@ export async function getIdleTimeAnalysis(daysBack: number = 30, tagId?: string)
   );
 
   // Calculate idle percent and cost for each truck
-  const trucks = (results as any[]).map((row) => {
+  const trucks = (results as TruckIdleRow[]).map((row) => {
     const totalPoints = row.totalPoints || 0;
     const idlePoints = row.idlePoints || 0;
     const movingPoints = row.movingPoints || 0;
@@ -349,7 +395,7 @@ export async function getFuelEfficiencyRankings(daysBack: number = 30, tagId?: s
   );
 
   // Calculate MPG and cost per mile for each truck
-  const rankings = (results as any[]).map((row) => {
+  const rankings = (results as TruckRankingRow[]).map((row) => {
     const totalGallons = row.totalGallons || 0;
     const totalCost = row.totalCost || 0;
     const totalMiles = row.totalMiles || 0;

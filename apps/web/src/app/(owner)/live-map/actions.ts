@@ -5,6 +5,21 @@ import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { VehicleLocation } from '@/lib/maps/map-utils';
 
+// ─── Typed SQL result row interfaces ─────────────────────────────────────────
+
+interface GPSLocationRow {
+  id: string
+  truckId: string
+  latitude: number | { toNumber(): number }
+  longitude: number | { toNumber(): number }
+  speed: number | { toNumber(): number } | null
+  heading: number | { toNumber(): number } | null
+  timestamp: Date
+  make: string
+  model: string
+  licensePlate: string
+}
+
 /**
  * Get the latest GPS location for each vehicle in the fleet
  * Uses DISTINCT ON to fetch only the most recent position per truck
@@ -40,7 +55,7 @@ export async function getLatestVehicleLocations(tagId?: string): Promise<Vehicle
   );
 
   // Map results and convert Decimal lat/lng to Number
-  return (results as any[]).map((row) => ({
+  return (results as GPSLocationRow[]).map((row) => ({
     id: row.id,
     truckId: row.truckId,
     latitude: Number(row.latitude),
