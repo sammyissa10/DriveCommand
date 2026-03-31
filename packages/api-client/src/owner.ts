@@ -299,6 +299,42 @@ export interface InvoiceDetail {
 // CRM
 // ---------------------------------------------------------------------------
 
+export interface CrmContactDetail {
+  id: string
+  companyName: string
+  contactName: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  priority: string
+  status: string
+  notes: string | null
+  emailNotifications: boolean
+  totalLoads: number
+  totalRevenue: number
+  lastLoadDate: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UpdateCrmContactPayload {
+  companyName?: string
+  contactName?: string
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  priority?: string
+  status?: string
+  notes?: string
+  emailNotifications?: boolean
+}
+
 export interface CreateCustomerPayload {
   companyName: string
   contactName?: string
@@ -336,6 +372,33 @@ export interface CRMResponse {
 // ---------------------------------------------------------------------------
 // Payroll
 // ---------------------------------------------------------------------------
+
+export interface PayrollRecordDetail {
+  id: string
+  status: string
+  periodStart: string
+  periodEnd: string
+  basePay: number
+  bonuses: number
+  deductions: number
+  totalPay: number
+  milesLogged: number
+  loadsCompleted: number
+  notes: string | null
+  paidAt: string | null
+  driverName: string
+  createdAt: string
+}
+
+export interface CreatePayrollPayload {
+  driverId: string
+  periodStart: string
+  periodEnd: string
+  basePay: number
+  deductions?: number
+  bonuses?: number
+  notes?: string
+}
 
 export interface PayrollStats {
   total: number
@@ -637,8 +700,28 @@ export const ownerApi = {
   getCRM: (token: string) =>
     apiRequest<CRMResponse>('/api/mobile/owner/crm', { token }),
 
+  getCrmContact: (token: string, id: string) =>
+    apiRequest<CrmContactDetail>(`/api/mobile/owner/crm/${id}`, { token }),
+
+  updateCrmContact: (token: string, id: string, payload: UpdateCrmContactPayload) =>
+    apiRequest<CrmContactDetail>(`/api/mobile/owner/crm/${id}`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
   getPayroll: (token: string) =>
     apiRequest<PayrollResponse>('/api/mobile/owner/payroll', { token }),
+
+  getPayrollRecord: (token: string, id: string) =>
+    apiRequest<PayrollRecordDetail>(`/api/mobile/owner/payroll/${id}`, { token }),
+
+  createPayrollRecord: (token: string, payload: CreatePayrollPayload) =>
+    apiRequest<{ record: { id: string; driverName: string } }>('/api/mobile/owner/payroll', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getCompliance: (token: string) =>
     apiRequest<ComplianceResponse>('/api/mobile/owner/compliance', { token }),
