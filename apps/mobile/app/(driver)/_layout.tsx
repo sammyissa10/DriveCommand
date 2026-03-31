@@ -11,6 +11,7 @@ import { NotificationPermissionModal, shouldShowNotificationModal } from '../../
 import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
+import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
 import { colors, shadows, tabBar } from '../../constants/tokens'
 import type { HOSStatus } from '@drivecommand/types'
@@ -137,6 +138,7 @@ export default function DriverLayout() {
         failedCount={failedCount}
         onRetryFailed={retryFailed}
       />
+      <SupportTicketProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -227,6 +229,7 @@ export default function DriverLayout() {
 
       {/* Support ticket FAB — persistent on all driver screens */}
       <SupportTicketFAB />
+      </SupportTicketProvider>
     </Fragment>
   )
 }
