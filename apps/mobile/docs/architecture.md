@@ -162,3 +162,73 @@ Over-the-air (OTA) updates use `expo-updates`. Minor JS changes can be deployed 
 **Expo Router** — File-based routing mirrors Next.js conventions. Route groups (`(owner)/`, `(driver)/`) keep portal-specific screens isolated without affecting URLs.
 
 **MMKV over AsyncStorage** — react-native-mmkv is synchronous and significantly faster than AsyncStorage for non-sensitive data. Auth tokens go in SecureStore; everything else in MMKV.
+
+---
+
+## Architecture Decision Records
+
+### ADR-001: Supabase JWT for Mobile Auth (not session cookies)
+
+**Status:** Accepted
+
+**Context:**
+The web app uses a custom AES-256-GCM encrypted session cookie for authentication. This design was chosen for Edge Runtime compatibility (middleware runs in Edge Runtime where the Web Crypto API is available and cookie management is straightforward). However, cookies are not a natural auth mechanism for mobile apps — React Native has no cookie jar, and session-based auth adds complexity to the `@drivecommand/api-client`.
+
+**Decision:**
+Mobile uses Supabase Auth with JWT access tokens stored in `expo-secure-store`.
+
+**Rationale:**
+- `expo-secure-store` provides hardware-backed encrypted storage on the device (Android Keystore / iOS Secure Enclave). Tokens are as secure as possible on mobile.
+- The Supabase client handles token refresh automatically. When the access token expires, the SDK silently fetches a new one using the refresh token. No custom refresh logic needed.
+- JWT Bearer auth (`Authorization: Bearer <token>`) is the standard for mobile API clients and is straightforward to implement in the HTTP client.
+- No cookie jar management needed in React Native.
+
+**Consequences:**
+- The web API routes under `/api/mobile/` cannot use the session-cookie auth middleware. They call `validateMobileToken()` or use the `withMobileAuth()` wrapper instead.
+- All mobile routes must call `bypass_rls` in their database transactions because Postgres RLS policies are session-scoped and cannot see the Bearer token. Each mobile route is responsible for filtering data by `tenantId`.
+
+---
+
+### ADR-002: MMKV over AsyncStorage
+
+**Status:** Accepted
+
+**Context:**
+The mobile app needs fast persistent key-value storage for non-sensitive data: user preferences, last-read message timestamps, cache flags, UI state that survives app restarts. The standard React Native solution is `@react-native-async-storage/async-storage`, but it has known performance characteristics that can cause jank on the main thread due to its asynchronous bridge calls.
+
+**Decision:**
+Use `react-native-mmkv` instead of AsyncStorage for all non-sensitive persistent data.
+
+**Rationale:**
+- MMKV is synchronous — no `await` needed. Reads and writes happen on the calling thread with no bridge overhead.
+- Benchmarks show MMKV is approximately 30x faster than AsyncStorage for typical key-value operations.
+- MMKV uses memory-mapped files, making it efficient for both reads and writes.
+- Auth tokens (sensitive data) stay in `expo-secure-store`. MMKV is only for non-sensitive data like preferences and cache metadata.
+
+**Consequences:**
+- `react-native-mmkv` is a native module — it requires a custom dev build (not compatible with Expo Go).
+- All MMKV operations are synchronous, which simplifies code by eliminating async/await boilerplate in storage reads.
+
+---
+
+### ADR-003: NativeWind v4 over StyleSheet.create
+
+**Status:** Accepted
+
+**Context:**
+The web app is styled with Tailwind CSS + shadcn/ui. New developers working on both web and mobile need to know two separate styling systems if mobile uses React Native's `StyleSheet.create` API. Additionally, `StyleSheet.create` produces verbose boilerplate for common patterns (spacing, colors, typography).
+
+**Decision:**
+Use NativeWind v4 (Tailwind CSS for React Native) as the primary styling solution for the mobile app.
+
+**Rationale:**
+- Same utility class vocabulary as the web app. A developer who knows `className="flex-1 p-4 bg-background"` on web can apply the same pattern on mobile without learning a new API.
+- NativeWind v4 compiles Tailwind classes at build time into `StyleSheet` objects — no runtime CSS parsing overhead.
+- Supports dark mode via the `dark:` prefix, identical to the web pattern.
+- Supports responsive breakpoints and state variants (`active:`, `disabled:`, `focus:`).
+- Significantly reduces style boilerplate compared to `StyleSheet.create` for common patterns.
+
+**Consequences:**
+- Tailwind's `tailwind.config.js` must be configured at `apps/mobile/tailwind.config.js` with the correct content paths.
+- Not all Tailwind properties map 1:1 to React Native. Web-only properties (like `display: block`, `text-decoration`) are silently ignored. Developers should test visual output on device.
+- NativeWind v4 is a native module — it requires a custom dev build.
