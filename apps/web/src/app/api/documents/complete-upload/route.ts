@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logger.error('[complete-upload] CAUGHT ERROR:', error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
-      { error: `[complete-upload] ${error instanceof Error ? error.message : String(error)}` },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

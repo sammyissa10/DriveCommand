@@ -15,6 +15,34 @@ import { validateOrigin } from '@/lib/security/csrf';
  * 5. Authenticated users with tenantId get x-tenant-id header injected
  */
 
+/**
+ * PUBLIC API ROUTES — Intentionally unauthenticated
+ *
+ * These paths bypass authentication in middleware. Each has a specific reason:
+ *
+ * Authentication flows (pre-auth by nature):
+ *   /sign-in, /sign-up, /accept-invitation — login/registration pages
+ *   /api/auth/login — POST login endpoint
+ *   /api/auth/logout — POST logout endpoint
+ *   /api/auth/accept-invitation — GET/POST invitation acceptance (pre-auth)
+ *   /api/auth/callback — Supabase OAuth/email confirmation callback
+ *
+ * Infrastructure:
+ *   /api/warmup — Health check / cold-start warmup (no sensitive data)
+ *   /api/webhooks — Inbound webhooks (Stripe, etc.) — verified by signature, not session
+ *
+ * Public-facing:
+ *   /track — Public shipment tracking page (token-gated, not session-gated)
+ *
+ * Static assets:
+ *   /_next/static, /_next/image, /favicon.ico, /favicon.png, /site.webmanifest
+ *
+ * NOTE: /api/geocoding/autocomplete is NOT listed here — it requires authentication
+ * (session or mobile Bearer token) enforced at the route handler level.
+ * NOTE: /api/cron/* routes are protected by CRON_SECRET verification in each handler.
+ * NOTE: /api/mobile/* routes use Bearer token auth, not middleware session cookies.
+ *       Middleware passes them through (line ~91), and each handler calls validateMobileToken().
+ */
 const PUBLIC_PATHS = [
   '/sign-in',
   '/sign-up',
