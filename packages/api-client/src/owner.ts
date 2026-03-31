@@ -409,6 +409,42 @@ export interface UpdateDriverPayload {
   licenseNumber?: string | null
 }
 
+export interface OwnerRouteSummary {
+  id: string
+  name: string | null
+  status: string
+  origin: string
+  destination: string
+  scheduledDate: string
+  driver: { id: string; name: string }
+  truck: { id: string; make: string; model: string; licensePlate: string }
+  _count: { loads: number; stops: number }
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OwnerRouteDetail {
+  id: string
+  name: string | null
+  status: string
+  origin: string
+  destination: string
+  scheduledDate: string
+  notes: string | null
+  driver: { id: string; name: string }
+  truck: { id: string; make: string; model: string; licensePlate: string }
+  stops: RouteStop[]
+  loads: Array<{ id: string; loadNumber: string; status: string; origin: string; destination: string; rate: number | null }>
+  createdAt: string
+}
+
+export interface UpdateRoutePayload {
+  name?: string
+  status?: string
+  scheduledDate?: string
+  driverId?: string
+}
+
 export interface UpdateTruckPayload {
   make?: string
   model?: string
@@ -562,4 +598,17 @@ export const ownerApi = {
       '/api/mobile/owner/drivers/invite',
       { method: 'POST', token, body: JSON.stringify(payload) }
     ),
+
+  getRoutes: (token: string, status: 'all' | 'planned' | 'active' | 'completed') =>
+    apiRequest<OwnerRouteSummary[]>(`/api/mobile/owner/routes?status=${status}`, { token }),
+
+  getRoute: (token: string, id: string) =>
+    apiRequest<OwnerRouteDetail>(`/api/mobile/owner/routes/${id}`, { token }),
+
+  updateRoute: (token: string, id: string, payload: UpdateRoutePayload) =>
+    apiRequest<{ route: OwnerRouteDetail }>(`/api/mobile/owner/routes/${id}`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
 }
