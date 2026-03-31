@@ -435,10 +435,11 @@ Plans:
 
 **Goal:** Replace the custom AES-256-GCM encrypted session cookie system in the web app with Supabase Auth, so both web and mobile use the same authentication provider. This eliminates dual auth maintenance, unifies token handling, and establishes a single security surface before App Store launch. All three portals (Owner, Driver, SysAdmin) must continue to work correctly after migration.
 **Depends on:** Phase 37.5 (all mobile screens stable)
-**Plans:** TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD
+- [ ] 37.6-01-PLAN.md — Security hardening: move claims from user_metadata to app_metadata + cleanup
+- [ ] 37.6-02-PLAN.md — Consolidate auth helpers into supabase.ts + update 70 import paths + build verification
 
 ---
 
