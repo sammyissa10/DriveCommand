@@ -9,8 +9,7 @@ import { createTenantClient } from '@/lib/db/tenant-client';
 import { logger } from '@/lib/logger';
 
 // ─── Auth helper ──────────────────────────────────────────────
-// Validates role and extracts tenantId in a single getSession() call,
-// reducing session decrypts from 2 (requireRole + requireTenantId) to 1.
+// Validates role and extracts tenantId in a single Supabase session read.
 
 async function getAuthContext(): Promise<{ tenantId: string }> {
   const session = await getSession();

@@ -44,7 +44,7 @@ postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/p
 
 Get this from: Supabase Dashboard → Settings → Database → Connection string → **Session mode**.
 
-All other variables (`AUTH_SECRET`, `ADMIN_SECRET_KEY`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, S3 vars, etc.) use the same values as local — just add them to the Vercel dashboard.
+All other variables (`ADMIN_SECRET_KEY`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, S3 vars, Supabase vars, etc.) use the same values as local — just add them to the Vercel dashboard.
 
 ---
 
@@ -105,7 +105,7 @@ curl -X POST https://your-domain.vercel.app/api/cron/send-reminders \
 - [ ] `DATABASE_URL` uses Supabase **Session Mode pooler** at port **6543** (not 5432)
 - [ ] `NEXT_PUBLIC_APP_URL` set to the production domain
 - [ ] `ADMIN_SECRET_KEY` set (needed to access `/admin/login`)
-- [ ] `AUTH_SECRET` is 32+ characters and consistent with local
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` set (Supabase Dashboard → Settings → API)
 - [ ] Email credentials configured (`RESEND_API_KEY` or Gmail vars — see [Email docs](./email.md))
 - [ ] R2/S3 bucket created and credentials set (`S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`)
 - [ ] `ANTHROPIC_API_KEY` set (if AI features are needed)

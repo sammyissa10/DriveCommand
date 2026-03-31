@@ -51,7 +51,6 @@ Then fill in the values. The table below documents every variable in `.env.examp
 | Variable | Required | Description | Where to get it |
 |---|---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string | Supabase Dashboard → Settings → Database → Connection string (URI). Use port **5432** (direct connection) for local dev. Use port **6543** (Session Mode pooler) for Vercel. |
-| `AUTH_SECRET` | Yes | 32+ character secret for session encryption | Run: `openssl rand -base64 32` |
 | `NEXT_PUBLIC_APP_URL` | Yes | App base URL (no trailing slash) | `http://localhost:3000` for local dev |
 | `RESEND_API_KEY` | Email | Resend API key (legacy email provider) | [resend.com/api-keys](https://resend.com/api-keys) — leave blank if using Gmail SMTP |
 | `RESEND_FROM_EMAIL` | Email | Sender address verified in Resend | e.g. `DriveCommand <onboarding@resend.dev>` |
@@ -70,15 +69,16 @@ Then fill in the values. The table below documents every variable in `.env.examp
 | `UPSTASH_REDIS_REST_URL` | Rate limiting | Upstash Redis REST URL | [console.upstash.com](https://console.upstash.com) → Create database → REST API |
 | `UPSTASH_REDIS_REST_TOKEN` | Rate limiting | Upstash Redis REST token | Same as above |
 | `SENTRY_DSN` | Error monitoring | Sentry Data Source Name | [sentry.io](https://sentry.io) → Project → Settings → Client Keys (DSN). Optional — app runs without it. |
-| `NEXT_PUBLIC_SUPABASE_URL` | Mobile auth | Supabase project URL | Supabase Dashboard → Settings → API → Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Mobile auth | Supabase anonymous public key | Supabase Dashboard → Settings → API → anon public key |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL | Supabase Dashboard → Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous public key | Supabase Dashboard → Settings → API → anon public key |
 
 **Note on email:** The `.env.example` uses Resend (`RESEND_API_KEY`). The active email implementation in `src/lib/email/gmail-client.ts` uses Gmail SMTP instead (requires `GMAIL_USER` and `GMAIL_APP_PASSWORD` set in `.env.local` — not shown in `.env.example`). See [Email docs](./email.md) for Gmail setup.
 
 **Minimum required variables for local dev without optional features:**
 
 - `DATABASE_URL`
-- `AUTH_SECRET`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_APP_URL`
 - `ADMIN_SECRET_KEY`
 - `CRON_SECRET`
@@ -153,9 +153,6 @@ npm run test:e2e:ui
 ---
 
 ## 7. Common Issues
-
-**"AUTH_SECRET must be set and at least 32 characters"**
-Check that `AUTH_SECRET` is set in `.env.local` and is at least 32 characters. Generate one with `openssl rand -base64 32`.
 
 **Prisma query errors / RLS violations**
 Ensure `DATABASE_URL` points to your Supabase project with the correct credentials. For local dev, use the direct connection URL (port 5432). The Session Mode pooler (port 6543) is for Vercel only.

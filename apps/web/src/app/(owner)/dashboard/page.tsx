@@ -11,7 +11,7 @@
  *
  * The page component itself is synchronous so it returns JSX immediately,
  * allowing all four Suspense boundaries to activate and show skeletons
- * without waiting for any session decrypt.
+ * without waiting for any session read.
  */
 
 import { Suspense } from 'react';

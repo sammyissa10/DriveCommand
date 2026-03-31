@@ -25,7 +25,7 @@ export default async function OwnerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Run auth checks in parallel — both are fast JWT decrypts, no DB calls
+  // Run auth checks in parallel — both read from the Supabase session, no DB calls
   const [session, role] = await Promise.all([getSession(), getRole()]);
 
   if (!session) {
