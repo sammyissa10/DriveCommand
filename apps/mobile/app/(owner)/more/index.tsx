@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import {
+  AlertTriangle,
   ChevronRight,
   MessageSquare,
   FileText,
@@ -80,6 +81,14 @@ const SECTIONS: MoreSection[] = [
         iconBg: 'rgba(251,146,60,0.15)',
         iconColor: '#fb923c',
         route: '/(owner)/more/fuel',
+      },
+      {
+        label: 'Safety',
+        subtitle: 'Alerts & incidents',
+        Icon: AlertTriangle,
+        iconBg: 'rgba(239,68,68,0.15)',
+        iconColor: '#ef4444',
+        route: '/(owner)/more/safety',
       },
     ],
   },
