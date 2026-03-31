@@ -346,6 +346,7 @@ model Document {
   @@index([loadId])
   @@index([expiryDate])
   @@index([uploadedBy])
+  @@index([tenantId, driverId])
 }
 
 model MaintenanceEvent {
@@ -751,6 +752,7 @@ model Invoice {
   @@index([dueDate])
   @@index([loadId])
   @@index([archivedAt])
+  @@index([tenantId, status])
 }
 
 model InvoiceItem {
@@ -916,6 +918,7 @@ model Load {
   @@index([trackingToken])
   @@index([archivedAt])
   @@index([routeId, sequence])
+  @@index([tenantId, status, archivedAt])
 }
 
 // ─── Integration Models ──────────────────────────────────────
@@ -1084,6 +1087,7 @@ model FleetMessage {
   @@index([loadId])
   @@index([createdAt])
   @@index([senderId])
+  @@index([tenantId, createdAt])
 }
 
 // ─── Push Token Models ───────────────────────────────────────

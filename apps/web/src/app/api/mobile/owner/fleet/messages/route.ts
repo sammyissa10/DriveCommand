@@ -27,6 +27,10 @@ export async function GET(req: NextRequest) {
 
   const { tenantId, userId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const cursor = searchParams.get('cursor') ?? undefined;
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
     /**
      * @bypass_rls reason: mobile-api
@@ -36,10 +40,10 @@ export async function GET(req: NextRequest) {
      *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
      * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
      */
-    const messages = await prisma.$transaction(async (tx) => {
+    const { messages, nextCursor } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      return tx.fleetMessage.findMany({
+      const rawMessages = await tx.fleetMessage.findMany({
         where: {
           tenantId,
           OR: [
@@ -50,7 +54,9 @@ export async function GET(req: NextRequest) {
             { routeId: { not: null } },
           ],
         },
-        orderBy: { createdAt: 'asc' },
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+        take: limit + 1,
+        orderBy: { createdAt: 'desc' },
         select: {
           id: true,
           senderId: true,
@@ -62,6 +68,14 @@ export async function GET(req: NextRequest) {
           createdAt: true,
         },
       });
+
+      let nextCursor: string | null = null;
+      if (rawMessages.length > limit) {
+        rawMessages.pop();
+        nextCursor = rawMessages[rawMessages.length - 1]?.id ?? null;
+      }
+
+      return { messages: rawMessages, nextCursor };
     }, TX_OPTIONS);
 
     // Collect all participant IDs that need name resolution
@@ -196,7 +210,7 @@ export async function GET(req: NextRequest) {
       unreadCount: 0,
     }));
 
-    return NextResponse.json({ conversations: result });
+    return NextResponse.json({ conversations: result, nextCursor });
   } catch (err) {
     logger.error('[mobile/owner/fleet/messages GET] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

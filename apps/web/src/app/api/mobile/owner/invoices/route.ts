@@ -63,22 +63,34 @@ export async function GET(req: NextRequest) {
         : [];
       const customerMap = new Map(customers.map((c) => [c.id, c.companyName]));
 
-      // Stats — pull all invoices for accurate counts (not limited to 20)
-      const allInvoices = await tx.invoice.findMany({
+      // Stats — use groupBy aggregates instead of a full-table scan
+      const statusGroups = await tx.invoice.groupBy({
+        by: ['status'],
         where: { tenantId, archivedAt: null },
-        select: { status: true, totalAmount: true },
+        _count: true,
+        _sum: { totalAmount: true },
       });
 
+      let totalCount = 0;
+      let draft = 0;
+      let overdue = 0;
+      let outstandingAmount = 0;
+      let paidAmount = 0;
+      for (const g of statusGroups) {
+        totalCount += g._count;
+        const amount = Number(g._sum.totalAmount ?? 0);
+        if (g.status === 'DRAFT') draft = g._count;
+        if (g.status === 'OVERDUE') { overdue = g._count; outstandingAmount += amount; }
+        if (g.status === 'SENT') outstandingAmount += amount;
+        if (g.status === 'PAID') paidAmount = amount;
+      }
+
       const stats = {
-        total: allInvoices.length,
-        draft: allInvoices.filter((i) => i.status === 'DRAFT').length,
-        overdue: allInvoices.filter((i) => i.status === 'OVERDUE').length,
-        outstandingAmount: allInvoices
-          .filter((i) => i.status === 'SENT' || i.status === 'OVERDUE')
-          .reduce((sum, i) => sum + Number(i.totalAmount), 0),
-        paidAmount: allInvoices
-          .filter((i) => i.status === 'PAID')
-          .reduce((sum, i) => sum + Number(i.totalAmount), 0),
+        total: totalCount,
+        draft,
+        overdue,
+        outstandingAmount,
+        paidAmount,
       };
 
       const invoiceList = invoices.map((inv) => ({

@@ -26,6 +26,10 @@ export async function GET(req: NextRequest) {
 
   const { driverId, tenantId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const cursor = searchParams.get('cursor') ?? undefined;
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
     /**
      * @bypass_rls reason: mobile-api
@@ -35,7 +39,7 @@ export async function GET(req: NextRequest) {
      *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
      * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
      */
-    const messages = await prisma.$transaction(async (tx) => {
+    const { messages, nextCursor } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       // Find all loads assigned to this driver
@@ -47,7 +51,8 @@ export async function GET(req: NextRequest) {
       const loadIds = driverLoads.map((l) => l.id);
 
       // Return messages scoped to the driver's loads, plus legacy unscoped messages from this driver
-      return tx.fleetMessage.findMany({
+      // Cursor-based pagination ordered desc (newest first), then reverse for chat display
+      const rawMessages = await tx.fleetMessage.findMany({
         where: {
           tenantId,
           OR: [
@@ -55,11 +60,22 @@ export async function GET(req: NextRequest) {
             { loadId: null, senderId: driverId },
           ],
         },
-        orderBy: { createdAt: 'asc' },
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+        take: limit + 1,
+        orderBy: { createdAt: 'desc' },
       });
+
+      let nextCursor: string | null = null;
+      if (rawMessages.length > limit) {
+        rawMessages.pop();
+        nextCursor = rawMessages[rawMessages.length - 1]?.id ?? null;
+      }
+
+      // Reverse so oldest-first for chat display
+      return { messages: rawMessages.reverse(), nextCursor };
     }, TX_OPTIONS);
 
-    return NextResponse.json(messages);
+    return NextResponse.json({ messages, nextCursor });
   } catch (err) {
     logger.error('[mobile/driver/messages] GET error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

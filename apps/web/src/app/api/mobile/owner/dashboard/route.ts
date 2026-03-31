@@ -50,101 +50,122 @@ export async function GET(req: NextRequest) {
 
       const activeStatuses = ['PENDING', 'DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] as const;
 
-      // Count active loads
-      const activeLoadsCount = await tx.load.count({
-        where: {
-          tenantId,
-          status: { in: [...activeStatuses] },
-          archivedAt: null,
-        },
-      });
+      // Batch 1: all independent queries run in parallel
+      const [
+        activeLoadsCount,
+        driversOnDuty,
+        revenueResult,
+        expiringDocsCount,
+        trucksInMaintenance,
+        activeLoads,
+        drivers,
+      ] = await Promise.all([
+        // Count active loads
+        tx.load.count({
+          where: {
+            tenantId,
+            status: { in: [...activeStatuses] },
+            archivedAt: null,
+          },
+        }),
+        // Get drivers on duty today
+        tx.driverHOSEntry.findMany({
+          where: {
+            tenantId,
+            status: { in: ['DRIVING', 'ON_DUTY'] },
+            startTime: { gte: todayStart },
+            endTime: null,
+          },
+          select: { driverId: true },
+          distinct: ['driverId'],
+        }),
+        // Revenue this month
+        tx.load.aggregate({
+          where: {
+            tenantId,
+            status: { in: ['DELIVERED', 'INVOICED'] },
+            archivedAt: null,
+            updatedAt: { gte: monthStart, lte: monthEnd },
+          },
+          _sum: { rate: true },
+        }),
+        // Expiring docs count
+        tx.document.count({
+          where: {
+            tenantId,
+            expiryDate: { gte: now, lte: in30Days },
+          },
+        }),
+        // Trucks in maintenance count
+        tx.truck.count({
+          where: {
+            tenantId,
+            inMaintenance: true,
+            archivedAt: null,
+          },
+        }),
+        // Top 5 active loads
+        tx.load.findMany({
+          where: {
+            tenantId,
+            status: { in: [...activeStatuses] },
+            archivedAt: null,
+          },
+          include: {
+            customer: { select: { id: true, companyName: true } },
+            truck: { select: { id: true, make: true, model: true, licensePlate: true } },
+            driver: { select: { id: true, firstName: true, lastName: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+          take: 5,
+        }),
+        // All drivers in tenant
+        tx.user.findMany({
+          where: {
+            tenantId,
+            role: 'DRIVER',
+          },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        }),
+      ]);
 
-      // Get drivers on duty today: find latest HOS entry per driver that started today
-      // and is DRIVING or ON_DUTY with no endTime (or endTime >= now)
-      const driversOnDuty = await tx.driverHOSEntry.findMany({
-        where: {
-          tenantId,
-          status: { in: ['DRIVING', 'ON_DUTY'] },
-          startTime: { gte: todayStart },
-          endTime: null,
-        },
-        select: { driverId: true },
-        distinct: ['driverId'],
-      });
       const driversOnDutyCount = driversOnDuty.length;
-
-      // Revenue this month: sum of rate for DELIVERED + INVOICED loads
-      const revenueResult = await tx.load.aggregate({
-        where: {
-          tenantId,
-          status: { in: ['DELIVERED', 'INVOICED'] },
-          archivedAt: null,
-          updatedAt: { gte: monthStart, lte: monthEnd },
-        },
-        _sum: { rate: true },
-      });
       const revenueThisMonth = Number(revenueResult._sum.rate ?? 0);
-
-      // Open alerts: expiring docs (within 30 days) + trucks in maintenance
-      const expiringDocsCount = await tx.document.count({
-        where: {
-          tenantId,
-          expiryDate: { gte: now, lte: in30Days },
-        },
-      });
-      const trucksInMaintenance = await tx.truck.count({
-        where: {
-          tenantId,
-          inMaintenance: true,
-          archivedAt: null,
-        },
-      });
       const openAlertsCount = expiringDocsCount + trucksInMaintenance;
 
-      // Top 5 active loads with driver name
-      const activeLoads = await tx.load.findMany({
-        where: {
-          tenantId,
-          status: { in: [...activeStatuses] },
-          archivedAt: null,
-        },
-        include: {
-          customer: { select: { id: true, companyName: true } },
-          truck: { select: { id: true, make: true, model: true, licensePlate: true } },
-          driver: { select: { id: true, firstName: true, lastName: true } },
-        },
-        orderBy: { updatedAt: 'desc' },
-        take: 5,
-      });
-
-      // All drivers in tenant (role = DRIVER)
-      const drivers = await tx.user.findMany({
-        where: {
-          tenantId,
-          role: 'DRIVER',
-        },
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-        },
-      });
-
-      // Latest HOS entry per driver (most recent open entry)
+      // Batch 2: queries that depend on driverIds from batch 1
       const driverIds = drivers.map((d) => d.id);
-      const latestHOSEntries = await tx.driverHOSEntry.findMany({
-        where: {
-          tenantId,
-          driverId: { in: driverIds },
-          endTime: null,
-        },
-        select: {
-          driverId: true,
-          status: true,
-          startTime: true,
-        },
-        orderBy: { startTime: 'desc' },
-      });
+      const [latestHOSEntries, driverActiveLoads] = await Promise.all([
+        tx.driverHOSEntry.findMany({
+          where: {
+            tenantId,
+            driverId: { in: driverIds },
+            endTime: null,
+          },
+          select: {
+            driverId: true,
+            status: true,
+            startTime: true,
+          },
+          orderBy: { startTime: 'desc' },
+        }),
+        tx.load.findMany({
+          where: {
+            tenantId,
+            driverId: { in: driverIds },
+            status: { in: [...activeStatuses] },
+            archivedAt: null,
+          },
+          select: {
+            driverId: true,
+            loadNumber: true,
+          },
+        }),
+      ]);
 
       // Deduplicate — keep only the latest entry per driver
       const hosMap = new Map<string, { status: string; startTime: Date }>();
@@ -154,19 +175,6 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      // Active load per driver
-      const driverActiveLoads = await tx.load.findMany({
-        where: {
-          tenantId,
-          driverId: { in: driverIds },
-          status: { in: [...activeStatuses] },
-          archivedAt: null,
-        },
-        select: {
-          driverId: true,
-          loadNumber: true,
-        },
-      });
       const driverLoadMap = new Map<string, string>();
       for (const load of driverActiveLoads) {
         if (load.driverId && !driverLoadMap.has(load.driverId)) {

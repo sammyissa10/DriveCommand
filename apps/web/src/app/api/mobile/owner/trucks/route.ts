@@ -133,53 +133,66 @@ export async function GET(req: NextRequest) {
 
   const { tenantId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
-    const trucks = await prisma.$transaction(async (tx) => {
+    const { trucks, total } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      return tx.truck.findMany({
-        where: { tenantId, archivedAt: null },
-        select: {
-          id: true,
-          make: true,
-          model: true,
-          year: true,
-          vin: true,
-          licensePlate: true,
-          odometer: true,
-          inMaintenance: true,
-          documentMetadata: true,
-          tenantId: true,
-          createdById: true,
-          updatedById: true,
-          createdAt: true,
-          updatedAt: true,
-          archivedAt: true,
-          loads: {
-            where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
-            select: { id: true, status: true },
-          },
-          assignedRoutes: {
-            where: { status: 'IN_PROGRESS', archivedAt: null },
-            select: { id: true, status: true },
-          },
-          scheduledServices: {
-            where: { isCompleted: false },
-            select: {
-              id: true,
-              baselineDate: true,
-              intervalDays: true,
-              intervalMiles: true,
-              baselineOdometer: true,
+      const where = { tenantId, archivedAt: null };
+
+      const [items, count] = await Promise.all([
+        tx.truck.findMany({
+          where,
+          select: {
+            id: true,
+            make: true,
+            model: true,
+            year: true,
+            vin: true,
+            licensePlate: true,
+            odometer: true,
+            inMaintenance: true,
+            documentMetadata: true,
+            tenantId: true,
+            createdById: true,
+            updatedById: true,
+            createdAt: true,
+            updatedAt: true,
+            archivedAt: true,
+            loads: {
+              where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
+              select: { id: true, status: true },
+            },
+            assignedRoutes: {
+              where: { status: 'IN_PROGRESS', archivedAt: null },
+              select: { id: true, status: true },
+            },
+            scheduledServices: {
+              where: { isCompleted: false },
+              select: {
+                id: true,
+                baselineDate: true,
+                intervalDays: true,
+                intervalMiles: true,
+                baselineOdometer: true,
+              },
+            },
+            documents: {
+              where: { expiryDate: { not: null } },
+              select: { id: true, expiryDate: true },
             },
           },
-          documents: {
-            where: { expiryDate: { not: null } },
-            select: { id: true, expiryDate: true },
-          },
-        },
-        orderBy: [{ make: 'asc' }, { model: 'asc' }],
-      });
+          orderBy: [{ make: 'asc' }, { model: 'asc' }],
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+        tx.truck.count({ where }),
+      ]);
+
+      return { trucks: items, total: count };
     }, TX_OPTIONS);
 
     const result = trucks.map((truck) => {
@@ -197,7 +210,15 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json(result);
+    return NextResponse.json({
+      trucks: result,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     logger.error('[mobile/owner/trucks] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

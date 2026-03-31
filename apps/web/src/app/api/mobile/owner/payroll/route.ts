@@ -48,19 +48,30 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      // Stats — pull all records for accurate counts
-      const allRecords = await tx.payrollRecord.findMany({
+      // Stats — use groupBy aggregates instead of a full-table scan
+      const statusGroups = await tx.payrollRecord.groupBy({
+        by: ['status'],
         where: { tenantId, archivedAt: null },
-        select: { status: true, totalPay: true },
+        _count: true,
+        _sum: { totalPay: true },
       });
 
+      let totalCount = 0;
+      let draft = 0;
+      let approved = 0;
+      let totalPaid = 0;
+      for (const g of statusGroups) {
+        totalCount += g._count;
+        if (g.status === 'DRAFT') draft = g._count;
+        if (g.status === 'APPROVED') approved = g._count;
+        if (g.status === 'PAID') totalPaid = Number(g._sum.totalPay ?? 0);
+      }
+
       const stats = {
-        total: allRecords.length,
-        draft: allRecords.filter((r) => r.status === 'DRAFT').length,
-        approved: allRecords.filter((r) => r.status === 'APPROVED').length,
-        totalPaid: allRecords
-          .filter((r) => r.status === 'PAID')
-          .reduce((sum, r) => sum + Number(r.totalPay), 0),
+        total: totalCount,
+        draft,
+        approved,
+        totalPaid,
       };
 
       const recordList = records.map((r) => ({

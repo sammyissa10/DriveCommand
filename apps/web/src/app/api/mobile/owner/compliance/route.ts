@@ -28,6 +28,10 @@ export async function GET(req: NextRequest) {
 
   const { tenantId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
     /**
      * @bypass_rls reason: mobile-api
@@ -43,9 +47,16 @@ export async function GET(req: NextRequest) {
       const now = new Date();
       const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
+      const docWhere = { tenantId, driverId: { not: null }, expiryDate: { not: null } };
+      const [totalDocs] = await Promise.all([
+        tx.document.count({ where: docWhere }),
+      ]);
+
       // 1. Driver documents with expiry dates
       const driverDocs = await tx.document.findMany({
-        where: { tenantId, driverId: { not: null }, expiryDate: { not: null } },
+        where: docWhere,
+        take: limit,
+        skip: (page - 1) * limit,
         select: {
           id: true,
           driverId: true,
@@ -157,7 +168,16 @@ export async function GET(req: NextRequest) {
         totalTrucksTracked: trackedTruckIds.size,
       };
 
-      return { summary, alerts };
+      return {
+        summary,
+        alerts,
+        pagination: {
+          page,
+          limit,
+          total: totalDocs,
+          totalPages: Math.ceil(totalDocs / limit),
+        },
+      };
     }, TX_OPTIONS);
 
     return NextResponse.json(result);
