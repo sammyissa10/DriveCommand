@@ -1,11 +1,13 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState } from 'react';
 import { Navigation } from 'lucide-react';
 import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
 
 interface LoadFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     customerId?: string;
     driverId?: string | null;
@@ -59,6 +61,7 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
       ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
       : null;
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {state?.error && typeof state.error === 'string' && (
@@ -97,8 +100,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               </option>
             ))}
           </select>
-          {state?.error?.customerId && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.customerId}</p>
+          {fieldErrors?.customerId && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.customerId}</p>
           )}
         </div>
 
@@ -186,8 +189,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             />
             <input type="hidden" name="pickupLat" value={originCoords ? String(originCoords.lat) : ''} />
             <input type="hidden" name="pickupLng" value={originCoords ? String(originCoords.lng) : ''} />
-            {state?.error?.origin && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
+            {fieldErrors?.origin && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
             )}
           </div>
           <div>
@@ -206,8 +209,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             />
             <input type="hidden" name="deliveryLat" value={destCoords ? String(destCoords.lat) : ''} />
             <input type="hidden" name="deliveryLng" value={destCoords ? String(destCoords.lng) : ''} />
-            {state?.error?.destination && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
+            {fieldErrors?.destination && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
             )}
           </div>
         </div>
@@ -277,8 +280,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               className={inputClass}
               required
             />
-            {state?.error?.pickupDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.pickupDate}</p>
+            {fieldErrors?.pickupDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.pickupDate}</p>
             )}
           </div>
           <div>
@@ -320,8 +323,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             placeholder="$0.00"
             required
           />
-          {state?.error?.rate && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.rate}</p>
+          {fieldErrors?.rate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.rate}</p>
           )}
         </div>
       </div>

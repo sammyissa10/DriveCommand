@@ -1,5 +1,7 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useState, useEffect, useActionState } from 'react';
 import { X, Truck } from 'lucide-react';
 
@@ -7,7 +9,7 @@ interface ChangeTruckModalProps {
   loadId: string;
   currentTruckId: string | null;
   trucks: Array<{ id: string; make: string; model: string; licensePlate: string }>;
-  reassignAction: (prevState: any, formData: FormData) => Promise<any>;
+  reassignAction: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
 }
 
 const inputClass =

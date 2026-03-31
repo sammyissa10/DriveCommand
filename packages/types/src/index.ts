@@ -3,7 +3,9 @@ export type ActionState = {
   error?: Record<string, string[] | undefined> | string
   success?: boolean
   message?: string
+  warning?: string
   data?: unknown
+  values?: Record<string, unknown>
 }
 
 // User roles

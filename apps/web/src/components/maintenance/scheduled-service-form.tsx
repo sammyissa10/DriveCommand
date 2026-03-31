@@ -1,9 +1,11 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState } from 'react';
 
 interface ScheduledServiceFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   currentOdometer: number;
   submitLabel: string;
   initialValues?: {
@@ -22,6 +24,7 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
   // Get today's date in YYYY-MM-DD format for default value
   const today = new Date().toISOString().split('T')[0];
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-4">
       {/* General error message */}
@@ -46,8 +49,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        {state?.error?.serviceType && (
-          <p className="mt-1 text-sm text-red-600">{state.error.serviceType}</p>
+        {fieldErrors?.serviceType && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.serviceType}</p>
         )}
       </div>
 
@@ -67,8 +70,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.intervalDays && (
-          <p className="mt-1 text-sm text-red-600">{state.error.intervalDays}</p>
+        {fieldErrors?.intervalDays && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.intervalDays}</p>
         )}
       </div>
 
@@ -88,8 +91,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.intervalMiles && (
-          <p className="mt-1 text-sm text-red-600">{state.error.intervalMiles}</p>
+        {fieldErrors?.intervalMiles && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.intervalMiles}</p>
         )}
         <p className="mt-1 text-xs text-muted-foreground">
           At least one interval is required. Service is due when EITHER trigger is met.
@@ -110,8 +113,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        {state?.error?.baselineDate && (
-          <p className="mt-1 text-sm text-red-600">{state.error.baselineDate}</p>
+        {fieldErrors?.baselineDate && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.baselineDate}</p>
         )}
       </div>
 
@@ -131,8 +134,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        {state?.error?.baselineOdometer && (
-          <p className="mt-1 text-sm text-red-600">{state.error.baselineOdometer}</p>
+        {fieldErrors?.baselineOdometer && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.baselineOdometer}</p>
         )}
       </div>
 
@@ -149,8 +152,8 @@ export function ScheduledServiceForm({ action, currentOdometer, submitLabel, ini
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.notes && (
-          <p className="mt-1 text-sm text-red-600">{state.error.notes}</p>
+        {fieldErrors?.notes && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.notes}</p>
         )}
       </div>
 

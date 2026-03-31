@@ -1,9 +1,11 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState, useRef } from 'react';
 
 interface TruckFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     make?: string;
     model?: string;
@@ -40,22 +42,28 @@ const labelClass = "block text-sm font-medium text-foreground mb-1.5";
 
 export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  // Cast values to a typed shape so defaultValue props remain string | number | undefined
+  const vals = state?.values as {
+    make?: string; model?: string; year?: string; vin?: string; licensePlate?: string;
+    odometer?: string | number; registrationNumber?: string; registrationExpiry?: string;
+    insuranceNumber?: string; insuranceExpiry?: string;
+  } | undefined;
   const [odometerDisplay, setOdometerDisplay] = useState(() => {
-    const val = state?.values?.odometer ?? initialData?.odometer;
+    const val = vals?.odometer ?? initialData?.odometer;
     if (val != null && val !== '') return formatWithCommas(val);
     return '';
   });
   // Track the raw numeric value in React state so it persists across re-renders.
   // Using a ref is insufficient because React resets type="hidden" input values on re-render.
   const [odometerRaw, setOdometerRaw] = useState(() => {
-    const val = state?.values?.odometer ?? initialData?.odometer;
+    const val = vals?.odometer ?? initialData?.odometer;
     if (val != null && val !== '') return String(val);
     return '';
   });
   const [yearFilter, setYearFilter] = useState('');
   const [yearOpen, setYearOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState<number | null>(() => {
-    const stateYear = state?.values?.year;
+    const stateYear = vals?.year;
     if (stateYear) return parseInt(stateYear, 10) || null;
     return initialData?.year ?? null;
   });
@@ -77,8 +85,9 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
     setOdometerRaw(num.toString());
   };
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
-    <form action={formAction} key={state?.values ? JSON.stringify(state.values) : 'initial'} className="max-w-2xl space-y-5">
+    <form action={formAction} key={vals ? JSON.stringify(vals) : 'initial'} className="max-w-2xl space-y-5">
       {/* General error message */}
       {state?.error && typeof state.error === 'string' && (
         <div className="rounded-lg bg-red-50 border border-red-200 p-4">
@@ -146,8 +155,8 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               </ul>
             )}
           </div>
-          {state?.error?.year && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.year}</p>
+          {fieldErrors?.year && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.year}</p>
           )}
         </div>
 
@@ -159,13 +168,13 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="make"
               name="make"
-              defaultValue={state?.values?.make ?? initialData?.make ?? ''}
+              defaultValue={vals?.make ?? initialData?.make ?? ''}
               disabled={isPending}
               className={inputClass}
               required
             />
-            {state?.error?.make && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.make}</p>
+            {fieldErrors?.make && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.make}</p>
             )}
           </div>
           <div>
@@ -174,13 +183,13 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="model"
               name="model"
-              defaultValue={state?.values?.model ?? initialData?.model ?? ''}
+              defaultValue={vals?.model ?? initialData?.model ?? ''}
               disabled={isPending}
               className={inputClass}
               required
             />
-            {state?.error?.model && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.model}</p>
+            {fieldErrors?.model && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.model}</p>
             )}
           </div>
         </div>
@@ -207,7 +216,7 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
                 name="vin"
                 maxLength={17}
                 pattern="[A-HJ-NPR-Z0-9]{17}"
-                defaultValue={state?.values?.vin ?? ''}
+                defaultValue={vals?.vin ?? ''}
                 disabled={isPending}
                 className={`${inputClass} uppercase font-mono`}
                 required
@@ -215,8 +224,8 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               <p className="mt-1.5 text-xs text-muted-foreground">17 characters, no I, O, or Q</p>
             </>
           )}
-          {state?.error?.vin && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.vin}</p>
+          {fieldErrors?.vin && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.vin}</p>
           )}
         </div>
 
@@ -229,13 +238,13 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               id="licensePlate"
               name="licensePlate"
               maxLength={20}
-              defaultValue={state?.values?.licensePlate ?? initialData?.licensePlate ?? ''}
+              defaultValue={vals?.licensePlate ?? initialData?.licensePlate ?? ''}
               disabled={isPending}
               className={inputClass}
               required
             />
-            {state?.error?.licensePlate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.licensePlate}</p>
+            {fieldErrors?.licensePlate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.licensePlate}</p>
             )}
           </div>
           <div>
@@ -257,8 +266,8 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               value={odometerRaw}
               onChange={() => {}}
             />
-            {state?.error?.odometer && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.odometer}</p>
+            {fieldErrors?.odometer && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.odometer}</p>
             )}
           </div>
         </div>
@@ -275,12 +284,12 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="registrationNumber"
               name="registrationNumber"
-              defaultValue={state?.values?.registrationNumber ?? initialData?.documentMetadata?.registrationNumber ?? ''}
+              defaultValue={vals?.registrationNumber ?? initialData?.documentMetadata?.registrationNumber ?? ''}
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.registrationNumber && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.registrationNumber}</p>
+            {fieldErrors?.registrationNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.registrationNumber}</p>
             )}
           </div>
           <div>
@@ -289,12 +298,12 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="date"
               id="registrationExpiry"
               name="registrationExpiry"
-              defaultValue={state?.values?.registrationExpiry ?? initialData?.documentMetadata?.registrationExpiry ?? ''}
+              defaultValue={vals?.registrationExpiry ?? initialData?.documentMetadata?.registrationExpiry ?? ''}
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.registrationExpiry && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.registrationExpiry}</p>
+            {fieldErrors?.registrationExpiry && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.registrationExpiry}</p>
             )}
           </div>
         </div>
@@ -306,12 +315,12 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="text"
               id="insuranceNumber"
               name="insuranceNumber"
-              defaultValue={state?.values?.insuranceNumber ?? initialData?.documentMetadata?.insuranceNumber ?? ''}
+              defaultValue={vals?.insuranceNumber ?? initialData?.documentMetadata?.insuranceNumber ?? ''}
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.insuranceNumber && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.insuranceNumber}</p>
+            {fieldErrors?.insuranceNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.insuranceNumber}</p>
             )}
           </div>
           <div>
@@ -320,12 +329,12 @@ export function TruckForm({ action, initialData, submitLabel }: TruckFormProps) 
               type="date"
               id="insuranceExpiry"
               name="insuranceExpiry"
-              defaultValue={state?.values?.insuranceExpiry ?? initialData?.documentMetadata?.insuranceExpiry ?? ''}
+              defaultValue={vals?.insuranceExpiry ?? initialData?.documentMetadata?.insuranceExpiry ?? ''}
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.insuranceExpiry && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.insuranceExpiry}</p>
+            {fieldErrors?.insuranceExpiry && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.insuranceExpiry}</p>
             )}
           </div>
         </div>

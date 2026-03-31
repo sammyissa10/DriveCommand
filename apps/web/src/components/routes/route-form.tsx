@@ -1,5 +1,7 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState } from 'react';
 import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
 import { Navigation, Plus, ChevronUp, ChevronDown, X } from 'lucide-react';
@@ -18,7 +20,7 @@ interface StopDraft {
 }
 
 interface RouteFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     origin: string;
     destination: string;
@@ -153,6 +155,7 @@ export function RouteForm({
     );
   }
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {/* Extra hidden fields (e.g., version for optimistic locking) */}
@@ -220,8 +223,8 @@ export function RouteForm({
             className={inputClass}
             onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
           />
-          {state?.error?.origin && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
+          {fieldErrors?.origin && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
           )}
         </div>
 
@@ -237,8 +240,8 @@ export function RouteForm({
             className={inputClass}
             onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
           />
-          {state?.error?.destination && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
+          {fieldErrors?.destination && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
           )}
         </div>
 
@@ -273,8 +276,8 @@ export function RouteForm({
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.scheduledDate && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.scheduledDate}</p>
+          {fieldErrors?.scheduledDate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.scheduledDate}</p>
           )}
         </div>
       </div>
@@ -438,8 +441,8 @@ export function RouteForm({
                 Invite drivers first before creating routes.
               </p>
             )}
-            {state?.error?.driverId && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.driverId}</p>
+            {fieldErrors?.driverId && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.driverId}</p>
             )}
           </div>
 
@@ -460,8 +463,8 @@ export function RouteForm({
                 </option>
               ))}
             </select>
-            {state?.error?.truckId && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.truckId}</p>
+            {fieldErrors?.truckId && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.truckId}</p>
             )}
           </div>
         </div>
@@ -506,8 +509,8 @@ export function RouteForm({
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.notes && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.notes}</p>
+          {fieldErrors?.notes && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.notes}</p>
           )}
         </div>
       </div>

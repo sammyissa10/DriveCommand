@@ -1,5 +1,7 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState, useCallback } from 'react';
 import { getDriverPayPeriodStats } from '@/app/(owner)/actions/payroll';
 
@@ -10,7 +12,7 @@ interface Driver {
 }
 
 interface PayrollFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     driverId?: string;
     periodStart?: Date;
@@ -95,6 +97,7 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
 
   const totalPay = basePay + bonuses - deductions;
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-6">
       {state?.error && typeof state.error === 'string' && (
@@ -129,8 +132,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               </option>
             ))}
           </select>
-          {state?.error?.driverId && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.driverId}</p>
+          {fieldErrors?.driverId && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.driverId}</p>
           )}
         </div>
       </div>
@@ -156,8 +159,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               className={inputClass}
               required
             />
-            {state?.error?.periodStart && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.periodStart}</p>
+            {fieldErrors?.periodStart && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.periodStart}</p>
             )}
           </div>
           <div>
@@ -174,8 +177,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               className={inputClass}
               required
             />
-            {state?.error?.periodEnd && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.periodEnd}</p>
+            {fieldErrors?.periodEnd && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.periodEnd}</p>
             )}
           </div>
         </div>
@@ -255,8 +258,8 @@ export function PayrollForm({ action, initialData, drivers, submitLabel }: Payro
               className={inputClass}
               required
             />
-            {state?.error?.basePay && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.basePay}</p>
+            {fieldErrors?.basePay && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.basePay}</p>
             )}
           </div>
           <div>

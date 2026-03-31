@@ -1,5 +1,7 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState } from 'react';
 import { InvoiceItemsEditor } from './invoice-items-editor';
 
@@ -16,7 +18,7 @@ interface Load {
 }
 
 interface InvoiceFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     customerId?: string | null;
     routeId?: string | null;
@@ -71,6 +73,7 @@ export function InvoiceForm({
   const taxAmount = subtotal * taxPercent / 100;
   const total = subtotal + taxAmount;
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
       {/* loadId — hidden, controlled by load picker or pre-filled from load page */}
@@ -119,8 +122,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.invoiceNumber && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.invoiceNumber}</p>
+            {fieldErrors?.invoiceNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.invoiceNumber}</p>
             )}
           </div>
           <div>
@@ -157,8 +160,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.issueDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.issueDate}</p>
+            {fieldErrors?.issueDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.issueDate}</p>
             )}
           </div>
           <div>
@@ -174,8 +177,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.dueDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.dueDate}</p>
+            {fieldErrors?.dueDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.dueDate}</p>
             )}
           </div>
         </div>
@@ -243,8 +246,8 @@ export function InvoiceForm({
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Line Items
         </h3>
-        {state?.error?.items && (
-          <p className="text-sm text-red-600">{state.error.items}</p>
+        {fieldErrors?.items && (
+          <p className="text-sm text-red-600">{fieldErrors?.items}</p>
         )}
         <InvoiceItemsEditor
           initialItems={initialData?.items}
@@ -273,8 +276,8 @@ export function InvoiceForm({
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.tax && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.tax}</p>
+            {fieldErrors?.tax && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.tax}</p>
             )}
           </div>
           <div className="space-y-1 text-right">
