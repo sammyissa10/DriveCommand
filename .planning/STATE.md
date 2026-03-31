@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed quick task 139: Fix mobile auth refresh token error and SupportTicketProvider context crash
-Stopped at: Completed 37.6-02-PLAN.md
+Last activity: 2026-03-31 - Completed quick task 140: Mobile owner portal add edit actions to driver and truck detail screens
+Stopped at: Completed quick-140
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -130,6 +130,7 @@ Progress: [███████████████████████
 - Quick-131-01 (2026-03-30): Rebuild driver and owner dashboards with extracted components — TripCard, StatsRow, KPIGrid, SpeedDial extracted; dashboards rebuilt with StyleSheet + tokens; CHIP_WIDTH removed, FAB safe-area insets — 2 tasks, 6 files, ~5min
 - Quick-132 (2026-03-30): Security & reliability improvements — CSRF Origin validation, structured logger (222 console.* replaced), bypass_rls JSDoc, createTenantClient() wrapper, zero @ts-ignore (32 removed), Prisma enum type casts, OpenAPI 3.1 spec (4 paths), EAS env docs, 31 Vitest unit tests, mobile jest-expo setup — 15 items, 130+ files, ~45min
 - Quick-135 (2026-03-30): Code quality audit fixes — ActionState type (warning+values) in packages/types, all prevState:any/catch:any eliminated across 17 action files + 11 form components, withMobileAuth HOF (5 mobile routes refactored), typed SQL interfaces in fuel/live-map, landing-page.tsx split to 8 section components (936→26 lines), ESLint/Prettier config, dark 404 page — ~55 files, ~120min
+- Quick-140 (2026-03-31): Mobile owner portal edit actions — PATCH API routes for drivers/trucks, UpdateDriverPayload + UpdateTruckPayload types, ownerApi.updateDriver + ownerApi.updateTruck, EditDriverSheet + EditTruckSheet bottom sheets with pre-filled forms — 3 tasks, 6 files, ~25min
 
 ## Accumulated Context
 
@@ -143,6 +144,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-140 decisions (Mobile owner portal edit actions):**
+- BottomSheet snapPoint="80%" used for both sheets — component only accepts 40%/60%/80%/full; plan specified 70%/85% which are invalid
+- Driver detail API returns a combined `name` string; parse it into firstName/lastName on client for form pre-fill (parseName helper)
+- Truck edit sheet only sends changed fields to minimize API payload (diff against initialData before calling PATCH)
+- UpdateDriverPayload and UpdateTruckPayload added to api-client/src/index.ts exports and dist/ rebuilt
 
 **Phase 37.6-02 decisions (Auth helper consolidation):**
 - All server-side auth helpers live in a single file: src/lib/auth/supabase.ts — no more fragmented session.ts + server.ts + require-permission.ts
