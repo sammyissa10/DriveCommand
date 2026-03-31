@@ -188,6 +188,7 @@ model User {
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, role, isActive])
 }
 
 model Truck {
@@ -251,6 +252,7 @@ model DriverInvitation {
 
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, status])
 }
 
 model Route {
@@ -295,6 +297,7 @@ model Route {
   @@index([scheduledDate])
   @@index([status])
   @@index([archivedAt])
+  @@index([tenantId, driverId, scheduledDate])
 }
 
 model RouteDriver {
