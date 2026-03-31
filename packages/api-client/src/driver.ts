@@ -149,7 +149,7 @@ export const driverApi = {
     apiRequest<DashboardData>('/api/mobile/driver/dashboard', { token }),
 
   getLoads: (token: string, status: 'active' | 'history') =>
-    apiRequest<LoadSummary[]>(`/api/mobile/driver/loads?status=${status}`, { token }),
+    apiRequest<{ loads: LoadSummary[] }>(`/api/mobile/driver/loads?status=${status}`, { token }).then((r) => r.loads),
 
   getLoad: (token: string, id: string) =>
     apiRequest<LoadDetail>(`/api/mobile/driver/loads/${id}`, { token }),
@@ -192,7 +192,7 @@ export const driverApi = {
 
   // Messaging
   getMessages: (token: string) =>
-    apiRequest<FleetMessage[]>('/api/mobile/driver/messages', { token }),
+    apiRequest<{ messages: FleetMessage[] }>('/api/mobile/driver/messages', { token }).then((r) => r.messages),
 
   sendMessage: (token: string, body: string, loadId?: string) =>
     apiRequest<FleetMessage>('/api/mobile/driver/messages', {

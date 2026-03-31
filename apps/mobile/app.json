@@ -16,7 +16,6 @@
       "policy": "appVersion"
     },
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "cover",
@@ -107,7 +106,8 @@
       "@sentry/react-native"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "newArchEnabled": true
     },
     "extra": {
       "router": {},

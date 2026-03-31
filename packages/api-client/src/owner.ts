@@ -622,7 +622,7 @@ export const ownerApi = {
     apiRequest<OwnerDashboardData>('/api/mobile/owner/dashboard', { token }),
 
   getLoads: (token: string, status: 'all' | 'active' | 'pending' | 'delivered') =>
-    apiRequest<OwnerLoadSummary[]>(`/api/mobile/owner/loads?status=${status}`, { token }),
+    apiRequest<{ loads: OwnerLoadSummary[] }>(`/api/mobile/owner/loads?status=${status}`, { token }).then((r) => r.loads),
 
   createLoad: (token: string, payload: CreateLoadPayload) =>
     apiRequest<{ load: OwnerLoadSummary }>('/api/mobile/owner/loads', {
@@ -652,7 +652,7 @@ export const ownerApi = {
     ),
 
   getTrucks: (token: string) =>
-    apiRequest<TruckOption[]>('/api/mobile/owner/trucks', { token }),
+    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks', { token }).then((r) => r.trucks),
 
   getTruck: (token: string, id: string) =>
     apiRequest<TruckDetail>(`/api/mobile/owner/trucks/${id}`, { token }),
@@ -779,7 +779,7 @@ export const ownerApi = {
     ),
 
   getRoutes: (token: string, status: 'all' | 'planned' | 'active' | 'completed') =>
-    apiRequest<OwnerRouteSummary[]>(`/api/mobile/owner/routes?status=${status}`, { token }),
+    apiRequest<{ routes: OwnerRouteSummary[] }>(`/api/mobile/owner/routes?status=${status}`, { token }).then((r) => r.routes),
 
   getRoute: (token: string, id: string) =>
     apiRequest<OwnerRouteDetail>(`/api/mobile/owner/routes/${id}`, { token }),
