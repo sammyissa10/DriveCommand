@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed 37.6-02: auth helper consolidation into supabase.ts, production build verified
+Last activity: 2026-03-31 - Completed quick task 139: Fix mobile auth refresh token error and SupportTicketProvider context crash
 Stopped at: Completed 37.6-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -788,6 +788,7 @@ None blocking immediate progress.
 | 136 | Add 3 missing composite indexes to Prisma schema and generate migration: User(tenantId, role, isActive), Route(tenantId, driverId, scheduledDate), DriverInvitation(tenantId, status) | 2026-03-31 | f6aaf1a | [136-add-3-missing-composite-indexes-to-prism](./quick/136-add-3-missing-composite-indexes-to-prism/) |
 | 137 | Three deployment hardening fixes: /api/health endpoint, Redis unavailability production warning, apps/mobile/.env.example template | 2026-03-31 | 6e8eedf | [137-three-deployment-hardening-fixes-1-add-u](./quick/137-three-deployment-hardening-fixes-1-add-u/) |
 | 138 | Fill documentation gaps: mobile API reference (52 endpoints), domain glossary (30+ terms), local dev guide, 3 ADRs, web + mobile troubleshooting guides, CONTRIBUTING.md | 2026-03-31 | 995a865 | [138-fill-documentation-gaps-mobile-api-docs-](./quick/138-fill-documentation-gaps-mobile-api-docs-/) |
+| 139 | Fix mobile auth refresh token error and SupportTicketProvider context crash | 2026-03-31 | 0c591e9 | [139-fix-mobile-auth-refresh-token-error-and-](./quick/139-fix-mobile-auth-refresh-token-error-and-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
