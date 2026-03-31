@@ -772,6 +772,7 @@ None blocking immediate progress.
 | 131 | Rebuild driver and owner dashboards with proper native mobile layout structure | 2026-03-30 | 62d2280 | [131-rebuild-driver-and-owner-dashboards-with](./quick/131-rebuild-driver-and-owner-dashboards-with/) |
 | 133 | Fix security audit findings: open redirect, auth on geocoding, rate limiting, error message sanitization, security headers, MMKV audit, middleware docs | 2026-03-31 | 173a54b | [133-fix-security-audit-findings-open-redirec](./quick/133-fix-security-audit-findings-open-redirec/) |
 | 134 | Fix performance and scalability audit findings: pagination, parallel queries, composite indexes, Suspense boundaries, FlashList, expo-image, loading skeletons | 2026-03-31 | 9513973 | [134-fix-performance-and-scalability-audit-fi](./quick/134-fix-performance-and-scalability-audit-fi/) |
+| 135 | Fix code quality audit findings: ActionState type, dead code removal, withMobileAuth wrapper, typed SQL, ESLint/Prettier, landing page split, not-found page | 2026-03-31 | cb0c893 | [135-fix-code-quality-audit-findings-actionst](./quick/135-fix-code-quality-audit-findings-actionst/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
