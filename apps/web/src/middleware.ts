@@ -28,7 +28,8 @@ import { validateOrigin } from '@/lib/security/csrf';
  *   /api/auth/callback — Supabase OAuth/email confirmation callback
  *
  * Infrastructure:
- *   /api/warmup — Health check / cold-start warmup (no sensitive data)
+ *   /api/health — Uptime monitor health check (no sensitive data, no DB calls)
+ *   /api/warmup — Cold-start warmup (no sensitive data)
  *   /api/webhooks — Inbound webhooks (Stripe, etc.) — verified by signature, not session
  *
  * Public-facing:
@@ -51,6 +52,7 @@ const PUBLIC_PATHS = [
   '/api/auth/logout',
   '/api/auth/accept-invitation',
   '/api/auth/callback',
+  '/api/health',
   '/api/warmup',
   '/api/webhooks',
   '/track',
