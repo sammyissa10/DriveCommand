@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-31 - Completed quick task 134: Fix performance and scalability audit findings: pagination, parallel queries, composite indexes, Suspense boundaries, FlashList, expo-image, loading skeletons
-Stopped at: Completed quick-132-PLAN.md
+Last activity: 2026-03-30 - Completed quick task 135: Fix code quality audit findings — ActionState type, dead code removal, withMobileAuth HOF, typed SQL, landing page split, ESLint/Prettier config
+Stopped at: Completed quick-135-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -127,6 +127,7 @@ Progress: [███████████████████████
 - Quick-127-01 (2026-03-30): Server-side Nominatim proxy at /api/geocoding/autocomplete with 60s in-memory cache, web AddressAutocomplete switched from direct Nominatim to proxy, RouteStop lat/lng coordinates now populated in DB — 2 tasks, 5 files
 - Quick-131-01 (2026-03-30): Rebuild driver and owner dashboards with extracted components — TripCard, StatsRow, KPIGrid, SpeedDial extracted; dashboards rebuilt with StyleSheet + tokens; CHIP_WIDTH removed, FAB safe-area insets — 2 tasks, 6 files, ~5min
 - Quick-132 (2026-03-30): Security & reliability improvements — CSRF Origin validation, structured logger (222 console.* replaced), bypass_rls JSDoc, createTenantClient() wrapper, zero @ts-ignore (32 removed), Prisma enum type casts, OpenAPI 3.1 spec (4 paths), EAS env docs, 31 Vitest unit tests, mobile jest-expo setup — 15 items, 130+ files, ~45min
+- Quick-135 (2026-03-30): Code quality audit fixes — ActionState type (warning+values) in packages/types, all prevState:any/catch:any eliminated across 17 action files + 11 form components, withMobileAuth HOF (5 mobile routes refactored), typed SQL interfaces in fuel/live-map, landing-page.tsx split to 8 section components (936→26 lines), ESLint/Prettier config, dark 404 page — ~55 files, ~120min
 
 ## Accumulated Context
 
@@ -140,6 +141,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-135 decisions (Code quality audit fixes):**
+- ActionState extended with warning?: string and values?: Record<string, unknown> — driver invite form uses warning for email-send failures; truck form uses values for field repopulation after validation error
+- withMobileAuth HOF covers 5 demonstration routes — validates pattern without migrating all 40; remaining routes can be migrated incrementally
+- fieldErrors narrowing is per-component (typeof state?.error === 'object' check) — self-contained, no shared utility import needed
+- vals typed cast in TruckForm (state?.values as typed shape) preserves type safety for input defaultValue props without changing ActionState.values to a more specific type
 
 **Quick-127-01 decisions (Geocoding proxy + RouteStop coordinates):**
 - Proxy uses 60s in-memory Map cache keyed by lowercase-trimmed query; response gets Cache-Control: public, max-age=300
