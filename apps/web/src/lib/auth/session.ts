@@ -16,8 +16,9 @@ export interface SessionData {
  * Read the current session from Supabase Auth (cookie-based via @supabase/ssr).
  * Cached per request — all callers within the same request share the same result.
  *
- * Reads role, tenantId, and permissions from Supabase user_metadata JWT claim —
- * no DB query needed for auth flows.
+ * Reads security claims (role, tenantId, isSystemAdmin, permissions) from
+ * app_metadata — admin-only, tamper-proof, not writable by end users.
+ * Reads display fields (firstName, lastName) from user_metadata — user-editable.
  */
 export const getSession = cache(async function getSession(): Promise<SessionData | null> {
   // Dynamic import to avoid circular deps and ensure server-only
@@ -26,15 +27,16 @@ export const getSession = cache(async function getSession(): Promise<SessionData
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const meta = user.user_metadata || {};
+  const appMeta = user.app_metadata || {};
+  const userMeta = user.user_metadata || {};
   return {
     userId: user.id,
     email: user.email!,
-    role: meta.role || 'DRIVER',
-    tenantId: meta.tenantId || '',
-    firstName: meta.firstName,
-    lastName: meta.lastName,
-    isSystemAdmin: meta.isSystemAdmin || false,
-    permissions: meta.permissions,
+    role: appMeta.role || 'DRIVER',
+    tenantId: appMeta.tenantId || '',
+    firstName: userMeta.firstName,
+    lastName: userMeta.lastName,
+    isSystemAdmin: appMeta.isSystemAdmin || false,
+    permissions: appMeta.permissions,
   };
 });

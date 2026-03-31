@@ -43,12 +43,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const meta = data.user.user_metadata || {};
-    const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || data.user.email;
+    // Security claims: read from app_metadata (admin-only, tamper-proof)
+    const appMeta = data.user.app_metadata || {};
+    // Display fields: read from user_metadata (user-editable, display only)
+    const userMeta = data.user.user_metadata || {};
+    const name = [userMeta.firstName, userMeta.lastName].filter(Boolean).join(' ') || data.user.email;
 
     let redirectUrl = '/dashboard';
-    if (meta.isSystemAdmin) redirectUrl = '/admin-dashboard';
-    else if (meta.role === 'DRIVER') redirectUrl = '/my-route';
+    if (appMeta.isSystemAdmin) redirectUrl = '/admin-dashboard';
+    else if (appMeta.role === 'DRIVER') redirectUrl = '/my-route';
 
     return NextResponse.json({
       success: true,
@@ -60,9 +63,9 @@ export async function POST(req: NextRequest) {
         id: data.user.id,
         email: data.user.email,
         name,
-        role: meta.role,
-        tenantId: meta.tenantId,
-        companyName: meta.companyName || '',
+        role: appMeta.role,
+        tenantId: appMeta.tenantId,
+        companyName: appMeta.companyName || '',
       },
     });
   } catch (error) {

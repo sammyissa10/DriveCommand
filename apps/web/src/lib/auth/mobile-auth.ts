@@ -3,7 +3,10 @@
  *
  * Shared utility used by all /api/mobile/* route handlers.
  * Validates the Supabase access_token issued by /api/auth/login
- * and returns the authenticated user context (from user_metadata — no DB lookup).
+ * and returns the authenticated user context (from app_metadata — no DB lookup).
+ *
+ * Security claims (role, tenantId) are stored in app_metadata (admin-only,
+ * tamper-proof) — not user_metadata, which is user-writable via updateUser().
  *
  * Note: user.isActive is no longer checked on every request. Supabase handles
  * session validity. To deactivate a user, call supabase.auth.admin.updateUserById
@@ -59,15 +62,16 @@ export async function validateMobileToken(req: Request): Promise<MobileAuthConte
     const { data: { user }, error } = await admin.auth.getUser(token);
     if (error || !user) return null;
 
-    const meta = user.user_metadata || {};
+    // Security claims from app_metadata (tamper-proof, admin-only writes)
+    const appMeta = user.app_metadata || {};
     const ctx: MobileAuthContext = {
       userId: user.id,
-      tenantId: meta.tenantId,
-      role: meta.role as UserRole,
+      tenantId: appMeta.tenantId,
+      role: appMeta.role as UserRole,
     };
 
     // For DRIVER role, driverId is the same as userId (drivers are User records)
-    if (meta.role === 'DRIVER') {
+    if (appMeta.role === 'DRIVER') {
       ctx.driverId = user.id;
     }
 

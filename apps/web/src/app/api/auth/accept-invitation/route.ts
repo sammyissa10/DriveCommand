@@ -175,11 +175,15 @@ export async function POST(req: NextRequest) {
       email: userEmail,
       password,
       email_confirm: true,
+      // Display fields: user-editable, safe in user_metadata
       user_metadata: {
-        role: userRole,
-        tenantId: invitation.tenantId,
         firstName: invitation.firstName,
         lastName: invitation.lastName,
+      },
+      // Security claims: admin-only, tamper-proof via app_metadata (not writable by end users)
+      app_metadata: {
+        role: userRole,
+        tenantId: invitation.tenantId,
         isSystemAdmin: false,
         permissions: userRole === 'MANAGER' ? (invitation.permissions ?? null) : null,
       },

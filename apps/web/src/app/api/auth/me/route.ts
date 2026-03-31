@@ -23,15 +23,17 @@ export async function GET(req: NextRequest) {
     if (error || !user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
-    const meta = user.user_metadata || {};
-    const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || user.email;
+    // Security claims from app_metadata; display fields from user_metadata
+    const appMeta = user.app_metadata || {};
+    const userMeta = user.user_metadata || {};
+    const name = [userMeta.firstName, userMeta.lastName].filter(Boolean).join(' ') || user.email;
     return NextResponse.json({
       id: user.id,
       email: user.email,
       name,
-      role: meta.role,
-      tenantId: meta.tenantId,
-      companyName: meta.companyName || '',
+      role: appMeta.role,
+      tenantId: appMeta.tenantId,
+      companyName: appMeta.companyName || '',
     });
   }
 
@@ -41,14 +43,16 @@ export async function GET(req: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
-  const meta = user.user_metadata || {};
+  // Security claims from app_metadata; display fields from user_metadata
+  const appMeta = user.app_metadata || {};
+  const userMeta = user.user_metadata || {};
   return NextResponse.json({
     userId: user.id,
     email: user.email,
-    role: meta.role,
-    tenantId: meta.tenantId,
-    firstName: meta.firstName,
-    lastName: meta.lastName,
-    permissions: meta.permissions,
+    role: appMeta.role,
+    tenantId: appMeta.tenantId,
+    firstName: userMeta.firstName,
+    lastName: userMeta.lastName,
+    permissions: appMeta.permissions,
   });
 }

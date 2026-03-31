@@ -126,11 +126,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  const meta = user.user_metadata || {};
+  // Security claims come from app_metadata (admin-only, tamper-proof).
+  // Display fields (firstName, lastName) live in user_metadata — not needed here.
+  const appMeta = user.app_metadata || {};
 
   // User is authenticated but has no tenant assigned
   // System admins have no tenantId by design — skip onboarding redirect for them
-  if (!meta.tenantId && !meta.isSystemAdmin) {
+  if (!appMeta.tenantId && !appMeta.isSystemAdmin) {
     const isOnboardingPath = pathname.startsWith('/onboarding');
     const isApiPath = pathname.startsWith('/api');
 
@@ -143,7 +145,7 @@ export default async function middleware(request: NextRequest) {
 
   // System admin guard: restrict to admin portal paths only
   const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/unauthorized', '/onboarding', '/api'];
-  if (meta.isSystemAdmin) {
+  if (appMeta.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {
       return NextResponse.redirect(new URL('/admin-support', request.url));
@@ -151,17 +153,17 @@ export default async function middleware(request: NextRequest) {
   }
 
   // Driver guard: redirect DRIVER role away from owner-only paths
-  if (meta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
+  if (appMeta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL('/my-route', request.url));
   }
 
   // MANAGER permission guard: check granular permissions for gated paths
-  if (meta.role === 'MANAGER') {
+  if (appMeta.role === 'MANAGER') {
     const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
       pathname.startsWith(g.path)
     );
     if (gatedRoute) {
-      const permissions = (meta.permissions ?? {}) as UserPermissions;
+      const permissions = (appMeta.permissions ?? {}) as UserPermissions;
       if (!permissions[gatedRoute.permission]) {
         return NextResponse.redirect(new URL('/unauthorized', request.url));
       }
@@ -170,7 +172,7 @@ export default async function middleware(request: NextRequest) {
 
   // Inject tenant ID into request headers for downstream consumers
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', meta.tenantId);
+  requestHeaders.set('x-tenant-id', appMeta.tenantId);
 
   // Build final response: preserve Supabase session cookies + inject tenant header
   const finalResponse = NextResponse.next({
