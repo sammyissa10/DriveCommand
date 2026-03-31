@@ -8,10 +8,15 @@ export default async function CRMPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let customers: any[] = [];
+  let totalCount = 0;
+  let activeCount = 0;
+  let vipCount = 0;
+  let totalRevenue = 0;
   try {
-    const [rawCustomers, loadStats] = await Promise.all([
+    const [rawCustomers, loadStats, customerTotal, activeTotal, vipTotal] = await Promise.all([
       prisma.customer.findMany({
         orderBy: { updatedAt: 'desc' },
+        take: 50,
         include: { _count: { select: { interactions: true } } },
       }),
       prisma.load.groupBy({
@@ -20,6 +25,9 @@ export default async function CRMPage() {
         _count: { id: true },
         _sum: { rate: true },
       }),
+      prisma.customer.count(),
+      prisma.customer.count({ where: { status: 'ACTIVE' } }),
+      prisma.customer.count({ where: { priority: 'VIP' } }),
     ]);
 
     const statsMap = new Map(
@@ -31,15 +39,20 @@ export default async function CRMPage() {
       totalLoads: statsMap.get(c.id)?.totalLoads ?? 0,
       totalRevenue: statsMap.get(c.id)?.totalRevenue ?? 0,
     }));
+
+    totalCount = customerTotal;
+    activeCount = activeTotal;
+    vipCount = vipTotal;
+    totalRevenue = loadStats.reduce((sum: number, s: any) => sum + Number(s._sum.rate ?? 0), 0);
   } catch {
     // DB failure — render empty list
   }
 
   const stats = {
-    total: customers.length,
-    active: customers.filter((c: any) => c.status === 'ACTIVE').length,
-    vip: customers.filter((c: any) => c.priority === 'VIP').length,
-    totalRevenue: customers.reduce((sum: number, c: any) => sum + Number(c.totalRevenue), 0),
+    total: totalCount,
+    active: activeCount,
+    vip: vipCount,
+    totalRevenue,
   };
 
   return (
@@ -48,7 +61,7 @@ export default async function CRMPage() {
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
           <p className="mt-1 text-muted-foreground">
-            {stats.total} customer{stats.total !== 1 ? 's' : ''} &middot; {stats.active} active &middot; {stats.vip} VIP
+            Showing {customers.length} of {stats.total} customer{stats.total !== 1 ? 's' : ''} &middot; {stats.active} active &middot; {stats.vip} VIP
           </p>
         </div>
         <Link

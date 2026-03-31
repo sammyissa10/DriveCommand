@@ -8,30 +8,48 @@ export default async function LoadsPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let loads: any[] = [];
+  let totalCount = 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let statusCounts: any[] = [];
   try {
-    loads = await prisma.load.findMany({
-      where: { archivedAt: null },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        customer: { select: { companyName: true } },
-        driver: { select: { firstName: true, lastName: true } },
-        truck: { select: { make: true, model: true, licensePlate: true } },
-      },
-    });
+    [loads, totalCount, statusCounts] = await Promise.all([
+      prisma.load.findMany({
+        where: { archivedAt: null },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        include: {
+          customer: { select: { companyName: true } },
+          driver: { select: { firstName: true, lastName: true } },
+          truck: { select: { make: true, model: true, licensePlate: true } },
+        },
+      }),
+      prisma.load.count({ where: { archivedAt: null } }),
+      prisma.load.groupBy({
+        by: ['status'],
+        where: { archivedAt: null },
+        _count: true,
+        _sum: { rate: true },
+      }),
+    ]);
   } catch {
     // DB failure — render empty list
   }
 
-  const nonCancelledLoads = loads.filter((l: any) => l.status !== 'CANCELLED');
+  // Derive stats from aggregate groupBy results (accurate across all records, not just the 50 shown)
+  let pending = 0;
+  let inTransit = 0;
+  let totalRevenue = 0;
+  for (const g of statusCounts) {
+    if (g.status === 'PENDING') pending = g._count;
+    if (g.status === 'IN_TRANSIT' || g.status === 'PICKED_UP') inTransit += g._count;
+    if (g.status !== 'CANCELLED') totalRevenue += Number(g._sum?.rate ?? 0);
+  }
 
   const stats = {
-    total: loads.length,
-    pending: loads.filter((l: any) => l.status === 'PENDING').length,
-    inTransit: loads.filter((l: any) => l.status === 'IN_TRANSIT' || l.status === 'PICKED_UP').length,
-    totalRevenue: nonCancelledLoads.reduce(
-      (sum: number, l: any) => sum + Number(l.rate),
-      0
-    ),
+    total: totalCount,
+    pending,
+    inTransit,
+    totalRevenue,
   };
 
   return (
@@ -40,7 +58,7 @@ export default async function LoadsPage() {
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Loads</h1>
           <p className="mt-1 text-muted-foreground text-sm">
-            {stats.total} load{stats.total !== 1 ? 's' : ''} &middot; {stats.pending} pending &middot; {stats.inTransit} in transit
+            Showing {loads.length} of {stats.total} load{stats.total !== 1 ? 's' : ''} &middot; {stats.pending} pending &middot; {stats.inTransit} in transit
           </p>
         </div>
         <Link
