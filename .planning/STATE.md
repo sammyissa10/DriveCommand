@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.6 Web Auth Migration to Supabase — IN PROGRESS
-Current Plan: Plan 1 of 1 complete — 37.6-01 DONE
-Status: 37.6-01 complete — Security claims (role, tenantId, isSystemAdmin, permissions) migrated to app_metadata in all 6 auth files. AUTH_SECRET removed. Docs updated.
-Last activity: 2026-03-31 - Completed 37.6-01: app_metadata security claims migration + AUTH_SECRET cleanup
-Stopped at: Completed 37.6-01-PLAN.md
+Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
+Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
+Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
+Last activity: 2026-03-31 - Completed 37.6-02: auth helper consolidation into supabase.ts, production build verified
+Stopped at: Completed 37.6-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -87,6 +87,7 @@ Progress: [███████████████████████
 - Phase 37.1-02 (2026-03-29): My Route detail screen + MessageBubble extraction — loads timeline, route/truck details card, route messages thread with send, MessageBubble shared component — 2 tasks, 3 files, 128s
 - Phase 37.1-03 (2026-03-28): Support Ticket FAB — POST /api/mobile/support/ticket, SupportTicketFAB (LifeBuoy FAB + BottomSheet form), wired in driver + owner layouts — 2 tasks, 6 files, ~5min
 - Phase 37.6-01 (2026-03-31): Security claims to app_metadata — 6 auth files updated (accept-invitation, session, middleware, login, me, mobile-auth), AUTH_SECRET removed, docs updated — 2 tasks, 14 files, 372s
+- Phase 37.6-02 (2026-03-31): Auth helper consolidation — session.ts + server.ts + require-permission.ts merged into supabase.ts, 74 import paths updated, production build verified — 2 tasks, 76 files, 566s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -142,6 +143,11 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 37.6-02 decisions (Auth helper consolidation):**
+- All server-side auth helpers live in a single file: src/lib/auth/supabase.ts — no more fragmented session.ts + server.ts + require-permission.ts
+- Client-side auth files (auth-context.tsx, guards.tsx) remain separate — they use "use client" and cannot be in the same module as server helpers
+- mobile-auth.ts, permissions.ts, roles.ts remain separate — different concerns, not auth helpers
 
 **Phase 37.6-01 decisions (Web auth security migration):**
 - Security claims (role, tenantId, isSystemAdmin, permissions) moved to app_metadata — admin-only write, prevents user privilege escalation via supabase.auth.updateUser()
