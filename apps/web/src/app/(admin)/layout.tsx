@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
-import { isSystemAdmin } from "@/lib/auth/server";
+import { getSession, isSystemAdmin } from "@/lib/auth/supabase";
 import { UserMenu } from "@/components/navigation/user-menu";
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo";
 import Link from "next/link";

@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { ProfitPredictorForm } from '@/components/profit-predictor/profit-predictor-form';
 

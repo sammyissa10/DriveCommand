@@ -2,9 +2,8 @@
 
 import type { ActionState } from '@drivecommand/types'
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import { requireRole, requireAuth, requirePermission } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@drivecommand/validation';
 import { Prisma, PayrollStatus } from '@/generated/prisma';

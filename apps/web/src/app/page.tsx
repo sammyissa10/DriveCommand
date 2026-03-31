@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/supabase";
 import { redirect } from "next/navigation";
 import { LandingPage } from "@/components/landing/landing-page";
 

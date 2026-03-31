@@ -2,8 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types'
 
-import { requireRole } from '@/lib/auth/server';
-import { getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';

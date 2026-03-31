@@ -2,7 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types'
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@drivecommand/validation';

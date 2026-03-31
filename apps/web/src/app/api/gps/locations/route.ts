@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getLatestVehicleLocations } from '@/app/(owner)/live-map/actions';
 import { logger } from '@/lib/logger';

@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/server';
+import { requireAuth } from '@/lib/auth/supabase';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';

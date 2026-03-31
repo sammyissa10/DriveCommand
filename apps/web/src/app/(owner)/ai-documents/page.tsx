@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { DocumentAnalyzer } from '@/components/ai-documents/document-analyzer';
 import { ComingSoonBanner } from '@/components/ui/coming-soon-banner';

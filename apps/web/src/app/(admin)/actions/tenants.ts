@@ -2,7 +2,7 @@
 
 import { getAppBaseUrl } from '@/lib/app-url';
 import { Prisma } from '@/generated/prisma';
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';

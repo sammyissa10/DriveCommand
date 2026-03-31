@@ -1,9 +1,8 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 import { Prisma } from '@/generated/prisma';
 import { createTenantClient } from '@/lib/db/tenant-client';
 import { logger } from '@/lib/logger';

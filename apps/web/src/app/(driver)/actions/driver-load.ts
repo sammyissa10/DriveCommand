@@ -6,7 +6,7 @@
  * CRITICAL SECURITY: No action accepts driverId as input — identity resolved from getCurrentUser().
  */
 
-import { requireRole, getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';

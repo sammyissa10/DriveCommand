@@ -7,7 +7,7 @@ import { Prisma } from '@/generated/prisma';
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { createTagSchema, assignTagSchema } from '@drivecommand/validation';

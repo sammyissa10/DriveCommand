@@ -1,9 +1,8 @@
 'use server';
 
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requirePermission } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import {
   getStateFromCoordinates,
   haversineDistance,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { AddressResult } from '@drivecommand/types';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/lib/auth/supabase';
 import { validateMobileToken } from '@/lib/auth/mobile-auth';
 import { applyRateLimit, geocodingLimiter } from '@/lib/rate-limit';
 

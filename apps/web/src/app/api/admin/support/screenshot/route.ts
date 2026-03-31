@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
 

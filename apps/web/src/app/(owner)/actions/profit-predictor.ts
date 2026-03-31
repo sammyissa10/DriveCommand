@@ -1,9 +1,8 @@
 'use server';
 
 import { Prisma } from '@/generated/prisma';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requirePermission } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getLaneAnalytics } from '@/app/(owner)/actions/lane-analytics';
 import { getFleetAverageCostPerMile } from '@/app/(owner)/actions/route-analytics';
 

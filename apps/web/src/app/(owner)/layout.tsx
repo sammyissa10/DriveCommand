@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getSession } from "@/lib/auth/session";
-import { getRole } from "@/lib/auth/server";
+import { getSession, getRole } from "@/lib/auth/supabase";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
 import { SupportBadge } from "@/components/navigation/support-badge";

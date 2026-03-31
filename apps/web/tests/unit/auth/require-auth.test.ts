@@ -5,8 +5,7 @@ vi.mock('@/lib/auth/session', () => ({
   getSession: vi.fn(),
 }));
 
-import { requireAuth } from '@/lib/auth/server';
-import { getSession } from '@/lib/auth/session';
+import { requireAuth, getSession } from '@/lib/auth/supabase';
 
 const mockGetSession = vi.mocked(getSession);
 

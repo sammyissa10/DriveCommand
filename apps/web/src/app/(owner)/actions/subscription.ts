@@ -1,9 +1,8 @@
 'use server';
 
-import { getSession } from '@/lib/auth/session';
+import { getSession, requirePermission } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
-import { requirePermission } from '@/lib/auth/require-permission';
 
 async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
   const session = await getSession();

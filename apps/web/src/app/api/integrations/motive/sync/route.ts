@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { syncMotiveLocations } from '@/lib/integrations/motive';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { getSession } from '@/lib/auth/session';
+import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {

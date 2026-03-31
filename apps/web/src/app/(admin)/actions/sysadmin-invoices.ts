@@ -1,6 +1,6 @@
 'use server';
 
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { Decimal } from 'decimal.js';

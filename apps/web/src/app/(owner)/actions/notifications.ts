@@ -6,10 +6,9 @@
  */
 
 import { unstable_cache } from 'next/cache';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 import { prisma as globalPrisma } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';

@@ -1,9 +1,8 @@
 'use server';
 
 import { getAppBaseUrl } from '@/lib/app-url';
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireAuth, isSystemAdmin, getSession } from '@/lib/auth/supabase';
 import { requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';

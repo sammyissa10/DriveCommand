@@ -1,6 +1,6 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { VehicleLocation } from '@/lib/maps/map-utils';

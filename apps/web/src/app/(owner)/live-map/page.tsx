@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getLatestVehicleLocations } from './actions';
 import { listTags } from '@/app/(owner)/actions/tags';

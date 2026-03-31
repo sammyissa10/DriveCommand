@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getLaneAnalytics } from '@/app/(owner)/actions/lane-analytics';
 import { LaneSummaryCards } from '@/components/lanes/lane-summary-cards';
