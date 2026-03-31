@@ -6,7 +6,14 @@ import { NextResponse } from 'next/server';
 function createRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
+  if (!url || !token) {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn(
+        '[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.'
+      );
+    }
+    return null;
+  }
   return new Redis({ url, token });
 }
 
