@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed quick task 140: Mobile owner portal add edit actions to driver and truck detail screens
-Stopped at: Completed quick-140
+Last activity: 2026-03-31 - Completed quick task 141: Mobile owner portal add routes section with list, detail, and edit screens
+Stopped at: Completed quick-141
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
