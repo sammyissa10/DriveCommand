@@ -359,6 +359,56 @@ export interface PayrollResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Profit Predictor
+// ---------------------------------------------------------------------------
+
+export interface PredictProfitPayload {
+  origin: string
+  destination: string
+  distanceMiles: number
+  offeredRate: number
+}
+
+export interface PredictProfitResult {
+  predictedExpenses: string
+  predictedProfit: string
+  predictedMarginPercent: number
+  costPerMileUsed: string
+  dataSource: 'lane' | 'fleet' | 'none'
+  laneRouteCount: number | null
+  offeredRate: string
+  distanceMiles: number
+  recommendation: 'accept' | 'caution' | 'reject'
+}
+
+// ---------------------------------------------------------------------------
+// Fuel Log
+// ---------------------------------------------------------------------------
+
+export interface FuelEntry {
+  id: string
+  truckId: string
+  truckName: string
+  licensePlate: string
+  quantity: string
+  unitCost: string | null
+  totalCost: string | null
+  odometer: number
+  location: string | null
+  timestamp: string
+  fuelType: string
+}
+
+export interface CreateFuelEntryPayload {
+  truckId: string
+  quantity: number
+  unitCost: number
+  odometer: number
+  location?: string
+  timestamp?: string
+}
+
+// ---------------------------------------------------------------------------
 // Compliance
 // ---------------------------------------------------------------------------
 
@@ -608,6 +658,23 @@ export const ownerApi = {
   updateRoute: (token: string, id: string, payload: UpdateRoutePayload) =>
     apiRequest<{ route: OwnerRouteDetail }>(`/api/mobile/owner/routes/${id}`, {
       method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  predictProfit: (token: string, payload: PredictProfitPayload) =>
+    apiRequest<PredictProfitResult>('/api/mobile/owner/profit-predictor', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getFuelLog: (token: string) =>
+    apiRequest<{ entries: FuelEntry[] }>('/api/mobile/owner/fuel', { token }),
+
+  createFuelEntry: (token: string, payload: CreateFuelEntryPayload) =>
+    apiRequest<{ entry: FuelEntry }>('/api/mobile/owner/fuel', {
+      method: 'POST',
       token,
       body: JSON.stringify(payload),
     }),
