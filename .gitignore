@@ -78,6 +78,10 @@ apps/mobile/ios/
 apps/mobile/dist/
 apps/mobile/google-play-key.json
 
+# marketing app
+apps/marketing/.next/
+apps/marketing/node_modules/
+
 # prevent accidental root-level expo prebuild output
 /android/
 /ios/
