@@ -102,6 +102,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 37.3. Owner Financial Tools Mobile | v5.0 | 0/? | ○ Not started | — |
 | 37.4. Owner Analytics + Support Mobile | v5.0 | 0/? | ○ Not started | — |
 | 37.5. Mobile UI/UX Design Overhaul | v5.0 | 0/? | ○ Not started | — |
+| 37.6. Web Auth Migration to Supabase | v5.0 | 0/? | ○ Not started | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -423,6 +424,17 @@ Plans:
 
 **Goal:** Full design overhaul of both driver and owner mobile portals. Audit and improve layout structure, color palette, typography, spacing, and component consistency. Establish a cohesive visual identity across all screens. Target: the app looks and feels premium — something drivers are proud to use and owners trust as a professional tool.
 **Depends on:** Phase 37.4 (all screens built before design pass)
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.6: Web Auth Migration to Supabase — Migrate web authentication from custom AES-256-GCM session cookies to Supabase Auth, unifying web and mobile onto a single auth system
+
+**Goal:** Replace the custom AES-256-GCM encrypted session cookie system in the web app with Supabase Auth, so both web and mobile use the same authentication provider. This eliminates dual auth maintenance, unifies token handling, and establishes a single security surface before App Store launch. All three portals (Owner, Driver, SysAdmin) must continue to work correctly after migration.
+**Depends on:** Phase 37.5 (all mobile screens stable)
 **Plans:** TBD
 
 Plans:
