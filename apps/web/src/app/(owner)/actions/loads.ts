@@ -118,7 +118,7 @@ async function generateLoadNumber(prisma: any, tenantId: string): Promise<string
 /**
  * Create a new load.
  */
-export async function createLoad(prevState: ActionState, formData: FormData) {
+export async function createLoad(prevState: ActionState | null, formData: FormData) {
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
@@ -181,7 +181,7 @@ export async function createLoad(prevState: ActionState, formData: FormData) {
 
     createdId = load.id;
   } catch (error: unknown) {
-    const msg = error?.message || '';
+    const msg = error instanceof Error ? error.message : '';
     // Surface the real error so it's visible in the form
     return { error: msg || 'Failed to create load. Please try again.' };
   }
@@ -193,7 +193,7 @@ export async function createLoad(prevState: ActionState, formData: FormData) {
 /**
  * Update an existing load.
  */
-export async function updateLoad(id: string, prevState: ActionState, formData: FormData) {
+export async function updateLoad(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
@@ -248,7 +248,7 @@ export async function updateLoad(id: string, prevState: ActionState, formData: F
       },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load. Please try again.' };
@@ -276,7 +276,7 @@ export async function deleteLoad(id: string) {
     }
     await prisma.load.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to archive load.' };
@@ -289,7 +289,7 @@ export async function deleteLoad(id: string) {
 /**
  * Dispatch a load by assigning a driver and truck. Status moves to DISPATCHED.
  */
-export async function dispatchLoad(id: string, prevState: ActionState, formData: FormData) {
+export async function dispatchLoad(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
@@ -339,7 +339,7 @@ export async function dispatchLoad(id: string, prevState: ActionState, formData:
       data: { screen: 'loads', loadId: id },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to dispatch load. Please try again.' };
@@ -353,7 +353,7 @@ export async function dispatchLoad(id: string, prevState: ActionState, formData:
  * Reassign the truck on an active load (DISPATCHED, PICKED_UP, IN_TRANSIT).
  * Does not change the driver or load status — only swaps the truck.
  */
-export async function reassignTruck(loadId: string, prevState: ActionState, formData: FormData) {
+export async function reassignTruck(loadId: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const truckId = (formData.get('truckId') as string | null)?.trim();
@@ -384,7 +384,7 @@ export async function reassignTruck(loadId: string, prevState: ActionState, form
       data: { truckId, updatedById: userId },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to reassign truck. Please try again.' };
@@ -472,7 +472,7 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       }).catch((err) => logger.error('Failed to update customer stats:', err));
     }
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load status. Please try again.' };
@@ -500,7 +500,7 @@ export async function updateLoadSequence(loadId: string, sequence: number | null
       data: { sequence },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load sequence.' };
@@ -544,7 +544,7 @@ export async function revertLoadStatus(id: string) {
       data: updateData,
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to revert load status. Please try again.' };

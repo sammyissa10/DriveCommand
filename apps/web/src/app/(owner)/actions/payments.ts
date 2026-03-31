@@ -19,7 +19,7 @@ const Decimal = Prisma.Decimal;
  * Create a new payment for a route.
  * OWNER/MANAGER only.
  */
-export async function createPayment(prevState: ActionState, formData: FormData) {
+export async function createPayment(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -101,7 +101,7 @@ export async function createPayment(prevState: ActionState, formData: FormData) 
  */
 export async function updatePayment(
   paymentId: string,
-  prevState: ActionState,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

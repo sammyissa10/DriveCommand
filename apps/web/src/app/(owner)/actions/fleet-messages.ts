@@ -111,7 +111,7 @@ export async function getLoadMessages(loadId: string): Promise<FleetMessageWithS
 /**
  * Send a reply from the owner/manager to a driver on a load.
  */
-export async function sendOwnerLoadReply(prevState: ActionState, formData: FormData) {
+export async function sendOwnerLoadReply(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const loadId = formData.get('loadId') as string;
@@ -165,7 +165,7 @@ export async function sendOwnerLoadReply(prevState: ActionState, formData: FormD
 /**
  * Send a reply from the owner/manager to a driver on a route.
  */
-export async function sendOwnerReply(prevState: ActionState, formData: FormData) {
+export async function sendOwnerReply(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const routeId = formData.get('routeId') as string;

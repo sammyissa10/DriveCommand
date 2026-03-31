@@ -11,7 +11,7 @@ import { requireRole, requireAuth } from '@/lib/auth/server';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@drivecommand/validation';
-import { RouteStatus } from '@/generated/prisma';
+import { Prisma, RouteStatus } from '@/generated/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { logger } from '@/lib/logger';
@@ -31,7 +31,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists before creating.
  */
-export async function createRoute(prevState: ActionState, formData: FormData) {
+export async function createRoute(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -213,7 +213,7 @@ export async function createRoute(prevState: ActionState, formData: FormData) {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists if either is updated.
  */
-export async function updateRoute(id: string, prevState: ActionState, formData: FormData) {
+export async function updateRoute(id: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -397,7 +397,7 @@ export async function updateRoute(id: string, prevState: ActionState, formData: 
         updatedRouteId = route.id;
       } catch (error: unknown) {
         // Prisma P2025 = Record to update not found (version mismatch)
-        if (error?.code === 'P2025') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
           return {
             error: 'This route was modified by another user. Please refresh the page and try again.',
           };

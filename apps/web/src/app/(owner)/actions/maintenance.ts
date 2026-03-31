@@ -24,7 +24,7 @@ import { redirect } from 'next/navigation';
  */
 export async function createMaintenanceEvent(
   truckId: string,
-  prevState: ActionState,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -105,7 +105,7 @@ export async function deleteMaintenanceEvent(id: string, truckId: string) {
  */
 export async function createScheduledService(
   truckId: string,
-  prevState: ActionState,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -219,7 +219,7 @@ export async function getScheduledService(id: string) {
 export async function updateScheduledService(
   truckId: string,
   serviceId: string,
-  prevState: ActionState,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

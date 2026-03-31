@@ -16,7 +16,7 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new payroll record.
  */
-export async function createPayrollRecord(prevState: ActionState, formData: FormData) {
+export async function createPayrollRecord(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewPayroll');
 
@@ -72,7 +72,7 @@ export async function createPayrollRecord(prevState: ActionState, formData: Form
     });
     createdId = record.id;
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Driver not found.' };
     }
     return { error: 'Failed to create payroll record. Please try again.' };
@@ -85,7 +85,7 @@ export async function createPayrollRecord(prevState: ActionState, formData: Form
 /**
  * Update an existing payroll record.
  */
-export async function updatePayrollRecord(id: string, prevState: ActionState, formData: FormData) {
+export async function updatePayrollRecord(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewPayroll');
 
@@ -135,7 +135,7 @@ export async function updatePayrollRecord(id: string, prevState: ActionState, fo
       },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
     return { error: 'Failed to update payroll record. Please try again.' };
@@ -211,7 +211,7 @@ export async function deletePayrollRecord(id: string) {
     }
     await prisma.payrollRecord.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
     return { error: 'Failed to archive payroll record.' };

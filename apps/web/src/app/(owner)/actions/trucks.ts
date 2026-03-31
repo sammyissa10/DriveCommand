@@ -1,6 +1,7 @@
 'use server';
 
 import type { ActionState } from '@drivecommand/types'
+import { Prisma } from '@/generated/prisma';
 
 /**
  * Server actions for truck CRUD operations.
@@ -23,7 +24,7 @@ import { logger } from '@/lib/logger';
  * Create a new truck.
  * Requires OWNER or MANAGER role.
  */
-export async function createTruck(prevState: ActionState, formData: FormData) {
+export async function createTruck(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -94,7 +95,7 @@ export async function createTruck(prevState: ActionState, formData: FormData) {
     truckId = truck.id;
   } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       const target = error?.meta?.target;
       if (Array.isArray(target) && target.includes('vin')) {
         return { error: { vin: ['A truck with this VIN already exists'] } };
@@ -115,7 +116,7 @@ export async function createTruck(prevState: ActionState, formData: FormData) {
  * Update an existing truck.
  * Requires OWNER or MANAGER role.
  */
-export async function updateTruck(id: string, prevState: ActionState, formData: FormData) {
+export async function updateTruck(id: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 

@@ -1,6 +1,6 @@
-// Server action state
+// Server action state — flexible to support both field-level errors and string error messages
 export type ActionState = {
-  error?: Record<string, string[]>
+  error?: Record<string, string[] | undefined> | string
   success?: boolean
   message?: string
   data?: unknown

@@ -1,5 +1,7 @@
 'use server';
 
+import { Prisma } from '@/generated/prisma';
+
 import type { ActionState } from '@drivecommand/types'
 
 /**
@@ -20,7 +22,7 @@ import { logger } from '@/lib/logger';
  * Requires OWNER or MANAGER role.
  * Categories are created with isSystemDefault: false.
  */
-export async function createCategory(prevState: ActionState, formData: FormData) {
+export async function createCategory(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canManageSettings');
@@ -58,7 +60,7 @@ export async function createCategory(prevState: ActionState, formData: FormData)
     logger.error('Failed to create category:', error);
 
     // Check for unique constraint violation (duplicate name)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: {
           name: ['A category with this name already exists'],

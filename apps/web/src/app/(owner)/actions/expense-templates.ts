@@ -24,7 +24,7 @@ const Decimal = Prisma.Decimal;
  * Requires OWNER or MANAGER role.
  * Uses a transaction to create template and items atomically.
  */
-export async function createTemplate(prevState: ActionState, formData: FormData) {
+export async function createTemplate(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canManageSettings');
@@ -88,7 +88,7 @@ export async function createTemplate(prevState: ActionState, formData: FormData)
     logger.error('Failed to create template:', error);
 
     // Check for unique constraint violation (duplicate name)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: {
           name: ['A template with this name already exists'],
@@ -235,7 +235,7 @@ export async function applyTemplate(routeId: string, templateId: string) {
   } catch (error: unknown) {
     logger.error('Failed to apply template:', error);
 
-    if (error instanceof Error ? error.message : 'Unknown error' === 'Template not found') {
+    if (error instanceof Error && error.message === 'Template not found') {
       return {
         error: 'Template not found',
       };

@@ -83,7 +83,7 @@ export async function listDriverRouteJoinsByDriver(driverId: string) {
  * Create a new DriverRouteJoin entry.
  * OWNER/MANAGER only.
  */
-export async function createDriverRouteJoin(prevState: ActionState, formData: FormData) {
+export async function createDriverRouteJoin(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -155,7 +155,7 @@ export async function createDriverRouteJoin(prevState: ActionState, formData: Fo
     return { success: true };
   } catch (error: unknown) {
     // Unique constraint violation: driver already assigned to this route
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: 'This driver is already assigned to this route' };
     }
     logger.error('Error creating driver route join:', error);
@@ -169,7 +169,7 @@ export async function createDriverRouteJoin(prevState: ActionState, formData: Fo
  */
 export async function updateDriverRouteJoin(
   joinId: string,
-  prevState: ActionState,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access

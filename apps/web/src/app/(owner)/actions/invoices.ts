@@ -17,7 +17,7 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new invoice with line items.
  */
-export async function createInvoice(prevState: ActionState, formData: FormData) {
+export async function createInvoice(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewInvoices');
 
@@ -100,7 +100,7 @@ export async function createInvoice(prevState: ActionState, formData: FormData) 
     });
     createdId = invoice.id;
   } catch (error: unknown) {
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
     return { error: 'Failed to create invoice. Please try again.' };
@@ -114,7 +114,7 @@ export async function createInvoice(prevState: ActionState, formData: FormData) 
 /**
  * Update an existing invoice.
  */
-export async function updateInvoice(id: string, prevState: ActionState, formData: FormData) {
+export async function updateInvoice(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewInvoices');
 
@@ -194,10 +194,10 @@ export async function updateInvoice(id: string, prevState: ActionState, formData
       });
     }, TX_OPTIONS);
   } catch (error: unknown) {
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to update invoice. Please try again.' };
@@ -232,7 +232,7 @@ export async function markInvoicePaid(id: string) {
       },
     });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to mark invoice as paid.' };
@@ -262,7 +262,7 @@ export async function deleteInvoice(id: string) {
     }
     await prisma.invoice.update({ where: { id }, data: { archivedAt: new Date() } });
   } catch (error: unknown) {
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to archive invoice.' };

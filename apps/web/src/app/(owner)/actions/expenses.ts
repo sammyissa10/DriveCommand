@@ -22,7 +22,7 @@ const Decimal = Prisma.Decimal;
  * Requires OWNER or MANAGER role.
  * Validates route exists and is not COMPLETED before creating.
  */
-export async function createExpense(prevState: ActionState, formData: FormData) {
+export async function createExpense(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -109,7 +109,7 @@ export async function createExpense(prevState: ActionState, formData: FormData) 
  * Requires OWNER or MANAGER role.
  * Validates route is not COMPLETED and expense is not soft-deleted.
  */
-export async function updateExpense(expenseId: string, prevState: ActionState, formData: FormData) {
+export async function updateExpense(expenseId: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 

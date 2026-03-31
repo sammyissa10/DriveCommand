@@ -1,5 +1,7 @@
 'use server';
 
+import { Prisma } from '@/generated/prisma';
+
 /**
  * Server actions for tag CRUD and assignment operations.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
@@ -52,7 +54,7 @@ export async function createTag(formData: FormData) {
     return { success: true, tag };
   } catch (error: unknown) {
     // Handle unique constraint violation (duplicate tag name)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: {
           name: ['A tag with this name already exists'],
@@ -178,7 +180,7 @@ export async function assignTag(formData: FormData) {
     return { success: true, assignment };
   } catch (error: unknown) {
     // Handle unique constraint violation (tag already assigned)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: 'This tag is already assigned to the selected truck or user',
       };

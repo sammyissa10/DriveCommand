@@ -1,6 +1,7 @@
 'use server';
 
 import { getAppBaseUrl } from '@/lib/app-url';
+import { Prisma } from '@/generated/prisma';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
@@ -145,7 +146,7 @@ export async function createTenant(formData: FormData) {
     return { success: true, tenant };
   } catch (error: unknown) {
     // Check for unique constraint violation on slug
-    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('slug')) {
       return {
         success: false,
         error: 'A tenant with this slug already exists',
@@ -375,7 +376,7 @@ export async function updateTenant(
 
     return { success: true };
   } catch (error: unknown) {
-    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('slug')) {
       return { success: false, error: 'A tenant with this slug already exists' };
     }
     return { success: false, error: 'Failed to update tenant. Please try again.' };
@@ -434,7 +435,7 @@ export async function updateOwnerEmail(
 
     return { success: true };
   } catch (error: unknown) {
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('email')) {
       return { success: false, error: 'This email is already in use by another account' };
     }
     return { success: false, error: 'Failed to update email. Please try again.' };
@@ -462,7 +463,7 @@ export async function deleteTenant(tenantId: string) {
     return { success: true };
   } catch (error: unknown) {
     // Check for foreign key constraint violation
-    if (error.code === 'P2003') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
       return {
         success: false,
         error: 'Cannot delete tenant with associated users, trucks, or routes. Please remove them first.',

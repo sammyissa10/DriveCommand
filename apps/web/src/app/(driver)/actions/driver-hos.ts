@@ -29,7 +29,7 @@ export async function getDriverHOS() {
 /**
  * Update driver's duty status.
  */
-export async function updateDutyStatus(prevState: ActionState, formData: FormData) {
+export async function updateDutyStatus(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const status = formData.get('status') as string;

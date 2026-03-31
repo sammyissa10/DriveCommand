@@ -139,7 +139,9 @@ export const GET = withMobileAuth(
  */
 export const POST = withMobileAuth(
   async (req: NextRequest, { auth }) => {
-    const { driverId, tenantId } = auth
+    const { tenantId } = auth
+    // withMobileAuth guarantees driverId is set for DRIVER role
+    const driverId = auth.driverId as string
 
     let body: { status?: unknown; notes?: unknown }
     try {

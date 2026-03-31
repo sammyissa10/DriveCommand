@@ -8,7 +8,7 @@ import { UserRole } from '@/lib/auth/roles';
 /**
  * Submit an incident report from the driver.
  */
-export async function submitIncidentReport(prevState: ActionState, formData: FormData) {
+export async function submitIncidentReport(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const type = formData.get('type') as string;

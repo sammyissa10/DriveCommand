@@ -57,7 +57,7 @@ export async function getDriverMessages() {
  * Send a message from the driver to dispatch.
  * Not scoped to any route or load — any authenticated driver can send at any time.
  */
-export async function sendDriverMessage(prevState: ActionState, formData: FormData) {
+export async function sendDriverMessage(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const message = formData.get('message') as string;
