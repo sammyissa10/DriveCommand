@@ -50,15 +50,16 @@ function getInitials(name: string): string {
 // CustomerCard Component
 // ---------------------------------------------------------------------------
 
-function CustomerCard({ customer }: { customer: CustomerSummary }) {
+function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPress: () => void }) {
   const statusColor = getStatusColor(customer.status)
   const priorityColor = getPriorityColor(customer.priority)
   const initials = getInitials(customer.companyName)
   const isVIP = customer.priority === 'VIP'
 
   return (
-    <View
-      className="mx-4 mb-3 rounded-xl border bg-slate-800 px-4 py-3.5 flex-row items-center"
+    <Pressable
+      onPress={onPress}
+      className="mx-4 mb-3 rounded-xl border bg-slate-800 px-4 py-3.5 flex-row items-center active:opacity-80"
       style={{ borderColor: isVIP ? '#f59e0b40' : '#334155' }}
     >
       {/* Avatar */}
@@ -117,7 +118,7 @@ function CustomerCard({ customer }: { customer: CustomerSummary }) {
           )}
         </View>
       </View>
-    </View>
+    </Pressable>
   )
 }
 
@@ -165,8 +166,11 @@ export default function CRMScreen() {
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
   const renderCustomer = useCallback(({ item: c }: { item: CustomerSummary }) => (
-    <CustomerCard customer={c} />
-  ), [])
+    <CustomerCard
+      customer={c}
+      onPress={() => router.push(`/(owner)/more/crm/${c.id}` as never)}
+    />
+  ), [router])
 
   return (
     <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
