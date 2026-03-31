@@ -494,6 +494,52 @@ export interface ComplianceResponse {
   alerts: ComplianceAlert[]
 }
 
+// ---------------------------------------------------------------------------
+// Maintenance
+// ---------------------------------------------------------------------------
+
+export interface MaintenanceEventSummary {
+  id: string
+  serviceType: string
+  serviceDate: string
+  odometerAtService: number
+  cost: string | null
+  provider: string | null
+  notes: string | null
+  createdAt: string
+}
+
+export interface LogMaintenancePayload {
+  serviceType: string
+  serviceDate: string
+  odometerAtService: number
+  cost?: number | null
+  provider?: string | null
+  notes?: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Safety
+// ---------------------------------------------------------------------------
+
+export interface SafetyAlert {
+  severity: 'high' | 'medium' | 'low'
+  category: 'DOCUMENT' | 'MAINTENANCE' | 'INCIDENT'
+  description: string
+  affectedEntity: string
+  date: string
+}
+
+export interface SafetyAlertsResponse {
+  alerts: SafetyAlert[]
+  summary: {
+    highCount: number
+    mediumCount: number
+    lowCount: number
+    totalCount: number
+  }
+}
+
 export interface SendFleetMessagePayload {
   recipientId?: string
   body: string
@@ -761,4 +807,17 @@ export const ownerApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  getTruckMaintenance: (token: string, truckId: string) =>
+    apiRequest<MaintenanceEventSummary[]>(`/api/mobile/owner/trucks/${truckId}/maintenance`, { token }),
+
+  logMaintenanceEvent: (token: string, truckId: string, payload: LogMaintenancePayload) =>
+    apiRequest<{ success: boolean; event: MaintenanceEventSummary }>(`/api/mobile/owner/trucks/${truckId}/maintenance`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getSafetyAlerts: (token: string) =>
+    apiRequest<SafetyAlertsResponse>('/api/mobile/owner/safety', { token }),
 }
