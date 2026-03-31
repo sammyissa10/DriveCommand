@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1 Driver Portal Gaps — IN PROGRESS
 Current Plan: Plan 3 of 3 complete — Phase 37.1 DONE
 Status: 37.1-03 complete — Support ticket FAB, POST /api/mobile/support/ticket, SupportTicketFAB wired in driver + owner layouts. Phase 37.1 all 3 plans complete.
-Last activity: 2026-03-30 - Completed quick task 135: Fix code quality audit findings — ActionState type, dead code removal, withMobileAuth HOF, typed SQL, landing page split, ESLint/Prettier config
+Last activity: 2026-03-31 - Completed quick task 136: Add 3 missing composite indexes to Prisma schema and generate migration: User(tenantId, role, isActive), Route(tenantId, driverId, scheduledDate), DriverInvitation(tenantId, status)
 Stopped at: Completed quick-135-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -773,6 +773,7 @@ None blocking immediate progress.
 | 133 | Fix security audit findings: open redirect, auth on geocoding, rate limiting, error message sanitization, security headers, MMKV audit, middleware docs | 2026-03-31 | 173a54b | [133-fix-security-audit-findings-open-redirec](./quick/133-fix-security-audit-findings-open-redirec/) |
 | 134 | Fix performance and scalability audit findings: pagination, parallel queries, composite indexes, Suspense boundaries, FlashList, expo-image, loading skeletons | 2026-03-31 | 9513973 | [134-fix-performance-and-scalability-audit-fi](./quick/134-fix-performance-and-scalability-audit-fi/) |
 | 135 | Fix code quality audit findings: ActionState type, dead code removal, withMobileAuth wrapper, typed SQL, ESLint/Prettier, landing page split, not-found page | 2026-03-31 | cb0c893 | [135-fix-code-quality-audit-findings-actionst](./quick/135-fix-code-quality-audit-findings-actionst/) |
+| 136 | Add 3 missing composite indexes to Prisma schema and generate migration: User(tenantId, role, isActive), Route(tenantId, driverId, scheduledDate), DriverInvitation(tenantId, status) | 2026-03-31 | f6aaf1a | [136-add-3-missing-composite-indexes-to-prism](./quick/136-add-3-missing-composite-indexes-to-prism/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
