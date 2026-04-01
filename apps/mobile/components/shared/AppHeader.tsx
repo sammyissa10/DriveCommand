@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../context/AuthContext'
 import { DCChevronIcon } from './DCLogo'
@@ -13,6 +13,7 @@ import { colors, radii, typography } from '../../constants/tokens'
 export function AppHeader() {
   const { user, logout } = useAuthContext()
   const [showProfile, setShowProfile] = useState(false)
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false)
   const { top } = useSafeAreaInsets()
 
   const initials = user?.name
@@ -21,14 +22,12 @@ export function AppHeader() {
 
   function handleSignOut() {
     setShowProfile(false)
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign Out', style: 'destructive', onPress: logout },
-      ]
-    )
+    setShowSignOutConfirm(true)
+  }
+
+  function confirmSignOut() {
+    setShowSignOutConfirm(false)
+    logout()
   }
 
   return (
@@ -58,6 +57,50 @@ export function AppHeader() {
           <Text style={styles.avatarText}>{initials}</Text>
         </Pressable>
       </View>
+
+      {/* Sign out confirmation modal */}
+      <Modal
+        visible={showSignOutConfirm}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSignOutConfirm(false)}
+      >
+        <View style={styles.confirmBackdrop}>
+          <View style={styles.confirmCard}>
+            {/* Icon */}
+            <View style={styles.confirmIconWrap}>
+              <View style={styles.confirmIconBg}>
+                {/* Power/logout icon using simple shapes */}
+                <Text style={styles.confirmIconGlyph}>⏻</Text>
+              </View>
+            </View>
+
+            {/* Title + body */}
+            <Text style={styles.confirmTitle}>Sign Out</Text>
+            <Text style={styles.confirmBody}>
+              Are you sure you want to sign out of DriveCommand?
+            </Text>
+
+            {/* Actions */}
+            <View style={styles.confirmActions}>
+              <Pressable
+                onPress={() => setShowSignOutConfirm(false)}
+                android_ripple={{ color: 'rgba(148,163,184,0.12)', borderless: false }}
+                style={[styles.confirmBtn, styles.confirmBtnCancel]}
+              >
+                <Text style={styles.confirmBtnCancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={confirmSignOut}
+                android_ripple={{ color: 'rgba(239,68,68,0.2)', borderless: false }}
+                style={[styles.confirmBtn, styles.confirmBtnDanger]}
+              >
+                <Text style={styles.confirmBtnDangerText}>Sign Out</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* Profile popup modal */}
       <Modal
@@ -253,5 +296,94 @@ const styles = StyleSheet.create({
     color: colors.danger,
     fontSize: 13,
     fontWeight: '600',
+  },
+
+  // Sign-out confirmation dialog
+  confirmBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  confirmCard: {
+    width: '100%',
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radii.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 20,
+    alignItems: 'center',
+    elevation: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.6,
+    shadowRadius: 24,
+  },
+  confirmIconWrap: {
+    marginBottom: 16,
+  },
+  confirmIconBg: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.dangerBg,
+    borderWidth: 1.5,
+    borderColor: 'rgba(239,68,68,0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmIconGlyph: {
+    fontSize: 22,
+    color: colors.danger,
+  },
+  confirmTitle: {
+    color: colors.textPrimary,
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.2,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  confirmBody: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  confirmActions: {
+    flexDirection: 'row',
+    gap: 10,
+    width: '100%',
+  },
+  confirmBtn: {
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: radii.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  confirmBtnCancel: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  confirmBtnCancelText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  confirmBtnDanger: {
+    backgroundColor: colors.danger,
+  },
+  confirmBtnDangerText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 })
