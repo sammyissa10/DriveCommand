@@ -18,8 +18,8 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f9fafb"
+      "resizeMode": "cover",
+      "backgroundColor": "#0f172a"
     },
     "ios": {
       "supportsTablet": true,
