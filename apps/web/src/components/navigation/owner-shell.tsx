@@ -4,6 +4,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/navigation/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
+import { UserMenu } from "@/components/navigation/user-menu"
 
 interface OwnerShellProps {
   children: React.ReactNode;
@@ -22,6 +23,9 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
           {tenantName && (
             <span className="text-sm font-semibold text-foreground truncate">{tenantName}</span>
           )}
+          <div className="ml-auto">
+            <UserMenu />
+          </div>
         </header>
         <main className="flex-1 p-6 pb-20 lg:pb-6">
           {children}
