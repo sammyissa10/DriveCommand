@@ -12,6 +12,7 @@ import {
   ChevronRight,
   MessageSquare,
   FileText,
+  Navigation,
   Users,
   DollarSign,
   Sparkles,
@@ -58,6 +59,14 @@ const SECTIONS: MoreSection[] = [
   {
     header: 'FLEET',
     rows: [
+      {
+        label: 'Routes',
+        subtitle: 'Planned & active routes',
+        Icon: Navigation,
+        iconBg: 'rgba(14,165,233,0.15)',
+        iconColor: '#0ea5e9',
+        route: '/(owner)/routes',
+      },
       {
         label: 'Trucks',
         subtitle: 'Vehicle management',

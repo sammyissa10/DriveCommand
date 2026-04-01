@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
-import { Navigation } from 'lucide-react-native'
+import { ArrowLeft, Navigation } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerRouteSummary } from '@drivecommand/api-client'
@@ -138,7 +138,13 @@ export default function OwnerRoutesScreen() {
     <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Screen header */}
-        <View className="px-4 pt-4 pb-3">
+        <View className="px-4 pt-4 pb-3 flex-row items-center gap-3">
+          <Pressable
+            onPress={() => router.back()}
+            className="w-9 h-9 items-center justify-center rounded-full bg-slate-800 border border-slate-700 active:opacity-70"
+          >
+            <ArrowLeft color="#94a3b8" size={18} />
+          </Pressable>
           <Text className="text-2xl font-bold text-white">Routes</Text>
         </View>
 
