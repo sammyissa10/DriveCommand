@@ -9,11 +9,11 @@
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://your-production-url.vercel.app" }
+      "env": { "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app" }
     }
   },
   "submit": {
