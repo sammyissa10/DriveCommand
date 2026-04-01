@@ -30,19 +30,39 @@ The web app (`apps/web`) serves as the API backend. Mobile-specific API routes l
 ```
 apps/web/src/app/api/mobile/
   owner/
-    customers/     # CRM customers list + detail
-    drivers/       # Driver list + invite
-    invoices/      # Invoice list
-    trucks/        # Truck list + detail (with [id]/ sub-routes)
-  driver/          # Driver-specific endpoints
-  support/         # Support ticket screenshot upload
+    compliance/         # Compliance dashboard data
+    crm/                # CRM customers list + detail
+    customers/          # Customer list (alias)
+    dashboard/          # Owner dashboard summary
+    drivers/            # Driver list + invite
+    fleet/              # Fleet overview
+    fleet-positions/    # Live truck positions for map
+    fuel/               # Fuel records
+    invoices/           # Invoice list + detail
+    loads/              # Load list + detail + assign-truck sub-routes
+    map/                # Map data
+    payroll/            # Payroll records
+    profit-predictor/   # AI profit predictor
+    routes/             # Routes list + detail
+    safety/             # Safety events
+    trucks/             # Truck list + detail (with [id]/ sub-routes)
+  driver/
+    dashboard/          # Driver dashboard summary
+    documents/          # Driver document viewer
+    hos/                # Hours of service
+    incidents/          # Incident reporting
+    loads/              # Load detail + status update + rate-confirmation + revert sub-routes
+    messages/           # Fleet messaging + mark-read + route-thread + unread-count sub-routes
+    route/              # Active route with stops
+    tracking-token/     # Load tracking token
+  support/              # Support ticket screenshot upload
 ```
 
 ---
 
 ## Authentication
 
-The mobile app uses **Supabase Auth** (separate from the web app's custom AES-256-GCM session cookie):
+The mobile app uses **Supabase Auth** with JWT Bearer tokens stored in `expo-secure-store`. Both web and mobile now use Supabase Auth, but via different mechanisms — web uses `@supabase/ssr` cookie-based sessions, while mobile uses JWT Bearer tokens:
 
 1. **Sign in** — User submits email + password. The `@supabase/supabase-js` client calls Supabase Auth and returns a JWT access token and refresh token.
 2. **Token storage** — Tokens are stored in `expo-secure-store` (hardware-backed encrypted storage on device).
@@ -59,39 +79,70 @@ Navigation uses **Expo Router** (file-based routing, similar to Next.js App Rout
 ```
 app/
   _layout.tsx          # Root layout — AuthContext provider, React Query client, toast
-  index.tsx            # Root redirect: unauthenticated → sign-in, owner → (owner)/dashboard, driver → (driver)/active-route
-  sign-in.tsx          # Sign-in screen
+  index.tsx            # Root redirect: unauthenticated → login, owner → (owner)/dashboard, driver → (driver)/active-route
+  login.tsx            # Login screen
   (owner)/             # Owner portal route group
-    _layout.tsx        # Owner navigation shell (tab bar: Dashboard, Loads, Map, More)
+    _layout.tsx        # Owner navigation shell (tab bar: Dashboard, Loads, Routes, Map, More)
     index.tsx          # Dashboard
     loads/
+      _layout.tsx      # Loads sub-layout
       index.tsx        # Load list
       [id].tsx         # Load detail
+    routes/
+      _layout.tsx      # Routes sub-layout
+      index.tsx        # Routes list
+      [id].tsx         # Route detail
+    map.tsx            # Live map (react-native-maps + clustering)
     drivers/
+      _layout.tsx      # Drivers sub-layout
+      index.tsx        # Driver list
+      [id].tsx         # Driver detail
       invite.tsx       # Driver invitation form
-    map/
-      index.tsx        # Live map (react-native-maps + clustering)
     more/
       _layout.tsx      # "More" tab sub-navigation
+      index.tsx        # More menu index
       fleet.tsx        # Fleet overview (trucks list)
+      ai-documents.tsx # AI document reader
+      compliance.tsx   # Compliance dashboard
+      fuel.tsx         # Fuel records
+      payroll.tsx      # Payroll records
+      profit-predictor.tsx  # AI profit predictor
+      safety.tsx       # Safety analytics
       trucks/
         _layout.tsx    # Trucks sub-layout
+        index.tsx      # Truck list
         [id].tsx       # Truck detail
         new.tsx        # New truck form
       crm/
         _layout.tsx    # CRM sub-layout
-        index.tsx      # Customer list (redirects to _layout)
+        index.tsx      # Customer list
+        [id].tsx       # Customer detail
         new.tsx        # New customer form
       invoices/
+        _layout.tsx    # Invoices sub-layout
+        index.tsx      # Invoice list
+        [id].tsx       # Invoice detail
         new.tsx        # New invoice form
+      settings/
+        _layout.tsx    # Settings sub-layout
+        index.tsx      # Settings menu
+        account.tsx    # Account settings
+        team.tsx       # Team management
   (driver)/            # Driver portal route group
     _layout.tsx        # Driver navigation shell
     index.tsx          # Active route / home
-    loads/             # Load management
-    documents/         # Document viewer
-    hos/               # Hours of service
-    incidents/         # Incident reporting
-    messages/          # Fleet messaging
+    loads/
+      _layout.tsx      # Loads sub-layout
+      index.tsx        # Load list
+      [id].tsx         # Load detail
+      my-route.tsx     # Active route with stops
+    documents.tsx      # Document viewer
+    hos.tsx            # Hours of service
+    incidents/
+      _layout.tsx      # Incidents sub-layout
+      index.tsx        # Incident list
+      new.tsx          # Report new incident
+    messages.tsx       # Fleet messaging
 ```
 
 ---
@@ -155,7 +206,7 @@ Over-the-air (OTA) updates use `expo-updates`. Minor JS changes can be deployed 
 
 **Single backend** — The web app's Next.js API routes serve both web and mobile. No separate mobile API server. Mobile-specific endpoints live under `/api/mobile/` and are secured with Supabase JWT verification.
 
-**Supabase Auth for mobile, custom session for web** — Web uses a custom AES-256-GCM cookie because it runs in Edge Runtime (middleware) where Web Crypto API is available. Mobile uses Supabase Auth because it integrates cleanly with expo-secure-store and provides token refresh out of the box.
+**Supabase Auth for both web and mobile** — Both portals now use Supabase Auth, but via different mechanisms. Web uses `@supabase/ssr` for cookie-based sessions (seamlessly handled by Next.js middleware). Mobile uses JWT Bearer tokens stored in `expo-secure-store`, because cookies are not a natural auth mechanism in React Native and the Supabase client handles token refresh automatically.
 
 **NativeWind v4** — Tailwind CSS utility classes work directly in React Native components. Styles are compiled at build time, not runtime, for performance.
 
@@ -172,7 +223,7 @@ Over-the-air (OTA) updates use `expo-updates`. Minor JS changes can be deployed 
 **Status:** Accepted
 
 **Context:**
-The web app uses a custom AES-256-GCM encrypted session cookie for authentication. This design was chosen for Edge Runtime compatibility (middleware runs in Edge Runtime where the Web Crypto API is available and cookie management is straightforward). However, cookies are not a natural auth mechanism for mobile apps — React Native has no cookie jar, and session-based auth adds complexity to the `@drivecommand/api-client`.
+The web app uses Supabase Auth with cookie-based sessions via `@supabase/ssr`. This design works well for web (Next.js middleware handles cookie lifecycle automatically). However, cookies are not a natural auth mechanism for mobile apps — React Native has no cookie jar, and cookie-based session auth adds complexity to the `@drivecommand/api-client`. Both web and mobile now use Supabase Auth, but the decision to use JWT Bearer tokens for mobile remains the correct approach regardless of the web implementation.
 
 **Decision:**
 Mobile uses Supabase Auth with JWT access tokens stored in `expo-secure-store`.

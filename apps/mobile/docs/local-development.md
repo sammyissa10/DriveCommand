@@ -239,7 +239,7 @@ apps/mobile/
   app/               # Expo Router file-based routes
     (owner)/         # Owner portal screens
     (driver)/        # Driver portal screens
-    sign-in.tsx      # Login screen
+    login.tsx        # Login screen
     _layout.tsx      # Root layout (AuthContext, React Query)
   components/        # Shared UI components
   lib/               # Utilities, hooks, API client config
