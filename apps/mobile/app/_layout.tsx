@@ -3,7 +3,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import * as Notifications from 'expo-notifications'
 import { useFonts, Poppins_600SemiBold, Poppins_800ExtraBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Animated, ImageBackground, StyleSheet, View, Text, Image } from 'react-native'
 import { AuthProvider, useAuthContext } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler, configureApiClient } from '@drivecommand/api-client'
@@ -33,6 +34,54 @@ Notifications.setNotificationHandler({
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
+
+// Custom JS splash — full-screen road background with branding.
+// Shows while fonts load and fades out once the app is ready.
+function CustomSplash({ ready }: { ready: boolean }) {
+  const opacity = useRef(new Animated.Value(1)).current
+  const [hidden, setHidden] = useState(false)
+
+  useEffect(() => {
+    if (ready) {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 700,
+        delay: 300,
+        useNativeDriver: true,
+      }).start(() => setHidden(true))
+    }
+  }, [ready])
+
+  if (hidden) return null
+
+  return (
+    <Animated.View style={[StyleSheet.absoluteFill, { opacity, zIndex: 999 }]}>
+      <ImageBackground
+        source={require('../assets/images/login-bg.jpeg')}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+        {/* Dark overlay matching the web login screen */}
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.48)' }]} />
+
+        {/* Centered branding */}
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+          <Image
+            source={require('../assets/images/logo-white.png')}
+            style={{ width: 90, height: 90, marginBottom: 8 }}
+            resizeMode="contain"
+          />
+          <Text style={{ color: '#ffffff', fontSize: 36, fontFamily: ready ? 'Poppins-ExtraBold' : undefined, fontWeight: '900' }}>
+            DriveCommand
+          </Text>
+          <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, letterSpacing: 5, fontWeight: '400' }}>
+            FLEET MANAGEMENT
+          </Text>
+        </View>
+      </ImageBackground>
+    </Animated.View>
+  )
+}
 
 /**
  * Inner layout that has access to AuthContext.
@@ -82,18 +131,15 @@ function RootLayout() {
     }
   }, [fontsLoaded])
 
-  if (!fontsLoaded) {
-    return null
-  }
-
   return (
     <SafeAreaProvider>
       <QueryProvider>
         <AuthProvider>
-          <AuthGuard />
+          {fontsLoaded ? <AuthGuard /> : null}
         </AuthProvider>
       </QueryProvider>
       <Toast />
+      <CustomSplash ready={fontsLoaded} />
     </SafeAreaProvider>
   )
 }
