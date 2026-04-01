@@ -4,10 +4,12 @@ DriveCommand uses Supabase Auth for all authentication. Sessions are managed via
 
 **Key files:**
 
-- `src/lib/auth/session.ts` — `getSession()` — reads the current Supabase Auth user and extracts session data
-- `src/lib/auth/server.ts` — `requireAuth`, `requireRole`, `isSystemAdmin`, `getCurrentUser`
-- `src/middleware.ts` — request-level auth guard and `x-tenant-id` injection
+- `src/lib/auth/supabase.ts` — all server-side auth helpers: `getSession()`, `requireAuth`, `requireRole`, `isSystemAdmin`, `getCurrentUser`, `requirePermission`
 - `src/lib/auth/mobile-auth.ts` — `validateMobileToken()` for mobile Bearer token auth
+- `src/lib/auth/permissions.ts` — `UserPermissions` interface and permission key definitions
+- `src/lib/auth/guards.tsx` — server component auth guard wrappers
+- `src/lib/auth/auth-context.tsx` — client-side auth context (used by web client components)
+- `src/middleware.ts` — request-level auth guard and `x-tenant-id` injection
 
 ---
 
@@ -61,7 +63,7 @@ Reads the current Supabase Auth user via `supabase.auth.getUser()`. Wrapped with
 
 ---
 
-## Auth Helpers (server.ts)
+## Auth Helpers (supabase.ts)
 
 All helpers call `getSession()` internally (benefiting from `React.cache()` deduplication).
 
@@ -79,6 +81,9 @@ Runs a `$queryRaw` SELECT to check `User.isSystemAdmin` in the database. **Makes
 
 **`getCurrentUser()`**
 Fetches the User record via a `bypass_rls` transaction. **Makes a DB call — use sparingly.**
+
+**`requirePermission(key: keyof UserPermissions): Promise<void>`**
+Throws `Error('Forbidden')` if the current session does not have the specified permission enabled. Permissions are stored in `app_metadata` and are only relevant for `MANAGER` role users (owners have all permissions implicitly).
 
 ---
 

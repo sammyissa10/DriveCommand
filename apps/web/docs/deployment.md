@@ -44,7 +44,7 @@ postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/p
 
 Get this from: Supabase Dashboard → Settings → Database → Connection string → **Session mode**.
 
-All other variables (`ADMIN_SECRET_KEY`, `RESEND_API_KEY`, `ANTHROPIC_API_KEY`, S3 vars, Supabase vars, etc.) use the same values as local — just add them to the Vercel dashboard.
+All other variables (`ADMIN_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, S3 vars, Supabase vars, Gmail SMTP vars, etc.) use the same values as local — just add them to the Vercel dashboard.
 
 ---
 
@@ -105,8 +105,8 @@ curl -X POST https://your-domain.vercel.app/api/cron/send-reminders \
 - [ ] `DATABASE_URL` uses Supabase **Session Mode pooler** at port **6543** (not 5432)
 - [ ] `NEXT_PUBLIC_APP_URL` set to the production domain
 - [ ] `ADMIN_SECRET_KEY` set (needed to access `/admin/login`)
-- [ ] `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` set (Supabase Dashboard → Settings → API)
-- [ ] Email credentials configured (`RESEND_API_KEY` or Gmail vars — see [Email docs](./email.md))
+- [ ] `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` set (Supabase Dashboard → Settings → API)
+- [ ] Gmail SMTP credentials set (`GMAIL_USER`, `GMAIL_APP_PASSWORD` — see [Email docs](./email.md))
 - [ ] R2/S3 bucket created and credentials set (`S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`)
 - [ ] `ANTHROPIC_API_KEY` set (if AI features are needed)
 - [ ] Run `npx vercel --prod` to deploy

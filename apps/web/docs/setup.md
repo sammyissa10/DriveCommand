@@ -52,8 +52,11 @@ Then fill in the values. The table below documents every variable in `.env.examp
 |---|---|---|---|
 | `DATABASE_URL` | Yes | PostgreSQL connection string | Supabase Dashboard → Settings → Database → Connection string (URI). Use port **5432** (direct connection) for local dev. Use port **6543** (Session Mode pooler) for Vercel. |
 | `NEXT_PUBLIC_APP_URL` | Yes | App base URL (no trailing slash) | `http://localhost:3000` for local dev |
-| `RESEND_API_KEY` | Email | Resend API key (legacy email provider) | [resend.com/api-keys](https://resend.com/api-keys) — leave blank if using Gmail SMTP |
-| `RESEND_FROM_EMAIL` | Email | Sender address verified in Resend | e.g. `DriveCommand <onboarding@resend.dev>` |
+| `GMAIL_USER` | Email | Gmail address for sending emails | Your Gmail address (e.g. `noreply@yourcompany.com`) |
+| `GMAIL_APP_PASSWORD` | Email | Google App Password for Gmail SMTP | Google Account → Security → App Passwords (16-character code — not your login password) |
+| `GMAIL_FROM_NAME` | Email | Display name for sent emails | Optional, e.g. `DriveCommand` |
+| `RESEND_API_KEY` | Legacy | Resend API key (legacy — not active) | [resend.com/api-keys](https://resend.com/api-keys) — no longer the active email provider |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server-side admin operations) | Supabase Dashboard → Settings → API → `service_role` key |
 | `ANTHROPIC_API_KEY` | AI features | Enables AI document reading and profit predictor | [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) |
 | `S3_ENDPOINT` | File uploads | S3-compatible storage endpoint | Cloudflare R2: `https://<account-id>.r2.cloudflarestorage.com` |
 | `S3_REGION` | File uploads | Storage region (`auto` for R2) | `auto` for Cloudflare R2, or your AWS region |
@@ -63,22 +66,20 @@ Then fill in the values. The table below documents every variable in `.env.examp
 | `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Address autocomplete | Google Maps API key | [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials |
 | `ADMIN_SECRET_KEY` | Yes | Password for the sysadmin portal at `/admin/login` | Run: `openssl rand -base64 32` |
 | `CRON_SECRET` | Yes (Vercel) | Protects `/api/cron/*` endpoints | Any random string for local testing. Vercel sets this automatically for Vercel Cron Jobs. |
-| `GMAIL_USER` | Email | Gmail address for sending emails | Your Gmail address (e.g. `noreply@yourcompany.com`) |
-| `GMAIL_APP_PASSWORD` | Email | Google App Password for Gmail SMTP | Google Account → Security → App Passwords (16-character code — not your login password) |
-| `GMAIL_FROM_NAME` | Email | Display name for sent emails | Optional, e.g. `DriveCommand` |
 | `UPSTASH_REDIS_REST_URL` | Rate limiting | Upstash Redis REST URL | [console.upstash.com](https://console.upstash.com) → Create database → REST API |
 | `UPSTASH_REDIS_REST_TOKEN` | Rate limiting | Upstash Redis REST token | Same as above |
 | `SENTRY_DSN` | Error monitoring | Sentry Data Source Name | [sentry.io](https://sentry.io) → Project → Settings → Client Keys (DSN). Optional — app runs without it. |
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL | Supabase Dashboard → Settings → API → Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous public key | Supabase Dashboard → Settings → API → anon public key |
 
-**Note on email:** The `.env.example` uses Resend (`RESEND_API_KEY`). The active email implementation in `src/lib/email/gmail-client.ts` uses Gmail SMTP instead (requires `GMAIL_USER` and `GMAIL_APP_PASSWORD` set in `.env.local` — not shown in `.env.example`). See [Email docs](./email.md) for Gmail setup.
+**Note on email:** The active email implementation uses Gmail SMTP (`src/lib/email/gmail-client.ts`). Set `GMAIL_USER` and `GMAIL_APP_PASSWORD` in `.env.local` to enable email. `RESEND_API_KEY` is the legacy email provider (kept in `.env.example` for reference but not used). See [Email docs](./email.md) for Gmail setup.
 
 **Minimum required variables for local dev without optional features:**
 
 - `DATABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 - `NEXT_PUBLIC_APP_URL`
 - `ADMIN_SECRET_KEY`
 - `CRON_SECRET`

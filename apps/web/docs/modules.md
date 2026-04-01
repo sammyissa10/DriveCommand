@@ -222,9 +222,18 @@ Access requires the `ADMIN_SECRET_KEY` env var to be set. The admin session is m
 
 ---
 
+### 21. SysAdmin Invoicing — `/admin-dashboard` (invoices section)
+
+Billing management for DriveCommand to charge tenants. Create, edit, and send invoices from DriveCommand to fleet operators. Supports line items, recurring billing flags, and status lifecycle (`DRAFT` → `SENT` → `PAID` → `OVERDUE`). Uses the `SysAdminInvoice` and `SysAdminInvoiceItem` models.
+
+**Key files:**
+- `src/app/(admin)/` (invoicing pages within admin portal)
+
+---
+
 ## Shared / Public
 
-### 21. Shipment Tracking — `/track/[token]`
+### 22. Shipment Tracking — `/track/[token]`
 
 Public page (no login required) for customers to track their shipment. Accessible via a unique `trackingToken` on each load. Shows GPS map position, status timeline, and estimated delivery info. Polling updates the map every 30 seconds.
 

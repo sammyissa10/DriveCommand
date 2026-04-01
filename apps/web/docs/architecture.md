@@ -23,7 +23,7 @@ drivecommand/
 1. Web portals (owner, driver, sysadmin) via Next.js pages and server actions
 2. REST API for the mobile app via `src/app/api/mobile/` route handlers
 
-Mobile API routes are secured with Supabase JWT verification (not the custom session cookie used by web portals). See [Mobile app docs](../../mobile/docs/architecture.md) for mobile auth details.
+Mobile API routes are secured with Supabase JWT Bearer tokens via `validateMobileToken()`, while web portals use Supabase cookie-based sessions via `@supabase/ssr`. See [Mobile app docs](../../mobile/docs/architecture.md) for mobile auth details.
 
 ---
 
@@ -128,9 +128,9 @@ src/
     api/           # API routes (auth, cron, GPS, documents, webhooks, etc.)
       mobile/      # REST API for mobile app (owner/*, driver/*, support/*)
   lib/
-    auth/          # session.ts, server.ts, roles.ts
-    db/            # prisma.ts (singleton Prisma client + connection pool)
-    email/         # Resend client, email sender functions, templates
+    auth/          # supabase.ts, mobile-auth.ts, roles.ts, permissions.ts, guards.tsx, auth-context.tsx
+    db/            # prisma.ts (singleton Prisma client + connection pool), tenant-client.ts, repositories/, extensions/
+    email/         # Gmail client, Resend client (legacy), email sender functions, templates
     notifications/ # Notification log utilities (idempotent email tracking)
     storage/       # S3/R2 file upload helpers (presigned URLs, multipart)
     finance/       # Revenue/expense calculation helpers (Decimal.js)
@@ -153,7 +153,7 @@ docs/              # Developer documentation (this directory)
 
 **`DATABASE_URL` must use Supabase's Session Mode pooler** on port **6543** (not 5432). Transaction mode drops connections after each transaction, which defeats pooling and causes `app.tenant_id` config to be lost.
 
-**Custom AES-256-GCM session cookie** uses the Web Crypto API, which works in both Edge Runtime (middleware) and Node.js (server components). No third-party auth library is used — the implementation is in `src/lib/auth/session.ts` and is fully transparent.
+**Supabase Auth via `@supabase/ssr`** handles web session management. Sessions are cookie-based and set automatically on sign-in by the `@supabase/ssr` library. The server-side auth helpers are consolidated in `src/lib/auth/supabase.ts`. No custom AES encryption or third-party session libraries are used — Supabase manages the cookie lifecycle.
 
 **No Prisma migrations in production.** Schema changes are applied via `scripts/migrate.mjs`, which runs raw SQL migration files from a `migrations/` directory as part of the Vercel build command: `node scripts/migrate.mjs && prisma generate && next build`.
 
