@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-04-01 - Completed quick task 145: Move sign-out button from bottom-left sidebar to top-right header across all web portals
+Last activity: 2026-03-31 - Completed quick task 146: Audit and update all technical documentation
 Stopped at: Completed quick-143
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -134,6 +134,8 @@ Progress: [███████████████████████
 - Quick-141 (2026-03-31): Mobile owner portal routes section — GET list/detail endpoints, OwnerRouteSummary + OwnerRouteDetail types, routes list screen with 4-tab filter, route detail screen, More menu entry — 3 tasks, 7 files, ~30min
 - Quick-142 (2026-03-31): Mobile owner portal Profit Predictor + Fuel Log — POST profit-predictor endpoint (lane+fleet avg Decimal math), GET+POST fuel endpoints, 5 new types in api-client, ProfitPredictor screen (useMutation + recommendation banner + stat grid), Fuel Log screen (FlashList + FAB + AddFuelModal + truck picker), FuelRowSkeleton, More menu entries — 2 tasks, 8 files, ~40min
 - Quick-143 (2026-03-31): Mobile owner portal CRM contact detail/edit + payroll detail/create — GET+PATCH crm/[id], GET payroll/[id], POST payroll routes; 4 new api-client types+methods; crm/[id].tsx detail+edit screen; tappable CRM cards; payroll detail bottom sheet + create FAB form with driver picker — 3 tasks, 8 files, ~35min
+- Quick-145 (2026-03-31): Move sign-out button from bottom-left sidebar to top-right header across all web portals — UserMenu dropdown component (owner/driver/admin), removed sidebar footer sign-out — 2 tasks, 4 files, ~15min
+- Quick-146 (2026-03-31): Audit and update all technical documentation — auth.md (session.ts→supabase.ts, requirePermission added), architecture.md (AES-256-GCM→Supabase Auth, lib/auth/ + lib/db/ listings updated), mobile architecture.md (full API tree + navigation tree, ADR-001 updated), setup.md + deployment.md (Gmail SMTP primary, SUPABASE_SERVICE_ROLE_KEY added), modules.md (SysAdmin Invoicing added), stack.md (bcryptjs legacy), local-development.md (sign-in.tsx→login.tsx) — 2 tasks, 8 files, ~25min
 
 ## Accumulated Context
 
