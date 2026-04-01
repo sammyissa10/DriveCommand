@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-03-31 - Completed quick task 143: Mobile owner portal complete CRM contact detail/edit and payroll detail/create
+Last activity: 2026-04-01 - Completed quick task 145: Move sign-out button from bottom-left sidebar to top-right header across all web portals
 Stopped at: Completed quick-143
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -815,6 +815,7 @@ None blocking immediate progress.
 | 142 | Mobile owner portal: add Profit Predictor and Fuel log screens | 2026-03-31 | 8340114 | [142-mobile-owner-portal-add-profit-predictor](./quick/142-mobile-owner-portal-add-profit-predictor/) |
 | 143 | Mobile owner portal: complete CRM contact detail/edit and Payroll detail/create | 2026-03-31 | fa328ed | [143-mobile-owner-portal-complete-crm-contact](./quick/143-mobile-owner-portal-complete-crm-contact/) |
 | 144 | Mobile owner portal: add truck maintenance logging and safety alerts screen | 2026-03-31 | d82bdff | [144-mobile-owner-portal-add-truck-maintenanc](./quick/144-mobile-owner-portal-add-truck-maintenanc/) |
+| 145 | Move sign-out button from bottom-left sidebar to top-right header across all web portals | 2026-04-01 | 9212d31 | [145-move-sign-out-button-from-bottom-left-si](./quick/145-move-sign-out-button-from-bottom-left-si/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
