@@ -61,7 +61,7 @@ export default function OwnerLayout() {
         />
         <Tabs.Screen
           name="routes"
-          options={{ href: null }}
+          options={{ tabBarButton: () => null }}
         />
         <Tabs.Screen
           name="drivers"
