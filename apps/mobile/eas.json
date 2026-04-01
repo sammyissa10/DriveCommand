@@ -9,11 +9,22 @@
     },
     "preview": {
       "distribution": "internal",
-      "env": { "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app", "SENTRY_DISABLE_AUTO_UPLOAD": "true" }
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://oqdhberkghtnszrkdvfm.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZGhiZXJrZ2h0bnN6cmtkdmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTY3MzgsImV4cCI6MjA4OTk3MjczOH0.Y4R8ZqOeQCfUVQR-5_sQ_gx3e1tF5hft7xfd_TZOXas",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://7fcbf4884022488043fe3d30e51ccb97@o4511113660923904.ingest.us.sentry.io/4511113683468288",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "env": { "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app" }
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://drive-command.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://oqdhberkghtnszrkdvfm.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZGhiZXJrZ2h0bnN6cmtkdmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzOTY3MzgsImV4cCI6MjA4OTk3MjczOH0.Y4R8ZqOeQCfUVQR-5_sQ_gx3e1tF5hft7xfd_TZOXas",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://7fcbf4884022488043fe3d30e51ccb97@o4511113660923904.ingest.us.sentry.io/4511113683468288"
+      }
     }
   },
   "submit": {
