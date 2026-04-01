@@ -29,7 +29,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -39,7 +38,6 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { UserMenu } from "@/components/navigation/user-menu"
 import { UserRole } from "@/lib/auth/roles"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { PermissionGuard } from "@/lib/auth/guards"
@@ -470,15 +468,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* Footer with user menu */}
-      <SidebarFooter className="border-t border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <UserMenu dropdownDirection="up" />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }
