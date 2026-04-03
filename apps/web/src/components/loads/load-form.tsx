@@ -2,9 +2,10 @@
 
 import type { ActionState } from '@drivecommand/types';
 
-import { useActionState, useState } from 'react';
-import { Navigation } from 'lucide-react';
-import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
+import { useActionState, useState, useEffect } from 'react';
+import { Navigation, Loader2 } from 'lucide-react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 
 interface LoadFormProps {
   action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
@@ -42,6 +43,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
   const [selectedRouteId, setSelectedRouteId] = useState<string>(initialData?.routeId || '');
   const [pickupDateVal, setPickupDateVal] = useState<string>(initialData?.pickupDate || '');
   const [deliveryDateVal, setDeliveryDateVal] = useState<string>(initialData?.deliveryDate || '');
+  const [distance, setDistance] = useState<number | null>(null);
+  const [distanceLoading, setDistanceLoading] = useState(false);
 
   // Compute date mismatch warning (informational only — does not block submission)
   const selectedRoute = routes.find((r) => r.id === selectedRouteId);
@@ -56,10 +59,25 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
     }
   }
 
-  const distance =
-    originCoords && destCoords
-      ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
-      : null;
+  // Fetch road distance via OSRM when both coordinates are available
+  useEffect(() => {
+    if (!originCoords || !destCoords) {
+      setDistance(null);
+      return;
+    }
+    let cancelled = false;
+    setDistanceLoading(true);
+    setDistance(null);
+    getOSRMDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      .then((miles) => {
+        if (cancelled) return;
+        setDistance(miles);
+      })
+      .finally(() => {
+        if (!cancelled) setDistanceLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [originCoords, destCoords]);
 
   const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
@@ -215,14 +233,27 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
           </div>
         </div>
 
-        {/* Distance badge — shown once both locations are geocoded */}
-        {distance !== null && (
+        {/* Hidden distanceMiles — submitted with form when OSRM distance is available */}
+        <input
+          type="hidden"
+          name="distanceMiles"
+          value={distance !== null ? String(Math.round(distance)) : ''}
+        />
+
+        {/* Distance badge — shown while loading or once both locations are geocoded */}
+        {distanceLoading && (
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
+            <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0 animate-spin" />
+            <span className="text-sm text-blue-600 dark:text-blue-400">Calculating road distance...</span>
+          </div>
+        )}
+        {!distanceLoading && distance !== null && (
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
             <Navigation className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
               Estimated distance: <strong>{Math.round(distance).toLocaleString()} miles</strong>
             </span>
-            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">straight-line est.</span>
+            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">road distance</span>
           </div>
         )}
 

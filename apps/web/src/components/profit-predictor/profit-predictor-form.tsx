@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   predictLoadProfitability,
   PredictionResult,
 } from '@/app/(owner)/actions/profit-predictor';
 import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 
 function formatCurrency(value: string): string {
   return new Intl.NumberFormat('en-US', {
@@ -13,6 +15,8 @@ function formatCurrency(value: string): string {
     currency: 'USD',
   }).format(parseFloat(value));
 }
+
+interface Coords { lat: number; lng: number }
 
 export function ProfitPredictorForm() {
   const [origin, setOrigin] = useState('');
@@ -22,6 +26,27 @@ export function ProfitPredictorForm() {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [originCoords, setOriginCoords] = useState<Coords | null>(null);
+  const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [distanceAutoFilled, setDistanceAutoFilled] = useState(false);
+
+  // Auto-fill distance via OSRM when both addresses are geocoded
+  useEffect(() => {
+    if (!originCoords || !destCoords) return;
+
+    let cancelled = false;
+    getOSRMDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      .then((miles) => {
+        if (cancelled || miles === null) return;
+        setDistanceMiles(String(Math.round(miles)));
+        setDistanceAutoFilled(true);
+      })
+      .catch(() => {
+        // Silently fail — user can still enter distance manually
+      });
+
+    return () => { cancelled = true; };
+  }, [originCoords, destCoords]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,6 +87,9 @@ export function ProfitPredictorForm() {
       setLoading(false);
     }
   }
+
+  const inputClass =
+    'w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground';
 
   const recommendationConfig = result
     ? {
@@ -115,13 +143,17 @@ export function ProfitPredictorForm() {
               >
                 Origin
               </label>
-              <input
+              <AddressAutocomplete
                 id="origin"
-                type="text"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
+                name="origin"
+                defaultValue={origin}
                 placeholder="e.g. Chicago, IL"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                className={inputClass}
+                onPlaceSelect={(place) => {
+                  setOrigin(place.displayName);
+                  setOriginCoords({ lat: place.lat, lng: place.lng });
+                  setDistanceAutoFilled(false);
+                }}
               />
             </div>
 
@@ -133,32 +165,44 @@ export function ProfitPredictorForm() {
               >
                 Destination
               </label>
-              <input
+              <AddressAutocomplete
                 id="destination"
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                name="destination"
+                defaultValue={destination}
                 placeholder="e.g. Dallas, TX"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                className={inputClass}
+                onPlaceSelect={(place) => {
+                  setDestination(place.displayName);
+                  setDestCoords({ lat: place.lat, lng: place.lng });
+                  setDistanceAutoFilled(false);
+                }}
               />
             </div>
 
             {/* Distance */}
             <div className="space-y-1.5">
-              <label
-                htmlFor="distanceMiles"
-                className="text-sm font-medium text-foreground"
-              >
-                Distance (miles)
-              </label>
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="distanceMiles"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Distance (miles)
+                </label>
+                {distanceAutoFilled && (
+                  <span className="text-xs text-muted-foreground">(auto)</span>
+                )}
+              </div>
               <input
                 id="distanceMiles"
                 type="number"
                 min="1"
                 value={distanceMiles}
-                onChange={(e) => setDistanceMiles(e.target.value)}
+                onChange={(e) => {
+                  setDistanceMiles(e.target.value);
+                  setDistanceAutoFilled(false);
+                }}
                 placeholder="e.g. 850"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                className={inputClass}
               />
             </div>
 
@@ -178,7 +222,7 @@ export function ProfitPredictorForm() {
                 value={offeredRate}
                 onChange={(e) => setOfferedRate(e.target.value)}
                 placeholder="e.g. 2500.00"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                className={inputClass}
               />
             </div>
           </div>
