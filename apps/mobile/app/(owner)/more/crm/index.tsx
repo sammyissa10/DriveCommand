@@ -15,6 +15,7 @@ import { ownerApi, type CRMResponse, type CustomerSummary } from '@drivecommand/
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
 import { CRMCardSkeleton } from '../../../../components/skeletons/CRMCardSkeleton'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -51,6 +52,7 @@ function getInitials(name: string): string {
 // ---------------------------------------------------------------------------
 
 function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPress: () => void }) {
+  const c = useThemeColors()
   const statusColor = getStatusColor(customer.status)
   const priorityColor = getPriorityColor(customer.priority)
   const initials = getInitials(customer.companyName)
@@ -59,8 +61,12 @@ function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPres
   return (
     <Pressable
       onPress={onPress}
-      className="mx-4 mb-3 rounded-xl border bg-slate-800 px-4 py-3.5 flex-row items-center active:opacity-80"
-      style={{ borderColor: isVIP ? '#f59e0b40' : '#334155' }}
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center active:opacity-80"
+      style={{
+        backgroundColor: c.surfaceCard,
+        borderWidth: 1,
+        borderColor: isVIP ? '#f59e0b40' : c.border,
+      }}
     >
       {/* Avatar */}
       <View
@@ -73,7 +79,8 @@ function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPres
       {/* Info */}
       <View className="flex-1 min-w-0">
         <Text
-          className="text-slate-100 font-bold text-[15px] mb-1"
+          className="font-bold text-[15px] mb-1"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           {customer.companyName}
@@ -110,8 +117,8 @@ function CustomerCard({ customer, onPress }: { customer: CustomerSummary; onPres
           {/* Phone */}
           {customer.phone && (
             <View className="flex-row items-center gap-1">
-              <Phone color="#64748b" size={11} />
-              <Text className="text-slate-500 text-xs" numberOfLines={1}>
+              <Phone color={c.textTertiary} size={11} />
+              <Text className="text-xs" style={{ color: c.textTertiary }} numberOfLines={1}>
                 {customer.phone}
               </Text>
             </View>
@@ -135,15 +142,19 @@ function StatCard({
   label: string
   valueColor?: string
 }) {
+  const c = useThemeColors()
   return (
-    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+    <View
+      className="flex-1 rounded-xl p-3.5 items-center"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
       <Text
         className="text-[22px] font-bold"
-        style={{ color: valueColor ?? '#f1f5f9' }}
+        style={{ color: valueColor ?? c.textPrimary }}
       >
         {value}
       </Text>
-      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
+      <Text className="text-xs mt-0.5 text-center" style={{ color: c.textTertiary }}>{label}</Text>
     </View>
   )
 }
@@ -153,6 +164,7 @@ function StatCard({
 // ---------------------------------------------------------------------------
 
 export default function CRMScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
 
@@ -165,18 +177,21 @@ export default function CRMScreen() {
 
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
-  const renderCustomer = useCallback(({ item: c }: { item: CustomerSummary }) => (
+  const renderCustomer = useCallback(({ item: cust }: { item: CustomerSummary }) => (
     <CustomerCard
-      customer={c}
-      onPress={() => router.push(`/(owner)/more/crm/${c.id}` as never)}
+      customer={cust}
+      onPress={() => router.push(`/(owner)/more/crm/${cust.id}` as never)}
     />
   ), [router])
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -184,9 +199,9 @@ export default function CRMScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">CRM</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>CRM</Text>
         </View>
 
         {isLoading ? (
@@ -198,15 +213,16 @@ export default function CRMScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load customers
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -215,14 +231,14 @@ export default function CRMScreen() {
           <FlashList
             data={data?.customers ?? []}
             renderItem={renderCustomer}
-            keyExtractor={(c) => c.id}
+            keyExtractor={(cust) => cust.id}
             estimatedItemSize={80}
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 100 }}
@@ -247,7 +263,7 @@ export default function CRMScreen() {
 
                 {/* Customers section header */}
                 <View className="px-4 pt-4 pb-2.5">
-                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
                     Customers
                   </Text>
                 </View>
@@ -255,8 +271,8 @@ export default function CRMScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
-                <Building2 color="#334155" size={48} />
-                <Text className="text-slate-500 text-[15px] mt-3 text-center">
+                <Building2 color={c.surfaceElevated} size={48} />
+                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
                   No customers yet
                 </Text>
               </View>

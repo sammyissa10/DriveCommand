@@ -26,6 +26,7 @@ import {
 import { BottomSheet } from '../../../../components/ui/BottomSheet'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../../lib/haptics'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -72,10 +73,11 @@ function todayISO(): string {
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
+  const c = useThemeColors()
   return (
     <View className="mb-4">
-      <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{label}</Text>
-      <Text className="text-sm text-slate-100 font-medium">{value}</Text>
+      <Text className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: c.textTertiary }}>{label}</Text>
+      <Text className="text-sm font-medium" style={{ color: c.textPrimary }}>{value}</Text>
     </View>
   )
 }
@@ -83,9 +85,6 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 // ---------------------------------------------------------------------------
 // EditTruckSheet
 // ---------------------------------------------------------------------------
-
-const inputClass = 'bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm'
-const labelClass = 'text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5'
 
 interface EditTruckSheetProps {
   visible: boolean
@@ -103,6 +102,7 @@ interface EditTruckSheetProps {
 }
 
 function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: EditTruckSheetProps) {
+  const c = useThemeColors()
   const [make, setMake] = useState(initialData.make)
   const [model, setModel] = useState(initialData.model)
   const [year, setYear] = useState(String(initialData.year))
@@ -122,7 +122,6 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
   }, [visible])
 
   function handleSave() {
-    // Build payload with only changed fields
     const payload: UpdateTruckPayload = {}
 
     if (make.trim() !== initialData.make) payload.make = make.trim()
@@ -135,29 +134,38 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
     if (!isNaN(odometerNum) && odometerNum !== initialData.odometer) payload.odometer = odometerNum
 
     if (Object.keys(payload).length === 0) {
-      Toast.show({
-        type: 'info',
-        text1: 'No changes',
-        text2: 'No fields were changed.',
-        visibilityTime: 2500,
-      })
+      Toast.show({ type: 'info', text1: 'No changes', text2: 'No fields were changed.', visibilityTime: 2500 })
       return
     }
 
-    // Validate required fields haven't been emptied
     const currentMake = payload.make ?? initialData.make
     const currentModel = payload.model ?? initialData.model
     if (!currentMake || !currentModel) {
-      Toast.show({
-        type: 'error',
-        text1: 'Missing fields',
-        text2: 'Make and model cannot be empty.',
-        visibilityTime: 3000,
-      })
+      Toast.show({ type: 'error', text1: 'Missing fields', text2: 'Make and model cannot be empty.', visibilityTime: 3000 })
       return
     }
 
     onSave(payload)
+  }
+
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+  } as const
+
+  const labelStyle = {
+    color: c.textSecondary,
+    fontSize: 11,
+    fontWeight: '600' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+    marginBottom: 6,
   }
 
   return (
@@ -174,11 +182,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
           {/* Make + Model row */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <Text className={labelClass}>Make</Text>
+              <Text style={labelStyle}>Make</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="Freightliner"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={make}
                 onChangeText={setMake}
                 autoCapitalize="words"
@@ -186,11 +194,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
               />
             </View>
             <View className="flex-1">
-              <Text className={labelClass}>Model</Text>
+              <Text style={labelStyle}>Model</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="Cascadia"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={model}
                 onChangeText={setModel}
                 autoCapitalize="words"
@@ -202,11 +210,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
           {/* Year + License Plate row */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <Text className={labelClass}>Year</Text>
+              <Text style={labelStyle}>Year</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="2022"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={year}
                 onChangeText={setYear}
                 keyboardType="numeric"
@@ -214,11 +222,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
               />
             </View>
             <View className="flex-1">
-              <Text className={labelClass}>License Plate</Text>
+              <Text style={labelStyle}>License Plate</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="ABC-1234"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={licensePlate}
                 onChangeText={setLicensePlate}
                 autoCapitalize="characters"
@@ -229,11 +237,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
 
           {/* VIN */}
           <View className="mb-4">
-            <Text className={labelClass}>VIN</Text>
+            <Text style={labelStyle}>VIN</Text>
             <TextInput
-              className={inputClass}
+              style={inputStyle}
               placeholder="1XPBD49X1XD123456"
-              placeholderTextColor="#475569"
+              placeholderTextColor={c.textMuted}
               value={vin}
               onChangeText={setVin}
               autoCapitalize="characters"
@@ -243,11 +251,11 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
 
           {/* Odometer */}
           <View className="mb-6">
-            <Text className={labelClass}>Odometer (miles)</Text>
+            <Text style={labelStyle}>Odometer (miles)</Text>
             <TextInput
-              className={inputClass}
+              style={inputStyle}
               placeholder="150000"
-              placeholderTextColor="#475569"
+              placeholderTextColor={c.textMuted}
               value={odometer}
               onChangeText={setOdometer}
               keyboardType="numeric"
@@ -260,7 +268,7 @@ function EditTruckSheet({ visible, onClose, initialData, onSave, isPending }: Ed
             onPress={handleSave}
             disabled={isPending}
             className="rounded-xl py-4 items-center"
-            style={{ backgroundColor: isPending ? '#0c4a6e' : '#0284c7', opacity: isPending ? 0.7 : 1 }}
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.7 : 1 }}
           >
             {isPending
               ? <ActivityIndicator size="small" color="white" />
@@ -286,6 +294,7 @@ interface LogMaintenanceSheetProps {
 }
 
 function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPending }: LogMaintenanceSheetProps) {
+  const c = useThemeColors()
   const [serviceType, setServiceType] = useState('')
   const [notes, setNotes] = useState('')
   const [cost, setCost] = useState('')
@@ -332,6 +341,26 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
     onSave(payload)
   }
 
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+  } as const
+
+  const labelStyle = {
+    color: c.textSecondary,
+    fontSize: 11,
+    fontWeight: '600' as const,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+    marginBottom: 6,
+  }
+
   return (
     <BottomSheet visible={visible} onClose={onClose} title="Log Maintenance" snapPoint="80%">
       <KeyboardAvoidingView
@@ -345,11 +374,11 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
         >
           {/* Service Type */}
           <View className="mb-4">
-            <Text className={labelClass}>Service Type</Text>
+            <Text style={labelStyle}>Service Type</Text>
             <TextInput
-              className={inputClass}
+              style={inputStyle}
               placeholder="e.g. Oil Change, Tire Rotation, Inspection..."
-              placeholderTextColor="#475569"
+              placeholderTextColor={c.textMuted}
               value={serviceType}
               onChangeText={setServiceType}
               autoCapitalize="words"
@@ -360,11 +389,11 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
           {/* Service Date + Odometer row */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <Text className={labelClass}>Service Date</Text>
+              <Text style={labelStyle}>Service Date</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="YYYY-MM-DD"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={serviceDate}
                 onChangeText={setServiceDate}
                 keyboardType="numeric"
@@ -372,11 +401,11 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
               />
             </View>
             <View className="flex-1">
-              <Text className={labelClass}>Odometer (mi)</Text>
+              <Text style={labelStyle}>Odometer (mi)</Text>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="150000"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={odometer}
                 onChangeText={setOdometer}
                 keyboardType="numeric"
@@ -387,11 +416,11 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
 
           {/* Cost */}
           <View className="mb-4">
-            <Text className={labelClass}>Cost ($)</Text>
+            <Text style={labelStyle}>Cost ($)</Text>
             <TextInput
-              className={inputClass}
+              style={inputStyle}
               placeholder="0.00"
-              placeholderTextColor="#475569"
+              placeholderTextColor={c.textMuted}
               value={cost}
               onChangeText={setCost}
               keyboardType="numeric"
@@ -401,17 +430,16 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
 
           {/* Notes */}
           <View className="mb-6">
-            <Text className={labelClass}>Notes</Text>
+            <Text style={labelStyle}>Notes</Text>
             <TextInput
-              className={inputClass}
+              style={[inputStyle, { minHeight: 72, textAlignVertical: 'top' }]}
               placeholder="Describe the service performed..."
-              placeholderTextColor="#475569"
+              placeholderTextColor={c.textMuted}
               value={notes}
               onChangeText={setNotes}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
-              style={{ minHeight: 72 }}
               editable={!isPending}
             />
           </View>
@@ -421,7 +449,7 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
             onPress={handleSave}
             disabled={isPending}
             className="rounded-xl py-4 items-center"
-            style={{ backgroundColor: isPending ? '#0c4a6e' : '#0284c7', opacity: isPending ? 0.7 : 1 }}
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.7 : 1 }}
           >
             {isPending
               ? <ActivityIndicator size="small" color="white" />
@@ -439,6 +467,7 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
 // ---------------------------------------------------------------------------
 
 export default function TruckDetailScreen() {
+  const c = useThemeColors()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { token } = useAuthContext()
@@ -465,22 +494,12 @@ export default function TruckDetailScreen() {
       haptic.success()
       queryClient.invalidateQueries({ queryKey: ['owner-truck', id] })
       queryClient.invalidateQueries({ queryKey: ['owner-trucks'] })
-      Toast.show({
-        type: 'success',
-        text1: 'Truck updated',
-        text2: 'Changes saved successfully.',
-        visibilityTime: 3000,
-      })
+      Toast.show({ type: 'success', text1: 'Truck updated', text2: 'Changes saved successfully.', visibilityTime: 3000 })
       setEditSheetVisible(false)
     },
     onError: (err: Error) => {
       haptic.error()
-      Toast.show({
-        type: 'error',
-        text1: 'Update failed',
-        text2: err.message || 'Please try again.',
-        visibilityTime: 4000,
-      })
+      Toast.show({ type: 'error', text1: 'Update failed', text2: err.message || 'Please try again.', visibilityTime: 4000 })
     },
   })
 
@@ -503,14 +522,17 @@ export default function TruckDetailScreen() {
     refetchMaintenance()
   }, [refetch, refetchMaintenance])
 
-  const colors = STATUS_COLORS[truck?.status ?? ''] ?? STATUS_COLORS['Ready to Use']
+  const statusColors = STATUS_COLORS[truck?.status ?? ''] ?? STATUS_COLORS['Ready to Use']
   const docMeta = truck?.documentMetadata
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -518,50 +540,49 @@ export default function TruckDetailScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
           <View className="flex-1 min-w-0">
             {truck ? (
-              <Text className="text-lg font-bold text-slate-100" numberOfLines={1}>
+              <Text className="text-lg font-bold" style={{ color: c.textPrimary }} numberOfLines={1}>
                 {truck.year} {truck.make} {truck.model}
               </Text>
             ) : (
-              <Text className="text-lg font-bold text-slate-100">Truck Detail</Text>
+              <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Truck Detail</Text>
             )}
           </View>
           {truck && (
-            <View className="px-2.5 py-1 rounded-full ml-2" style={{ backgroundColor: colors.bg }}>
-              <Text className="text-xs font-semibold" style={{ color: colors.text }}>
+            <View className="px-2.5 py-1 rounded-full ml-2" style={{ backgroundColor: statusColors.bg }}>
+              <Text className="text-xs font-semibold" style={{ color: statusColors.text }}>
                 {truck.status}
               </Text>
             </View>
           )}
-          {/* Edit button */}
           {truck && (
             <Pressable
               onPress={() => { haptic.light(); setEditSheetVisible(true) }}
               hitSlop={8}
               className="active:opacity-75 ml-3"
             >
-              <Pencil color="#94a3b8" size={18} />
+              <Pencil color={c.textSecondary} size={18} />
             </Pressable>
           )}
         </View>
 
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#38bdf8" />
+            <ActivityIndicator size="large" color={c.brand} />
           </View>
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load truck
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
-            <Pressable onPress={() => refetch()} className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]">
+            <Pressable onPress={() => refetch()} className="mt-5 px-6 py-3 rounded-[10px]" style={{ backgroundColor: c.brand }}>
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
@@ -572,107 +593,86 @@ export default function TruckDetailScreen() {
                 <RefreshControl
                   refreshing={isRefetching}
                   onRefresh={onRefresh}
-                  tintColor="#38bdf8"
-                  colors={['#38bdf8']}
+                  tintColor={c.brand}
+                  colors={[c.brand]}
                 />
               }
               contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
             >
               {/* Vehicle Information */}
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+              <View
+                className="rounded-xl p-4 mb-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
                 <View className="flex-row items-center gap-2 mb-4">
-                  <Truck color="#64748b" size={16} />
-                  <Text className="text-white font-semibold text-base">Vehicle Information</Text>
+                  <Truck color={c.textTertiary} size={16} />
+                  <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>Vehicle Information</Text>
                 </View>
                 <View className="flex-row flex-wrap">
-                  <View className="w-1/2">
-                    <InfoRow label="Make" value={truck.make} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="Model" value={truck.model} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="Year" value={String(truck.year)} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="License Plate" value={truck.licensePlate} />
-                  </View>
-                  <View className="w-full">
-                    <InfoRow label="VIN" value={truck.vin} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="Odometer" value={`${truck.odometer.toLocaleString()} mi`} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="Status" value={truck.status} />
-                  </View>
+                  <View className="w-1/2"><InfoRow label="Make" value={truck.make} /></View>
+                  <View className="w-1/2"><InfoRow label="Model" value={truck.model} /></View>
+                  <View className="w-1/2"><InfoRow label="Year" value={String(truck.year)} /></View>
+                  <View className="w-1/2"><InfoRow label="License Plate" value={truck.licensePlate} /></View>
+                  <View className="w-full"><InfoRow label="VIN" value={truck.vin} /></View>
+                  <View className="w-1/2"><InfoRow label="Odometer" value={`${truck.odometer.toLocaleString()} mi`} /></View>
+                  <View className="w-1/2"><InfoRow label="Status" value={truck.status} /></View>
                 </View>
               </View>
 
               {/* Document Information */}
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-                <Text className="text-white font-semibold text-base mb-4">Document Information</Text>
+              <View
+                className="rounded-xl p-4 mb-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
+                <Text className="font-semibold text-base mb-4" style={{ color: c.textPrimary }}>Document Information</Text>
                 {docMeta && (docMeta.registrationNumber || docMeta.registrationExpiry || docMeta.insuranceNumber || docMeta.insuranceExpiry) ? (
                   <View className="flex-row flex-wrap">
-                    {docMeta.registrationNumber && (
-                      <View className="w-1/2">
-                        <InfoRow label="Registration #" value={docMeta.registrationNumber} />
-                      </View>
-                    )}
-                    {docMeta.registrationExpiry && (
-                      <View className="w-1/2">
-                        <InfoRow label="Reg. Expiry" value={formatDate(docMeta.registrationExpiry)} />
-                      </View>
-                    )}
-                    {docMeta.insuranceNumber && (
-                      <View className="w-1/2">
-                        <InfoRow label="Insurance #" value={docMeta.insuranceNumber} />
-                      </View>
-                    )}
-                    {docMeta.insuranceExpiry && (
-                      <View className="w-1/2">
-                        <InfoRow label="Ins. Expiry" value={formatDate(docMeta.insuranceExpiry)} />
-                      </View>
-                    )}
+                    {docMeta.registrationNumber && <View className="w-1/2"><InfoRow label="Registration #" value={docMeta.registrationNumber} /></View>}
+                    {docMeta.registrationExpiry && <View className="w-1/2"><InfoRow label="Reg. Expiry" value={formatDate(docMeta.registrationExpiry)} /></View>}
+                    {docMeta.insuranceNumber && <View className="w-1/2"><InfoRow label="Insurance #" value={docMeta.insuranceNumber} /></View>}
+                    {docMeta.insuranceExpiry && <View className="w-1/2"><InfoRow label="Ins. Expiry" value={formatDate(docMeta.insuranceExpiry)} /></View>}
                   </View>
                 ) : (
-                  <Text className="text-slate-500 text-sm">No document information recorded</Text>
+                  <Text className="text-sm" style={{ color: c.textTertiary }}>No document information recorded</Text>
                 )}
               </View>
 
               {/* Service History */}
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+              <View
+                className="rounded-xl p-4 mb-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
                 <View className="flex-row items-center justify-between mb-4">
                   <View className="flex-row items-center gap-2">
-                    <Wrench color="#64748b" size={16} />
-                    <Text className="text-white font-semibold text-base">Service History</Text>
+                    <Wrench color={c.textTertiary} size={16} />
+                    <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>Service History</Text>
                   </View>
                   <Pressable
                     onPress={() => { haptic.light(); setMaintenanceSheetVisible(true) }}
                     hitSlop={8}
                     className="active:opacity-75"
                   >
-                    <Text style={{ color: '#0ea5e9', fontSize: 14, fontWeight: '600' }}>Log</Text>
+                    <Text style={{ color: c.brand, fontSize: 14, fontWeight: '600' }}>Log</Text>
                   </Pressable>
                 </View>
 
                 {maintenanceLoading ? (
-                  <ActivityIndicator size="small" color="#38bdf8" />
+                  <ActivityIndicator size="small" color={c.brand} />
                 ) : !maintenance || maintenance.length === 0 ? (
-                  <Text className="text-slate-500 text-sm">No maintenance records</Text>
+                  <Text className="text-sm" style={{ color: c.textTertiary }}>No maintenance records</Text>
                 ) : (
                   maintenance.slice(0, 5).map((event, index) => (
                     <View key={event.id}>
-                      {index > 0 && <View className="h-px bg-slate-700 my-3" />}
+                      {index > 0 && <View className="h-px my-3" style={{ backgroundColor: c.border }} />}
                       <View className="flex-row items-start justify-between">
-                        <Text className="text-slate-100 font-semibold text-sm flex-1 mr-2">{event.serviceType}</Text>
-                        <Text className="text-slate-500 text-xs">{formatDateShort(event.serviceDate)}</Text>
+                        <Text className="font-semibold text-sm flex-1 mr-2" style={{ color: c.textPrimary }}>{event.serviceType}</Text>
+                        <Text className="text-xs" style={{ color: c.textTertiary }}>{formatDateShort(event.serviceDate)}</Text>
                       </View>
                       <View className="flex-row gap-3 mt-1">
                         {event.cost && (
-                          <Text className="text-slate-400 text-xs">{formatCost(event.cost)}</Text>
+                          <Text className="text-xs" style={{ color: c.textSecondary }}>{formatCost(event.cost)}</Text>
                         )}
-                        <Text className="text-slate-400 text-xs">{event.odometerAtService.toLocaleString()} mi</Text>
+                        <Text className="text-xs" style={{ color: c.textSecondary }}>{event.odometerAtService.toLocaleString()} mi</Text>
                       </View>
                     </View>
                   ))
@@ -680,20 +680,18 @@ export default function TruckDetailScreen() {
               </View>
 
               {/* Record History */}
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-                <Text className="text-white font-semibold text-base mb-4">Record History</Text>
+              <View
+                className="rounded-xl p-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
+                <Text className="font-semibold text-base mb-4" style={{ color: c.textPrimary }}>Record History</Text>
                 <View className="flex-row flex-wrap">
-                  <View className="w-1/2">
-                    <InfoRow label="Created" value={formatDate(truck.createdAt)} />
-                  </View>
-                  <View className="w-1/2">
-                    <InfoRow label="Last Updated" value={formatDate(truck.updatedAt)} />
-                  </View>
+                  <View className="w-1/2"><InfoRow label="Created" value={formatDate(truck.createdAt)} /></View>
+                  <View className="w-1/2"><InfoRow label="Last Updated" value={formatDate(truck.updatedAt)} /></View>
                 </View>
               </View>
             </ScrollView>
 
-            {/* Edit Truck Sheet */}
             <EditTruckSheet
               visible={editSheetVisible}
               onClose={() => setEditSheetVisible(false)}
@@ -709,7 +707,6 @@ export default function TruckDetailScreen() {
               isPending={isUpdating}
             />
 
-            {/* Log Maintenance Sheet */}
             <LogMaintenanceSheet
               visible={maintenanceSheetVisible}
               onClose={() => setMaintenanceSheetVisible(false)}

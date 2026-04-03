@@ -22,6 +22,7 @@ import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { LoadDetailSkeleton } from '../../../components/skeletons/LoadDetailSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
+import { useThemeColors } from '../../../constants/tokens'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -57,12 +58,13 @@ interface InfoFieldProps {
 }
 
 function InfoField({ label, value }: InfoFieldProps) {
+  const c = useThemeColors()
   return (
     <View className="mb-3">
-      <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+      <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
         {label}
       </Text>
-      <Text className="text-sm text-white" numberOfLines={2}>
+      <Text className="text-sm" style={{ color: c.textPrimary }} numberOfLines={2}>
         {value}
       </Text>
     </View>
@@ -98,17 +100,18 @@ function DriverPickerSheet({
   loading,
   isPending,
 }: DriverPickerSheetProps) {
+  const c = useThemeColors()
   return (
     <BottomSheet visible={visible} onClose={onClose} title="Assign Driver" snapPoint="60%">
       {loading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#0ea5e9" />
+          <ActivityIndicator size="large" color={c.brand} />
         </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
           {drivers.length === 0 ? (
             <View className="items-center py-8">
-              <Text className="text-slate-400 text-sm">No active drivers found</Text>
+              <Text className="text-sm" style={{ color: c.textSecondary }}>No active drivers found</Text>
             </View>
           ) : (
             drivers.map((driver) => {
@@ -118,16 +121,16 @@ function DriverPickerSheet({
                   key={driver.id}
                   onPress={() => onSelect(driver.id)}
                   disabled={isPending || isSelected}
-                  className={`flex-row items-center p-3 rounded-xl mb-2 border ${
-                    isSelected
-                      ? 'bg-sky-900/40 border-sky-500'
-                      : 'bg-slate-700/50 border-slate-600 active:opacity-75'
-                  }`}
+                  className="flex-row items-center p-3 rounded-xl mb-2 border active:opacity-75"
+                  style={{
+                    backgroundColor: isSelected ? c.brandDark + '40' : c.surfaceElevated,
+                    borderColor: isSelected ? c.brand : c.border,
+                  }}
                 >
-                  <Text className="text-white text-sm flex-1" numberOfLines={1}>
+                  <Text className="text-sm flex-1" style={{ color: c.textPrimary }} numberOfLines={1}>
                     {driver.name}
                   </Text>
-                  {isSelected && <View className="w-2 h-2 rounded-full bg-sky-400" />}
+                  {isSelected && <View className="w-2 h-2 rounded-full" style={{ backgroundColor: c.brand }} />}
                 </Pressable>
               )
             })
@@ -165,6 +168,7 @@ function EditRouteSheet({
   isPending,
   token,
 }: EditRouteSheetProps) {
+  const c = useThemeColors()
   const [name, setName] = useState(currentName ?? '')
   const [status, setStatus] = useState(currentStatus)
   const [driverPickerVisible, setDriverPickerVisible] = useState(false)
@@ -200,19 +204,20 @@ function EditRouteSheet({
       <BottomSheet visible={visible} onClose={onClose} title="Edit Route" snapPoint="80%">
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {/* Name */}
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+          <Text className="text-xs font-medium uppercase tracking-wide mb-1.5" style={{ color: c.textTertiary }}>
             Route Name
           </Text>
           <TextInput
             value={name}
             onChangeText={setName}
             placeholder="Enter route name"
-            placeholderTextColor="#64748b"
-            className="bg-slate-700 border border-slate-600 rounded-xl px-3 py-3 text-white text-sm mb-4"
+            placeholderTextColor={c.textMuted}
+            className="rounded-xl px-3 py-3 text-sm mb-4"
+            style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
           />
 
           {/* Status */}
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+          <Text className="text-xs font-medium uppercase tracking-wide mb-1.5" style={{ color: c.textTertiary }}>
             Status
           </Text>
           <View className="mb-4">
@@ -223,17 +228,17 @@ function EditRouteSheet({
                 <Pressable
                   key={s.value}
                   onPress={() => setStatus(s.value)}
-                  className={`flex-row items-center justify-between p-3 rounded-xl mb-2 border ${
-                    isCurrentStatus
-                      ? 'bg-sky-900/30 border-sky-600'
-                      : 'bg-slate-700/50 border-slate-600 active:opacity-75'
-                  }`}
+                  className="flex-row items-center justify-between p-3 rounded-xl mb-2 border active:opacity-75"
+                  style={{
+                    backgroundColor: isCurrentStatus ? c.brandDark + '30' : c.surfaceElevated,
+                    borderColor: isCurrentStatus ? c.brand : c.border,
+                  }}
                 >
-                  <Text className={`text-sm ${isCurrentStatus ? 'text-sky-300' : 'text-white'}`}>
+                  <Text className="text-sm" style={{ color: isCurrentStatus ? c.brand : c.textPrimary }}>
                     {s.label}
                   </Text>
                   {isCurrentStatus ? (
-                    <Text className="text-xs text-sky-400 font-medium">Selected</Text>
+                    <Text className="text-xs font-medium" style={{ color: c.brand }}>Selected</Text>
                   ) : (
                     <Badge label={badge.label} variant={badge.variant} />
                   )}
@@ -243,32 +248,35 @@ function EditRouteSheet({
           </View>
 
           {/* Scheduled Date (read-only) */}
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+          <Text className="text-xs font-medium uppercase tracking-wide mb-1.5" style={{ color: c.textTertiary }}>
             Scheduled Date
           </Text>
-          <View className="bg-slate-700/50 border border-slate-600 rounded-xl px-3 py-3 mb-4">
-            <Text className="text-slate-400 text-sm">{formatDate(scheduledDate)}</Text>
+          <View
+            className="rounded-xl px-3 py-3 mb-4"
+            style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-sm" style={{ color: c.textSecondary }}>{formatDate(scheduledDate)}</Text>
           </View>
 
           {/* Driver */}
-          <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+          <Text className="text-xs font-medium uppercase tracking-wide mb-1.5" style={{ color: c.textTertiary }}>
             Driver
           </Text>
           <Pressable
             onPress={() => setDriverPickerVisible(true)}
-            className="flex-row items-center justify-between bg-slate-700/50 border border-slate-600 rounded-xl px-3 py-3 mb-6 active:opacity-75"
+            className="flex-row items-center justify-between rounded-xl px-3 py-3 mb-6 active:opacity-75"
+            style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
           >
-            <Text className="text-white text-sm">{selectedDriverName}</Text>
-            <ChevronDown color="#64748b" size={16} />
+            <Text className="text-sm" style={{ color: c.textPrimary }}>{selectedDriverName}</Text>
+            <ChevronDown color={c.textTertiary} size={16} />
           </Pressable>
 
           {/* Save Button */}
           <Pressable
             onPress={handleSave}
             disabled={isPending}
-            className={`rounded-xl py-3.5 items-center ${
-              isPending ? 'bg-sky-900 opacity-60' : 'bg-sky-600 active:opacity-80'
-            }`}
+            className="rounded-xl py-3.5 items-center"
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.6 : 1 }}
           >
             {isPending ? (
               <ActivityIndicator size="small" color="white" />
@@ -296,6 +304,7 @@ function EditRouteSheet({
 // ─── Main screen ─────────────────────────────────────────────────────────────
 
 export default function OwnerRouteDetailScreen() {
+  const c = useThemeColors()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { token } = useAuthContext()
@@ -321,22 +330,12 @@ export default function OwnerRouteDetailScreen() {
     onSuccess: () => {
       haptic.success()
       invalidateRoute()
-      Toast.show({
-        type: 'success',
-        text1: 'Updated',
-        text2: 'Route updated successfully.',
-        visibilityTime: 3000,
-      })
+      Toast.show({ type: 'success', text1: 'Updated', text2: 'Route updated successfully.', visibilityTime: 3000 })
       setEditSheetVisible(false)
     },
     onError: (err: Error) => {
       haptic.error()
-      Toast.show({
-        type: 'error',
-        text1: 'Update failed',
-        text2: err.message || 'Please try again.',
-        visibilityTime: 4000,
-      })
+      Toast.show({ type: 'error', text1: 'Update failed', text2: err.message || 'Please try again.', visibilityTime: 4000 })
     },
   })
 
@@ -353,21 +352,23 @@ export default function OwnerRouteDetailScreen() {
   if (isError || !route) {
     return (
       <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center px-6"
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: c.background }}
         edges={['bottom', 'left', 'right']}
       >
         <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
+        <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
           Failed to load details
         </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+        <Text className="text-sm mt-2 text-center" style={{ color: c.textSecondary }}>
           {error instanceof Error ? error.message : 'Route not found'}
         </Text>
         <Pressable
           onPress={() => router.back()}
-          className="mt-6 bg-slate-700 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-6 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.surfaceElevated }}
         >
-          <Text className="text-white font-semibold">Go Back</Text>
+          <Text className="font-semibold" style={{ color: c.textPrimary }}>Go Back</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -378,18 +379,21 @@ export default function OwnerRouteDetailScreen() {
   const isCompleted = route.status === 'COMPLETED'
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
+        <View
+          className="flex-row items-center px-4 py-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 p-1.5 rounded-lg active:bg-slate-700"
+            className="mr-3 p-1.5 rounded-lg active:opacity-75"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <ArrowLeft color="#94a3b8" size={22} />
+            <ArrowLeft color={c.textSecondary} size={22} />
           </Pressable>
-          <Text className="flex-1 text-lg font-bold text-white" numberOfLines={1}>
+          <Text className="flex-1 text-lg font-bold" style={{ color: c.textPrimary }} numberOfLines={1}>
             {routeName}
           </Text>
           <Badge label={badge.label} variant={badge.variant} />
@@ -403,8 +407,8 @@ export default function OwnerRouteDetailScreen() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={onRefresh}
-              tintColor="#0ea5e9"
-              colors={['#0ea5e9']}
+              tintColor={c.brand}
+              colors={[c.brand]}
             />
           }
           contentContainerStyle={{
@@ -414,36 +418,30 @@ export default function OwnerRouteDetailScreen() {
           }}
         >
           {/* Route Info Card */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-white font-semibold text-base mb-3">Route Info</Text>
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Route Info</Text>
             <View className="flex-row flex-wrap">
-              <View className="w-1/2">
-                <InfoField label="Name" value={routeName} />
-              </View>
-              <View className="w-1/2">
-                <InfoField label="Status" value={badge.label} />
-              </View>
-              <View className="w-1/2">
-                <InfoField label="Origin" value={route.origin} />
-              </View>
-              <View className="w-1/2">
-                <InfoField label="Destination" value={route.destination} />
-              </View>
-              <View className="w-1/2">
-                <InfoField label="Scheduled Date" value={formatDate(route.scheduledDate)} />
-              </View>
-              <View className="w-1/2">
-                <InfoField label="Driver" value={route.driver.name} />
-              </View>
+              <View className="w-1/2"><InfoField label="Name" value={routeName} /></View>
+              <View className="w-1/2"><InfoField label="Status" value={badge.label} /></View>
+              <View className="w-1/2"><InfoField label="Origin" value={route.origin} /></View>
+              <View className="w-1/2"><InfoField label="Destination" value={route.destination} /></View>
+              <View className="w-1/2"><InfoField label="Scheduled Date" value={formatDate(route.scheduledDate)} /></View>
+              <View className="w-1/2"><InfoField label="Driver" value={route.driver.name} /></View>
             </View>
           </View>
 
           {/* Stops Section */}
           {route.stops.length > 0 && (
-            <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+            <View
+              className="rounded-xl p-4 mb-4"
+              style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+            >
               <View className="flex-row items-center mb-4">
-                <Navigation color="#64748b" size={16} style={{ marginRight: 8 }} />
-                <Text className="text-white font-semibold text-base">
+                <Navigation color={c.textTertiary} size={16} style={{ marginRight: 8 }} />
+                <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>
                   Route Stops ({route.stops.length})
                 </Text>
               </View>
@@ -459,8 +457,11 @@ export default function OwnerRouteDetailScreen() {
 
           {/* Associated Loads Section */}
           {route.loads.length > 0 && (
-            <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-              <Text className="text-white font-semibold text-base mb-3">
+            <View
+              className="rounded-xl p-4 mb-4"
+              style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+            >
+              <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>
                 Associated Loads ({route.loads.length})
               </Text>
               {route.loads.map((load: { id: string; loadNumber: string; status: string; origin: string; destination: string; rate: number | null }) => {
@@ -480,13 +481,14 @@ export default function OwnerRouteDetailScreen() {
                   <Pressable
                     key={load.id}
                     onPress={() => router.push(`/(owner)/loads/${load.id}` as never)}
-                    className="flex-row items-center justify-between p-3 bg-slate-700/50 rounded-xl mb-2 border border-slate-600 active:opacity-75"
+                    className="flex-row items-center justify-between p-3 rounded-xl mb-2 border active:opacity-75"
+                    style={{ backgroundColor: c.surfaceElevated, borderColor: c.border }}
                   >
                     <View className="flex-1 mr-2">
-                      <Text className="text-white text-sm font-semibold mb-0.5">
+                      <Text className="text-sm font-semibold mb-0.5" style={{ color: c.textPrimary }}>
                         #{load.loadNumber}
                       </Text>
-                      <Text className="text-slate-400 text-xs" numberOfLines={1}>
+                      <Text className="text-xs" style={{ color: c.textSecondary }} numberOfLines={1}>
                         {load.origin} → {load.destination}
                       </Text>
                     </View>
@@ -499,18 +501,22 @@ export default function OwnerRouteDetailScreen() {
 
           {/* Actions Card — only show if not completed */}
           {!isCompleted && (
-            <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-              <Text className="text-white font-semibold text-base mb-3">Actions</Text>
+            <View
+              className="rounded-xl p-4 mb-4"
+              style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+            >
+              <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Actions</Text>
               <Pressable
                 onPress={() => setEditSheetVisible(true)}
                 disabled={isUpdating}
-                className="flex-row items-center justify-between p-3 bg-slate-700 rounded-xl border border-slate-600 active:opacity-75"
+                className="flex-row items-center justify-between p-3 rounded-xl border active:opacity-75"
+                style={{ backgroundColor: c.surfaceElevated, borderColor: c.border }}
               >
                 <View className="flex-row items-center gap-3">
-                  <User color="#94a3b8" size={18} />
-                  <Text className="text-white text-sm font-medium">Edit Route</Text>
+                  <User color={c.textSecondary} size={18} />
+                  <Text className="text-sm font-medium" style={{ color: c.textPrimary }}>Edit Route</Text>
                 </View>
-                <ChevronDown color="#64748b" size={16} />
+                <ChevronDown color={c.textTertiary} size={16} />
               </Pressable>
             </View>
           )}
@@ -519,7 +525,7 @@ export default function OwnerRouteDetailScreen() {
           {isCompleted && (
             <View className="bg-green-950/30 border border-green-900/50 rounded-xl p-4 mb-4">
               <Text className="text-green-400 text-sm font-semibold">Route Completed</Text>
-              <Text className="text-slate-500 text-xs mt-1">
+              <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>
                 This route has been completed and is read-only.
               </Text>
             </View>

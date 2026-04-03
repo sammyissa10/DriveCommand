@@ -14,12 +14,14 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type ComplianceResponse, type ComplianceAlert } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { ComplianceRowSkeleton } from '../../../components/skeletons/ComplianceRowSkeleton'
+import { useThemeColors } from '../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // AlertRow Component
 // ---------------------------------------------------------------------------
 
 function AlertRow({ alert }: { alert: ComplianceAlert }) {
+  const c = useThemeColors()
   const isExpired = alert.status === 'EXPIRED'
   const statusColor = isExpired ? '#ef4444' : '#f59e0b'
   const statusBg = isExpired ? '#ef444418' : '#f59e0b18'
@@ -34,8 +36,12 @@ function AlertRow({ alert }: { alert: ComplianceAlert }) {
 
   return (
     <View
-      className="mx-4 mb-3 rounded-xl border bg-slate-800 px-4 py-3.5 flex-row items-center"
-      style={{ borderColor: isExpired ? '#ef444430' : '#f59e0b30' }}
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center"
+      style={{
+        backgroundColor: c.surfaceCard,
+        borderWidth: 1,
+        borderColor: isExpired ? '#ef444430' : '#f59e0b30',
+      }}
     >
       {/* Indicator dot */}
       <View
@@ -46,12 +52,13 @@ function AlertRow({ alert }: { alert: ComplianceAlert }) {
       {/* Info */}
       <View className="flex-1 min-w-0">
         <Text
-          className="text-slate-100 font-semibold text-[15px] mb-0.5"
+          className="font-semibold text-[15px] mb-0.5"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           {alert.entityName}
         </Text>
-        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
+        <Text className="text-[13px]" style={{ color: c.textTertiary }} numberOfLines={1}>
           {alert.documentType}
         </Text>
       </View>
@@ -73,7 +80,7 @@ function AlertRow({ alert }: { alert: ComplianceAlert }) {
           </Text>
         </View>
         {daysText && (
-          <Text className="text-slate-500 text-[11px]">{daysText}</Text>
+          <Text className="text-[11px]" style={{ color: c.textTertiary }}>{daysText}</Text>
         )}
       </View>
     </View>
@@ -93,15 +100,19 @@ function StatCard({
   label: string
   valueColor?: string
 }) {
+  const c = useThemeColors()
   return (
-    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+    <View
+      className="flex-1 rounded-xl p-3.5 items-center"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
       <Text
         className="text-[22px] font-bold"
-        style={{ color: valueColor ?? '#f1f5f9' }}
+        style={{ color: valueColor ?? c.textPrimary }}
       >
         {value}
       </Text>
-      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
+      <Text className="text-xs mt-0.5 text-center" style={{ color: c.textTertiary }}>{label}</Text>
     </View>
   )
 }
@@ -111,6 +122,7 @@ function StatCard({
 // ---------------------------------------------------------------------------
 
 export default function ComplianceScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
 
@@ -128,10 +140,13 @@ export default function ComplianceScreen() {
   ), [])
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -139,9 +154,9 @@ export default function ComplianceScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">Compliance</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Compliance</Text>
         </View>
 
         {isLoading ? (
@@ -153,15 +168,16 @@ export default function ComplianceScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load compliance data
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -208,7 +224,7 @@ export default function ComplianceScreen() {
 
                 {/* Alerts section header */}
                 <View className="px-4 pt-4 pb-2.5">
-                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
                     Alerts
                   </Text>
                 </View>
@@ -220,7 +236,7 @@ export default function ComplianceScreen() {
                 <Text className="text-green-500 text-base font-semibold mt-3 text-center">
                   All Clear
                 </Text>
-                <Text className="text-slate-500 text-sm mt-1.5 text-center">
+                <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
                   No compliance issues found
                 </Text>
               </View>
@@ -229,8 +245,8 @@ export default function ComplianceScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}

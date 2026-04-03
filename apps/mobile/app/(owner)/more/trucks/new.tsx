@@ -10,13 +10,14 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi } from '@drivecommand/api-client'
 import { haptic } from '../../../../lib/haptics'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -35,27 +36,33 @@ function FormField({
   hint?: string
   children: React.ReactNode
 }) {
+  const c = useThemeColors()
   return (
     <View className="mb-4">
-      <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+      <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
         {label}{required && <Text className="text-red-400"> *</Text>}
       </Text>
       {children}
-      {hint && <Text className="text-xs text-slate-500 mt-1">{hint}</Text>}
+      {hint && <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>{hint}</Text>}
     </View>
   )
 }
-
-const inputClass = 'bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm'
 
 // ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
 
 export default function NewTruckScreen() {
+  const c = useThemeColors()
   const router = useRouter()
+  const { from } = useLocalSearchParams<{ from?: string }>()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+
+  function goBack() {
+    if (from === 'dashboard') router.replace('/(owner)/' as any)
+    else router.back()
+  }
 
   const [make, setMake] = useState('')
   const [model, setModel] = useState('')
@@ -86,7 +93,7 @@ export default function NewTruckScreen() {
       haptic.success()
       queryClient.invalidateQueries({ queryKey: ['owner-trucks'] })
       Toast.show({ type: 'success', text1: 'Truck added', text2: 'The truck has been added to your fleet.', visibilityTime: 3000 })
-      router.back()
+      goBack()
     },
     onError: (err: Error) => {
       haptic.error()
@@ -117,10 +124,24 @@ export default function NewTruckScreen() {
     createTruck()
   }
 
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+  } as const
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+      <View
+        className="flex-row items-center px-4 py-3.5"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
         <Pressable
           accessibilityLabel="Go back"
           accessibilityRole="button"
@@ -129,9 +150,9 @@ export default function NewTruckScreen() {
           hitSlop={8}
           disabled={isPending}
         >
-          <ChevronLeft color="#f1f5f9" size={24} />
+          <ChevronLeft color={c.textPrimary} size={24} />
         </Pressable>
-        <Text className="text-lg font-bold text-slate-100 flex-1">Add Truck</Text>
+        <Text className="text-lg font-bold flex-1" style={{ color: c.textPrimary }}>Add Truck</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -144,8 +165,11 @@ export default function NewTruckScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Vehicle Information */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: c.textSecondary }}>
               Vehicle Information
             </Text>
 
@@ -153,9 +177,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Make" required>
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="e.g. Peterbilt"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={make}
                     onChangeText={setMake}
                     autoCapitalize="words"
@@ -166,9 +190,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Model" required>
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="e.g. 579"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={model}
                     onChangeText={setModel}
                     autoCapitalize="words"
@@ -180,9 +204,9 @@ export default function NewTruckScreen() {
 
             <FormField label="Year" required>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder={String(currentYear)}
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={year}
                 onChangeText={setYear}
                 keyboardType="numeric"
@@ -193,9 +217,9 @@ export default function NewTruckScreen() {
 
             <FormField label="VIN" required hint="17 characters — no I, O, or Q">
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="1HGBH41JXMN109186"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={vin}
                 onChangeText={(t) => setVin(t.toUpperCase())}
                 autoCapitalize="characters"
@@ -208,9 +232,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="License Plate" required>
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="TX-9034"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={licensePlate}
                     onChangeText={(t) => setLicensePlate(t.toUpperCase())}
                     autoCapitalize="characters"
@@ -221,9 +245,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Odometer (mi)" required>
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="125000"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={odometer}
                     onChangeText={setOdometer}
                     keyboardType="numeric"
@@ -235,18 +259,21 @@ export default function NewTruckScreen() {
           </View>
 
           {/* Documents (optional) */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
-            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-              Documents <Text className="text-slate-600 normal-case tracking-normal">(optional)</Text>
+          <View
+            className="rounded-xl p-4 mb-6"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: c.textSecondary }}>
+              Documents <Text style={{ color: c.textTertiary }} className="normal-case tracking-normal">(optional)</Text>
             </Text>
 
             <View className="flex-row gap-3">
               <View className="flex-1">
                 <FormField label="Registration #">
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="REG-12345"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={registrationNumber}
                     onChangeText={setRegistrationNumber}
                     editable={!isPending}
@@ -256,9 +283,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Reg. Expiry" hint="YYYY-MM-DD">
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="2026-12-31"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={registrationExpiry}
                     onChangeText={setRegistrationExpiry}
                     keyboardType="numbers-and-punctuation"
@@ -272,9 +299,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Insurance #">
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="INS-67890"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={insuranceNumber}
                     onChangeText={setInsuranceNumber}
                     editable={!isPending}
@@ -284,9 +311,9 @@ export default function NewTruckScreen() {
               <View className="flex-1">
                 <FormField label="Ins. Expiry" hint="YYYY-MM-DD">
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="2026-12-31"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={insuranceExpiry}
                     onChangeText={setInsuranceExpiry}
                     keyboardType="numbers-and-punctuation"
@@ -301,7 +328,8 @@ export default function NewTruckScreen() {
           <Pressable
             onPress={handleSubmit}
             disabled={isPending}
-            className={`rounded-xl py-4 items-center ${isPending ? 'bg-sky-800 opacity-60' : 'bg-sky-600 active:opacity-80'}`}
+            className="rounded-xl py-4 items-center"
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.6 : 1 }}
           >
             {isPending ? (
               <ActivityIndicator size="small" color="white" />

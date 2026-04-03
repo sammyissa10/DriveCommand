@@ -22,6 +22,7 @@ import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { LoadDetailSkeleton } from '../../../components/skeletons/LoadDetailSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
+import { useThemeColors } from '../../../constants/tokens'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -70,12 +71,13 @@ interface InfoFieldProps {
 }
 
 function InfoField({ label, value }: InfoFieldProps) {
+  const c = useThemeColors()
   return (
     <View className="mb-3">
-      <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+      <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
         {label}
       </Text>
-      <Text className="text-sm text-white" numberOfLines={2}>
+      <Text className="text-sm" style={{ color: c.textPrimary }} numberOfLines={2}>
         {value}
       </Text>
     </View>
@@ -95,12 +97,16 @@ const STATUS_TIMELINE_LABELS: Record<string, string> = {
 }
 
 function StatusTimeline({ status }: { status: string }) {
+  const c = useThemeColors()
   const isCancelled = status === 'CANCELLED'
   const currentIndex = STATUS_LIFECYCLE.indexOf(status)
 
   return (
-    <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-      <Text className="text-white font-semibold text-base mb-4">Status Timeline</Text>
+    <View
+      className="rounded-xl p-4 mb-4"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
+      <Text className="font-semibold text-base mb-4" style={{ color: c.textPrimary }}>Status Timeline</Text>
       {isCancelled ? (
         <View className="flex-row items-center gap-3">
           <View className="w-8 h-8 rounded-full bg-red-900/50 border border-red-700 items-center justify-center">
@@ -118,32 +124,32 @@ function StatusTimeline({ status }: { status: string }) {
                 <View key={s} className="flex-row items-center">
                   <View className="items-center" style={{ minWidth: 64 }}>
                     <View
-                      className={`w-8 h-8 rounded-full items-center justify-center ${
-                        isCompleted
-                          ? 'bg-green-500'
-                          : isCurrent
-                          ? 'bg-sky-500'
-                          : 'bg-slate-700 border border-slate-600'
-                      }`}
-                      style={isCurrent ? { shadowColor: '#0ea5e9', shadowOpacity: 0.4, shadowRadius: 6, elevation: 3 } : undefined}
+                      className="w-8 h-8 rounded-full items-center justify-center"
+                      style={{
+                        backgroundColor: isCompleted ? '#22c55e' : isCurrent ? '#0ea5e9' : c.surfaceElevated,
+                        borderWidth: (!isCompleted && !isCurrent) ? 1 : 0,
+                        borderColor: c.border,
+                        ...(isCurrent ? { shadowColor: '#0ea5e9', shadowOpacity: 0.4, shadowRadius: 6, elevation: 3 } : undefined),
+                      }}
                     >
-                      <Text className={`text-xs font-bold ${isCompleted || isCurrent ? 'text-white' : 'text-slate-400'}`}>
+                      <Text className="text-xs font-bold" style={{ color: isCompleted || isCurrent ? '#ffffff' : c.textSecondary }}>
                         {isCompleted ? '✓' : index + 1}
                       </Text>
                     </View>
                     <Text
-                      className={`text-xs text-center mt-1.5 font-medium ${
-                        isCurrent ? 'text-sky-400' : isCompleted ? 'text-green-400' : 'text-slate-500'
-                      }`}
-                      style={{ width: 64 }}
+                      className="text-xs text-center mt-1.5 font-medium"
+                      style={{
+                        color: isCurrent ? '#0ea5e9' : isCompleted ? '#22c55e' : c.textTertiary,
+                        width: 64,
+                      }}
                     >
                       {STATUS_TIMELINE_LABELS[s]}
                     </Text>
                   </View>
                   {index < STATUS_LIFECYCLE.length - 1 && (
                     <View
-                      className={`h-0.5 ${currentIndex > index ? 'bg-green-500' : 'bg-slate-700'}`}
-                      style={{ width: 20, marginBottom: 20 }}
+                      className="h-0.5"
+                      style={{ width: 20, marginBottom: 20, backgroundColor: currentIndex > index ? '#22c55e' : c.border }}
                     />
                   )}
                 </View>
@@ -201,7 +207,8 @@ function DriverPickerSheet({
             <Pressable
               onPress={() => onSelect(null)}
               disabled={isPending}
-              className="flex-row items-center p-3 rounded-xl mb-2 border border-slate-600 bg-slate-700/50 active:opacity-75"
+              className="flex-row items-center p-3 rounded-xl mb-2 active:opacity-75"
+              style={{ borderWidth: 1, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.1)' }}
             >
               <Text className="text-red-400 font-semibold text-sm flex-1">Unassign Driver</Text>
               {isPending && <ActivityIndicator size="small" color="#f87171" />}
@@ -210,7 +217,7 @@ function DriverPickerSheet({
 
           {drivers.length === 0 ? (
             <View className="items-center py-8">
-              <Text className="text-slate-400 text-sm">No active drivers found</Text>
+              <Text className="text-sm" style={{ color: '#94a3b8' }}>No active drivers found</Text>
             </View>
           ) : (
             drivers.map((driver) => {
@@ -220,13 +227,14 @@ function DriverPickerSheet({
                   key={driver.id}
                   onPress={() => onSelect(driver.id)}
                   disabled={isPending}
-                  className={`flex-row items-center p-3 rounded-xl mb-2 border ${
-                    isSelected
-                      ? 'bg-sky-900/40 border-sky-500'
-                      : 'bg-slate-700/50 border-slate-600 active:opacity-75'
-                  }`}
+                  className="flex-row items-center p-3 rounded-xl mb-2 active:opacity-75"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: isSelected ? '#0ea5e9' : 'rgba(100,116,139,0.5)',
+                    backgroundColor: isSelected ? 'rgba(14,165,233,0.15)' : 'rgba(100,116,139,0.1)',
+                  }}
                 >
-                  <Text className="text-white text-sm flex-1" numberOfLines={1}>
+                  <Text className="text-sm flex-1" style={{ color: '#f1f5f9' }} numberOfLines={1}>
                     {driver.name}
                   </Text>
                   {isSelected && <View className="w-2 h-2 rounded-full bg-sky-400" />}
@@ -270,13 +278,15 @@ function StatusPickerSheet({
                 if (!isCurrentStatus) onSelect(s.value)
               }}
               disabled={isPending || isCurrentStatus}
-              className={`flex-row items-center justify-between p-3 rounded-xl mb-2 border ${
-                isCurrentStatus
-                  ? 'bg-sky-900/30 border-sky-600 opacity-60'
-                  : 'bg-slate-700/50 border-slate-600 active:opacity-75'
-              }`}
+              className="flex-row items-center justify-between p-3 rounded-xl mb-2 active:opacity-75"
+              style={{
+                borderWidth: 1,
+                borderColor: isCurrentStatus ? '#0ea5e9' : 'rgba(100,116,139,0.5)',
+                backgroundColor: isCurrentStatus ? 'rgba(14,165,233,0.15)' : 'rgba(100,116,139,0.1)',
+                opacity: isCurrentStatus ? 0.6 : 1,
+              }}
             >
-              <Text className={`text-sm ${isCurrentStatus ? 'text-sky-300' : 'text-white'}`}>
+              <Text className="text-sm" style={{ color: isCurrentStatus ? '#38bdf8' : '#f1f5f9' }}>
                 {s.label}
               </Text>
               {isCurrentStatus && (
@@ -320,7 +330,7 @@ function CancelConfirmSheet({
               Cancel Load #{loadNumber}?
             </Text>
           </View>
-          <Text className="text-slate-400 text-sm leading-5">
+          <Text className="text-sm leading-5" style={{ color: '#94a3b8' }}>
             This will mark the load as CANCELLED. This action cannot be easily undone.
             The load will remain visible in history.
           </Text>
@@ -330,16 +340,16 @@ function CancelConfirmSheet({
           <Pressable
             onPress={onClose}
             disabled={isPending}
-            className="flex-1 bg-slate-700 rounded-xl py-3.5 items-center active:opacity-75"
+            className="flex-1 rounded-xl py-3.5 items-center active:opacity-75"
+            style={{ backgroundColor: 'rgba(100,116,139,0.3)' }}
           >
             <Text className="text-white font-semibold">Keep Load</Text>
           </Pressable>
           <Pressable
             onPress={onConfirm}
             disabled={isPending}
-            className={`flex-1 rounded-xl py-3.5 items-center ${
-              isPending ? 'bg-red-900 opacity-60' : 'bg-red-600 active:opacity-80'
-            }`}
+            className="flex-1 rounded-xl py-3.5 items-center"
+            style={{ backgroundColor: isPending ? '#7f1d1d' : '#dc2626', opacity: isPending ? 0.6 : 1 }}
           >
             {isPending ? (
               <ActivityIndicator size="small" color="white" />
@@ -356,6 +366,7 @@ function CancelConfirmSheet({
 // ─── Main screen ────────────────────────────────────────────────────────────
 
 export default function OwnerLoadDetailScreen() {
+  const c = useThemeColors()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { token } = useAuthContext()
@@ -454,21 +465,23 @@ export default function OwnerLoadDetailScreen() {
   if (isError || !load) {
     return (
       <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center px-6"
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: c.background }}
         edges={['bottom', 'left', 'right']}
       >
         <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
+        <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
           Failed to load details
         </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+        <Text className="text-sm mt-2 text-center" style={{ color: c.textSecondary }}>
           {error instanceof Error ? error.message : 'Load not found'}
         </Text>
         <Pressable
           onPress={() => router.back()}
-          className="mt-6 bg-slate-700 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-6 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.surfaceElevated }}
         >
-          <Text className="text-white font-semibold">Go Back</Text>
+          <Text className="font-semibold" style={{ color: c.textPrimary }}>Go Back</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -479,18 +492,21 @@ export default function OwnerLoadDetailScreen() {
   const isDeliveredOrInvoiced = load.status === 'DELIVERED' || load.status === 'INVOICED'
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
+      <View
+        className="flex-row items-center px-4 py-3"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
         <Pressable
           onPress={() => router.back()}
-          className="mr-3 p-1.5 rounded-lg active:bg-slate-700"
+          className="mr-3 p-1.5 rounded-lg active:opacity-80"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <ArrowLeft color="#94a3b8" size={22} />
+          <ArrowLeft color={c.textSecondary} size={22} />
         </Pressable>
-        <Text className="flex-1 text-lg font-bold text-white" numberOfLines={1}>
+        <Text className="flex-1 text-lg font-bold" style={{ color: c.textPrimary }} numberOfLines={1}>
           Load #{load.loadNumber}
         </Text>
         <Badge label={badge.label} variant={badge.variant} />
@@ -504,8 +520,8 @@ export default function OwnerLoadDetailScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={onRefresh}
-            tintColor="#0ea5e9"
-            colors={['#0ea5e9']}
+            tintColor={c.brand}
+            colors={[c.brand]}
           />
         }
         contentContainerStyle={{
@@ -515,8 +531,11 @@ export default function OwnerLoadDetailScreen() {
         }}
       >
         {/* Route Info Card */}
-        <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-          <Text className="text-white font-semibold text-base mb-3">Route Info</Text>
+        <View
+          className="rounded-xl p-4 mb-4"
+          style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+        >
+          <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Route Info</Text>
           <View className="flex-row flex-wrap">
             <View className="w-1/2">
               <InfoField label="Origin" value={load.origin} />
@@ -547,10 +566,13 @@ export default function OwnerLoadDetailScreen() {
 
         {/* Stop Timeline */}
         {load.stops.length > 0 && (
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
             <View className="flex-row items-center mb-4">
-              <Package color="#64748b" size={16} style={{ marginRight: 8 }} />
-              <Text className="text-white font-semibold text-base">
+              <Package color={c.textTertiary} size={16} style={{ marginRight: 8 }} />
+              <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>
                 Route Stops ({load.stops.length})
               </Text>
             </View>
@@ -565,18 +587,22 @@ export default function OwnerLoadDetailScreen() {
         )}
 
         {/* Assigned Truck */}
-        <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+        <View
+          className="rounded-xl p-4 mb-4"
+          style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+        >
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center gap-2">
-              <Truck color="#64748b" size={16} />
-              <Text className="text-white font-semibold text-base">Assigned Truck</Text>
+              <Truck color={c.textTertiary} size={16} />
+              <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>Assigned Truck</Text>
             </View>
             {!isCancelled && (
               <Pressable
                 onPress={() => setTruckPickerVisible(true)}
-                className="bg-sky-600 rounded-lg py-2 px-4 active:opacity-75"
+                className="rounded-lg py-2 px-4 active:opacity-75"
+                style={{ backgroundColor: c.brand }}
               >
-                <Text className="text-white text-sm font-semibold">
+                <Text className="text-sm font-semibold" style={{ color: '#ffffff' }}>
                   {load.truck ? 'Change Truck' : 'Assign Truck'}
                 </Text>
               </Pressable>
@@ -596,35 +622,39 @@ export default function OwnerLoadDetailScreen() {
               </View>
             </View>
           ) : (
-            <Text className="text-slate-500 text-sm">No truck assigned to this load.</Text>
+            <Text className="text-sm" style={{ color: c.textTertiary }}>No truck assigned to this load.</Text>
           )}
         </View>
 
         {/* Owner Actions — only show if not cancelled */}
         {!isCancelled && (
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-white font-semibold text-base mb-3">Actions</Text>
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Actions</Text>
 
             {/* Assign Driver */}
             <Pressable
               onPress={() => setDriverPickerVisible(true)}
               disabled={isUpdating}
-              className="flex-row items-center justify-between p-3 bg-slate-700 rounded-xl mb-2 border border-slate-600 active:opacity-75"
+              className="flex-row items-center justify-between p-3 rounded-xl mb-2 active:opacity-75"
+              style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
             >
               <View className="flex-row items-center gap-3">
-                <User color="#94a3b8" size={18} />
+                <User color={c.textSecondary} size={18} />
                 <View>
-                  <Text className="text-white text-sm font-medium">
+                  <Text className="text-sm font-medium" style={{ color: c.textPrimary }}>
                     {load.driver ? 'Change Driver' : 'Assign Driver'}
                   </Text>
                   {load.driver && (
-                    <Text className="text-slate-400 text-xs mt-0.5">
+                    <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }}>
                       Currently: {load.driver.name}
                     </Text>
                   )}
                 </View>
               </View>
-              <ChevronDown color="#64748b" size={16} />
+              <ChevronDown color={c.textTertiary} size={16} />
             </Pressable>
 
             {/* Change Status */}
@@ -632,20 +662,21 @@ export default function OwnerLoadDetailScreen() {
               <Pressable
                 onPress={() => setStatusPickerVisible(true)}
                 disabled={isUpdating}
-                className="flex-row items-center justify-between p-3 bg-slate-700 rounded-xl mb-2 border border-slate-600 active:opacity-75"
+                className="flex-row items-center justify-between p-3 rounded-xl mb-2 active:opacity-75"
+                style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
               >
                 <View className="flex-row items-center gap-3">
-                  <View className="w-4 h-4 rounded-full bg-sky-500/30 border border-sky-500 items-center justify-center">
+                  <View className="w-4 h-4 rounded-full items-center justify-center" style={{ backgroundColor: 'rgba(14,165,233,0.3)', borderWidth: 1, borderColor: '#0ea5e9' }}>
                     <View className="w-1.5 h-1.5 rounded-full bg-sky-400" />
                   </View>
                   <View>
-                    <Text className="text-white text-sm font-medium">Change Status</Text>
-                    <Text className="text-slate-400 text-xs mt-0.5">
+                    <Text className="text-sm font-medium" style={{ color: c.textPrimary }}>Change Status</Text>
+                    <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }}>
                       Current: {getStatusBadge(load.status).label}
                     </Text>
                   </View>
                 </View>
-                <ChevronDown color="#64748b" size={16} />
+                <ChevronDown color={c.textTertiary} size={16} />
               </Pressable>
             )}
 
@@ -653,7 +684,8 @@ export default function OwnerLoadDetailScreen() {
             <Pressable
               onPress={() => { haptic.warning(); setCancelConfirmVisible(true) }}
               disabled={isUpdating}
-              className="flex-row items-center gap-3 p-3 bg-red-950/40 rounded-xl border border-red-900/50 active:opacity-75"
+              className="flex-row items-center gap-3 p-3 rounded-xl active:opacity-75"
+              style={{ backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 1, borderColor: 'rgba(239,68,68,0.3)' }}
             >
               <XCircle color="#f87171" size={18} />
               <Text className="text-red-400 text-sm font-medium">Cancel Load</Text>
@@ -663,12 +695,15 @@ export default function OwnerLoadDetailScreen() {
 
         {/* Cancelled banner */}
         {isCancelled && (
-          <View className="bg-red-950/30 border border-red-900/50 rounded-xl p-4 mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: 'rgba(239,68,68,0.08)', borderWidth: 1, borderColor: 'rgba(239,68,68,0.25)' }}
+          >
             <View className="flex-row items-center gap-2">
               <XCircle color="#f87171" size={16} />
               <Text className="text-red-400 text-sm font-semibold">Load Cancelled</Text>
             </View>
-            <Text className="text-slate-500 text-xs mt-1">
+            <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>
               This load has been cancelled and is read-only.
             </Text>
           </View>

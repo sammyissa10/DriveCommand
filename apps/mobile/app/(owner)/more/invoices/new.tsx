@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, ChevronDown } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
@@ -18,6 +18,7 @@ import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi, type CustomerOption } from '@drivecommand/api-client'
 import { BottomSheet } from '../../../../components/ui/BottomSheet'
 import { haptic } from '../../../../lib/haptics'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -34,27 +35,33 @@ function FormField({
   hint?: string
   children: React.ReactNode
 }) {
+  const c = useThemeColors()
   return (
     <View className="mb-4">
-      <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+      <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
         {label}{required && <Text className="text-red-400"> *</Text>}
       </Text>
       {children}
-      {hint && <Text className="text-xs text-slate-500 mt-1">{hint}</Text>}
+      {hint && <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>{hint}</Text>}
     </View>
   )
 }
-
-const inputClass = 'bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm'
 
 // ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
 
 export default function NewInvoiceScreen() {
+  const c = useThemeColors()
   const router = useRouter()
+  const { from } = useLocalSearchParams<{ from?: string }>()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+
+  function goBack() {
+    if (from === 'dashboard') router.replace('/(owner)/' as any)
+    else router.back()
+  }
 
   const [description, setDescription] = useState('')
   const [amount, setAmount] = useState('')
@@ -81,7 +88,7 @@ export default function NewInvoiceScreen() {
       haptic.success()
       queryClient.invalidateQueries({ queryKey: ['owner-invoices'] })
       Toast.show({ type: 'success', text1: 'Invoice created', text2: `Invoice #${data.invoice.invoiceNumber} created as draft.`, visibilityTime: 3000 })
-      router.back()
+      goBack()
     },
     onError: (err: Error) => {
       haptic.error()
@@ -102,21 +109,35 @@ export default function NewInvoiceScreen() {
     createInvoice()
   }
 
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+  } as const
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+      <View
+        className="flex-row items-center px-4 py-3.5"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
         <Pressable
           accessibilityLabel="Go back"
           accessibilityRole="button"
-          onPress={() => router.back()}
+          onPress={() => goBack()}
           className="mr-3"
           hitSlop={8}
           disabled={isPending}
         >
-          <ChevronLeft color="#f1f5f9" size={24} />
+          <ChevronLeft color={c.textPrimary} size={24} />
         </Pressable>
-        <Text className="text-lg font-bold text-slate-100 flex-1">New Invoice</Text>
+        <Text className="text-lg font-bold flex-1" style={{ color: c.textPrimary }}>New Invoice</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -129,8 +150,11 @@ export default function NewInvoiceScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Invoice Details */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: c.textSecondary }}>
               Invoice Details
             </Text>
 
@@ -138,20 +162,21 @@ export default function NewInvoiceScreen() {
               <Pressable
                 onPress={() => setCustomerSheetVisible(true)}
                 disabled={isPending}
-                className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 flex-row items-center justify-between active:opacity-75"
+                className="rounded-xl px-4 py-3 flex-row items-center justify-between active:opacity-75"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border }}
               >
-                <Text className={selectedCustomer ? 'text-white text-sm' : 'text-slate-500 text-sm'}>
+                <Text style={{ color: selectedCustomer ? c.textPrimary : c.textMuted, fontSize: 14 }}>
                   {selectedCustomer ? selectedCustomer.name : 'Select customer (optional)'}
                 </Text>
-                <ChevronDown color="#475569" size={16} />
+                <ChevronDown color={c.textTertiary} size={16} />
               </Pressable>
             </FormField>
 
             <FormField label="Description" required>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="e.g. Freight delivery — Dallas to Houston"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={description}
                 onChangeText={setDescription}
                 autoCapitalize="sentences"
@@ -164,9 +189,9 @@ export default function NewInvoiceScreen() {
               <View className="flex-1">
                 <FormField label="Amount ($)" required>
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="0.00"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={amount}
                     onChangeText={setAmount}
                     keyboardType="decimal-pad"
@@ -177,9 +202,9 @@ export default function NewInvoiceScreen() {
               <View className="flex-1">
                 <FormField label="Due Date" hint="YYYY-MM-DD">
                   <TextInput
-                    className={inputClass}
+                    style={inputStyle}
                     placeholder="2026-04-30"
-                    placeholderTextColor="#475569"
+                    placeholderTextColor={c.textMuted}
                     value={dueDate}
                     onChangeText={setDueDate}
                     keyboardType="numbers-and-punctuation"
@@ -194,7 +219,8 @@ export default function NewInvoiceScreen() {
           <Pressable
             onPress={handleSubmit}
             disabled={isPending}
-            className={`rounded-xl py-4 items-center ${isPending ? 'bg-sky-800 opacity-60' : 'bg-sky-600 active:opacity-80'}`}
+            className="rounded-xl py-4 items-center"
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.6 : 1 }}
           >
             {isPending ? (
               <ActivityIndicator size="small" color="white" />
@@ -223,45 +249,45 @@ export default function NewInvoiceScreen() {
               paddingVertical: 14,
               paddingHorizontal: 4,
               borderBottomWidth: 1,
-              borderBottomColor: '#1e293b',
+              borderBottomColor: c.border,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
-            <Text style={{ color: '#94a3b8', fontSize: 15 }}>No customer</Text>
+            <Text style={{ color: c.textSecondary, fontSize: 15 }}>No customer</Text>
             {selectedCustomer === null && (
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#0284c7' }} />
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c.brand }} />
             )}
           </Pressable>
 
-          {(customers ?? []).map((c) => (
+          {(customers ?? []).map((cust) => (
             <Pressable
-              key={c.id}
+              key={cust.id}
               onPress={() => {
                 haptic.light()
-                setSelectedCustomer(c)
+                setSelectedCustomer(cust)
                 setCustomerSheetVisible(false)
               }}
               style={{
                 paddingVertical: 14,
                 paddingHorizontal: 4,
                 borderBottomWidth: 1,
-                borderBottomColor: '#1e293b',
+                borderBottomColor: c.border,
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
             >
-              <Text style={{ color: '#f1f5f9', fontSize: 15 }}>{c.name}</Text>
-              {selectedCustomer?.id === c.id && (
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#0284c7' }} />
+              <Text style={{ color: c.textPrimary, fontSize: 15 }}>{cust.name}</Text>
+              {selectedCustomer?.id === cust.id && (
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c.brand }} />
               )}
             </Pressable>
           ))}
 
           {(customers ?? []).length === 0 && (
-            <Text style={{ color: '#64748b', fontSize: 14, textAlign: 'center', paddingVertical: 20 }}>
+            <Text style={{ color: c.textTertiary, fontSize: 14, textAlign: 'center', paddingVertical: 20 }}>
               No customers found
             </Text>
           )}

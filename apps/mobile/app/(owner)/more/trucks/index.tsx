@@ -15,6 +15,7 @@ import { ownerApi, type TruckOption } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
 import { TruckCardSkeleton } from '../../../../components/skeletons/TruckCardSkeleton'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // TruckCard Component
@@ -28,12 +29,14 @@ const STATUS_COLORS: Record<string, { text: string; bg: string }> = {
 }
 
 function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void }) {
+  const c = useThemeColors()
   const colors = STATUS_COLORS[truck.status] ?? STATUS_COLORS['Ready to Use']
 
   return (
     <Pressable
       onPress={onPress}
-      className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 flex-row items-center active:opacity-75"
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center active:opacity-75"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Icon */}
       <View
@@ -45,10 +48,10 @@ function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void
 
       {/* Info */}
       <View className="flex-1 min-w-0">
-        <Text className="text-slate-100 font-bold text-[15px] mb-0.5" numberOfLines={1}>
+        <Text className="font-bold text-[15px] mb-0.5" style={{ color: c.textPrimary }} numberOfLines={1}>
           {truck.year} {truck.make} {truck.model}
         </Text>
-        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
+        <Text className="text-[13px]" style={{ color: c.textTertiary }} numberOfLines={1}>
           {truck.licensePlate}
         </Text>
       </View>
@@ -60,7 +63,7 @@ function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void
             {truck.status}
           </Text>
         </View>
-        <ChevronRight color="#475569" size={16} />
+        <ChevronRight color={c.textTertiary} size={16} />
       </View>
     </Pressable>
   )
@@ -71,6 +74,7 @@ function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void
 // ---------------------------------------------------------------------------
 
 export default function TrucksScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
 
@@ -96,10 +100,13 @@ export default function TrucksScreen() {
   const expiredDocsCount = data?.filter((t) => t.status === 'Expired Docs').length ?? 0
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -107,9 +114,9 @@ export default function TrucksScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100 flex-1">Trucks</Text>
+          <Text className="text-lg font-bold flex-1" style={{ color: c.textPrimary }}>Trucks</Text>
         </View>
 
         {isLoading ? (
@@ -121,15 +128,16 @@ export default function TrucksScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load trucks
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -144,8 +152,8 @@ export default function TrucksScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
@@ -155,12 +163,16 @@ export default function TrucksScreen() {
                 <View className="px-4 py-4 gap-2.5">
                   <View className="flex-row gap-2.5">
                     {[
-                      { label: 'Total', value: totalCount, color: '#f1f5f9' },
+                      { label: 'Total', value: totalCount, color: c.textPrimary },
                       { label: 'In Use', value: inUseCount, color: '#38bdf8' },
                     ].map((s) => (
-                      <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                      <View
+                        key={s.label}
+                        className="flex-1 rounded-xl p-3.5 items-center"
+                        style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+                      >
                         <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
-                        <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+                        <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>{s.label}</Text>
                       </View>
                     ))}
                   </View>
@@ -169,9 +181,13 @@ export default function TrucksScreen() {
                       { label: 'In Maint.', value: maintenanceCount, color: maintenanceCount > 0 ? '#f59e0b' : '#64748b' },
                       { label: 'Expired Docs', value: expiredDocsCount, color: expiredDocsCount > 0 ? '#ef4444' : '#64748b' },
                     ].map((s) => (
-                      <View key={s.label} className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+                      <View
+                        key={s.label}
+                        className="flex-1 rounded-xl p-3.5 items-center"
+                        style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+                      >
                         <Text className="text-[22px] font-bold" style={{ color: s.color }}>{s.value}</Text>
-                        <Text className="text-slate-500 text-xs mt-0.5">{s.label}</Text>
+                        <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>{s.label}</Text>
                       </View>
                     ))}
                   </View>
@@ -179,7 +195,7 @@ export default function TrucksScreen() {
 
                 {totalCount > 0 && (
                   <View className="px-4 pb-2.5">
-                    <Text className="text-slate-500 text-[13px]">
+                    <Text className="text-[13px]" style={{ color: c.textTertiary }}>
                       {totalCount} truck{totalCount !== 1 ? 's' : ''} in fleet
                     </Text>
                   </View>
@@ -188,13 +204,14 @@ export default function TrucksScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-[60px]">
-                <Truck color="#334155" size={48} />
-                <Text className="text-slate-500 text-[15px] mt-3 text-center">
+                <Truck color={c.border} size={48} />
+                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
                   No trucks in your fleet
                 </Text>
                 <Pressable
                   onPress={() => router.push('/(owner)/more/trucks/new' as never)}
-                  className="mt-4 bg-sky-600 px-6 py-3 rounded-xl active:opacity-75"
+                  className="mt-4 px-6 py-3 rounded-xl active:opacity-75"
+                  style={{ backgroundColor: c.brand }}
                 >
                   <Text className="text-white font-semibold">Add First Truck</Text>
                 </Pressable>

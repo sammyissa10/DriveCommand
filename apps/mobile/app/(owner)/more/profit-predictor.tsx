@@ -19,6 +19,7 @@ import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type PredictProfitResult } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { AddressInput } from '../../../components/owner/AddressInput'
+import { useThemeColors } from '../../../constants/tokens'
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000'
 
@@ -35,17 +36,21 @@ function StatCard({
   label: string
   valueColor?: string
 }) {
+  const c = useThemeColors()
   return (
-    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+    <View
+      className="flex-1 rounded-xl p-3.5 items-center"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
       <Text
         className="text-[18px] font-bold"
-        style={{ color: valueColor ?? '#f1f5f9' }}
+        style={{ color: valueColor ?? c.textPrimary }}
         numberOfLines={1}
         adjustsFontSizeToFit
       >
         {value}
       </Text>
-      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
+      <Text className="text-xs mt-0.5 text-center" style={{ color: c.textTertiary }}>{label}</Text>
     </View>
   )
 }
@@ -86,6 +91,7 @@ const BANNER_CONFIG = {
 // ---------------------------------------------------------------------------
 
 export default function ProfitPredictorScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
 
@@ -155,10 +161,13 @@ export default function ProfitPredictorScreen() {
     `$${parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -166,9 +175,9 @@ export default function ProfitPredictorScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">Profit Predictor</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Profit Predictor</Text>
         </View>
 
         <ScrollView
@@ -179,14 +188,13 @@ export default function ProfitPredictorScreen() {
         >
           {/* Origin */}
           <View className="mb-4" style={{ zIndex: 20 }}>
-            <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+            <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
               Origin
             </Text>
             <AddressInput
               value={origin}
               onChangeText={(text) => {
                 setOrigin(text)
-                // Clear coords if user manually edits after a geocoded selection
                 setOriginLat(null)
                 setOriginLng(null)
               }}
@@ -201,7 +209,7 @@ export default function ProfitPredictorScreen() {
 
           {/* Destination */}
           <View className="mb-4" style={{ zIndex: 10 }}>
-            <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+            <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
               Destination
             </Text>
             <AddressInput
@@ -223,29 +231,31 @@ export default function ProfitPredictorScreen() {
           {/* Distance + Rate row */}
           <View className="flex-row gap-3 mb-5">
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Distance
               </Text>
               <TextInput
                 value={distance}
                 onChangeText={setDistance}
                 placeholder="Miles"
-                placeholderTextColor="#64748b"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3.5 text-[15px]"
+                placeholderTextColor={c.textMuted}
+                className="rounded-xl px-4 py-3.5 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
                 keyboardType="numeric"
                 returnKeyType="next"
               />
             </View>
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Offered Rate
               </Text>
               <TextInput
                 value={rate}
                 onChangeText={setRate}
                 placeholder="$ Rate"
-                placeholderTextColor="#64748b"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3.5 text-[15px]"
+                placeholderTextColor={c.textMuted}
+                className="rounded-xl px-4 py-3.5 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
                 keyboardType="numeric"
                 returnKeyType="done"
                 onSubmitEditing={() => isFormValid && handlePredict()}
@@ -257,8 +267,8 @@ export default function ProfitPredictorScreen() {
           <Pressable
             onPress={handlePredict}
             disabled={!isFormValid || isPending}
-            className="bg-sky-500 rounded-xl py-3.5 items-center mb-5"
-            style={{ opacity: !isFormValid || isPending ? 0.5 : 1 }}
+            className="rounded-xl py-3.5 items-center mb-5"
+            style={{ backgroundColor: c.brand, opacity: !isFormValid || isPending ? 0.5 : 1 }}
           >
             <Text className="text-white font-semibold text-[15px]">
               {isPending ? 'Predicting…' : 'Predict'}
@@ -288,7 +298,7 @@ export default function ProfitPredictorScreen() {
                   <Text className="font-bold text-[15px]" style={{ color: banner.color }}>
                     {banner.label}
                   </Text>
-                  <Text className="text-slate-400 text-xs mt-0.5">{banner.sublabel}</Text>
+                  <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }}>{banner.sublabel}</Text>
                 </View>
               </View>
 
@@ -325,8 +335,11 @@ export default function ProfitPredictorScreen() {
               </View>
 
               {/* Data source note */}
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-                <Text className="text-slate-400 text-xs">
+              <View
+                className="rounded-xl p-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
+                <Text className="text-xs" style={{ color: c.textSecondary }}>
                   {data.dataSource === 'lane'
                     ? `Based on ${data.laneRouteCount} historical route${data.laneRouteCount !== 1 ? 's' : ''} for this lane ($${data.costPerMileUsed}/mi).`
                     : data.dataSource === 'fleet'

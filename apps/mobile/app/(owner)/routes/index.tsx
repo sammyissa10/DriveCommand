@@ -11,6 +11,7 @@ import { EmptyState } from '../../../components/ui/EmptyState'
 import { Badge } from '../../../components/ui/Badge'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { useThemeColors } from '../../../constants/tokens'
 
 type TabType = 'all' | 'planned' | 'active' | 'completed'
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
@@ -41,6 +42,7 @@ interface OwnerRouteCardProps {
 }
 
 function OwnerRouteCard({ route, onPress }: OwnerRouteCardProps) {
+  const c = useThemeColors()
   const badge = getStatusBadge(route.status)
   const routeName = route.name ?? 'Unnamed Route'
   const scheduledLabel = (() => {
@@ -58,30 +60,31 @@ function OwnerRouteCard({ route, onPress }: OwnerRouteCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="bg-slate-800 border border-slate-700 rounded-xl mx-4 mb-3 p-4 active:opacity-75"
+      className="rounded-xl mx-4 mb-3 p-4 active:opacity-75"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Top row: route name + badge */}
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-white font-semibold text-base flex-1 mr-2" numberOfLines={1}>
+        <Text className="font-semibold text-base flex-1 mr-2" style={{ color: c.textPrimary }} numberOfLines={1}>
           {routeName}
         </Text>
         <Badge label={badge.label} variant={badge.variant} />
       </View>
 
       {/* Origin → Destination */}
-      <Text className="text-slate-400 text-xs mb-1" numberOfLines={1}>
+      <Text className="text-xs mb-1" style={{ color: c.textSecondary }} numberOfLines={1}>
         {route.origin} → {route.destination}
       </Text>
 
       {/* Scheduled date */}
-      <Text className="text-slate-400 text-xs mb-2">{scheduledLabel}</Text>
+      <Text className="text-xs mb-2" style={{ color: c.textSecondary }}>{scheduledLabel}</Text>
 
       {/* Driver + counts */}
       <View className="flex-row items-center justify-between">
-        <Text className="text-slate-400 text-xs font-medium" numberOfLines={1}>
+        <Text className="text-xs font-medium" style={{ color: c.textSecondary }} numberOfLines={1}>
           Driver: {route.driver.name}
         </Text>
-        <Text className="text-slate-500 text-xs">
+        <Text className="text-xs" style={{ color: c.textTertiary }}>
           {route._count.loads} loads, {route._count.stops} stops
         </Text>
       </View>
@@ -90,6 +93,7 @@ function OwnerRouteCard({ route, onPress }: OwnerRouteCardProps) {
 }
 
 export default function OwnerRoutesScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>('all')
@@ -135,17 +139,18 @@ export default function OwnerRoutesScreen() {
       : 'Completed routes will appear here.'
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Screen header */}
         <View className="px-4 pt-4 pb-3 flex-row items-center gap-3">
           <Pressable
             onPress={() => router.back()}
-            className="w-9 h-9 items-center justify-center rounded-full bg-slate-800 border border-slate-700 active:opacity-70"
+            className="w-9 h-9 items-center justify-center rounded-full active:opacity-70"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
           >
-            <ArrowLeft color="#94a3b8" size={18} />
+            <ArrowLeft color={c.textSecondary} size={18} />
           </Pressable>
-          <Text className="text-2xl font-bold text-white">Routes</Text>
+          <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Routes</Text>
         </View>
 
         {/* Status filter tabs — horizontally scrollable */}
@@ -159,16 +164,16 @@ export default function OwnerRoutesScreen() {
             <Pressable
               key={tab.key}
               onPress={() => setActiveTab(tab.key)}
-              className={`rounded-full px-4 py-3 ${
-                activeTab === tab.key
-                  ? 'bg-sky-600'
-                  : 'bg-slate-800 border border-slate-700'
-              }`}
+              className="rounded-full px-4 py-3"
+              style={{
+                backgroundColor: activeTab === tab.key ? c.brand : c.surfaceCard,
+                borderWidth: activeTab === tab.key ? 0 : 1,
+                borderColor: c.border,
+              }}
             >
               <Text
-                className={`text-sm font-semibold ${
-                  activeTab === tab.key ? 'text-white' : 'text-slate-400'
-                }`}
+                className="text-sm font-semibold"
+                style={{ color: activeTab === tab.key ? '#ffffff' : c.textSecondary }}
               >
                 {tab.label}
               </Text>
@@ -188,9 +193,10 @@ export default function OwnerRoutesScreen() {
             <Text className="text-red-400 text-base font-semibold mb-2">Failed to load</Text>
             <Pressable
               onPress={() => refetch()}
-              className="bg-slate-700 px-6 py-3 rounded-lg active:opacity-80"
+              className="px-6 py-3 rounded-lg active:opacity-80"
+              style={{ backgroundColor: c.surfaceElevated }}
             >
-              <Text className="text-white font-semibold">Retry</Text>
+              <Text className="font-semibold" style={{ color: c.textPrimary }}>Retry</Text>
             </Pressable>
           </View>
         ) : (
@@ -206,7 +212,7 @@ export default function OwnerRoutesScreen() {
               contentContainerStyle={{ paddingBottom: 80 }}
               ListEmptyComponent={
                 <EmptyState
-                  icon={<Navigation color="#475569" size={40} />}
+                  icon={<Navigation color={c.textTertiary} size={40} />}
                   title={emptyTitle}
                   subtitle={emptySubtitle}
                 />

@@ -21,12 +21,15 @@ import {
 } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { FuelRowSkeleton } from '../../../components/skeletons/FuelRowSkeleton'
+import { useThemeColors } from '../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // FuelRow
 // ---------------------------------------------------------------------------
 
 function FuelRow({ entry }: { entry: FuelEntry }) {
+  const c = useThemeColors()
+
   const date = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -39,21 +42,24 @@ function FuelRow({ entry }: { entry: FuelEntry }) {
     : '—'
 
   return (
-    <View className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 flex-row items-center">
+    <View
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
       <View className="flex-1 min-w-0">
-        <Text className="text-slate-100 font-semibold text-[15px] mb-0.5" numberOfLines={1}>
+        <Text className="font-semibold text-[15px] mb-0.5" style={{ color: c.textPrimary }} numberOfLines={1}>
           {date}
         </Text>
-        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
+        <Text className="text-[13px]" style={{ color: c.textTertiary }} numberOfLines={1}>
           {entry.truckName} · {entry.licensePlate}
         </Text>
       </View>
       <View className="items-end shrink-0 ml-2.5">
-        <Text className="text-slate-100 font-semibold text-[14px]">
+        <Text className="font-semibold text-[14px]" style={{ color: c.textPrimary }}>
           {gallons} gal · {totalCost}
         </Text>
         {entry.location ? (
-          <Text className="text-slate-500 text-[12px] mt-0.5" numberOfLines={1}>
+          <Text className="text-[12px] mt-0.5" style={{ color: c.textTertiary }} numberOfLines={1}>
             {entry.location}
           </Text>
         ) : null}
@@ -77,6 +83,7 @@ function AddFuelModal({
   onClose: () => void
   onSuccess: () => void
 }) {
+  const c = useThemeColors()
   const [selectedTruckId, setSelectedTruckId] = useState<string | null>(null)
   const [gallons, setGallons] = useState('')
   const [costPerGallon, setCostPerGallon] = useState('')
@@ -129,18 +136,18 @@ function AddFuelModal({
       <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
         <View
           className="rounded-t-2xl px-4 pt-6 pb-8"
-          style={{ backgroundColor: '#0f172a' }}
+          style={{ backgroundColor: c.surfaceCard }}
         >
           {/* Title */}
           <View className="flex-row items-center justify-between mb-5">
-            <Text className="text-slate-100 text-lg font-bold">Add Fuel Entry</Text>
+            <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Add Fuel Entry</Text>
             <Pressable onPress={handleClose} hitSlop={8}>
-              <Text className="text-slate-400 text-[15px]">Cancel</Text>
+              <Text className="text-[15px]" style={{ color: c.textSecondary }}>Cancel</Text>
             </Pressable>
           </View>
 
           {/* Truck picker */}
-          <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">
+          <Text className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: c.textSecondary }}>
             Truck
           </Text>
           <ScrollView
@@ -156,17 +163,17 @@ function AddFuelModal({
                   key={truck.id}
                   onPress={() => setSelectedTruckId(truck.id)}
                   className="rounded-xl px-3.5 py-2.5"
-                  style={{ backgroundColor: selected ? '#0ea5e9' : '#1e293b' }}
+                  style={{ backgroundColor: selected ? c.brand : c.surfaceElevated }}
                 >
                   <Text
                     className="font-semibold text-[13px]"
-                    style={{ color: selected ? '#fff' : '#94a3b8' }}
+                    style={{ color: selected ? '#fff' : c.textSecondary }}
                   >
                     {truck.make} {truck.model}
                   </Text>
                   <Text
                     className="text-[11px] mt-0.5"
-                    style={{ color: selected ? '#bae6fd' : '#64748b' }}
+                    style={{ color: selected ? '#bae6fd' : c.textTertiary }}
                   >
                     {truck.licensePlate}
                   </Text>
@@ -178,29 +185,31 @@ function AddFuelModal({
           {/* Gallons + Cost per Gallon */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Gallons
               </Text>
               <TextInput
                 value={gallons}
                 onChangeText={setGallons}
                 placeholder="0.0"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={c.textMuted}
                 keyboardType="numeric"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3 text-[15px]"
+                className="rounded-xl px-4 py-3 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
               />
             </View>
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Cost / Gal
               </Text>
               <TextInput
                 value={costPerGallon}
                 onChangeText={setCostPerGallon}
                 placeholder="$0.00"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={c.textMuted}
                 keyboardType="numeric"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3 text-[15px]"
+                className="rounded-xl px-4 py-3 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
               />
             </View>
           </View>
@@ -208,43 +217,46 @@ function AddFuelModal({
           {/* Odometer + Location */}
           <View className="flex-row gap-3 mb-4">
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Odometer
               </Text>
               <TextInput
                 value={odometer}
                 onChangeText={setOdometer}
                 placeholder="Miles"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={c.textMuted}
                 keyboardType="numeric"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3 text-[15px]"
+                className="rounded-xl px-4 py-3 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
               />
             </View>
             <View className="flex-1">
-              <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+              <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
                 Location
               </Text>
               <TextInput
                 value={location}
                 onChangeText={setLocation}
                 placeholder="State / City"
-                placeholderTextColor="#64748b"
-                className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3 text-[15px]"
+                placeholderTextColor={c.textMuted}
+                className="rounded-xl px-4 py-3 text-[15px]"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
               />
             </View>
           </View>
 
           {/* Date */}
           <View className="mb-5">
-            <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
+            <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
               Date (YYYY-MM-DD)
             </Text>
             <TextInput
               value={date}
               onChangeText={setDate}
               placeholder="2025-01-01"
-              placeholderTextColor="#64748b"
-              className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3 text-[15px]"
+              placeholderTextColor={c.textMuted}
+              className="rounded-xl px-4 py-3 text-[15px]"
+              style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
             />
           </View>
 
@@ -259,8 +271,8 @@ function AddFuelModal({
           <Pressable
             onPress={() => mutate()}
             disabled={!isValid || isPending}
-            className="bg-sky-500 rounded-xl py-3.5 items-center"
-            style={{ opacity: !isValid || isPending ? 0.5 : 1 }}
+            className="rounded-xl py-3.5 items-center"
+            style={{ backgroundColor: c.brand, opacity: !isValid || isPending ? 0.5 : 1 }}
           >
             <Text className="text-white font-semibold text-[15px]">
               {isPending ? 'Saving…' : 'Save Fuel Entry'}
@@ -277,6 +289,7 @@ function AddFuelModal({
 // ---------------------------------------------------------------------------
 
 export default function FuelScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -301,10 +314,13 @@ export default function FuelScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -312,9 +328,9 @@ export default function FuelScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">Fuel Log</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Fuel Log</Text>
         </View>
 
         {isLoading ? (
@@ -326,15 +342,16 @@ export default function FuelScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load fuel records
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -347,11 +364,11 @@ export default function FuelScreen() {
             estimatedItemSize={72}
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-16">
-                <Droplets color="#475569" size={48} />
-                <Text className="text-slate-400 text-base font-semibold mt-3 text-center">
+                <Droplets color={c.textTertiary} size={48} />
+                <Text className="text-base font-semibold mt-3 text-center" style={{ color: c.textSecondary }}>
                   No fuel entries yet
                 </Text>
-                <Text className="text-slate-500 text-sm mt-1.5 text-center">
+                <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
                   Tap the + button to log a fill-up
                 </Text>
               </View>
@@ -360,8 +377,8 @@ export default function FuelScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingTop: 12, paddingBottom: 96 }}
@@ -380,7 +397,7 @@ export default function FuelScreen() {
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: '#0ea5e9',
+            backgroundColor: c.brand,
             alignItems: 'center',
             justifyContent: 'center',
             shadowColor: '#000',

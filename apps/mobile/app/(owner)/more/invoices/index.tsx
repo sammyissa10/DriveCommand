@@ -16,6 +16,7 @@ import { ownerApi, type InvoicesResponse, type InvoiceSummary } from '@drivecomm
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
 import { InvoiceRowSkeleton } from '../../../../components/skeletons/InvoiceRowSkeleton'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -60,17 +61,20 @@ function getStatusLabel(status: string): string {
 // ---------------------------------------------------------------------------
 
 function InvoiceRow({ invoice, onPress }: { invoice: InvoiceSummary; onPress: () => void }) {
+  const c = useThemeColors()
   const statusColor = getStatusColor(invoice.status)
 
   return (
     <Pressable
       onPress={onPress}
-      className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 active:opacity-75"
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 active:opacity-75"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Top row */}
       <View className="flex-row items-center mb-2">
         <Text
-          className="text-slate-100 font-bold text-[15px] flex-1"
+          className="font-bold text-[15px] flex-1"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           #{invoice.invoiceNumber}
@@ -86,22 +90,22 @@ function InvoiceRow({ invoice, onPress }: { invoice: InvoiceSummary; onPress: ()
             {getStatusLabel(invoice.status)}
           </Text>
         </View>
-        <ChevronRight color="#475569" size={16} />
+        <ChevronRight color={c.textTertiary} size={16} />
       </View>
 
       {/* Bottom row */}
       <View className="flex-row items-center">
         <View className="flex-1 min-w-0">
-          <Text className="text-slate-400 text-[13px]" numberOfLines={1}>
+          <Text className="text-[13px]" style={{ color: c.textSecondary }} numberOfLines={1}>
             {invoice.customerName}
           </Text>
           {invoice.dueDate && (
-            <Text className="text-slate-500 text-xs mt-0.5">
+            <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>
               Due {formatDate(invoice.dueDate)}
             </Text>
           )}
         </View>
-        <Text className="text-slate-100 font-bold text-base ml-3">
+        <Text className="font-bold text-base ml-3" style={{ color: c.textPrimary }}>
           ${invoice.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
         </Text>
       </View>
@@ -126,24 +130,25 @@ function StatCard({
   active?: boolean
   onPress?: () => void
 }) {
+  const c = useThemeColors()
   return (
     <Pressable
       onPress={onPress}
       className="flex-1 rounded-xl border p-3.5 items-center active:opacity-75"
       style={{
-        backgroundColor: active ? '#1e3a5f' : '#1e293b',
-        borderColor: active ? '#38bdf8' : '#334155',
+        backgroundColor: active ? c.brandDark + '40' : c.surfaceCard,
+        borderColor: active ? c.brand : c.border,
       }}
     >
       <Text
         className="text-lg font-bold"
-        style={{ color: valueColor ?? '#f1f5f9' }}
+        style={{ color: valueColor ?? c.textPrimary }}
       >
         {value}
       </Text>
       <Text
         className="text-xs mt-0.5 text-center"
-        style={{ color: active ? '#38bdf8' : '#64748b' }}
+        style={{ color: active ? c.brand : c.textTertiary }}
       >
         {label}
       </Text>
@@ -167,6 +172,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 ]
 
 export default function InvoicesScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const [activeFilter, setActiveFilter] = useState<FilterKey>('ALL')
@@ -192,10 +198,13 @@ export default function InvoicesScreen() {
   ), [router])
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -203,9 +212,9 @@ export default function InvoicesScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">Invoices</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Invoices</Text>
         </View>
 
         {isLoading ? (
@@ -217,15 +226,16 @@ export default function InvoicesScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load invoices
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -240,8 +250,8 @@ export default function InvoicesScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
@@ -292,13 +302,13 @@ export default function InvoicesScreen() {
                         onPress={() => setActiveFilter(f.key)}
                         className="flex-1 py-[7px] rounded-[20px] border items-center active:opacity-75"
                         style={{
-                          backgroundColor: active ? '#38bdf8' : '#1e293b',
-                          borderColor: active ? '#38bdf8' : '#334155',
+                          backgroundColor: active ? c.brand : c.surfaceCard,
+                          borderColor: active ? c.brand : c.border,
                         }}
                       >
                         <Text
                           className="text-[11px] font-semibold"
-                          style={{ color: active ? '#0f172a' : '#94a3b8' }}
+                          style={{ color: active ? '#0f172a' : c.textSecondary }}
                         >
                           {f.label}
                         </Text>
@@ -309,18 +319,18 @@ export default function InvoicesScreen() {
 
                 {/* Invoices section header */}
                 <View className="px-4 pt-3.5 pb-2.5">
-                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
                     {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
                     {' '}
-                    <Text className="text-slate-600">({filteredInvoices.length})</Text>
+                    <Text style={{ color: c.textTertiary }}>({filteredInvoices.length})</Text>
                   </Text>
                 </View>
               </View>
             }
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
-                <FileText color="#334155" size={48} />
-                <Text className="text-slate-500 text-[15px] mt-3 text-center">
+                <FileText color={c.border} size={48} />
+                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
                   {activeFilter === 'ALL' ? 'No invoices yet' : `No ${FILTERS.find(f => f.key === activeFilter)?.label.toLowerCase()} invoices`}
                 </Text>
               </View>

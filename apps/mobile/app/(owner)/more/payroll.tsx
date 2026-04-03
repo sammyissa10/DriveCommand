@@ -29,6 +29,7 @@ import { BottomSheet } from '../../../components/ui/BottomSheet'
 import { PageSpeedDial } from '../../../components/ui/PageSpeedDial'
 import { PayrollRowSkeleton } from '../../../components/skeletons/PayrollRowSkeleton'
 import { haptic } from '../../../lib/haptics'
+import { useThemeColors } from '../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -80,47 +81,11 @@ function getInitials(name: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Form helpers
-// ---------------------------------------------------------------------------
-
-function FormField({
-  label,
-  required,
-  hint,
-  children,
-}: {
-  label: string
-  required?: boolean
-  hint?: string
-  children: React.ReactNode
-}) {
-  return (
-    <View style={{ marginBottom: 14 }}>
-      <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
-        {label}{required && <Text style={{ color: '#f87171' }}> *</Text>}
-      </Text>
-      {children}
-      {hint && <Text style={{ color: '#64748b', fontSize: 11, marginTop: 4 }}>{hint}</Text>}
-    </View>
-  )
-}
-
-const inputStyle = {
-  backgroundColor: '#1e293b',
-  borderWidth: 1,
-  borderColor: '#334155',
-  color: '#f1f5f9',
-  borderRadius: 12,
-  paddingHorizontal: 14,
-  paddingVertical: 11,
-  fontSize: 14,
-} as const
-
-// ---------------------------------------------------------------------------
 // PayrollRow Component
 // ---------------------------------------------------------------------------
 
 function PayrollRow({ record, onPress }: { record: PayrollRecordSummary; onPress: () => void }) {
+  const c = useThemeColors()
   const statusColor = getStatusColor(record.status)
   const initials = getInitials(record.driverName)
   const period = `${formatDateShort(record.periodStart)} – ${formatDateShort(record.periodEnd)}`
@@ -128,7 +93,8 @@ function PayrollRow({ record, onPress }: { record: PayrollRecordSummary; onPress
   return (
     <Pressable
       onPress={onPress}
-      className="mx-4 mb-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3.5 flex-row items-center active:opacity-80"
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 flex-row items-center active:opacity-80"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Avatar */}
       <View
@@ -141,19 +107,20 @@ function PayrollRow({ record, onPress }: { record: PayrollRecordSummary; onPress
       {/* Info */}
       <View className="flex-1 min-w-0">
         <Text
-          className="text-slate-100 font-bold text-[15px] mb-0.5"
+          className="font-bold text-[15px] mb-0.5"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           {record.driverName}
         </Text>
-        <Text className="text-slate-500 text-[13px]" numberOfLines={1}>
+        <Text className="text-[13px]" style={{ color: c.textTertiary }} numberOfLines={1}>
           {period}
         </Text>
       </View>
 
       {/* Right side */}
       <View className="items-end shrink-0 ml-2.5">
-        <Text className="text-white font-bold text-base mb-1">
+        <Text className="font-bold text-base mb-1" style={{ color: c.textPrimary }}>
           {formatCurrency(record.totalPay)}
         </Text>
         <View
@@ -185,15 +152,19 @@ function StatCard({
   label: string
   valueColor?: string
 }) {
+  const c = useThemeColors()
   return (
-    <View className="flex-1 bg-slate-800 rounded-xl border border-slate-700 p-3.5 items-center">
+    <View
+      className="flex-1 rounded-xl p-3.5 items-center"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+    >
       <Text
         className="text-lg font-bold"
-        style={{ color: valueColor ?? '#f1f5f9' }}
+        style={{ color: valueColor ?? c.textPrimary }}
       >
         {value}
       </Text>
-      <Text className="text-slate-500 text-xs mt-0.5 text-center">{label}</Text>
+      <Text className="text-xs mt-0.5 text-center" style={{ color: c.textTertiary }}>{label}</Text>
     </View>
   )
 }
@@ -203,6 +174,7 @@ function StatCard({
 // ---------------------------------------------------------------------------
 
 export default function PayrollScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -306,11 +278,25 @@ export default function PayrollScreen() {
     />
   ), [])
 
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 14,
+  } as const
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+        <View
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
@@ -318,9 +304,9 @@ export default function PayrollScreen() {
             className="mr-3"
             hitSlop={8}
           >
-            <ChevronLeft color="#f1f5f9" size={24} />
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text className="text-lg font-bold text-slate-100">Payroll</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Payroll</Text>
         </View>
 
         {isLoading ? (
@@ -332,15 +318,16 @@ export default function PayrollScreen() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text className="text-slate-100 text-[17px] font-semibold mt-4 text-center">
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load payroll
             </Text>
-            <Text className="text-slate-500 text-sm mt-1.5 text-center">
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              className="mt-5 bg-sky-500 px-6 py-3 rounded-[10px]"
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
               <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
@@ -355,8 +342,8 @@ export default function PayrollScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 100 }}
@@ -388,7 +375,7 @@ export default function PayrollScreen() {
 
                 {/* Records section header */}
                 <View className="px-4 pt-4 pb-2.5">
-                  <Text className="text-slate-400 text-xs font-semibold tracking-[0.5px] uppercase">
+                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
                     Recent Records
                   </Text>
                 </View>
@@ -396,8 +383,8 @@ export default function PayrollScreen() {
             }
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-10">
-                <DollarSign color="#334155" size={48} />
-                <Text className="text-slate-500 text-[15px] mt-3 text-center">
+                <DollarSign color={c.border} size={48} />
+                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
                   No payroll records yet
                 </Text>
               </View>
@@ -422,15 +409,15 @@ export default function PayrollScreen() {
         >
           {detailLoading ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator color="#38bdf8" size="large" />
+              <ActivityIndicator color={c.brand} size="large" />
             </View>
           ) : detail ? (
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
               {/* Driver + period */}
-              <Text style={{ color: '#f1f5f9', fontSize: 18, fontWeight: '700', marginBottom: 4 }}>
+              <Text style={{ color: c.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 4 }}>
                 {detail.driverName}
               </Text>
-              <Text style={{ color: '#64748b', fontSize: 13, marginBottom: 12 }}>
+              <Text style={{ color: c.textTertiary, fontSize: 13, marginBottom: 12 }}>
                 {formatDateShort(detail.periodStart)} – {formatDateShort(detail.periodEnd)}
               </Text>
 
@@ -452,35 +439,35 @@ export default function PayrollScreen() {
               </View>
 
               {/* Pay Breakdown */}
-              <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
+              <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
                 Pay Breakdown
               </Text>
-              <View style={{ backgroundColor: '#1e293b', borderRadius: 12, borderWidth: 1, borderColor: '#334155', paddingHorizontal: 16, marginBottom: 20 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#0f172a' }}>
-                  <Text style={{ color: '#94a3b8', fontSize: 13 }}>Base Pay</Text>
-                  <Text style={{ color: '#f1f5f9', fontSize: 13, fontWeight: '600' }}>
+              <View style={{ backgroundColor: c.surfaceCard, borderRadius: 12, borderWidth: 1, borderColor: c.border, paddingHorizontal: 16, marginBottom: 20 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.background }}>
+                  <Text style={{ color: c.textSecondary, fontSize: 13 }}>Base Pay</Text>
+                  <Text style={{ color: c.textPrimary, fontSize: 13, fontWeight: '600' }}>
                     {formatCurrencyFull(detail.basePay)}
                   </Text>
                 </View>
                 {detail.bonuses > 0 && (
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#0f172a' }}>
-                    <Text style={{ color: '#94a3b8', fontSize: 13 }}>+ Bonuses</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.background }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 13 }}>+ Bonuses</Text>
                     <Text style={{ color: '#22c55e', fontSize: 13, fontWeight: '600' }}>
                       {formatCurrencyFull(detail.bonuses)}
                     </Text>
                   </View>
                 )}
                 {detail.deductions > 0 && (
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#0f172a' }}>
-                    <Text style={{ color: '#94a3b8', fontSize: 13 }}>- Deductions</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.background }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 13 }}>- Deductions</Text>
                     <Text style={{ color: '#ef4444', fontSize: 13, fontWeight: '600' }}>
                       {formatCurrencyFull(detail.deductions)}
                     </Text>
                   </View>
                 )}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 14, borderTopWidth: 1, borderTopColor: '#334155' }}>
-                  <Text style={{ color: '#f1f5f9', fontSize: 15, fontWeight: '700' }}>= Total Pay</Text>
-                  <Text style={{ color: '#f1f5f9', fontSize: 15, fontWeight: '700' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 14, borderTopWidth: 1, borderTopColor: c.border }}>
+                  <Text style={{ color: c.textPrimary, fontSize: 15, fontWeight: '700' }}>= Total Pay</Text>
+                  <Text style={{ color: c.textPrimary, fontSize: 15, fontWeight: '700' }}>
                     {formatCurrencyFull(detail.totalPay)}
                   </Text>
                 </View>
@@ -489,22 +476,22 @@ export default function PayrollScreen() {
               {/* Performance */}
               {(detail.milesLogged > 0 || detail.loadsCompleted > 0) && (
                 <>
-                  <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
+                  <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
                     Performance
                   </Text>
-                  <View style={{ backgroundColor: '#1e293b', borderRadius: 12, borderWidth: 1, borderColor: '#334155', paddingHorizontal: 16, marginBottom: 20 }}>
+                  <View style={{ backgroundColor: c.surfaceCard, borderRadius: 12, borderWidth: 1, borderColor: c.border, paddingHorizontal: 16, marginBottom: 20 }}>
                     {detail.milesLogged > 0 && (
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#0f172a' }}>
-                        <Text style={{ color: '#64748b', fontSize: 13 }}>Miles Logged</Text>
-                        <Text style={{ color: '#f1f5f9', fontSize: 13, fontWeight: '600' }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: c.background }}>
+                        <Text style={{ color: c.textTertiary, fontSize: 13 }}>Miles Logged</Text>
+                        <Text style={{ color: c.textPrimary, fontSize: 13, fontWeight: '600' }}>
                           {detail.milesLogged.toLocaleString()}
                         </Text>
                       </View>
                     )}
                     {detail.loadsCompleted > 0 && (
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 12 }}>
-                        <Text style={{ color: '#64748b', fontSize: 13 }}>Loads Completed</Text>
-                        <Text style={{ color: '#f1f5f9', fontSize: 13, fontWeight: '600' }}>
+                        <Text style={{ color: c.textTertiary, fontSize: 13 }}>Loads Completed</Text>
+                        <Text style={{ color: c.textPrimary, fontSize: 13, fontWeight: '600' }}>
                           {detail.loadsCompleted}
                         </Text>
                       </View>
@@ -523,11 +510,11 @@ export default function PayrollScreen() {
               {/* Notes */}
               {detail.notes && (
                 <>
-                  <Text style={{ color: '#94a3b8', fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
+                  <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 10 }}>
                     Notes
                   </Text>
-                  <View style={{ backgroundColor: '#1e293b', borderRadius: 12, borderWidth: 1, borderColor: '#334155', padding: 16, marginBottom: 20 }}>
-                    <Text style={{ color: '#f1f5f9', fontSize: 13, lineHeight: 20 }}>{detail.notes}</Text>
+                  <View style={{ backgroundColor: c.surfaceCard, borderRadius: 12, borderWidth: 1, borderColor: c.border, padding: 16, marginBottom: 20 }}>
+                    <Text style={{ color: c.textPrimary, fontSize: 13, lineHeight: 20 }}>{detail.notes}</Text>
                   </View>
                 </>
               )}
@@ -552,7 +539,10 @@ export default function PayrollScreen() {
               contentContainerStyle={{ paddingBottom: 40 }}
             >
               {/* Driver picker */}
-              <FormField label="Driver" required>
+              <View style={{ marginBottom: 14 }}>
+                <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                  Driver <Text style={{ color: '#f87171' }}>*</Text>
+                </Text>
                 <Pressable
                   onPress={() => setDriverPickerVisible(true)}
                   disabled={creating}
@@ -563,104 +553,124 @@ export default function PayrollScreen() {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Text style={{ color: selectedDriver ? '#f1f5f9' : '#475569', fontSize: 14 }}>
+                  <Text style={{ color: selectedDriver ? c.textPrimary : c.textMuted, fontSize: 14 }}>
                     {selectedDriver ? selectedDriver.name : 'Select driver'}
                   </Text>
-                  <ChevronDown color="#475569" size={16} />
+                  <ChevronDown color={c.textTertiary} size={16} />
                 </Pressable>
-              </FormField>
+              </View>
 
               {/* Period dates */}
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={{ flex: 1 }}>
-                  <FormField label="Period Start" required hint="YYYY-MM-DD">
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                      Period Start <Text style={{ color: '#f87171' }}>*</Text>
+                    </Text>
                     <TextInput
                       style={inputStyle}
                       value={periodStart}
                       onChangeText={setPeriodStart}
                       placeholder="2026-04-01"
-                      placeholderTextColor="#475569"
+                      placeholderTextColor={c.textMuted}
                       keyboardType="numbers-and-punctuation"
                       editable={!creating}
                     />
-                  </FormField>
+                    <Text style={{ color: c.textTertiary, fontSize: 11, marginTop: 4 }}>YYYY-MM-DD</Text>
+                  </View>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <FormField label="Period End" required hint="YYYY-MM-DD">
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                      Period End <Text style={{ color: '#f87171' }}>*</Text>
+                    </Text>
                     <TextInput
                       style={inputStyle}
                       value={periodEnd}
                       onChangeText={setPeriodEnd}
                       placeholder="2026-04-14"
-                      placeholderTextColor="#475569"
+                      placeholderTextColor={c.textMuted}
                       keyboardType="numbers-and-punctuation"
                       editable={!creating}
                     />
-                  </FormField>
+                    <Text style={{ color: c.textTertiary, fontSize: 11, marginTop: 4 }}>YYYY-MM-DD</Text>
+                  </View>
                 </View>
               </View>
 
               {/* Pay fields */}
-              <FormField label="Base Pay ($)" required>
+              <View style={{ marginBottom: 14 }}>
+                <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                  Base Pay ($) <Text style={{ color: '#f87171' }}>*</Text>
+                </Text>
                 <TextInput
                   style={inputStyle}
                   value={basePay}
                   onChangeText={setBasePay}
                   placeholder="0.00"
-                  placeholderTextColor="#475569"
+                  placeholderTextColor={c.textMuted}
                   keyboardType="decimal-pad"
                   editable={!creating}
                 />
-              </FormField>
+              </View>
 
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <View style={{ flex: 1 }}>
-                  <FormField label="Bonuses ($)">
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                      Bonuses ($)
+                    </Text>
                     <TextInput
                       style={inputStyle}
                       value={bonuses}
                       onChangeText={setBonuses}
                       placeholder="0.00"
-                      placeholderTextColor="#475569"
+                      placeholderTextColor={c.textMuted}
                       keyboardType="decimal-pad"
                       editable={!creating}
                     />
-                  </FormField>
+                  </View>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <FormField label="Deductions ($)">
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                      Deductions ($)
+                    </Text>
                     <TextInput
                       style={inputStyle}
                       value={deductions}
                       onChangeText={setDeductions}
                       placeholder="0.00"
-                      placeholderTextColor="#475569"
+                      placeholderTextColor={c.textMuted}
                       keyboardType="decimal-pad"
                       editable={!creating}
                     />
-                  </FormField>
+                  </View>
                 </View>
               </View>
 
-              <FormField label="Notes">
+              <View style={{ marginBottom: 14 }}>
+                <Text style={{ color: c.textSecondary, fontSize: 11, fontWeight: '700', letterSpacing: 0.5, textTransform: 'uppercase', marginBottom: 6 }}>
+                  Notes
+                </Text>
                 <TextInput
                   style={[inputStyle, { minHeight: 70, textAlignVertical: 'top' }]}
                   value={notes}
                   onChangeText={setNotes}
                   placeholder="Optional notes..."
-                  placeholderTextColor="#475569"
+                  placeholderTextColor={c.textMuted}
                   multiline
                   numberOfLines={3}
                   editable={!creating}
                 />
-              </FormField>
+              </View>
 
               {/* Submit */}
               <Pressable
                 onPress={handleCreate}
                 disabled={creating}
                 style={{
-                  backgroundColor: creating ? '#2d1e4f' : '#8b5cf6',
+                  backgroundColor: '#8b5cf6',
                   borderRadius: 12,
                   paddingVertical: 14,
                   alignItems: 'center',
@@ -687,7 +697,7 @@ export default function PayrollScreen() {
         >
           <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 320 }}>
             {(drivers ?? []).length === 0 && (
-              <Text style={{ color: '#64748b', fontSize: 14, textAlign: 'center', paddingVertical: 20 }}>
+              <Text style={{ color: c.textTertiary, fontSize: 14, textAlign: 'center', paddingVertical: 20 }}>
                 No active drivers found
               </Text>
             )}
@@ -703,13 +713,13 @@ export default function PayrollScreen() {
                   paddingVertical: 14,
                   paddingHorizontal: 4,
                   borderBottomWidth: 1,
-                  borderBottomColor: '#1e293b',
+                  borderBottomColor: c.border,
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
-                <Text style={{ color: '#f1f5f9', fontSize: 15 }}>{d.name}</Text>
+                <Text style={{ color: c.textPrimary, fontSize: 15 }}>{d.name}</Text>
                 {selectedDriver?.id === d.id && (
                   <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#8b5cf6' }} />
                 )}

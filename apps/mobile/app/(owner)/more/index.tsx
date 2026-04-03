@@ -26,6 +26,7 @@ import {
 } from 'lucide-react-native'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
+import { useThemeColors } from '../../../constants/tokens'
 
 type LucideIcon = React.ComponentType<{ color: string; size: number }>
 
@@ -179,10 +180,11 @@ const SECTIONS: MoreSection[] = [
 ]
 
 export default function MoreScreen() {
+  const c = useThemeColors()
   const router = useRouter()
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         <ScrollView
           className="flex-1"
@@ -190,16 +192,22 @@ export default function MoreScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="mb-5">
-            <Text className="text-2xl font-extrabold text-slate-100">More</Text>
-            <Text className="text-[13px] text-slate-500 mt-0.5">Features & settings</Text>
+            <Text className="text-2xl font-extrabold" style={{ color: c.textPrimary }}>More</Text>
+            <Text className="text-[13px] mt-0.5" style={{ color: c.textTertiary }}>Features & settings</Text>
           </View>
 
           {SECTIONS.map((section, sectionIndex) => (
             <View key={section.header} className={sectionIndex > 0 ? 'mt-6' : ''}>
-              <Text className="text-[11px] font-semibold text-slate-500 tracking-widest uppercase mb-2">
+              <Text
+                className="text-[11px] font-semibold tracking-widest uppercase mb-2"
+                style={{ color: c.textTertiary }}
+              >
                 {section.header}
               </Text>
-              <View className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+              <View
+                className="rounded-xl overflow-hidden"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
                 {section.rows.map((row, rowIndex) => (
                   <View key={row.route}>
                     <Pressable
@@ -217,13 +225,13 @@ export default function MoreScreen() {
                         <row.Icon color={row.iconColor} size={20} />
                       </View>
                       <View className="flex-1">
-                        <Text className="text-[15px] font-semibold text-slate-100">{row.label}</Text>
-                        <Text className="text-xs text-slate-500 mt-0.5">{row.subtitle}</Text>
+                        <Text className="text-[15px] font-semibold" style={{ color: c.textPrimary }}>{row.label}</Text>
+                        <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>{row.subtitle}</Text>
                       </View>
-                      <ChevronRight color="#475569" size={18} />
+                      <ChevronRight color={c.textTertiary} size={18} />
                     </Pressable>
                     {rowIndex < section.rows.length - 1 && (
-                      <View className="h-px bg-slate-700 ml-[68px]" />
+                      <View className="h-px ml-[68px]" style={{ backgroundColor: c.border }} />
                     )}
                   </View>
                 ))}

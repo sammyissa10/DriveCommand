@@ -10,13 +10,14 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi } from '@drivecommand/api-client'
 import { haptic } from '../../../../lib/haptics'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -33,27 +34,33 @@ function FormField({
   hint?: string
   children: React.ReactNode
 }) {
+  const c = useThemeColors()
   return (
     <View className="mb-4">
-      <Text className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+      <Text className="text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: c.textSecondary }}>
         {label}{required && <Text className="text-red-400"> *</Text>}
       </Text>
       {children}
-      {hint && <Text className="text-xs text-slate-500 mt-1">{hint}</Text>}
+      {hint && <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>{hint}</Text>}
     </View>
   )
 }
-
-const inputClass = 'bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm'
 
 // ---------------------------------------------------------------------------
 // Screen
 // ---------------------------------------------------------------------------
 
 export default function NewCustomerScreen() {
+  const c = useThemeColors()
   const router = useRouter()
+  const { from } = useLocalSearchParams<{ from?: string }>()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+
+  function goBack() {
+    if (from === 'dashboard') router.replace('/(owner)/' as any)
+    else router.back()
+  }
 
   const [companyName, setCompanyName] = useState('')
   const [contactName, setContactName] = useState('')
@@ -72,7 +79,7 @@ export default function NewCustomerScreen() {
       haptic.success()
       queryClient.invalidateQueries({ queryKey: ['owner-crm'] })
       Toast.show({ type: 'success', text1: 'Customer added', text2: `${companyName.trim()} has been added.`, visibilityTime: 3000 })
-      router.back()
+      goBack()
     },
     onError: (err: Error) => {
       haptic.error()
@@ -88,21 +95,35 @@ export default function NewCustomerScreen() {
     createCustomer()
   }
 
+  const inputStyle = {
+    backgroundColor: c.surfaceInput,
+    borderWidth: 1,
+    borderColor: c.border,
+    color: c.textPrimary,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+  } as const
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-950" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3.5 border-b border-slate-700">
+      <View
+        className="flex-row items-center px-4 py-3.5"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
         <Pressable
           accessibilityLabel="Go back"
           accessibilityRole="button"
-          onPress={() => router.back()}
+          onPress={() => goBack()}
           className="mr-3"
           hitSlop={8}
           disabled={isPending}
         >
-          <ChevronLeft color="#f1f5f9" size={24} />
+          <ChevronLeft color={c.textPrimary} size={24} />
         </Pressable>
-        <Text className="text-lg font-bold text-slate-100 flex-1">Add Customer</Text>
+        <Text className="text-lg font-bold flex-1" style={{ color: c.textPrimary }}>Add Customer</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -115,16 +136,19 @@ export default function NewCustomerScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Customer Information */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: c.textSecondary }}>
               Customer Information
             </Text>
 
             <FormField label="Company Name" required>
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="e.g. Acme Logistics"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={companyName}
                 onChangeText={setCompanyName}
                 autoCapitalize="words"
@@ -134,9 +158,9 @@ export default function NewCustomerScreen() {
 
             <FormField label="Contact Name">
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="e.g. Jane Doe"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={contactName}
                 onChangeText={setContactName}
                 autoCapitalize="words"
@@ -146,16 +170,19 @@ export default function NewCustomerScreen() {
           </View>
 
           {/* Contact Details (optional) */}
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
-            <Text className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-              Contact Details <Text className="text-slate-600 normal-case tracking-normal">(optional)</Text>
+          <View
+            className="rounded-xl p-4 mb-6"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: c.textSecondary }}>
+              Contact Details <Text style={{ color: c.textTertiary }} className="normal-case tracking-normal">(optional)</Text>
             </Text>
 
             <FormField label="Email">
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="contact@company.com"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -166,9 +193,9 @@ export default function NewCustomerScreen() {
 
             <FormField label="Phone">
               <TextInput
-                className={inputClass}
+                style={inputStyle}
                 placeholder="+1 (555) 000-0000"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 value={phone}
                 onChangeText={setPhone}
                 keyboardType="phone-pad"
@@ -181,7 +208,8 @@ export default function NewCustomerScreen() {
           <Pressable
             onPress={handleSubmit}
             disabled={isPending}
-            className={`rounded-xl py-4 items-center ${isPending ? 'bg-sky-800 opacity-60' : 'bg-sky-600 active:opacity-80'}`}
+            className="rounded-xl py-4 items-center"
+            style={{ backgroundColor: isPending ? c.brandDark : c.brand, opacity: isPending ? 0.6 : 1 }}
           >
             {isPending ? (
               <ActivityIndicator size="small" color="white" />
