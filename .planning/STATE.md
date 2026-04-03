@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
-Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
-Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-04-03 - Completed quick task 149: Migrate all mobile screens to use useThemeColors
-Stopped at: Completed quick-149
+Phase: Phase 37.7 Driver Map Navigation — IN PROGRESS
+Current Plan: Plan 1 of 6 complete — 37.7-01 DONE
+Status: 37.7-01 complete — @rnmapbox/maps installed, react-native-maps removed, Mapbox token initialized in driver layout, VehicleMarker components migrated, iOS URL schemes added.
+Last activity: 2026-04-03 - Completed 37.7-01: Mapbox Foundation
+Stopped at: Completed 37.7-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -88,6 +88,7 @@ Progress: [███████████████████████
 - Phase 37.1-03 (2026-03-28): Support Ticket FAB — POST /api/mobile/support/ticket, SupportTicketFAB (LifeBuoy FAB + BottomSheet form), wired in driver + owner layouts — 2 tasks, 6 files, ~5min
 - Phase 37.6-01 (2026-03-31): Security claims to app_metadata — 6 auth files updated (accept-invitation, session, middleware, login, me, mobile-auth), AUTH_SECRET removed, docs updated — 2 tasks, 14 files, 372s
 - Phase 37.6-02 (2026-03-31): Auth helper consolidation — session.ts + server.ts + require-permission.ts merged into supabase.ts, 74 import paths updated, production build verified — 2 tasks, 76 files, 566s
+- Phase 37.7-01 (2026-04-03): Mapbox foundation — @rnmapbox/maps installed, react-native-maps removed, driver VehicleMarker created, owner VehicleMarker migrated, Mapbox.setAccessToken at module level in driver layout, iOS URL schemes added — 2 tasks, 5 files, 198s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
