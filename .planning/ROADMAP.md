@@ -443,6 +443,23 @@ Plans:
 
 ---
 
+### Phase 37.7: Driver Map + Navigation Screen — Mapbox map with live location, OSRM route polyline, and one-tap navigation
+
+**Goal:** Add a Map screen to the driver mobile portal showing the driver's live location and their active load route as a drawn polyline. Restructure driver tab bar to 5 tabs + More. Auto-redirect to Map tab and open the driver's preferred navigation app when a load is started.
+**Depends on:** Phase 37.6 (auth stable)
+**Plans:** 6 plans
+
+Plans:
+- [ ] 37.7-01-PLAN.md — Install @rnmapbox/maps, remove react-native-maps, initialize Mapbox token, iOS infoPlist nav app schemes
+- [ ] 37.7-02-PLAN.md — Backend: /api/geocoding/directions OSRM proxy, getOSRMDirections utility, driverApi.getDirections, RouteStop lat/lng
+- [ ] 37.7-03-PLAN.md — Tab bar restructure (Dashboard, Loads, Map, Messages, More), map.tsx stub, more/ stack + index
+- [ ] 37.7-04-PLAN.md — Map screen: MapView + UserLocation + ShapeSource/LineLayer polyline + MarkerView stops + info panel
+- [ ] 37.7-05-PLAN.md — Auto-redirect + nav deep links: StatusUpdateButton wiring, openNavigation utility, nav-settings.tsx preference screen
+- [ ] 37.7-06-PLAN.md — Architecture docs update + EAS dev build checkpoint
+
+
+---
+
 ### Phase 38: EAS Build Pipeline + CI/CD + Beta Distribution — Code signing, GitHub Actions, TestFlight, and Google Play Internal Track
 
 **Goal:** Set up the complete build and distribution infrastructure: EAS code signing for both platforms, GitHub Actions workflows for automated lint/test/build/deploy, TestFlight external beta for iOS, and Google Play Internal Track + open testing for Android. At the end of this phase, any push to main automatically ships an OTA update to beta testers, and tagged releases trigger full native builds submitted to stores.
