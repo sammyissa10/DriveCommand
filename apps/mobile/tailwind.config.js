@@ -2,10 +2,24 @@
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // Aligned with constants/tokens.ts
+        // Semantic CSS variable aliases — switch automatically with theme class
+        bg: 'rgb(var(--color-bg) / <alpha-value>)',
+        'surface-card': 'rgb(var(--color-surface-card) / <alpha-value>)',
+        'surface-elevated': 'rgb(var(--color-surface-elevated) / <alpha-value>)',
+        'surface-input': 'rgb(var(--color-surface-input) / <alpha-value>)',
+        'theme-border': 'rgb(var(--color-border) / <alpha-value>)',
+        'theme-border-light': 'rgb(var(--color-border-light) / <alpha-value>)',
+        'text-primary': 'rgb(var(--color-text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--color-text-secondary) / <alpha-value>)',
+        'text-tertiary': 'rgb(var(--color-text-tertiary) / <alpha-value>)',
+        'tab-bar-bg': 'rgb(var(--color-tab-bar-bg) / <alpha-value>)',
+        'tab-bar-border': 'rgb(var(--color-tab-bar-border) / <alpha-value>)',
+
+        // Static brand and status colors (aligned with constants/tokens.ts)
         brand: {
           50: "#f0f9ff",
           DEFAULT: "#0ea5e9",

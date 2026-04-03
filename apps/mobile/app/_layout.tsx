@@ -4,13 +4,18 @@ import * as Notifications from 'expo-notifications'
 import { useFonts, Poppins_600SemiBold, Poppins_800ExtraBold } from '@expo-google-fonts/poppins'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { useEffect, useRef, useState } from 'react'
-import { Animated, ImageBackground, StyleSheet, View, Text, Image } from 'react-native'
+import { Animated, ImageBackground, StyleSheet, View, Text } from 'react-native'
 import { AuthProvider, useAuthContext } from '../context/AuthContext'
 import { QueryProvider } from '../context/QueryProvider'
 import { setUnauthorizedHandler, configureApiClient } from '@drivecommand/api-client'
 import * as Sentry from '@sentry/react-native'
 import Toast from 'react-native-toast-message'
+import { DCChevronIcon } from '../components/shared/DCLogo'
+import { initAppearance } from '../lib/appearance'
 import '../global.css'
+
+// Apply saved appearance preference before first render
+initAppearance()
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -65,17 +70,10 @@ function CustomSplash({ ready }: { ready: boolean }) {
         <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.48)' }]} />
 
         {/* Centered branding */}
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-          <Image
-            source={require('../assets/images/logo-white.png')}
-            style={{ width: 90, height: 90, marginBottom: 8 }}
-            resizeMode="contain"
-          />
-          <Text style={{ color: '#ffffff', fontSize: 36, fontFamily: ready ? 'Poppins-ExtraBold' : undefined, fontWeight: '900' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+          <DCChevronIcon size={80} variant="light" />
+          <Text style={{ color: '#ffffff', fontSize: 32, fontFamily: ready ? 'Poppins-ExtraBold' : undefined, fontWeight: '900', letterSpacing: -0.5 }}>
             DriveCommand
-          </Text>
-          <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, letterSpacing: 5, fontWeight: '400' }}>
-            FLEET MANAGEMENT
           </Text>
         </View>
       </ImageBackground>

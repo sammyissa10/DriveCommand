@@ -1,5 +1,7 @@
 import { Platform, StyleSheet } from 'react-native'
+import { useColorScheme } from 'nativewind'
 
+// Dark palette (original — preserved for backward-compat with inline StyleSheet files)
 export const colors = {
   // Surfaces
   background: '#0f172a',
@@ -40,6 +42,58 @@ export const colors = {
   tabActive: '#0ea5e9',
   tabInactive: '#4a5e78',
 } as const
+
+// Light palette — used by useThemeColors() in light mode
+export const lightColors = {
+  // Surfaces
+  background: '#ffffff',
+  surfaceCard: '#f1f5f9',
+  surfaceElevated: '#e2e8f0',
+  surfaceInput: '#f8fafc',
+  border: '#cbd5e1',
+  borderLight: '#e2e8f0',
+  divider: '#e2e8f0',
+
+  // Brand (same as dark — works on both backgrounds)
+  brand: '#0ea5e9',
+  brandLight: '#38bdf8',
+  brandDark: '#0284c7',
+  brandSubtle: '#e0f2fe',
+
+  // Text
+  textPrimary: '#0f172a',
+  textSecondary: '#64748b',
+  textTertiary: '#94a3b8',
+  textMuted: '#94a3b8',
+  textInverse: '#f1f5f9',
+
+  // Status (same as dark — same semantic colors on both themes)
+  success: '#22c55e',
+  successBg: 'rgba(34,197,94,0.12)',
+  warning: '#f59e0b',
+  warningBg: 'rgba(245,158,11,0.12)',
+  danger: '#ef4444',
+  dangerBg: 'rgba(239,68,68,0.12)',
+  info: '#3b82f6',
+  infoBg: 'rgba(59,130,246,0.12)',
+  mutedBg: 'rgba(100,116,139,0.12)',
+
+  // Tab bar
+  tabBarBg: Platform.select({ ios: 'rgba(255,255,255,0.95)', android: '#ffffff' }) as string,
+  tabBarBorder: '#e2e8f0',
+  tabActive: '#0ea5e9',
+  tabInactive: '#94a3b8',
+} as const
+
+/**
+ * Reactive color palette hook.
+ * Returns the dark palette in dark mode, light palette in light mode.
+ * Use this instead of importing `colors` directly in components that need to respond to theme changes.
+ */
+export function useThemeColors() {
+  const { colorScheme } = useColorScheme()
+  return colorScheme === 'dark' ? colors : lightColors
+}
 
 export const radii = {
   sm: 8,
@@ -116,9 +170,9 @@ export const shadows = {
 
 // Native tab bar dimensions
 export const tabBar = {
-  height: (Platform.select({ ios: 49, android: 56 }) as number) + (Platform.select({ ios: 34, android: 0 }) as number),
-  iconSize: Platform.select({ ios: 28, android: 24 }) as number,
-  labelSize: Platform.select({ ios: 10, android: 12 }) as number,
+  height: (Platform.select({ ios: 49, android: 64 }) as number) + (Platform.select({ ios: 34, android: 0 }) as number),
+  iconSize: Platform.select({ ios: 26, android: 24 }) as number,
+  labelSize: Platform.select({ ios: 10, android: 11 }) as number,
 } as const
 
 // Native list row dimensions
