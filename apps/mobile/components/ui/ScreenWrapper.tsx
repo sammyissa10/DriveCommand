@@ -1,8 +1,9 @@
 import React from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-import { colors, spacing } from '../../constants/tokens'
+import { useColorScheme } from 'nativewind'
+import { useThemeColors, spacing } from '../../constants/tokens'
 
 interface ScreenWrapperProps {
   children: React.ReactNode
@@ -13,15 +14,21 @@ interface ScreenWrapperProps {
 export function ScreenWrapper({
   children,
   scrollable = false,
-  className = '',
 }: ScreenWrapperProps) {
+  const { colorScheme } = useColorScheme()
+  const c = useThemeColors()
+
   if (scrollable) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar style="light" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: c.background }}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.lg,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -32,29 +39,11 @@ export function ScreenWrapper({
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="light" />
-      <View style={styles.inner}>{children}</View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.background }}>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <View style={{ flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg }}>
+        {children}
+      </View>
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
-  inner: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
-})

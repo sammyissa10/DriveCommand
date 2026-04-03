@@ -6,9 +6,10 @@ import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
-import { colors, shadows, tabBar } from '../../constants/tokens'
+import { useThemeColors, shadows, tabBar } from '../../constants/tokens'
 
 export default function OwnerLayout() {
+  const c = useThemeColors()
   return (
     <Fragment>
       <AppHeader />
@@ -24,15 +25,15 @@ export default function OwnerLayout() {
             marginBottom: 0,
           },
           tabBarStyle: {
-            backgroundColor: colors.tabBarBg,
+            backgroundColor: c.tabBarBg,
             borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: colors.tabBarBorder,
+            borderTopColor: c.tabBarBorder,
             height: tabBar.height,
             paddingTop: 6,
             ...shadows.tabBar,
           },
-          tabBarActiveTintColor: colors.tabActive,
-          tabBarInactiveTintColor: colors.tabInactive,
+          tabBarActiveTintColor: c.tabActive,
+          tabBarInactiveTintColor: c.tabInactive,
         }}
       >
         <Tabs.Screen
@@ -61,7 +62,10 @@ export default function OwnerLayout() {
         />
         <Tabs.Screen
           name="routes"
-          options={{ tabBarButton: () => null }}
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none', width: 0 },
+          }}
         />
         <Tabs.Screen
           name="drivers"

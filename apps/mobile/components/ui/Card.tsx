@@ -1,6 +1,6 @@
 import React from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
-import { colors, radii, shadows, spacing } from '../../constants/tokens'
+import { Pressable, View } from 'react-native'
+import { useThemeColors, radii, shadows, spacing } from '../../constants/tokens'
 
 interface CardProps {
   children: React.ReactNode
@@ -9,17 +9,23 @@ interface CardProps {
   elevated?: boolean
 }
 
-export function Card({ children, className = '', onPress, elevated = false }: CardProps) {
-  const cardStyle = [
-    styles.base,
-    elevated ? styles.elevated : styles.normal,
-  ]
+export function Card({ children, onPress, elevated = false }: CardProps) {
+  const c = useThemeColors()
+
+  const baseStyle = {
+    backgroundColor: elevated ? c.surfaceElevated : c.surfaceCard,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    borderColor: c.border,
+    padding: spacing.lg,
+    ...(elevated ? (shadows.cardElevated as object) : (shadows.card as object)),
+  }
 
   if (onPress) {
     return (
       <Pressable
         onPress={onPress}
-        style={({ pressed }) => [cardStyle, pressed && styles.pressed]}
+        style={({ pressed }) => [baseStyle, pressed && { opacity: 0.8 }]}
         android_ripple={{ color: 'rgba(255,255,255,0.06)', borderless: false }}
       >
         {children}
@@ -27,25 +33,5 @@ export function Card({ children, className = '', onPress, elevated = false }: Ca
     )
   }
 
-  return <View style={cardStyle}>{children}</View>
+  return <View style={baseStyle}>{children}</View>
 }
-
-const styles = StyleSheet.create({
-  base: {
-    backgroundColor: colors.surfaceCard,
-    borderRadius: radii.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-  },
-  normal: {
-    ...(shadows.card as object),
-  },
-  elevated: {
-    backgroundColor: colors.surfaceElevated,
-    ...(shadows.cardElevated as object),
-  },
-  pressed: {
-    opacity: 0.8,
-  },
-})

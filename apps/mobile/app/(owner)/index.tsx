@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
   Pressable,
   RefreshControl,
@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   Building2,
@@ -19,6 +19,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-react-native'
+import { CreateLoadSheet } from '../../components/owner/CreateLoadSheet'
 import { useAuthContext } from '../../context/AuthContext'
 import { useSupportTicket } from '../../context/SupportTicketContext'
 import { ownerApi } from '@drivecommand/api-client'
@@ -30,7 +31,7 @@ import { SectionHeader } from '../../components/ui/SectionHeader'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { haptic } from '../../lib/haptics'
-import { colors, radii, spacing, typography } from '../../constants/tokens'
+import { useThemeColors, radii, spacing, typography } from '../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -78,17 +79,20 @@ function formatRevenue(amount: number): string {
 // ---------------------------------------------------------------------------
 
 const CREATE_ACTIONS = [
-  { key: 'load',     label: 'New Load',      icon: Package,   route: '/(owner)/loads?create=1',       color: '#38bdf8' },
-  { key: 'truck',    label: 'Add Truck',     icon: Truck,     route: '/(owner)/more/trucks/new',      color: '#f87171' },
-  { key: 'driver',   label: 'Invite Driver', icon: UserPlus,  route: '/(owner)/drivers/invite',       color: '#a78bfa' },
-  { key: 'customer', label: 'New Customer',  icon: Building2, route: '/(owner)/more/crm/new',         color: '#34d399' },
-  { key: 'invoice',  label: 'New Invoice',   icon: FileText,  route: '/(owner)/more/invoices/new',    color: '#fbbf24' },
+  { key: 'load',     label: 'New Load',      icon: Package,   route: '',                                           color: '#38bdf8' },
+  { key: 'truck',    label: 'Add Truck',     icon: Truck,     route: '/(owner)/more/trucks/new?from=dashboard',    color: '#f87171' },
+  { key: 'driver',   label: 'Invite Driver', icon: UserPlus,  route: '/(owner)/drivers/invite?from=dashboard',     color: '#a78bfa' },
+  { key: 'customer', label: 'New Customer',  icon: Building2, route: '/(owner)/more/crm/new?from=dashboard',       color: '#34d399' },
+  { key: 'invoice',  label: 'New Invoice',   icon: FileText,  route: '/(owner)/more/invoices/new?from=dashboard',  color: '#fbbf24' },
 ] as const
 
 export default function OwnerDashboard() {
   const { token } = useAuthContext()
   const { open: openSupport } = useSupportTicket()
   const router = useRouter()
+  const queryClient = useQueryClient()
+  const [createLoadVisible, setCreateLoadVisible] = useState(false)
+  const c = useThemeColors()
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDashboardData>({
     queryKey: ['owner-dashboard'],
@@ -110,14 +114,14 @@ export default function OwnerDashboard() {
   // Error state
   if (isError) {
     return (
-      <SafeAreaView style={styles.errorContainer} edges={['bottom', 'left', 'right']}>
-        <AlertTriangle color={colors.danger} size={40} />
-        <Text style={styles.errorTitle}>Failed to load dashboard</Text>
-        <Text style={styles.errorMessage}>
+      <SafeAreaView style={[styles.errorContainer, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
+        <AlertTriangle color={c.danger} size={40} />
+        <Text style={[styles.errorTitle, { color: c.textPrimary }]}>Failed to load dashboard</Text>
+        <Text style={[styles.errorMessage, { color: c.textSecondary }]}>
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </Text>
-        <Pressable onPress={() => refetch()} style={styles.retryButton}>
-          <Text style={styles.retryText}>Retry</Text>
+        <Pressable onPress={() => refetch()} style={[styles.retryButton, { backgroundColor: c.brandDark }]}>
+          <Text style={[styles.retryText, { color: c.textPrimary }]}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -130,7 +134,7 @@ export default function OwnerDashboard() {
   ).length
 
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         <ScrollView
           style={styles.scroll}
@@ -140,15 +144,15 @@ export default function OwnerDashboard() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={onRefresh}
-              tintColor={colors.brand}
-              colors={[colors.brand]}
+              tintColor={c.brand}
+              colors={[c.brand]}
             />
           }
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Dashboard</Text>
-            <Text style={styles.headerSubtitle}>Fleet overview</Text>
+            <Text style={[styles.headerTitle, { color: c.textPrimary }]}>Dashboard</Text>
+            <Text style={[styles.headerSubtitle, { color: c.textMuted }]}>Fleet overview</Text>
           </View>
 
           {/* 2x2 KPI Grid */}
@@ -159,22 +163,22 @@ export default function OwnerDashboard() {
               revenue: formatRevenue(kpis.revenueThisMonth),
               openAlerts: kpis.openAlertsCount,
             }}
-            onPressLoads={() => { haptic.light(); router.push('/(owner)/loads' as any) }}
+            onPressLoads={() => { haptic.light(); router.push('/(owner)/loads?filter=active' as any) }}
             onPressDrivers={() => { haptic.light(); router.push('/(owner)/drivers' as any) }}
             onPressRevenue={() => { haptic.light(); router.push('/(owner)/invoices' as any) }}
             onPressAlerts={() => { haptic.light(); router.push('/(owner)/compliance' as any) }}
           />
 
           {/* Active Loads Section */}
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: c.divider }]} />
           <View style={styles.sectionHeaderWrap}>
             <SectionHeader title="Active Loads" />
           </View>
 
           {activeLoads.length === 0 ? (
-            <View style={styles.emptySection}>
-              <Package color={colors.textMuted} size={32} />
-              <Text style={styles.emptySectionText}>No active loads right now</Text>
+            <View style={[styles.emptySection, { backgroundColor: c.surfaceCard }]}>
+              <Package color={c.textMuted} size={32} />
+              <Text style={[styles.emptySectionText, { color: c.textSecondary }]}>No active loads right now</Text>
             </View>
           ) : (
             <View style={styles.loadList}>
@@ -194,7 +198,7 @@ export default function OwnerDashboard() {
           )}
 
           {/* Driver Status Section */}
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: c.divider }]} />
           <View style={styles.sectionHeaderWrap}>
             <SectionHeader title="Driver Status" />
           </View>
@@ -205,8 +209,8 @@ export default function OwnerDashboard() {
             )
             if (activeDrivers.length === 0) {
               return (
-                <View style={styles.emptySection}>
-                  <Text style={styles.emptySectionText}>All drivers are currently off duty</Text>
+                <View style={[styles.emptySection, { backgroundColor: c.surfaceCard }]}>
+                  <Text style={[styles.emptySectionText, { color: c.textSecondary }]}>All drivers are currently off duty</Text>
                 </View>
               )
             }
@@ -216,7 +220,7 @@ export default function OwnerDashboard() {
                   <Pressable
                     key={driver.id}
                     style={({ pressed }) => [styles.chipItem, pressed && styles.chipPressed]}
-                    onPress={() => router.push(`/(owner)/drivers/${driver.id}` as any)}
+                    onPress={() => router.push(`/(owner)/drivers/${driver.id}?from=dashboard` as any)}
                   >
                     <DriverStatusChip
                       name={driver.name}
@@ -232,8 +236,21 @@ export default function OwnerDashboard() {
 
         <SpeedDial
           actions={CREATE_ACTIONS}
-          onAction={(route) => { haptic.light(); router.push(route as any) }}
+          onAction={(route) => {
+            haptic.light()
+            if (route === '') { setCreateLoadVisible(true); return }
+            router.push(route as any)
+          }}
           onSupportPress={openSupport}
+        />
+
+        <CreateLoadSheet
+          visible={createLoadVisible}
+          onClose={() => setCreateLoadVisible(false)}
+          onCreated={() => {
+            queryClient.invalidateQueries({ queryKey: ['owner-dashboard'] })
+            setCreateLoadVisible(false)
+          }}
         />
       </AnimatedScreen>
     </SafeAreaView>
@@ -243,7 +260,6 @@ export default function OwnerDashboard() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,
@@ -255,33 +271,28 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.xxl,
   },
   errorTitle: {
     ...typography.headline,
-    color: colors.textPrimary,
     marginTop: spacing.lg,
     textAlign: 'center',
   },
   errorMessage: {
     ...typography.footnote,
-    color: colors.textSecondary,
     marginTop: spacing.sm,
     textAlign: 'center',
   },
   retryButton: {
     marginTop: spacing.xxl,
-    backgroundColor: colors.brandDark,
     paddingHorizontal: spacing.xxl,
     paddingVertical: spacing.md,
     borderRadius: radii.md,
   },
   retryText: {
     ...typography.subhead,
-    color: colors.textPrimary,
     fontWeight: '600',
   },
   header: {
@@ -289,16 +300,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.title1,
-    color: colors.textPrimary,
   },
   headerSubtitle: {
     ...typography.footnote,
-    color: colors.textMuted,
     marginTop: 2,
   },
   divider: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: colors.divider,
     marginBottom: spacing.sm,
   },
   sectionHeaderWrap: {
@@ -308,7 +316,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   emptySection: {
-    backgroundColor: colors.surfaceCard,
     borderRadius: radii.md,
     padding: spacing.xl,
     alignItems: 'center',
@@ -317,7 +324,6 @@ const styles = StyleSheet.create({
   },
   emptySectionText: {
     ...typography.footnote,
-    color: colors.textSecondary,
     textAlign: 'center',
   },
   chipGrid: {

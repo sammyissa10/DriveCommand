@@ -22,6 +22,7 @@ import {
   Droplets,
   Shield,
   CreditCard,
+  Palette,
 } from 'lucide-react-native'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
@@ -149,6 +150,14 @@ const SECTIONS: MoreSection[] = [
   {
     header: 'SETTINGS',
     rows: [
+      {
+        label: 'Appearance',
+        subtitle: 'Light, dark, or system theme',
+        Icon: Palette,
+        iconBg: 'rgba(14,165,233,0.15)',
+        iconColor: '#0ea5e9',
+        route: '/(owner)/more/settings/appearance',
+      },
       {
         label: 'Team Permissions',
         subtitle: 'Roles & access',

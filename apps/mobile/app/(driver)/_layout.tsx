@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment, useCallback } from 'react'
+import React, { useEffect, useState, Fragment, useCallback } from 'react'
 import { View, Text, StyleSheet, AppState } from 'react-native'
 import { Tabs } from 'expo-router'
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
@@ -13,7 +13,7 @@ import { AppHeader } from '../../components/shared/AppHeader'
 import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
 import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
-import { colors, shadows, tabBar } from '../../constants/tokens'
+import { useThemeColors, shadows, tabBar } from '../../constants/tokens'
 import type { HOSStatus } from '@drivecommand/types'
 
 const LAST_READ_KEY = 'messages_last_read_at'
@@ -24,14 +24,14 @@ const UNREAD_POLL_INTERVAL_MS = 30_000
  * Positioned as a custom tab bar icon badge overlay.
  */
 function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission' | 'off' }) {
-  const color = {
-    active: colors.success,       // green — tracking
-    paused: colors.textSecondary, // grey — user paused
-    'no-permission': colors.danger, // red — permission denied
-    off: colors.textSecondary,    // grey — not started
+  const dotColor = {
+    active: '#22c55e',        // green — tracking
+    paused: '#94a3b8',        // grey — user paused
+    'no-permission': '#ef4444', // red — permission denied
+    off: '#94a3b8',           // grey — not started
   }[status]
 
-  return <View style={[styles.gpsDot, { backgroundColor: color }]} />
+  return <View style={[styles.gpsDot, { backgroundColor: dotColor }]} />
 }
 
 /**
@@ -39,7 +39,7 @@ function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission
  */
 function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: number }) {
   return (
-    <View style={styles.iconWrapper}>
+    <>
       <MessageSquare color={color} size={tabBar.iconSize} />
       {unreadCount > 0 && (
         <View style={styles.unreadBadge}>
@@ -48,12 +48,25 @@ function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: nu
           </Text>
         </View>
       )}
+    </>
+  )
+}
+
+/**
+ * Wrapper that renders a colored pill indicator above the icon when the tab is active.
+ */
+function TabIcon({ focused, children }: { focused: boolean; children: React.ReactNode }) {
+  return (
+    <View style={styles.tabIconWrap}>
+      <View style={[styles.activeBar, focused && styles.activeBarVisible]} />
+      <View style={styles.iconWrapper}>{children}</View>
     </View>
   )
 }
 
 export default function DriverLayout() {
   const { token } = useAuthContext()
+  const c = useThemeColors()
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
   const [showNotifModal, setShowNotifModal] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -144,26 +157,32 @@ export default function DriverLayout() {
           headerShown: false,
           tabBarShowLabel: true,
           tabBarStyle: {
-            backgroundColor: colors.tabBarBg,
-            borderTopColor: colors.tabBarBorder,
+            backgroundColor: c.tabBarBg,
+            borderTopColor: c.tabBarBorder,
             borderTopWidth: StyleSheet.hairlineWidth,
             height: tabBar.height,
-            paddingTop: 6,
+            paddingTop: 0,
+            paddingBottom: 8,
             ...shadows.tabBar,
           },
           tabBarItemStyle: {
             flex: 1,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             paddingHorizontal: 0,
+            minHeight: 48,
           },
-          tabBarActiveTintColor: colors.tabActive,
-          tabBarInactiveTintColor: colors.tabInactive,
+          tabBarActiveTintColor: c.tabActive,
+          tabBarInactiveTintColor: c.tabInactive,
           tabBarLabelStyle: {
             fontSize: tabBar.labelSize,
             fontWeight: '500',
             marginTop: 2,
             marginBottom: 0,
+          },
+          tabBarActiveLabelStyle: {
+            color: c.tabActive,
+            fontWeight: '700',
           },
         }}
       >
@@ -171,7 +190,11 @@ export default function DriverLayout() {
           name="loads"
           options={{
             tabBarLabel: 'Loads',
-            tabBarIcon: ({ color }) => <Truck color={color} size={tabBar.iconSize} />,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Truck color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
             tabBarButtonTestID: 'tab-loads',
           }}
           listeners={{ tabPress: () => haptic.light() }}
@@ -180,7 +203,11 @@ export default function DriverLayout() {
           name="hos"
           options={{
             tabBarLabel: 'HOS',
-            tabBarIcon: ({ color }) => <Clock color={color} size={tabBar.iconSize} />,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Clock color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -189,12 +216,11 @@ export default function DriverLayout() {
           name="index"
           options={{
             tabBarLabel: 'Home',
-            tabBarIcon: ({ color }) => (
-              <View style={styles.iconWrapper}>
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
                 <House color={color} size={tabBar.iconSize} />
-                {/* GPS status dot overlaid on the home tab icon */}
                 <GPSStatusDot status={gpsStatus} />
-              </View>
+              </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
@@ -203,8 +229,10 @@ export default function DriverLayout() {
           name="messages"
           options={{
             tabBarLabel: 'Messages',
-            tabBarIcon: ({ color }) => (
-              <MessageTabIcon color={color} unreadCount={unreadCount} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <MessageTabIcon color={color} unreadCount={unreadCount} />
+              </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
@@ -213,7 +241,11 @@ export default function DriverLayout() {
           name="documents"
           options={{
             tabBarLabel: 'Docs',
-            tabBarIcon: ({ color }) => <FileText color={color} size={tabBar.iconSize} />,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <FileText color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -235,6 +267,21 @@ export default function DriverLayout() {
 }
 
 const styles = StyleSheet.create({
+  tabIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 4,
+    gap: 6,
+  },
+  activeBar: {
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'transparent',
+  },
+  activeBarVisible: {
+    backgroundColor: '#0ea5e9',
+  },
   iconWrapper: {
     position: 'relative',
     alignItems: 'center',
@@ -248,13 +295,13 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: colors.tabBarBg,
+    borderColor: 'transparent',
   },
   unreadBadge: {
     position: 'absolute',
     top: -4,
     right: -8,
-    backgroundColor: colors.danger,
+    backgroundColor: '#ef4444',
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -263,7 +310,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   unreadBadgeText: {
-    color: colors.textPrimary,
+    color: '#ffffff',
     fontSize: 10,
     fontWeight: '700',
     lineHeight: 14,

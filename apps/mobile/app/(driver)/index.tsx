@@ -9,105 +9,90 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
-import { AlertTriangle, Truck } from 'lucide-react-native'
+import {
+  AlertTriangle,
+  Bell,
+  Gauge,
+  Navigation,
+  RotateCcw,
+  Timer,
+  Truck,
+} from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi, type DashboardData } from '@drivecommand/api-client'
-import { SectionHeader } from '../../components/ui/SectionHeader'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { TripCard } from '../../components/driver/TripCard'
-import { StatsRow } from '../../components/driver/StatsRow'
 import { haptic } from '../../lib/haptics'
 import { DashboardSkeleton } from '../../components/skeletons/DashboardSkeleton'
-import { colors, radii, spacing, typography } from '../../constants/tokens'
+import { useThemeColors, radii, typography } from '../../constants/tokens'
 
-// Map route status values to badge variants
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
 function getRouteBadge(status: string): { label: string; variant: BadgeVariant } {
   switch (status) {
-    case 'PENDING':
-      return { label: 'Pending', variant: 'muted' }
+    case 'PENDING':     return { label: 'Pending',   variant: 'muted' }
     case 'ACTIVE':
-    case 'IN_PROGRESS':
-      return { label: 'Active', variant: 'info' }
-    case 'COMPLETED':
-      return { label: 'Completed', variant: 'success' }
-    case 'CANCELLED':
-      return { label: 'Cancelled', variant: 'danger' }
-    default:
-      return { label: status, variant: 'muted' }
+    case 'IN_PROGRESS': return { label: 'Active',    variant: 'info' }
+    case 'COMPLETED':   return { label: 'Completed', variant: 'success' }
+    case 'CANCELLED':   return { label: 'Cancelled', variant: 'danger' }
+    default:            return { label: status,      variant: 'muted' }
   }
 }
 
-// Map DB status values to driver-friendly display labels and badge variants
 function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
   switch (status) {
-    case 'DISPATCHED':
-      return { label: 'Accepted', variant: 'info' }
+    case 'DISPATCHED':  return { label: 'Accepted', variant: 'info' }
     case 'IN_TRANSIT':
-    case 'PICKED_UP':
-      return { label: 'En Route', variant: 'warning' }
-    case 'DELIVERED':
-      return { label: 'Delivered', variant: 'success' }
-    case 'PENDING':
-      return { label: 'Pending', variant: 'muted' }
-    case 'CANCELLED':
-      return { label: 'Cancelled', variant: 'danger' }
-    default:
-      return { label: status, variant: 'muted' }
+    case 'PICKED_UP':   return { label: 'En Route', variant: 'warning' }
+    case 'DELIVERED':   return { label: 'Delivered', variant: 'success' }
+    case 'PENDING':     return { label: 'Pending',   variant: 'muted' }
+    case 'CANCELLED':   return { label: 'Cancelled', variant: 'danger' }
+    default:            return { label: status,      variant: 'muted' }
   }
 }
 
-function formatAlertTime(isoString: string): string {
-  const date = new Date(isoString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  if (diffMins < 60) return `${diffMins}m ago`
-  const diffHours = Math.floor(diffMins / 60)
-  if (diffHours < 24) return `${diffHours}h ago`
-  return `${Math.floor(diffHours / 24)}d ago`
+function formatAlertTime(iso: string): string {
+  const m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
 }
 
 export default function DriverDashboard() {
   const { token } = useAuthContext()
-  const router = useRouter()
+  const router    = useRouter()
+  const c = useThemeColors()
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery({
     queryKey: ['driver-dashboard'],
-    queryFn: () => driverApi.getDashboard(token!),
-    enabled: !!token,
+    queryFn:  () => driverApi.getDashboard(token!),
+    enabled:  !!token,
   })
 
   const { data: routeData, refetch: refetchRoute } = useQuery({
     queryKey: ['driver-route'],
-    queryFn: () => driverApi.getMyRoute(token!),
-    enabled: !!token,
+    queryFn:  () => driverApi.getMyRoute(token!),
+    enabled:  !!token,
   })
 
   const onRefresh = useCallback(() => {
-    haptic.light()
-    refetch()
-    refetchRoute()
+    haptic.light(); refetch(); refetchRoute()
   }, [refetch, refetchRoute])
 
-  // Loading state — show skeleton instead of spinner
-  if (isLoading) {
-    return <DashboardSkeleton />
-  }
+  if (isLoading) return <DashboardSkeleton />
 
-  // Error state
   if (isError) {
     return (
-      <SafeAreaView style={styles.errorContainer} edges={['bottom', 'left', 'right']}>
-        <AlertTriangle color={colors.danger} size={40} />
-        <Text style={styles.errorTitle}>Failed to load dashboard</Text>
-        <Text style={styles.errorMessage}>
+      <SafeAreaView style={[styles.errorContainer, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
+        <AlertTriangle color={c.danger} size={44} />
+        <Text style={[styles.errorTitle, { color: c.textPrimary }]}>Failed to load dashboard</Text>
+        <Text style={[styles.errorMessage, { color: c.textSecondary }]}>
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </Text>
-        <Pressable onPress={() => refetch()} style={styles.retryButton}>
-          <Text style={styles.retryText}>Retry</Text>
+        <Pressable onPress={() => refetch()} style={[styles.retryBtn, { backgroundColor: c.brandDark }]}>
+          <Text style={[styles.retryText, { color: c.textPrimary }]}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -116,46 +101,46 @@ export default function DriverDashboard() {
   const { activeLoad, stopsCompleted, hosHoursRemaining, todayMiles, recentAlerts } = data!
 
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={[styles.screen, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={onRefresh}
-              tintColor={colors.brand}
-              colors={[colors.brand]}
+              tintColor={c.brand}
+              colors={[c.brand]}
             />
           }
         >
-          {/* Header */}
+          {/* ── Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Dashboard</Text>
-            <Text style={styles.headerSubtitle}>Your shift at a glance</Text>
+            <Text style={[styles.headerTitle, { color: c.textPrimary }]}>Dashboard</Text>
+            <Text style={[styles.headerSub, { color: c.textSecondary }]}>Your shift at a glance</Text>
           </View>
 
-          {/* My Route Card — visible only when a route is assigned */}
+          {/* ── My Route */}
           {routeData?.route ? (
             <TripCard
-              accentColor={colors.success}
+              accentColor={c.success}
               label="My Route"
               title={routeData.route.name ?? 'Unnamed Route'}
               statusBadge={getRouteBadge(routeData.route.status)}
               origin={routeData.route.origin}
               destination={routeData.route.destination}
               linkText="View Route"
-              linkColor={colors.success}
+              linkColor={c.success}
               onPress={() => { haptic.light(); router.push('/(driver)/loads/my-route' as any) }}
             />
           ) : null}
 
-          {/* Active Load Card */}
+          {/* ── Active Load */}
           {activeLoad ? (
             <TripCard
-              accentColor={colors.brandLight}
+              accentColor={c.brandLight}
               label="Active Load"
               title={`#${activeLoad.loadNumber}`}
               statusBadge={getStatusBadge(activeLoad.status)}
@@ -163,81 +148,91 @@ export default function DriverDashboard() {
               origin={activeLoad.origin}
               destination={activeLoad.destination}
               linkText="View Details"
-              linkColor={colors.brandLight}
+              linkColor={c.brandLight}
               onPress={() => router.push('/(driver)/loads' as any)}
             />
           ) : (
-            /* Empty state — no active load */
-            <View style={styles.emptyCard}>
-              <Truck color={colors.textMuted} size={36} />
-              <Text style={styles.emptyTitle}>No active load</Text>
-              <Text style={styles.emptySubtitle}>
-                You have no load in progress right now.
-              </Text>
+            <View style={[styles.emptyLoad, { backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+              <View style={[styles.emptyIconWrap, { backgroundColor: c.background, borderColor: c.border }]}>
+                <Truck color={c.textMuted} size={24} />
+              </View>
+              <Text style={[styles.emptyTitle, { color: c.textPrimary }]}>No active load</Text>
+              <Text style={[styles.emptySub, { color: c.textSecondary }]}>You have no load in progress right now.</Text>
               <Pressable
                 onPress={() => router.push('/(driver)/loads' as any)}
-                style={styles.viewLoadsButton}
+                style={[styles.viewLoadsBtn, { backgroundColor: c.brandDark }]}
               >
-                <Text style={styles.viewLoadsText}>View All Loads</Text>
+                <Text style={[styles.viewLoadsTxt, { color: c.textPrimary }]}>View All Loads</Text>
               </Pressable>
             </View>
           )}
 
-          {/* Stats Row */}
+          {/* ── Shift Stats */}
           <View style={styles.statsRow}>
-            <StatsRow
-              miles={todayMiles}
-              stops={stopsCompleted}
-              hosHours={`${hosHoursRemaining}h`}
-            />
+            {/* Miles */}
+            <View style={[styles.statChip, { borderTopColor: '#38bdf8', backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+              <Gauge color="#38bdf8" size={14} />
+              <Text style={[styles.statNum, { color: c.textPrimary }]}>{todayMiles}</Text>
+              <Text style={[styles.statLbl, { color: c.textMuted }]}>Miles</Text>
+            </View>
+            {/* Stops */}
+            <View style={[styles.statChip, { borderTopColor: '#22c55e', backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+              <Navigation color="#22c55e" size={14} />
+              <Text style={[styles.statNum, { color: c.textPrimary }]}>{stopsCompleted}</Text>
+              <Text style={[styles.statLbl, { color: c.textMuted }]}>Stops</Text>
+            </View>
+            {/* HOS */}
+            <View style={[styles.statChip, { borderTopColor: '#f59e0b', backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+              <Timer color="#f59e0b" size={14} />
+              <Text style={[styles.statNum, { color: c.textPrimary }]}>{hosHoursRemaining}h</Text>
+              <Text style={[styles.statLbl, { color: c.textMuted }]}>HOS Left</Text>
+            </View>
           </View>
 
-          {/* Report Incident Quick Action */}
+          {/* ── Report Incident — outlined button */}
           <Pressable
-            onPress={() => router.push('/(driver)/incidents' as any)}
-            style={styles.incidentButton}
+            onPress={() => { haptic.medium(); router.push('/(driver)/incidents' as any) }}
+            style={({ pressed }) => [styles.incidentBtn, { borderColor: c.danger + '55', backgroundColor: c.dangerBg }, pressed && { opacity: 0.7 }]}
           >
-            <View style={styles.incidentInner}>
-              <AlertTriangle color={colors.danger} size={22} />
-              <View style={styles.incidentText}>
-                <Text style={styles.incidentTitle}>Report Incident</Text>
-                <Text style={styles.incidentSubtitle}>
-                  Submit accident, violation, or hazard report
-                </Text>
-              </View>
-            </View>
+            <AlertTriangle color={c.danger} size={15} />
+            <Text style={[styles.incidentBtnLabel, { color: c.danger }]}>Report Incident</Text>
           </Pressable>
 
-          {/* Recent Alerts */}
-          <View>
-            <View style={styles.sectionHeaderWrap}>
-              <SectionHeader title="Recent Alerts" />
-            </View>
+          {/* ── Recent Alerts */}
+          <View style={styles.alertsBlock}>
+            <Text style={[styles.alertsTitle, { color: c.textMuted }]}>Recent Alerts</Text>
 
             {recentAlerts.length === 0 ? (
-              <Text style={styles.noAlerts}>No recent alerts</Text>
+              <View style={[styles.noAlertsCard, { backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+                <Bell color={c.textMuted} size={18} />
+                <Text style={[styles.noAlertsText, { color: c.textSecondary }]}>No alerts right now</Text>
+                <Pressable
+                  onPress={() => { haptic.light(); refetch() }}
+                  style={[styles.refreshBtn, { borderColor: c.border }]}
+                  hitSlop={8}
+                >
+                  <RotateCcw color={c.textMuted} size={11} />
+                  <Text style={[styles.refreshTxt, { color: c.textMuted }]}>Refresh</Text>
+                </Pressable>
+              </View>
             ) : (
               <View style={styles.alertList}>
-                {recentAlerts.map((alert: DashboardData['recentAlerts'][number]) => (
-                  <View key={alert.id} style={styles.alertCard}>
-                    <View style={styles.alertRow}>
-                      <AlertTriangle
-                        color={alert.type === 'danger' ? colors.danger : colors.warning}
-                        size={16}
-                        style={styles.alertIcon}
-                      />
-                      <View style={styles.alertContent}>
-                        <Text style={styles.alertMessage}>{alert.message}</Text>
-                        <Text style={styles.alertTime}>
-                          {formatAlertTime(alert.createdAt)}
-                        </Text>
+                {recentAlerts.map((alert: DashboardData['recentAlerts'][number]) => {
+                  const dotColor = alert.type === 'danger' ? c.danger : c.warning
+                  return (
+                    <View key={alert.id} style={[styles.alertCard, { backgroundColor: c.surfaceCard, borderColor: c.border }]}>
+                      <View style={[styles.alertDot, { backgroundColor: dotColor }]} />
+                      <View style={styles.alertBody}>
+                        <Text style={[styles.alertMsg, { color: c.textSecondary }]}>{alert.message}</Text>
+                        <Text style={[styles.alertTime, { color: c.textMuted }]}>{formatAlertTime(alert.createdAt)}</Text>
                       </View>
                     </View>
-                  </View>
-                ))}
+                  )
+                })}
               </View>
             )}
           </View>
+
         </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>
@@ -245,163 +240,123 @@ export default function DriverDashboard() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    paddingBottom: 32,
-  },
+  screen:  { flex: 1 },
+  scroll:  { flex: 1 },
+  content: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 52 },
+
+  // Error
   errorContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32,
+  },
+  errorTitle:   { ...typography.headline, marginTop: 16, textAlign: 'center' },
+  errorMessage: { ...typography.footnote, marginTop: 8, textAlign: 'center' },
+  retryBtn:     { marginTop: 24, paddingHorizontal: 28, paddingVertical: 12, borderRadius: radii.md },
+  retryText:    { ...typography.subhead, fontWeight: '600' },
+
+  // Header
+  header:      { marginBottom: 20 },
+  headerTitle: { fontSize: 26, fontWeight: '800', letterSpacing: -0.5 },
+  headerSub:   { fontSize: 13, marginTop: 3 },
+
+  // Empty load
+  emptyLoad: {
+    marginBottom: 20,
+    alignItems: 'center',
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  emptyIconWrap: {
+    width: 48, height: 48, borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
+  },
+  emptyTitle:   { fontSize: 15, fontWeight: '700', marginBottom: 4 },
+  emptySub:     { fontSize: 13, textAlign: 'center', lineHeight: 19 },
+  viewLoadsBtn: { marginTop: 14, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 },
+  viewLoadsTxt: { fontSize: 13, fontWeight: '600' },
+
+  // ── Stat chips — compact 3-column
+  statsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20,
+  },
+  statChip: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.xxl,
-  },
-  errorTitle: {
-    ...typography.headline,
-    color: colors.textPrimary,
-    marginTop: spacing.lg,
-    textAlign: 'center',
-  },
-  errorMessage: {
-    ...typography.footnote,
-    color: colors.textSecondary,
-    marginTop: spacing.sm,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: spacing.xxl,
-    backgroundColor: colors.brandDark,
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.md,
-    borderRadius: radii.md,
-  },
-  retryText: {
-    ...typography.subhead,
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  header: {
-    marginBottom: spacing.xl,
-  },
-  headerTitle: {
-    ...typography.title2,
-    color: colors.textPrimary,
-  },
-  headerSubtitle: {
-    ...typography.footnote,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  emptyCard: {
-    marginBottom: spacing.xl,
-    alignItems: 'center',
-    paddingVertical: spacing.xxl,
-    paddingHorizontal: spacing.lg,
-    backgroundColor: colors.surfaceCard,
-    borderRadius: radii.md,
+    gap: 4,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderTopWidth: 2,
   },
-  emptyTitle: {
-    ...typography.callout,
-    color: colors.textPrimary,
-    fontWeight: '600',
-    marginTop: spacing.md,
+  statNum: {
+    fontSize: 18,
+    fontWeight: '800',
+    letterSpacing: -0.4,
   },
-  emptySubtitle: {
-    ...typography.footnote,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-    textAlign: 'center',
+  statLbl: {
+    fontSize: 10,
   },
-  viewLoadsButton: {
-    marginTop: spacing.lg,
-    backgroundColor: colors.brandDark,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: 10,
-    borderRadius: radii.md,
-  },
-  viewLoadsText: {
-    ...typography.footnote,
-    color: colors.textPrimary,
-    fontWeight: '600',
-  },
-  statsRow: {
-    marginBottom: spacing.xl,
-  },
-  incidentButton: {
-    marginBottom: spacing.xl,
-    backgroundColor: colors.dangerBg,
-    borderWidth: 1,
-    borderColor: colors.danger + '80',
-    borderRadius: radii.xl,
-    overflow: 'hidden',
-  },
-  incidentInner: {
+
+  // ── Report Incident — clean outlined button
+  incidentBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.lg,
-    gap: spacing.md,
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    marginBottom: 28,
   },
-  incidentText: {
-    flex: 1,
+  incidentBtnLabel: {
+    fontSize: 14,
+    fontWeight: '700',
   },
-  incidentTitle: {
-    ...typography.callout,
-    color: colors.danger,
-    fontWeight: '600',
+
+  // ── Alerts
+  alertsBlock: { gap: 10 },
+  alertsTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1.1,
   },
-  incidentSubtitle: {
-    ...typography.footnote,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
-  noAlerts: {
-    ...typography.footnote,
-    color: colors.textMuted,
-    paddingHorizontal: spacing.lg,
-  },
-  sectionHeaderWrap: {
-    marginHorizontal: -spacing.lg,
-  },
-  alertList: {
-    gap: spacing.sm,
-  },
-  alertCard: {
-    backgroundColor: colors.surfaceCard,
-    borderRadius: radii.md,
+  noAlertsCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
   },
-  alertRow: {
+  noAlertsText: { flex: 1, fontSize: 13 },
+  refreshBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingHorizontal: 10, paddingVertical: 6,
+    borderRadius: 7, borderWidth: 1,
+  },
+  refreshTxt: { fontSize: 11, fontWeight: '500' },
+
+  alertList: { gap: 8 },
+  alertCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    gap: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
   },
-  alertIcon: {
-    marginTop: 2,
-    marginRight: spacing.sm,
-    flexShrink: 0,
-  },
-  alertContent: {
-    flex: 1,
-  },
-  alertMessage: {
-    ...typography.footnote,
-    color: colors.textSecondary,
-  },
-  alertTime: {
-    ...typography.caption2,
-    color: colors.textMuted,
-    marginTop: 2,
-  },
+  alertDot:  { width: 7, height: 7, borderRadius: 4, marginTop: 5, flexShrink: 0 },
+  alertBody: { flex: 1 },
+  alertMsg:  { fontSize: 13, lineHeight: 19 },
+  alertTime: { fontSize: 11, marginTop: 3 },
 })
