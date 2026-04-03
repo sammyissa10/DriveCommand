@@ -87,6 +87,15 @@ export interface RouteStop {
   arrivedAt: string | null
   departedAt: string | null
   notes: string | null
+  lat: number | null   // from RouteStop.lat in DB (nullable Decimal → number | null in JSON)
+  lng: number | null   // from RouteStop.lng in DB (nullable Decimal → number | null in JSON)
+}
+
+export interface DirectionsResult {
+  /** GeoJSON [lng, lat] coordinate pairs — feed directly to Mapbox ShapeSource */
+  polyline: [number, number][] | null
+  distanceMiles: number | null
+  durationSeconds: number | null
 }
 
 export interface LoadDetail {
@@ -264,6 +273,14 @@ export const driverApi = {
       method: 'POST',
       token,
       body: JSON.stringify({ routeId, body }),
+    }),
+
+  // Directions — OSRM multi-stop polyline proxy
+  getDirections: (token: string, stops: { lat: number; lng: number }[]) =>
+    apiRequest<DirectionsResult>('/api/geocoding/directions', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ stops }),
     }),
 
   // Support tickets — shared across driver and owner portals
