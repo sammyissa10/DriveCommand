@@ -23,6 +23,7 @@ import { Skeleton } from '../../../components/ui/Skeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { RouteLoadTimelineItem } from '../../../components/driver/RouteLoadTimelineItem'
 import { MessageBubble } from '../../../components/driver/MessageBubble'
+import { useThemeColors } from '../../../constants/tokens'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -56,6 +57,7 @@ function formatDate(isoString: string | null | undefined): string {
 }
 
 export default function MyRouteScreen() {
+  const c = useThemeColors()
   const router = useRouter()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
@@ -112,9 +114,12 @@ export default function MyRouteScreen() {
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
         {/* Header skeleton */}
-        <View className="flex-row items-center px-4 py-3 border-b border-slate-800 gap-3">
+        <View
+          className="flex-row items-center px-4 py-3 gap-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Skeleton width={28} height={28} borderRadius={6} />
           <View style={{ flex: 1, gap: 4 }}>
             <Skeleton width={100} height={18} />
@@ -136,27 +141,30 @@ export default function MyRouteScreen() {
   if (isError || !routeData) {
     return (
       <SafeAreaView
-        className="flex-1 bg-slate-900 items-center justify-center px-6"
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: c.background }}
         edges={['bottom', 'left', 'right']}
       >
         <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
+        <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
           Failed to load route
         </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+        <Text className="text-sm mt-2 text-center" style={{ color: c.textSecondary }}>
           {error instanceof Error ? error.message : 'Could not load route data'}
         </Text>
         <Pressable
           onPress={() => refetch()}
-          className="mt-4 bg-sky-600 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-4 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.brand }}
         >
-          <Text className="text-white font-semibold">Retry</Text>
+          <Text className="font-semibold" style={{ color: '#ffffff' }}>Retry</Text>
         </Pressable>
         <Pressable
           onPress={() => router.back()}
-          className="mt-3 bg-slate-700 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-3 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.surfaceElevated }}
         >
-          <Text className="text-white font-semibold">Go Back</Text>
+          <Text className="font-semibold" style={{ color: c.textPrimary }}>Go Back</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -165,21 +173,24 @@ export default function MyRouteScreen() {
   // No route assigned state
   if (!route) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
+        <View
+          className="flex-row items-center px-4 py-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 p-1.5 rounded-lg active:bg-slate-700"
+            className="mr-3 p-1.5 rounded-lg active:opacity-80"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <ArrowLeft color="#94a3b8" size={22} />
+            <ArrowLeft color={c.textSecondary} size={22} />
           </Pressable>
-          <Text className="flex-1 text-lg font-bold text-white">My Route</Text>
+          <Text className="flex-1 text-lg font-bold" style={{ color: c.textPrimary }}>My Route</Text>
         </View>
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-white text-lg font-semibold text-center">No Active Route</Text>
-          <Text className="text-slate-400 text-sm mt-2 text-center">
+          <Text className="text-lg font-semibold text-center" style={{ color: c.textPrimary }}>No Active Route</Text>
+          <Text className="text-sm mt-2 text-center" style={{ color: c.textSecondary }}>
             You have no route assigned at this time.
           </Text>
         </View>
@@ -192,22 +203,25 @@ export default function MyRouteScreen() {
   const messageList = messages ?? []
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
-        <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
+        <View
+          className="flex-row items-center px-4 py-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
             onPress={() => router.back()}
-            className="mr-3 p-1.5 rounded-lg active:bg-slate-700"
+            className="mr-3 p-1.5 rounded-lg active:opacity-80"
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <ArrowLeft color="#94a3b8" size={22} />
+            <ArrowLeft color={c.textSecondary} size={22} />
           </Pressable>
           <View className="flex-1 mr-3">
-            <Text className="text-xl font-bold text-white" numberOfLines={1}>
+            <Text className="text-xl font-bold" style={{ color: c.textPrimary }} numberOfLines={1}>
               My Route
             </Text>
-            <Text className="text-sm text-slate-400" numberOfLines={1}>
+            <Text className="text-sm" style={{ color: c.textSecondary }} numberOfLines={1}>
               {route.origin} → {route.destination}
             </Text>
           </View>
@@ -225,8 +239,8 @@ export default function MyRouteScreen() {
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#0ea5e9"
-                colors={['#0ea5e9']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{
@@ -239,16 +253,22 @@ export default function MyRouteScreen() {
             {/* ------------------------------------------------------------------ */}
             {/* Section 1: Loads on this Route                                      */}
             {/* ------------------------------------------------------------------ */}
-            <Text className="text-lg font-semibold text-white mb-3">Route Legs</Text>
+            <Text className="text-lg font-semibold mb-3" style={{ color: c.textPrimary }}>Route Legs</Text>
 
             {loadList.length === 0 ? (
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
-                <Text className="text-slate-400 text-sm text-center">
+              <View
+                className="rounded-xl p-4 mb-6"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
+                <Text className="text-sm text-center" style={{ color: c.textSecondary }}>
                   No loads assigned to this route
                 </Text>
               </View>
             ) : (
-              <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
+              <View
+                className="rounded-xl p-4 mb-6"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
                 {loadList.map((load, index) => (
                   <RouteLoadTimelineItem
                     key={load.id}
@@ -264,22 +284,25 @@ export default function MyRouteScreen() {
             {/* ------------------------------------------------------------------ */}
             {/* Section 2: Route & Truck Details                                    */}
             {/* ------------------------------------------------------------------ */}
-            <Text className="text-lg font-semibold text-white mb-3">Route Details</Text>
+            <Text className="text-lg font-semibold mb-3" style={{ color: c.textPrimary }}>Route Details</Text>
 
-            <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-6">
+            <View
+              className="rounded-xl p-4 mb-6"
+              style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+            >
               {/* Route info fields */}
               <View className="flex-row mb-2">
                 <View className="flex-1">
-                  <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+                  <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
                     Scheduled Date
                   </Text>
-                  <Text className="text-sm text-white">{formatDate(route.scheduledDate)}</Text>
+                  <Text className="text-sm" style={{ color: c.textPrimary }}>{formatDate(route.scheduledDate)}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+                  <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
                     Status
                   </Text>
-                  <Text className="text-sm text-white capitalize">
+                  <Text className="text-sm capitalize" style={{ color: c.textPrimary }}>
                     {route.status.replace(/_/g, ' ').toLowerCase()}
                   </Text>
                 </View>
@@ -287,34 +310,40 @@ export default function MyRouteScreen() {
 
               {route.name ? (
                 <View className="mb-2">
-                  <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+                  <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
                     Route Name
                   </Text>
-                  <Text className="text-sm text-white">{route.name}</Text>
+                  <Text className="text-sm" style={{ color: c.textPrimary }}>{route.name}</Text>
                 </View>
               ) : null}
 
               {/* Truck details */}
               {route.truck ? (
                 <>
-                  <View className="mt-3 pt-3 border-t border-slate-700">
-                    <Text className="text-sm font-semibold text-white mb-2">Truck Details</Text>
-                    <Text className="text-sm text-white mb-1">
+                  <View
+                    className="mt-3 pt-3"
+                    style={{ borderTopWidth: 1, borderTopColor: c.border }}
+                  >
+                    <Text className="text-sm font-semibold mb-2" style={{ color: c.textPrimary }}>Truck Details</Text>
+                    <Text className="text-sm mb-1" style={{ color: c.textPrimary }}>
                       {route.truck.year} {route.truck.make} {route.truck.model}
                     </Text>
                     {route.truck.vin ? (
-                      <Text className="text-xs text-slate-400">VIN: {route.truck.vin}</Text>
+                      <Text className="text-xs" style={{ color: c.textSecondary }}>VIN: {route.truck.vin}</Text>
                     ) : null}
                     {route.truck.licensePlate ? (
-                      <Text className="text-xs text-slate-400">
+                      <Text className="text-xs" style={{ color: c.textSecondary }}>
                         Plate: {route.truck.licensePlate}
                       </Text>
                     ) : null}
                   </View>
                 </>
               ) : (
-                <View className="mt-3 pt-3 border-t border-slate-700">
-                  <Text className="text-sm text-slate-400">No truck assigned</Text>
+                <View
+                  className="mt-3 pt-3"
+                  style={{ borderTopWidth: 1, borderTopColor: c.border }}
+                >
+                  <Text className="text-sm" style={{ color: c.textSecondary }}>No truck assigned</Text>
                 </View>
               )}
             </View>
@@ -322,9 +351,12 @@ export default function MyRouteScreen() {
             {/* ------------------------------------------------------------------ */}
             {/* Section 3: Route Messages                                           */}
             {/* ------------------------------------------------------------------ */}
-            <Text className="text-lg font-semibold text-white mb-3">Route Messages</Text>
+            <Text className="text-lg font-semibold mb-3" style={{ color: c.textPrimary }}>Route Messages</Text>
 
-            <View className="bg-slate-800 border border-slate-700 rounded-xl mb-4">
+            <View
+              className="rounded-xl mb-4"
+              style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+            >
               {/* Message list */}
               {messagesLoading ? (
                 <View className="p-4" style={{ gap: 8 }}>
@@ -334,7 +366,7 @@ export default function MyRouteScreen() {
                 </View>
               ) : messageList.length === 0 ? (
                 <View className="p-4 items-center">
-                  <Text className="text-slate-400 text-sm">No messages yet</Text>
+                  <Text className="text-sm" style={{ color: c.textSecondary }}>No messages yet</Text>
                 </View>
               ) : (
                 <View className="pt-3 pb-1">
@@ -345,11 +377,15 @@ export default function MyRouteScreen() {
               )}
 
               {/* Message input row */}
-              <View className="px-3 py-3 border-t border-slate-700 flex-row items-end gap-2">
+              <View
+                className="px-3 py-3 flex-row items-end gap-2"
+                style={{ borderTopWidth: 1, borderTopColor: c.border }}
+              >
                 <TextInput
-                  className="flex-1 bg-slate-700 text-white rounded-xl px-4 py-3 text-sm"
+                  className="flex-1 rounded-xl px-4 py-3 text-sm"
+                  style={{ backgroundColor: c.surfaceElevated, color: c.textPrimary }}
                   placeholder="Message your dispatcher..."
-                  placeholderTextColor="#64748b"
+                  placeholderTextColor={c.textMuted}
                   value={messageText}
                   onChangeText={setMessageText}
                   multiline
@@ -360,16 +396,15 @@ export default function MyRouteScreen() {
                   onPress={handleSend}
                   disabled={!messageText.trim() || sendMutation.isPending}
                   hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                  className={`rounded-xl p-3 ${
-                    messageText.trim() && !sendMutation.isPending ? 'bg-sky-500' : 'bg-slate-700'
-                  }`}
+                  className="rounded-xl p-3"
+                  style={{ backgroundColor: messageText.trim() && !sendMutation.isPending ? c.brand : c.surfaceElevated }}
                 >
                   {sendMutation.isPending ? (
-                    <ActivityIndicator size="small" color="#94a3b8" />
+                    <ActivityIndicator size="small" color={c.textSecondary} />
                   ) : (
                     <Send
                       size={20}
-                      color={messageText.trim() && !sendMutation.isPending ? '#ffffff' : '#475569'}
+                      color={messageText.trim() && !sendMutation.isPending ? '#ffffff' : c.textMuted}
                     />
                   )}
                 </TouchableOpacity>

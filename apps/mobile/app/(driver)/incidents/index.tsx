@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import type { Incident } from '@drivecommand/api-client'
+import { useThemeColors } from '../../../constants/tokens'
 
 const SEVERITY_COLORS: Record<string, string> = {
   LOW: '#4ade80',
@@ -30,6 +31,7 @@ function formatDate(iso: string) {
 }
 
 export default function IncidentsScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
 
@@ -44,10 +46,11 @@ export default function IncidentsScreen() {
 
   const renderItem = useCallback(({ item: incident }: { item: Incident }) => (
     <View
-      className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-3"
+      className="rounded-xl p-4 mb-3"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-white font-semibold text-sm">
+        <Text className="font-semibold text-sm" style={{ color: c.textPrimary }}>
           {CATEGORY_LABELS[incident.category] ?? incident.category}
         </Text>
         <View
@@ -59,45 +62,46 @@ export default function IncidentsScreen() {
           </Text>
         </View>
       </View>
-      <Text className="text-slate-300 text-sm mb-2" numberOfLines={2}>
+      <Text className="text-sm mb-2" style={{ color: c.textSecondary }} numberOfLines={2}>
         {incident.description}
       </Text>
-      <Text className="text-slate-500 text-xs">
+      <Text className="text-xs" style={{ color: c.textTertiary }}>
         {formatDate(incident.reportedAt)}
       </Text>
     </View>
-  ), [])
+  ), [c])
 
   const ListEmptyComponent = useCallback(() => {
     if (isLoading) {
       return (
         <View className="items-center justify-center py-20">
-          <Text className="text-slate-400 text-sm">Loading incidents...</Text>
+          <Text className="text-sm" style={{ color: c.textSecondary }}>Loading incidents...</Text>
         </View>
       )
     }
     return (
       <View className="items-center justify-center py-20 px-8">
-        <AlertTriangle color="#334155" size={48} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">No incidents reported</Text>
-        <Text className="text-slate-500 text-sm mt-2 text-center">
+        <AlertTriangle color={c.surfaceElevated} size={48} />
+        <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>No incidents reported</Text>
+        <Text className="text-sm mt-2 text-center" style={{ color: c.textTertiary }}>
           Your submitted incident reports will appear here.
         </Text>
       </View>
     )
-  }, [isLoading])
+  }, [isLoading, c])
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 pt-4 pb-3">
-        <Text className="text-2xl font-bold text-white">Incidents</Text>
+        <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Incidents</Text>
         <Pressable
           onPress={() => router.push('/(driver)/incidents/new' as never)}
-          className="bg-sky-600 flex-row items-center gap-1.5 px-3 py-2 rounded-lg active:opacity-80"
+          className="flex-row items-center gap-1.5 px-3 py-2 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.brand }}
         >
           <Plus color="#ffffff" size={16} />
-          <Text className="text-white text-sm font-semibold">Report</Text>
+          <Text className="text-sm font-semibold" style={{ color: '#ffffff' }}>Report</Text>
         </Pressable>
       </View>
 
@@ -108,7 +112,7 @@ export default function IncidentsScreen() {
         estimatedItemSize={120}
         ListEmptyComponent={ListEmptyComponent}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor="#0ea5e9" colors={['#0ea5e9']} />
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor={c.brand} colors={[c.brand]} />
         }
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}

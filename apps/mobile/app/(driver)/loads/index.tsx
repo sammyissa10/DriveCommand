@@ -12,10 +12,12 @@ import { RouteCard } from '../../../components/driver/RouteCard'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { LoadCardSkeleton } from '../../../components/skeletons/LoadCardSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { useThemeColors } from '../../../constants/tokens'
 
 type TabType = 'active' | 'history'
 
 export default function LoadsScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<TabType>('active')
@@ -63,39 +65,35 @@ export default function LoadsScreen() {
   )
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       {/* Screen header */}
       <View className="px-4 pt-4 pb-3">
-        <Text className="text-2xl font-bold text-white">Loads</Text>
+        <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Loads</Text>
       </View>
 
       {/* Active / History toggle tabs */}
-      <View className="flex-row mx-4 mb-3 bg-slate-800 rounded-lg p-1">
+      <View className="flex-row mx-4 mb-3 rounded-lg p-1" style={{ backgroundColor: c.surfaceCard }}>
         <Pressable
           onPress={() => setActiveTab('active')}
-          className={`flex-1 rounded-md py-3 items-center ${
-            activeTab === 'active' ? 'bg-sky-600' : 'bg-transparent'
-          }`}
+          className="flex-1 rounded-md py-3 items-center"
+          style={{ backgroundColor: activeTab === 'active' ? c.brand : 'transparent' }}
         >
           <Text
-            className={`text-sm font-semibold ${
-              activeTab === 'active' ? 'text-white' : 'text-slate-400'
-            }`}
+            className="text-sm font-semibold"
+            style={{ color: activeTab === 'active' ? '#ffffff' : c.textSecondary }}
           >
             Active
           </Text>
         </Pressable>
         <Pressable
           onPress={() => setActiveTab('history')}
-          className={`flex-1 rounded-md py-3 items-center ${
-            activeTab === 'history' ? 'bg-sky-600' : 'bg-transparent'
-          }`}
+          className="flex-1 rounded-md py-3 items-center"
+          style={{ backgroundColor: activeTab === 'history' ? c.brand : 'transparent' }}
         >
           <Text
-            className={`text-sm font-semibold ${
-              activeTab === 'history' ? 'text-white' : 'text-slate-400'
-            }`}
+            className="text-sm font-semibold"
+            style={{ color: activeTab === 'history' ? '#ffffff' : c.textSecondary }}
           >
             History
           </Text>
@@ -122,7 +120,7 @@ export default function LoadsScreen() {
             ListHeaderComponent={listHeader}
             ListEmptyComponent={
               <EmptyState
-                icon={<Truck color="#475569" size={40} />}
+                icon={<Truck color={c.textMuted} size={40} />}
                 title={activeTab === 'active' ? 'No active loads' : 'No completed loads'}
                 subtitle={
                   activeTab === 'active'
