@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.7 Driver Map Navigation — IN PROGRESS
-Current Plan: Plan 4 of 6 complete — 37.7-04 DONE
-Status: 37.7-04 complete — Full driver MapView with OSRM polyline (ShapeSource/LineLayer), numbered stop MarkerViews, useDriverDirections hook, floating info panel (next stop address, distance, ETA), Start Navigation button (disabled when no active load).
-Last activity: 2026-04-03 - Completed 37.7-04: Full Map Screen + useDriverDirections Hook
-Stopped at: Completed 37.7-04-PLAN.md
+Current Plan: Plan 5 of 6 complete — 37.7-05 DONE
+Status: 37.7-05 complete — navigation utility (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers Map tab switch + nav deep link, map.tsx Start Navigation wired, nav-settings.tsx preference screen (iOS picker / Android static).
+Last activity: 2026-04-03 - Completed 37.7-05: Start Route Navigation Deep Link + Nav Settings
+Stopped at: Completed 37.7-05-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -90,6 +90,7 @@ Progress: [███████████████████████
 - Phase 37.6-02 (2026-03-31): Auth helper consolidation — session.ts + server.ts + require-permission.ts merged into supabase.ts, 74 import paths updated, production build verified — 2 tasks, 76 files, 566s
 - Phase 37.7-01 (2026-04-03): Mapbox foundation — @rnmapbox/maps installed, react-native-maps removed, driver VehicleMarker created, owner VehicleMarker migrated, Mapbox.setAccessToken at module level in driver layout, iOS URL schemes added — 2 tasks, 5 files, 198s
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
+- Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -159,6 +160,12 @@ Progress: [███████████████████████
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
 - Rate limit key prefix dir: (not dist:) to isolate directions quota from distance quota on shared geocodingLimiter
 - Coordinate order [lng, lat] preserved end-to-end — GeoJSON standard, matches Mapbox ShapeSource natively, no swap needed on mobile
+
+**Phase 37.7-05 decisions (Start Route navigation deep link):**
+- router.navigate cast as 'never' to avoid expo-router strict typing on dynamic string route
+- openNavigation is fire-and-forget after query invalidation — does not block onStatusUpdated()
+- Android locked to Google Maps regardless of stored preference — enforced in getNavPreference()
+- Waze fallback goes to Apple Maps (iOS only) since Waze may not be installed
 
 **Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
 - useThemeColors() called in each sub-component (not passed as prop) — hooks must be called inside React function components
