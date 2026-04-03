@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-04-03 - Completed quick task 148: Add a global appearance setting that allows users to seamlessly switch between Light Mode and Dark Mode
-Stopped at: Completed quick-143
+Last activity: 2026-04-03 - Completed quick task 149: Migrate all mobile screens to use useThemeColors
+Stopped at: Completed quick-149
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -137,6 +137,8 @@ Progress: [███████████████████████
 - Quick-145 (2026-03-31): Move sign-out button from bottom-left sidebar to top-right header across all web portals — UserMenu dropdown component (owner/driver/admin), removed sidebar footer sign-out — 2 tasks, 4 files, ~15min
 - Quick-146 (2026-03-31): Audit and update all technical documentation — auth.md (session.ts→supabase.ts, requirePermission added), architecture.md (AES-256-GCM→Supabase Auth, lib/auth/ + lib/db/ listings updated), mobile architecture.md (full API tree + navigation tree, ADR-001 updated), setup.md + deployment.md (Gmail SMTP primary, SUPABASE_SERVICE_ROLE_KEY added), modules.md (SysAdmin Invoicing added), stack.md (bcryptjs legacy), local-development.md (sign-in.tsx→login.tsx) — 2 tasks, 8 files, ~25min
 - Quick-147 (2026-04-03): Geocoding autocomplete + OSRM real road distances — OSRM utility (lib/geo/osrm.ts), /api/geocoding/distance proxy, profit-predictor-form.tsx (AddressAutocomplete + OSRM auto-fill), load-form.tsx + route-form.tsx (haversine→OSRM), mobile profit-predictor.tsx + crm/[id].tsx (AddressInput + OSRM proxy) — 3 tasks, 7 files, ~25min
+- Quick-148 (2026-04-03): Add global appearance setting for light/dark mode — useThemeColors() hook, color token system (background/surfaceCard/surfaceElevated/surfaceInput/border/brand/brandDark/text*), AppearanceSheet bottom sheet, AsyncStorage persistence, appearance setting in More menu — 3 tasks, ~10 files, ~30min
+- Quick-149 (2026-04-03): Migrate all mobile screens to useThemeColors — replaced all bg-slate-*/text-slate-*/border-slate-*/hardcoded hex values with useThemeColors() tokens across 29 files (7 driver screens, 17 owner screens, 5 shared components); fixed 2 variable name collisions + 2 recursive goBack() bugs — 3 tasks, 29 files, ~90min
 
 ## Accumulated Context
 
@@ -150,6 +152,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
+- useThemeColors() called in each sub-component (not passed as prop) — hooks must be called inside React function components
+- Variable name collisions resolved: 'c' param in find callbacks renamed to 'cat'/'cust', STATUS_COLORS const renamed to 'statusColors' in trucks/[id].tsx
+- LoadingSpinner color prop default changed to c.brand so it picks up theme; explicit color override still supported
+- Pre-existing TypeScript errors (FlashList estimatedItemSize, _layout args) confirmed not introduced by this task
 
 **Quick-143 decisions (Mobile CRM contact detail/edit + payroll detail/create):**
 - BottomSheet snapPoint="80%" for all edit/create sheets — component only accepts 40%/60%/80%/full; plan specified 85%/90% which are invalid
