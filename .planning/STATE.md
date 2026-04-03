@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.7 Driver Map Navigation — IN PROGRESS
-Current Plan: Plan 3 of 6 complete — 37.7-03 DONE
-Status: 37.7-03 complete — Driver tab bar restructured (Dashboard/Loads/Map/Messages/More), map.tsx stub created, more/_layout.tsx Stack navigator, more/index.tsx with 5 driver sections, support-ticket.tsx stub.
-Last activity: 2026-04-03 - Completed 37.7-03: Driver Tab Bar Restructure + More Menu
-Stopped at: Completed 37.7-03-PLAN.md
+Current Plan: Plan 4 of 6 complete — 37.7-04 DONE
+Status: 37.7-04 complete — Full driver MapView with OSRM polyline (ShapeSource/LineLayer), numbered stop MarkerViews, useDriverDirections hook, floating info panel (next stop address, distance, ETA), Start Navigation button (disabled when no active load).
+Last activity: 2026-04-03 - Completed 37.7-04: Full Map Screen + useDriverDirections Hook
+Stopped at: Completed 37.7-04-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -677,6 +677,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-134]: Dashboard queries parallelized into 2 Promise.all batches; cron uses single IN query for dedup; groupBy replaces full-table stats scans
 - [Phase quick-134]: 4 composite indexes: Load(tenantId,status,archivedAt), Invoice(tenantId,status), Document(tenantId,driverId), FleetMessage(tenantId,createdAt)
 - [Phase quick-147]: OSRM for road distance over haversine — 20-40% more accurate for route/load distance estimates
+- [Phase 37.7]: Use UserTrackingMode.Follow enum (not string literal 'normal') for Mapbox Camera followUserMode — Mapbox types require enum values
+- [Phase 37.7]: Two-query pattern for map screen: dashboard query for activeLoad summary, getLoad query for full RouteStop coords (lat/lng not in dashboard stops)
 
 ### Pending Todos
 
@@ -903,6 +905,7 @@ None blocking immediate progress.
 | Phase 36 P02b | 151 | 2 tasks | 2 files |
 | Phase 37 P01 | 439 | 6 tasks | 20 files |
 | Phase quick-134 P01 | 14 | 3 tasks | 29 files |
+| Phase 37.7 P04 | 239 | 2 tasks | 3 files |
 
 ## Session Continuity
 
