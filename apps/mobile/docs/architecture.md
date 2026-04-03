@@ -283,3 +283,79 @@ Use NativeWind v4 (Tailwind CSS for React Native) as the primary styling solutio
 - Tailwind's `tailwind.config.js` must be configured at `apps/mobile/tailwind.config.js` with the correct content paths.
 - Not all Tailwind properties map 1:1 to React Native. Web-only properties (like `display: block`, `text-decoration`) are silently ignored. Developers should test visual output on device.
 - NativeWind v4 is a native module — it requires a custom dev build.
+
+---
+
+## Driver Tab Bar Structure (Phase 37.7+)
+
+The driver tab bar follows a 5+More pattern:
+
+| Tab | Route | Icon | Notes |
+|-----|-------|------|-------|
+| Dashboard | `(driver)/index` | House | GPSStatusDot overlay |
+| Loads | `(driver)/loads` | Truck | Load list + detail |
+| Map | `(driver)/map` | Navigation | Mapbox full-screen map |
+| Messages | `(driver)/messages` | MessageSquare | Unread badge |
+| More | `(driver)/more` | Grid2X2 | Overflow menu |
+
+Hidden routes (href: null): `hos`, `documents`, `incidents`
+These are accessible via the More menu (`(driver)/more/index.tsx`).
+
+---
+
+## Navigation Strategy (Phase 37.7+)
+
+DriveCommand uses a hybrid approach for driver navigation:
+
+**In-app map:** `@rnmapbox/maps` renders a full-screen Mapbox Standard map with:
+- Driver live location via `UserLocation` component (expo-location foreground permissions)
+- OSRM road polyline drawn via `ShapeSource` + `LineLayer`
+- Numbered `MarkerView` stop markers; active/next stop highlighted in brand blue
+
+**Turn-by-turn:** Handled by external navigation apps via deep links:
+- Apple Maps: `maps://?daddr={lat},{lng}` (iOS default)
+- Google Maps: `https://www.google.com/maps/dir/?api=1&destination={lat},{lng}&travelmode=driving`
+- Waze: `waze://?ll={lat},{lng}&navigate=yes`
+
+Driver preference stored in MMKV under key `nav_app_preference`. Android is locked to Google Maps.
+iOS preference configurable in More → Navigation App.
+
+**One-tap Start Route:** When driver taps "Start Route" on a load (`DISPATCHED → EN_ROUTE`),
+`StatusUpdateButton` simultaneously:
+1. Calls `router.navigate('/(driver)/map')` to switch to the Map tab
+2. Calls `openNavigation(lat, lng)` (`lib/navigation.ts`) to open the preferred nav app
+
+Target is always the first stop with `status !== 'DEPARTED'` (next unvisited stop).
+
+---
+
+## Directions API
+
+`POST /api/geocoding/directions`
+
+Proxies OSRM (public endpoint, no API key) for mobile clients. CORS and mixed-content
+restrictions on mobile networks require all OSRM calls to go through this backend proxy.
+
+Request: `{ stops: Array<{ lat: number; lng: number }> }` (minimum 2 stops)
+Response: `{ polyline: [number, number][] | null, distanceMiles: number | null, durationSeconds: number | null }`
+
+Polyline is in GeoJSON `[lng, lat]` order (Mapbox ShapeSource native format).
+
+Auth: accepts mobile Bearer token or web session cookie.
+Rate limit: `geocodingLimiter` with key `dir:{userId}`.
+
+Implementation: `apps/web/src/app/api/geocoding/directions/route.ts`
+OSRM utility: `apps/web/src/lib/geo/osrm.ts` → `getOSRMDirections()`
+api-client: `driverApi.getDirections(token, stops)` → `DirectionsResult`
+Mobile hook: `apps/mobile/hooks/useDriverDirections.ts`
+
+---
+
+## Mapbox Configuration
+
+Token: `EXPO_PUBLIC_MAPBOX_TOKEN` (dev `.env`) or `Constants.expoConfig.extra.mapboxToken` (builds)
+Initialized at: `apps/mobile/app/(driver)/_layout.tsx` module level via `Mapbox.setAccessToken()`
+Must be called before any `MapView` renders — module-level call guarantees this.
+
+Before Phase 38 EAS production build: replace `MAPBOX_PUBLIC_TOKEN_PLACEHOLDER` in `app.json`
+with the real public token, or configure via EAS Secrets + `app.config.js`.
