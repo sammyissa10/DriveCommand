@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.7 Driver Map Navigation — IN PROGRESS
-Current Plan: Plan 2 of 6 complete — 37.7-02 DONE
-Status: 37.7-02 complete — POST /api/geocoding/directions endpoint created, getOSRMDirections added to osrm.ts, RouteStop lat/lng typed in api-client, driverApi.getDirections method added.
-Last activity: 2026-04-03 - Completed 37.7-02: Directions Backend
-Stopped at: Completed 37.7-02-PLAN.md
+Current Plan: Plan 3 of 6 complete — 37.7-03 DONE
+Status: 37.7-03 complete — Driver tab bar restructured (Dashboard/Loads/Map/Messages/More), map.tsx stub created, more/_layout.tsx Stack navigator, more/index.tsx with 5 driver sections, support-ticket.tsx stub.
+Last activity: 2026-04-03 - Completed 37.7-03: Driver Tab Bar Restructure + More Menu
+Stopped at: Completed 37.7-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
