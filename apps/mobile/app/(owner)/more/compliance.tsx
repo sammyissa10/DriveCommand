@@ -187,7 +187,7 @@ export default function ComplianceScreen() {
             data={data?.alerts ?? []}
             renderItem={renderAlert}
             keyExtractor={(alert, idx) => `${alert.entityName}-${alert.documentType}-${idx}`}
-            estimatedItemSize={72}
+
             ListHeaderComponent={
               <View>
                 {/* Stats grid 2x2 */}

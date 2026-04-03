@@ -232,7 +232,7 @@ export default function CRMScreen() {
             data={data?.customers ?? []}
             renderItem={renderCustomer}
             keyExtractor={(cust) => cust.id}
-            estimatedItemSize={80}
+
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}

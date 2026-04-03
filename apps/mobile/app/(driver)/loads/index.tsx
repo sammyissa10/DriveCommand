@@ -113,7 +113,7 @@ export default function LoadsScreen() {
             data={data ?? []}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
-            estimatedItemSize={88}
+
             showsVerticalScrollIndicator={false}
             refreshing={isRefetching}
             onRefresh={onRefresh}

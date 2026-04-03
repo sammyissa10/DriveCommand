@@ -109,7 +109,7 @@ export default function IncidentsScreen() {
         data={incidents}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        estimatedItemSize={120}
+
         ListEmptyComponent={ListEmptyComponent}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor={c.brand} colors={[c.brand]} />

@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -80,7 +80,7 @@ function ConversationRow({ conversation, onPress }: ConversationRowProps) {
   const isLoad = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('load:')
   const isRoute = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('route:')
 
-  let avatarBg = c.surfaceElevated
+  let avatarBg: string = c.surfaceElevated
   if (conversation.isBroadcast) avatarBg = c.brand
   else if (isLoad) avatarBg = '#059669'
   else if (isRoute) avatarBg = '#d97706'
@@ -172,7 +172,7 @@ export default function OwnerFleetScreen() {
   const [threadMessages, setThreadMessages] = useState<ConversationMessage[]>([])
   const [threadLoading, setThreadLoading] = useState(false)
 
-  const flatListRef = useRef<FlashList<ConversationMessage>>(null)
+  const flatListRef = useRef<FlashListRef<ConversationMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const didPreSelect = useRef(false)
 
@@ -381,7 +381,7 @@ export default function OwnerFleetScreen() {
               keyExtractor={(item) =>
                 item.isBroadcast ? 'broadcast' : (item.recipientId ?? 'unknown')
               }
-              estimatedItemSize={68}
+
               showsVerticalScrollIndicator={false}
               refreshControl={
                 <RefreshControl
@@ -471,7 +471,7 @@ export default function OwnerFleetScreen() {
               ref={flatListRef}
               data={threadMessages}
               keyExtractor={(item) => item.id}
-              estimatedItemSize={70}
+
               renderItem={({ item }) => <MessageBubble message={item} />}
               contentContainerStyle={{ paddingTop: 12, paddingBottom: 8 }}
               onContentSizeChange={() => {

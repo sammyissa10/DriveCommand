@@ -147,7 +147,7 @@ export default function TrucksScreen() {
             data={data ?? []}
             renderItem={renderTruck}
             keyExtractor={(truck) => truck.id}
-            estimatedItemSize={72}
+
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}

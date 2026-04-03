@@ -245,7 +245,7 @@ export default function InvoicesScreen() {
             data={filteredInvoices}
             renderItem={renderInvoice}
             keyExtractor={(inv) => inv.id}
-            estimatedItemSize={88}
+
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}

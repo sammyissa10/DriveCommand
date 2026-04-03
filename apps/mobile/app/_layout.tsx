@@ -125,7 +125,7 @@ function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync({ fade: true })
+      SplashScreen.hideAsync()
     }
   }, [fontsLoaded])
 

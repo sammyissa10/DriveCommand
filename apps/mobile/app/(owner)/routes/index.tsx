@@ -208,7 +208,7 @@ export default function OwnerRoutesScreen() {
               showsVerticalScrollIndicator={false}
               refreshing={isRefetching}
               onRefresh={onRefresh}
-              estimatedItemSize={120}
+
               contentContainerStyle={{ paddingBottom: 80 }}
               ListEmptyComponent={
                 <EmptyState

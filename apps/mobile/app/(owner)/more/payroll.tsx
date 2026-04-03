@@ -337,7 +337,7 @@ export default function PayrollScreen() {
             data={data?.records ?? []}
             renderItem={renderRecord}
             keyExtractor={(r) => r.id}
-            estimatedItemSize={80}
+
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}

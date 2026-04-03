@@ -8,7 +8,7 @@ import {
   Platform,
   RefreshControl,
 } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { MessageSquare, Send } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -33,7 +33,7 @@ export default function DriverMessages() {
   const [refreshing, setRefreshing] = useState(false)
   const [sending, setSending] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const flatListRef = useRef<FlashList<FleetMessage>>(null)
+  const flatListRef = useRef<FlashListRef<FleetMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const markAllRead = useCallback(async () => {
@@ -161,7 +161,7 @@ export default function DriverMessages() {
             ref={flatListRef}
             data={messages}
             keyExtractor={(item) => item.id}
-            estimatedItemSize={60}
+
             renderItem={({ item }) => <MessageBubble message={item} />}
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}
             refreshControl={

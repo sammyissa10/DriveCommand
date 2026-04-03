@@ -361,7 +361,7 @@ export default function FuelScreen() {
             data={data?.entries ?? []}
             renderItem={renderEntry}
             keyExtractor={(entry) => entry.id}
-            estimatedItemSize={72}
+
             ListEmptyComponent={
               <View className="items-center justify-center px-6 pt-16">
                 <Droplets color={c.textTertiary} size={48} />
