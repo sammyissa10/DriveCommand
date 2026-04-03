@@ -22,6 +22,7 @@ import {
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { BottomSheet } from '../../../../components/ui/BottomSheet'
 import { haptic } from '../../../../lib/haptics'
+import { AddressInput } from '../../../../components/owner/AddressInput'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -401,18 +402,19 @@ export default function CrmContactDetailScreen() {
             </FormField>
 
             <FormField label="Address">
-              <TextInput
-                style={inputStyle}
-                value={address}
-                onChangeText={setAddress}
-                placeholder="Street address"
-                placeholderTextColor="#475569"
-                autoCapitalize="words"
-                editable={!updating}
-              />
+              <View style={{ zIndex: 20 }}>
+                <AddressInput
+                  value={address}
+                  onChangeText={setAddress}
+                  onAddressSelect={(r) => {
+                    setAddress(r.formatted_address)
+                  }}
+                  placeholder="Street address"
+                />
+              </View>
             </FormField>
 
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 10, zIndex: 10 }}>
               <View style={{ flex: 2 }}>
                 <FormField label="City">
                   <TextInput

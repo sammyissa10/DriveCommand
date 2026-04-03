@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Pressable,
   ScrollView,
@@ -18,6 +18,9 @@ import {
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type PredictProfitResult } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { AddressInput } from '../../../components/owner/AddressInput'
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000'
 
 // ---------------------------------------------------------------------------
 // StatCard
@@ -91,6 +94,40 @@ export default function ProfitPredictorScreen() {
   const [distance, setDistance] = useState('')
   const [rate, setRate] = useState('')
 
+  const [originLat, setOriginLat] = useState<number | null>(null)
+  const [originLng, setOriginLng] = useState<number | null>(null)
+  const [destLat, setDestLat] = useState<number | null>(null)
+  const [destLng, setDestLng] = useState<number | null>(null)
+
+  // Auto-fill distance via OSRM proxy when both addresses are geocoded
+  useEffect(() => {
+    if (originLat === null || originLng === null || destLat === null || destLng === null) return
+
+    let cancelled = false
+
+    fetch(`${API_URL}/api/geocoding/distance`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ originLat, originLng, destLat, destLng }),
+    })
+      .then((res) => {
+        if (!res.ok) return null
+        return res.json() as Promise<{ distanceMiles: number | null }>
+      })
+      .then((data) => {
+        if (cancelled || !data || data.distanceMiles === null) return
+        setDistance(String(Math.round(data.distanceMiles)))
+      })
+      .catch(() => {
+        // Silently fail — user can still enter distance manually
+      })
+
+    return () => { cancelled = true }
+  }, [originLat, originLng, destLat, destLng, token])
+
   const { mutate, data, isPending, error, reset } = useMutation<PredictProfitResult, Error, void>({
     mutationFn: () =>
       ownerApi.predictProfit(token!, {
@@ -141,34 +178,45 @@ export default function ProfitPredictorScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Origin */}
-          <View className="mb-4">
+          <View className="mb-4" style={{ zIndex: 20 }}>
             <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
               Origin
             </Text>
-            <TextInput
+            <AddressInput
               value={origin}
-              onChangeText={setOrigin}
+              onChangeText={(text) => {
+                setOrigin(text)
+                // Clear coords if user manually edits after a geocoded selection
+                setOriginLat(null)
+                setOriginLng(null)
+              }}
+              onAddressSelect={(r) => {
+                setOrigin(r.formatted_address)
+                setOriginLat(r.latitude)
+                setOriginLng(r.longitude)
+              }}
               placeholder="e.g. Chicago, IL"
-              placeholderTextColor="#64748b"
-              className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3.5 text-[15px]"
-              autoCapitalize="words"
-              returnKeyType="next"
             />
           </View>
 
           {/* Destination */}
-          <View className="mb-4">
+          <View className="mb-4" style={{ zIndex: 10 }}>
             <Text className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1.5">
               Destination
             </Text>
-            <TextInput
+            <AddressInput
               value={destination}
-              onChangeText={setDestination}
+              onChangeText={(text) => {
+                setDestination(text)
+                setDestLat(null)
+                setDestLng(null)
+              }}
+              onAddressSelect={(r) => {
+                setDestination(r.formatted_address)
+                setDestLat(r.latitude)
+                setDestLng(r.longitude)
+              }}
               placeholder="e.g. Dallas, TX"
-              placeholderTextColor="#64748b"
-              className="bg-slate-800 border border-slate-700 rounded-xl text-slate-100 px-4 py-3.5 text-[15px]"
-              autoCapitalize="words"
-              returnKeyType="next"
             />
           </View>
 
