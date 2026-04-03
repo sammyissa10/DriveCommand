@@ -1,8 +1,8 @@
 /**
- * OSRM road distance utility.
+ * OSRM road distance and directions utility.
  *
  * Uses the public OSRM routing engine to compute real road distances
- * between two geographic coordinates.
+ * and polyline routes between geographic coordinates.
  *
  * NOTE: OSRM uses (longitude, latitude) order — opposite of the conventional
  * (lat, lng) order used elsewhere. All coordinates passed to the URL must
@@ -13,6 +13,7 @@
  *   - route-form.tsx (replacing haversine straight-line distance)
  *   - profit-predictor-form.tsx (auto-filling distance from geocoded addresses)
  *   - /api/geocoding/distance (server-side proxy for mobile)
+ *   - /api/geocoding/directions (server-side directions proxy for mobile map)
  *
  * DO NOT use this for:
  *   - IFTA state-lookup GPS ping segments (haversine is correct for point-to-point GPS)
@@ -76,5 +77,74 @@ export async function getOSRMDistanceMiles(
   } catch {
     // Network error, timeout, JSON parse failure — all return null gracefully
     return null;
+  }
+}
+
+export interface OSRMDirectionsResult {
+  /** GeoJSON [lng, lat] coordinate pairs — Mapbox ShapeSource expects this order natively */
+  polyline: [number, number][]
+  /** Total route distance in miles */
+  distanceMiles: number
+  /** Total route duration in seconds */
+  durationSeconds: number
+}
+
+/**
+ * Get the real road polyline and distance/duration for a multi-stop route via OSRM.
+ *
+ * @param stops - Array of stops in visit order, each with lat and lng in decimal degrees.
+ *                Minimum 2 stops required.
+ * @returns Polyline coordinates (GeoJSON [lng, lat] order), distance in miles, and
+ *          duration in seconds. Returns null if the request fails or no route found.
+ *
+ * OSRM coordinate order: longitude,latitude in the URL (opposite of conventional lat,lng).
+ * Response geometry coordinates are also [lng, lat] (GeoJSON standard).
+ * Mapbox ShapeSource uses GeoJSON [lng, lat] natively — no swap needed on the frontend.
+ *
+ * Never throws — all errors are caught and null is returned.
+ */
+export async function getOSRMDirections(
+  stops: { lat: number; lng: number }[]
+): Promise<OSRMDirectionsResult | null> {
+  if (stops.length < 2) return null
+
+  try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+
+    // OSRM coordinate order: lng,lat (not lat,lng) — see getOSRMDistanceMiles comment
+    const coordsStr = stops.map(s => `${s.lng},${s.lat}`).join(';')
+    const url = `${OSRM_BASE_URL}/${coordsStr}?overview=full&geometries=geojson`
+
+    let res: Response
+    try {
+      res = await fetch(url, { signal: controller.signal })
+    } finally {
+      clearTimeout(timer)
+    }
+
+    if (!res.ok) return null
+
+    const data: {
+      code: string
+      routes?: Array<{
+        distance: number
+        duration: number
+        geometry: { type: 'LineString'; coordinates: [number, number][] }
+      }>
+    } = await res.json()
+
+    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) return null
+
+    const route = data.routes[0]
+    if (!route.geometry?.coordinates?.length) return null
+
+    return {
+      polyline: route.geometry.coordinates,
+      distanceMiles: route.distance / 1609.344,
+      durationSeconds: route.duration,
+    }
+  } catch {
+    return null
   }
 }
