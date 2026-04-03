@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 import { ChevronRight } from 'lucide-react-native'
 import type { DriverRoute } from '@drivecommand/api-client'
 import { Badge } from '../ui/Badge'
+import { useThemeColors } from '../../constants/tokens'
 
 interface RouteCardProps {
   route: DriverRoute
@@ -44,6 +45,7 @@ function formatDate(isoString: string): string {
 }
 
 export function RouteCard({ route, onPress }: RouteCardProps) {
+  const c = useThemeColors()
   const truckLabel = route.truck
     ? `${route.truck.year} ${route.truck.make} ${route.truck.model} - ${route.truck.licensePlate}`
     : null
@@ -51,7 +53,8 @@ export function RouteCard({ route, onPress }: RouteCardProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="mb-3 mx-4 rounded-xl border border-slate-700 bg-slate-800 p-4 active:opacity-70"
+      className="mb-3 mx-4 rounded-xl p-4 active:opacity-70"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Header row: "My Route" label + status badge + chevron */}
       <View className="flex-row items-center justify-between mb-2">
@@ -62,29 +65,29 @@ export function RouteCard({ route, onPress }: RouteCardProps) {
             variant={getRouteStatusVariant(route.status)}
           />
         </View>
-        <ChevronRight size={18} color="#94a3b8" />
+        <ChevronRight size={18} color={c.textSecondary} />
       </View>
 
       {/* Route name (if set) */}
       {route.name ? (
-        <Text className="text-base font-semibold text-white mb-0.5">{route.name}</Text>
+        <Text className="text-base font-semibold mb-0.5" style={{ color: c.textPrimary }}>{route.name}</Text>
       ) : null}
 
       {/* Origin → Destination */}
-      <Text className="text-sm text-white mb-1">
+      <Text className="text-sm mb-1" style={{ color: c.textPrimary }}>
         {route.origin} → {route.destination}
       </Text>
 
       {/* Scheduled date */}
       {route.scheduledDate ? (
-        <Text className="text-xs text-slate-400 mb-1">
+        <Text className="text-xs mb-1" style={{ color: c.textSecondary }}>
           Scheduled: {formatDate(route.scheduledDate)}
         </Text>
       ) : null}
 
       {/* Truck info */}
       {truckLabel ? (
-        <Text className="text-xs text-slate-400">{truckLabel}</Text>
+        <Text className="text-xs" style={{ color: c.textSecondary }}>{truckLabel}</Text>
       ) : null}
     </Pressable>
   )

@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message'
 import { ChevronLeft, Image, X, File } from 'lucide-react-native'
 import { driverApi, type DocumentType } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
+import { useThemeColors } from '../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,6 +62,7 @@ interface DocumentUploadSheetProps {
 // ---------------------------------------------------------------------------
 
 export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUploadSheetProps) {
+  const c = useThemeColors()
   const { token } = useAuthContext()
 
   const [docType, setDocType] = useState<DocumentType | null>(null)
@@ -280,23 +282,26 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
         <View
           style={{
             height: '80%',
-            backgroundColor: '#1e293b',
+            backgroundColor: c.surfaceCard,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             borderTopWidth: 1,
-            borderColor: '#334155',
+            borderColor: c.border,
           }}
         >
           {/* Handle */}
           <View className="items-center pt-3 pb-1">
-            <View className="w-10 h-1 rounded-full bg-slate-600" />
+            <View className="w-10 h-1 rounded-full" style={{ backgroundColor: c.border }} />
           </View>
 
           {/* Header */}
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-slate-700">
-            <Text className="text-white text-lg font-bold">Upload Document</Text>
+          <View
+            className="flex-row items-center justify-between px-4 py-3"
+            style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+          >
+            <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Upload Document</Text>
             <Pressable onPress={handleClose} className="p-1 active:opacity-60" disabled={isSubmitting}>
-              <X color="#94a3b8" size={20} />
+              <X color={c.textSecondary} size={20} />
             </Pressable>
           </View>
 
@@ -308,72 +313,81 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
           >
             {/* Document Type */}
             <View className="mb-4">
-              <Text className="text-slate-300 font-semibold text-sm mb-2">
+              <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
                 Document Type <Text className="text-red-400">*</Text>
               </Text>
               <Pressable
                 onPress={() => setTypePickerVisible(true)}
                 disabled={isSubmitting}
-                className="flex-row items-center justify-between bg-slate-800 border border-slate-600 rounded-xl px-4 py-3.5 active:opacity-80"
+                className="flex-row items-center justify-between rounded-xl px-4 py-3.5 active:opacity-80"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border }}
               >
-                <Text className={selectedTypeOption ? 'text-white text-sm' : 'text-slate-500 text-sm'}>
+                <Text style={{ color: selectedTypeOption ? c.textPrimary : c.textMuted, fontSize: 14 }}>
                   {selectedTypeOption ? selectedTypeOption.label : 'Select document type...'}
                 </Text>
-                <ChevronLeft color="#64748b" size={16} style={{ transform: [{ rotate: '-90deg' }] }} />
+                <ChevronLeft color={c.textTertiary} size={16} style={{ transform: [{ rotate: '-90deg' }] }} />
               </Pressable>
               {errors.docType ? <Text className="text-red-500 text-xs mt-1">{errors.docType}</Text> : null}
             </View>
 
             {/* Document Name */}
             <View className="mb-4">
-              <Text className="text-slate-300 font-semibold text-sm mb-2">
+              <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
                 Document Name <Text className="text-red-400">*</Text>
               </Text>
               <TextInput
                 value={docName}
                 onChangeText={(v) => { setDocName(v); setErrors((p) => ({ ...p, docName: '' })) }}
                 placeholder="e.g. CDL Class A"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 editable={!isSubmitting}
-                className={`bg-slate-800 border rounded-xl px-4 py-3 text-white text-sm ${
-                  errors.docName ? 'border-red-500' : 'border-slate-600'
-                }`}
+                className="rounded-xl px-4 py-3 text-sm"
+                style={{
+                  backgroundColor: c.surfaceInput,
+                  borderWidth: 1,
+                  borderColor: errors.docName ? '#ef4444' : c.border,
+                  color: c.textPrimary,
+                }}
               />
               {errors.docName ? <Text className="text-red-500 text-xs mt-1">{errors.docName}</Text> : null}
             </View>
 
             {/* Expiry Date */}
             <View className="mb-4">
-              <Text className="text-slate-300 font-semibold text-sm mb-2">
-                Expiry Date <Text className="text-slate-500 font-normal">(optional)</Text>
+              <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
+                Expiry Date <Text style={{ color: c.textTertiary }} className="font-normal">(optional)</Text>
               </Text>
               <TextInput
                 value={expiryDate}
                 onChangeText={(v) => { setExpiryDate(v); setErrors((p) => ({ ...p, expiryDate: '' })) }}
                 placeholder="YYYY-MM-DD (e.g. 2027-01-15)"
-                placeholderTextColor="#475569"
+                placeholderTextColor={c.textMuted}
                 keyboardType="numbers-and-punctuation"
                 editable={!isSubmitting}
-                className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-sm"
+                className="rounded-xl px-4 py-3 text-sm"
+                style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border, color: c.textPrimary }}
               />
               {errors.expiryDate ? <Text className="text-red-500 text-xs mt-1">{errors.expiryDate}</Text> : null}
             </View>
 
             {/* File — single tap to open native picker */}
             <View className="mb-5">
-              <Text className="text-slate-300 font-semibold text-sm mb-2">
+              <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
                 File <Text className="text-red-400">*</Text>
               </Text>
 
               {selectedFile ? (
-                <View className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 flex-row items-center">
-                  <File color="#38bdf8" size={18} style={{ flexShrink: 0 }} />
+                <View
+                  className="rounded-xl px-4 py-3 flex-row items-center"
+                  style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border }}
+                >
+                  <File color={c.brand} size={18} style={{ flexShrink: 0 }} />
                   <View className="flex-1 ml-3 min-w-0">
-                    <Text className="text-white text-sm font-medium" numberOfLines={1}>{selectedFile.name}</Text>
-                    <Text className="text-slate-400 text-xs mt-0.5">{formatBytes(selectedFile.size)}</Text>
+                    <Text className="text-sm font-medium" style={{ color: c.textPrimary }} numberOfLines={1}>{selectedFile.name}</Text>
+                    <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }}>{formatBytes(selectedFile.size)}</Text>
                   </View>
                   <Pressable onPress={() => setSelectedFile(null)} disabled={isSubmitting} className="p-1 ml-2 active:opacity-60">
-                    <X color="#64748b" size={16} />
+                    <X color={c.textTertiary} size={16} />
                   </Pressable>
                 </View>
               ) : (
@@ -387,13 +401,14 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
                     paddingVertical: 28,
                     alignItems: 'center',
                     gap: 8,
-                    backgroundColor: '#0f172a',
+                    backgroundColor: c.background,
+                    borderColor: errors.file ? '#ef4444' : c.border,
                   }}
-                  className={`active:opacity-70 ${errors.file ? 'border-red-500' : 'border-slate-700'}`}
+                  className="active:opacity-70"
                 >
-                  <Image color="#38bdf8" size={28} />
-                  <Text style={{ color: '#38bdf8', fontWeight: '600', fontSize: 15 }}>Add Photo or File</Text>
-                  <Text style={{ color: '#475569', fontSize: 12 }}>Tap to choose from library, camera, or files</Text>
+                  <Image color={c.brand} size={28} />
+                  <Text style={{ color: c.brand, fontWeight: '600', fontSize: 15 }}>Add Photo or File</Text>
+                  <Text style={{ color: c.textMuted, fontSize: 12 }}>Tap to choose from library, camera, or files</Text>
                 </Pressable>
               )}
 
@@ -410,11 +425,11 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
             {isSubmitting && (
               <View className="mb-4">
                 <View className="flex-row items-center justify-between mb-1.5">
-                  <Text className="text-slate-400 text-xs">{progressLabel}</Text>
-                  <Text className="text-slate-400 text-xs">{progress}%</Text>
+                  <Text className="text-xs" style={{ color: c.textSecondary }}>{progressLabel}</Text>
+                  <Text className="text-xs" style={{ color: c.textSecondary }}>{progress}%</Text>
                 </View>
-                <View className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <View style={{ width: `${progress}%` }} className="h-full bg-sky-500 rounded-full" />
+                <View className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: c.border }}>
+                  <View style={{ width: `${progress}%`, height: '100%', backgroundColor: c.brand, borderRadius: 9999 }} />
                 </View>
               </View>
             )}
@@ -424,7 +439,7 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
               onPress={handleSubmit}
               disabled={isSubmitting}
               style={{
-                backgroundColor: isSubmitting ? '#0c4a6e' : '#0ea5e9',
+                backgroundColor: isSubmitting ? c.brandDark : c.brand,
                 borderRadius: 12,
                 paddingVertical: 14,
                 alignItems: 'center',
@@ -451,18 +466,18 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={() => setTypePickerVisible(false)} />
         <View
           style={{
-            backgroundColor: '#1e293b',
+            backgroundColor: c.surfaceCard,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             borderTopWidth: 1,
-            borderColor: '#334155',
+            borderColor: c.border,
             paddingHorizontal: 20,
             paddingTop: 20,
             paddingBottom: 40,
           }}
         >
-          <View className="self-center w-12 h-1 bg-slate-600 rounded-full mb-5" />
-          <Text className="text-white text-xl font-bold mb-4">Document Type</Text>
+          <View className="self-center w-12 h-1 rounded-full mb-5" style={{ backgroundColor: c.border }} />
+          <Text className="text-xl font-bold mb-4" style={{ color: c.textPrimary }}>Document Type</Text>
           {DOC_TYPES.map((option) => (
             <Pressable
               key={option.key}
@@ -472,11 +487,11 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
                 paddingHorizontal: 12,
                 borderRadius: 12,
                 marginBottom: 2,
-                backgroundColor: docType === option.key ? '#334155' : 'transparent',
+                backgroundColor: docType === option.key ? c.surfaceElevated : 'transparent',
               }}
-              className="active:bg-slate-700/50"
+              className="active:opacity-75"
             >
-              <Text style={{ color: docType === option.key ? '#ffffff' : '#cbd5e1', fontSize: 15, fontWeight: docType === option.key ? '600' : '400' }}>
+              <Text style={{ color: docType === option.key ? c.textPrimary : c.textSecondary, fontSize: 15, fontWeight: docType === option.key ? '600' : '400' }}>
                 {option.label}
               </Text>
             </Pressable>
@@ -489,18 +504,18 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
         <Pressable style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={() => setMediaPickerVisible(false)} />
         <View
           style={{
-            backgroundColor: '#1e293b',
+            backgroundColor: c.surfaceCard,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
             borderTopWidth: 1,
-            borderColor: '#334155',
+            borderColor: c.border,
             paddingHorizontal: 20,
             paddingTop: 20,
             paddingBottom: 40,
           }}
         >
-          <View className="self-center w-12 h-1 bg-slate-600 rounded-full mb-5" />
-          <Text className="text-white text-xl font-bold mb-4">Add Document</Text>
+          <View className="self-center w-12 h-1 rounded-full mb-5" style={{ backgroundColor: c.border }} />
+          <Text className="text-xl font-bold mb-4" style={{ color: c.textPrimary }}>Add Document</Text>
 
           {[
             { label: 'Choose from Gallery', action: () => { setMediaPickerVisible(false); setTimeout(launchGallery, 300) } },
@@ -510,18 +525,18 @@ export function DocumentUploadSheet({ visible, onClose, onSuccess }: DocumentUpl
               key={item.label}
               onPress={item.action}
               style={{ paddingVertical: 16, paddingHorizontal: 12, borderRadius: 12, marginBottom: 2 }}
-              className="active:bg-slate-700/50"
+              className="active:opacity-75"
             >
-              <Text style={{ color: '#cbd5e1', fontSize: 16 }}>{item.label}</Text>
+              <Text style={{ color: c.textSecondary, fontSize: 16 }}>{item.label}</Text>
             </Pressable>
           ))}
 
           <Pressable
             onPress={() => setMediaPickerVisible(false)}
-            style={{ marginTop: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: '#334155', alignItems: 'center' }}
+            style={{ marginTop: 8, paddingVertical: 14, borderRadius: 12, backgroundColor: c.surfaceElevated, alignItems: 'center' }}
             className="active:opacity-80"
           >
-            <Text style={{ color: '#94a3b8', fontSize: 15, fontWeight: '600' }}>Cancel</Text>
+            <Text style={{ color: c.textSecondary, fontSize: 15, fontWeight: '600' }}>Cancel</Text>
           </Pressable>
         </View>
       </Modal>
