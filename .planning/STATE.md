@@ -831,6 +831,7 @@ None blocking immediate progress.
 | 146 | Audit and update all technical documentation to reflect Phase 37.6 state | 2026-04-03 | 04b7b6d | [146-audit-and-upgrade-all-address-input-fiel](./quick/146-audit-and-upgrade-all-address-input-fiel/) |
 | 147 | Geocoding autocomplete + OSRM real road distances | 2026-04-03 | 760b6ed | [147-audit-and-upgrade-all-address-input-fiel](./quick/147-audit-and-upgrade-all-address-input-fiel/) |
 | 148 | Add a global appearance setting that allows users to seamlessly switch between Light Mode and Dark Mode | 2026-04-03 | b7c3e8b | [148-add-a-global-appearance-setting-that-all](./quick/148-add-a-global-appearance-setting-that-all/) |
+| 149 | Migrate all mobile screens to use useThemeColors() for full Light/Dark mode support | 2026-04-03 | aa86e4e | [149-migrate-all-mobile-screens-to-use-usethe](./quick/149-migrate-all-mobile-screens-to-use-usethe/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
