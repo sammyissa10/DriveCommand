@@ -660,6 +660,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-134]: Offset pagination (page/limit default 50) added to 5 mobile list APIs; cursor pagination on fleet messages
 - [Phase quick-134]: Dashboard queries parallelized into 2 Promise.all batches; cron uses single IN query for dedup; groupBy replaces full-table stats scans
 - [Phase quick-134]: 4 composite indexes: Load(tenantId,status,archivedAt), Invoice(tenantId,status), Document(tenantId,driverId), FleetMessage(tenantId,createdAt)
+- [Phase quick-147]: OSRM for road distance over haversine — 20-40% more accurate for route/load distance estimates
 
 ### Pending Todos
 
