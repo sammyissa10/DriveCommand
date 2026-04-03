@@ -11,7 +11,7 @@ Mapbox.setAccessToken(
   (Constants.expoConfig?.extra?.mapboxToken as string | undefined) ??
   ''
 )
-import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
+import { House, Truck, MessageSquare, Navigation, Grid2X2 } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
@@ -196,6 +196,22 @@ export default function DriverLayout() {
           },
         }}
       >
+        {/* Tab 1: Dashboard — center of gravity, has GPSStatusDot */}
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarLabel: 'Dashboard',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <House color={color} size={tabBar.iconSize} />
+                <GPSStatusDot status={gpsStatus} />
+              </TabIcon>
+            ),
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+
+        {/* Tab 2: Loads */}
         <Tabs.Screen
           name="loads"
           options={{
@@ -209,32 +225,22 @@ export default function DriverLayout() {
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+
+        {/* Tab 3: Map — NEW */}
         <Tabs.Screen
-          name="hos"
+          name="map"
           options={{
-            tabBarLabel: 'HOS',
+            tabBarLabel: 'Map',
             tabBarIcon: ({ color, focused }) => (
               <TabIcon focused={focused}>
-                <Clock color={color} size={tabBar.iconSize} />
+                <Navigation color={color} size={tabBar.iconSize} />
               </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
-        {/* Home/Dashboard — center tab */}
-        <Tabs.Screen
-          name="index"
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon focused={focused}>
-                <House color={color} size={tabBar.iconSize} />
-                <GPSStatusDot status={gpsStatus} />
-              </TabIcon>
-            ),
-          }}
-          listeners={{ tabPress: () => haptic.light() }}
-        />
+
+        {/* Tab 4: Messages */}
         <Tabs.Screen
           name="messages"
           options={{
@@ -247,19 +253,24 @@ export default function DriverLayout() {
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+
+        {/* Tab 5: More — NEW */}
         <Tabs.Screen
-          name="documents"
+          name="more"
           options={{
-            tabBarLabel: 'Docs',
+            tabBarLabel: 'More',
             tabBarIcon: ({ color, focused }) => (
               <TabIcon focused={focused}>
-                <FileText color={color} size={tabBar.iconSize} />
+                <Grid2X2 color={color} size={tabBar.iconSize} />
               </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
-        {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
+
+        {/* Hidden routes — removed from tab bar */}
+        <Tabs.Screen name="hos" options={{ href: null }} />
+        <Tabs.Screen name="documents" options={{ href: null }} />
         <Tabs.Screen name="incidents" options={{ href: null }} />
       </Tabs>
 
