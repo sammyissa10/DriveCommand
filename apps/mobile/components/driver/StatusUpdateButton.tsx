@@ -3,10 +3,12 @@ import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
 import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 import { driverApi, type LoadDetail } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
 import { callOrQueue } from '../../lib/api-with-queue'
 import { useThemeColors } from '../../constants/tokens'
+import { openNavigation } from '../../lib/navigation'
 
 interface NextAction {
   label: string
@@ -56,6 +58,7 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
   const c = useThemeColors()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const [modalVisible, setModalVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [revertModalVisible, setRevertModalVisible] = useState(false)
@@ -98,6 +101,17 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
           queryClient.invalidateQueries({ queryKey: ['driver-dashboard'] }),
         ])
         onStatusUpdated()
+
+        // EN_ROUTE: switch to Map tab and open navigation app simultaneously
+        if (action!.nextStatus === 'EN_ROUTE') {
+          const nextStop = load.stops?.find(s => s.status !== 'DEPARTED')
+          // Switch to Map tab (idiomatic expo-router tab switch — does NOT add stack entry)
+          router.navigate('/(driver)/map' as never)
+          if (nextStop?.lat != null && nextStop?.lng != null) {
+            // Open navigation app (async, non-blocking — fire and forget)
+            openNavigation(Number(nextStop.lat), Number(nextStop.lng))
+          }
+        }
       }
     } catch (err) {
       // Error path: close modal + toast + re-enable button

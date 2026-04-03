@@ -17,6 +17,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useDriverDirections } from '../../hooks/useDriverDirections'
 import { useThemeColors } from '../../constants/tokens'
+import { openNavigation } from '../../lib/navigation'
 
 export default function MapScreen() {
   const { token } = useAuthContext()
@@ -163,8 +164,9 @@ export default function MapScreen() {
           style={[styles.navButton, (!activeLoad || !nextStop) && styles.navButtonDisabled]}
           disabled={!activeLoad || !nextStop}
           onPress={() => {
-            // Navigation deep link logic added in Plan 05
-            // This button is wired in the next plan
+            if (nextStop?.lat != null && nextStop?.lng != null) {
+              openNavigation(Number(nextStop.lat), Number(nextStop.lng))
+            }
           }}
         >
           <Navigation color="#ffffff" size={18} />
