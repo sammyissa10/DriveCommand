@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.6 Web Auth Migration to Supabase — COMPLETE
 Current Plan: Plan 2 of 2 complete — 37.6-02 DONE
 Status: 37.6-02 complete — Auth helpers (session.ts + server.ts + require-permission.ts) consolidated into single supabase.ts. All ~74 import paths updated across 72 source files + 2 test files. Production build (`npx next build`) passes cleanly.
-Last activity: 2026-04-03 - Completed quick task 147: Geocoding autocomplete + OSRM real road distances
+Last activity: 2026-04-03 - Completed quick task 148: Add a global appearance setting that allows users to seamlessly switch between Light Mode and Dark Mode
 Stopped at: Completed quick-143
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -820,6 +820,9 @@ None blocking immediate progress.
 | 143 | Mobile owner portal: complete CRM contact detail/edit and Payroll detail/create | 2026-03-31 | fa328ed | [143-mobile-owner-portal-complete-crm-contact](./quick/143-mobile-owner-portal-complete-crm-contact/) |
 | 144 | Mobile owner portal: add truck maintenance logging and safety alerts screen | 2026-03-31 | d82bdff | [144-mobile-owner-portal-add-truck-maintenanc](./quick/144-mobile-owner-portal-add-truck-maintenanc/) |
 | 145 | Move sign-out button from bottom-left sidebar to top-right header across all web portals | 2026-04-01 | 9212d31 | [145-move-sign-out-button-from-bottom-left-si](./quick/145-move-sign-out-button-from-bottom-left-si/) |
+| 146 | Audit and update all technical documentation to reflect Phase 37.6 state | 2026-04-03 | 04b7b6d | [146-audit-and-upgrade-all-address-input-fiel](./quick/146-audit-and-upgrade-all-address-input-fiel/) |
+| 147 | Geocoding autocomplete + OSRM real road distances | 2026-04-03 | 760b6ed | [147-audit-and-upgrade-all-address-input-fiel](./quick/147-audit-and-upgrade-all-address-input-fiel/) |
+| 148 | Add a global appearance setting that allows users to seamlessly switch between Light Mode and Dark Mode | 2026-04-03 | b7c3e8b | [148-add-a-global-appearance-setting-that-all](./quick/148-add-a-global-appearance-setting-that-all/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
