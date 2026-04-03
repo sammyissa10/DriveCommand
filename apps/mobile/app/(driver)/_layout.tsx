@@ -1,6 +1,16 @@
 import React, { useEffect, useState, Fragment, useCallback } from 'react'
 import { View, Text, StyleSheet, AppState } from 'react-native'
 import { Tabs } from 'expo-router'
+import Mapbox from '@rnmapbox/maps'
+import Constants from 'expo-constants'
+
+// Initialize Mapbox token before any MapView renders.
+// Token is read from EXPO_PUBLIC_MAPBOX_TOKEN (dev) or app.json extra.mapboxToken (build).
+Mapbox.setAccessToken(
+  process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
+  (Constants.expoConfig?.extra?.mapboxToken as string | undefined) ??
+  ''
+)
 import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
