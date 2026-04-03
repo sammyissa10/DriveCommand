@@ -190,10 +190,6 @@ export default function DriverLayout() {
             marginTop: 2,
             marginBottom: 0,
           },
-          tabBarActiveLabelStyle: {
-            color: c.tabActive,
-            fontWeight: '700',
-          },
         }}
       >
         {/* Tab 1: Dashboard — center of gravity, has GPSStatusDot */}
