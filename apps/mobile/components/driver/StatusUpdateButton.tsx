@@ -105,11 +105,13 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
         // EN_ROUTE: switch to Map tab and open navigation app simultaneously
         if (action!.nextStatus === 'EN_ROUTE') {
           const nextStop = load.stops?.find(s => s.status !== 'DEPARTED')
-          // Switch to Map tab (idiomatic expo-router tab switch — does NOT add stack entry)
           router.navigate('/(driver)/map' as never)
-          if (nextStop?.lat != null && nextStop?.lng != null) {
-            // Open navigation app (async, non-blocking — fire and forget)
-            openNavigation(Number(nextStop.lat), Number(nextStop.lng))
+          if (nextStop) {
+            openNavigation(
+              nextStop.lat != null && nextStop.lng != null
+                ? { lat: Number(nextStop.lat), lng: Number(nextStop.lng), address: nextStop.address }
+                : { address: nextStop.address }
+            )
           }
         }
       }

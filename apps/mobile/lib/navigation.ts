@@ -24,49 +24,56 @@ export function setNavPreference(pref: NavAppPreference): void {
   kvStorage.setString(NAV_PREF_KEY, pref)
 }
 
+export type NavDestination =
+  | { lat: number; lng: number; address?: string }
+  | { lat?: null; lng?: null; address: string }
+
 /**
- * Build the deep link URL for the given nav app and destination coordinates.
- * Coordinates are lat/lng in decimal degrees.
+ * Build the deep link URL for the given nav app and destination.
+ * Prefers lat/lng for accuracy; falls back to address string.
  */
-export function buildNavUrl(pref: NavAppPreference, lat: number, lng: number): string {
+export function buildNavUrl(pref: NavAppPreference, dest: NavDestination): string {
+  const useCoords = dest.lat != null && dest.lng != null
+  const destination = useCoords ? `${dest.lat},${dest.lng}` : encodeURIComponent(dest.address ?? '')
+
   switch (pref) {
     case 'google':
-      return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=driving`
+      return `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving`
     case 'waze':
-      return `waze://?ll=${lat},${lng}&navigate=yes`
+      return useCoords
+        ? `waze://?ll=${dest.lat},${dest.lng}&navigate=yes`
+        : `waze://?q=${encodeURIComponent(dest.address ?? '')}&navigate=yes`
     case 'apple':
     default:
-      return `maps://?daddr=${lat},${lng}`
+      return `maps://?daddr=${destination}`
   }
 }
 
 /**
  * Open the driver's preferred navigation app with the given destination.
+ * Accepts lat/lng coordinates or a plain address string as fallback.
  *
- * Falls back: Waze -> Apple Maps if Waze not installed; Google app -> Google web URL
- * (Google web URL always works — opens in browser on Android, Safari on iOS).
+ * Falls back: Waze -> Apple Maps if Waze not installed.
+ * Google uses an https:// URL that always works (opens browser if app not installed).
  *
  * Never throws — all errors are silently caught.
  */
-export async function openNavigation(lat: number, lng: number): Promise<void> {
+export async function openNavigation(dest: NavDestination): Promise<void> {
   try {
     const pref = getNavPreference()
 
     if (pref === 'waze') {
-      const wazeUrl = buildNavUrl('waze', lat, lng)
+      const wazeUrl = buildNavUrl('waze', dest)
       const canOpen = await Linking.canOpenURL(wazeUrl)
       if (canOpen) {
         await Linking.openURL(wazeUrl)
         return
       }
-      // Fallback: Waze not installed on iOS — use Apple Maps
-      await Linking.openURL(buildNavUrl('apple', lat, lng))
+      await Linking.openURL(buildNavUrl('apple', dest))
       return
     }
 
-    // Google (https:// URL) always works — opens in browser if app not installed
-    // Apple Maps uses maps:// which is iOS-native
-    await Linking.openURL(buildNavUrl(pref, lat, lng))
+    await Linking.openURL(buildNavUrl(pref, dest))
   } catch {
     // Best-effort: if anything fails, silently ignore
   }

@@ -164,9 +164,12 @@ export default function MapScreen() {
           style={[styles.navButton, (!activeLoad || !nextStop) && styles.navButtonDisabled]}
           disabled={!activeLoad || !nextStop}
           onPress={() => {
-            if (nextStop?.lat != null && nextStop?.lng != null) {
-              openNavigation(Number(nextStop.lat), Number(nextStop.lng))
-            }
+            if (!nextStop) return
+            openNavigation(
+              nextStop.lat != null && nextStop.lng != null
+                ? { lat: Number(nextStop.lat), lng: Number(nextStop.lng), address: nextStop.address }
+                : { address: nextStop.address }
+            )
           }}
         >
           <Navigation color="#ffffff" size={18} />
