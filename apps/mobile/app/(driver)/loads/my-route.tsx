@@ -14,7 +14,7 @@ import {
 } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, ArrowLeft, Send } from 'lucide-react-native'
+import { AlertTriangle, ArrowLeft, Navigation, Send } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthContext } from '../../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
@@ -24,6 +24,7 @@ import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { RouteLoadTimelineItem } from '../../../components/driver/RouteLoadTimelineItem'
 import { MessageBubble } from '../../../components/driver/MessageBubble'
 import { useThemeColors } from '../../../constants/tokens'
+import { openNavigation } from '../../../lib/navigation'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -202,6 +203,28 @@ export default function MyRouteScreen() {
   const loadList = route.loads ?? []
   const messageList = messages ?? []
 
+  // Determine next active load for navigation
+  const DONE_STATUSES = ['DELIVERED', 'CANCELLED']
+  const PICKUP_STATUSES = ['DISPATCHED', 'ACCEPTED']
+  // EN_ROUTE, IN_TRANSIT, PICKED_UP → destination
+
+  const activeLoads = loadList
+    .filter((l) => !DONE_STATUSES.includes(l.status))
+    .sort((a, b) => (a.sequence ?? 999) - (b.sequence ?? 999))
+
+  const nextLoad = activeLoads[0] ?? null
+  const navAddress = nextLoad
+    ? PICKUP_STATUSES.includes(nextLoad.status)
+      ? nextLoad.origin
+      : nextLoad.destination
+    : null
+
+  const handleStartNavigation = useCallback(() => {
+    if (!navAddress) return
+    openNavigation({ address: navAddress })
+    router.navigate('/(driver)/map' as never)
+  }, [navAddress, router])
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
@@ -226,6 +249,27 @@ export default function MyRouteScreen() {
             </Text>
           </View>
           <Badge label={badge.label} variant={badge.variant} />
+        </View>
+
+        {/* Start Navigation button */}
+        <View className="px-4 py-2" style={{ borderBottomWidth: 1, borderBottomColor: c.border }}>
+          <Pressable
+            onPress={handleStartNavigation}
+            disabled={!navAddress}
+            className="flex-row items-center justify-center py-3 rounded-xl active:opacity-80"
+            style={{
+              backgroundColor: navAddress ? c.brand : c.surfaceElevated,
+              opacity: navAddress ? 1 : 0.5,
+            }}
+          >
+            <Navigation size={18} color={navAddress ? '#ffffff' : c.textMuted} />
+            <Text
+              className="font-semibold ml-2"
+              style={{ color: navAddress ? '#ffffff' : c.textMuted }}
+            >
+              Start Navigation
+            </Text>
+          </Pressable>
         </View>
 
         <KeyboardAvoidingView
