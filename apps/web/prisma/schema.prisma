@@ -897,19 +897,24 @@ model Load {
   trackingToken String?    @unique // Public token for customer shipment tracking
   createdById   String?    @db.Uuid
   updatedById   String?    @db.Uuid
-  createdAt     DateTime   @default(now()) @db.Timestamptz
-  updatedAt     DateTime   @updatedAt @db.Timestamptz
-  archivedAt    DateTime?  @db.Timestamptz
+  createdAt       DateTime   @default(now()) @db.Timestamptz
+  updatedAt       DateTime   @updatedAt @db.Timestamptz
+  archivedAt      DateTime?  @db.Timestamptz
+  pickupStopId    String?    @db.Uuid // FK → RouteStop (set when load is assigned to a route)
+  deliveryStopId  String?    @db.Uuid // FK → RouteStop
 
-  tenant    Tenant    @relation(fields: [tenantId], references: [id])
-  customer  Customer  @relation(fields: [customerId], references: [id])
-  route     Route?    @relation(fields: [routeId], references: [id])
-  driver    User?     @relation(name: "DriverLoads", fields: [driverId], references: [id])
-  truck     Truck?    @relation(fields: [truckId], references: [id])
-  createdBy User?     @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
-  updatedBy User?       @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
-  invoices  Invoice[]
-  documents Document[]
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  route        Route?      @relation(fields: [routeId], references: [id])
+  driver       User?       @relation(name: "DriverLoads", fields: [driverId], references: [id])
+  truck        Truck?      @relation(fields: [truckId], references: [id])
+  createdBy    User?       @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User?       @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
+  invoices     Invoice[]
+  documents    Document[]
+  routeStops   RouteStop[] @relation(name: "RouteStopLoad")
+  pickupStop   RouteStop?  @relation(name: "LoadPickupStop", fields: [pickupStopId], references: [id])
+  deliveryStop RouteStop?  @relation(name: "LoadDeliveryStop", fields: [deliveryStopId], references: [id])
 
   @@unique([tenantId, loadNumber])
   @@index([tenantId])
@@ -1012,28 +1017,37 @@ model TicketMessage {
 // ─── Multi-Stop Route Models ─────────────────────────────────
 
 model RouteStop {
-  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  routeId     String          @db.Uuid
-  tenantId    String          @db.Uuid
-  position    Int // 1-based ordering
-  type        RouteStopType
-  address     String
-  lat         Decimal?        @db.Decimal(10, 8)
-  lng         Decimal?        @db.Decimal(11, 8)
-  scheduledAt DateTime?       @db.Timestamptz
-  arrivedAt   DateTime?       @db.Timestamptz
-  departedAt  DateTime?       @db.Timestamptz
-  notes       String?
-  status      RouteStopStatus @default(PENDING)
-  geofenceHit Boolean         @default(false)
-  createdAt   DateTime        @default(now()) @db.Timestamptz
-  updatedAt   DateTime        @updatedAt @db.Timestamptz
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId      String          @db.Uuid
+  tenantId     String          @db.Uuid
+  loadId       String?         @db.Uuid // Links stop to the load it serves (nullable: fuel/weigh stops have no load)
+  position     Int // 1-based ordering
+  type         RouteStopType
+  address      String
+  lat          Decimal?        @db.Decimal(10, 8)
+  lng          Decimal?        @db.Decimal(11, 8)
+  scheduledAt  DateTime?       @db.Timestamptz
+  arrivedAt    DateTime?       @db.Timestamptz
+  departedAt   DateTime?       @db.Timestamptz
+  notes        String?
+  contactName  String? // Shipper/receiver contact at this stop
+  contactPhone String?
+  bolNumber    String? // Bill of Lading number for this stop's load
+  poNumber     String? // Customer PO number
+  status       RouteStopStatus @default(PENDING)
+  geofenceHit  Boolean         @default(false)
+  createdAt    DateTime        @default(now()) @db.Timestamptz
+  updatedAt    DateTime        @updatedAt @db.Timestamptz
 
-  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  route             Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tenant            Tenant @relation(fields: [tenantId], references: [id])
+  load              Load?  @relation(name: "RouteStopLoad", fields: [loadId], references: [id])
+  pickupForLoads    Load[] @relation(name: "LoadPickupStop")
+  deliveryForLoads  Load[] @relation(name: "LoadDeliveryStop")
 
   @@index([routeId])
   @@index([tenantId])
+  @@index([loadId])
   @@index([routeId, position])
   @@index([status])
 }
