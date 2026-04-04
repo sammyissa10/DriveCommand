@@ -21,7 +21,7 @@ export async function createInvoice(prevState: ActionState | null, formData: For
   await requirePermission('canViewInvoices');
 
   // Parse items from JSON hidden field
-  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number }> = [];
+  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
   try {
     const itemsJson = formData.get('itemsJson') as string;
     parsedItems = JSON.parse(itemsJson || '[]');
@@ -39,6 +39,13 @@ export async function createInvoice(prevState: ActionState | null, formData: For
     issueDate: formData.get('issueDate') as string,
     dueDate: formData.get('dueDate') as string,
     notes: (formData.get('notes') as string) || '',
+    bolNumber: (formData.get('bolNumber') as string) || '',
+    proNumber: (formData.get('proNumber') as string) || '',
+    poNumber: (formData.get('poNumber') as string) || '',
+    commodity: (formData.get('commodity') as string) || '',
+    weightLbs: formData.get('weightLbs') as string,
+    pieces: formData.get('pieces') as string,
+    loadedMiles: formData.get('loadedMiles') as string,
     items: parsedItems,
   };
 
@@ -55,7 +62,9 @@ export async function createInvoice(prevState: ActionState | null, formData: For
   const itemsWithAmounts = result.data.items.map((item) => {
     const qty = new Decimal(item.quantity);
     const price = new Decimal(item.unitPrice);
-    const amount = qty.mul(price);
+    const amount = item.unitType === 'PERCENT'
+      ? qty.div(100).mul(price)
+      : qty.mul(price);
     return { ...item, amount };
   });
 
@@ -84,6 +93,13 @@ export async function createInvoice(prevState: ActionState | null, formData: For
         dueDate: new Date(result.data.dueDate),
         paidDate: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
+        bolNumber: (formData.get('bolNumber') as string) || null,
+        proNumber: (formData.get('proNumber') as string) || null,
+        poNumber: (formData.get('poNumber') as string) || null,
+        commodity: (formData.get('commodity') as string) || null,
+        weightLbs: formData.get('weightLbs') ? parseInt(formData.get('weightLbs') as string) || null : null,
+        pieces: formData.get('pieces') ? parseInt(formData.get('pieces') as string) || null : null,
+        loadedMiles: formData.get('loadedMiles') ? new Decimal(formData.get('loadedMiles') as string) : null,
         createdById: userId,
         updatedById: userId,
         items: {
@@ -93,6 +109,8 @@ export async function createInvoice(prevState: ActionState | null, formData: For
             quantity: new Decimal(item.quantity),
             unitPrice: new Decimal(item.unitPrice),
             amount: item.amount,
+            itemType: (item.itemType as any) || 'OTHER',
+            unitType: (item.unitType as any) || 'FLAT',
           })),
         },
       },
@@ -117,7 +135,7 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   await requirePermission('canViewInvoices');
 
-  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number }> = [];
+  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
   try {
     const itemsJson = formData.get('itemsJson') as string;
     parsedItems = JSON.parse(itemsJson || '[]');
@@ -128,12 +146,20 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
   const rawData = {
     customerId: (formData.get('customerId') as string) || '',
     routeId: (formData.get('routeId') as string) || '',
+    loadId: (formData.get('loadId') as string) || '',
     invoiceNumber: formData.get('invoiceNumber') as string,
     tax: formData.get('tax') as string,
     status: (formData.get('status') as string) || 'DRAFT',
     issueDate: formData.get('issueDate') as string,
     dueDate: formData.get('dueDate') as string,
     notes: (formData.get('notes') as string) || '',
+    bolNumber: (formData.get('bolNumber') as string) || '',
+    proNumber: (formData.get('proNumber') as string) || '',
+    poNumber: (formData.get('poNumber') as string) || '',
+    commodity: (formData.get('commodity') as string) || '',
+    weightLbs: formData.get('weightLbs') as string,
+    pieces: formData.get('pieces') as string,
+    loadedMiles: formData.get('loadedMiles') as string,
     items: parsedItems,
   };
 
@@ -149,7 +175,9 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
   const itemsWithAmounts = result.data.items.map((item) => {
     const qty = new Decimal(item.quantity);
     const price = new Decimal(item.unitPrice);
-    const amount = qty.mul(price);
+    const amount = item.unitType === 'PERCENT'
+      ? qty.div(100).mul(price)
+      : qty.mul(price);
     return { ...item, amount };
   });
 
@@ -170,6 +198,7 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
         data: {
           customerId: result.data.customerId || null,
           routeId: result.data.routeId || null,
+          loadId: result.data.loadId || null,
           invoiceNumber: result.data.invoiceNumber,
           amount: subtotal,
           tax,
@@ -179,6 +208,13 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
           dueDate: new Date(result.data.dueDate),
           paidDate: result.data.status === 'PAID' ? new Date() : null,
           notes: result.data.notes || null,
+          bolNumber: (formData.get('bolNumber') as string) || null,
+          proNumber: (formData.get('proNumber') as string) || null,
+          poNumber: (formData.get('poNumber') as string) || null,
+          commodity: (formData.get('commodity') as string) || null,
+          weightLbs: formData.get('weightLbs') ? parseInt(formData.get('weightLbs') as string) || null : null,
+          pieces: formData.get('pieces') ? parseInt(formData.get('pieces') as string) || null : null,
+          loadedMiles: formData.get('loadedMiles') ? new Decimal(formData.get('loadedMiles') as string) : null,
           updatedById: userId,
           items: {
             create: itemsWithAmounts.map((item) => ({
@@ -187,6 +223,8 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
               quantity: new Decimal(item.quantity),
               unitPrice: new Decimal(item.unitPrice),
               amount: item.amount,
+              itemType: (item.itemType as any) || 'OTHER',
+              unitType: (item.unitType as any) || 'FLAT',
             })),
           },
         },
