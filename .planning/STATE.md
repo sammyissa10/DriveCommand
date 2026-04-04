@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
-Current Plan: Plan 1 of 2 complete — 37.1.2-01 DONE
-Status: 37.1.2-01 complete — InvoiceItemType/InvoiceItemUnit enums added to DB and Prisma schema; 7 freight header fields added to Invoice; itemType/unitType added to InvoiceItem; Zod validation updated with new fields and label maps; PERCENT amount calculation fixed in server action.
-Last activity: 2026-04-04 - Completed 37.1.2-01: Freight schema data layer, enums, and PERCENT calculation fix
-Stopped at: Completed 37.1.2-01-PLAN.md
+Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
+Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
+Last activity: 2026-04-04 - Completed 37.1.2-02: Trucking-standard invoice UI
+Stopped at: Completed 37.1.2-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -91,6 +91,7 @@ Progress: [███████████████████████
 - Phase 37.7-01 (2026-04-03): Mapbox foundation — @rnmapbox/maps installed, react-native-maps removed, driver VehicleMarker created, owner VehicleMarker migrated, Mapbox.setAccessToken at module level in driver layout, iOS URL schemes added — 2 tasks, 5 files, 198s
 - Phase 37.1.1-01 (2026-04-04): Route/Load/Stop schema links + backfill — RouteStop: loadId/contactName/contactPhone/bolNumber/poNumber + named back-refs; Load: pickupStopId/deliveryStopId + named FK relations; migration applied with idempotent backfill (pickups-first sequencing); pre-existing migration drift resolved — 2 tasks, 2 files, ~4min
 - Phase 37.1.2-01 (2026-04-04): Invoicing trucking standard data layer — InvoiceItemType/InvoiceItemUnit enums, 7 freight header fields on Invoice, itemType/unitType on InvoiceItem, Zod validation exports (arrays+label maps), PERCENT calculation fix in createInvoice/updateInvoice — 2 tasks, 4 files, 18min
+- Phase 37.1.2-02 (2026-04-04): Invoicing trucking standard UI — collapsible Freight Details section (7 fields), item type + unit type selectors per line item, FSC auto-calculation (percent-of-linehaul helper text), PER_MILE preview, quick-add buttons (Linehaul/FSC/Detention/Stop-Off), detail page freight display + type labels, edit page round-trips all fields, new invoice load auto-populate — 2 tasks, 5 files, ~25min
 
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
