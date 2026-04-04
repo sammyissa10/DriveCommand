@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.7 Driver Map Navigation — IN PROGRESS
-Current Plan: Plan 5 of 6 complete — 37.7-05 DONE
-Status: 37.7-05 complete — navigation utility (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers Map tab switch + nav deep link, map.tsx Start Navigation wired, nav-settings.tsx preference screen (iOS picker / Android static).
-Last activity: 2026-04-03 - Completed 37.7-05: Start Route Navigation Deep Link + Nav Settings
-Stopped at: Completed 37.7-05-PLAN.md
+Phase: Phase 37.1.1 Data Pipeline — Routes, Loads, and Stops — IN PROGRESS
+Current Plan: Plan 1 of 3 complete — 37.1.1-01 DONE
+Status: 37.1.1-01 complete — Prisma schema extended (RouteStop: loadId/contact/bol/po + back-refs; Load: pickupStopId/deliveryStopId + named FK relations), migration applied with idempotent backfill (pickups-first sequencing). Pre-existing migration drift resolved.
+Last activity: 2026-04-04 - Completed 37.1.1-01: Schema and backfill migration for RouteStop/Load link fields
+Stopped at: Completed 37.1.1-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -89,6 +89,8 @@ Progress: [███████████████████████
 - Phase 37.6-01 (2026-03-31): Security claims to app_metadata — 6 auth files updated (accept-invitation, session, middleware, login, me, mobile-auth), AUTH_SECRET removed, docs updated — 2 tasks, 14 files, 372s
 - Phase 37.6-02 (2026-03-31): Auth helper consolidation — session.ts + server.ts + require-permission.ts merged into supabase.ts, 74 import paths updated, production build verified — 2 tasks, 76 files, 566s
 - Phase 37.7-01 (2026-04-03): Mapbox foundation — @rnmapbox/maps installed, react-native-maps removed, driver VehicleMarker created, owner VehicleMarker migrated, Mapbox.setAccessToken at module level in driver layout, iOS URL schemes added — 2 tasks, 5 files, 198s
+- Phase 37.1.1-01 (2026-04-04): Route/Load/Stop schema links + backfill — RouteStop: loadId/contactName/contactPhone/bolNumber/poNumber + named back-refs; Load: pickupStopId/deliveryStopId + named FK relations; migration applied with idempotent backfill (pickups-first sequencing); pre-existing migration drift resolved — 2 tasks, 2 files, ~4min
+
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
 
@@ -157,6 +159,12 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 
 ### Decisions
+
+**Phase 37.1.1-01 decisions (Route/Load/Stop schema links):**
+- DEFERRABLE INITIALLY DEFERRED FK constraints used for circular Load↔RouteStop relationship — allows RouteStop insert with loadId then Load UPDATE with stopIds in same transaction without constraint violations
+- Backfill idempotent with NOT EXISTS guards — safe to re-run
+- Sequencing: all PICKUPs first (1..N ordered by pickupDate), then DELIVERYs (N+1..N+M ordered by deliveryDate) per route — matches locked sequencing decision
+- Pre-existing migration drift (20260329000001_add_load_sequence column already existed) resolved with migrate resolve --applied before deploying new migration
 
 **Phase 37.7-02 decisions (Directions backend):**
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
