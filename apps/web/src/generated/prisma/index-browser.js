@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.4.0
- * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+ * Prisma Client JS version: 7.6.0
+ * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 Prisma.prismaVersion = {
-  client: "7.4.0",
-  engine: "ab56fe763f921d033a6c195e7ddeb3e255bdbb57"
+  client: "7.6.0",
+  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -458,6 +458,13 @@ exports.Prisma.InvoiceScalarFieldEnum = {
   dueDate: 'dueDate',
   paidDate: 'paidDate',
   notes: 'notes',
+  bolNumber: 'bolNumber',
+  proNumber: 'proNumber',
+  poNumber: 'poNumber',
+  commodity: 'commodity',
+  weightLbs: 'weightLbs',
+  pieces: 'pieces',
+  loadedMiles: 'loadedMiles',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
@@ -470,6 +477,8 @@ exports.Prisma.InvoiceItemScalarFieldEnum = {
   invoiceId: 'invoiceId',
   tenantId: 'tenantId',
   description: 'description',
+  itemType: 'itemType',
+  unitType: 'unitType',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   amount: 'amount'
@@ -554,7 +563,9 @@ exports.Prisma.LoadScalarFieldEnum = {
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  archivedAt: 'archivedAt'
+  archivedAt: 'archivedAt',
+  pickupStopId: 'pickupStopId',
+  deliveryStopId: 'deliveryStopId'
 };
 
 exports.Prisma.TenantIntegrationScalarFieldEnum = {
@@ -602,6 +613,7 @@ exports.Prisma.RouteStopScalarFieldEnum = {
   id: 'id',
   routeId: 'routeId',
   tenantId: 'tenantId',
+  loadId: 'loadId',
   position: 'position',
   type: 'type',
   address: 'address',
@@ -611,6 +623,10 @@ exports.Prisma.RouteStopScalarFieldEnum = {
   arrivedAt: 'arrivedAt',
   departedAt: 'departedAt',
   notes: 'notes',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  bolNumber: 'bolNumber',
+  poNumber: 'poNumber',
   status: 'status',
   geofenceHit: 'geofenceHit',
   createdAt: 'createdAt',
@@ -800,6 +816,28 @@ exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
   PAID: 'PAID',
   OVERDUE: 'OVERDUE',
   CANCELLED: 'CANCELLED'
+};
+
+exports.InvoiceItemType = exports.$Enums.InvoiceItemType = {
+  LINEHAUL: 'LINEHAUL',
+  FUEL_SURCHARGE: 'FUEL_SURCHARGE',
+  DETENTION: 'DETENTION',
+  STOP_OFF: 'STOP_OFF',
+  LAYOVER: 'LAYOVER',
+  TONU: 'TONU',
+  LUMPER: 'LUMPER',
+  ACCESSORIAL: 'ACCESSORIAL',
+  TAX: 'TAX',
+  OTHER: 'OTHER'
+};
+
+exports.InvoiceItemUnit = exports.$Enums.InvoiceItemUnit = {
+  FLAT: 'FLAT',
+  PER_MILE: 'PER_MILE',
+  PER_CWT: 'PER_CWT',
+  PER_PIECE: 'PER_PIECE',
+  PER_HOUR: 'PER_HOUR',
+  PERCENT: 'PERCENT'
 };
 
 exports.SysAdminInvoiceStatus = exports.$Enums.SysAdminInvoiceStatus = {

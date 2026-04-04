@@ -387,6 +387,34 @@ export const InvoiceStatus: {
 export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
 
 
+export const InvoiceItemType: {
+  LINEHAUL: 'LINEHAUL',
+  FUEL_SURCHARGE: 'FUEL_SURCHARGE',
+  DETENTION: 'DETENTION',
+  STOP_OFF: 'STOP_OFF',
+  LAYOVER: 'LAYOVER',
+  TONU: 'TONU',
+  LUMPER: 'LUMPER',
+  ACCESSORIAL: 'ACCESSORIAL',
+  TAX: 'TAX',
+  OTHER: 'OTHER'
+};
+
+export type InvoiceItemType = (typeof InvoiceItemType)[keyof typeof InvoiceItemType]
+
+
+export const InvoiceItemUnit: {
+  FLAT: 'FLAT',
+  PER_MILE: 'PER_MILE',
+  PER_CWT: 'PER_CWT',
+  PER_PIECE: 'PER_PIECE',
+  PER_HOUR: 'PER_HOUR',
+  PERCENT: 'PERCENT'
+};
+
+export type InvoiceItemUnit = (typeof InvoiceItemUnit)[keyof typeof InvoiceItemUnit]
+
+
 export const PayrollStatus: {
   DRAFT: 'DRAFT',
   APPROVED: 'APPROVED',
@@ -560,6 +588,14 @@ export type InvoiceStatus = $Enums.InvoiceStatus
 
 export const InvoiceStatus: typeof $Enums.InvoiceStatus
 
+export type InvoiceItemType = $Enums.InvoiceItemType
+
+export const InvoiceItemType: typeof $Enums.InvoiceItemType
+
+export type InvoiceItemUnit = $Enums.InvoiceItemUnit
+
+export const InvoiceItemUnit: typeof $Enums.InvoiceItemUnit
+
 export type PayrollStatus = $Enums.PayrollStatus
 
 export const PayrollStatus: typeof $Enums.PayrollStatus
@@ -606,7 +642,9 @@ export const IncidentSeverity: typeof $Enums.IncidentSeverity
  * Type-safe database client for TypeScript & Node.js
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Tenants
  * const tenants = await prisma.tenant.findMany()
  * ```
@@ -627,7 +665,9 @@ export class PrismaClient<
    * Type-safe database client for TypeScript & Node.js
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Tenants
    * const tenants = await prisma.tenant.findMany()
    * ```
@@ -707,7 +747,7 @@ export class PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
   $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
@@ -1136,8 +1176,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.4.0
-   * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+   * Prisma Client JS version: 7.6.0
+   * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
    */
   export type PrismaVersion = {
     client: string
@@ -5454,11 +5494,13 @@ export namespace Prisma {
   export type LoadCountOutputType = {
     invoices: number
     documents: number
+    routeStops: number
   }
 
   export type LoadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     invoices?: boolean | LoadCountOutputTypeCountInvoicesArgs
     documents?: boolean | LoadCountOutputTypeCountDocumentsArgs
+    routeStops?: boolean | LoadCountOutputTypeCountRouteStopsArgs
   }
 
   // Custom InputTypes
@@ -5484,6 +5526,53 @@ export namespace Prisma {
    */
   export type LoadCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DocumentWhereInput
+  }
+
+  /**
+   * LoadCountOutputType without action
+   */
+  export type LoadCountOutputTypeCountRouteStopsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RouteStopWhereInput
+  }
+
+
+  /**
+   * Count Type RouteStopCountOutputType
+   */
+
+  export type RouteStopCountOutputType = {
+    pickupForLoads: number
+    deliveryForLoads: number
+  }
+
+  export type RouteStopCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pickupForLoads?: boolean | RouteStopCountOutputTypeCountPickupForLoadsArgs
+    deliveryForLoads?: boolean | RouteStopCountOutputTypeCountDeliveryForLoadsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * RouteStopCountOutputType without action
+   */
+  export type RouteStopCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RouteStopCountOutputType
+     */
+    select?: RouteStopCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * RouteStopCountOutputType without action
+   */
+  export type RouteStopCountOutputTypeCountPickupForLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LoadWhereInput
+  }
+
+  /**
+   * RouteStopCountOutputType without action
+   */
+  export type RouteStopCountOutputTypeCountDeliveryForLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LoadWhereInput
   }
 
 
@@ -6516,6 +6605,11 @@ export namespace Prisma {
      * Skip the first `n` Tenants.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tenants.
+     */
     distinct?: TenantScalarFieldEnum | TenantScalarFieldEnum[]
   }
 
@@ -8476,6 +8570,11 @@ export namespace Prisma {
      * Skip the first `n` Users.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Users.
+     */
     distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
   }
 
@@ -10280,6 +10379,11 @@ export namespace Prisma {
      * Skip the first `n` Trucks.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Trucks.
+     */
     distinct?: TruckScalarFieldEnum | TruckScalarFieldEnum[]
   }
 
@@ -11783,6 +11887,11 @@ export namespace Prisma {
      * Skip the first `n` DriverInvitations.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverInvitations.
+     */
     distinct?: DriverInvitationScalarFieldEnum | DriverInvitationScalarFieldEnum[]
   }
 
@@ -13148,6 +13257,11 @@ export namespace Prisma {
      * Skip the first `n` Routes.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Routes.
+     */
     distinct?: RouteScalarFieldEnum | RouteScalarFieldEnum[]
   }
 
@@ -14444,6 +14558,11 @@ export namespace Prisma {
      * Skip the first `n` RouteDrivers.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RouteDrivers.
+     */
     distinct?: RouteDriverScalarFieldEnum | RouteDriverScalarFieldEnum[]
   }
 
@@ -15745,6 +15864,11 @@ export namespace Prisma {
      * Skip the first `n` Documents.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Documents.
+     */
     distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
   }
 
@@ -17003,6 +17127,11 @@ export namespace Prisma {
      * Skip the first `n` MaintenanceEvents.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MaintenanceEvents.
+     */
     distinct?: MaintenanceEventScalarFieldEnum | MaintenanceEventScalarFieldEnum[]
   }
 
@@ -18215,6 +18344,11 @@ export namespace Prisma {
      * Skip the first `n` ScheduledServices.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScheduledServices.
+     */
     distinct?: ScheduledServiceScalarFieldEnum | ScheduledServiceScalarFieldEnum[]
   }
 
@@ -19450,6 +19584,11 @@ export namespace Prisma {
      * Skip the first `n` NotificationLogs.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NotificationLogs.
+     */
     distinct?: NotificationLogScalarFieldEnum | NotificationLogScalarFieldEnum[]
   }
 
@@ -20648,6 +20787,11 @@ export namespace Prisma {
      * Skip the first `n` GPSLocations.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GPSLocations.
+     */
     distinct?: GPSLocationScalarFieldEnum | GPSLocationScalarFieldEnum[]
   }
 
@@ -21906,6 +22050,11 @@ export namespace Prisma {
      * Skip the first `n` SafetyEvents.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SafetyEvents.
+     */
     distinct?: SafetyEventScalarFieldEnum | SafetyEventScalarFieldEnum[]
   }
 
@@ -23194,6 +23343,11 @@ export namespace Prisma {
      * Skip the first `n` FuelRecords.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FuelRecords.
+     */
     distinct?: FuelRecordScalarFieldEnum | FuelRecordScalarFieldEnum[]
   }
 
@@ -24271,6 +24425,11 @@ export namespace Prisma {
      * Skip the first `n` Tags.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Tags.
+     */
     distinct?: TagScalarFieldEnum | TagScalarFieldEnum[]
   }
 
@@ -25390,6 +25549,11 @@ export namespace Prisma {
      * Skip the first `n` TagAssignments.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TagAssignments.
+     */
     distinct?: TagAssignmentScalarFieldEnum | TagAssignmentScalarFieldEnum[]
   }
 
@@ -26509,6 +26673,11 @@ export namespace Prisma {
      * Skip the first `n` ExpenseCategories.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExpenseCategories.
+     */
     distinct?: ExpenseCategoryScalarFieldEnum | ExpenseCategoryScalarFieldEnum[]
   }
 
@@ -27730,6 +27899,11 @@ export namespace Prisma {
      * Skip the first `n` RouteExpenses.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RouteExpenses.
+     */
     distinct?: RouteExpenseScalarFieldEnum | RouteExpenseScalarFieldEnum[]
   }
 
@@ -28794,6 +28968,11 @@ export namespace Prisma {
      * Skip the first `n` ExpenseTemplates.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExpenseTemplates.
+     */
     distinct?: ExpenseTemplateScalarFieldEnum | ExpenseTemplateScalarFieldEnum[]
   }
 
@@ -29939,6 +30118,11 @@ export namespace Prisma {
      * Skip the first `n` ExpenseTemplateItems.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExpenseTemplateItems.
+     */
     distinct?: ExpenseTemplateItemScalarFieldEnum | ExpenseTemplateItemScalarFieldEnum[]
   }
 
@@ -31104,6 +31288,11 @@ export namespace Prisma {
      * Skip the first `n` RoutePayments.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RoutePayments.
+     */
     distinct?: RoutePaymentScalarFieldEnum | RoutePaymentScalarFieldEnum[]
   }
 
@@ -32392,6 +32581,11 @@ export namespace Prisma {
      * Skip the first `n` Customers.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
     distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
   }
 
@@ -33558,6 +33752,11 @@ export namespace Prisma {
      * Skip the first `n` CustomerInteractions.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerInteractions.
+     */
     distinct?: CustomerInteractionScalarFieldEnum | CustomerInteractionScalarFieldEnum[]
   }
 
@@ -33792,12 +33991,18 @@ export namespace Prisma {
     amount: Decimal | null
     tax: Decimal | null
     totalAmount: Decimal | null
+    weightLbs: number | null
+    pieces: number | null
+    loadedMiles: Decimal | null
   }
 
   export type InvoiceSumAggregateOutputType = {
     amount: Decimal | null
     tax: Decimal | null
     totalAmount: Decimal | null
+    weightLbs: number | null
+    pieces: number | null
+    loadedMiles: Decimal | null
   }
 
   export type InvoiceMinAggregateOutputType = {
@@ -33815,6 +34020,13 @@ export namespace Prisma {
     dueDate: Date | null
     paidDate: Date | null
     notes: string | null
+    bolNumber: string | null
+    proNumber: string | null
+    poNumber: string | null
+    commodity: string | null
+    weightLbs: number | null
+    pieces: number | null
+    loadedMiles: Decimal | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -33837,6 +34049,13 @@ export namespace Prisma {
     dueDate: Date | null
     paidDate: Date | null
     notes: string | null
+    bolNumber: string | null
+    proNumber: string | null
+    poNumber: string | null
+    commodity: string | null
+    weightLbs: number | null
+    pieces: number | null
+    loadedMiles: Decimal | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -33859,6 +34078,13 @@ export namespace Prisma {
     dueDate: number
     paidDate: number
     notes: number
+    bolNumber: number
+    proNumber: number
+    poNumber: number
+    commodity: number
+    weightLbs: number
+    pieces: number
+    loadedMiles: number
     createdById: number
     updatedById: number
     createdAt: number
@@ -33872,12 +34098,18 @@ export namespace Prisma {
     amount?: true
     tax?: true
     totalAmount?: true
+    weightLbs?: true
+    pieces?: true
+    loadedMiles?: true
   }
 
   export type InvoiceSumAggregateInputType = {
     amount?: true
     tax?: true
     totalAmount?: true
+    weightLbs?: true
+    pieces?: true
+    loadedMiles?: true
   }
 
   export type InvoiceMinAggregateInputType = {
@@ -33895,6 +34127,13 @@ export namespace Prisma {
     dueDate?: true
     paidDate?: true
     notes?: true
+    bolNumber?: true
+    proNumber?: true
+    poNumber?: true
+    commodity?: true
+    weightLbs?: true
+    pieces?: true
+    loadedMiles?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -33917,6 +34156,13 @@ export namespace Prisma {
     dueDate?: true
     paidDate?: true
     notes?: true
+    bolNumber?: true
+    proNumber?: true
+    poNumber?: true
+    commodity?: true
+    weightLbs?: true
+    pieces?: true
+    loadedMiles?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -33939,6 +34185,13 @@ export namespace Prisma {
     dueDate?: true
     paidDate?: true
     notes?: true
+    bolNumber?: true
+    proNumber?: true
+    poNumber?: true
+    commodity?: true
+    weightLbs?: true
+    pieces?: true
+    loadedMiles?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -34048,6 +34301,13 @@ export namespace Prisma {
     dueDate: Date
     paidDate: Date | null
     notes: string | null
+    bolNumber: string | null
+    proNumber: string | null
+    poNumber: string | null
+    commodity: string | null
+    weightLbs: number | null
+    pieces: number | null
+    loadedMiles: Decimal | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date
@@ -34089,6 +34349,13 @@ export namespace Prisma {
     dueDate?: boolean
     paidDate?: boolean
     notes?: boolean
+    bolNumber?: boolean
+    proNumber?: boolean
+    poNumber?: boolean
+    commodity?: boolean
+    weightLbs?: boolean
+    pieces?: boolean
+    loadedMiles?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -34117,6 +34384,13 @@ export namespace Prisma {
     dueDate?: boolean
     paidDate?: boolean
     notes?: boolean
+    bolNumber?: boolean
+    proNumber?: boolean
+    poNumber?: boolean
+    commodity?: boolean
+    weightLbs?: boolean
+    pieces?: boolean
+    loadedMiles?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -34143,6 +34417,13 @@ export namespace Prisma {
     dueDate?: boolean
     paidDate?: boolean
     notes?: boolean
+    bolNumber?: boolean
+    proNumber?: boolean
+    poNumber?: boolean
+    commodity?: boolean
+    weightLbs?: boolean
+    pieces?: boolean
+    loadedMiles?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -34169,6 +34450,13 @@ export namespace Prisma {
     dueDate?: boolean
     paidDate?: boolean
     notes?: boolean
+    bolNumber?: boolean
+    proNumber?: boolean
+    poNumber?: boolean
+    commodity?: boolean
+    weightLbs?: boolean
+    pieces?: boolean
+    loadedMiles?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -34176,7 +34464,7 @@ export namespace Prisma {
     archivedAt?: boolean
   }
 
-  export type InvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "customerId" | "routeId" | "loadId" | "invoiceNumber" | "amount" | "tax" | "totalAmount" | "status" | "issueDate" | "dueDate" | "paidDate" | "notes" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["invoice"]>
+  export type InvoiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "customerId" | "routeId" | "loadId" | "invoiceNumber" | "amount" | "tax" | "totalAmount" | "status" | "issueDate" | "dueDate" | "paidDate" | "notes" | "bolNumber" | "proNumber" | "poNumber" | "commodity" | "weightLbs" | "pieces" | "loadedMiles" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["invoice"]>
   export type InvoiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     createdBy?: boolean | Invoice$createdByArgs<ExtArgs>
@@ -34222,6 +34510,13 @@ export namespace Prisma {
       dueDate: Date
       paidDate: Date | null
       notes: string | null
+      bolNumber: string | null
+      proNumber: string | null
+      poNumber: string | null
+      commodity: string | null
+      weightLbs: number | null
+      pieces: number | null
+      loadedMiles: Prisma.Decimal | null
       createdById: string | null
       updatedById: string | null
       createdAt: Date
@@ -34669,6 +34964,13 @@ export namespace Prisma {
     readonly dueDate: FieldRef<"Invoice", 'DateTime'>
     readonly paidDate: FieldRef<"Invoice", 'DateTime'>
     readonly notes: FieldRef<"Invoice", 'String'>
+    readonly bolNumber: FieldRef<"Invoice", 'String'>
+    readonly proNumber: FieldRef<"Invoice", 'String'>
+    readonly poNumber: FieldRef<"Invoice", 'String'>
+    readonly commodity: FieldRef<"Invoice", 'String'>
+    readonly weightLbs: FieldRef<"Invoice", 'Int'>
+    readonly pieces: FieldRef<"Invoice", 'Int'>
+    readonly loadedMiles: FieldRef<"Invoice", 'Decimal'>
     readonly createdById: FieldRef<"Invoice", 'String'>
     readonly updatedById: FieldRef<"Invoice", 'String'>
     readonly createdAt: FieldRef<"Invoice", 'DateTime'>
@@ -34870,6 +35172,11 @@ export namespace Prisma {
      * Skip the first `n` Invoices.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Invoices.
+     */
     distinct?: InvoiceScalarFieldEnum | InvoiceScalarFieldEnum[]
   }
 
@@ -35198,6 +35505,8 @@ export namespace Prisma {
     invoiceId: string | null
     tenantId: string | null
     description: string | null
+    itemType: $Enums.InvoiceItemType | null
+    unitType: $Enums.InvoiceItemUnit | null
     quantity: Decimal | null
     unitPrice: Decimal | null
     amount: Decimal | null
@@ -35208,6 +35517,8 @@ export namespace Prisma {
     invoiceId: string | null
     tenantId: string | null
     description: string | null
+    itemType: $Enums.InvoiceItemType | null
+    unitType: $Enums.InvoiceItemUnit | null
     quantity: Decimal | null
     unitPrice: Decimal | null
     amount: Decimal | null
@@ -35218,6 +35529,8 @@ export namespace Prisma {
     invoiceId: number
     tenantId: number
     description: number
+    itemType: number
+    unitType: number
     quantity: number
     unitPrice: number
     amount: number
@@ -35242,6 +35555,8 @@ export namespace Prisma {
     invoiceId?: true
     tenantId?: true
     description?: true
+    itemType?: true
+    unitType?: true
     quantity?: true
     unitPrice?: true
     amount?: true
@@ -35252,6 +35567,8 @@ export namespace Prisma {
     invoiceId?: true
     tenantId?: true
     description?: true
+    itemType?: true
+    unitType?: true
     quantity?: true
     unitPrice?: true
     amount?: true
@@ -35262,6 +35579,8 @@ export namespace Prisma {
     invoiceId?: true
     tenantId?: true
     description?: true
+    itemType?: true
+    unitType?: true
     quantity?: true
     unitPrice?: true
     amount?: true
@@ -35359,6 +35678,8 @@ export namespace Prisma {
     invoiceId: string
     tenantId: string
     description: string
+    itemType: $Enums.InvoiceItemType
+    unitType: $Enums.InvoiceItemUnit
     quantity: Decimal
     unitPrice: Decimal
     amount: Decimal
@@ -35388,6 +35709,8 @@ export namespace Prisma {
     invoiceId?: boolean
     tenantId?: boolean
     description?: boolean
+    itemType?: boolean
+    unitType?: boolean
     quantity?: boolean
     unitPrice?: boolean
     amount?: boolean
@@ -35400,6 +35723,8 @@ export namespace Prisma {
     invoiceId?: boolean
     tenantId?: boolean
     description?: boolean
+    itemType?: boolean
+    unitType?: boolean
     quantity?: boolean
     unitPrice?: boolean
     amount?: boolean
@@ -35412,6 +35737,8 @@ export namespace Prisma {
     invoiceId?: boolean
     tenantId?: boolean
     description?: boolean
+    itemType?: boolean
+    unitType?: boolean
     quantity?: boolean
     unitPrice?: boolean
     amount?: boolean
@@ -35424,12 +35751,14 @@ export namespace Prisma {
     invoiceId?: boolean
     tenantId?: boolean
     description?: boolean
+    itemType?: boolean
+    unitType?: boolean
     quantity?: boolean
     unitPrice?: boolean
     amount?: boolean
   }
 
-  export type InvoiceItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceId" | "tenantId" | "description" | "quantity" | "unitPrice" | "amount", ExtArgs["result"]["invoiceItem"]>
+  export type InvoiceItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "invoiceId" | "tenantId" | "description" | "itemType" | "unitType" | "quantity" | "unitPrice" | "amount", ExtArgs["result"]["invoiceItem"]>
   export type InvoiceItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     invoice?: boolean | InvoiceDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -35454,6 +35783,8 @@ export namespace Prisma {
       invoiceId: string
       tenantId: string
       description: string
+      itemType: $Enums.InvoiceItemType
+      unitType: $Enums.InvoiceItemUnit
       quantity: Prisma.Decimal
       unitPrice: Prisma.Decimal
       amount: Prisma.Decimal
@@ -35886,6 +36217,8 @@ export namespace Prisma {
     readonly invoiceId: FieldRef<"InvoiceItem", 'String'>
     readonly tenantId: FieldRef<"InvoiceItem", 'String'>
     readonly description: FieldRef<"InvoiceItem", 'String'>
+    readonly itemType: FieldRef<"InvoiceItem", 'InvoiceItemType'>
+    readonly unitType: FieldRef<"InvoiceItem", 'InvoiceItemUnit'>
     readonly quantity: FieldRef<"InvoiceItem", 'Decimal'>
     readonly unitPrice: FieldRef<"InvoiceItem", 'Decimal'>
     readonly amount: FieldRef<"InvoiceItem", 'Decimal'>
@@ -36085,6 +36418,11 @@ export namespace Prisma {
      * Skip the first `n` InvoiceItems.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvoiceItems.
+     */
     distinct?: InvoiceItemScalarFieldEnum | InvoiceItemScalarFieldEnum[]
   }
 
@@ -37330,6 +37668,11 @@ export namespace Prisma {
      * Skip the first `n` SysAdminInvoices.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SysAdminInvoices.
+     */
     distinct?: SysAdminInvoiceScalarFieldEnum | SysAdminInvoiceScalarFieldEnum[]
   }
 
@@ -38480,6 +38823,11 @@ export namespace Prisma {
      * Skip the first `n` SysAdminInvoiceItems.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SysAdminInvoiceItems.
+     */
     distinct?: SysAdminInvoiceItemScalarFieldEnum | SysAdminInvoiceItemScalarFieldEnum[]
   }
 
@@ -39798,6 +40146,11 @@ export namespace Prisma {
      * Skip the first `n` PayrollRecords.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PayrollRecords.
+     */
     distinct?: PayrollRecordScalarFieldEnum | PayrollRecordScalarFieldEnum[]
   }
 
@@ -40114,6 +40467,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     archivedAt: Date | null
+    pickupStopId: string | null
+    deliveryStopId: string | null
   }
 
   export type LoadMaxAggregateOutputType = {
@@ -40144,6 +40499,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     archivedAt: Date | null
+    pickupStopId: string | null
+    deliveryStopId: string | null
   }
 
   export type LoadCountAggregateOutputType = {
@@ -40175,6 +40532,8 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     archivedAt: number
+    pickupStopId: number
+    deliveryStopId: number
     _all: number
   }
 
@@ -40227,6 +40586,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     archivedAt?: true
+    pickupStopId?: true
+    deliveryStopId?: true
   }
 
   export type LoadMaxAggregateInputType = {
@@ -40257,6 +40618,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     archivedAt?: true
+    pickupStopId?: true
+    deliveryStopId?: true
   }
 
   export type LoadCountAggregateInputType = {
@@ -40288,6 +40651,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     archivedAt?: true
+    pickupStopId?: true
+    deliveryStopId?: true
     _all?: true
   }
 
@@ -40406,6 +40771,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     archivedAt: Date | null
+    pickupStopId: string | null
+    deliveryStopId: string | null
     _count: LoadCountAggregateOutputType | null
     _avg: LoadAvgAggregateOutputType | null
     _sum: LoadSumAggregateOutputType | null
@@ -40456,6 +40823,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     archivedAt?: boolean
+    pickupStopId?: boolean
+    deliveryStopId?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     route?: boolean | Load$routeArgs<ExtArgs>
@@ -40465,6 +40834,9 @@ export namespace Prisma {
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
     invoices?: boolean | Load$invoicesArgs<ExtArgs>
     documents?: boolean | Load$documentsArgs<ExtArgs>
+    routeStops?: boolean | Load$routeStopsArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
     _count?: boolean | LoadCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["load"]>
 
@@ -40497,6 +40869,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     archivedAt?: boolean
+    pickupStopId?: boolean
+    deliveryStopId?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     route?: boolean | Load$routeArgs<ExtArgs>
@@ -40504,6 +40878,8 @@ export namespace Prisma {
     truck?: boolean | Load$truckArgs<ExtArgs>
     createdBy?: boolean | Load$createdByArgs<ExtArgs>
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
   }, ExtArgs["result"]["load"]>
 
   export type LoadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -40535,6 +40911,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     archivedAt?: boolean
+    pickupStopId?: boolean
+    deliveryStopId?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
     route?: boolean | Load$routeArgs<ExtArgs>
@@ -40542,6 +40920,8 @@ export namespace Prisma {
     truck?: boolean | Load$truckArgs<ExtArgs>
     createdBy?: boolean | Load$createdByArgs<ExtArgs>
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
   }, ExtArgs["result"]["load"]>
 
   export type LoadSelectScalar = {
@@ -40573,9 +40953,11 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     archivedAt?: boolean
+    pickupStopId?: boolean
+    deliveryStopId?: boolean
   }
 
-  export type LoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "loadNumber" | "customerId" | "routeId" | "sequence" | "driverId" | "truckId" | "origin" | "destination" | "pickupDate" | "deliveryDate" | "weight" | "commodity" | "rate" | "status" | "notes" | "pickupLat" | "pickupLng" | "deliveryLat" | "deliveryLng" | "geofenceFlags" | "trackingToken" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["load"]>
+  export type LoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "loadNumber" | "customerId" | "routeId" | "sequence" | "driverId" | "truckId" | "origin" | "destination" | "pickupDate" | "deliveryDate" | "weight" | "commodity" | "rate" | "status" | "notes" | "pickupLat" | "pickupLng" | "deliveryLat" | "deliveryLng" | "geofenceFlags" | "trackingToken" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt" | "pickupStopId" | "deliveryStopId", ExtArgs["result"]["load"]>
   export type LoadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     customer?: boolean | CustomerDefaultArgs<ExtArgs>
@@ -40586,6 +40968,9 @@ export namespace Prisma {
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
     invoices?: boolean | Load$invoicesArgs<ExtArgs>
     documents?: boolean | Load$documentsArgs<ExtArgs>
+    routeStops?: boolean | Load$routeStopsArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
     _count?: boolean | LoadCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type LoadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40596,6 +40981,8 @@ export namespace Prisma {
     truck?: boolean | Load$truckArgs<ExtArgs>
     createdBy?: boolean | Load$createdByArgs<ExtArgs>
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
   }
   export type LoadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -40605,6 +40992,8 @@ export namespace Prisma {
     truck?: boolean | Load$truckArgs<ExtArgs>
     createdBy?: boolean | Load$createdByArgs<ExtArgs>
     updatedBy?: boolean | Load$updatedByArgs<ExtArgs>
+    pickupStop?: boolean | Load$pickupStopArgs<ExtArgs>
+    deliveryStop?: boolean | Load$deliveryStopArgs<ExtArgs>
   }
 
   export type $LoadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40619,6 +41008,9 @@ export namespace Prisma {
       updatedBy: Prisma.$UserPayload<ExtArgs> | null
       invoices: Prisma.$InvoicePayload<ExtArgs>[]
       documents: Prisma.$DocumentPayload<ExtArgs>[]
+      routeStops: Prisma.$RouteStopPayload<ExtArgs>[]
+      pickupStop: Prisma.$RouteStopPayload<ExtArgs> | null
+      deliveryStop: Prisma.$RouteStopPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -40649,6 +41041,8 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       archivedAt: Date | null
+      pickupStopId: string | null
+      deliveryStopId: string | null
     }, ExtArgs["result"]["load"]>
     composites: {}
   }
@@ -41052,6 +41446,9 @@ export namespace Prisma {
     updatedBy<T extends Load$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Load$updatedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     invoices<T extends Load$invoicesArgs<ExtArgs> = {}>(args?: Subset<T, Load$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     documents<T extends Load$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Load$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    routeStops<T extends Load$routeStopsArgs<ExtArgs> = {}>(args?: Subset<T, Load$routeStopsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteStopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pickupStop<T extends Load$pickupStopArgs<ExtArgs> = {}>(args?: Subset<T, Load$pickupStopArgs<ExtArgs>>): Prisma__RouteStopClient<$Result.GetResult<Prisma.$RouteStopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    deliveryStop<T extends Load$deliveryStopArgs<ExtArgs> = {}>(args?: Subset<T, Load$deliveryStopArgs<ExtArgs>>): Prisma__RouteStopClient<$Result.GetResult<Prisma.$RouteStopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -41109,6 +41506,8 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Load", 'DateTime'>
     readonly updatedAt: FieldRef<"Load", 'DateTime'>
     readonly archivedAt: FieldRef<"Load", 'DateTime'>
+    readonly pickupStopId: FieldRef<"Load", 'String'>
+    readonly deliveryStopId: FieldRef<"Load", 'String'>
   }
     
 
@@ -41305,6 +41704,11 @@ export namespace Prisma {
      * Skip the first `n` Loads.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Loads.
+     */
     distinct?: LoadScalarFieldEnum | LoadScalarFieldEnum[]
   }
 
@@ -41645,6 +42049,68 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
+   * Load.routeStops
+   */
+  export type Load$routeStopsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RouteStop
+     */
+    select?: RouteStopSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RouteStop
+     */
+    omit?: RouteStopOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RouteStopInclude<ExtArgs> | null
+    where?: RouteStopWhereInput
+    orderBy?: RouteStopOrderByWithRelationInput | RouteStopOrderByWithRelationInput[]
+    cursor?: RouteStopWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RouteStopScalarFieldEnum | RouteStopScalarFieldEnum[]
+  }
+
+  /**
+   * Load.pickupStop
+   */
+  export type Load$pickupStopArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RouteStop
+     */
+    select?: RouteStopSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RouteStop
+     */
+    omit?: RouteStopOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RouteStopInclude<ExtArgs> | null
+    where?: RouteStopWhereInput
+  }
+
+  /**
+   * Load.deliveryStop
+   */
+  export type Load$deliveryStopArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RouteStop
+     */
+    select?: RouteStopSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RouteStop
+     */
+    omit?: RouteStopOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RouteStopInclude<ExtArgs> | null
+    where?: RouteStopWhereInput
   }
 
   /**
@@ -42541,6 +43007,11 @@ export namespace Prisma {
      * Skip the first `n` TenantIntegrations.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantIntegrations.
+     */
     distinct?: TenantIntegrationScalarFieldEnum | TenantIntegrationScalarFieldEnum[]
   }
 
@@ -43733,6 +44204,11 @@ export namespace Prisma {
      * Skip the first `n` SupportTickets.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SupportTickets.
+     */
     distinct?: SupportTicketScalarFieldEnum | SupportTicketScalarFieldEnum[]
   }
 
@@ -44741,6 +45217,11 @@ export namespace Prisma {
      * Skip the first `n` TicketMessages.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TicketMessages.
+     */
     distinct?: TicketMessageScalarFieldEnum | TicketMessageScalarFieldEnum[]
   }
 
@@ -44959,6 +45440,7 @@ export namespace Prisma {
     id: string | null
     routeId: string | null
     tenantId: string | null
+    loadId: string | null
     position: number | null
     type: $Enums.RouteStopType | null
     address: string | null
@@ -44968,6 +45450,10 @@ export namespace Prisma {
     arrivedAt: Date | null
     departedAt: Date | null
     notes: string | null
+    contactName: string | null
+    contactPhone: string | null
+    bolNumber: string | null
+    poNumber: string | null
     status: $Enums.RouteStopStatus | null
     geofenceHit: boolean | null
     createdAt: Date | null
@@ -44978,6 +45464,7 @@ export namespace Prisma {
     id: string | null
     routeId: string | null
     tenantId: string | null
+    loadId: string | null
     position: number | null
     type: $Enums.RouteStopType | null
     address: string | null
@@ -44987,6 +45474,10 @@ export namespace Prisma {
     arrivedAt: Date | null
     departedAt: Date | null
     notes: string | null
+    contactName: string | null
+    contactPhone: string | null
+    bolNumber: string | null
+    poNumber: string | null
     status: $Enums.RouteStopStatus | null
     geofenceHit: boolean | null
     createdAt: Date | null
@@ -44997,6 +45488,7 @@ export namespace Prisma {
     id: number
     routeId: number
     tenantId: number
+    loadId: number
     position: number
     type: number
     address: number
@@ -45006,6 +45498,10 @@ export namespace Prisma {
     arrivedAt: number
     departedAt: number
     notes: number
+    contactName: number
+    contactPhone: number
+    bolNumber: number
+    poNumber: number
     status: number
     geofenceHit: number
     createdAt: number
@@ -45030,6 +45526,7 @@ export namespace Prisma {
     id?: true
     routeId?: true
     tenantId?: true
+    loadId?: true
     position?: true
     type?: true
     address?: true
@@ -45039,6 +45536,10 @@ export namespace Prisma {
     arrivedAt?: true
     departedAt?: true
     notes?: true
+    contactName?: true
+    contactPhone?: true
+    bolNumber?: true
+    poNumber?: true
     status?: true
     geofenceHit?: true
     createdAt?: true
@@ -45049,6 +45550,7 @@ export namespace Prisma {
     id?: true
     routeId?: true
     tenantId?: true
+    loadId?: true
     position?: true
     type?: true
     address?: true
@@ -45058,6 +45560,10 @@ export namespace Prisma {
     arrivedAt?: true
     departedAt?: true
     notes?: true
+    contactName?: true
+    contactPhone?: true
+    bolNumber?: true
+    poNumber?: true
     status?: true
     geofenceHit?: true
     createdAt?: true
@@ -45068,6 +45574,7 @@ export namespace Prisma {
     id?: true
     routeId?: true
     tenantId?: true
+    loadId?: true
     position?: true
     type?: true
     address?: true
@@ -45077,6 +45584,10 @@ export namespace Prisma {
     arrivedAt?: true
     departedAt?: true
     notes?: true
+    contactName?: true
+    contactPhone?: true
+    bolNumber?: true
+    poNumber?: true
     status?: true
     geofenceHit?: true
     createdAt?: true
@@ -45174,6 +45685,7 @@ export namespace Prisma {
     id: string
     routeId: string
     tenantId: string
+    loadId: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -45183,6 +45695,10 @@ export namespace Prisma {
     arrivedAt: Date | null
     departedAt: Date | null
     notes: string | null
+    contactName: string | null
+    contactPhone: string | null
+    bolNumber: string | null
+    poNumber: string | null
     status: $Enums.RouteStopStatus
     geofenceHit: boolean
     createdAt: Date
@@ -45212,6 +45728,7 @@ export namespace Prisma {
     id?: boolean
     routeId?: boolean
     tenantId?: boolean
+    loadId?: boolean
     position?: boolean
     type?: boolean
     address?: boolean
@@ -45221,18 +45738,27 @@ export namespace Prisma {
     arrivedAt?: boolean
     departedAt?: boolean
     notes?: boolean
+    contactName?: boolean
+    contactPhone?: boolean
+    bolNumber?: boolean
+    poNumber?: boolean
     status?: boolean
     geofenceHit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
+    pickupForLoads?: boolean | RouteStop$pickupForLoadsArgs<ExtArgs>
+    deliveryForLoads?: boolean | RouteStop$deliveryForLoadsArgs<ExtArgs>
+    _count?: boolean | RouteStopCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["routeStop"]>
 
   export type RouteStopSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     routeId?: boolean
     tenantId?: boolean
+    loadId?: boolean
     position?: boolean
     type?: boolean
     address?: boolean
@@ -45242,18 +45768,24 @@ export namespace Prisma {
     arrivedAt?: boolean
     departedAt?: boolean
     notes?: boolean
+    contactName?: boolean
+    contactPhone?: boolean
+    bolNumber?: boolean
+    poNumber?: boolean
     status?: boolean
     geofenceHit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
   }, ExtArgs["result"]["routeStop"]>
 
   export type RouteStopSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     routeId?: boolean
     tenantId?: boolean
+    loadId?: boolean
     position?: boolean
     type?: boolean
     address?: boolean
@@ -45263,18 +45795,24 @@ export namespace Prisma {
     arrivedAt?: boolean
     departedAt?: boolean
     notes?: boolean
+    contactName?: boolean
+    contactPhone?: boolean
+    bolNumber?: boolean
+    poNumber?: boolean
     status?: boolean
     geofenceHit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
   }, ExtArgs["result"]["routeStop"]>
 
   export type RouteStopSelectScalar = {
     id?: boolean
     routeId?: boolean
     tenantId?: boolean
+    loadId?: boolean
     position?: boolean
     type?: boolean
     address?: boolean
@@ -45284,24 +45822,34 @@ export namespace Prisma {
     arrivedAt?: boolean
     departedAt?: boolean
     notes?: boolean
+    contactName?: boolean
+    contactPhone?: boolean
+    bolNumber?: boolean
+    poNumber?: boolean
     status?: boolean
     geofenceHit?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type RouteStopOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "routeId" | "tenantId" | "position" | "type" | "address" | "lat" | "lng" | "scheduledAt" | "arrivedAt" | "departedAt" | "notes" | "status" | "geofenceHit" | "createdAt" | "updatedAt", ExtArgs["result"]["routeStop"]>
+  export type RouteStopOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "routeId" | "tenantId" | "loadId" | "position" | "type" | "address" | "lat" | "lng" | "scheduledAt" | "arrivedAt" | "departedAt" | "notes" | "contactName" | "contactPhone" | "bolNumber" | "poNumber" | "status" | "geofenceHit" | "createdAt" | "updatedAt", ExtArgs["result"]["routeStop"]>
   export type RouteStopInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
+    pickupForLoads?: boolean | RouteStop$pickupForLoadsArgs<ExtArgs>
+    deliveryForLoads?: boolean | RouteStop$deliveryForLoadsArgs<ExtArgs>
+    _count?: boolean | RouteStopCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type RouteStopIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
   }
   export type RouteStopIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     route?: boolean | RouteDefaultArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    load?: boolean | RouteStop$loadArgs<ExtArgs>
   }
 
   export type $RouteStopPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -45309,11 +45857,15 @@ export namespace Prisma {
     objects: {
       route: Prisma.$RoutePayload<ExtArgs>
       tenant: Prisma.$TenantPayload<ExtArgs>
+      load: Prisma.$LoadPayload<ExtArgs> | null
+      pickupForLoads: Prisma.$LoadPayload<ExtArgs>[]
+      deliveryForLoads: Prisma.$LoadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       routeId: string
       tenantId: string
+      loadId: string | null
       position: number
       type: $Enums.RouteStopType
       address: string
@@ -45323,6 +45875,10 @@ export namespace Prisma {
       arrivedAt: Date | null
       departedAt: Date | null
       notes: string | null
+      contactName: string | null
+      contactPhone: string | null
+      bolNumber: string | null
+      poNumber: string | null
       status: $Enums.RouteStopStatus
       geofenceHit: boolean
       createdAt: Date
@@ -45723,6 +46279,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     route<T extends RouteDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RouteDefaultArgs<ExtArgs>>): Prisma__RouteClient<$Result.GetResult<Prisma.$RoutePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    load<T extends RouteStop$loadArgs<ExtArgs> = {}>(args?: Subset<T, RouteStop$loadArgs<ExtArgs>>): Prisma__LoadClient<$Result.GetResult<Prisma.$LoadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    pickupForLoads<T extends RouteStop$pickupForLoadsArgs<ExtArgs> = {}>(args?: Subset<T, RouteStop$pickupForLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    deliveryForLoads<T extends RouteStop$deliveryForLoadsArgs<ExtArgs> = {}>(args?: Subset<T, RouteStop$deliveryForLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -45755,6 +46314,7 @@ export namespace Prisma {
     readonly id: FieldRef<"RouteStop", 'String'>
     readonly routeId: FieldRef<"RouteStop", 'String'>
     readonly tenantId: FieldRef<"RouteStop", 'String'>
+    readonly loadId: FieldRef<"RouteStop", 'String'>
     readonly position: FieldRef<"RouteStop", 'Int'>
     readonly type: FieldRef<"RouteStop", 'RouteStopType'>
     readonly address: FieldRef<"RouteStop", 'String'>
@@ -45764,6 +46324,10 @@ export namespace Prisma {
     readonly arrivedAt: FieldRef<"RouteStop", 'DateTime'>
     readonly departedAt: FieldRef<"RouteStop", 'DateTime'>
     readonly notes: FieldRef<"RouteStop", 'String'>
+    readonly contactName: FieldRef<"RouteStop", 'String'>
+    readonly contactPhone: FieldRef<"RouteStop", 'String'>
+    readonly bolNumber: FieldRef<"RouteStop", 'String'>
+    readonly poNumber: FieldRef<"RouteStop", 'String'>
     readonly status: FieldRef<"RouteStop", 'RouteStopStatus'>
     readonly geofenceHit: FieldRef<"RouteStop", 'Boolean'>
     readonly createdAt: FieldRef<"RouteStop", 'DateTime'>
@@ -45964,6 +46528,11 @@ export namespace Prisma {
      * Skip the first `n` RouteStops.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RouteStops.
+     */
     distinct?: RouteStopScalarFieldEnum | RouteStopScalarFieldEnum[]
   }
 
@@ -46161,6 +46730,73 @@ export namespace Prisma {
      * Limit how many RouteStops to delete.
      */
     limit?: number
+  }
+
+  /**
+   * RouteStop.load
+   */
+  export type RouteStop$loadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Load
+     */
+    select?: LoadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Load
+     */
+    omit?: LoadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LoadInclude<ExtArgs> | null
+    where?: LoadWhereInput
+  }
+
+  /**
+   * RouteStop.pickupForLoads
+   */
+  export type RouteStop$pickupForLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Load
+     */
+    select?: LoadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Load
+     */
+    omit?: LoadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LoadInclude<ExtArgs> | null
+    where?: LoadWhereInput
+    orderBy?: LoadOrderByWithRelationInput | LoadOrderByWithRelationInput[]
+    cursor?: LoadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LoadScalarFieldEnum | LoadScalarFieldEnum[]
+  }
+
+  /**
+   * RouteStop.deliveryForLoads
+   */
+  export type RouteStop$deliveryForLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Load
+     */
+    select?: LoadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Load
+     */
+    omit?: LoadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LoadInclude<ExtArgs> | null
+    where?: LoadWhereInput
+    orderBy?: LoadOrderByWithRelationInput | LoadOrderByWithRelationInput[]
+    cursor?: LoadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LoadScalarFieldEnum | LoadScalarFieldEnum[]
   }
 
   /**
@@ -47192,6 +47828,11 @@ export namespace Prisma {
      * Skip the first `n` DriverRouteJoins.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverRouteJoins.
+     */
     distinct?: DriverRouteJoinScalarFieldEnum | DriverRouteJoinScalarFieldEnum[]
   }
 
@@ -48280,6 +48921,11 @@ export namespace Prisma {
      * Skip the first `n` FleetMessages.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FleetMessages.
+     */
     distinct?: FleetMessageScalarFieldEnum | FleetMessageScalarFieldEnum[]
   }
 
@@ -49323,6 +49969,11 @@ export namespace Prisma {
      * Skip the first `n` PushTokens.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PushTokens.
+     */
     distinct?: PushTokenScalarFieldEnum | PushTokenScalarFieldEnum[]
   }
 
@@ -50441,6 +51092,11 @@ export namespace Prisma {
      * Skip the first `n` DriverHOSEntries.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverHOSEntries.
+     */
     distinct?: DriverHOSEntryScalarFieldEnum | DriverHOSEntryScalarFieldEnum[]
   }
 
@@ -51649,6 +52305,11 @@ export namespace Prisma {
      * Skip the first `n` DriverIncidents.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DriverIncidents.
+     */
     distinct?: DriverIncidentScalarFieldEnum | DriverIncidentScalarFieldEnum[]
   }
 
@@ -52285,6 +52946,13 @@ export namespace Prisma {
     dueDate: 'dueDate',
     paidDate: 'paidDate',
     notes: 'notes',
+    bolNumber: 'bolNumber',
+    proNumber: 'proNumber',
+    poNumber: 'poNumber',
+    commodity: 'commodity',
+    weightLbs: 'weightLbs',
+    pieces: 'pieces',
+    loadedMiles: 'loadedMiles',
     createdById: 'createdById',
     updatedById: 'updatedById',
     createdAt: 'createdAt',
@@ -52300,6 +52968,8 @@ export namespace Prisma {
     invoiceId: 'invoiceId',
     tenantId: 'tenantId',
     description: 'description',
+    itemType: 'itemType',
+    unitType: 'unitType',
     quantity: 'quantity',
     unitPrice: 'unitPrice',
     amount: 'amount'
@@ -52396,7 +53066,9 @@ export namespace Prisma {
     updatedById: 'updatedById',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    archivedAt: 'archivedAt'
+    archivedAt: 'archivedAt',
+    pickupStopId: 'pickupStopId',
+    deliveryStopId: 'deliveryStopId'
   };
 
   export type LoadScalarFieldEnum = (typeof LoadScalarFieldEnum)[keyof typeof LoadScalarFieldEnum]
@@ -52456,6 +53128,7 @@ export namespace Prisma {
     id: 'id',
     routeId: 'routeId',
     tenantId: 'tenantId',
+    loadId: 'loadId',
     position: 'position',
     type: 'type',
     address: 'address',
@@ -52465,6 +53138,10 @@ export namespace Prisma {
     arrivedAt: 'arrivedAt',
     departedAt: 'departedAt',
     notes: 'notes',
+    contactName: 'contactName',
+    contactPhone: 'contactPhone',
+    bolNumber: 'bolNumber',
+    poNumber: 'poNumber',
     status: 'status',
     geofenceHit: 'geofenceHit',
     createdAt: 'createdAt',
@@ -52871,6 +53548,34 @@ export namespace Prisma {
    * Reference to a field of type 'InvoiceStatus[]'
    */
   export type ListEnumInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'InvoiceItemType'
+   */
+  export type EnumInvoiceItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceItemType'>
+    
+
+
+  /**
+   * Reference to a field of type 'InvoiceItemType[]'
+   */
+  export type ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceItemType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'InvoiceItemUnit'
+   */
+  export type EnumInvoiceItemUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceItemUnit'>
+    
+
+
+  /**
+   * Reference to a field of type 'InvoiceItemUnit[]'
+   */
+  export type ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceItemUnit[]'>
     
 
 
@@ -55393,6 +56098,13 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     paidDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     notes?: StringNullableFilter<"Invoice"> | string | null
+    bolNumber?: StringNullableFilter<"Invoice"> | string | null
+    proNumber?: StringNullableFilter<"Invoice"> | string | null
+    poNumber?: StringNullableFilter<"Invoice"> | string | null
+    commodity?: StringNullableFilter<"Invoice"> | string | null
+    weightLbs?: IntNullableFilter<"Invoice"> | number | null
+    pieces?: IntNullableFilter<"Invoice"> | number | null
+    loadedMiles?: DecimalNullableFilter<"Invoice"> | Decimal | DecimalJsLike | number | string | null
     createdById?: UuidNullableFilter<"Invoice"> | string | null
     updatedById?: UuidNullableFilter<"Invoice"> | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
@@ -55420,6 +56132,13 @@ export namespace Prisma {
     dueDate?: SortOrder
     paidDate?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    bolNumber?: SortOrderInput | SortOrder
+    proNumber?: SortOrderInput | SortOrder
+    poNumber?: SortOrderInput | SortOrder
+    commodity?: SortOrderInput | SortOrder
+    weightLbs?: SortOrderInput | SortOrder
+    pieces?: SortOrderInput | SortOrder
+    loadedMiles?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -55451,6 +56170,13 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     paidDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     notes?: StringNullableFilter<"Invoice"> | string | null
+    bolNumber?: StringNullableFilter<"Invoice"> | string | null
+    proNumber?: StringNullableFilter<"Invoice"> | string | null
+    poNumber?: StringNullableFilter<"Invoice"> | string | null
+    commodity?: StringNullableFilter<"Invoice"> | string | null
+    weightLbs?: IntNullableFilter<"Invoice"> | number | null
+    pieces?: IntNullableFilter<"Invoice"> | number | null
+    loadedMiles?: DecimalNullableFilter<"Invoice"> | Decimal | DecimalJsLike | number | string | null
     createdById?: UuidNullableFilter<"Invoice"> | string | null
     updatedById?: UuidNullableFilter<"Invoice"> | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
@@ -55478,6 +56204,13 @@ export namespace Prisma {
     dueDate?: SortOrder
     paidDate?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    bolNumber?: SortOrderInput | SortOrder
+    proNumber?: SortOrderInput | SortOrder
+    poNumber?: SortOrderInput | SortOrder
+    commodity?: SortOrderInput | SortOrder
+    weightLbs?: SortOrderInput | SortOrder
+    pieces?: SortOrderInput | SortOrder
+    loadedMiles?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -55508,6 +56241,13 @@ export namespace Prisma {
     dueDate?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
     paidDate?: DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    bolNumber?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    proNumber?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    poNumber?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    commodity?: StringNullableWithAggregatesFilter<"Invoice"> | string | null
+    weightLbs?: IntNullableWithAggregatesFilter<"Invoice"> | number | null
+    pieces?: IntNullableWithAggregatesFilter<"Invoice"> | number | null
+    loadedMiles?: DecimalNullableWithAggregatesFilter<"Invoice"> | Decimal | DecimalJsLike | number | string | null
     createdById?: UuidNullableWithAggregatesFilter<"Invoice"> | string | null
     updatedById?: UuidNullableWithAggregatesFilter<"Invoice"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Invoice"> | Date | string
@@ -55523,6 +56263,8 @@ export namespace Prisma {
     invoiceId?: UuidFilter<"InvoiceItem"> | string
     tenantId?: UuidFilter<"InvoiceItem"> | string
     description?: StringFilter<"InvoiceItem"> | string
+    itemType?: EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFilter<"InvoiceItem"> | $Enums.InvoiceItemUnit
     quantity?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     amount?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
@@ -55535,6 +56277,8 @@ export namespace Prisma {
     invoiceId?: SortOrder
     tenantId?: SortOrder
     description?: SortOrder
+    itemType?: SortOrder
+    unitType?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
@@ -55550,6 +56294,8 @@ export namespace Prisma {
     invoiceId?: UuidFilter<"InvoiceItem"> | string
     tenantId?: UuidFilter<"InvoiceItem"> | string
     description?: StringFilter<"InvoiceItem"> | string
+    itemType?: EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFilter<"InvoiceItem"> | $Enums.InvoiceItemUnit
     quantity?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     amount?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
@@ -55562,6 +56308,8 @@ export namespace Prisma {
     invoiceId?: SortOrder
     tenantId?: SortOrder
     description?: SortOrder
+    itemType?: SortOrder
+    unitType?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
@@ -55580,6 +56328,8 @@ export namespace Prisma {
     invoiceId?: UuidWithAggregatesFilter<"InvoiceItem"> | string
     tenantId?: UuidWithAggregatesFilter<"InvoiceItem"> | string
     description?: StringWithAggregatesFilter<"InvoiceItem"> | string
+    itemType?: EnumInvoiceItemTypeWithAggregatesFilter<"InvoiceItem"> | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitWithAggregatesFilter<"InvoiceItem"> | $Enums.InvoiceItemUnit
     quantity?: DecimalWithAggregatesFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalWithAggregatesFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     amount?: DecimalWithAggregatesFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
@@ -55935,6 +56685,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Load"> | Date | string
     updatedAt?: DateTimeFilter<"Load"> | Date | string
     archivedAt?: DateTimeNullableFilter<"Load"> | Date | string | null
+    pickupStopId?: UuidNullableFilter<"Load"> | string | null
+    deliveryStopId?: UuidNullableFilter<"Load"> | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     route?: XOR<RouteNullableScalarRelationFilter, RouteWhereInput> | null
@@ -55944,6 +56696,9 @@ export namespace Prisma {
     updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     invoices?: InvoiceListRelationFilter
     documents?: DocumentListRelationFilter
+    routeStops?: RouteStopListRelationFilter
+    pickupStop?: XOR<RouteStopNullableScalarRelationFilter, RouteStopWhereInput> | null
+    deliveryStop?: XOR<RouteStopNullableScalarRelationFilter, RouteStopWhereInput> | null
   }
 
   export type LoadOrderByWithRelationInput = {
@@ -55975,6 +56730,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     archivedAt?: SortOrderInput | SortOrder
+    pickupStopId?: SortOrderInput | SortOrder
+    deliveryStopId?: SortOrderInput | SortOrder
     tenant?: TenantOrderByWithRelationInput
     customer?: CustomerOrderByWithRelationInput
     route?: RouteOrderByWithRelationInput
@@ -55984,6 +56741,9 @@ export namespace Prisma {
     updatedBy?: UserOrderByWithRelationInput
     invoices?: InvoiceOrderByRelationAggregateInput
     documents?: DocumentOrderByRelationAggregateInput
+    routeStops?: RouteStopOrderByRelationAggregateInput
+    pickupStop?: RouteStopOrderByWithRelationInput
+    deliveryStop?: RouteStopOrderByWithRelationInput
   }
 
   export type LoadWhereUniqueInput = Prisma.AtLeast<{
@@ -56019,6 +56779,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Load"> | Date | string
     updatedAt?: DateTimeFilter<"Load"> | Date | string
     archivedAt?: DateTimeNullableFilter<"Load"> | Date | string | null
+    pickupStopId?: UuidNullableFilter<"Load"> | string | null
+    deliveryStopId?: UuidNullableFilter<"Load"> | string | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     customer?: XOR<CustomerScalarRelationFilter, CustomerWhereInput>
     route?: XOR<RouteNullableScalarRelationFilter, RouteWhereInput> | null
@@ -56028,6 +56790,9 @@ export namespace Prisma {
     updatedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     invoices?: InvoiceListRelationFilter
     documents?: DocumentListRelationFilter
+    routeStops?: RouteStopListRelationFilter
+    pickupStop?: XOR<RouteStopNullableScalarRelationFilter, RouteStopWhereInput> | null
+    deliveryStop?: XOR<RouteStopNullableScalarRelationFilter, RouteStopWhereInput> | null
   }, "id" | "trackingToken" | "tenantId_loadNumber">
 
   export type LoadOrderByWithAggregationInput = {
@@ -56059,6 +56824,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     archivedAt?: SortOrderInput | SortOrder
+    pickupStopId?: SortOrderInput | SortOrder
+    deliveryStopId?: SortOrderInput | SortOrder
     _count?: LoadCountOrderByAggregateInput
     _avg?: LoadAvgOrderByAggregateInput
     _max?: LoadMaxOrderByAggregateInput
@@ -56098,6 +56865,8 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Load"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Load"> | Date | string
     archivedAt?: DateTimeNullableWithAggregatesFilter<"Load"> | Date | string | null
+    pickupStopId?: UuidNullableWithAggregatesFilter<"Load"> | string | null
+    deliveryStopId?: UuidNullableWithAggregatesFilter<"Load"> | string | null
   }
 
   export type TenantIntegrationWhereInput = {
@@ -56352,6 +57121,7 @@ export namespace Prisma {
     id?: UuidFilter<"RouteStop"> | string
     routeId?: UuidFilter<"RouteStop"> | string
     tenantId?: UuidFilter<"RouteStop"> | string
+    loadId?: UuidNullableFilter<"RouteStop"> | string | null
     position?: IntFilter<"RouteStop"> | number
     type?: EnumRouteStopTypeFilter<"RouteStop"> | $Enums.RouteStopType
     address?: StringFilter<"RouteStop"> | string
@@ -56361,18 +57131,26 @@ export namespace Prisma {
     arrivedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     departedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     notes?: StringNullableFilter<"RouteStop"> | string | null
+    contactName?: StringNullableFilter<"RouteStop"> | string | null
+    contactPhone?: StringNullableFilter<"RouteStop"> | string | null
+    bolNumber?: StringNullableFilter<"RouteStop"> | string | null
+    poNumber?: StringNullableFilter<"RouteStop"> | string | null
     status?: EnumRouteStopStatusFilter<"RouteStop"> | $Enums.RouteStopStatus
     geofenceHit?: BoolFilter<"RouteStop"> | boolean
     createdAt?: DateTimeFilter<"RouteStop"> | Date | string
     updatedAt?: DateTimeFilter<"RouteStop"> | Date | string
     route?: XOR<RouteScalarRelationFilter, RouteWhereInput>
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    load?: XOR<LoadNullableScalarRelationFilter, LoadWhereInput> | null
+    pickupForLoads?: LoadListRelationFilter
+    deliveryForLoads?: LoadListRelationFilter
   }
 
   export type RouteStopOrderByWithRelationInput = {
     id?: SortOrder
     routeId?: SortOrder
     tenantId?: SortOrder
+    loadId?: SortOrderInput | SortOrder
     position?: SortOrder
     type?: SortOrder
     address?: SortOrder
@@ -56382,12 +57160,19 @@ export namespace Prisma {
     arrivedAt?: SortOrderInput | SortOrder
     departedAt?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    contactName?: SortOrderInput | SortOrder
+    contactPhone?: SortOrderInput | SortOrder
+    bolNumber?: SortOrderInput | SortOrder
+    poNumber?: SortOrderInput | SortOrder
     status?: SortOrder
     geofenceHit?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     route?: RouteOrderByWithRelationInput
     tenant?: TenantOrderByWithRelationInput
+    load?: LoadOrderByWithRelationInput
+    pickupForLoads?: LoadOrderByRelationAggregateInput
+    deliveryForLoads?: LoadOrderByRelationAggregateInput
   }
 
   export type RouteStopWhereUniqueInput = Prisma.AtLeast<{
@@ -56397,6 +57182,7 @@ export namespace Prisma {
     NOT?: RouteStopWhereInput | RouteStopWhereInput[]
     routeId?: UuidFilter<"RouteStop"> | string
     tenantId?: UuidFilter<"RouteStop"> | string
+    loadId?: UuidNullableFilter<"RouteStop"> | string | null
     position?: IntFilter<"RouteStop"> | number
     type?: EnumRouteStopTypeFilter<"RouteStop"> | $Enums.RouteStopType
     address?: StringFilter<"RouteStop"> | string
@@ -56406,18 +57192,26 @@ export namespace Prisma {
     arrivedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     departedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     notes?: StringNullableFilter<"RouteStop"> | string | null
+    contactName?: StringNullableFilter<"RouteStop"> | string | null
+    contactPhone?: StringNullableFilter<"RouteStop"> | string | null
+    bolNumber?: StringNullableFilter<"RouteStop"> | string | null
+    poNumber?: StringNullableFilter<"RouteStop"> | string | null
     status?: EnumRouteStopStatusFilter<"RouteStop"> | $Enums.RouteStopStatus
     geofenceHit?: BoolFilter<"RouteStop"> | boolean
     createdAt?: DateTimeFilter<"RouteStop"> | Date | string
     updatedAt?: DateTimeFilter<"RouteStop"> | Date | string
     route?: XOR<RouteScalarRelationFilter, RouteWhereInput>
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    load?: XOR<LoadNullableScalarRelationFilter, LoadWhereInput> | null
+    pickupForLoads?: LoadListRelationFilter
+    deliveryForLoads?: LoadListRelationFilter
   }, "id">
 
   export type RouteStopOrderByWithAggregationInput = {
     id?: SortOrder
     routeId?: SortOrder
     tenantId?: SortOrder
+    loadId?: SortOrderInput | SortOrder
     position?: SortOrder
     type?: SortOrder
     address?: SortOrder
@@ -56427,6 +57221,10 @@ export namespace Prisma {
     arrivedAt?: SortOrderInput | SortOrder
     departedAt?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    contactName?: SortOrderInput | SortOrder
+    contactPhone?: SortOrderInput | SortOrder
+    bolNumber?: SortOrderInput | SortOrder
+    poNumber?: SortOrderInput | SortOrder
     status?: SortOrder
     geofenceHit?: SortOrder
     createdAt?: SortOrder
@@ -56445,6 +57243,7 @@ export namespace Prisma {
     id?: UuidWithAggregatesFilter<"RouteStop"> | string
     routeId?: UuidWithAggregatesFilter<"RouteStop"> | string
     tenantId?: UuidWithAggregatesFilter<"RouteStop"> | string
+    loadId?: UuidNullableWithAggregatesFilter<"RouteStop"> | string | null
     position?: IntWithAggregatesFilter<"RouteStop"> | number
     type?: EnumRouteStopTypeWithAggregatesFilter<"RouteStop"> | $Enums.RouteStopType
     address?: StringWithAggregatesFilter<"RouteStop"> | string
@@ -56454,6 +57253,10 @@ export namespace Prisma {
     arrivedAt?: DateTimeNullableWithAggregatesFilter<"RouteStop"> | Date | string | null
     departedAt?: DateTimeNullableWithAggregatesFilter<"RouteStop"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"RouteStop"> | string | null
+    contactName?: StringNullableWithAggregatesFilter<"RouteStop"> | string | null
+    contactPhone?: StringNullableWithAggregatesFilter<"RouteStop"> | string | null
+    bolNumber?: StringNullableWithAggregatesFilter<"RouteStop"> | string | null
+    poNumber?: StringNullableWithAggregatesFilter<"RouteStop"> | string | null
     status?: EnumRouteStopStatusWithAggregatesFilter<"RouteStop"> | $Enums.RouteStopStatus
     geofenceHit?: BoolWithAggregatesFilter<"RouteStop"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"RouteStop"> | Date | string
@@ -59405,6 +60208,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -59430,6 +60240,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -59451,6 +60268,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59476,6 +60300,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59499,6 +60330,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -59519,6 +60357,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -59539,6 +60384,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -59549,6 +60401,8 @@ export namespace Prisma {
   export type InvoiceItemCreateInput = {
     id?: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -59561,6 +60415,8 @@ export namespace Prisma {
     invoiceId: string
     tenantId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -59569,6 +60425,8 @@ export namespace Prisma {
   export type InvoiceItemUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -59581,6 +60439,8 @@ export namespace Prisma {
     invoiceId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -59591,6 +60451,8 @@ export namespace Prisma {
     invoiceId: string
     tenantId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -59599,6 +60461,8 @@ export namespace Prisma {
   export type InvoiceItemUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -59609,6 +60473,8 @@ export namespace Prisma {
     invoiceId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -60000,6 +60866,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateInput = {
@@ -60031,8 +60900,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadUpdateInput = {
@@ -60066,6 +60938,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateInput = {
@@ -60097,8 +60972,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadCreateManyInput = {
@@ -60130,6 +61008,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type LoadUpdateManyMutationInput = {
@@ -60185,6 +61065,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TenantIntegrationCreateInput = {
@@ -60484,18 +61366,26 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     route: RouteCreateNestedOneWithoutStopsInput
     tenant: TenantCreateNestedOneWithoutRouteStopsInput
+    load?: LoadCreateNestedOneWithoutRouteStopsInput
+    pickupForLoads?: LoadCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopUncheckedCreateInput = {
     id?: string
     routeId: string
     tenantId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -60505,10 +61395,16 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    pickupForLoads?: LoadUncheckedCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadUncheckedCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopUpdateInput = {
@@ -60522,18 +61418,26 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     route?: RouteUpdateOneRequiredWithoutStopsNestedInput
     tenant?: TenantUpdateOneRequiredWithoutRouteStopsNestedInput
+    load?: LoadUpdateOneWithoutRouteStopsNestedInput
+    pickupForLoads?: LoadUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     routeId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -60543,16 +61447,23 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pickupForLoads?: LoadUncheckedUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopCreateManyInput = {
     id?: string
     routeId: string
     tenantId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -60562,6 +61473,10 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
@@ -60579,6 +61494,10 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -60589,6 +61508,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     routeId?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -60598,6 +61518,10 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -63203,6 +64127,13 @@ export namespace Prisma {
     dueDate?: SortOrder
     paidDate?: SortOrder
     notes?: SortOrder
+    bolNumber?: SortOrder
+    proNumber?: SortOrder
+    poNumber?: SortOrder
+    commodity?: SortOrder
+    weightLbs?: SortOrder
+    pieces?: SortOrder
+    loadedMiles?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -63214,6 +64145,9 @@ export namespace Prisma {
     amount?: SortOrder
     tax?: SortOrder
     totalAmount?: SortOrder
+    weightLbs?: SortOrder
+    pieces?: SortOrder
+    loadedMiles?: SortOrder
   }
 
   export type InvoiceMaxOrderByAggregateInput = {
@@ -63231,6 +64165,13 @@ export namespace Prisma {
     dueDate?: SortOrder
     paidDate?: SortOrder
     notes?: SortOrder
+    bolNumber?: SortOrder
+    proNumber?: SortOrder
+    poNumber?: SortOrder
+    commodity?: SortOrder
+    weightLbs?: SortOrder
+    pieces?: SortOrder
+    loadedMiles?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -63253,6 +64194,13 @@ export namespace Prisma {
     dueDate?: SortOrder
     paidDate?: SortOrder
     notes?: SortOrder
+    bolNumber?: SortOrder
+    proNumber?: SortOrder
+    poNumber?: SortOrder
+    commodity?: SortOrder
+    weightLbs?: SortOrder
+    pieces?: SortOrder
+    loadedMiles?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -63264,6 +64212,9 @@ export namespace Prisma {
     amount?: SortOrder
     tax?: SortOrder
     totalAmount?: SortOrder
+    weightLbs?: SortOrder
+    pieces?: SortOrder
+    loadedMiles?: SortOrder
   }
 
   export type EnumInvoiceStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -63276,6 +64227,20 @@ export namespace Prisma {
     _max?: NestedEnumInvoiceStatusFilter<$PrismaModel>
   }
 
+  export type EnumInvoiceItemTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemType | EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemTypeFilter<$PrismaModel> | $Enums.InvoiceItemType
+  }
+
+  export type EnumInvoiceItemUnitFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemUnit | EnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemUnitFilter<$PrismaModel> | $Enums.InvoiceItemUnit
+  }
+
   export type InvoiceScalarRelationFilter = {
     is?: InvoiceWhereInput
     isNot?: InvoiceWhereInput
@@ -63286,6 +64251,8 @@ export namespace Prisma {
     invoiceId?: SortOrder
     tenantId?: SortOrder
     description?: SortOrder
+    itemType?: SortOrder
+    unitType?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
@@ -63302,6 +64269,8 @@ export namespace Prisma {
     invoiceId?: SortOrder
     tenantId?: SortOrder
     description?: SortOrder
+    itemType?: SortOrder
+    unitType?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
@@ -63312,6 +64281,8 @@ export namespace Prisma {
     invoiceId?: SortOrder
     tenantId?: SortOrder
     description?: SortOrder
+    itemType?: SortOrder
+    unitType?: SortOrder
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
@@ -63321,6 +64292,26 @@ export namespace Prisma {
     quantity?: SortOrder
     unitPrice?: SortOrder
     amount?: SortOrder
+  }
+
+  export type EnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemType | EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceItemType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+  }
+
+  export type EnumInvoiceItemUnitWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemUnit | EnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemUnitWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceItemUnit
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceItemUnitFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceItemUnitFilter<$PrismaModel>
   }
 
   export type EnumSysAdminInvoiceStatusFilter<$PrismaModel = never> = {
@@ -63572,6 +64563,11 @@ export namespace Prisma {
     not?: NestedEnumLoadStatusFilter<$PrismaModel> | $Enums.LoadStatus
   }
 
+  export type RouteStopNullableScalarRelationFilter = {
+    is?: RouteStopWhereInput | null
+    isNot?: RouteStopWhereInput | null
+  }
+
   export type LoadTenantIdLoadNumberCompoundUniqueInput = {
     tenantId: string
     loadNumber: string
@@ -63606,6 +64602,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     archivedAt?: SortOrder
+    pickupStopId?: SortOrder
+    deliveryStopId?: SortOrder
   }
 
   export type LoadAvgOrderByAggregateInput = {
@@ -63646,6 +64644,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     archivedAt?: SortOrder
+    pickupStopId?: SortOrder
+    deliveryStopId?: SortOrder
   }
 
   export type LoadMinOrderByAggregateInput = {
@@ -63676,6 +64676,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     archivedAt?: SortOrder
+    pickupStopId?: SortOrder
+    deliveryStopId?: SortOrder
   }
 
   export type LoadSumOrderByAggregateInput = {
@@ -63944,6 +64946,7 @@ export namespace Prisma {
     id?: SortOrder
     routeId?: SortOrder
     tenantId?: SortOrder
+    loadId?: SortOrder
     position?: SortOrder
     type?: SortOrder
     address?: SortOrder
@@ -63953,6 +64956,10 @@ export namespace Prisma {
     arrivedAt?: SortOrder
     departedAt?: SortOrder
     notes?: SortOrder
+    contactName?: SortOrder
+    contactPhone?: SortOrder
+    bolNumber?: SortOrder
+    poNumber?: SortOrder
     status?: SortOrder
     geofenceHit?: SortOrder
     createdAt?: SortOrder
@@ -63969,6 +64976,7 @@ export namespace Prisma {
     id?: SortOrder
     routeId?: SortOrder
     tenantId?: SortOrder
+    loadId?: SortOrder
     position?: SortOrder
     type?: SortOrder
     address?: SortOrder
@@ -63978,6 +64986,10 @@ export namespace Prisma {
     arrivedAt?: SortOrder
     departedAt?: SortOrder
     notes?: SortOrder
+    contactName?: SortOrder
+    contactPhone?: SortOrder
+    bolNumber?: SortOrder
+    poNumber?: SortOrder
     status?: SortOrder
     geofenceHit?: SortOrder
     createdAt?: SortOrder
@@ -63988,6 +65000,7 @@ export namespace Prisma {
     id?: SortOrder
     routeId?: SortOrder
     tenantId?: SortOrder
+    loadId?: SortOrder
     position?: SortOrder
     type?: SortOrder
     address?: SortOrder
@@ -63997,6 +65010,10 @@ export namespace Prisma {
     arrivedAt?: SortOrder
     departedAt?: SortOrder
     notes?: SortOrder
+    contactName?: SortOrder
+    contactPhone?: SortOrder
+    bolNumber?: SortOrder
+    poNumber?: SortOrder
     status?: SortOrder
     geofenceHit?: SortOrder
     createdAt?: SortOrder
@@ -68419,6 +69436,14 @@ export namespace Prisma {
     connect?: TenantWhereUniqueInput
   }
 
+  export type EnumInvoiceItemTypeFieldUpdateOperationsInput = {
+    set?: $Enums.InvoiceItemType
+  }
+
+  export type EnumInvoiceItemUnitFieldUpdateOperationsInput = {
+    set?: $Enums.InvoiceItemUnit
+  }
+
   export type InvoiceUpdateOneRequiredWithoutItemsNestedInput = {
     create?: XOR<InvoiceCreateWithoutItemsInput, InvoiceUncheckedCreateWithoutItemsInput>
     connectOrCreate?: InvoiceCreateOrConnectWithoutItemsInput
@@ -68629,6 +69654,25 @@ export namespace Prisma {
     connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
   }
 
+  export type RouteStopCreateNestedManyWithoutLoadInput = {
+    create?: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput> | RouteStopCreateWithoutLoadInput[] | RouteStopUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: RouteStopCreateOrConnectWithoutLoadInput | RouteStopCreateOrConnectWithoutLoadInput[]
+    createMany?: RouteStopCreateManyLoadInputEnvelope
+    connect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+  }
+
+  export type RouteStopCreateNestedOneWithoutPickupForLoadsInput = {
+    create?: XOR<RouteStopCreateWithoutPickupForLoadsInput, RouteStopUncheckedCreateWithoutPickupForLoadsInput>
+    connectOrCreate?: RouteStopCreateOrConnectWithoutPickupForLoadsInput
+    connect?: RouteStopWhereUniqueInput
+  }
+
+  export type RouteStopCreateNestedOneWithoutDeliveryForLoadsInput = {
+    create?: XOR<RouteStopCreateWithoutDeliveryForLoadsInput, RouteStopUncheckedCreateWithoutDeliveryForLoadsInput>
+    connectOrCreate?: RouteStopCreateOrConnectWithoutDeliveryForLoadsInput
+    connect?: RouteStopWhereUniqueInput
+  }
+
   export type InvoiceUncheckedCreateNestedManyWithoutLoadInput = {
     create?: XOR<InvoiceCreateWithoutLoadInput, InvoiceUncheckedCreateWithoutLoadInput> | InvoiceCreateWithoutLoadInput[] | InvoiceUncheckedCreateWithoutLoadInput[]
     connectOrCreate?: InvoiceCreateOrConnectWithoutLoadInput | InvoiceCreateOrConnectWithoutLoadInput[]
@@ -68641,6 +69685,13 @@ export namespace Prisma {
     connectOrCreate?: DocumentCreateOrConnectWithoutLoadInput | DocumentCreateOrConnectWithoutLoadInput[]
     createMany?: DocumentCreateManyLoadInputEnvelope
     connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
+  export type RouteStopUncheckedCreateNestedManyWithoutLoadInput = {
+    create?: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput> | RouteStopCreateWithoutLoadInput[] | RouteStopUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: RouteStopCreateOrConnectWithoutLoadInput | RouteStopCreateOrConnectWithoutLoadInput[]
+    createMany?: RouteStopCreateManyLoadInputEnvelope
+    connect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
   }
 
   export type EnumLoadStatusFieldUpdateOperationsInput = {
@@ -68741,6 +69792,40 @@ export namespace Prisma {
     deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
   }
 
+  export type RouteStopUpdateManyWithoutLoadNestedInput = {
+    create?: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput> | RouteStopCreateWithoutLoadInput[] | RouteStopUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: RouteStopCreateOrConnectWithoutLoadInput | RouteStopCreateOrConnectWithoutLoadInput[]
+    upsert?: RouteStopUpsertWithWhereUniqueWithoutLoadInput | RouteStopUpsertWithWhereUniqueWithoutLoadInput[]
+    createMany?: RouteStopCreateManyLoadInputEnvelope
+    set?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    disconnect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    delete?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    connect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    update?: RouteStopUpdateWithWhereUniqueWithoutLoadInput | RouteStopUpdateWithWhereUniqueWithoutLoadInput[]
+    updateMany?: RouteStopUpdateManyWithWhereWithoutLoadInput | RouteStopUpdateManyWithWhereWithoutLoadInput[]
+    deleteMany?: RouteStopScalarWhereInput | RouteStopScalarWhereInput[]
+  }
+
+  export type RouteStopUpdateOneWithoutPickupForLoadsNestedInput = {
+    create?: XOR<RouteStopCreateWithoutPickupForLoadsInput, RouteStopUncheckedCreateWithoutPickupForLoadsInput>
+    connectOrCreate?: RouteStopCreateOrConnectWithoutPickupForLoadsInput
+    upsert?: RouteStopUpsertWithoutPickupForLoadsInput
+    disconnect?: RouteStopWhereInput | boolean
+    delete?: RouteStopWhereInput | boolean
+    connect?: RouteStopWhereUniqueInput
+    update?: XOR<XOR<RouteStopUpdateToOneWithWhereWithoutPickupForLoadsInput, RouteStopUpdateWithoutPickupForLoadsInput>, RouteStopUncheckedUpdateWithoutPickupForLoadsInput>
+  }
+
+  export type RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput = {
+    create?: XOR<RouteStopCreateWithoutDeliveryForLoadsInput, RouteStopUncheckedCreateWithoutDeliveryForLoadsInput>
+    connectOrCreate?: RouteStopCreateOrConnectWithoutDeliveryForLoadsInput
+    upsert?: RouteStopUpsertWithoutDeliveryForLoadsInput
+    disconnect?: RouteStopWhereInput | boolean
+    delete?: RouteStopWhereInput | boolean
+    connect?: RouteStopWhereUniqueInput
+    update?: XOR<XOR<RouteStopUpdateToOneWithWhereWithoutDeliveryForLoadsInput, RouteStopUpdateWithoutDeliveryForLoadsInput>, RouteStopUncheckedUpdateWithoutDeliveryForLoadsInput>
+  }
+
   export type InvoiceUncheckedUpdateManyWithoutLoadNestedInput = {
     create?: XOR<InvoiceCreateWithoutLoadInput, InvoiceUncheckedCreateWithoutLoadInput> | InvoiceCreateWithoutLoadInput[] | InvoiceUncheckedCreateWithoutLoadInput[]
     connectOrCreate?: InvoiceCreateOrConnectWithoutLoadInput | InvoiceCreateOrConnectWithoutLoadInput[]
@@ -68767,6 +69852,20 @@ export namespace Prisma {
     update?: DocumentUpdateWithWhereUniqueWithoutLoadInput | DocumentUpdateWithWhereUniqueWithoutLoadInput[]
     updateMany?: DocumentUpdateManyWithWhereWithoutLoadInput | DocumentUpdateManyWithWhereWithoutLoadInput[]
     deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
+  export type RouteStopUncheckedUpdateManyWithoutLoadNestedInput = {
+    create?: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput> | RouteStopCreateWithoutLoadInput[] | RouteStopUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: RouteStopCreateOrConnectWithoutLoadInput | RouteStopCreateOrConnectWithoutLoadInput[]
+    upsert?: RouteStopUpsertWithWhereUniqueWithoutLoadInput | RouteStopUpsertWithWhereUniqueWithoutLoadInput[]
+    createMany?: RouteStopCreateManyLoadInputEnvelope
+    set?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    disconnect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    delete?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    connect?: RouteStopWhereUniqueInput | RouteStopWhereUniqueInput[]
+    update?: RouteStopUpdateWithWhereUniqueWithoutLoadInput | RouteStopUpdateWithWhereUniqueWithoutLoadInput[]
+    updateMany?: RouteStopUpdateManyWithWhereWithoutLoadInput | RouteStopUpdateManyWithWhereWithoutLoadInput[]
+    deleteMany?: RouteStopScalarWhereInput | RouteStopScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTenantIntegrationsInput = {
@@ -68819,6 +69918,40 @@ export namespace Prisma {
     connect?: TenantWhereUniqueInput
   }
 
+  export type LoadCreateNestedOneWithoutRouteStopsInput = {
+    create?: XOR<LoadCreateWithoutRouteStopsInput, LoadUncheckedCreateWithoutRouteStopsInput>
+    connectOrCreate?: LoadCreateOrConnectWithoutRouteStopsInput
+    connect?: LoadWhereUniqueInput
+  }
+
+  export type LoadCreateNestedManyWithoutPickupStopInput = {
+    create?: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput> | LoadCreateWithoutPickupStopInput[] | LoadUncheckedCreateWithoutPickupStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutPickupStopInput | LoadCreateOrConnectWithoutPickupStopInput[]
+    createMany?: LoadCreateManyPickupStopInputEnvelope
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+  }
+
+  export type LoadCreateNestedManyWithoutDeliveryStopInput = {
+    create?: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput> | LoadCreateWithoutDeliveryStopInput[] | LoadUncheckedCreateWithoutDeliveryStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutDeliveryStopInput | LoadCreateOrConnectWithoutDeliveryStopInput[]
+    createMany?: LoadCreateManyDeliveryStopInputEnvelope
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+  }
+
+  export type LoadUncheckedCreateNestedManyWithoutPickupStopInput = {
+    create?: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput> | LoadCreateWithoutPickupStopInput[] | LoadUncheckedCreateWithoutPickupStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutPickupStopInput | LoadCreateOrConnectWithoutPickupStopInput[]
+    createMany?: LoadCreateManyPickupStopInputEnvelope
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+  }
+
+  export type LoadUncheckedCreateNestedManyWithoutDeliveryStopInput = {
+    create?: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput> | LoadCreateWithoutDeliveryStopInput[] | LoadUncheckedCreateWithoutDeliveryStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutDeliveryStopInput | LoadCreateOrConnectWithoutDeliveryStopInput[]
+    createMany?: LoadCreateManyDeliveryStopInputEnvelope
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+  }
+
   export type EnumRouteStopTypeFieldUpdateOperationsInput = {
     set?: $Enums.RouteStopType
   }
@@ -68841,6 +69974,72 @@ export namespace Prisma {
     upsert?: TenantUpsertWithoutRouteStopsInput
     connect?: TenantWhereUniqueInput
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutRouteStopsInput, TenantUpdateWithoutRouteStopsInput>, TenantUncheckedUpdateWithoutRouteStopsInput>
+  }
+
+  export type LoadUpdateOneWithoutRouteStopsNestedInput = {
+    create?: XOR<LoadCreateWithoutRouteStopsInput, LoadUncheckedCreateWithoutRouteStopsInput>
+    connectOrCreate?: LoadCreateOrConnectWithoutRouteStopsInput
+    upsert?: LoadUpsertWithoutRouteStopsInput
+    disconnect?: LoadWhereInput | boolean
+    delete?: LoadWhereInput | boolean
+    connect?: LoadWhereUniqueInput
+    update?: XOR<XOR<LoadUpdateToOneWithWhereWithoutRouteStopsInput, LoadUpdateWithoutRouteStopsInput>, LoadUncheckedUpdateWithoutRouteStopsInput>
+  }
+
+  export type LoadUpdateManyWithoutPickupStopNestedInput = {
+    create?: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput> | LoadCreateWithoutPickupStopInput[] | LoadUncheckedCreateWithoutPickupStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutPickupStopInput | LoadCreateOrConnectWithoutPickupStopInput[]
+    upsert?: LoadUpsertWithWhereUniqueWithoutPickupStopInput | LoadUpsertWithWhereUniqueWithoutPickupStopInput[]
+    createMany?: LoadCreateManyPickupStopInputEnvelope
+    set?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    disconnect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    delete?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    update?: LoadUpdateWithWhereUniqueWithoutPickupStopInput | LoadUpdateWithWhereUniqueWithoutPickupStopInput[]
+    updateMany?: LoadUpdateManyWithWhereWithoutPickupStopInput | LoadUpdateManyWithWhereWithoutPickupStopInput[]
+    deleteMany?: LoadScalarWhereInput | LoadScalarWhereInput[]
+  }
+
+  export type LoadUpdateManyWithoutDeliveryStopNestedInput = {
+    create?: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput> | LoadCreateWithoutDeliveryStopInput[] | LoadUncheckedCreateWithoutDeliveryStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutDeliveryStopInput | LoadCreateOrConnectWithoutDeliveryStopInput[]
+    upsert?: LoadUpsertWithWhereUniqueWithoutDeliveryStopInput | LoadUpsertWithWhereUniqueWithoutDeliveryStopInput[]
+    createMany?: LoadCreateManyDeliveryStopInputEnvelope
+    set?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    disconnect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    delete?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    update?: LoadUpdateWithWhereUniqueWithoutDeliveryStopInput | LoadUpdateWithWhereUniqueWithoutDeliveryStopInput[]
+    updateMany?: LoadUpdateManyWithWhereWithoutDeliveryStopInput | LoadUpdateManyWithWhereWithoutDeliveryStopInput[]
+    deleteMany?: LoadScalarWhereInput | LoadScalarWhereInput[]
+  }
+
+  export type LoadUncheckedUpdateManyWithoutPickupStopNestedInput = {
+    create?: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput> | LoadCreateWithoutPickupStopInput[] | LoadUncheckedCreateWithoutPickupStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutPickupStopInput | LoadCreateOrConnectWithoutPickupStopInput[]
+    upsert?: LoadUpsertWithWhereUniqueWithoutPickupStopInput | LoadUpsertWithWhereUniqueWithoutPickupStopInput[]
+    createMany?: LoadCreateManyPickupStopInputEnvelope
+    set?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    disconnect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    delete?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    update?: LoadUpdateWithWhereUniqueWithoutPickupStopInput | LoadUpdateWithWhereUniqueWithoutPickupStopInput[]
+    updateMany?: LoadUpdateManyWithWhereWithoutPickupStopInput | LoadUpdateManyWithWhereWithoutPickupStopInput[]
+    deleteMany?: LoadScalarWhereInput | LoadScalarWhereInput[]
+  }
+
+  export type LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput = {
+    create?: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput> | LoadCreateWithoutDeliveryStopInput[] | LoadUncheckedCreateWithoutDeliveryStopInput[]
+    connectOrCreate?: LoadCreateOrConnectWithoutDeliveryStopInput | LoadCreateOrConnectWithoutDeliveryStopInput[]
+    upsert?: LoadUpsertWithWhereUniqueWithoutDeliveryStopInput | LoadUpsertWithWhereUniqueWithoutDeliveryStopInput[]
+    createMany?: LoadCreateManyDeliveryStopInputEnvelope
+    set?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    disconnect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    delete?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    connect?: LoadWhereUniqueInput | LoadWhereUniqueInput[]
+    update?: LoadUpdateWithWhereUniqueWithoutDeliveryStopInput | LoadUpdateWithWhereUniqueWithoutDeliveryStopInput[]
+    updateMany?: LoadUpdateManyWithWhereWithoutDeliveryStopInput | LoadUpdateManyWithWhereWithoutDeliveryStopInput[]
+    deleteMany?: LoadScalarWhereInput | LoadScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutDriverRouteJoinsInput = {
@@ -69534,6 +70733,40 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumInvoiceStatusFilter<$PrismaModel>
     _max?: NestedEnumInvoiceStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumInvoiceItemTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemType | EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemTypeFilter<$PrismaModel> | $Enums.InvoiceItemType
+  }
+
+  export type NestedEnumInvoiceItemUnitFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemUnit | EnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemUnitFilter<$PrismaModel> | $Enums.InvoiceItemUnit
+  }
+
+  export type NestedEnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemType | EnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemType[] | ListEnumInvoiceItemTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceItemType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceItemTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumInvoiceItemUnitWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InvoiceItemUnit | EnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    in?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InvoiceItemUnit[] | ListEnumInvoiceItemUnitFieldRefInput<$PrismaModel>
+    not?: NestedEnumInvoiceItemUnitWithAggregatesFilter<$PrismaModel> | $Enums.InvoiceItemUnit
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInvoiceItemUnitFilter<$PrismaModel>
+    _max?: NestedEnumInvoiceItemUnitFilter<$PrismaModel>
   }
 
   export type NestedEnumSysAdminInvoiceStatusFilter<$PrismaModel = never> = {
@@ -70636,6 +71869,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -70659,6 +71899,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -70680,6 +71927,8 @@ export namespace Prisma {
   export type InvoiceItemCreateWithoutTenantInput = {
     id?: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -70690,6 +71939,8 @@ export namespace Prisma {
     id?: string
     invoiceId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -70813,6 +72064,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutTenantInput = {
@@ -70843,8 +72097,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutTenantInput = {
@@ -70898,16 +72155,24 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     route: RouteCreateNestedOneWithoutStopsInput
+    load?: LoadCreateNestedOneWithoutRouteStopsInput
+    pickupForLoads?: LoadCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopUncheckedCreateWithoutTenantInput = {
     id?: string
     routeId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -70917,10 +72182,16 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    pickupForLoads?: LoadUncheckedCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadUncheckedCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopCreateOrConnectWithoutTenantInput = {
@@ -71783,6 +73054,13 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"Invoice"> | Date | string
     paidDate?: DateTimeNullableFilter<"Invoice"> | Date | string | null
     notes?: StringNullableFilter<"Invoice"> | string | null
+    bolNumber?: StringNullableFilter<"Invoice"> | string | null
+    proNumber?: StringNullableFilter<"Invoice"> | string | null
+    poNumber?: StringNullableFilter<"Invoice"> | string | null
+    commodity?: StringNullableFilter<"Invoice"> | string | null
+    weightLbs?: IntNullableFilter<"Invoice"> | number | null
+    pieces?: IntNullableFilter<"Invoice"> | number | null
+    loadedMiles?: DecimalNullableFilter<"Invoice"> | Decimal | DecimalJsLike | number | string | null
     createdById?: UuidNullableFilter<"Invoice"> | string | null
     updatedById?: UuidNullableFilter<"Invoice"> | string | null
     createdAt?: DateTimeFilter<"Invoice"> | Date | string
@@ -71814,6 +73092,8 @@ export namespace Prisma {
     invoiceId?: UuidFilter<"InvoiceItem"> | string
     tenantId?: UuidFilter<"InvoiceItem"> | string
     description?: StringFilter<"InvoiceItem"> | string
+    itemType?: EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFilter<"InvoiceItem"> | $Enums.InvoiceItemUnit
     quantity?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
     amount?: DecimalFilter<"InvoiceItem"> | Decimal | DecimalJsLike | number | string
@@ -71936,6 +73216,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Load"> | Date | string
     updatedAt?: DateTimeFilter<"Load"> | Date | string
     archivedAt?: DateTimeNullableFilter<"Load"> | Date | string | null
+    pickupStopId?: UuidNullableFilter<"Load"> | string | null
+    deliveryStopId?: UuidNullableFilter<"Load"> | string | null
   }
 
   export type TenantIntegrationUpsertWithWhereUniqueWithoutTenantInput = {
@@ -71991,6 +73273,7 @@ export namespace Prisma {
     id?: UuidFilter<"RouteStop"> | string
     routeId?: UuidFilter<"RouteStop"> | string
     tenantId?: UuidFilter<"RouteStop"> | string
+    loadId?: UuidNullableFilter<"RouteStop"> | string | null
     position?: IntFilter<"RouteStop"> | number
     type?: EnumRouteStopTypeFilter<"RouteStop"> | $Enums.RouteStopType
     address?: StringFilter<"RouteStop"> | string
@@ -72000,6 +73283,10 @@ export namespace Prisma {
     arrivedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     departedAt?: DateTimeNullableFilter<"RouteStop"> | Date | string | null
     notes?: StringNullableFilter<"RouteStop"> | string | null
+    contactName?: StringNullableFilter<"RouteStop"> | string | null
+    contactPhone?: StringNullableFilter<"RouteStop"> | string | null
+    bolNumber?: StringNullableFilter<"RouteStop"> | string | null
+    poNumber?: StringNullableFilter<"RouteStop"> | string | null
     status?: EnumRouteStopStatusFilter<"RouteStop"> | $Enums.RouteStopStatus
     geofenceHit?: BoolFilter<"RouteStop"> | boolean
     createdAt?: DateTimeFilter<"RouteStop"> | Date | string
@@ -72552,6 +73839,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutDriverInput = {
@@ -72582,8 +73872,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutDriverInput = {
@@ -72914,6 +74207,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutCreatedByInput = {
@@ -72944,8 +74240,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutCreatedByInput = {
@@ -72988,6 +74287,9 @@ export namespace Prisma {
     createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutUpdatedByInput = {
@@ -73018,8 +74320,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutUpdatedByInput = {
@@ -73045,6 +74350,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -73069,6 +74381,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73099,6 +74418,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -73123,6 +74449,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74467,6 +75800,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutTruckInput = {
@@ -74497,8 +75833,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutTruckInput = {
@@ -75663,6 +77002,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutRouteInput = {
@@ -75693,8 +77035,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutRouteInput = {
@@ -75718,16 +77063,24 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutRouteStopsInput
+    load?: LoadCreateNestedOneWithoutRouteStopsInput
+    pickupForLoads?: LoadCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopUncheckedCreateWithoutRouteInput = {
     id?: string
     tenantId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -75737,10 +77090,16 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    pickupForLoads?: LoadUncheckedCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadUncheckedCreateNestedManyWithoutDeliveryStopInput
   }
 
   export type RouteStopCreateOrConnectWithoutRouteInput = {
@@ -76970,6 +78329,9 @@ export namespace Prisma {
     createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutDocumentsInput = {
@@ -77001,7 +78363,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutDocumentsInput = {
@@ -77439,6 +78804,9 @@ export namespace Prisma {
     createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutDocumentsInput = {
@@ -77470,7 +78838,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type UserUpsertWithoutUploadedDocumentsInput = {
@@ -81837,6 +83208,9 @@ export namespace Prisma {
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     invoices?: InvoiceCreateNestedManyWithoutLoadInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutCustomerInput = {
@@ -81867,8 +83241,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutCustomerInput = {
@@ -82561,6 +83938,9 @@ export namespace Prisma {
     createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
     updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
     documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
   }
 
   export type LoadUncheckedCreateWithoutInvoicesInput = {
@@ -82592,7 +83972,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
     documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type LoadCreateOrConnectWithoutInvoicesInput = {
@@ -82603,6 +83986,8 @@ export namespace Prisma {
   export type InvoiceItemCreateWithoutInvoiceInput = {
     id?: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -82613,6 +83998,8 @@ export namespace Prisma {
     id?: string
     tenantId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -82930,6 +84317,9 @@ export namespace Prisma {
     createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutInvoicesInput = {
@@ -82961,7 +84351,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type InvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -82993,6 +84386,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -83017,6 +84417,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -83138,6 +84545,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -83162,6 +84576,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -84761,6 +86182,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -84784,6 +86212,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -84850,6 +86285,176 @@ export namespace Prisma {
   export type DocumentCreateManyLoadInputEnvelope = {
     data: DocumentCreateManyLoadInput | DocumentCreateManyLoadInput[]
     skipDuplicates?: boolean
+  }
+
+  export type RouteStopCreateWithoutLoadInput = {
+    id?: string
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    route: RouteCreateNestedOneWithoutStopsInput
+    tenant: TenantCreateNestedOneWithoutRouteStopsInput
+    pickupForLoads?: LoadCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadCreateNestedManyWithoutDeliveryStopInput
+  }
+
+  export type RouteStopUncheckedCreateWithoutLoadInput = {
+    id?: string
+    routeId: string
+    tenantId: string
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    pickupForLoads?: LoadUncheckedCreateNestedManyWithoutPickupStopInput
+    deliveryForLoads?: LoadUncheckedCreateNestedManyWithoutDeliveryStopInput
+  }
+
+  export type RouteStopCreateOrConnectWithoutLoadInput = {
+    where: RouteStopWhereUniqueInput
+    create: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput>
+  }
+
+  export type RouteStopCreateManyLoadInputEnvelope = {
+    data: RouteStopCreateManyLoadInput | RouteStopCreateManyLoadInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RouteStopCreateWithoutPickupForLoadsInput = {
+    id?: string
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    route: RouteCreateNestedOneWithoutStopsInput
+    tenant: TenantCreateNestedOneWithoutRouteStopsInput
+    load?: LoadCreateNestedOneWithoutRouteStopsInput
+    deliveryForLoads?: LoadCreateNestedManyWithoutDeliveryStopInput
+  }
+
+  export type RouteStopUncheckedCreateWithoutPickupForLoadsInput = {
+    id?: string
+    routeId: string
+    tenantId: string
+    loadId?: string | null
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    deliveryForLoads?: LoadUncheckedCreateNestedManyWithoutDeliveryStopInput
+  }
+
+  export type RouteStopCreateOrConnectWithoutPickupForLoadsInput = {
+    where: RouteStopWhereUniqueInput
+    create: XOR<RouteStopCreateWithoutPickupForLoadsInput, RouteStopUncheckedCreateWithoutPickupForLoadsInput>
+  }
+
+  export type RouteStopCreateWithoutDeliveryForLoadsInput = {
+    id?: string
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    route: RouteCreateNestedOneWithoutStopsInput
+    tenant: TenantCreateNestedOneWithoutRouteStopsInput
+    load?: LoadCreateNestedOneWithoutRouteStopsInput
+    pickupForLoads?: LoadCreateNestedManyWithoutPickupStopInput
+  }
+
+  export type RouteStopUncheckedCreateWithoutDeliveryForLoadsInput = {
+    id?: string
+    routeId: string
+    tenantId: string
+    loadId?: string | null
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    pickupForLoads?: LoadUncheckedCreateNestedManyWithoutPickupStopInput
+  }
+
+  export type RouteStopCreateOrConnectWithoutDeliveryForLoadsInput = {
+    where: RouteStopWhereUniqueInput
+    create: XOR<RouteStopCreateWithoutDeliveryForLoadsInput, RouteStopUncheckedCreateWithoutDeliveryForLoadsInput>
   }
 
   export type TenantUpsertWithoutLoadsInput = {
@@ -85421,6 +87026,144 @@ export namespace Prisma {
     data: XOR<DocumentUpdateManyMutationInput, DocumentUncheckedUpdateManyWithoutLoadInput>
   }
 
+  export type RouteStopUpsertWithWhereUniqueWithoutLoadInput = {
+    where: RouteStopWhereUniqueInput
+    update: XOR<RouteStopUpdateWithoutLoadInput, RouteStopUncheckedUpdateWithoutLoadInput>
+    create: XOR<RouteStopCreateWithoutLoadInput, RouteStopUncheckedCreateWithoutLoadInput>
+  }
+
+  export type RouteStopUpdateWithWhereUniqueWithoutLoadInput = {
+    where: RouteStopWhereUniqueInput
+    data: XOR<RouteStopUpdateWithoutLoadInput, RouteStopUncheckedUpdateWithoutLoadInput>
+  }
+
+  export type RouteStopUpdateManyWithWhereWithoutLoadInput = {
+    where: RouteStopScalarWhereInput
+    data: XOR<RouteStopUpdateManyMutationInput, RouteStopUncheckedUpdateManyWithoutLoadInput>
+  }
+
+  export type RouteStopUpsertWithoutPickupForLoadsInput = {
+    update: XOR<RouteStopUpdateWithoutPickupForLoadsInput, RouteStopUncheckedUpdateWithoutPickupForLoadsInput>
+    create: XOR<RouteStopCreateWithoutPickupForLoadsInput, RouteStopUncheckedCreateWithoutPickupForLoadsInput>
+    where?: RouteStopWhereInput
+  }
+
+  export type RouteStopUpdateToOneWithWhereWithoutPickupForLoadsInput = {
+    where?: RouteStopWhereInput
+    data: XOR<RouteStopUpdateWithoutPickupForLoadsInput, RouteStopUncheckedUpdateWithoutPickupForLoadsInput>
+  }
+
+  export type RouteStopUpdateWithoutPickupForLoadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    route?: RouteUpdateOneRequiredWithoutStopsNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutRouteStopsNestedInput
+    load?: LoadUpdateOneWithoutRouteStopsNestedInput
+    deliveryForLoads?: LoadUpdateManyWithoutDeliveryStopNestedInput
+  }
+
+  export type RouteStopUncheckedUpdateWithoutPickupForLoadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    routeId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryForLoads?: LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput
+  }
+
+  export type RouteStopUpsertWithoutDeliveryForLoadsInput = {
+    update: XOR<RouteStopUpdateWithoutDeliveryForLoadsInput, RouteStopUncheckedUpdateWithoutDeliveryForLoadsInput>
+    create: XOR<RouteStopCreateWithoutDeliveryForLoadsInput, RouteStopUncheckedCreateWithoutDeliveryForLoadsInput>
+    where?: RouteStopWhereInput
+  }
+
+  export type RouteStopUpdateToOneWithWhereWithoutDeliveryForLoadsInput = {
+    where?: RouteStopWhereInput
+    data: XOR<RouteStopUpdateWithoutDeliveryForLoadsInput, RouteStopUncheckedUpdateWithoutDeliveryForLoadsInput>
+  }
+
+  export type RouteStopUpdateWithoutDeliveryForLoadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    route?: RouteUpdateOneRequiredWithoutStopsNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutRouteStopsNestedInput
+    load?: LoadUpdateOneWithoutRouteStopsNestedInput
+    pickupForLoads?: LoadUpdateManyWithoutPickupStopNestedInput
+  }
+
+  export type RouteStopUncheckedUpdateWithoutDeliveryForLoadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    routeId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pickupForLoads?: LoadUncheckedUpdateManyWithoutPickupStopNestedInput
+  }
+
   export type TenantCreateWithoutTenantIntegrationsInput = {
     id?: string
     name: string
@@ -85747,6 +87490,241 @@ export namespace Prisma {
     create: XOR<TenantCreateWithoutRouteStopsInput, TenantUncheckedCreateWithoutRouteStopsInput>
   }
 
+  export type LoadCreateWithoutRouteStopsInput = {
+    id?: string
+    loadNumber: string
+    sequence?: number | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutLoadsInput
+    customer: CustomerCreateNestedOneWithoutLoadsInput
+    route?: RouteCreateNestedOneWithoutLoadsInput
+    driver?: UserCreateNestedOneWithoutDriverLoadsInput
+    truck?: TruckCreateNestedOneWithoutLoadsInput
+    createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
+    invoices?: InvoiceCreateNestedManyWithoutLoadInput
+    documents?: DocumentCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
+  }
+
+  export type LoadUncheckedCreateWithoutRouteStopsInput = {
+    id?: string
+    tenantId: string
+    loadNumber: string
+    customerId: string
+    routeId?: string | null
+    sequence?: number | null
+    driverId?: string | null
+    truckId?: string | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+  }
+
+  export type LoadCreateOrConnectWithoutRouteStopsInput = {
+    where: LoadWhereUniqueInput
+    create: XOR<LoadCreateWithoutRouteStopsInput, LoadUncheckedCreateWithoutRouteStopsInput>
+  }
+
+  export type LoadCreateWithoutPickupStopInput = {
+    id?: string
+    loadNumber: string
+    sequence?: number | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutLoadsInput
+    customer: CustomerCreateNestedOneWithoutLoadsInput
+    route?: RouteCreateNestedOneWithoutLoadsInput
+    driver?: UserCreateNestedOneWithoutDriverLoadsInput
+    truck?: TruckCreateNestedOneWithoutLoadsInput
+    createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
+    invoices?: InvoiceCreateNestedManyWithoutLoadInput
+    documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    deliveryStop?: RouteStopCreateNestedOneWithoutDeliveryForLoadsInput
+  }
+
+  export type LoadUncheckedCreateWithoutPickupStopInput = {
+    id?: string
+    tenantId: string
+    loadNumber: string
+    customerId: string
+    routeId?: string | null
+    sequence?: number | null
+    driverId?: string | null
+    truckId?: string | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    deliveryStopId?: string | null
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
+  }
+
+  export type LoadCreateOrConnectWithoutPickupStopInput = {
+    where: LoadWhereUniqueInput
+    create: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput>
+  }
+
+  export type LoadCreateManyPickupStopInputEnvelope = {
+    data: LoadCreateManyPickupStopInput | LoadCreateManyPickupStopInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LoadCreateWithoutDeliveryStopInput = {
+    id?: string
+    loadNumber: string
+    sequence?: number | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    tenant: TenantCreateNestedOneWithoutLoadsInput
+    customer: CustomerCreateNestedOneWithoutLoadsInput
+    route?: RouteCreateNestedOneWithoutLoadsInput
+    driver?: UserCreateNestedOneWithoutDriverLoadsInput
+    truck?: TruckCreateNestedOneWithoutLoadsInput
+    createdBy?: UserCreateNestedOneWithoutLoadsCreatedInput
+    updatedBy?: UserCreateNestedOneWithoutLoadsUpdatedInput
+    invoices?: InvoiceCreateNestedManyWithoutLoadInput
+    documents?: DocumentCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopCreateNestedManyWithoutLoadInput
+    pickupStop?: RouteStopCreateNestedOneWithoutPickupForLoadsInput
+  }
+
+  export type LoadUncheckedCreateWithoutDeliveryStopInput = {
+    id?: string
+    tenantId: string
+    loadNumber: string
+    customerId: string
+    routeId?: string | null
+    sequence?: number | null
+    driverId?: string | null
+    truckId?: string | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutLoadInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutLoadInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutLoadInput
+  }
+
+  export type LoadCreateOrConnectWithoutDeliveryStopInput = {
+    where: LoadWhereUniqueInput
+    create: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput>
+  }
+
+  export type LoadCreateManyDeliveryStopInputEnvelope = {
+    data: LoadCreateManyDeliveryStopInput | LoadCreateManyDeliveryStopInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RouteUpsertWithoutStopsInput = {
     update: XOR<RouteUpdateWithoutStopsInput, RouteUncheckedUpdateWithoutStopsInput>
     create: XOR<RouteCreateWithoutStopsInput, RouteUncheckedCreateWithoutStopsInput>
@@ -85907,6 +87885,119 @@ export namespace Prisma {
     driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
     driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
     driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type LoadUpsertWithoutRouteStopsInput = {
+    update: XOR<LoadUpdateWithoutRouteStopsInput, LoadUncheckedUpdateWithoutRouteStopsInput>
+    create: XOR<LoadCreateWithoutRouteStopsInput, LoadUncheckedCreateWithoutRouteStopsInput>
+    where?: LoadWhereInput
+  }
+
+  export type LoadUpdateToOneWithWhereWithoutRouteStopsInput = {
+    where?: LoadWhereInput
+    data: XOR<LoadUpdateWithoutRouteStopsInput, LoadUncheckedUpdateWithoutRouteStopsInput>
+  }
+
+  export type LoadUpdateWithoutRouteStopsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutLoadsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutLoadsNestedInput
+    route?: RouteUpdateOneWithoutLoadsNestedInput
+    driver?: UserUpdateOneWithoutDriverLoadsNestedInput
+    truck?: TruckUpdateOneWithoutLoadsNestedInput
+    createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
+    invoices?: InvoiceUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
+  }
+
+  export type LoadUncheckedUpdateWithoutRouteStopsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+  }
+
+  export type LoadUpsertWithWhereUniqueWithoutPickupStopInput = {
+    where: LoadWhereUniqueInput
+    update: XOR<LoadUpdateWithoutPickupStopInput, LoadUncheckedUpdateWithoutPickupStopInput>
+    create: XOR<LoadCreateWithoutPickupStopInput, LoadUncheckedCreateWithoutPickupStopInput>
+  }
+
+  export type LoadUpdateWithWhereUniqueWithoutPickupStopInput = {
+    where: LoadWhereUniqueInput
+    data: XOR<LoadUpdateWithoutPickupStopInput, LoadUncheckedUpdateWithoutPickupStopInput>
+  }
+
+  export type LoadUpdateManyWithWhereWithoutPickupStopInput = {
+    where: LoadScalarWhereInput
+    data: XOR<LoadUpdateManyMutationInput, LoadUncheckedUpdateManyWithoutPickupStopInput>
+  }
+
+  export type LoadUpsertWithWhereUniqueWithoutDeliveryStopInput = {
+    where: LoadWhereUniqueInput
+    update: XOR<LoadUpdateWithoutDeliveryStopInput, LoadUncheckedUpdateWithoutDeliveryStopInput>
+    create: XOR<LoadCreateWithoutDeliveryStopInput, LoadUncheckedCreateWithoutDeliveryStopInput>
+  }
+
+  export type LoadUpdateWithWhereUniqueWithoutDeliveryStopInput = {
+    where: LoadWhereUniqueInput
+    data: XOR<LoadUpdateWithoutDeliveryStopInput, LoadUncheckedUpdateWithoutDeliveryStopInput>
+  }
+
+  export type LoadUpdateManyWithWhereWithoutDeliveryStopInput = {
+    where: LoadScalarWhereInput
+    data: XOR<LoadUpdateManyMutationInput, LoadUncheckedUpdateManyWithoutDeliveryStopInput>
   }
 
   export type TenantCreateWithoutDriverRouteJoinsInput = {
@@ -87519,6 +89610,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -87530,6 +89628,8 @@ export namespace Prisma {
     id?: string
     invoiceId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -87592,6 +89692,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type TenantIntegrationCreateManyTenantInput = {
@@ -87607,6 +89709,7 @@ export namespace Prisma {
   export type RouteStopCreateManyTenantInput = {
     id?: string
     routeId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -87616,6 +89719,10 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
@@ -88612,6 +90719,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -88635,6 +90749,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -88657,6 +90778,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -88667,6 +90795,8 @@ export namespace Prisma {
   export type InvoiceItemUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -88677,6 +90807,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -88686,6 +90818,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     invoiceId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -88808,6 +90942,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutTenantInput = {
@@ -88838,8 +90975,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutTenantInput = {
@@ -88870,6 +91010,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TenantIntegrationUpdateWithoutTenantInput = {
@@ -88913,16 +91055,24 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     route?: RouteUpdateOneRequiredWithoutStopsNestedInput
+    load?: LoadUpdateOneWithoutRouteStopsNestedInput
+    pickupForLoads?: LoadUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     routeId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -88932,15 +91082,22 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pickupForLoads?: LoadUncheckedUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     routeId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -88950,6 +91107,10 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -89271,6 +91432,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type RouteDriverCreateManyDriverInput = {
@@ -89386,6 +91549,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type LoadCreateManyUpdatedByInput = {
@@ -89416,6 +91581,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type InvoiceCreateManyCreatedByInput = {
@@ -89433,6 +91600,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -89454,6 +91628,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -89921,6 +92102,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutDriverInput = {
@@ -89951,8 +92135,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutDriverInput = {
@@ -89983,6 +92170,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RouteDriverUpdateWithoutDriverInput = {
@@ -90338,6 +92527,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutCreatedByInput = {
@@ -90368,8 +92560,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutCreatedByInput = {
@@ -90400,6 +92595,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LoadUpdateWithoutUpdatedByInput = {
@@ -90432,6 +92629,9 @@ export namespace Prisma {
     createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutUpdatedByInput = {
@@ -90462,8 +92662,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutUpdatedByInput = {
@@ -90494,6 +92697,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceUpdateWithoutCreatedByInput = {
@@ -90509,6 +92714,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -90533,6 +92745,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -90555,6 +92774,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -90574,6 +92800,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -90598,6 +92831,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -90620,6 +92860,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -91052,6 +93299,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type RouteUpdateWithoutTruckInput = {
@@ -91475,6 +93724,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutTruckInput = {
@@ -91505,8 +93757,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutTruckInput = {
@@ -91537,6 +93792,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type DocumentCreateManyRouteInput = {
@@ -91628,11 +93885,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type RouteStopCreateManyRouteInput = {
     id?: string
     tenantId: string
+    loadId?: string | null
     position: number
     type: $Enums.RouteStopType
     address: string
@@ -91642,6 +93902,10 @@ export namespace Prisma {
     arrivedAt?: Date | string | null
     departedAt?: Date | string | null
     notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
     status?: $Enums.RouteStopStatus
     geofenceHit?: boolean
     createdAt?: Date | string
@@ -91883,6 +94147,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutRouteInput = {
@@ -91913,8 +94180,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutRouteInput = {
@@ -91945,6 +94215,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RouteStopUpdateWithoutRouteInput = {
@@ -91958,16 +94230,24 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutRouteStopsNestedInput
+    load?: LoadUpdateOneWithoutRouteStopsNestedInput
+    pickupForLoads?: LoadUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopUncheckedUpdateWithoutRouteInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -91977,15 +94257,22 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pickupForLoads?: LoadUncheckedUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput
   }
 
   export type RouteStopUncheckedUpdateManyWithoutRouteInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
     position?: IntFieldUpdateOperationsInput | number
     type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
     address?: StringFieldUpdateOperationsInput | string
@@ -91995,6 +94282,10 @@ export namespace Prisma {
     arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
     geofenceHit?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92250,6 +94541,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
+    pickupStopId?: string | null
+    deliveryStopId?: string | null
   }
 
   export type CustomerInteractionUpdateWithoutCustomerInput = {
@@ -92315,6 +94608,9 @@ export namespace Prisma {
     updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
     invoices?: InvoiceUpdateManyWithoutLoadNestedInput
     documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
   }
 
   export type LoadUncheckedUpdateWithoutCustomerInput = {
@@ -92345,8 +94641,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
     invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type LoadUncheckedUpdateManyWithoutCustomerInput = {
@@ -92377,12 +94676,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type InvoiceItemCreateManyInvoiceInput = {
     id?: string
     tenantId: string
     description: string
+    itemType?: $Enums.InvoiceItemType
+    unitType?: $Enums.InvoiceItemUnit
     quantity: Decimal | DecimalJsLike | number | string
     unitPrice: Decimal | DecimalJsLike | number | string
     amount: Decimal | DecimalJsLike | number | string
@@ -92391,6 +94694,8 @@ export namespace Prisma {
   export type InvoiceItemUpdateWithoutInvoiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -92401,6 +94706,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -92410,6 +94717,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
+    itemType?: EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+    unitType?: EnumInvoiceItemUnitFieldUpdateOperationsInput | $Enums.InvoiceItemUnit
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -92465,6 +94774,13 @@ export namespace Prisma {
     dueDate: Date | string
     paidDate?: Date | string | null
     notes?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodity?: string | null
+    weightLbs?: number | null
+    pieces?: number | null
+    loadedMiles?: Decimal | DecimalJsLike | number | string | null
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -92492,6 +94808,29 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type RouteStopCreateManyLoadInput = {
+    id?: string
+    routeId: string
+    tenantId: string
+    position: number
+    type: $Enums.RouteStopType
+    address: string
+    lat?: Decimal | DecimalJsLike | number | string | null
+    lng?: Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    notes?: string | null
+    contactName?: string | null
+    contactPhone?: string | null
+    bolNumber?: string | null
+    poNumber?: string | null
+    status?: $Enums.RouteStopStatus
+    geofenceHit?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type InvoiceUpdateWithoutLoadInput = {
     id?: StringFieldUpdateOperationsInput | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -92505,6 +94844,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -92528,6 +94874,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92550,6 +94903,13 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    weightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    loadedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92615,6 +94975,347 @@ export namespace Prisma {
     externalUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RouteStopUpdateWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    route?: RouteUpdateOneRequiredWithoutStopsNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutRouteStopsNestedInput
+    pickupForLoads?: LoadUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUpdateManyWithoutDeliveryStopNestedInput
+  }
+
+  export type RouteStopUncheckedUpdateWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    routeId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pickupForLoads?: LoadUncheckedUpdateManyWithoutPickupStopNestedInput
+    deliveryForLoads?: LoadUncheckedUpdateManyWithoutDeliveryStopNestedInput
+  }
+
+  export type RouteStopUncheckedUpdateManyWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    routeId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    type?: EnumRouteStopTypeFieldUpdateOperationsInput | $Enums.RouteStopType
+    address?: StringFieldUpdateOperationsInput | string
+    lat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    lng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumRouteStopStatusFieldUpdateOperationsInput | $Enums.RouteStopStatus
+    geofenceHit?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LoadCreateManyPickupStopInput = {
+    id?: string
+    tenantId: string
+    loadNumber: string
+    customerId: string
+    routeId?: string | null
+    sequence?: number | null
+    driverId?: string | null
+    truckId?: string | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    deliveryStopId?: string | null
+  }
+
+  export type LoadCreateManyDeliveryStopInput = {
+    id?: string
+    tenantId: string
+    loadNumber: string
+    customerId: string
+    routeId?: string | null
+    sequence?: number | null
+    driverId?: string | null
+    truckId?: string | null
+    origin: string
+    destination: string
+    pickupDate: Date | string
+    deliveryDate?: Date | string | null
+    weight?: number | null
+    commodity?: string | null
+    rate: Decimal | DecimalJsLike | number | string
+    status?: $Enums.LoadStatus
+    notes?: string | null
+    pickupLat?: Decimal | DecimalJsLike | number | string | null
+    pickupLng?: Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: string | null
+    createdById?: string | null
+    updatedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    archivedAt?: Date | string | null
+    pickupStopId?: string | null
+  }
+
+  export type LoadUpdateWithoutPickupStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutLoadsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutLoadsNestedInput
+    route?: RouteUpdateOneWithoutLoadsNestedInput
+    driver?: UserUpdateOneWithoutDriverLoadsNestedInput
+    truck?: TruckUpdateOneWithoutLoadsNestedInput
+    createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
+    invoices?: InvoiceUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    deliveryStop?: RouteStopUpdateOneWithoutDeliveryForLoadsNestedInput
+  }
+
+  export type LoadUncheckedUpdateWithoutPickupStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
+  }
+
+  export type LoadUncheckedUpdateManyWithoutPickupStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveryStopId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LoadUpdateWithoutDeliveryStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    tenant?: TenantUpdateOneRequiredWithoutLoadsNestedInput
+    customer?: CustomerUpdateOneRequiredWithoutLoadsNestedInput
+    route?: RouteUpdateOneWithoutLoadsNestedInput
+    driver?: UserUpdateOneWithoutDriverLoadsNestedInput
+    truck?: TruckUpdateOneWithoutLoadsNestedInput
+    createdBy?: UserUpdateOneWithoutLoadsCreatedNestedInput
+    updatedBy?: UserUpdateOneWithoutLoadsUpdatedNestedInput
+    invoices?: InvoiceUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUpdateManyWithoutLoadNestedInput
+    pickupStop?: RouteStopUpdateOneWithoutPickupForLoadsNestedInput
+  }
+
+  export type LoadUncheckedUpdateWithoutDeliveryStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    invoices?: InvoiceUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutLoadNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutLoadNestedInput
+  }
+
+  export type LoadUncheckedUpdateManyWithoutDeliveryStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    loadNumber?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequence?: NullableIntFieldUpdateOperationsInput | number | null
+    driverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: StringFieldUpdateOperationsInput | string
+    destination?: StringFieldUpdateOperationsInput | string
+    pickupDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    deliveryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    weight?: NullableIntFieldUpdateOperationsInput | number | null
+    commodity?: NullableStringFieldUpdateOperationsInput | string | null
+    rate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    status?: EnumLoadStatusFieldUpdateOperationsInput | $Enums.LoadStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pickupLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    pickupLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLat?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    deliveryLng?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    geofenceFlags?: NullableJsonNullValueInput | InputJsonValue
+    trackingToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pickupStopId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

@@ -722,6 +722,28 @@ enum InvoiceStatus {
   CANCELLED
 }
 
+enum InvoiceItemType {
+  LINEHAUL
+  FUEL_SURCHARGE
+  DETENTION
+  STOP_OFF
+  LAYOVER
+  TONU
+  LUMPER
+  ACCESSORIAL
+  TAX
+  OTHER
+}
+
+enum InvoiceItemUnit {
+  FLAT
+  PER_MILE
+  PER_CWT
+  PER_PIECE
+  PER_HOUR
+  PERCENT
+}
+
 model Invoice {
   id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String        @db.Uuid
@@ -737,6 +759,13 @@ model Invoice {
   dueDate       DateTime      @db.Timestamptz
   paidDate      DateTime?     @db.Timestamptz
   notes         String?
+  bolNumber     String?
+  proNumber     String?
+  poNumber      String?
+  commodity     String?
+  weightLbs     Int?
+  pieces        Int?
+  loadedMiles   Decimal?      @db.Decimal(10, 2)
   createdById   String?       @db.Uuid
   updatedById   String?       @db.Uuid
   createdAt     DateTime      @default(now()) @db.Timestamptz
@@ -759,13 +788,15 @@ model Invoice {
 }
 
 model InvoiceItem {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  invoiceId   String  @db.Uuid
-  tenantId    String  @db.Uuid
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId   String          @db.Uuid
+  tenantId    String          @db.Uuid
   description String
-  quantity    Decimal @db.Decimal(10, 2)
-  unitPrice   Decimal @db.Decimal(10, 2)
-  amount      Decimal @db.Decimal(12, 2)
+  itemType    InvoiceItemType @default(OTHER)
+  unitType    InvoiceItemUnit @default(FLAT)
+  quantity    Decimal         @db.Decimal(10, 2)
+  unitPrice   Decimal         @db.Decimal(10, 2)
+  amount      Decimal         @db.Decimal(12, 2)
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   tenant  Tenant  @relation(fields: [tenantId], references: [id])

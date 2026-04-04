@@ -188,6 +188,7 @@ model User {
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, role, isActive])
 }
 
 model Truck {
@@ -251,6 +252,7 @@ model DriverInvitation {
 
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, status])
 }
 
 model Route {
@@ -295,6 +297,7 @@ model Route {
   @@index([scheduledDate])
   @@index([status])
   @@index([archivedAt])
+  @@index([tenantId, driverId, scheduledDate])
 }
 
 model RouteDriver {
@@ -346,6 +349,7 @@ model Document {
   @@index([loadId])
   @@index([expiryDate])
   @@index([uploadedBy])
+  @@index([tenantId, driverId])
 }
 
 model MaintenanceEvent {
@@ -718,6 +722,28 @@ enum InvoiceStatus {
   CANCELLED
 }
 
+enum InvoiceItemType {
+  LINEHAUL
+  FUEL_SURCHARGE
+  DETENTION
+  STOP_OFF
+  LAYOVER
+  TONU
+  LUMPER
+  ACCESSORIAL
+  TAX
+  OTHER
+}
+
+enum InvoiceItemUnit {
+  FLAT
+  PER_MILE
+  PER_CWT
+  PER_PIECE
+  PER_HOUR
+  PERCENT
+}
+
 model Invoice {
   id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String        @db.Uuid
@@ -733,6 +759,13 @@ model Invoice {
   dueDate       DateTime      @db.Timestamptz
   paidDate      DateTime?     @db.Timestamptz
   notes         String?
+  bolNumber     String?
+  proNumber     String?
+  poNumber      String?
+  commodity     String?
+  weightLbs     Int?
+  pieces        Int?
+  loadedMiles   Decimal?      @db.Decimal(10, 2)
   createdById   String?       @db.Uuid
   updatedById   String?       @db.Uuid
   createdAt     DateTime      @default(now()) @db.Timestamptz
@@ -751,16 +784,19 @@ model Invoice {
   @@index([dueDate])
   @@index([loadId])
   @@index([archivedAt])
+  @@index([tenantId, status])
 }
 
 model InvoiceItem {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  invoiceId   String  @db.Uuid
-  tenantId    String  @db.Uuid
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId   String          @db.Uuid
+  tenantId    String          @db.Uuid
   description String
-  quantity    Decimal @db.Decimal(10, 2)
-  unitPrice   Decimal @db.Decimal(10, 2)
-  amount      Decimal @db.Decimal(12, 2)
+  itemType    InvoiceItemType @default(OTHER)
+  unitType    InvoiceItemUnit @default(FLAT)
+  quantity    Decimal         @db.Decimal(10, 2)
+  unitPrice   Decimal         @db.Decimal(10, 2)
+  amount      Decimal         @db.Decimal(12, 2)
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   tenant  Tenant  @relation(fields: [tenantId], references: [id])
@@ -866,45 +902,50 @@ model PayrollRecord {
 // ─── Load / Dispatch Models ──────────────────────────────────
 
 model Load {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String     @db.Uuid
-  loadNumber    String
-  customerId    String     @db.Uuid
-  routeId       String?    @db.Uuid
-  sequence      Int?
-  driverId      String?    @db.Uuid
-  truckId       String?    @db.Uuid
-  origin        String
-  destination   String
-  pickupDate    DateTime   @db.Timestamptz
-  deliveryDate  DateTime?  @db.Timestamptz
-  weight        Int?
-  commodity     String?
-  rate          Decimal    @db.Decimal(12, 2)
-  status        LoadStatus @default(PENDING)
-  notes         String?
-  pickupLat     Decimal?   @db.Decimal(10, 8) // Geocoded from origin address
-  pickupLng     Decimal?   @db.Decimal(11, 8)
-  deliveryLat   Decimal?   @db.Decimal(10, 8) // Geocoded from destination address
-  deliveryLng   Decimal?   @db.Decimal(11, 8)
-  geofenceFlags Json? // JSONB: tracks which alerts have fired
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String     @db.Uuid
+  loadNumber     String
+  customerId     String     @db.Uuid
+  routeId        String?    @db.Uuid
+  sequence       Int?
+  driverId       String?    @db.Uuid
+  truckId        String?    @db.Uuid
+  origin         String
+  destination    String
+  pickupDate     DateTime   @db.Timestamptz
+  deliveryDate   DateTime?  @db.Timestamptz
+  weight         Int?
+  commodity      String?
+  rate           Decimal    @db.Decimal(12, 2)
+  status         LoadStatus @default(PENDING)
+  notes          String?
+  pickupLat      Decimal?   @db.Decimal(10, 8) // Geocoded from origin address
+  pickupLng      Decimal?   @db.Decimal(11, 8)
+  deliveryLat    Decimal?   @db.Decimal(10, 8) // Geocoded from destination address
+  deliveryLng    Decimal?   @db.Decimal(11, 8)
+  geofenceFlags  Json? // JSONB: tracks which alerts have fired
   // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
-  trackingToken String?    @unique // Public token for customer shipment tracking
-  createdById   String?    @db.Uuid
-  updatedById   String?    @db.Uuid
-  createdAt     DateTime   @default(now()) @db.Timestamptz
-  updatedAt     DateTime   @updatedAt @db.Timestamptz
-  archivedAt    DateTime?  @db.Timestamptz
+  trackingToken  String?    @unique // Public token for customer shipment tracking
+  createdById    String?    @db.Uuid
+  updatedById    String?    @db.Uuid
+  createdAt      DateTime   @default(now()) @db.Timestamptz
+  updatedAt      DateTime   @updatedAt @db.Timestamptz
+  archivedAt     DateTime?  @db.Timestamptz
+  pickupStopId   String?    @db.Uuid // FK → RouteStop (set when load is assigned to a route)
+  deliveryStopId String?    @db.Uuid // FK → RouteStop
 
-  tenant    Tenant     @relation(fields: [tenantId], references: [id])
-  customer  Customer   @relation(fields: [customerId], references: [id])
-  route     Route?     @relation(fields: [routeId], references: [id])
-  driver    User?      @relation(name: "DriverLoads", fields: [driverId], references: [id])
-  truck     Truck?     @relation(fields: [truckId], references: [id])
-  createdBy User?      @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
-  updatedBy User?      @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
-  invoices  Invoice[]
-  documents Document[]
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  route        Route?      @relation(fields: [routeId], references: [id])
+  driver       User?       @relation(name: "DriverLoads", fields: [driverId], references: [id])
+  truck        Truck?      @relation(fields: [truckId], references: [id])
+  createdBy    User?       @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User?       @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
+  invoices     Invoice[]
+  documents    Document[]
+  routeStops   RouteStop[] @relation(name: "RouteStopLoad")
+  pickupStop   RouteStop?  @relation(name: "LoadPickupStop", fields: [pickupStopId], references: [id])
+  deliveryStop RouteStop?  @relation(name: "LoadDeliveryStop", fields: [deliveryStopId], references: [id])
 
   @@unique([tenantId, loadNumber])
   @@index([tenantId])
@@ -916,6 +957,7 @@ model Load {
   @@index([trackingToken])
   @@index([archivedAt])
   @@index([routeId, sequence])
+  @@index([tenantId, status, archivedAt])
 }
 
 // ─── Integration Models ──────────────────────────────────────
@@ -1006,28 +1048,37 @@ model TicketMessage {
 // ─── Multi-Stop Route Models ─────────────────────────────────
 
 model RouteStop {
-  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  routeId     String          @db.Uuid
-  tenantId    String          @db.Uuid
-  position    Int // 1-based ordering
-  type        RouteStopType
-  address     String
-  lat         Decimal?        @db.Decimal(10, 8)
-  lng         Decimal?        @db.Decimal(11, 8)
-  scheduledAt DateTime?       @db.Timestamptz
-  arrivedAt   DateTime?       @db.Timestamptz
-  departedAt  DateTime?       @db.Timestamptz
-  notes       String?
-  status      RouteStopStatus @default(PENDING)
-  geofenceHit Boolean         @default(false)
-  createdAt   DateTime        @default(now()) @db.Timestamptz
-  updatedAt   DateTime        @updatedAt @db.Timestamptz
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId      String          @db.Uuid
+  tenantId     String          @db.Uuid
+  loadId       String?         @db.Uuid // Links stop to the load it serves (nullable: fuel/weigh stops have no load)
+  position     Int // 1-based ordering
+  type         RouteStopType
+  address      String
+  lat          Decimal?        @db.Decimal(10, 8)
+  lng          Decimal?        @db.Decimal(11, 8)
+  scheduledAt  DateTime?       @db.Timestamptz
+  arrivedAt    DateTime?       @db.Timestamptz
+  departedAt   DateTime?       @db.Timestamptz
+  notes        String?
+  contactName  String? // Shipper/receiver contact at this stop
+  contactPhone String?
+  bolNumber    String? // Bill of Lading number for this stop's load
+  poNumber     String? // Customer PO number
+  status       RouteStopStatus @default(PENDING)
+  geofenceHit  Boolean         @default(false)
+  createdAt    DateTime        @default(now()) @db.Timestamptz
+  updatedAt    DateTime        @updatedAt @db.Timestamptz
 
-  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  route            Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tenant           Tenant @relation(fields: [tenantId], references: [id])
+  load             Load?  @relation(name: "RouteStopLoad", fields: [loadId], references: [id])
+  pickupForLoads   Load[] @relation(name: "LoadPickupStop")
+  deliveryForLoads Load[] @relation(name: "LoadDeliveryStop")
 
   @@index([routeId])
   @@index([tenantId])
+  @@index([loadId])
   @@index([routeId, position])
   @@index([status])
 }
@@ -1084,6 +1135,7 @@ model FleetMessage {
   @@index([loadId])
   @@index([createdAt])
   @@index([senderId])
+  @@index([tenantId, createdAt])
 }
 
 // ─── Push Token Models ───────────────────────────────────────

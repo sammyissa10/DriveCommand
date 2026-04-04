@@ -1,0 +1,23 @@
+-- Create enums (idempotent)
+DO $$ BEGIN
+  CREATE TYPE "InvoiceItemType" AS ENUM ('LINEHAUL', 'FUEL_SURCHARGE', 'DETENTION', 'STOP_OFF', 'LAYOVER', 'TONU', 'LUMPER', 'ACCESSORIAL', 'TAX', 'OTHER');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  CREATE TYPE "InvoiceItemUnit" AS ENUM ('FLAT', 'PER_MILE', 'PER_CWT', 'PER_PIECE', 'PER_HOUR', 'PERCENT');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Invoice freight header fields
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "bolNumber" TEXT;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "proNumber" TEXT;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "poNumber" TEXT;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "commodity" TEXT;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "weightLbs" INTEGER;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "pieces" INTEGER;
+ALTER TABLE "Invoice" ADD COLUMN IF NOT EXISTS "loadedMiles" DECIMAL(10, 2);
+
+-- InvoiceItem type fields
+ALTER TABLE "InvoiceItem" ADD COLUMN IF NOT EXISTS "itemType" "InvoiceItemType" NOT NULL DEFAULT 'OTHER';
+ALTER TABLE "InvoiceItem" ADD COLUMN IF NOT EXISTS "unitType" "InvoiceItemUnit" NOT NULL DEFAULT 'FLAT';
