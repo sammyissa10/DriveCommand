@@ -65,11 +65,20 @@ export default async function EditInvoicePage({
           issueDate: invoice.issueDate,
           dueDate: invoice.dueDate,
           notes: invoice.notes,
+          bolNumber: invoice.bolNumber,
+          proNumber: invoice.proNumber,
+          poNumber: invoice.poNumber,
+          commodity: invoice.commodity,
+          weightLbs: invoice.weightLbs,
+          pieces: invoice.pieces,
+          loadedMiles: invoice.loadedMiles ? Number(invoice.loadedMiles) : null,
           items: invoice.items.map((item) => ({
             description: item.description,
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             amount: item.amount,
+            itemType: item.itemType,
+            unitType: item.unitType,
           })),
         }}
         customers={customers}

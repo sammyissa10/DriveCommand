@@ -5,6 +5,7 @@ import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { deleteInvoice, markInvoicePaid } from '@/app/(owner)/actions/invoices';
 import { DeleteInvoiceButton } from '@/components/invoices/delete-invoice-button';
 import { MarkAsPaidButton } from '@/components/invoices/mark-as-paid-button';
+import { ITEM_TYPE_LABELS, ITEM_UNIT_LABELS, type InvoiceItemType, type InvoiceItemUnit } from '@drivecommand/validation';
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-700',
@@ -13,6 +14,29 @@ const statusColors: Record<string, string> = {
   OVERDUE: 'bg-red-100 text-red-700',
   CANCELLED: 'bg-gray-100 text-gray-500',
 };
+
+function formatQtyWithUnit(quantity: any, unitType: string | null | undefined): string {
+  const qty = Number(quantity);
+  if (!unitType || unitType === 'FLAT') {
+    return qty.toLocaleString();
+  }
+  if (unitType === 'PERCENT') {
+    return `${qty}%`;
+  }
+  if (unitType === 'PER_HOUR') {
+    return `${qty} hr${qty !== 1 ? 's' : ''}`;
+  }
+  if (unitType === 'PER_MILE') {
+    return `${qty.toLocaleString()} mi`;
+  }
+  if (unitType === 'PER_PIECE') {
+    return `${qty.toLocaleString()} pc`;
+  }
+  if (unitType === 'PER_CWT') {
+    return `${qty} cwt`;
+  }
+  return qty.toLocaleString();
+}
 
 export default async function InvoiceDetailPage({
   params,
@@ -54,6 +78,15 @@ export default async function InvoiceDetailPage({
       // Ignore
     }
   }
+
+  const hasFreightDetails =
+    invoice.bolNumber ||
+    invoice.proNumber ||
+    invoice.poNumber ||
+    invoice.commodity ||
+    invoice.weightLbs ||
+    invoice.pieces ||
+    invoice.loadedMiles;
 
   return (
     <div className="space-y-6">
@@ -151,6 +184,59 @@ export default async function InvoiceDetailPage({
             </dl>
           </div>
 
+          {/* Freight Details */}
+          {hasFreightDetails && (
+            <div className="rounded-lg border border-border bg-card p-5">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                Freight Details
+              </h3>
+              <dl className="space-y-3 text-sm">
+                {invoice.bolNumber && (
+                  <div>
+                    <dt className="text-muted-foreground">BOL #</dt>
+                    <dd className="font-medium">{invoice.bolNumber}</dd>
+                  </div>
+                )}
+                {invoice.proNumber && (
+                  <div>
+                    <dt className="text-muted-foreground">PRO #</dt>
+                    <dd className="font-medium">{invoice.proNumber}</dd>
+                  </div>
+                )}
+                {invoice.poNumber && (
+                  <div>
+                    <dt className="text-muted-foreground">PO #</dt>
+                    <dd className="font-medium">{invoice.poNumber}</dd>
+                  </div>
+                )}
+                {invoice.commodity && (
+                  <div>
+                    <dt className="text-muted-foreground">Commodity</dt>
+                    <dd className="font-medium">{invoice.commodity}</dd>
+                  </div>
+                )}
+                {invoice.weightLbs && (
+                  <div>
+                    <dt className="text-muted-foreground">Weight</dt>
+                    <dd className="font-medium">{Number(invoice.weightLbs).toLocaleString()} lbs</dd>
+                  </div>
+                )}
+                {invoice.pieces && (
+                  <div>
+                    <dt className="text-muted-foreground">Pieces</dt>
+                    <dd className="font-medium">{Number(invoice.pieces).toLocaleString()}</dd>
+                  </div>
+                )}
+                {invoice.loadedMiles && (
+                  <div>
+                    <dt className="text-muted-foreground">Loaded Miles</dt>
+                    <dd className="font-medium">{Number(invoice.loadedMiles).toLocaleString()} mi</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          )}
+
           {invoice.notes && (
             <div className="rounded-lg border border-border bg-card p-5">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
@@ -173,6 +259,7 @@ export default async function InvoiceDetailPage({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
+                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">Type</th>
                     <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                       Description
                     </th>
@@ -186,27 +273,38 @@ export default async function InvoiceDetailPage({
                   </tr>
                 </thead>
                 <tbody>
-                  {invoice.items.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b border-border last:border-b-0"
-                    >
-                      <td className="px-4 py-3">{item.description}</td>
-                      <td className="px-4 py-3 text-right">{Number(item.quantity)}</td>
-                      <td className="px-4 py-3 text-right">
-                        ${Number(item.unitPrice).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </td>
-                      <td className="px-4 py-3 text-right font-medium">
-                        ${Number(item.amount).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </td>
-                    </tr>
-                  ))}
+                  {invoice.items.map((item) => {
+                    const itemTypeLabel =
+                      item.itemType && item.itemType !== 'OTHER'
+                        ? ITEM_TYPE_LABELS[item.itemType as InvoiceItemType]
+                        : null;
+                    return (
+                      <tr
+                        key={item.id}
+                        className="border-b border-border last:border-b-0"
+                      >
+                        <td className="px-4 py-3 text-muted-foreground text-xs">
+                          {itemTypeLabel || ''}
+                        </td>
+                        <td className="px-4 py-3">{item.description}</td>
+                        <td className="px-4 py-3 text-right">
+                          {formatQtyWithUnit(item.quantity, item.unitType)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          ${Number(item.unitPrice).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </td>
+                        <td className="px-4 py-3 text-right font-medium">
+                          ${Number(item.amount).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

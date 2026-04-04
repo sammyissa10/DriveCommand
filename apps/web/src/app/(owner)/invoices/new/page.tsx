@@ -48,16 +48,44 @@ export default async function NewInvoicePage({
     // Use defaults on error
   }
 
-  // Build pre-fill initialData from query params (load context)
+  // Fetch freight details from load if loadId is provided
+  let loadFreightData: {
+    commodity?: string;
+    weightLbs?: number;
+  } | null = null;
+
+  if (loadId) {
+    try {
+      const prisma = await getTenantPrisma();
+      const load = await prisma.load.findUnique({
+        where: { id: loadId },
+        select: { commodity: true, weight: true },
+      });
+      if (load) {
+        loadFreightData = {
+          commodity: load.commodity || undefined,
+          weightLbs: load.weight || undefined,
+        };
+      }
+    } catch {
+      // Skip auto-populate on error
+    }
+  }
+
+  // Build pre-fill initialData from query params (load context) + load freight fields
   const initialData = loadId
     ? {
         customerId: customerId || undefined,
+        commodity: loadFreightData?.commodity,
+        weightLbs: loadFreightData?.weightLbs,
         items: amount
           ? [
               {
-                description: loadNumber ? `Freight - Load #${loadNumber}` : 'Freight',
+                description: loadNumber ? `Freight - Load #${loadNumber}` : 'Linehaul',
                 quantity: 1,
                 unitPrice: parseFloat(amount) || 0,
+                itemType: 'LINEHAUL' as const,
+                unitType: 'FLAT' as const,
               },
             ]
           : undefined,
