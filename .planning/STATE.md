@@ -149,6 +149,8 @@ Progress: [███████████████████████
 
 - Phase 01 added + COMPLETE: Database Integrity Hardening — RLS on 5 tables, tenantId backfill on InvoiceItem/ExpenseTemplateItem, Load/TenantIntegration migration SQL, migrate.mjs fail-fast
 - Phase 19 added: Multi-Stop Routes — ordered RouteStop model, dispatcher stop editor, driver app active-stop view, geofence auto-arrival
+- Phase 37.1.1 inserted after Phase 37.1 (URGENT): Data Pipeline — Routes, Loads, and Stops — schema (RouteStop.loadId + contact fields, Load.pickupStopId/deliveryStopId), geocoding on load save, auto-create RouteStops when load assigned to route, driver map reads populated stops
+- Phase 37.1.2 inserted after Phase 37.1.1 (URGENT): Invoicing — Trucking Standard — Invoice freight header fields (BOL/PRO/PO/commodity/weight/pieces/miles), InvoiceItem type+unit enums, UI for freight-standard line items with FSC auto-calc
 - Phase 20 added: Driver Pay Settlement — DriverPayConfig, DriverSettlement, SettlementLine models, pay calculation engine, PDF statement
 - Phase 21 added: QuickBooks Online Integration — OAuth2 connect flow, invoice/expense/settlement sync to QBO
 - Phase 22 added: Support Ticket System — in-owner-portal ticket submission and threaded replies, DriveCommand team manages via admin portal

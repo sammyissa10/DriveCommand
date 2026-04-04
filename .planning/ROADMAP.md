@@ -387,6 +387,24 @@ Plans:
 
 ---
 
+### Phase 37.1.1: Data Pipeline: Routes, Loads, and Stops (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Depends on:** Phase 37.1
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 37.1.1 to break down)
+
+### Phase 37.1.2: Invoicing: Trucking Standard (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Depends on:** Phase 37.1.1
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 37.1.2 to break down)
+
 ### Phase 37.2: Owner Route + Maintenance Mobile — Route management and truck maintenance on mobile
 
 **Goal:** Bring route management and truck maintenance to the owner mobile portal. Route management: list all routes, view route detail (stops, assigned driver/truck, status), create new route, edit existing route. Truck maintenance: view service history per truck, log a new service event (date, type, mileage, notes), schedule upcoming service with due date/mileage trigger.
