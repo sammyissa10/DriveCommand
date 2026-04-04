@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-04 - Completed 37.1.2-02: Trucking-standard invoice UI
+Last activity: 2026-04-04 - Completed quick task 150: Add Start Navigation button to driver my-route screen
 Stopped at: Completed 37.1.2-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -872,6 +872,7 @@ None blocking immediate progress.
 | 147 | Geocoding autocomplete + OSRM real road distances | 2026-04-03 | 760b6ed | [147-audit-and-upgrade-all-address-input-fiel](./quick/147-audit-and-upgrade-all-address-input-fiel/) |
 | 148 | Add a global appearance setting that allows users to seamlessly switch between Light Mode and Dark Mode | 2026-04-03 | b7c3e8b | [148-add-a-global-appearance-setting-that-all](./quick/148-add-a-global-appearance-setting-that-all/) |
 | 149 | Migrate all mobile screens to use useThemeColors() for full Light/Dark mode support | 2026-04-03 | aa86e4e | [149-migrate-all-mobile-screens-to-use-usethe](./quick/149-migrate-all-mobile-screens-to-use-usethe/) |
+| 150 | Add Start Navigation button to driver my-route screen | 2026-04-04 | f30a85a | [150-add-start-navigation-button-to-driver-my](./quick/150-add-start-navigation-button-to-driver-my/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
