@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { Prisma } from '@/generated/prisma';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { geocodeLoadAddresses } from '@/lib/geo/geocode';
+import {
+  createRouteStopsForLoad,
+  deleteRouteStopsForLoad,
+} from '@/lib/route-stops/sync-route-stops';
+
+const Decimal = Prisma.Decimal;
 
 /**
  * GET /api/mobile/owner/loads/[id]
@@ -129,7 +137,14 @@ export async function PATCH(
   const { id } = await params;
   const { tenantId } = auth;
 
-  let body: { status?: string; driverId?: string | null; notes?: string };
+  let body: {
+    status?: string;
+    driverId?: string | null;
+    notes?: string;
+    origin?: string;
+    destination?: string;
+    routeId?: string | null;
+  };
   try {
     body = await req.json();
   } catch {
@@ -145,18 +160,65 @@ export async function PATCH(
     );
   }
 
+  // Fetch existing load for comparison (needed for re-geocoding and routeId transition logic)
+  let existingLoad: {
+    id: string;
+    origin: string;
+    destination: string;
+    routeId: string | null;
+    pickupLat: Prisma.Decimal | null;
+    pickupLng: Prisma.Decimal | null;
+    deliveryLat: Prisma.Decimal | null;
+    deliveryLng: Prisma.Decimal | null;
+  } | null;
+
+  try {
+    existingLoad = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.load.findUnique({
+        where: { id, tenantId },
+        select: {
+          id: true,
+          origin: true,
+          destination: true,
+          routeId: true,
+          pickupLat: true,
+          pickupLng: true,
+          deliveryLat: true,
+          deliveryLng: true,
+        },
+      });
+    }, TX_OPTIONS);
+  } catch (err) {
+    logger.error('[mobile/owner/loads/[id] PATCH] fetch existing error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+
+  if (!existingLoad) {
+    return NextResponse.json({ error: 'Load not found' }, { status: 404 });
+  }
+
+  // Geocode BEFORE the transaction if addresses changed
+  const addressChanged =
+    (body.origin !== undefined && body.origin !== existingLoad.origin) ||
+    (body.destination !== undefined && body.destination !== existingLoad.destination);
+
+  let geocoded: {
+    pickupLat: number | null;
+    pickupLng: number | null;
+    deliveryLat: number | null;
+    deliveryLng: number | null;
+  } | null = null;
+
+  if (addressChanged) {
+    const newOrigin = body.origin ?? existingLoad.origin;
+    const newDestination = body.destination ?? existingLoad.destination;
+    geocoded = await geocodeLoadAddresses(newOrigin, newDestination);
+  }
+
   try {
     const load = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-
-      // Verify load belongs to tenant
-      const existing = await tx.load.findUnique({
-        where: { id, tenantId },
-        select: { id: true },
-      });
-      if (!existing) {
-        throw new Error('NOT_FOUND');
-      }
 
       // Validate driverId if provided and not null
       if (body.driverId !== undefined && body.driverId !== null) {
@@ -173,8 +235,19 @@ export async function PATCH(
       if (body.status !== undefined) updateData.status = body.status;
       if (body.driverId !== undefined) updateData.driverId = body.driverId;
       if (body.notes !== undefined) updateData.notes = body.notes;
+      if (body.origin !== undefined) updateData.origin = body.origin;
+      if (body.destination !== undefined) updateData.destination = body.destination;
+      if (body.routeId !== undefined) updateData.routeId = body.routeId;
 
-      return tx.load.update({
+      // Include geocoded coordinates when addresses changed
+      if (geocoded) {
+        updateData.pickupLat = geocoded.pickupLat != null ? new Decimal(geocoded.pickupLat) : null;
+        updateData.pickupLng = geocoded.pickupLng != null ? new Decimal(geocoded.pickupLng) : null;
+        updateData.deliveryLat = geocoded.deliveryLat != null ? new Decimal(geocoded.deliveryLat) : null;
+        updateData.deliveryLng = geocoded.deliveryLng != null ? new Decimal(geocoded.deliveryLng) : null;
+      }
+
+      const updatedLoad = await tx.load.update({
         where: { id },
         data: updateData,
         include: {
@@ -186,6 +259,61 @@ export async function PATCH(
           },
         },
       });
+
+      // Handle routeId transitions and address changes that affect stops
+      const oldRouteId = existingLoad!.routeId;
+      const newRouteId = body.routeId !== undefined ? body.routeId : oldRouteId;
+
+      const routeIdChanging = body.routeId !== undefined;
+      const routeBeingSet = routeIdChanging && newRouteId && !oldRouteId;
+      const routeBeingCleared = routeIdChanging && !newRouteId && oldRouteId;
+      const routeBeingChanged = routeIdChanging && newRouteId && oldRouteId && newRouteId !== oldRouteId;
+      const addressChangedWithRoute = addressChanged && newRouteId && !routeIdChanging;
+
+      if (routeBeingSet && newRouteId) {
+        // Load assigned to a route: create stops
+        const loadForSync = {
+          id,
+          origin: body.origin ?? existingLoad!.origin,
+          destination: body.destination ?? existingLoad!.destination,
+          pickupLat: geocoded ? (geocoded.pickupLat != null ? new Decimal(geocoded.pickupLat) : null) : existingLoad!.pickupLat,
+          pickupLng: geocoded ? (geocoded.pickupLng != null ? new Decimal(geocoded.pickupLng) : null) : existingLoad!.pickupLng,
+          deliveryLat: geocoded ? (geocoded.deliveryLat != null ? new Decimal(geocoded.deliveryLat) : null) : existingLoad!.deliveryLat,
+          deliveryLng: geocoded ? (geocoded.deliveryLng != null ? new Decimal(geocoded.deliveryLng) : null) : existingLoad!.deliveryLng,
+        };
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (routeBeingCleared && oldRouteId) {
+        // Load removed from route: delete stops
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+      } else if (routeBeingChanged && newRouteId && oldRouteId) {
+        // Load moving from one route to another: delete old stops, create new ones
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+        const loadForSync = {
+          id,
+          origin: body.origin ?? existingLoad!.origin,
+          destination: body.destination ?? existingLoad!.destination,
+          pickupLat: geocoded ? (geocoded.pickupLat != null ? new Decimal(geocoded.pickupLat) : null) : existingLoad!.pickupLat,
+          pickupLng: geocoded ? (geocoded.pickupLng != null ? new Decimal(geocoded.pickupLng) : null) : existingLoad!.pickupLng,
+          deliveryLat: geocoded ? (geocoded.deliveryLat != null ? new Decimal(geocoded.deliveryLat) : null) : existingLoad!.deliveryLat,
+          deliveryLng: geocoded ? (geocoded.deliveryLng != null ? new Decimal(geocoded.deliveryLng) : null) : existingLoad!.deliveryLng,
+        };
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (addressChangedWithRoute && newRouteId && geocoded) {
+        // Address changed while load stays on same route: rebuild stops with new coordinates
+        await deleteRouteStopsForLoad(tx, { routeId: newRouteId, loadId: id });
+        const loadForSync = {
+          id,
+          origin: body.origin ?? existingLoad!.origin,
+          destination: body.destination ?? existingLoad!.destination,
+          pickupLat: geocoded.pickupLat != null ? new Decimal(geocoded.pickupLat) : null,
+          pickupLng: geocoded.pickupLng != null ? new Decimal(geocoded.pickupLng) : null,
+          deliveryLat: geocoded.deliveryLat != null ? new Decimal(geocoded.deliveryLat) : null,
+          deliveryLng: geocoded.deliveryLng != null ? new Decimal(geocoded.deliveryLng) : null,
+        };
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      }
+
+      return updatedLoad;
     }, TX_OPTIONS);
 
     const stops = load.route?.stops ?? [];
@@ -200,9 +328,6 @@ export async function PATCH(
 
     return NextResponse.json({ load: { ...load, driver, stops } });
   } catch (err) {
-    if (err instanceof Error && err.message === 'NOT_FOUND') {
-      return NextResponse.json({ error: 'Load not found' }, { status: 404 });
-    }
     logger.error('[mobile/owner/loads/[id] PATCH] error:', err);
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });

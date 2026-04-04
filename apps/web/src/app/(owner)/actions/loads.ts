@@ -12,6 +12,10 @@ import { redirect } from 'next/navigation';
 import { sendLoadStatusEmail } from '@/lib/email/customer-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { logger } from '@/lib/logger';
+import {
+  createRouteStopsForLoad,
+  deleteRouteStopsForLoad,
+} from '@/lib/route-stops/sync-route-stops';
 
 const Decimal = Prisma.Decimal;
 
@@ -154,29 +158,44 @@ export async function createLoad(prevState: ActionState | null, formData: FormDa
 
     const loadNumber = await generateLoadNumber(prisma, tenantId);
 
-    const load = await prisma.load.create({
-      data: {
-        tenantId,
-        loadNumber,
-        customerId: result.data.customerId,
-        driverId: result.data.driverId || null,
-        truckId: result.data.truckId || null,
-        routeId: result.data.routeId || null,
-        origin: result.data.origin,
-        destination: result.data.destination,
-        pickupDate: new Date(result.data.pickupDate),
-        deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
-        weight: result.data.weight || null,
-        commodity: result.data.commodity || null,
-        rate: new Decimal(result.data.rate),
-        notes: result.data.notes || null,
-        pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : null,
-        pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : null,
-        deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : null,
-        deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : null,
-        createdById: userId,
-        updatedById: userId,
-      },
+    const loadRouteId = result.data.routeId || null;
+
+    const load = await prisma.$transaction(async (tx) => {
+      const createdLoad = await tx.load.create({
+        data: {
+          tenantId,
+          loadNumber,
+          customerId: result.data.customerId,
+          driverId: result.data.driverId || null,
+          truckId: result.data.truckId || null,
+          routeId: loadRouteId,
+          origin: result.data.origin,
+          destination: result.data.destination,
+          pickupDate: new Date(result.data.pickupDate),
+          deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
+          weight: result.data.weight || null,
+          commodity: result.data.commodity || null,
+          rate: new Decimal(result.data.rate),
+          notes: result.data.notes || null,
+          pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : null,
+          pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : null,
+          deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : null,
+          deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : null,
+          createdById: userId,
+          updatedById: userId,
+        },
+      });
+
+      // If load is being assigned to a route on creation, auto-create RouteStops
+      if (loadRouteId) {
+        await createRouteStopsForLoad(tx, {
+          routeId: loadRouteId,
+          tenantId,
+          load: createdLoad,
+        });
+      }
+
+      return createdLoad;
     });
 
     createdId = load.id;
@@ -218,34 +237,90 @@ export async function updateLoad(id: string, prevState: ActionState | null, form
 
   const userId = await requireAuth();
   const prisma = await getTenantPrisma();
+  const tenantId = await requireTenantId();
 
   const pickupLat = parseFloat(formData.get('pickupLat') as string);
   const pickupLng = parseFloat(formData.get('pickupLng') as string);
   const deliveryLat = parseFloat(formData.get('deliveryLat') as string);
   const deliveryLng = parseFloat(formData.get('deliveryLng') as string);
 
+  // Fetch current routeId before updating to detect route transitions
+  const existingLoad = await prisma.load.findUnique({
+    where: { id },
+    select: {
+      routeId: true,
+      origin: true,
+      destination: true,
+      pickupLat: true,
+      pickupLng: true,
+      deliveryLat: true,
+      deliveryLng: true,
+    },
+  });
+
+  if (!existingLoad) {
+    return { error: 'Load not found.' };
+  }
+
+  const newRouteId = result.data.routeId || null;
+  const oldRouteId = existingLoad.routeId;
+  const originChanged = result.data.origin !== existingLoad.origin;
+  const destinationChanged = result.data.destination !== existingLoad.destination;
+  const addressChanged = originChanged || destinationChanged;
+
   try {
-    await prisma.load.update({
-      where: { id },
-      data: {
-        customerId: result.data.customerId,
-        driverId: result.data.driverId || null,
-        truckId: result.data.truckId || null,
-        routeId: result.data.routeId || null,
+    await prisma.$transaction(async (tx) => {
+      const updatedLoad = await tx.load.update({
+        where: { id },
+        data: {
+          customerId: result.data.customerId,
+          driverId: result.data.driverId || null,
+          truckId: result.data.truckId || null,
+          routeId: newRouteId,
+          origin: result.data.origin,
+          destination: result.data.destination,
+          pickupDate: new Date(result.data.pickupDate),
+          deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
+          weight: result.data.weight || null,
+          commodity: result.data.commodity || null,
+          rate: new Decimal(result.data.rate),
+          notes: result.data.notes || null,
+          ...(!isNaN(pickupLat) && { pickupLat: new Decimal(pickupLat) }),
+          ...(!isNaN(pickupLng) && { pickupLng: new Decimal(pickupLng) }),
+          ...(!isNaN(deliveryLat) && { deliveryLat: new Decimal(deliveryLat) }),
+          ...(!isNaN(deliveryLng) && { deliveryLng: new Decimal(deliveryLng) }),
+          updatedById: userId,
+        },
+      });
+
+      // Build a load snapshot for RouteStop sync (use form-provided coords when valid)
+      const loadForSync = {
+        id,
         origin: result.data.origin,
         destination: result.data.destination,
-        pickupDate: new Date(result.data.pickupDate),
-        deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
-        weight: result.data.weight || null,
-        commodity: result.data.commodity || null,
-        rate: new Decimal(result.data.rate),
-        notes: result.data.notes || null,
-        ...(!isNaN(pickupLat) && { pickupLat: new Decimal(pickupLat) }),
-        ...(!isNaN(pickupLng) && { pickupLng: new Decimal(pickupLng) }),
-        ...(!isNaN(deliveryLat) && { deliveryLat: new Decimal(deliveryLat) }),
-        ...(!isNaN(deliveryLng) && { deliveryLng: new Decimal(deliveryLng) }),
-        updatedById: userId,
-      },
+        pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : updatedLoad.pickupLat,
+        pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : updatedLoad.pickupLng,
+        deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : updatedLoad.deliveryLat,
+        deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : updatedLoad.deliveryLng,
+      };
+
+      const routeBeingSet = newRouteId && !oldRouteId;
+      const routeBeingCleared = !newRouteId && oldRouteId;
+      const routeBeingChanged = newRouteId && oldRouteId && newRouteId !== oldRouteId;
+      const addressChangedWithRoute = addressChanged && newRouteId && newRouteId === oldRouteId;
+
+      if (routeBeingSet && newRouteId) {
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (routeBeingCleared && oldRouteId) {
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+      } else if (routeBeingChanged && newRouteId && oldRouteId) {
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (addressChangedWithRoute && newRouteId) {
+        // Address changed while staying on same route: rebuild stops with new coords
+        await deleteRouteStopsForLoad(tx, { routeId: newRouteId, loadId: id });
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      }
     });
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
