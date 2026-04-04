@@ -389,12 +389,13 @@ Plans:
 
 ### Phase 37.1.1: Data Pipeline: Routes, Loads, and Stops (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
+**Goal:** Fix the broken data pipeline between Routes, Loads, and RouteStops so the driver map has real coordinates — schema changes to link stops to loads, Nominatim geocoding on load save, auto-creation of RouteStops when a load is assigned to a route, and SQL backfill for existing routes.
 **Depends on:** Phase 37.1
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 37.1.1 to break down)
+- [ ] 37.1.1-01-PLAN.md — Prisma schema migration (RouteStop + Load field additions) with SQL backfill
+- [ ] 37.1.1-02-PLAN.md — Geocode utility extraction, RouteStop sync library, wire into all load mutation paths
 
 ### Phase 37.1.2: Invoicing: Trucking Standard (INSERTED)
 
