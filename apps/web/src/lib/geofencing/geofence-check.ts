@@ -23,30 +23,9 @@ import { distance, point } from '@turf/turf';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendGeofenceAlert } from '@/lib/email/send-geofence-alert';
 import { logger } from '@/lib/logger';
+import { geocodeAddress } from '@/lib/geo/geocode';
 
 const GEOFENCE_RADIUS_KM = 0.5; // 500 metres
-
-/**
- * Geocode an address string using Nominatim (OpenStreetMap).
- * Returns [lat, lng] or null if geocoding fails.
- * Free, no API key required. Respects OSM usage policy (low-volume requests only).
- */
-async function geocodeAddress(address: string): Promise<[number, number] | null> {
-  try {
-    const encoded = encodeURIComponent(address);
-    const url = `https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`;
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'DriveCommand/1.0 fleet-management' },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.length) return null;
-    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Main geofence check. Called after each successful GPS ping.
@@ -96,7 +75,7 @@ export async function checkGeofenceAndAlert(params: {
       if (pickupLat === null || pickupLng === null) {
         const coords = await geocodeAddress(load.origin);
         if (coords) {
-          [pickupLat, pickupLng] = coords;
+          ({ lat: pickupLat, lng: pickupLng } = coords);
           // Cache geocoded coordinates for future pings
           await prisma.$transaction(async (tx) => {
             await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -154,7 +133,7 @@ export async function checkGeofenceAndAlert(params: {
       if (deliveryLat === null || deliveryLng === null) {
         const coords = await geocodeAddress(load.destination);
         if (coords) {
-          [deliveryLat, deliveryLng] = coords;
+          ({ lat: deliveryLat, lng: deliveryLng } = coords);
           await prisma.$transaction(async (tx) => {
             await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
             await tx.load.update({
@@ -229,7 +208,7 @@ export async function checkGeofenceAndAlert(params: {
       if (stopLat === null || stopLng === null) {
         const coords = await geocodeAddress(nextStop.address);
         if (coords) {
-          [stopLat, stopLng] = coords;
+          ({ lat: stopLat, lng: stopLng } = coords);
           // Cache geocoded coordinates on RouteStop row
           await prisma.$transaction(async (tx) => {
             await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
