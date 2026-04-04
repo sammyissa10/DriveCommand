@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.1 Data Pipeline — Routes, Loads, and Stops — IN PROGRESS
-Current Plan: Plan 1 of 3 complete — 37.1.1-01 DONE
-Status: 37.1.1-01 complete — Prisma schema extended (RouteStop: loadId/contact/bol/po + back-refs; Load: pickupStopId/deliveryStopId + named FK relations), migration applied with idempotent backfill (pickups-first sequencing). Pre-existing migration drift resolved.
-Last activity: 2026-04-04 - Completed 37.1.1-01: Schema and backfill migration for RouteStop/Load link fields
-Stopped at: Completed 37.1.1-01-PLAN.md
+Current Plan: Plan 2 of 3 complete — 37.1.1-02 DONE
+Status: 37.1.1-02 complete — Shared Nominatim geocoder extracted to geo/geocode.ts, RouteStop auto-create/delete/resequence utility created in route-stops/sync-route-stops.ts, wired into mobile POST/PATCH and web createLoad/updateLoad server actions.
+Last activity: 2026-04-04 - Completed 37.1.1-02: Geocoding utility and RouteStop auto-sync pipeline
+Stopped at: Completed 37.1.1-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -165,6 +165,12 @@ Progress: [███████████████████████
 - Backfill idempotent with NOT EXISTS guards — safe to re-run
 - Sequencing: all PICKUPs first (1..N ordered by pickupDate), then DELIVERYs (N+1..N+M ordered by deliveryDate) per route — matches locked sequencing decision
 - Pre-existing migration drift (20260329000001_add_load_sequence column already existed) resolved with migrate resolve --applied before deploying new migration
+
+**Phase 37.1.1-02 decisions (Geocoding + RouteStop auto-sync):**
+- Nominatim is the geocoding API (NOT Google Maps) — confirmed by codebase; CONTEXT.md had incorrect claim
+- Geocoding runs BEFORE Prisma $transaction blocks — no network calls inside DB transactions (connection pool + timeout risk)
+- RouteStop rebuild on address change: delete old stops then re-create with new coordinates (simpler than in-place lat/lng updates)
+- Web updateLoad fetches existing load before transaction to detect routeId transition type (set/clear/change/address-change-with-same-route)
 
 **Phase 37.7-02 decisions (Directions backend):**
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
