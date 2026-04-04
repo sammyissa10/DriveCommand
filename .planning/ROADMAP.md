@@ -399,12 +399,13 @@ Plans:
 
 ### Phase 37.1.2: Invoicing: Trucking Standard (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
+**Goal:** Align invoicing with trucking industry standards — add freight reference fields to Invoice, itemType/unitType enums to InvoiceItem for standard trucking charges, update invoice UI for freight-standard line item entry with FSC auto-calculation.
 **Depends on:** Phase 37.1.1
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 37.1.2 to break down)
+- [ ] 37.1.2-01-PLAN.md — Schema migration (enums + freight fields) + validation + server action PERCENT fix
+- [ ] 37.1.2-02-PLAN.md — Invoice UI: Freight Details section, type/unit selectors, FSC logic, quick-add buttons, detail page
 
 ### Phase 37.2: Owner Route + Maintenance Mobile — Route management and truck maintenance on mobile
 
