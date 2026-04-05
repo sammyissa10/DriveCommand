@@ -186,7 +186,8 @@ export default function StopDetailScreen() {
   }
 
   const handleUploadDocument = () => {
-    Alert.alert('Coming Soon', 'Document upload will be available soon.')
+    const docType = stop?.stopType?.toLowerCase() === 'pickup' ? 'bol' : 'pod'
+    router.push(`/carrier/dispatch/${id}/stop/${stopId}/upload?documentType=${docType}` as Parameters<typeof router.push>[0])
   }
 
   const handleLogExpense = () => {
@@ -349,12 +350,12 @@ export default function StopDetailScreen() {
             <Pressable
               onPress={handleUploadDocument}
               accessibilityRole="button"
-              accessibilityLabel="Upload document"
+              accessibilityLabel={stop.stopType.toLowerCase() === 'pickup' ? 'Upload BOL' : 'Upload POD'}
               style={[styles.outlinedButton, { borderColor: c.border, marginTop: stop.documents.length > 0 ? 10 : 0 }]}
             >
               <Camera size={16} color={c.textSecondary} />
               <Text style={[styles.outlinedButtonText, { color: c.textSecondary }]}>
-                Upload Document
+                {stop.stopType.toLowerCase() === 'pickup' ? 'Upload BOL' : 'Upload POD'}
               </Text>
             </Pressable>
           </SectionCard>
