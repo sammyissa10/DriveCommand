@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 175: Carrier Ops Mobile — Stop list and stop detail screens
+Last activity: 2026-04-05 - Completed quick task 176: Carrier Ops Mobile — Document upload screen for stops
 Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -160,6 +160,7 @@ Progress: [███████████████████████
 - Quick-173 (2026-04-05): Carrier Ops — Compliance alert cron job — POST /api/cron/carrier-compliance-alerts (CRON_SECRET guard, auto-creates carrier_compliance_alert_log table, iterates all active orgs with isolated try/catch, logs alerts via parameterized SQL), vercel.json cron at 0 6 * * * (06:00 UTC daily) — 1 task, 2 files, ~76s
 - Quick-174 (2026-04-05): Carrier Ops Mobile — Auth flow and home screen for carrier driver dispatches — GET /api/mobile/carrier/driver/dispatches (list + detail), carrierDriverApi (6 typed methods in packages/api-client), carrier Stack navigator + home screen (active dispatch card, upcoming FlashList, pull-to-refresh, empty state), hidden carrier tab route — 2 tasks, 5 files, ~20min
 - Quick-175 (2026-04-05): Carrier Ops Mobile — Stop list and stop detail screens — StopListItem (sequence badge, type icon, status badge, doc indicator), dispatch detail page (progress bar, accent-highlighted active stop, FlashList), StopStatusButtons (Arrived/Complete with doc enforcement + 422 surfacing + haptics), stop detail page (facility info, Open in Maps, tappable phone, doc list, placeholders); added bolRequired/podRequired to CarrierStop schema + migration — 2 tasks, 4 files + 1 migration, ~7min
+- Quick-176 (2026-04-05): Carrier Ops Mobile — Document upload screen for stops — POST /api/mobile/carrier/driver/stops/[stopId]/documents (multipart, R2 presigned PUT, CarrierDocument record), StopDocumentUpload component (3-step: source→preview→upload, camera/gallery/PDF picker, progress bar, offline MMKV + NetInfo reconnect flush, haptic success + auto-back), upload.tsx screen, stop detail wired with correct documentType (BOL/POD) per stop type — 2 tasks, 4 files, ~7min
 
 ## Accumulated Context
 
