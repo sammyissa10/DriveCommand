@@ -1,5 +1,5 @@
 # DriveCommand — Technical Documentation
-*Last updated: March 31, 2026*
+*Last updated: April 5, 2026*
 
 ---
 
@@ -406,3 +406,59 @@ eas submit --platform android --latest
 | CRM | Customer database, interaction timeline, revenue analytics |
 | ELD Integrations | Samsara GPS sync, Motive GPS sync |
 | Admin | Tenant management, platform billing, system-wide support |
+| Carrier Operations | Client/contract management, route templates with RRULE recurrence, auto-dispatch, multi-stop execution, BOL/POD enforcement, 6 rate types, 5 pay models, compliance alerts |
+
+---
+
+## 10. Carrier Operations
+
+### Overview
+
+The Carrier Operations module adds a commercial and operational layer for trucking carriers. It separates commercial identity (clients, contracts, rate agreements) from operational execution (dispatches, stops, loads). This enables carriers to manage recurring customer relationships while executing individual dispatch runs independently.
+
+### Entity Hierarchy
+
+| Tier | Level | Entity | Purpose |
+|------|-------|--------|---------|
+| 1 | Commercial Identity | CarrierClient | Customer companies (shippers, brokers) |
+| 2 | Commercial Terms | CarrierContract | Rate agreements with clients (6 rate types) |
+| 3 | Operational Blueprint | CarrierRouteTemplate | Reusable route patterns with iCal RRULE recurrence |
+| 4 | Operational Instance | CarrierDispatch | Single execution of a template (immutable snapshot) |
+| 5 | Execution Steps | CarrierStop | Ordered pickup/delivery stops within a dispatch |
+| 6 | Transactional Leaves | CarrierLoad, CarrierDocument, CarrierPayRecord | Revenue items, BOL/POD docs, driver pay records |
+
+### Key API Routes
+
+| Route | Purpose |
+|-------|---------|
+| `/api/v1/carrier/clients` | Client CRUD |
+| `/api/v1/carrier/contracts` | Contract CRUD with rate type support |
+| `/api/v1/carrier/facilities` | Facility/location management |
+| `/api/v1/carrier/route-templates` | Route template CRUD with RRULE recurrence |
+| `/api/v1/carrier/dispatches` | Dispatch CRUD + auto-generation |
+| `/api/v1/carrier/stops` | Stop management within dispatches |
+| `/api/v1/carrier/loads` | Load CRUD with revenue calculation |
+| `/api/v1/carrier/documents` | BOL/POD document upload + enforcement |
+| `/api/v1/carrier/pay-records` | Driver pay record generation |
+| `/api/v1/carrier/compliance` | Compliance alerts |
+
+### Microflows
+
+1. **Auto-dispatch generation** — Generate dispatches from route templates for N days forward using iCal RRULE evaluation.
+2. **Stop completion with BOL/POD enforcement** — API returns 422 if a driver attempts to complete a delivery stop without uploading POD.
+3. **Load revenue calculation** — Computes revenue using one of 6 rate types: flat, per-mile, per-hour, per-ton, per-unit, or percentage.
+4. **Pay record generation** — Generates driver pay from completed loads using one of 5 pay models: flat, per-mile, percentage, per-stop, or hourly.
+5. **Document upload** — Typed document uploads (BOL, POD, rate confirmation) linked to stops or loads.
+
+### Mobile Extension
+
+Driver-facing carrier operations are surfaced in the mobile app. The driver sees assigned carrier dispatches in their dispatch list, can view the stop timeline, update stop status, upload BOL/POD documents via camera, and mark stops as arrived or departed. The feature uses the existing mobile infrastructure (Expo Router, TanStack Query, MMKV offline queue).
+
+### Critical Architectural Rules
+
+1. **No client_id on dispatches** — Dispatches are operational, not commercial. The client relationship lives on the contract, which lives on the route template. A dispatch is an immutable snapshot of a template execution.
+2. **No auto-sort stops by stop_type** — The `sequence` field is the source of truth for stop ordering. Pickup and delivery stops can be interleaved in any order the dispatcher sets.
+3. **Template edits don't affect existing dispatches** — Once a dispatch is generated from a template, it is an independent entity. Changing the template only affects future generations.
+4. **Computed fields stored, not recomputed** — Revenue, pay amounts, and distances are calculated once and stored. No re-computation at query time.
+5. **BOL/POD enforcement at API level** — Document requirements are enforced in API route handlers (returning 422), not via database constraints.
+6. **Orphan loads blocked** — Every CarrierLoad must have a client_id. The API rejects loads without client association.
