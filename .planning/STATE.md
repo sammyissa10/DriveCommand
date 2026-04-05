@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 159: Carrier Ops — API routes for facilities and route templates + dispatch generator
-Stopped at: Completed quick-159 — 8 files, facilities + route-templates CRUD REST API + dispatch-generator engine
+Last activity: 2026-04-05 - Completed quick task 160: Carrier Ops — API routes for dispatches + loads + revenue calculator
+Stopped at: Completed quick-160 — 9 files, dispatches CRUD + status machine, loads CRUD + revenue calculator (6 rate types + FSC)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -153,6 +153,7 @@ Progress: [███████████████████████
 - Quick-157 (2026-04-05): Carrier Ops — migration 014 + Prisma schema — 14 carrier models appended to schema.prisma — 2 tasks, 2 files
 - Quick-158 (2026-04-05): Carrier Ops — API routes for clients + contracts CRUD — 3 lib files + 4 route files, clients.ts, contracts.ts, withCarrierAuth HOF — 3 tasks, 7 files, ~5min
 - Quick-159 (2026-04-05): Carrier Ops — API routes for facilities + route templates + dispatch generator — facilities lib+routes, route-templates lib+routes, dispatch-generator engine (RRULE parser, conflict detection, address snapshot, load creation) — 3 tasks, 8 files, ~5min
+- Quick-160 (2026-04-05): Carrier Ops — API routes for dispatches + loads + revenue calculator — revenue-calculator.ts (6 rate types + FSC), dispatches.ts (state machine: planned→in_progress/cancelled/tonu, in_progress→completed), loads.ts (clientId required, contract auto-populate, LD-YYYY-NNNNN ref), 6 API route files — 3 tasks, 9 files, ~5min
 
 ## Accumulated Context
 
