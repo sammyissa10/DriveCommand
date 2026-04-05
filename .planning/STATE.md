@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 160: Carrier Ops — API routes for dispatches + loads + revenue calculator
-Stopped at: Completed quick-160 — 9 files, dispatches CRUD + status machine, loads CRUD + revenue calculator (6 rate types + FSC)
+Last activity: 2026-04-05 - Completed quick task 162: Carrier Ops — documents, expenses, pay-records API routes + nightly cron
+Stopped at: Completed quick-162 — 12 new files + 3 modified, Supabase Storage document microflow, expense CRUD+approval, 5-model pay calculator with relay mile-split, nightly carrier-auto-dispatch cron
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -154,6 +154,7 @@ Progress: [███████████████████████
 - Quick-158 (2026-04-05): Carrier Ops — API routes for clients + contracts CRUD — 3 lib files + 4 route files, clients.ts, contracts.ts, withCarrierAuth HOF — 3 tasks, 7 files, ~5min
 - Quick-159 (2026-04-05): Carrier Ops — API routes for facilities + route templates + dispatch generator — facilities lib+routes, route-templates lib+routes, dispatch-generator engine (RRULE parser, conflict detection, address snapshot, load creation) — 3 tasks, 8 files, ~5min
 - Quick-160 (2026-04-05): Carrier Ops — API routes for dispatches + loads + revenue calculator — revenue-calculator.ts (6 rate types + FSC), dispatches.ts (state machine: planned→in_progress/cancelled/tonu, in_progress→completed), loads.ts (clientId required, contract auto-populate, LD-YYYY-NNNNN ref), 6 API route files — 3 tasks, 9 files, ~5min
+- Quick-162 (2026-04-05): Carrier Ops — documents, expenses, pay-records API routes + nightly cron — documents.ts (Supabase Storage upload, path pattern {orgId}/{parentType}/{parentId}/{docType}/{uuid}.ext, org scoping through parent chain), expenses.ts (CRUD + auto-reimbursable on driver_cash + clientId propagation), pay-calculator.ts (5 pay models: per_mile/percentage_gross/hourly/flat_rate/team_split + relay mile-split at handoff stop), 9 API route files, carrier-auto-dispatch cron, stop-completion.ts + dispatches.ts wired — 3 tasks, 12 files created + 3 modified, ~7min
 
 ## Accumulated Context
 
@@ -197,6 +198,12 @@ Progress: [███████████████████████
 - router.navigate cast as 'never' to avoid expo-router strict typing on dynamic string route
 - openNavigation is fire-and-forget after query invalidation — does not block onStatusUpdated()
 - Android locked to Google Maps regardless of stored preference — enforced in getNavPreference()
+
+**Quick-162 decisions (Carrier Ops — documents/expenses/pay-records):**
+- Decimal import: Prisma.Decimal (from @/generated/prisma) not decimal.js — consistent with Prisma schema types
+- CarrierDocument has no orgId column — org scoping done by verifying parent chain (stop→dispatch→orgId, load→orgId, dispatch→orgId)
+- percentage_gross creates one DriverPayRecord per load on the dispatch (not one per dispatch)
+- dispatches.ts transitionDispatchStatus completion path also wired to generateDriverPayRecords (plan only mentioned stop-completion.ts)
 - Waze fallback goes to Apple Maps (iOS only) since Waze may not be installed
 
 **Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
