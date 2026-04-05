@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 180: Carrier Ops E2E integration test + Prisma @map schema fix (all 15 assertions pass)
+Last activity: 2026-04-05 - Completed quick task 181: Carrier Ops multi-tenancy + financial integrity audit (all 8 assertions pass)
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -919,6 +919,7 @@ None blocking immediate progress.
 | 170 | Carrier Ops — Dispatch detail page with stop timeline | 2026-04-05 | fc6c3ef | [170-carrier-ops-dispatch-detail-page-with-st](./quick/170-carrier-ops-dispatch-detail-page-with-st/) |
 | 171 | Carrier Ops — Document upload modal and expense log components | 2026-04-05 | 0186336 | [171-carrier-ops-document-upload-modal-and-ex](./quick/171-carrier-ops-document-upload-modal-and-ex/) |
 | 180 | Carrier Ops end-to-end integration test: contracted recurring route journey | 2026-04-05 | 9bdd5a6 | [180-carrier-ops-end-to-end-integration-test-](./quick/180-carrier-ops-end-to-end-integration-test-/) |
+| 181 | Carrier Ops — Multi-tenancy and financial integrity audit | 2026-04-05 | 4de9f89 | [181-carrier-ops-multi-tenancy-and-financial-](./quick/181-carrier-ops-multi-tenancy-and-financial-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
