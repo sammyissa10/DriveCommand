@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 162: Carrier Ops — documents, expenses, pay-records API routes + nightly cron
-Stopped at: Completed quick-162 — 12 new files + 3 modified, Supabase Storage document microflow, expense CRUD+approval, 5-model pay calculator with relay mile-split, nightly carrier-auto-dispatch cron
+Last activity: 2026-04-05 - Completed quick task 163: Carrier Ops — 4 report API endpoints (revenue, driver-pay, aging, performance)
+Stopped at: Completed quick-163 — 5 new files, SQL-aggregation reports library + 4 GET route handlers, dispatch_number extracted from notes tag via regexp_match
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -900,6 +900,8 @@ None blocking immediate progress.
 | 159 | Carrier Ops — API routes for facilities and route templates | 2026-04-05 | 0d02de2 | [159-carrier-ops-api-routes-for-facilities-an](./quick/159-carrier-ops-api-routes-for-facilities-an/) |
 | 160 | Carrier Ops — API routes for dispatches and loads | 2026-04-05 | 327c373 | [160-carrier-ops-api-routes-for-dispatches-an](./quick/160-carrier-ops-api-routes-for-dispatches-an/) |
 | 161 | Carrier Ops — API routes for stops including the Stop Completion Microflow | 2026-04-05 | 5196430 | [161-carrier-ops-api-routes-for-stops-includi](./quick/161-carrier-ops-api-routes-for-stops-includi/) |
+| 162 | Carrier Ops — documents, expenses, pay-records API routes + nightly cron | 2026-04-05 | — | [162-carrier-ops-documents-expenses-pay-recor](./quick/162-carrier-ops-documents-expenses-pay-recor/) |
+| 163 | Carrier Ops — 4 report API endpoints (revenue, driver-pay, aging, performance) | 2026-04-05 | 3f990c9 | [163-carrier-ops-reports-api-endpoints](./quick/163-carrier-ops-reports-api-endpoints/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
