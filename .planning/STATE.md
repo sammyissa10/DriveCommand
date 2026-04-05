@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 173: Carrier Ops — Compliance alert cron job
+Last activity: 2026-04-05 - Completed quick task 174: Carrier Ops Mobile — Auth flow and home screen for carrier driver dispatches
 Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -158,6 +158,7 @@ Progress: [███████████████████████
 - Quick-164 (2026-04-05): Carrier Ops — facilities management web UI — FacilityList (search+type filter table), FacilityForm (controlled state POST/PATCH), FacilitySearchModal (Dialog+debounce, exports FacilitySearchResult type), 3 server pages (/carrier/facilities list+create+[id]), DeleteFacilityButton, Carrier Ops sidebar section (8 items gated to OWNER/MANAGER) — 2 tasks, 8 files, ~20min
 - Quick-172 (2026-04-05): Carrier Ops — Reports pages and carrier dashboard — compliance-alerts API (CDL/registration/insurance/license/contract expiry), AlertBar + TodayDispatches + KPIStrip dashboard components, carrier dashboard page, 4 report pages (revenue w/ Recharts bar chart + CSV export, driver-pay w/ bulk approve, aging w/ credit-limit highlight + summary row, performance w/ on-time % color coding) — 2 tasks, 10 files, ~7min
 - Quick-173 (2026-04-05): Carrier Ops — Compliance alert cron job — POST /api/cron/carrier-compliance-alerts (CRON_SECRET guard, auto-creates carrier_compliance_alert_log table, iterates all active orgs with isolated try/catch, logs alerts via parameterized SQL), vercel.json cron at 0 6 * * * (06:00 UTC daily) — 1 task, 2 files, ~76s
+- Quick-174 (2026-04-05): Carrier Ops Mobile — Auth flow and home screen for carrier driver dispatches — GET /api/mobile/carrier/driver/dispatches (list + detail), carrierDriverApi (6 typed methods in packages/api-client), carrier Stack navigator + home screen (active dispatch card, upcoming FlashList, pull-to-refresh, empty state), hidden carrier tab route — 2 tasks, 5 files, ~20min
 
 ## Accumulated Context
 
