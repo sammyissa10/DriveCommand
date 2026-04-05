@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-
-// TODO: import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
-// This module is built in a later task. Stub the import to avoid breaking the build.
+import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -270,7 +268,11 @@ export async function transitionDispatchStatus(
       },
     });
 
-    // TODO: call generateDriverPayRecords(orgId, id) — pay-calculator module built in later task
+    try {
+      await generateDriverPayRecords(orgId, id);
+    } catch (err) {
+      logger.error('transitionDispatchStatus: generateDriverPayRecords failed', err);
+    }
     logger.info('transitionDispatchStatus: completed dispatch', { orgId, dispatchId: id });
 
     return { id: updated.id, status: updated.status, notes: updated.notes };

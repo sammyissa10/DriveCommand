@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
+import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import type { CarrierStop } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
@@ -186,7 +187,11 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
       },
     });
 
-    // TODO: call generateDriverPayRecords from pay-calculator.ts when built
+    try {
+      await generateDriverPayRecords(orgId, stop.dispatchId);
+    } catch (err) {
+      logger.error('completeStop: generateDriverPayRecords failed', err);
+    }
     logger.info('completeStop: dispatch marked completed', { orgId, dispatchId: stop.dispatchId });
   }
 
