@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -111,6 +112,7 @@ interface StopTimelineCardProps {
   facility: { name: string; addressLine1: string | null; city: string | null; state: string | null } | null;
   dispatchStatus: string;
   userRole: string;
+  onStopUpdated?: () => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -127,6 +129,7 @@ export function StopTimelineCard({
   facility,
   dispatchStatus,
   userRole,
+  onStopUpdated,
 }: StopTimelineCardProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -360,13 +363,12 @@ export function StopTimelineCard({
                       : '(required)'
                     : '(optional)'}
                 </span>
-                <button
-                  disabled
-                  className="text-xs text-muted-foreground/50 cursor-not-allowed underline"
-                  title="Document upload coming soon"
-                >
-                  Upload
-                </button>
+                <DocumentUploadModal
+                  parentType="stop"
+                  parentId={stop.id}
+                  documentType="bol"
+                  onSuccess={() => onStopUpdated?.()}
+                />
               </div>
             )}
 
@@ -389,13 +391,12 @@ export function StopTimelineCard({
                       : '(required)'
                     : '(optional)'}
                 </span>
-                <button
-                  disabled
-                  className="text-xs text-muted-foreground/50 cursor-not-allowed underline"
-                  title="Document upload coming soon"
-                >
-                  Upload
-                </button>
+                <DocumentUploadModal
+                  parentType="stop"
+                  parentId={stop.id}
+                  documentType="pod"
+                  onSuccess={() => onStopUpdated?.()}
+                />
               </div>
             )}
           </div>
