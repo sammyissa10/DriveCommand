@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 177: Carrier Ops Mobile — Expense log screen for drivers
-Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
+Last activity: 2026-04-05 - Completed quick task 178: Carrier fleet management pages (carrier drivers + trucks)
+Stopped at: Completed quick-178 — 14 files (2 lib modules + 4 API routes + 4 components + 4 pages), carrier fleet CRUD with expiry color coding and dispatch history
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
