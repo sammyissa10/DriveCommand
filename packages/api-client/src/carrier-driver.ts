@@ -73,6 +73,7 @@ export interface CarrierExpenseSummary {
   expenseType: string
   amount: string
   currency: string
+  paidBy: string
   notes: string | null
   createdAt: string
   reimbursable: boolean
