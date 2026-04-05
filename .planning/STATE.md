@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 166: Carrier Ops — Stop Builder drag-and-drop component
+Last activity: 2026-04-05 - Completed quick task 167: Carrier Ops — Route Templates create/edit pages
 Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -905,6 +905,7 @@ None blocking immediate progress.
 | 163 | Carrier Ops — 4 report API endpoints (revenue, driver-pay, aging, performance) | 2026-04-05 | 3f990c9 | [163-carrier-ops-reports-api-endpoints](./quick/163-carrier-ops-reports-api-endpoints/) |
 | 165 | Carrier Ops — Clients and Contracts pages | 2026-04-05 | 5a94658 | [165-carrier-ops-clients-and-contracts-pages](./quick/165-carrier-ops-clients-and-contracts-pages/) |
 | 166 | Carrier Ops — Stop Builder drag-and-drop component | 2026-04-05 | 57ae2a5 | [166-carrier-ops-stop-builder-drag-and-drop-c](./quick/166-carrier-ops-stop-builder-drag-and-drop-c/) |
+| 167 | Carrier Ops — Route Templates create/edit pages | 2026-04-05 | 8da9d19 | [167-carrier-ops-route-templates-create-edit-](./quick/167-carrier-ops-route-templates-create-edit-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
