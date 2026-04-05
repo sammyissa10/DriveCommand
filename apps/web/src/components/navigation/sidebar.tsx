@@ -42,11 +42,15 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { UserRole } from "@/lib/auth/roles"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { PermissionGuard } from "@/lib/auth/guards"
+import { DispatchBadge } from "@/components/navigation/dispatch-badge"
 
 interface AppSidebarProps {
   supportBadge?: React.ReactNode;
@@ -375,18 +379,20 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
+                {/* Dashboard */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith("/carrier/facilities")}
-                    tooltip="Facilities"
+                    isActive={pathname.startsWith("/carrier/dashboard")}
+                    tooltip="Dashboard"
                   >
-                    <Link href="/carrier/facilities" onClick={handleNavClick}>
-                      <Warehouse />
-                      <span>Facilities</span>
+                    <Link href="/carrier/dashboard" onClick={handleNavClick}>
+                      <LayoutDashboard />
+                      <span>Dashboard</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Clients */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -399,6 +405,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Contracts */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -411,6 +418,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Templates */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -423,6 +431,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Dispatches with live needs-assignment badge */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -432,9 +441,11 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     <Link href="/carrier/dispatches" onClick={handleNavClick}>
                       <Truck />
                       <span>Dispatches</span>
+                      <DispatchBadge />
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Loads */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     asChild
@@ -447,29 +458,99 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {/* Fleet sub-group */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/carrier/fleet")}
+                    isActive={pathname.startsWith("/carrier/fleet") || pathname.startsWith("/carrier/facilities")}
                     tooltip="Fleet"
                   >
-                    <Link href="/carrier/fleet" onClick={handleNavClick}>
-                      <Boxes />
-                      <span>Fleet</span>
-                    </Link>
+                    <Boxes />
+                    <span>Fleet</span>
                   </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname.startsWith("/carrier/fleet/drivers")}
+                      >
+                        <Link href="/carrier/fleet/drivers" onClick={handleNavClick}>
+                          Drivers
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname.startsWith("/carrier/fleet/trucks")}
+                      >
+                        <Link href="/carrier/fleet/trucks" onClick={handleNavClick}>
+                          Trucks
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname.startsWith("/carrier/facilities")}
+                      >
+                        <Link href="/carrier/facilities" onClick={handleNavClick}>
+                          Facilities
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
                 </SidebarMenuItem>
+                {/* Reports sub-group */}
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    asChild
                     isActive={pathname.startsWith("/carrier/reports")}
                     tooltip="Reports"
                   >
-                    <Link href="/carrier/reports" onClick={handleNavClick}>
-                      <BarChart3 />
-                      <span>Reports</span>
-                    </Link>
+                    <BarChart3 />
+                    <span>Reports</span>
                   </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname === "/carrier/reports/revenue"}
+                      >
+                        <Link href="/carrier/reports/revenue" onClick={handleNavClick}>
+                          Revenue
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname === "/carrier/reports/driver-pay"}
+                      >
+                        <Link href="/carrier/reports/driver-pay" onClick={handleNavClick}>
+                          Driver Pay
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname === "/carrier/reports/aging"}
+                      >
+                        <Link href="/carrier/reports/aging" onClick={handleNavClick}>
+                          AR Aging
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={pathname === "/carrier/reports/performance"}
+                      >
+                        <Link href="/carrier/reports/performance" onClick={handleNavClick}>
+                          Performance
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
