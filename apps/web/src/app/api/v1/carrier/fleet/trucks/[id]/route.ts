@@ -1,0 +1,77 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getSession } from '@/lib/auth/supabase';
+import { logger } from '@/lib/logger';
+import { getCarrierTruck, updateCarrierTruck } from '@/lib/carrier/fleet-trucks';
+
+const CarrierTruckUpdateSchema = z.object({
+  unitNumber: z.string().min(1).optional(),
+  vin: z.string().optional(),
+  year: z.number().int().optional(),
+  make: z.string().optional(),
+  model: z.string().optional(),
+  truckType: z
+    .enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck'])
+    .optional(),
+  grossWeightLbs: z.number().int().optional(),
+  payloadCapacityLbs: z.number().int().optional(),
+  currentOdometerMiles: z.number().int().optional(),
+  licensePlate: z.string().optional(),
+  licenseState: z.string().max(2).optional(),
+  registrationExpiry: z.string().optional(),
+  licenseExpiry: z.string().optional(),
+  insuranceExpiry: z.string().optional(),
+  status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
+  notes: z.string().optional(),
+});
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const orgId = session.tenantId;
+  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+
+  try {
+    const { id } = await params;
+    const truck = await getCarrierTruck(orgId, id);
+    if (!truck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    return NextResponse.json({ data: truck });
+  } catch (err) {
+    logger.error('GET /api/v1/carrier/fleet/trucks/[id] failed', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const orgId = session.tenantId;
+  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    const parsed = CarrierTruckUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+
+    const truck = await updateCarrierTruck(orgId, id, parsed.data);
+    if (!truck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    return NextResponse.json({ data: truck });
+  } catch (err) {
+    logger.error('PATCH /api/v1/carrier/fleet/trucks/[id] failed', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
