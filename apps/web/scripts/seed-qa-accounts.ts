@@ -230,7 +230,7 @@ async function seedTenant1(): Promise<void> {
       data: {
         orgId: tenantId,
         unitNumber: 'UNIT-QA-01',
-        truckType: 'day_cab',
+        truckType: 'semi',
         year: 2022,
         make: 'Kenworth',
         model: 'T680',
