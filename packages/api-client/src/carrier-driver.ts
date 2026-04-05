@@ -105,6 +105,7 @@ export interface ExpenseInput {
   expenseType: string
   amount: number
   paidBy: string
+  reimbursable: boolean
   notes?: string
   stopId?: string
 }
