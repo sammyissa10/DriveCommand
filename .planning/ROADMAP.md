@@ -2,13 +2,14 @@
 
 ## Overview
 
-DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads. v5.0 extends DriveCommand into native iOS and Android applications via React Native + Expo — driver and owner portals rebuilt for mobile with background GPS, push notifications, offline support, document camera, and App Store/Play Store distribution.
+DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads. v4.0 adds carrier operations with commercial client/contract management, route templates with iCal recurrence, auto-dispatch generation, and multi-stop execution with BOL/POD enforcement. v5.0 extends DriveCommand into native iOS and Android applications via React Native + Expo — driver and owner portals rebuilt for mobile with background GPS, push notifications, offline support, document camera, and App Store/Play Store distribution.
 
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** — Phases 1-10 (shipped 2026-02-15)
 - ✅ **v2.0 Samsara-Inspired Fleet Intelligence** — Phases 11-15 (shipped 2026-02-16)
 - ✅ **v3.0 Route Finance & Driver Documents** — Phases 16-18 (shipped 2026-02-17)
+- ✅ **v4.0 Carrier Operations** — 5 build phases + quick tasks 161-181 (shipped 2026-04-05)
 - ⬜ **v5.0 DriveCommand Mobile** — Phases 29-39 (target: 9-10 weeks from kickoff)
 
 ## Phases
@@ -89,6 +90,11 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 27. Automated Playwright E2E Tests | v4.0 | 0/3 | �—� Planned | — |
 | 28. Driver History | v4.0 | 2/2 | ✓ Complete | 2026-03-21 |
+| Carrier Ops P1: DB Schema | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P2: Service Layer | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P3: API Routes | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P4: Web UI | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P5: Mobile + Tests | v4.0 | —/— | ✓ Complete | 2026-04-05 |
 | 29. Monorepo Foundation + Expo Scaffold | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 31. Driver Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 32. Driver HOS + Incident Reporting | v5.0 | 4/4 | ✓ Complete | 2026-03-23 |
