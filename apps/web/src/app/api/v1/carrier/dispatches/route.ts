@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
     const dateFrom = searchParams.get('date_from') ?? undefined;
     const dateTo = searchParams.get('date_to') ?? undefined;
     const driverId = searchParams.get('driver_id') ?? undefined;
+    const routeTemplateId = searchParams.get('route_template_id') ?? undefined;
     const needsAssignmentRaw = searchParams.get('needs_assignment');
     const needsAssignment =
       needsAssignmentRaw === 'true' ? true : needsAssignmentRaw === 'false' ? false : undefined;
@@ -41,6 +42,7 @@ export async function GET(req: NextRequest) {
       dateFrom,
       dateTo,
       driverId,
+      routeTemplateId,
       needsAssignment,
       page,
       pageSize,

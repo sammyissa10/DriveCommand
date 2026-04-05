@@ -16,6 +16,7 @@ export interface ListDispatchesFilters {
   dateFrom?: string;
   dateTo?: string;
   driverId?: string;
+  routeTemplateId?: string;
   needsAssignment?: boolean;
   page?: number;
   pageSize?: number;
@@ -53,6 +54,7 @@ export async function listDispatches(orgId: string, filters: ListDispatchesFilte
     dateFrom,
     dateTo,
     driverId,
+    routeTemplateId,
     needsAssignment,
     page = 1,
     pageSize = 50,
@@ -80,9 +82,13 @@ export async function listDispatches(orgId: string, filters: ListDispatchesFilte
 
   const where: Record<string, unknown> = {
     orgId,
-    scheduledDeparture: { gte: dateFromResolved, lte: dateToResolved },
+    // When filtering by routeTemplateId, skip the default date filter so all related dispatches are returned
+    ...(routeTemplateId
+      ? {}
+      : { scheduledDeparture: { gte: dateFromResolved, lte: dateToResolved } }),
     ...(status ? { status } : {}),
     ...(driverId ? { primaryDriverId: driverId } : {}),
+    ...(routeTemplateId ? { routeTemplateId } : {}),
     ...(needsAssignment ? { notes: { contains: 'needs_assignment=true' } } : {}),
   };
 
