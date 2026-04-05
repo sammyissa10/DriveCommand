@@ -49,6 +49,10 @@ export interface CarrierDispatchDetailStop {
   contactName: string | null
   contactPhone: string | null
   specialInstructions: string | null
+  bolRequired: boolean
+  bolUploaded: boolean
+  podRequired: boolean
+  podUploaded: boolean
   bolNumber: string | null
   podNumber: string | null
   sealNumber: string | null
