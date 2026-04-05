@@ -1586,6 +1586,8 @@ model CarrierStop {
   bolNumber            String?
   podNumber            String?
   sealNumber           String?
+  bolRequired          Boolean   @default(true)
+  podRequired          Boolean   @default(true)
   contactName          String?
   contactPhone         String?
   specialInstructions  String?
