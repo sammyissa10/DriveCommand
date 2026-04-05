@@ -4,7 +4,6 @@ import {
   Text,
   Pressable,
   ScrollView,
-  Alert,
   StyleSheet,
 } from 'react-native'
 import * as Linking from 'expo-linking'
@@ -191,7 +190,7 @@ export default function StopDetailScreen() {
   }
 
   const handleLogExpense = () => {
-    Alert.alert('Coming Soon', 'Expense logging will be available soon.')
+    router.push(`/carrier/dispatch/${id}/expenses?stopId=${stopId}` as Parameters<typeof router.push>[0])
   }
 
   return (
