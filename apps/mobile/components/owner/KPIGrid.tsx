@@ -40,7 +40,7 @@ export function KPIGrid({
           onPress={onPressLoads}
         />
         <KPICard
-          label="Available"
+          label="Avail. Drivers"
           value={kpis.availableDrivers}
           valueColor={colors.brandLight}
           icon={<UserCheck color={colors.brandLight} size={16} />}

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { ArrowRight } from 'lucide-react-native'
+import { ChevronRight, MapPin, Navigation } from 'lucide-react-native'
 import { Badge } from '../ui/Badge'
-import { colors, radii, spacing, typography } from '../../constants/tokens'
+import { colors } from '../../constants/tokens'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -34,41 +34,41 @@ export function TripCard({
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.container,
-        { borderColor: accentColor + '40' },
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.container, { borderColor: accentColor + '35' }, pressed && styles.pressed]}
     >
       {/* Accent bar */}
       <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
       <View style={styles.inner}>
-        {/* Label row */}
+        {/* Label + badge */}
         <View style={styles.labelRow}>
-          <Text style={styles.label}>{label}</Text>
+          <Text style={styles.label}>{label.toUpperCase()}</Text>
           <Badge label={statusBadge.label} variant={statusBadge.variant} />
         </View>
 
-        {/* Title */}
-        <Text style={styles.title}>{title}</Text>
-
-        {/* Subtitle (optional) */}
-        {subtitle ? (
-          <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
-        ) : null}
-
-        {/* Origin → Destination */}
-        <View style={styles.routeRow}>
-          <Text style={styles.routeText} numberOfLines={1}>{origin}</Text>
-          <ArrowRight color={colors.textTertiary} size={14} style={styles.routeArrow} />
-          <Text style={[styles.routeText, styles.routeTextRight]} numberOfLines={1}>{destination}</Text>
+        {/* Title + subtitle on the same row */}
+        <View style={styles.titleRow}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text> : null}
         </View>
 
-        {/* Link row */}
+        {/* Route */}
+        <View style={styles.routeWrap}>
+          <View style={styles.routeRow}>
+            <MapPin color={colors.success} size={13} style={styles.routeIcon} />
+            <Text style={styles.routeText} numberOfLines={1}>{origin}</Text>
+          </View>
+          <View style={styles.routeLine} />
+          <View style={styles.routeRow}>
+            <Navigation color={accentColor} size={13} style={styles.routeIcon} />
+            <Text style={styles.routeText} numberOfLines={1}>{destination}</Text>
+          </View>
+        </View>
+
+        {/* Link */}
         <View style={styles.linkRow}>
           <Text style={[styles.linkText, { color: linkColor }]}>{linkText}</Text>
-          <ArrowRight color={linkColor} size={12} />
+          <ChevronRight color={linkColor} size={14} />
         </View>
       </View>
     </Pressable>
@@ -78,10 +78,9 @@ export function TripCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.surfaceCard,
-    borderRadius: radii.xl,
+    borderRadius: 16,
     borderWidth: 1,
-    padding: spacing.lg,
-    marginBottom: spacing.xl,
+    marginBottom: 16,
     overflow: 'hidden',
   },
   pressed: {
@@ -92,61 +91,79 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    width: 3,
-    borderTopLeftRadius: radii.xl,
-    borderBottomLeftRadius: radii.xl,
+    width: 4,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
   },
   inner: {
-    paddingLeft: spacing.sm,
+    paddingLeft: 20,
+    paddingRight: 16,
+    paddingTop: 16,
+    paddingBottom: 14,
   },
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: spacing.sm,
+    marginBottom: 8,
   },
   label: {
-    ...typography.caption1,
-    color: colors.textSecondary,
-    fontWeight: '500',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.textMuted,
+    letterSpacing: 1.2,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+    marginBottom: 2,
+    flexWrap: 'nowrap',
   },
   title: {
-    ...typography.headline,
+    fontSize: 20,
+    fontWeight: '800',
     color: colors.textPrimary,
-    marginBottom: spacing.xs,
+    letterSpacing: -0.3,
+    flexShrink: 1,
   },
   subtitle: {
-    ...typography.subhead,
+    fontSize: 12,
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
+    flexShrink: 1,
+  },
+  routeWrap: {
+    marginTop: 12,
+    gap: 0,
   },
   routeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.sm,
+    gap: 8,
+  },
+  routeIcon: {
+    flexShrink: 0,
+  },
+  routeLine: {
+    width: 1.5,
+    height: 10,
+    backgroundColor: colors.border,
+    marginLeft: 6,
   },
   routeText: {
-    ...typography.subhead,
+    fontSize: 13,
     color: colors.textSecondary,
     flex: 1,
-  },
-  routeTextRight: {
-    textAlign: 'right',
-  },
-  routeArrow: {
-    marginHorizontal: spacing.sm,
   },
   linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: spacing.md,
+    marginTop: 14,
+    gap: 2,
   },
   linkText: {
-    ...typography.caption1,
-    fontWeight: '500',
-    marginRight: spacing.xs,
+    fontSize: 13,
+    fontWeight: '600',
   },
 })

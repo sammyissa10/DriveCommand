@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useMutation } from '@tanstack/react-query'
 import { ChevronLeft } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
@@ -40,7 +40,13 @@ const labelStyle = {
 
 export default function InviteDriverScreen() {
   const router = useRouter()
+  const { from } = useLocalSearchParams<{ from?: string }>()
   const { token } = useAuthContext()
+
+  function goBack() {
+    if (from === 'dashboard') router.replace('/(owner)/' as any)
+    else router.back()
+  }
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -63,7 +69,7 @@ export default function InviteDriverScreen() {
         text2: `${firstName} will receive an email to join.`,
         visibilityTime: 3000,
       })
-      router.back()
+      goBack()
     },
     onError: (err: Error) => {
       haptic.error()
@@ -94,7 +100,7 @@ export default function InviteDriverScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#1e293b' }}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={goBack}
           disabled={isPending}
           hitSlop={8}
           style={{ marginRight: 12 }}

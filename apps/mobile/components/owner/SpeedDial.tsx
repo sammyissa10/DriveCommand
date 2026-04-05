@@ -91,7 +91,7 @@ export function SpeedDial({ actions, onAction, onSupportPress }: SpeedDialProps)
                 style={styles.actionRow}
               >
                 <View style={styles.actionLabel}>
-                  <Text style={styles.actionLabelText}>{action.label}</Text>
+                  <Text style={styles.actionLabelText} numberOfLines={1}>{action.label}</Text>
                 </View>
                 <View
                   style={[

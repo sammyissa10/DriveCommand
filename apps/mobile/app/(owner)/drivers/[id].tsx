@@ -17,16 +17,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertTriangle,
   ArrowLeft,
+  BedDouble,
   ChevronRight,
+  Clock,
   FileText,
   Mail,
   MessageSquare,
   Package,
   Pencil,
   Phone,
+  Plus,
   ShieldAlert,
   ShieldCheck,
   ShieldX,
+  Truck,
+  Zap,
 } from 'lucide-react-native'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
@@ -37,244 +42,176 @@ import { Skeleton } from '../../../components/ui/Skeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ─── Tokens ──────────────────────────────────────────────────────────────────
+
+const C = {
+  bg:        '#0b1120',
+  surface:   '#131f30',
+  card:      '#1a2840',
+  border:    '#243248',
+  borderSub: '#1e293b',
+  text:      '#f1f5f9',
+  textSub:   '#94a3b8',
+  textMuted: '#475569',
+  brand:     '#38bdf8',
+  brandDim:  '#38bdf818',
+  success:   '#22c55e',
+  warning:   '#f59e0b',
+  danger:    '#ef4444',
+} as const
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
 function getAvatarColor(name: string): string {
-  const COLORS = [
-    '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981',
-    '#ef4444', '#ec4899', '#06b6d4', '#f97316',
-  ]
-  let hash = 0
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  return COLORS[Math.abs(hash) % COLORS.length]
+  const PALETTE = ['#0ea5e9','#8b5cf6','#f59e0b','#10b981','#ef4444','#ec4899','#06b6d4','#f97316']
+  let h = 0
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h)
+  return PALETTE[Math.abs(h) % PALETTE.length]
 }
 
 function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/)
-  if (parts.length === 0) return '?'
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+  const p = name.trim().split(/\s+/)
+  if (!p.length) return '?'
+  if (p.length === 1) return p[0][0].toUpperCase()
+  return (p[0][0] + p[p.length - 1][0]).toUpperCase()
 }
 
-function getHOSInfo(hosStatus: string | null): { label: string; color: string } {
-  switch (hosStatus) {
-    case 'DRIVING':      return { label: 'Driving',  color: '#22c55e' }
-    case 'ON_DUTY':      return { label: 'On Duty',  color: '#38bdf8' }
-    case 'SLEEPER_BERTH':return { label: 'Sleeper',  color: '#8b5cf6' }
-    default:             return { label: 'Off Duty', color: '#475569' }
+type HOSInfo = { label: string; color: string; bg: string; Icon: React.ComponentType<{ color: string; size: number }> }
+function getHOS(s: string | null): HOSInfo {
+  switch (s) {
+    case 'DRIVING':       return { label: 'Driving',       color: '#22c55e', bg: '#22c55e1a', Icon: Truck }
+    case 'ON_DUTY':       return { label: 'On Duty',       color: '#38bdf8', bg: '#38bdf81a', Icon: Zap }
+    case 'SLEEPER_BERTH': return { label: 'Sleeper Berth', color: '#a78bfa', bg: '#a78bfa1a', Icon: BedDouble }
+    default:              return { label: 'Off Duty',      color: '#64748b', bg: '#64748b1a', Icon: Clock }
   }
 }
 
-function getStatusBadge(status: string): { label: string; variant: BadgeVariant } {
-  switch (status) {
-    case 'PENDING':    return { label: 'Pending',    variant: 'muted' }
-    case 'DISPATCHED': return { label: 'Accepted',   variant: 'info' }
-    case 'PICKED_UP':  return { label: 'Picked Up',  variant: 'warning' }
-    case 'IN_TRANSIT': return { label: 'En Route',   variant: 'warning' }
-    case 'DELIVERED':  return { label: 'Delivered',  variant: 'success' }
-    case 'INVOICED':   return { label: 'Invoiced',   variant: 'success' }
-    case 'CANCELLED':  return { label: 'Cancelled',  variant: 'danger' }
-    default:           return { label: status,       variant: 'muted' }
+function getLoadBadge(s: string): { label: string; variant: BadgeVariant } {
+  switch (s) {
+    case 'PENDING':    return { label: 'Pending',   variant: 'muted' }
+    case 'DISPATCHED': return { label: 'Accepted',  variant: 'info' }
+    case 'PICKED_UP':  return { label: 'Picked Up', variant: 'warning' }
+    case 'IN_TRANSIT': return { label: 'En Route',  variant: 'warning' }
+    case 'DELIVERED':  return { label: 'Delivered', variant: 'success' }
+    case 'INVOICED':   return { label: 'Invoiced',  variant: 'success' }
+    case 'CANCELLED':  return { label: 'Cancelled', variant: 'danger' }
+    default:           return { label: s,           variant: 'muted' }
   }
 }
 
-function getDocBadge(status: OwnerDriverDocument['status']): { label: string; variant: BadgeVariant } {
-  switch (status) {
+function getDocBadge(s: OwnerDriverDocument['status']): { label: string; variant: BadgeVariant } {
+  switch (s) {
     case 'EXPIRED':  return { label: 'Expired',       variant: 'danger' }
     case 'EXPIRING': return { label: 'Expiring Soon', variant: 'warning' }
     default:         return { label: 'Valid',          variant: 'success' }
   }
 }
 
-function getIncidentSeverityColor(severity: string): string {
-  switch (severity) {
-    case 'HIGH':   return '#ef4444'
-    case 'MEDIUM': return '#f59e0b'
-    default:       return '#64748b'
-  }
+function getSeverityColor(s: string) {
+  return s === 'HIGH' ? C.danger : s === 'MEDIUM' ? C.warning : C.textMuted
 }
 
-function formatDate(iso: string | null | undefined): string {
+function fmtDate(iso: string | null | undefined): string {
   if (!iso) return '—'
-  try {
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  } catch { return '—' }
+  try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }
+  catch { return '—' }
 }
 
-function toTitleCase(str: string): string {
-  return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+function titleCase(s: string) { return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) }
+
+function parseName(full: string) {
+  const p = full.trim().split(/\s+/)
+  if (!p.length) return { firstName: '', lastName: '' }
+  if (p.length === 1) return { firstName: p[0], lastName: '' }
+  return { firstName: p[0], lastName: p.slice(1).join(' ') }
 }
 
-/** Parse a full name string into firstName / lastName parts. */
-function parseName(fullName: string): { firstName: string; lastName: string } {
-  const parts = fullName.trim().split(/\s+/)
-  if (parts.length === 0) return { firstName: '', lastName: '' }
-  if (parts.length === 1) return { firstName: parts[0], lastName: '' }
-  return { firstName: parts[0], lastName: parts.slice(1).join(' ') }
-}
+// ─── Section header ───────────────────────────────────────────────────────────
 
-// ---------------------------------------------------------------------------
-// Section label
-// ---------------------------------------------------------------------------
-
-function SectionLabel({ title }: { title: string }) {
+function Section({ title }: { title: string }) {
   return (
-    <Text style={{
-      color: '#475569',
-      fontSize: 11,
-      fontWeight: '600',
-      textTransform: 'uppercase',
-      letterSpacing: 0.8,
-      marginBottom: 8,
-      marginTop: 24,
-      paddingHorizontal: 16,
-    }}>
-      {title}
-    </Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
+      <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.4 }}>
+        {title}
+      </Text>
+      <View style={{ flex: 1, height: 1, backgroundColor: C.border, marginLeft: 12 }} />
+    </View>
   )
 }
 
-// ---------------------------------------------------------------------------
-// EditDriverSheet
-// ---------------------------------------------------------------------------
+// ─── Edit sheet ───────────────────────────────────────────────────────────────
 
-const inputStyle = {
-  backgroundColor: '#1e293b',
+const INPUT = {
+  backgroundColor: C.bg,
   borderWidth: 1,
-  borderColor: '#334155',
-  color: '#fff',
+  borderColor: C.border,
+  color: C.text,
   borderRadius: 12,
   paddingHorizontal: 16,
   paddingVertical: 14,
-  fontSize: 14,
+  fontSize: 15,
 } as const
 
-const labelStyle = {
-  color: '#94a3b8',
+const LABEL = {
+  color: C.textSub,
   fontSize: 11,
   fontWeight: '600' as const,
   textTransform: 'uppercase' as const,
-  letterSpacing: 0.5,
-  marginBottom: 6,
+  letterSpacing: 0.6,
+  marginBottom: 8,
 }
 
-interface EditDriverSheetProps {
+interface EditSheetProps {
   visible: boolean
   onClose: () => void
   initialData: { firstName: string; lastName: string; licenseNumber: string | null }
-  onSave: (payload: UpdateDriverPayload) => void
+  onSave: (p: UpdateDriverPayload) => void
   isPending: boolean
 }
 
-function EditDriverSheet({ visible, onClose, initialData, onSave, isPending }: EditDriverSheetProps) {
+function EditDriverSheet({ visible, onClose, initialData, onSave, isPending }: EditSheetProps) {
   const [firstName, setFirstName] = useState(initialData.firstName)
-  const [lastName, setLastName] = useState(initialData.lastName)
-  const [licenseNumber, setLicenseNumber] = useState(initialData.licenseNumber ?? '')
+  const [lastName, setLastName]   = useState(initialData.lastName)
+  const [license, setLicense]     = useState(initialData.licenseNumber ?? '')
 
   useEffect(() => {
     if (visible) {
       setFirstName(initialData.firstName)
       setLastName(initialData.lastName)
-      setLicenseNumber(initialData.licenseNumber ?? '')
+      setLicense(initialData.licenseNumber ?? '')
     }
   }, [visible])
 
-  function handleSave() {
+  function save() {
     if (!firstName.trim() || !lastName.trim()) {
-      Toast.show({
-        type: 'error',
-        text1: 'Missing fields',
-        text2: 'First name and last name are required.',
-        visibilityTime: 3000,
-      })
+      Toast.show({ type: 'error', text1: 'Missing fields', text2: 'First and last name are required.', visibilityTime: 3000 })
       return
     }
-    const payload: UpdateDriverPayload = {
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      licenseNumber: licenseNumber.trim() || null,
-    }
-    onSave(payload)
+    onSave({ firstName: firstName.trim(), lastName: lastName.trim(), licenseNumber: license.trim() || null })
   }
 
   return (
     <BottomSheet visible={visible} onClose={onClose} title="Edit Driver" snapPoint="80%">
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 16 }}
-        >
-          {/* First Name + Last Name row */}
-          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 14 }}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 16 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
             <View style={{ flex: 1 }}>
-              <Text style={labelStyle}>First Name <Text style={{ color: '#f87171' }}>*</Text></Text>
-              <TextInput
-                style={inputStyle}
-                placeholder="John"
-                placeholderTextColor="#475569"
-                value={firstName}
-                onChangeText={setFirstName}
-                autoCapitalize="words"
-                editable={!isPending}
-              />
+              <Text style={LABEL}>First Name <Text style={{ color: C.danger }}>*</Text></Text>
+              <TextInput style={INPUT} placeholder="John" placeholderTextColor={C.textMuted} value={firstName} onChangeText={setFirstName} autoCapitalize="words" editable={!isPending} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={labelStyle}>Last Name <Text style={{ color: '#f87171' }}>*</Text></Text>
-              <TextInput
-                style={inputStyle}
-                placeholder="Smith"
-                placeholderTextColor="#475569"
-                value={lastName}
-                onChangeText={setLastName}
-                autoCapitalize="words"
-                editable={!isPending}
-              />
+              <Text style={LABEL}>Last Name <Text style={{ color: C.danger }}>*</Text></Text>
+              <TextInput style={INPUT} placeholder="Smith" placeholderTextColor={C.textMuted} value={lastName} onChangeText={setLastName} autoCapitalize="words" editable={!isPending} />
             </View>
           </View>
-
-          {/* License Number */}
-          <View style={{ marginBottom: 24 }}>
-            <Text style={labelStyle}>
-              License Number{' '}
-              <Text style={{ color: '#475569', fontWeight: '400', textTransform: 'none' }}>(optional)</Text>
-            </Text>
-            <TextInput
-              style={inputStyle}
-              placeholder="DL-12345"
-              placeholderTextColor="#475569"
-              value={licenseNumber}
-              onChangeText={setLicenseNumber}
-              autoCapitalize="characters"
-              editable={!isPending}
-            />
+          <View style={{ marginBottom: 28 }}>
+            <Text style={LABEL}>License # <Text style={{ color: C.textMuted, fontWeight: '400', textTransform: 'none' }}>(optional)</Text></Text>
+            <TextInput style={INPUT} placeholder="DL-12345" placeholderTextColor={C.textMuted} value={license} onChangeText={setLicense} autoCapitalize="characters" editable={!isPending} />
           </View>
-
-          {/* Save button */}
-          <Pressable
-            onPress={handleSave}
-            disabled={isPending}
-            style={{
-              backgroundColor: isPending ? '#0c4a6e' : '#0284c7',
-              borderRadius: 14,
-              paddingVertical: 16,
-              alignItems: 'center',
-              opacity: isPending ? 0.7 : 1,
-            }}
-          >
-            {isPending
-              ? <ActivityIndicator size="small" color="white" />
-              : <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>Save Changes</Text>
-            }
+          <Pressable onPress={save} disabled={isPending} style={{ backgroundColor: isPending ? '#0c4a6e' : '#0284c7', borderRadius: 14, paddingVertical: 16, alignItems: 'center', opacity: isPending ? 0.7 : 1 }}>
+            {isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '700', fontSize: 16 }}>Save Changes</Text>}
           </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -282,302 +219,358 @@ function EditDriverSheet({ visible, onClose, initialData, onSave, isPending }: E
   )
 }
 
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function DriverDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const { id, from } = useLocalSearchParams<{ id: string; from?: string }>()
   const { token } = useAuthContext()
-  const router = useRouter()
-  const insets = useSafeAreaInsets()
-  const queryClient = useQueryClient()
+  const router    = useRouter()
+  const insets    = useSafeAreaInsets()
+  const qc        = useQueryClient()
 
-  const [editSheetVisible, setEditSheetVisible] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDriverDetail>({
     queryKey: ['owner-driver-detail', id],
-    queryFn: () => ownerApi.getDriverDetail(token!, id!),
-    enabled: !!token && !!id,
+    queryFn:  () => ownerApi.getDriverDetail(token!, id!),
+    enabled:  !!token && !!id,
   })
 
-  const { mutate: updateDriver, isPending: isUpdating } = useMutation({
-    mutationFn: (payload: UpdateDriverPayload) => ownerApi.updateDriver(token!, id!, payload),
+  const { mutate: updateDriver, isPending: saving } = useMutation({
+    mutationFn: (p: UpdateDriverPayload) => ownerApi.updateDriver(token!, id!, p),
     onSuccess: () => {
       haptic.success()
-      queryClient.invalidateQueries({ queryKey: ['owner-driver-detail', id] })
-      queryClient.invalidateQueries({ queryKey: ['owner-drivers'] })
-      Toast.show({
-        type: 'success',
-        text1: 'Driver updated',
-        text2: 'Changes saved successfully.',
-        visibilityTime: 3000,
-      })
-      setEditSheetVisible(false)
+      qc.invalidateQueries({ queryKey: ['owner-driver-detail', id] })
+      qc.invalidateQueries({ queryKey: ['owner-drivers'] })
+      Toast.show({ type: 'success', text1: 'Driver updated', text2: 'Changes saved.', visibilityTime: 3000 })
+      setEditOpen(false)
     },
-    onError: (err: Error) => {
+    onError: (e: Error) => {
       haptic.error()
-      Toast.show({
-        type: 'error',
-        text1: 'Update failed',
-        text2: err.message || 'Please try again.',
-        visibilityTime: 4000,
-      })
+      Toast.show({ type: 'error', text1: 'Update failed', text2: e.message || 'Please try again.', visibilityTime: 4000 })
     },
   })
 
   const onRefresh = useCallback(() => refetch(), [refetch])
 
+  // ── Loading skeleton
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: insets.top + 8, paddingBottom: 12, gap: 12 }}>
-          <Skeleton width={28} height={28} borderRadius={6} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingTop: insets.top + 8, paddingBottom: 12, gap: 12 }}>
+          <Skeleton width={40} height={40} borderRadius={12} />
           <Skeleton width={160} height={18} />
         </View>
-        <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: 'center', gap: 10 }}>
-          <Skeleton width={72} height={72} borderRadius={36} />
-          <Skeleton width={140} height={20} />
-          <Skeleton width={70} height={22} borderRadius={11} />
+        <View style={{ alignItems: 'center', paddingTop: 32, gap: 14 }}>
+          <Skeleton width={100} height={100} borderRadius={50} />
+          <Skeleton width={160} height={24} />
+          <Skeleton width={120} height={16} />
+          <Skeleton width={100} height={32} borderRadius={16} />
         </View>
-        <View style={{ paddingTop: 24, gap: 8 }}>
-          <Skeleton width={100} height={11} style={{ marginLeft: 16 }} />
-          <Skeleton width="92%" height={72} borderRadius={12} style={{ marginHorizontal: 16 }} />
-          <Skeleton width={140} height={11} style={{ marginLeft: 16, marginTop: 16 }} />
-          <Skeleton width="92%" height={52} borderRadius={12} style={{ marginHorizontal: 16 }} />
+        <View style={{ paddingTop: 36, gap: 10 }}>
+          <Skeleton width={120} height={11} style={{ marginLeft: 20 }} />
+          <Skeleton width="91%" height={88} borderRadius={16} style={{ marginHorizontal: 20 }} />
+          <Skeleton width={80} height={11} style={{ marginLeft: 20, marginTop: 24 }} />
+          <View style={{ flexDirection: 'row', gap: 12, paddingHorizontal: 20 }}>
+            <Skeleton width="47%" height={52} borderRadius={14} />
+            <Skeleton width="47%" height={52} borderRadius={14} />
+          </View>
         </View>
       </SafeAreaView>
     )
   }
 
+  // ── Error
   if (isError || !data) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-        <AlertTriangle color="#f87171" size={40} />
-        <Text style={{ color: '#f1f5f9', fontSize: 18, fontWeight: '600', marginTop: 16, textAlign: 'center' }}>Failed to load driver</Text>
-        <Text style={{ color: '#64748b', fontSize: 14, marginTop: 8, textAlign: 'center' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: C.bg, alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <AlertTriangle color={C.danger} size={44} />
+        <Text style={{ color: C.text, fontSize: 18, fontWeight: '700', marginTop: 18, textAlign: 'center' }}>Failed to load driver</Text>
+        <Text style={{ color: C.textMuted, fontSize: 14, marginTop: 8, textAlign: 'center' }}>
           {error instanceof Error ? error.message : 'An unexpected error occurred'}
         </Text>
-        <Pressable onPress={() => refetch()} style={{ marginTop: 20, backgroundColor: '#0ea5e9', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 10 }}>
-          <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+        <Pressable onPress={() => refetch()} style={{ marginTop: 24, backgroundColor: C.brand, paddingHorizontal: 28, paddingVertical: 14, borderRadius: 12 }}>
+          <Text style={{ color: '#000', fontWeight: '700' }}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
   }
 
   const avatarColor = getAvatarColor(data.name)
-  const initials = getInitials(data.name)
-  const { label: hosLabel, color: hosColor } = getHOSInfo(data.hosStatus)
-  const displayName = toTitleCase(data.name)
+  const initials    = getInitials(data.name)
+  const hos         = getHOS(data.hosStatus)
+  const HOSIcon     = hos.Icon
+  const displayName = titleCase(data.name)
 
-  const ComplianceIcon = data.complianceStatus === 'critical' ? ShieldX : data.complianceStatus === 'warning' ? ShieldAlert : ShieldCheck
-  const complianceColor = data.complianceStatus === 'critical' ? '#ef4444' : data.complianceStatus === 'warning' ? '#f59e0b' : '#22c55e'
+  const ComplianceIcon  = data.complianceStatus === 'critical' ? ShieldX : data.complianceStatus === 'warning' ? ShieldAlert : ShieldCheck
+  const complianceColor = data.complianceStatus === 'critical' ? C.danger : data.complianceStatus === 'warning' ? C.warning : C.success
 
-  const { firstName: parsedFirstName, lastName: parsedLastName } = parseName(data.name)
-
-  // The API doesn't return licenseNumber in OwnerDriverDetail — we pass null as initial
-  // The PATCH will update it; on success the detail refreshes via query invalidation
-  const editInitialData = {
-    firstName: parsedFirstName,
-    lastName: parsedLastName,
-    licenseNumber: null as string | null,
-  }
+  const editInitial = { ...parseName(data.name), licenseNumber: null as string | null }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
-        {/* Nav bar */}
+
+        {/* ── Nav bar */}
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 16,
+          paddingHorizontal: 20,
           paddingTop: insets.top + 8,
-          paddingBottom: 10,
+          paddingBottom: 12,
           borderBottomWidth: 1,
-          borderBottomColor: '#1e293b',
+          borderBottomColor: C.border,
+          gap: 8,
         }}>
           <Pressable
-            onPress={() => { haptic.light(); router.back() }}
-            hitSlop={12}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, marginRight: 10 })}
+            onPress={() => { haptic.light(); from === 'dashboard' ? router.navigate('/(owner)/' as any) : router.back() }}
+            hitSlop={8}
+            style={({ pressed }) => ({
+              width: 40, height: 40, borderRadius: 12,
+              backgroundColor: C.surface,
+              borderWidth: 1, borderColor: C.border,
+              alignItems: 'center', justifyContent: 'center',
+              opacity: pressed ? 0.6 : 1,
+            })}
           >
-            <ArrowLeft color="#94a3b8" size={22} />
+            <ArrowLeft color={C.textSub} size={20} />
           </Pressable>
-          <Text style={{ color: '#94a3b8', fontSize: 15, fontWeight: '500', flex: 1 }} numberOfLines={1}>
-            Drivers
+
+          <Text style={{ color: C.text, fontSize: 17, fontWeight: '700', flex: 1 }} numberOfLines={1}>
+            Driver Profile
           </Text>
-          {/* Edit button */}
+
           <Pressable
-            onPress={() => { haptic.light(); setEditSheetVisible(true) }}
-            hitSlop={12}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, marginRight: 12 })}
+            onPress={() => { haptic.light(); setEditOpen(true) }}
+            hitSlop={8}
+            style={({ pressed }) => ({
+              width: 40, height: 40, borderRadius: 12,
+              backgroundColor: C.surface,
+              borderWidth: 1, borderColor: C.border,
+              alignItems: 'center', justifyContent: 'center',
+              opacity: pressed ? 0.6 : 1,
+            })}
           >
-            <Pencil color="#94a3b8" size={18} />
+            <Pencil color={C.textSub} size={17} />
           </Pressable>
-          <ComplianceIcon color={complianceColor} size={20} />
+
+          <View style={{
+            width: 40, height: 40, borderRadius: 12,
+            backgroundColor: complianceColor + '18',
+            borderWidth: 1, borderColor: complianceColor + '35',
+            alignItems: 'center', justifyContent: 'center',
+          }}>
+            <ComplianceIcon color={complianceColor} size={18} />
+          </View>
         </View>
 
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 48 }}
+          contentContainerStyle={{ paddingBottom: 56, paddingHorizontal: 20 }}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor="#38bdf8" colors={['#38bdf8']} />
-          }
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor={C.brand} colors={[C.brand]} />}
         >
-          {/* Profile header */}
-          <View style={{ alignItems: 'center', paddingTop: 28, paddingBottom: 24, paddingHorizontal: 16 }}>
+
+          {/* ── Profile hero */}
+          <View style={{ alignItems: 'center', paddingTop: 36, paddingBottom: 32 }}>
+            {/* Avatar */}
             <View style={{
-              width: 72,
-              height: 72,
-              borderRadius: 36,
-              backgroundColor: avatarColor + '20',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 14,
+              width: 100, height: 100, borderRadius: 50,
+              backgroundColor: avatarColor + '22',
+              borderWidth: 3, borderColor: avatarColor + '55',
+              alignItems: 'center', justifyContent: 'center',
+              marginBottom: 18,
             }}>
-              <Text style={{ color: avatarColor, fontWeight: '700', fontSize: 26 }}>{initials}</Text>
+              <Text style={{ color: avatarColor, fontWeight: '800', fontSize: 36 }}>{initials}</Text>
             </View>
-            <Text style={{ color: '#f1f5f9', fontSize: 22, fontWeight: '700', marginBottom: 8 }}>
+
+            {/* Name */}
+            <Text style={{ color: C.text, fontSize: 24, fontWeight: '800', letterSpacing: -0.4, marginBottom: 6 }}>
               {displayName}
             </Text>
-            {/* Inline status pill */}
+
+            {/* Email */}
+            <Text style={{ color: C.textSub, fontSize: 14, marginBottom: 18 }}>
+              {data.email}
+            </Text>
+
+            {/* HOS status chip */}
             <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: hosColor + '18',
-              borderRadius: 20,
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              gap: 6,
+              flexDirection: 'row', alignItems: 'center',
+              backgroundColor: hos.bg,
+              borderRadius: 24,
+              paddingHorizontal: 16, paddingVertical: 9,
+              gap: 8,
+              borderWidth: 1, borderColor: hos.color + '35',
             }}>
-              <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: hosColor }} />
-              <Text style={{ color: hosColor, fontSize: 13, fontWeight: '600' }}>{hosLabel}</Text>
+              <HOSIcon color={hos.color} size={14} />
+              <Text style={{ color: hos.color, fontSize: 13, fontWeight: '700' }}>{hos.label}</Text>
             </View>
           </View>
 
-          {/* Current Load */}
-          <SectionLabel title="Current Load" />
+          {/* ── Current Load */}
+          <Section title="Current Load" />
           {data.currentLoad ? (
             <Pressable
               onPress={() => { haptic.light(); router.push(`/(owner)/loads/${data.currentLoad!.id}` as any) }}
-              android_ripple={{ color: 'rgba(56,189,248,0.06)' }}
+              android_ripple={{ color: 'rgba(56,189,248,0.07)' }}
               style={({ pressed }) => ({
-                marginHorizontal: 16,
-                backgroundColor: pressed ? '#1a2d45' : '#1e293b',
-                borderWidth: 1,
-                borderColor: '#2d4a6e',
-                borderRadius: 14,
-                padding: 16,
+                                backgroundColor: pressed ? '#162c44' : C.card,
+                borderWidth: 1, borderColor: '#2d4e72',
+                borderRadius: 16,
+                padding: 18,
               })}
             >
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15 }}>
+              {/* Row: load ID + badge */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <Text style={{ color: C.brand, fontWeight: '800', fontSize: 16, letterSpacing: -0.2 }}>
                   #{data.currentLoad.loadNumber}
                 </Text>
-                <Badge {...getStatusBadge(data.currentLoad.status)} />
+                <Badge {...getLoadBadge(data.currentLoad.status)} />
               </View>
-              <Text style={{ color: '#64748b', fontSize: 12, marginBottom: 2 }}>From</Text>
-              <Text style={{ color: '#cbd5e1', fontSize: 13, fontWeight: '500', marginBottom: 8 }} numberOfLines={1}>
-                {data.currentLoad.origin}
-              </Text>
-              <Text style={{ color: '#64748b', fontSize: 12, marginBottom: 2 }}>To</Text>
-              <Text style={{ color: '#cbd5e1', fontSize: 13, fontWeight: '500' }} numberOfLines={1}>
-                {data.currentLoad.destination}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 4 }}>
-                <Text style={{ color: '#38bdf8', fontSize: 12, fontWeight: '500' }}>View load details</Text>
-                <ChevronRight color="#38bdf8" size={13} />
+
+              {/* Route */}
+              <View style={{ gap: 0 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: C.success, borderWidth: 2, borderColor: C.success + '60' }} />
+                  <Text style={{ color: C.text, fontSize: 14, fontWeight: '500', flex: 1 }} numberOfLines={1}>
+                    {data.currentLoad.origin}
+                  </Text>
+                </View>
+                <View style={{ width: 1.5, height: 16, backgroundColor: C.border, marginLeft: 4 }} />
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: C.danger, borderWidth: 2, borderColor: C.danger + '60' }} />
+                  <Text style={{ color: C.text, fontSize: 14, fontWeight: '500', flex: 1 }} numberOfLines={1}>
+                    {data.currentLoad.destination}
+                  </Text>
+                </View>
+              </View>
+
+              {/* View details — aligned right */}
+              <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 16, gap: 4 }}>
+                <Text style={{ color: C.brand, fontSize: 13, fontWeight: '600' }}>View details</Text>
+                <ChevronRight color={C.brand} size={14} />
               </View>
             </Pressable>
           ) : (
             <View style={{
-              marginHorizontal: 16,
-              backgroundColor: '#1e293b',
-              borderWidth: 1,
-              borderColor: '#334155',
-              borderRadius: 14,
-              padding: 20,
-              alignItems: 'center',
-              gap: 8,
+                            borderWidth: 1.5, borderColor: C.border, borderStyle: 'dashed',
+              borderRadius: 16, padding: 28,
+              alignItems: 'center', gap: 8,
             }}>
-              <Package color="#334155" size={28} />
-              <Text style={{ color: '#475569', fontSize: 14 }}>No active load</Text>
+              <Package color={C.border} size={32} />
+              <Text style={{ color: C.textMuted, fontSize: 14, fontWeight: '500' }}>No active load</Text>
+              <Text style={{ color: C.textMuted, fontSize: 12, textAlign: 'center' }}>
+                This driver hasn't been assigned a load yet.
+              </Text>
             </View>
           )}
 
-          {/* Compliance Documents */}
-          <SectionLabel title="Compliance Documents" />
+          {/* ── Actions */}
+          <Section title="Actions" />
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <Pressable
+              onPress={() => { haptic.medium(); router.push(`/(owner)/fleet?driverId=${id}` as any) }}
+              android_ripple={{ color: 'rgba(56,189,248,0.1)' }}
+              style={({ pressed }) => ({
+                flex: 1, minHeight: 52,
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+                backgroundColor: pressed ? '#0c4a6e' : C.brandDim,
+                borderWidth: 1, borderColor: C.brand + '50',
+                borderRadius: 14,
+              })}
+            >
+              <MessageSquare color={C.brand} size={18} />
+              <Text style={{ color: C.brand, fontSize: 14, fontWeight: '700' }}>Message</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => { haptic.light(); router.push(`/(owner)/loads?driverId=${id}` as any) }}
+              android_ripple={{ color: 'rgba(255,255,255,0.05)' }}
+              style={({ pressed }) => ({
+                flex: 1, minHeight: 52,
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+                backgroundColor: pressed ? '#1a2840' : C.surface,
+                borderWidth: 1, borderColor: C.border,
+                borderRadius: 14,
+              })}
+            >
+              <Package color={C.textSub} size={18} />
+              <Text style={{ color: C.textSub, fontSize: 14, fontWeight: '700' }}>View Loads</Text>
+            </Pressable>
+          </View>
+
+          {/* ── Compliance Documents */}
+          <Section title="Compliance Documents" />
           {data.documents.length === 0 ? (
             <View style={{
-              marginHorizontal: 16,
-              backgroundColor: '#1e293b',
-              borderWidth: 1,
-              borderColor: '#334155',
-              borderRadius: 14,
-              padding: 20,
-              alignItems: 'center',
-              gap: 8,
+                            borderWidth: 1.5, borderColor: C.border, borderStyle: 'dashed',
+              borderRadius: 16, padding: 28,
+              alignItems: 'center', gap: 10,
             }}>
-              <FileText color="#334155" size={28} />
-              <Text style={{ color: '#475569', fontSize: 14, textAlign: 'center' }}>No documents uploaded</Text>
+              <View style={{
+                width: 48, height: 48, borderRadius: 24,
+                backgroundColor: C.surface, borderWidth: 1, borderColor: C.border,
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Plus color={C.textMuted} size={22} />
+              </View>
+              <Text style={{ color: C.textSub, fontSize: 14, fontWeight: '600' }}>Upload Documents</Text>
+              <Text style={{ color: C.textMuted, fontSize: 12, textAlign: 'center', lineHeight: 18 }}>
+                Add CDL, medical certificates, and other compliance documents here.
+              </Text>
             </View>
           ) : (
-            <View style={{ marginHorizontal: 16, backgroundColor: '#1e293b', borderWidth: 1, borderColor: '#334155', borderRadius: 14, overflow: 'hidden' }}>
-              {data.documents.map((doc, idx) => {
-                const docBadge = getDocBadge(doc.status)
-                return (
-                  <View
-                    key={doc.id}
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      paddingHorizontal: 14,
-                      paddingVertical: 12,
-                      borderBottomWidth: idx < data.documents.length - 1 ? 1 : 0,
-                      borderBottomColor: '#334155',
-                    }}
-                  >
-                    <FileText color="#475569" size={16} style={{ marginRight: 10, flexShrink: 0 }} />
-                    <View style={{ flex: 1, minWidth: 0, marginRight: 10 }}>
-                      <Text style={{ color: '#e2e8f0', fontWeight: '600', fontSize: 13 }} numberOfLines={1}>
-                        {doc.documentType ?? doc.fileName}
-                      </Text>
-                      <Text style={{ color: '#475569', fontSize: 11, marginTop: 2 }}>
-                        {doc.expiryDate ? `Expires ${formatDate(doc.expiryDate)}` : 'No expiry date'}
-                      </Text>
-                    </View>
-                    <Badge label={docBadge.label} variant={docBadge.variant} />
+            <View style={{ marginHorizontal: 20, backgroundColor: C.surface, borderWidth: 1, borderColor: C.border, borderRadius: 16, overflow: 'hidden' }}>
+              {data.documents.map((doc, idx) => (
+                <View
+                  key={doc.id}
+                  style={{
+                    flexDirection: 'row', alignItems: 'center',
+                    paddingHorizontal: 16, paddingVertical: 14,
+                    borderBottomWidth: idx < data.documents.length - 1 ? 1 : 0,
+                    borderBottomColor: C.borderSub,
+                  }}
+                >
+                  <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: C.card, alignItems: 'center', justifyContent: 'center', marginRight: 12, flexShrink: 0 }}>
+                    <FileText color={C.textMuted} size={16} />
                   </View>
-                )
-              })}
+                  <View style={{ flex: 1, minWidth: 0, marginRight: 10 }}>
+                    <Text style={{ color: C.text, fontWeight: '600', fontSize: 14 }} numberOfLines={1}>
+                      {doc.documentType ?? doc.fileName}
+                    </Text>
+                    <Text style={{ color: C.textMuted, fontSize: 12, marginTop: 2 }}>
+                      {doc.expiryDate ? `Expires ${fmtDate(doc.expiryDate)}` : 'No expiry date'}
+                    </Text>
+                  </View>
+                  <Badge label={getDocBadge(doc.status).label} variant={getDocBadge(doc.status).variant} />
+                </View>
+              ))}
             </View>
           )}
 
-          {/* Contact */}
-          <SectionLabel title="Contact" />
-          <View style={{ marginHorizontal: 16, backgroundColor: '#1e293b', borderWidth: 1, borderColor: '#334155', borderRadius: 14, overflow: 'hidden' }}>
+          {/* ── Contact */}
+          <Section title="Contact" />
+          <View style={{ marginHorizontal: 20, backgroundColor: C.surface, borderWidth: 1, borderColor: C.border, borderRadius: 16, overflow: 'hidden' }}>
             <Pressable
               onPress={() => { haptic.light(); Linking.openURL(`mailto:${data.email}`) }}
               android_ripple={{ color: 'rgba(255,255,255,0.04)' }}
               style={({ pressed }) => ({
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 14,
-                paddingVertical: 14,
-                borderBottomWidth: data.phone ? 1 : 0,
-                borderBottomColor: '#334155',
+                flexDirection: 'row', alignItems: 'center',
+                paddingHorizontal: 16, paddingVertical: 16,
+                borderBottomWidth: data.phone ? 1 : 0, borderBottomColor: C.borderSub,
+                minHeight: 56,
                 opacity: pressed ? 0.75 : 1,
               })}
             >
-              <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#0ea5e918', alignItems: 'center', justifyContent: 'center', marginRight: 12, flexShrink: 0 }}>
-                <Mail color="#0ea5e9" size={16} />
+              <View style={{ width: 38, height: 38, borderRadius: 11, backgroundColor: '#0ea5e918', alignItems: 'center', justifyContent: 'center', marginRight: 14, flexShrink: 0 }}>
+                <Mail color="#0ea5e9" size={17} />
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Email</Text>
-                <Text style={{ color: '#f1f5f9', fontSize: 14 }} numberOfLines={1}>{data.email}</Text>
+                <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: '600', marginBottom: 3 }}>EMAIL</Text>
+                <Text style={{ color: C.text, fontSize: 14 }} numberOfLines={1}>{data.email}</Text>
               </View>
-              <ChevronRight color="#334155" size={16} />
+              <ChevronRight color={C.border} size={18} />
             </Pressable>
 
             {data.phone && (
@@ -585,51 +578,51 @@ export default function DriverDetailScreen() {
                 onPress={() => { haptic.light(); Linking.openURL(`tel:${data.phone}`) }}
                 android_ripple={{ color: 'rgba(255,255,255,0.04)' }}
                 style={({ pressed }) => ({
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 14,
-                  paddingVertical: 14,
+                  flexDirection: 'row', alignItems: 'center',
+                  paddingHorizontal: 16, paddingVertical: 16,
+                  minHeight: 56,
                   opacity: pressed ? 0.75 : 1,
                 })}
               >
-                <View style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#0ea5e918', alignItems: 'center', justifyContent: 'center', marginRight: 12, flexShrink: 0 }}>
-                  <Phone color="#0ea5e9" size={16} />
+                <View style={{ width: 38, height: 38, borderRadius: 11, backgroundColor: '#22c55e18', alignItems: 'center', justifyContent: 'center', marginRight: 14, flexShrink: 0 }}>
+                  <Phone color="#22c55e" size={17} />
                 </View>
                 <View style={{ flex: 1, minWidth: 0 }}>
-                  <Text style={{ color: '#64748b', fontSize: 11, marginBottom: 2 }}>Phone</Text>
-                  <Text style={{ color: '#f1f5f9', fontSize: 14 }}>{data.phone}</Text>
+                  <Text style={{ color: C.textMuted, fontSize: 11, fontWeight: '600', marginBottom: 3 }}>PHONE</Text>
+                  <Text style={{ color: C.text, fontSize: 14 }}>{data.phone}</Text>
                 </View>
-                <ChevronRight color="#334155" size={16} />
+                <ChevronRight color={C.border} size={18} />
               </Pressable>
             )}
           </View>
 
-          {/* Recent Incidents */}
+          {/* ── Recent Incidents */}
           {data.recentIncidents.length > 0 && (
             <>
-              <SectionLabel title="Recent Incidents" />
-              <View style={{ marginHorizontal: 16, backgroundColor: '#1e293b', borderWidth: 1, borderColor: '#334155', borderRadius: 14, overflow: 'hidden' }}>
-                {data.recentIncidents.map((incident, idx) => {
-                  const severityColor = getIncidentSeverityColor(incident.severity)
+              <Section title="Recent Incidents" />
+              <View style={{ marginHorizontal: 20, backgroundColor: C.surface, borderWidth: 1, borderColor: C.border, borderRadius: 16, overflow: 'hidden' }}>
+                {data.recentIncidents.map((inc, idx) => {
+                  const sc = getSeverityColor(inc.severity)
                   return (
                     <View
-                      key={incident.id}
+                      key={inc.id}
                       style={{
                         flexDirection: 'row',
-                        paddingHorizontal: 14,
-                        paddingVertical: 12,
+                        paddingHorizontal: 16, paddingVertical: 14,
                         borderBottomWidth: idx < data.recentIncidents.length - 1 ? 1 : 0,
-                        borderBottomColor: '#334155',
-                        gap: 10,
+                        borderBottomColor: C.borderSub,
+                        gap: 12,
                       }}
                     >
-                      <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: severityColor, marginTop: 4, flexShrink: 0 }} />
+                      <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: sc, marginTop: 3, flexShrink: 0 }} />
                       <View style={{ flex: 1 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 }}>
-                          <Text style={{ color: '#e2e8f0', fontSize: 13, fontWeight: '600' }}>{incident.category}</Text>
-                          <Text style={{ color: '#475569', fontSize: 11 }}>{formatDate(incident.reportedAt)}</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <Text style={{ color: C.text, fontSize: 14, fontWeight: '600' }}>{inc.category}</Text>
+                          <Text style={{ color: C.textMuted, fontSize: 12 }}>{fmtDate(inc.reportedAt)}</Text>
                         </View>
-                        <Text style={{ color: '#64748b', fontSize: 12 }} numberOfLines={2}>{incident.description}</Text>
+                        <Text style={{ color: C.textSub, fontSize: 13, lineHeight: 19 }} numberOfLines={2}>
+                          {inc.description}
+                        </Text>
                       </View>
                     </View>
                   )
@@ -638,58 +631,14 @@ export default function DriverDetailScreen() {
             </>
           )}
 
-          {/* Quick Actions */}
-          <SectionLabel title="Actions" />
-          <View style={{ flexDirection: 'row', gap: 10, marginHorizontal: 16 }}>
-            <Pressable
-              onPress={() => { haptic.medium(); router.push(`/(owner)/fleet?driverId=${id}` as any) }}
-              android_ripple={{ color: 'rgba(56,189,248,0.1)' }}
-              style={({ pressed }) => ({
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                backgroundColor: pressed ? '#0c4a6e' : '#0ea5e915',
-                borderWidth: 1,
-                borderColor: '#0ea5e9',
-                borderRadius: 12,
-                paddingVertical: 14,
-              })}
-            >
-              <MessageSquare color="#0ea5e9" size={18} />
-              <Text style={{ color: '#0ea5e9', fontSize: 14, fontWeight: '600' }}>Message</Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => { haptic.light(); router.push(`/(owner)/loads?driverId=${id}` as any) }}
-              android_ripple={{ color: 'rgba(255,255,255,0.05)' }}
-              style={({ pressed }) => ({
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                backgroundColor: pressed ? '#1a2d45' : '#1e293b',
-                borderWidth: 1,
-                borderColor: '#334155',
-                borderRadius: 12,
-                paddingVertical: 14,
-              })}
-            >
-              <Package color="#94a3b8" size={18} />
-              <Text style={{ color: '#94a3b8', fontSize: 14, fontWeight: '600' }}>View Loads</Text>
-            </Pressable>
-          </View>
         </ScrollView>
 
-        {/* Edit Driver Sheet */}
         <EditDriverSheet
-          visible={editSheetVisible}
-          onClose={() => setEditSheetVisible(false)}
-          initialData={editInitialData}
+          visible={editOpen}
+          onClose={() => setEditOpen(false)}
+          initialData={editInitial}
           onSave={updateDriver}
-          isPending={isUpdating}
+          isPending={saving}
         />
       </AnimatedScreen>
     </SafeAreaView>
