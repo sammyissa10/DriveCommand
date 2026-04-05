@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 163: Carrier Ops — 4 report API endpoints (revenue, driver-pay, aging, performance)
-Stopped at: Completed quick-163 — 5 new files, SQL-aggregation reports library + 4 GET route handlers, dispatch_number extracted from notes tag via regexp_match
+Last activity: 2026-04-05 - Completed quick task 164: Carrier Ops — facilities management web UI (list/create/edit pages, 3 client components, Carrier Ops sidebar)
+Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -155,6 +155,7 @@ Progress: [███████████████████████
 - Quick-159 (2026-04-05): Carrier Ops — API routes for facilities + route templates + dispatch generator — facilities lib+routes, route-templates lib+routes, dispatch-generator engine (RRULE parser, conflict detection, address snapshot, load creation) — 3 tasks, 8 files, ~5min
 - Quick-160 (2026-04-05): Carrier Ops — API routes for dispatches + loads + revenue calculator — revenue-calculator.ts (6 rate types + FSC), dispatches.ts (state machine: planned→in_progress/cancelled/tonu, in_progress→completed), loads.ts (clientId required, contract auto-populate, LD-YYYY-NNNNN ref), 6 API route files — 3 tasks, 9 files, ~5min
 - Quick-162 (2026-04-05): Carrier Ops — documents, expenses, pay-records API routes + nightly cron — documents.ts (Supabase Storage upload, path pattern {orgId}/{parentType}/{parentId}/{docType}/{uuid}.ext, org scoping through parent chain), expenses.ts (CRUD + auto-reimbursable on driver_cash + clientId propagation), pay-calculator.ts (5 pay models: per_mile/percentage_gross/hourly/flat_rate/team_split + relay mile-split at handoff stop), 9 API route files, carrier-auto-dispatch cron, stop-completion.ts + dispatches.ts wired — 3 tasks, 12 files created + 3 modified, ~7min
+- Quick-164 (2026-04-05): Carrier Ops — facilities management web UI — FacilityList (search+type filter table), FacilityForm (controlled state POST/PATCH), FacilitySearchModal (Dialog+debounce, exports FacilitySearchResult type), 3 server pages (/carrier/facilities list+create+[id]), DeleteFacilityButton, Carrier Ops sidebar section (8 items gated to OWNER/MANAGER) — 2 tasks, 8 files, ~20min
 
 ## Accumulated Context
 
