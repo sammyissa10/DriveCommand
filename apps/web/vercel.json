@@ -21,6 +21,10 @@
     {
       "path": "/api/cron/carrier-auto-dispatch",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/carrier-compliance-alerts",
+      "schedule": "0 6 * * *"
     }
   ]
 }
