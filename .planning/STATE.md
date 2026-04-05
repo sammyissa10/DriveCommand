@@ -918,6 +918,7 @@ None blocking immediate progress.
 | 169 | Carrier Ops — Loads list, create, and detail pages | 2026-04-05 | 4718cba | [169-carrier-ops-loads-list-create-and-detail](./quick/169-carrier-ops-loads-list-create-and-detail/) |
 | 170 | Carrier Ops — Dispatch detail page with stop timeline | 2026-04-05 | fc6c3ef | [170-carrier-ops-dispatch-detail-page-with-st](./quick/170-carrier-ops-dispatch-detail-page-with-st/) |
 | 171 | Carrier Ops — Document upload modal and expense log components | 2026-04-05 | 0186336 | [171-carrier-ops-document-upload-modal-and-ex](./quick/171-carrier-ops-document-upload-modal-and-ex/) |
+| 180 | Carrier Ops end-to-end integration test: contracted recurring route journey | 2026-04-05 | 9bdd5a6 | [180-carrier-ops-end-to-end-integration-test-](./quick/180-carrier-ops-end-to-end-integration-test-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
