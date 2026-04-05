@@ -736,6 +736,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 37.7]: Two-query pattern for map screen: dashboard query for activeLoad summary, getLoad query for full RouteStop coords (lat/lng not in dashboard stops)
 - [Phase quick-161]: recalculateAndStore wrapped in try/catch so revenue calc failure does not block stop completion
 - [Phase quick-161]: role check for skip (driver=403) placed in API route layer, not lib function
+- [Phase quick-182]: v4.0 MILESTONES entry added after v3.0 to maintain logical milestone document order
 
 ### Pending Todos
 
@@ -986,6 +987,7 @@ None blocking immediate progress.
 | Phase quick-134 P01 | 14 | 3 tasks | 29 files |
 | Phase 37.7 P04 | 239 | 2 tasks | 3 files |
 | Phase quick-161 P01 | 142s | 2 tasks | 7 files |
+| Phase quick-182 P01 | 128s | 2 tasks | 4 files |
 
 ## Session Continuity
 
