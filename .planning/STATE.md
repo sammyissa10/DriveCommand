@@ -887,6 +887,7 @@ None blocking immediate progress.
 | 156 | Carrier Ops — Migration 013 (RLS policies — 13 tables, 59 policies) | 2026-04-05 | 52a5d8e | [156-carrier-ops-migration-013-rls](./quick/156-carrier-ops-migration-013-rls/) |
 | 157 | Carrier Ops — Migration 014 + Prisma schema (carrier_catalog_meta + 14 models, 93 seed rows) | 2026-04-05 | 0863dc4 | [157-carrier-ops-migration-014-prisma-schema](./quick/157-carrier-ops-migration-014-prisma-schema/) |
 | 158 | Carrier Ops — API routes for clients and contracts | 2026-04-05 | 7fcf704 | [158-carrier-ops-api-routes-for-clients-and-c](./quick/158-carrier-ops-api-routes-for-clients-and-c/) |
+| 159 | Carrier Ops — API routes for facilities and route templates | 2026-04-05 | 0d02de2 | [159-carrier-ops-api-routes-for-facilities-an](./quick/159-carrier-ops-api-routes-for-facilities-an/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
