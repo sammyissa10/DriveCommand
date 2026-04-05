@@ -72,7 +72,7 @@ export const GET = withMobileAuth(
             tenantId,
             status: { in: ['DELIVERED', 'INVOICED'] },
             archivedAt: null,
-            updatedAt: { gte: monthStart, lte: monthEnd },
+            createdAt: { gte: monthStart, lte: monthEnd },
           },
           _sum: { rate: true },
         }),

@@ -49,6 +49,7 @@ export function useAuth() {
         }
         setUser(null)
         setToken(null)
+        router.replace('/login')
       } finally {
         setIsLoading(false)
       }
