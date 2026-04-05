@@ -2,6 +2,8 @@ export { apiClient, apiRequest, setUnauthorizedHandler, configureApiClient } fro
 export { driverApi } from './driver'
 export type { DashboardData, LoadSummary, LoadDetail, RouteStop, DirectionsResult, FleetMessage, DriverDocument, CreateDocumentPayload, DocumentStatus, DocumentType, DriverRoute, DriverRouteLoad, DriverRouteTruck } from './driver'
 export { ownerApi } from './owner'
+export { carrierDriverApi } from './carrier-driver'
+export type { CarrierDispatch, CarrierDispatchStop, CarrierDispatchDetail, CarrierDispatchDetailStop, CarrierStopDocument, CarrierExpenseSummary, ExpenseInput } from './carrier-driver'
 export type { OwnerDashboardData, OwnerLoadSummary, OwnerLoadDetail, TruckOption, TruckDetail, CreateTruckPayload, FleetPosition, CustomerOption, DriverOption, CreateLoadPayload, UpdateLoadPayload, UpdateDriverPayload, UpdateTruckPayload, OwnerDriverSummary, OwnerDriverDetail, OwnerDriverDocument, OwnerDriverIncident, OwnerDriverCurrentLoad, MapVehicle, FleetMessageSummary, SendFleetMessagePayload, ConversationSummary, ConversationMessage, InvoiceStats, InvoiceSummary, InvoicesResponse, InvoiceLineItem, InvoiceDetail, CRMStats, CustomerSummary, CRMResponse, CrmContactDetail, UpdateCrmContactPayload, PayrollStats, PayrollRecordSummary, PayrollResponse, PayrollRecordDetail, CreatePayrollPayload, ComplianceSummary, ComplianceAlert, ComplianceResponse, CreateCustomerPayload, CreateInvoicePayload, OwnerRouteSummary, OwnerRouteDetail, UpdateRoutePayload, PredictProfitPayload, PredictProfitResult, FuelEntry, CreateFuelEntryPayload, MaintenanceEventSummary, LogMaintenancePayload, SafetyAlert, SafetyAlertsResponse } from './owner'
 export type { RouteStop as OwnerRouteStop } from './owner'
 export type * from '@drivecommand/types'

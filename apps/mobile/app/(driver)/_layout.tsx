@@ -268,6 +268,7 @@ export default function DriverLayout() {
         <Tabs.Screen name="hos" options={{ href: null }} />
         <Tabs.Screen name="documents" options={{ href: null }} />
         <Tabs.Screen name="incidents" options={{ href: null }} />
+        <Tabs.Screen name="carrier" options={{ href: null }} />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}
