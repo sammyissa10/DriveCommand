@@ -1,0 +1,65 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getSession } from '@/lib/auth/supabase';
+import { logger } from '@/lib/logger';
+import { listContracts, createContract } from '@/lib/carrier/contracts';
+
+const ContractCreateSchema = z.object({
+  clientId: z.string().uuid(),
+  contractType: z.string().optional(),
+  effectiveDate: z.string().optional(),
+  expirationDate: z.string().optional(),
+  rateType: z.string().optional(),
+  baseRate: z.string().optional(),
+  fuelSurchargeRate: z.string().optional(),
+  fuelSurchargeMethod: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export async function GET(req: NextRequest) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const orgId = session.tenantId;
+  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+
+  try {
+    const { searchParams } = req.nextUrl;
+    const clientId = searchParams.get('client_id') ?? undefined;
+    const status = searchParams.get('status') ?? undefined;
+    const page = parseInt(searchParams.get('page') ?? '1', 10);
+    const pageSize = parseInt(searchParams.get('pageSize') ?? '50', 10);
+
+    const result = await listContracts(orgId, { clientId, status, page, pageSize });
+
+    return NextResponse.json({ data: { ...result, page, pageSize } });
+  } catch (err) {
+    logger.error('GET /api/v1/carrier/contracts failed', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const orgId = session.tenantId;
+  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+
+  try {
+    const body = await req.json();
+    const parsed = ContractCreateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0].message },
+        { status: 400 }
+      );
+    }
+
+    const { clientId, ...contractData } = parsed.data;
+    const contract = await createContract(orgId, clientId, contractData);
+
+    return NextResponse.json({ data: contract }, { status: 201 });
+  } catch (err) {
+    logger.error('POST /api/v1/carrier/contracts failed', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
