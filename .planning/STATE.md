@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 169: Carrier Ops — Loads list, create, and detail pages
+Last activity: 2026-04-05 - Completed quick task 170: Carrier Ops — Dispatch detail page with stop timeline
 Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -908,6 +908,7 @@ None blocking immediate progress.
 | 167 | Carrier Ops — Route Templates create/edit pages | 2026-04-05 | 8da9d19 | [167-carrier-ops-route-templates-create-edit-](./quick/167-carrier-ops-route-templates-create-edit-/) |
 | 168 | Carrier Ops — Dispatches list page | 2026-04-05 | 747d404 | [168-carrier-ops-dispatches-list-page](./quick/168-carrier-ops-dispatches-list-page/) |
 | 169 | Carrier Ops — Loads list, create, and detail pages | 2026-04-05 | 4718cba | [169-carrier-ops-loads-list-create-and-detail](./quick/169-carrier-ops-loads-list-create-and-detail/) |
+| 170 | Carrier Ops — Dispatch detail page with stop timeline | 2026-04-05 | fc6c3ef | [170-carrier-ops-dispatch-detail-page-with-st](./quick/170-carrier-ops-dispatch-detail-page-with-st/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
