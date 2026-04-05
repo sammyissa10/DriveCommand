@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 164: Carrier Ops — facilities management web UI (list/create/edit pages, 3 client components, Carrier Ops sidebar)
+Last activity: 2026-04-05 - Completed quick task 165: Carrier Ops — Clients and Contracts pages
 Stopped at: Completed quick-164 — 8 files (3 components + 3 server pages + DeleteFacilityButton + sidebar update), FacilitySearchModal ready for reuse
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -903,6 +903,7 @@ None blocking immediate progress.
 | 161 | Carrier Ops — API routes for stops including the Stop Completion Microflow | 2026-04-05 | 5196430 | [161-carrier-ops-api-routes-for-stops-includi](./quick/161-carrier-ops-api-routes-for-stops-includi/) |
 | 162 | Carrier Ops — documents, expenses, pay-records API routes + nightly cron | 2026-04-05 | — | [162-carrier-ops-documents-expenses-pay-recor](./quick/162-carrier-ops-documents-expenses-pay-recor/) |
 | 163 | Carrier Ops — 4 report API endpoints (revenue, driver-pay, aging, performance) | 2026-04-05 | 3f990c9 | [163-carrier-ops-reports-api-endpoints](./quick/163-carrier-ops-reports-api-endpoints/) |
+| 165 | Carrier Ops — Clients and Contracts pages | 2026-04-05 | 5a94658 | [165-carrier-ops-clients-and-contracts-pages](./quick/165-carrier-ops-clients-and-contracts-pages/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
