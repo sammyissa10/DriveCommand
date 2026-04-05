@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 178: Carrier fleet management pages (carrier drivers + trucks)
+Last activity: 2026-04-05 - Completed quick task 179: Carrier Ops — Sidebar navigation wiring and route guard for carrier section
 Stopped at: Completed quick-178 — 14 files (2 lib modules + 4 API routes + 4 components + 4 pages), carrier fleet CRUD with expiry color coding and dispatch history
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -163,6 +163,7 @@ Progress: [███████████████████████
 - Quick-176 (2026-04-05): Carrier Ops Mobile — Document upload screen for stops — POST /api/mobile/carrier/driver/stops/[stopId]/documents (multipart, R2 presigned PUT, CarrierDocument record), StopDocumentUpload component (3-step: source→preview→upload, camera/gallery/PDF picker, progress bar, offline MMKV + NetInfo reconnect flush, haptic success + auto-back), upload.tsx screen, stop detail wired with correct documentType (BOL/POD) per stop type — 2 tasks, 4 files, ~7min
 - Quick-177 (2026-04-05): Carrier Ops Mobile — Expense log screen for drivers — POST /api/mobile/carrier/driver/dispatches/[id]/expenses (validates 8 types + 4 paid-by + stop ownership), ExpenseLogForm (44px chip selects for type+paid-by, decimal-pad amount, auto-computed reimbursable badge, optional notes + receipt), expenses.tsx (header + form + pull-to-refresh list with type/amount/paidBy/reimbursable/timestamp), stop detail Expense Log button wired — 3 tasks, 4 files, ~5min
 - Quick-178 (2026-04-05): Carrier Ops — Fleet management pages (carrier drivers and carrier trucks) — fleet-drivers.ts + fleet-trucks.ts lib modules (CRUD, 400 on duplicate user link), 4 API routes (GET/POST list + GET/PATCH detail), CarrierDriverList + CarrierTruckList (expiry color coding: green/amber/red, AlertTriangle on near-expiry), CarrierDriverForm + CarrierTruckForm, 4 server pages (list + detail for drivers + trucks, dispatch history on detail pages) — 3 tasks, 14 files, ~25min
+- Quick-179 (2026-04-05): Carrier Ops — Sidebar navigation wiring and route guard — DispatchBadge client component (60s poll, needs_assignment count capped at "9+"), sidebar restructured with Fleet sub-group (Drivers/Trucks/Facilities) + Reports sub-group (Revenue/Driver Pay/AR Aging/Performance), CarrierBreadcrumb (pathname→display name mapping), carrier layout.tsx (DRIVER→/my-load redirect, non-OWNER/MANAGER→/unauthorized) — 2 tasks, 4 files, ~15min
 
 ## Accumulated Context
 
