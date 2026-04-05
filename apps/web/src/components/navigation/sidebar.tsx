@@ -25,6 +25,12 @@ import {
   Settings,
   LifeBuoy,
   CreditCard,
+  Warehouse,
+  Users2,
+  FileText,
+  CalendarDays,
+  Boxes,
+  BarChart3,
 } from "lucide-react"
 import {
   Sidebar,
@@ -361,6 +367,115 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {/* Carrier Ops - OWNER/MANAGER only */}
+        {canViewFleetIntelligence && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Carrier Ops
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/facilities")}
+                    tooltip="Facilities"
+                  >
+                    <Link href="/carrier/facilities" onClick={handleNavClick}>
+                      <Warehouse />
+                      <span>Facilities</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/clients")}
+                    tooltip="Clients"
+                  >
+                    <Link href="/carrier/clients" onClick={handleNavClick}>
+                      <Users2 />
+                      <span>Clients</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/contracts")}
+                    tooltip="Contracts"
+                  >
+                    <Link href="/carrier/contracts" onClick={handleNavClick}>
+                      <FileText />
+                      <span>Contracts</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/templates")}
+                    tooltip="Templates"
+                  >
+                    <Link href="/carrier/templates" onClick={handleNavClick}>
+                      <CalendarDays />
+                      <span>Templates</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/dispatches")}
+                    tooltip="Dispatches"
+                  >
+                    <Link href="/carrier/dispatches" onClick={handleNavClick}>
+                      <Truck />
+                      <span>Dispatches</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/loads")}
+                    tooltip="Loads (Carrier)"
+                  >
+                    <Link href="/carrier/loads" onClick={handleNavClick}>
+                      <Package />
+                      <span>Loads</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/fleet")}
+                    tooltip="Fleet"
+                  >
+                    <Link href="/carrier/fleet" onClick={handleNavClick}>
+                      <Boxes />
+                      <span>Fleet</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/carrier/reports")}
+                    tooltip="Reports"
+                  >
+                    <Link href="/carrier/reports" onClick={handleNavClick}>
+                      <BarChart3 />
+                      <span>Reports</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {/* Settings - OWNER and MANAGER (individual items gated by permission) */}
         {(userRole === UserRole.OWNER || userRole === UserRole.MANAGER) && (
           <SidebarGroup>
