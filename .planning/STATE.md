@@ -892,6 +892,7 @@ None blocking immediate progress.
 | 158 | Carrier Ops — API routes for clients and contracts | 2026-04-05 | 7fcf704 | [158-carrier-ops-api-routes-for-clients-and-c](./quick/158-carrier-ops-api-routes-for-clients-and-c/) |
 | 159 | Carrier Ops — API routes for facilities and route templates | 2026-04-05 | 0d02de2 | [159-carrier-ops-api-routes-for-facilities-an](./quick/159-carrier-ops-api-routes-for-facilities-an/) |
 | 160 | Carrier Ops — API routes for dispatches and loads | 2026-04-05 | 327c373 | [160-carrier-ops-api-routes-for-dispatches-an](./quick/160-carrier-ops-api-routes-for-dispatches-an/) |
+| 161 | Carrier Ops — API routes for stops including the Stop Completion Microflow | 2026-04-05 | 5196430 | [161-carrier-ops-api-routes-for-stops-includi](./quick/161-carrier-ops-api-routes-for-stops-includi/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
