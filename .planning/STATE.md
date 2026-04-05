@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 158: Carrier Ops — API routes for clients and contracts
-Stopped at: Completed quick-158 — 7 files, clients + contracts CRUD REST API
+Last activity: 2026-04-05 - Completed quick task 159: Carrier Ops — API routes for facilities and route templates + dispatch generator
+Stopped at: Completed quick-159 — 8 files, facilities + route-templates CRUD REST API + dispatch-generator engine
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -146,6 +146,13 @@ Progress: [███████████████████████
 - Quick-147 (2026-04-03): Geocoding autocomplete + OSRM real road distances — OSRM utility (lib/geo/osrm.ts), /api/geocoding/distance proxy, profit-predictor-form.tsx (AddressAutocomplete + OSRM auto-fill), load-form.tsx + route-form.tsx (haversine→OSRM), mobile profit-predictor.tsx + crm/[id].tsx (AddressInput + OSRM proxy) — 3 tasks, 7 files, ~25min
 - Quick-148 (2026-04-03): Add global appearance setting for light/dark mode — useThemeColors() hook, color token system (background/surfaceCard/surfaceElevated/surfaceInput/border/brand/brandDark/text*), AppearanceSheet bottom sheet, AsyncStorage persistence, appearance setting in More menu — 3 tasks, ~10 files, ~30min
 - Quick-149 (2026-04-03): Migrate all mobile screens to useThemeColors — replaced all bg-slate-*/text-slate-*/border-slate-*/hardcoded hex values with useThemeColors() tokens across 29 files (7 driver screens, 17 owner screens, 5 shared components); fixed 2 variable name collisions + 2 recursive goBack() bugs — 3 tasks, 29 files, ~90min
+- Quick-153 (2026-04-05): Carrier Ops — migrations 005-006 — driver catalog (carrier_drivers + carrier_driver_schedules) — 2 tasks, 2 files
+- Quick-154 (2026-04-05): Carrier Ops — migrations 007-009 — equipment catalog (carrier_trucks + carrier_trailers + carrier_truck_maintenance) — 3 tasks, 3 files
+- Quick-155 (2026-04-05): Carrier Ops — migrations 010-012 — clients, contracts, facilities tables — 3 tasks, 3 files
+- Quick-156 (2026-04-05): Carrier Ops — migration 013 — RLS policies for all carrier tables — 1 task, 1 file
+- Quick-157 (2026-04-05): Carrier Ops — migration 014 + Prisma schema — 14 carrier models appended to schema.prisma — 2 tasks, 2 files
+- Quick-158 (2026-04-05): Carrier Ops — API routes for clients + contracts CRUD — 3 lib files + 4 route files, clients.ts, contracts.ts, withCarrierAuth HOF — 3 tasks, 7 files, ~5min
+- Quick-159 (2026-04-05): Carrier Ops — API routes for facilities + route templates + dispatch generator — facilities lib+routes, route-templates lib+routes, dispatch-generator engine (RRULE parser, conflict detection, address snapshot, load creation) — 3 tasks, 8 files, ~5min
 
 ## Accumulated Context
 
