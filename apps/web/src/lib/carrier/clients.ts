@@ -97,10 +97,14 @@ export async function getClient(orgId: string, id: string) {
 }
 
 export async function createClient(orgId: string, data: ClientCreateInput) {
+  const { creditLimit, ...rest } = data;
   return prisma.carrierClient.create({
     data: {
-      ...data,
+      ...rest,
       orgId,
+      ...(creditLimit !== undefined
+        ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
+        : {}),
     },
   });
 }
@@ -109,9 +113,15 @@ export async function updateClient(orgId: string, id: string, data: ClientUpdate
   const existing = await prisma.carrierClient.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
+  const { creditLimit, ...rest } = data;
   return prisma.carrierClient.update({
     where: { id },
-    data,
+    data: {
+      ...rest,
+      ...(creditLimit !== undefined
+        ? { creditLimit: creditLimit !== null ? Number(creditLimit) : null }
+        : {}),
+    },
   });
 }
 
