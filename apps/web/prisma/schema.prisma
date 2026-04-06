@@ -1292,6 +1292,7 @@ model CarrierContract {
   orgId                String    @map("org_id") @db.Uuid
   clientId             String    @map("client_id") @db.Uuid
   contractNumber       String    @unique @map("contract_number")
+  contractName         String?   @map("contract_name")
   contractType         String    @default("spot") @map("contract_type")
   effectiveDate        DateTime? @map("effective_date") @db.Date
   expirationDate       DateTime? @map("expiration_date") @db.Date
@@ -1299,6 +1300,12 @@ model CarrierContract {
   baseRate             Decimal?  @map("base_rate") @db.Decimal(10, 4)
   fuelSurchargeMethod  String    @default("none") @map("fuel_surcharge_method")
   fuelSurchargeRate    Decimal?  @map("fuel_surcharge_rate") @db.Decimal(6, 4)
+  detentionFreeMinutes Int       @default(120) @map("detention_free_minutes")
+  detentionRatePerHour Decimal?  @map("detention_rate_per_hour") @db.Decimal(10, 2)
+  tonuRate             Decimal?  @map("tonu_rate") @db.Decimal(10, 2)
+  layoverRatePerDay    Decimal?  @map("layover_rate_per_day") @db.Decimal(10, 2)
+  paymentTermsOverride String?   @map("payment_terms_override")
+  autoRenew            Boolean   @default(false) @map("auto_renew")
   status               String    @default("active")
   notes                String?
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
