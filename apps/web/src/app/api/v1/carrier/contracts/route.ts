@@ -67,6 +67,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ data: contract }, { status: 201 });
   } catch (err) {
     logger.error('POST /api/v1/carrier/contracts failed', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const detail = process.env.NODE_ENV === 'development'
+      ? (err instanceof Error ? err.message : String(err))
+      : 'Internal server error';
+    return NextResponse.json({ error: detail }, { status: 500 });
   }
 }
