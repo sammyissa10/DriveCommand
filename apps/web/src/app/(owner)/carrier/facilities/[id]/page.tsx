@@ -59,6 +59,11 @@ export default async function FacilityDetailPage({ params }: Props) {
             contactName: facility.contactName,
             contactPhone: facility.contactPhone,
             contactEmail: facility.contactEmail,
+            lumperRequired: facility.lumperRequired,
+            appointmentRequired: facility.appointmentRequired,
+            contacts: Array.isArray(facility.contacts)
+              ? (facility.contacts as Array<{ name: string; phone: string; email: string; role: string }>)
+              : [],
             notes: facility.notes,
           }}
         />

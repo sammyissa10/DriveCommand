@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -14,6 +15,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+
+interface FacilityContact {
+  name: string;
+  phone: string;
+  email: string;
+  role: string;
+}
 
 export interface FacilityData {
   id: string;
@@ -27,9 +35,14 @@ export interface FacilityData {
   country: string | null;
   latitude: number | null;
   longitude: number | null;
-  contactName: string | null;
-  contactPhone: string | null;
-  contactEmail: string | null;
+  // Legacy single-contact fields (read-only, kept for backward compat)
+  contactName?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  // New fields
+  lumperRequired?: boolean;
+  appointmentRequired?: boolean;
+  contacts?: FacilityContact[];
   notes: string | null;
 }
 
@@ -38,18 +51,15 @@ interface FacilityFormProps {
 }
 
 const FACILITY_TYPES = [
-  { value: 'terminal', label: 'Terminal' },
-  { value: 'warehouse', label: 'Warehouse' },
-  { value: 'distribution_center', label: 'Distribution Center' },
-  { value: 'cross_dock', label: 'Cross Dock' },
-  { value: 'customer_location', label: 'Customer Location' },
-  { value: 'pickup', label: 'Pickup' },
-  { value: 'delivery', label: 'Delivery' },
+  { value: 'terminal',       label: 'Terminal' },
+  { value: 'yard',           label: 'Yard' },
+  { value: 'warehouse',      label: 'Warehouse' },
+  { value: 'drop_yard',      label: 'Drop Yard' },
+  { value: 'customer_site',  label: 'Customer Site' },
 ];
 
 interface FormErrors {
   name?: string;
-  contactEmail?: string;
   state?: string;
   latitude?: string;
   longitude?: string;
@@ -59,9 +69,6 @@ function validate(values: Record<string, string>): FormErrors {
   const errors: FormErrors = {};
   if (!values.name.trim()) {
     errors.name = 'Name is required';
-  }
-  if (values.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.contactEmail)) {
-    errors.contactEmail = 'Enter a valid email address';
   }
   if (values.state && values.state.length > 2) {
     errors.state = 'State must be 2 characters max';
@@ -73,6 +80,19 @@ function validate(values: Record<string, string>): FormErrors {
     errors.longitude = 'Longitude must be a number';
   }
   return errors;
+}
+
+function normalizeContacts(raw: unknown): FacilityContact[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((c: unknown) => {
+    const item = c as Record<string, unknown>;
+    return {
+      name:  typeof item.name  === 'string' ? item.name  : '',
+      phone: typeof item.phone === 'string' ? item.phone : '',
+      email: typeof item.email === 'string' ? item.email : '',
+      role:  typeof item.role  === 'string' ? item.role  : '',
+    };
+  });
 }
 
 export function FacilityForm({ initialData }: FacilityFormProps) {
@@ -90,11 +110,14 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
     country: initialData?.country ?? 'US',
     latitude: initialData?.latitude != null ? String(initialData.latitude) : '',
     longitude: initialData?.longitude != null ? String(initialData.longitude) : '',
-    contactName: initialData?.contactName ?? '',
-    contactPhone: initialData?.contactPhone ?? '',
-    contactEmail: initialData?.contactEmail ?? '',
     notes: initialData?.notes ?? '',
   });
+
+  const [lumperRequired, setLumperRequired] = useState(initialData?.lumperRequired ?? false);
+  const [appointmentRequired, setAppointmentRequired] = useState(initialData?.appointmentRequired ?? false);
+  const [contacts, setContacts] = useState<FacilityContact[]>(
+    normalizeContacts(initialData?.contacts)
+  );
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -107,6 +130,20 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
     }
   }
 
+  function addContact() {
+    setContacts((prev) => [...prev, { name: '', phone: '', email: '', role: '' }]);
+  }
+
+  function removeContact(index: number) {
+    setContacts((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function updateContact(index: number, field: keyof FacilityContact, value: string) {
+    setContacts((prev) =>
+      prev.map((c, i) => (i === index ? { ...c, [field]: value } : c))
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const validationErrors = validate(values);
@@ -117,6 +154,8 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
 
     setIsSubmitting(true);
     try {
+      const filteredContacts = contacts.filter((c) => c.name.trim() !== '');
+
       const body: Record<string, unknown> = {
         name: values.name.trim(),
         ...(values.facilityType ? { facilityType: values.facilityType } : {}),
@@ -128,10 +167,10 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
         ...(values.country ? { country: values.country } : {}),
         ...(values.latitude ? { latitude: Number(values.latitude) } : {}),
         ...(values.longitude ? { longitude: Number(values.longitude) } : {}),
-        ...(values.contactName ? { contactName: values.contactName } : {}),
-        ...(values.contactPhone ? { contactPhone: values.contactPhone } : {}),
-        ...(values.contactEmail ? { contactEmail: values.contactEmail } : {}),
         ...(values.notes ? { notes: values.notes } : {}),
+        lumperRequired,
+        appointmentRequired,
+        contacts: filteredContacts,
       };
 
       const url = isEdit
@@ -284,52 +323,120 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
         </div>
       </div>
 
-      {/* Contact section */}
+      {/* Options section */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Contact
+          Options
         </h3>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="contactName">
-              Contact Name
-            </label>
-            <Input
-              id="contactName"
-              name="contactName"
-              value={values.contactName}
-              onChange={handleChange}
-              placeholder="Jane Doe"
+        <div className="flex flex-wrap gap-6">
+          <div className="flex items-center gap-2.5">
+            <Switch
+              id="lumperRequired"
+              checked={lumperRequired}
+              onCheckedChange={setLumperRequired}
             />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground" htmlFor="contactPhone">
-              Contact Phone
+            <label
+              htmlFor="lumperRequired"
+              className="text-sm font-medium text-foreground cursor-pointer"
+            >
+              Lumper Required
             </label>
-            <Input
-              id="contactPhone"
-              name="contactPhone"
-              value={values.contactPhone}
-              onChange={handleChange}
-              placeholder="+1 (555) 000-0000"
-            />
           </div>
-          <div className="space-y-1.5 lg:col-span-2">
-            <label className="text-sm font-medium text-foreground" htmlFor="contactEmail">
-              Contact Email
+          <div className="flex items-center gap-2.5">
+            <Switch
+              id="appointmentRequired"
+              checked={appointmentRequired}
+              onCheckedChange={setAppointmentRequired}
+            />
+            <label
+              htmlFor="appointmentRequired"
+              className="text-sm font-medium text-foreground cursor-pointer"
+            >
+              Appointment Required
             </label>
-            <Input
-              id="contactEmail"
-              name="contactEmail"
-              type="email"
-              value={values.contactEmail}
-              onChange={handleChange}
-              placeholder="contact@facility.com"
-            />
-            {errors.contactEmail && (
-              <p className="text-xs text-destructive">{errors.contactEmail}</p>
-            )}
           </div>
+        </div>
+      </div>
+
+      {/* Contacts section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Contacts
+          </h3>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addContact}
+          >
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            Add Contact
+          </Button>
+        </div>
+
+        {contacts.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            No contacts added. Click &quot;Add Contact&quot; to add facility contacts.
+          </p>
+        )}
+
+        <div className="space-y-3">
+          {contacts.map((contact, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] items-end"
+            >
+              <div className="space-y-1.5">
+                {index === 0 && (
+                  <label className="text-xs font-medium text-muted-foreground">Name</label>
+                )}
+                <Input
+                  value={contact.name}
+                  onChange={(e) => updateContact(index, 'name', e.target.value)}
+                  placeholder="Jane Doe"
+                />
+              </div>
+              <div className="space-y-1.5">
+                {index === 0 && (
+                  <label className="text-xs font-medium text-muted-foreground">Phone</label>
+                )}
+                <Input
+                  value={contact.phone}
+                  onChange={(e) => updateContact(index, 'phone', e.target.value)}
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+              <div className="space-y-1.5">
+                {index === 0 && (
+                  <label className="text-xs font-medium text-muted-foreground">Email</label>
+                )}
+                <Input
+                  value={contact.email}
+                  onChange={(e) => updateContact(index, 'email', e.target.value)}
+                  placeholder="contact@example.com"
+                />
+              </div>
+              <div className="space-y-1.5">
+                {index === 0 && (
+                  <label className="text-xs font-medium text-muted-foreground">Role</label>
+                )}
+                <Input
+                  value={contact.role}
+                  onChange={(e) => updateContact(index, 'role', e.target.value)}
+                  placeholder="Dock Manager"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => removeContact(index)}
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                aria-label="Remove contact"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
         </div>
       </div>
 
