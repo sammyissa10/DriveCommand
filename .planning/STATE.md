@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 186: fix all carrier ops bugs found during QA testing
+Last activity: 2026-04-06 - Completed quick task 186: Fix all carrier ops bugs found during QA testing
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -931,6 +931,7 @@ None blocking immediate progress.
 | 183 | Create QA seed script for carrier operations test accounts | 2026-04-05 | 797e683 | [183-create-qa-seed-script-for-carrier-operat](./quick/183-create-qa-seed-script-for-carrier-operat/) |
 | 184 | Fix carrier facilities form: type dropdown, boolean toggles, dynamic contacts JSONB | 2026-04-06 | 623e7f0 | [184-fix-carrier-facilities-form-type-dropdow](./quick/184-fix-carrier-facilities-form-type-dropdow/) |
 | 185 | fix facility search modal bugs in route template stop builder | 2026-04-06 | c0c9aed | [185-fix-facility-search-modal-bugs-in-route-](./quick/185-fix-facility-search-modal-bugs-in-route-/) |
+| 186 | Fix all carrier ops bugs found during QA testing | 2026-04-06 | b5d9118 | [186-fix-all-carrier-ops-bugs-found-during-qa](./quick/186-fix-all-carrier-ops-bugs-found-during-qa/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
