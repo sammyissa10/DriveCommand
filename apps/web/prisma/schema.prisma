@@ -1328,10 +1328,13 @@ model CarrierFacility {
   longitude     Float?
   contactName   String?  @map("contact_name")
   contactPhone  String?  @map("contact_phone")
-  contactEmail  String?  @map("contact_email")
-  notes         String?
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  contactEmail        String?  @map("contact_email")
+  lumperRequired      Boolean  @default(false) @map("lumper_required")
+  appointmentRequired Boolean  @default(false) @map("appointment_required")
+  contacts            Json     @default("[]")
+  notes               String?
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant               Tenant               @relation(fields: [orgId], references: [id])
   carrierDrivers       CarrierDriver[]

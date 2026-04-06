@@ -18,6 +18,14 @@ const FacilityCreateSchema = z.object({
   contactName: z.string().optional(),
   contactPhone: z.string().optional(),
   contactEmail: z.string().email().optional(),
+  lumperRequired: z.boolean().optional(),
+  appointmentRequired: z.boolean().optional(),
+  contacts: z.array(z.object({
+    name: z.string(),
+    phone: z.string().optional(),
+    email: z.string().optional(),
+    role: z.string().optional(),
+  })).optional(),
   notes: z.string().optional(),
 });
 

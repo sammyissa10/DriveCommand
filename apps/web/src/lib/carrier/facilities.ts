@@ -29,6 +29,9 @@ export interface FacilityCreateInput {
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
+  lumperRequired?: boolean;
+  appointmentRequired?: boolean;
+  contacts?: Array<{ name: string; phone?: string; email?: string; role?: string }>;
   notes?: string;
 }
 
