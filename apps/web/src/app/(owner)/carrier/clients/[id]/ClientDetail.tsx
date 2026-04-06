@@ -48,6 +48,8 @@ interface ClientSerialized {
   country: string | null;
   portalAccess: boolean;
   portalEmail: string | null;
+  paymentTerms?: number | null;
+  creditLimit?: string | null;
   notes: string | null;
   openLoadsCount: number;
   outstandingAR: string | null;
@@ -186,6 +188,8 @@ export function ClientDetail({
     country: client.country,
     portalAccess: client.portalAccess,
     portalEmail: client.portalEmail,
+    paymentTerms: client.paymentTerms ?? null,
+    creditLimit: client.creditLimit ?? null,
     notes: client.notes,
   };
 
@@ -334,6 +338,30 @@ export function ClientDetail({
                 </div>
               </div>
 
+              {/* Billing */}
+              <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  Billing
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <Field
+                    label="Payment Terms"
+                    value={client.paymentTerms != null ? `${client.paymentTerms} days` : '30 days'}
+                  />
+                  <Field
+                    label="Credit Limit"
+                    value={
+                      client.creditLimit
+                        ? parseFloat(client.creditLimit).toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          })
+                        : null
+                    }
+                  />
+                </div>
+              </div>
+
               {/* Portal Access */}
               <div className="rounded-lg border border-border bg-card p-6 space-y-4">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
@@ -352,8 +380,8 @@ export function ClientDetail({
                     Client portal access {portalUpdating ? '(saving…)' : portalAccess ? 'enabled' : 'disabled'}
                   </label>
                 </div>
-                {portalAccess && client.portalEmail && (
-                  <Field label="Portal Email" value={client.portalEmail} />
+                {portalAccess && (
+                  <Field label="Portal Email" value={client.portalEmail ?? 'Not set — edit to add portal email'} />
                 )}
               </div>
 

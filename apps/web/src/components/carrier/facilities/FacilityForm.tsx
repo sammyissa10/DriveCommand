@@ -53,11 +53,11 @@ interface FacilityFormProps {
 }
 
 const FACILITY_TYPES = [
-  { value: 'terminal',       label: 'Terminal' },
-  { value: 'yard',           label: 'Yard' },
-  { value: 'warehouse',      label: 'Warehouse' },
-  { value: 'drop_yard',      label: 'Drop Yard' },
-  { value: 'customer_site',  label: 'Customer Site' },
+  { value: 'shipper',   label: 'Shipper' },
+  { value: 'receiver',  label: 'Receiver' },
+  { value: 'terminal',  label: 'Terminal' },
+  { value: 'fuel_stop', label: 'Fuel Stop' },
+  { value: 'other',     label: 'Other' },
 ];
 
 interface FormErrors {

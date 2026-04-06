@@ -38,6 +38,8 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
     country: client.country,
     portalAccess: client.portalAccess,
     portalEmail: client.portalEmail,
+    paymentTerms: client.paymentTerms,
+    creditLimit: client.creditLimit != null ? String(client.creditLimit) : null,
     notes: client.notes,
     openLoadsCount: client.openLoadsCount,
     outstandingAR: client.outstandingAR,

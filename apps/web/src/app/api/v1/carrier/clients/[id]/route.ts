@@ -22,6 +22,8 @@ const ClientUpdateSchema = z.object({
   country: z.string().optional(),
   portalAccess: z.boolean().optional(),
   portalEmail: z.string().email().optional(),
+  paymentTerms: z.number().int().optional(),
+  creditLimit: z.union([z.string(), z.number()]).optional().nullable(),
   notes: z.string().optional(),
 });
 

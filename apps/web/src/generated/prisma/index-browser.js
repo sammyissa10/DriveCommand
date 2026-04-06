@@ -720,6 +720,8 @@ exports.Prisma.CarrierClientScalarFieldEnum = {
   status: 'status',
   portalAccess: 'portalAccess',
   portalEmail: 'portalEmail',
+  paymentTerms: 'paymentTerms',
+  creditLimit: 'creditLimit',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -759,6 +761,9 @@ exports.Prisma.CarrierFacilityScalarFieldEnum = {
   contactName: 'contactName',
   contactPhone: 'contactPhone',
   contactEmail: 'contactEmail',
+  lumperRequired: 'lumperRequired',
+  appointmentRequired: 'appointmentRequired',
+  contacts: 'contacts',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1026,6 +1031,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 

@@ -34,6 +34,8 @@ export interface ClientCreateInput {
   country?: string;
   portalAccess?: boolean;
   portalEmail?: string;
+  paymentTerms?: number;
+  creditLimit?: string | number | null;
   notes?: string;
 }
 

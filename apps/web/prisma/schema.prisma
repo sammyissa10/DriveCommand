@@ -1267,6 +1267,8 @@ model CarrierClient {
   status         String   @default("active")
   portalAccess   Boolean  @default(false) @map("portal_access")
   portalEmail    String?  @map("portal_email")
+  paymentTerms   Int      @default(30) @map("payment_terms")
+  creditLimit    Decimal? @map("credit_limit") @db.Decimal(12, 2)
   notes          String?
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz

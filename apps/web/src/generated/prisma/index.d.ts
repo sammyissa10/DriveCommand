@@ -54894,8 +54894,20 @@ export namespace Prisma {
 
   export type AggregateCarrierClient = {
     _count: CarrierClientCountAggregateOutputType | null
+    _avg: CarrierClientAvgAggregateOutputType | null
+    _sum: CarrierClientSumAggregateOutputType | null
     _min: CarrierClientMinAggregateOutputType | null
     _max: CarrierClientMaxAggregateOutputType | null
+  }
+
+  export type CarrierClientAvgAggregateOutputType = {
+    paymentTerms: number | null
+    creditLimit: Decimal | null
+  }
+
+  export type CarrierClientSumAggregateOutputType = {
+    paymentTerms: number | null
+    creditLimit: Decimal | null
   }
 
   export type CarrierClientMinAggregateOutputType = {
@@ -54919,6 +54931,8 @@ export namespace Prisma {
     status: string | null
     portalAccess: boolean | null
     portalEmail: string | null
+    paymentTerms: number | null
+    creditLimit: Decimal | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -54945,6 +54959,8 @@ export namespace Prisma {
     status: string | null
     portalAccess: boolean | null
     portalEmail: string | null
+    paymentTerms: number | null
+    creditLimit: Decimal | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -54971,12 +54987,24 @@ export namespace Prisma {
     status: number
     portalAccess: number
     portalEmail: number
+    paymentTerms: number
+    creditLimit: number
     notes: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type CarrierClientAvgAggregateInputType = {
+    paymentTerms?: true
+    creditLimit?: true
+  }
+
+  export type CarrierClientSumAggregateInputType = {
+    paymentTerms?: true
+    creditLimit?: true
+  }
 
   export type CarrierClientMinAggregateInputType = {
     id?: true
@@ -54999,6 +55027,8 @@ export namespace Prisma {
     status?: true
     portalAccess?: true
     portalEmail?: true
+    paymentTerms?: true
+    creditLimit?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -55025,6 +55055,8 @@ export namespace Prisma {
     status?: true
     portalAccess?: true
     portalEmail?: true
+    paymentTerms?: true
+    creditLimit?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -55051,6 +55083,8 @@ export namespace Prisma {
     status?: true
     portalAccess?: true
     portalEmail?: true
+    paymentTerms?: true
+    creditLimit?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -55095,6 +55129,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: CarrierClientAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CarrierClientSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: CarrierClientMinAggregateInputType
@@ -55125,6 +55171,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: CarrierClientCountAggregateInputType | true
+    _avg?: CarrierClientAvgAggregateInputType
+    _sum?: CarrierClientSumAggregateInputType
     _min?: CarrierClientMinAggregateInputType
     _max?: CarrierClientMaxAggregateInputType
   }
@@ -55150,10 +55198,14 @@ export namespace Prisma {
     status: string
     portalAccess: boolean
     portalEmail: string | null
+    paymentTerms: number
+    creditLimit: Decimal | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
     _count: CarrierClientCountAggregateOutputType | null
+    _avg: CarrierClientAvgAggregateOutputType | null
+    _sum: CarrierClientSumAggregateOutputType | null
     _min: CarrierClientMinAggregateOutputType | null
     _max: CarrierClientMaxAggregateOutputType | null
   }
@@ -55193,6 +55245,8 @@ export namespace Prisma {
     status?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
+    paymentTerms?: boolean
+    creditLimit?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -55228,6 +55282,8 @@ export namespace Prisma {
     status?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
+    paymentTerms?: boolean
+    creditLimit?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -55255,6 +55311,8 @@ export namespace Prisma {
     status?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
+    paymentTerms?: boolean
+    creditLimit?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -55282,12 +55340,14 @@ export namespace Prisma {
     status?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
+    paymentTerms?: boolean
+    creditLimit?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "dbaName" | "mcNumber" | "dotNumber" | "taxId" | "primaryContact" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "status" | "portalAccess" | "portalEmail" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierClient"]>
+  export type CarrierClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "dbaName" | "mcNumber" | "dotNumber" | "taxId" | "primaryContact" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "status" | "portalAccess" | "portalEmail" | "paymentTerms" | "creditLimit" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierClient"]>
   export type CarrierClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     contracts?: boolean | CarrierClient$contractsArgs<ExtArgs>
@@ -55339,6 +55399,8 @@ export namespace Prisma {
       status: string
       portalAccess: boolean
       portalEmail: string | null
+      paymentTerms: number
+      creditLimit: Prisma.Decimal | null
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -55793,6 +55855,8 @@ export namespace Prisma {
     readonly status: FieldRef<"CarrierClient", 'String'>
     readonly portalAccess: FieldRef<"CarrierClient", 'Boolean'>
     readonly portalEmail: FieldRef<"CarrierClient", 'String'>
+    readonly paymentTerms: FieldRef<"CarrierClient", 'Int'>
+    readonly creditLimit: FieldRef<"CarrierClient", 'Decimal'>
     readonly notes: FieldRef<"CarrierClient", 'String'>
     readonly createdAt: FieldRef<"CarrierClient", 'DateTime'>
     readonly updatedAt: FieldRef<"CarrierClient", 'DateTime'>
@@ -57718,6 +57782,8 @@ export namespace Prisma {
     contactName: string | null
     contactPhone: string | null
     contactEmail: string | null
+    lumperRequired: boolean | null
+    appointmentRequired: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -57739,6 +57805,8 @@ export namespace Prisma {
     contactName: string | null
     contactPhone: string | null
     contactEmail: string | null
+    lumperRequired: boolean | null
+    appointmentRequired: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -57760,6 +57828,9 @@ export namespace Prisma {
     contactName: number
     contactPhone: number
     contactEmail: number
+    lumperRequired: number
+    appointmentRequired: number
+    contacts: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -57793,6 +57864,8 @@ export namespace Prisma {
     contactName?: true
     contactPhone?: true
     contactEmail?: true
+    lumperRequired?: true
+    appointmentRequired?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -57814,6 +57887,8 @@ export namespace Prisma {
     contactName?: true
     contactPhone?: true
     contactEmail?: true
+    lumperRequired?: true
+    appointmentRequired?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -57835,6 +57910,9 @@ export namespace Prisma {
     contactName?: true
     contactPhone?: true
     contactEmail?: true
+    lumperRequired?: true
+    appointmentRequired?: true
+    contacts?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -57943,6 +58021,9 @@ export namespace Prisma {
     contactName: string | null
     contactPhone: string | null
     contactEmail: string | null
+    lumperRequired: boolean
+    appointmentRequired: boolean
+    contacts: JsonValue
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -57983,6 +58064,9 @@ export namespace Prisma {
     contactName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -58009,6 +58093,9 @@ export namespace Prisma {
     contactName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -58031,6 +58118,9 @@ export namespace Prisma {
     contactName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -58053,12 +58143,15 @@ export namespace Prisma {
     contactName?: boolean
     contactPhone?: boolean
     contactEmail?: boolean
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierFacilityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "facilityType" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "latitude" | "longitude" | "contactName" | "contactPhone" | "contactEmail" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierFacility"]>
+  export type CarrierFacilityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "facilityType" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "latitude" | "longitude" | "contactName" | "contactPhone" | "contactEmail" | "lumperRequired" | "appointmentRequired" | "contacts" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierFacility"]>
   export type CarrierFacilityInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     carrierDrivers?: boolean | CarrierFacility$carrierDriversArgs<ExtArgs>
@@ -58097,6 +58190,9 @@ export namespace Prisma {
       contactName: string | null
       contactPhone: string | null
       contactEmail: string | null
+      lumperRequired: boolean
+      appointmentRequired: boolean
+      contacts: Prisma.JsonValue
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -58542,6 +58638,9 @@ export namespace Prisma {
     readonly contactName: FieldRef<"CarrierFacility", 'String'>
     readonly contactPhone: FieldRef<"CarrierFacility", 'String'>
     readonly contactEmail: FieldRef<"CarrierFacility", 'String'>
+    readonly lumperRequired: FieldRef<"CarrierFacility", 'Boolean'>
+    readonly appointmentRequired: FieldRef<"CarrierFacility", 'Boolean'>
+    readonly contacts: FieldRef<"CarrierFacility", 'Json'>
     readonly notes: FieldRef<"CarrierFacility", 'String'>
     readonly createdAt: FieldRef<"CarrierFacility", 'DateTime'>
     readonly updatedAt: FieldRef<"CarrierFacility", 'DateTime'>
@@ -75435,6 +75534,8 @@ export namespace Prisma {
     status: 'status',
     portalAccess: 'portalAccess',
     portalEmail: 'portalEmail',
+    paymentTerms: 'paymentTerms',
+    creditLimit: 'creditLimit',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -75480,6 +75581,9 @@ export namespace Prisma {
     contactName: 'contactName',
     contactPhone: 'contactPhone',
     contactEmail: 'contactEmail',
+    lumperRequired: 'lumperRequired',
+    appointmentRequired: 'appointmentRequired',
+    contacts: 'contacts',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -75790,6 +75894,13 @@ export namespace Prisma {
   };
 
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+  export const JsonNullValueInput: {
+    JsonNull: typeof JsonNull
+  };
+
+  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
   export const QueryMode: {
@@ -80299,6 +80410,8 @@ export namespace Prisma {
     status?: StringFilter<"CarrierClient"> | string
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
+    paymentTerms?: IntFilter<"CarrierClient"> | number
+    creditLimit?: DecimalNullableFilter<"CarrierClient"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"CarrierClient"> | string | null
     createdAt?: DateTimeFilter<"CarrierClient"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierClient"> | Date | string
@@ -80333,6 +80446,8 @@ export namespace Prisma {
     status?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrderInput | SortOrder
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -80370,6 +80485,8 @@ export namespace Prisma {
     status?: StringFilter<"CarrierClient"> | string
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
+    paymentTerms?: IntFilter<"CarrierClient"> | number
+    creditLimit?: DecimalNullableFilter<"CarrierClient"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"CarrierClient"> | string | null
     createdAt?: DateTimeFilter<"CarrierClient"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierClient"> | Date | string
@@ -80404,12 +80521,16 @@ export namespace Prisma {
     status?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrderInput | SortOrder
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CarrierClientCountOrderByAggregateInput
+    _avg?: CarrierClientAvgOrderByAggregateInput
     _max?: CarrierClientMaxOrderByAggregateInput
     _min?: CarrierClientMinOrderByAggregateInput
+    _sum?: CarrierClientSumOrderByAggregateInput
   }
 
   export type CarrierClientScalarWhereWithAggregatesInput = {
@@ -80436,6 +80557,8 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"CarrierClient"> | string
     portalAccess?: BoolWithAggregatesFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableWithAggregatesFilter<"CarrierClient"> | string | null
+    paymentTerms?: IntWithAggregatesFilter<"CarrierClient"> | number
+    creditLimit?: DecimalNullableWithAggregatesFilter<"CarrierClient"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableWithAggregatesFilter<"CarrierClient"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierClient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierClient"> | Date | string
@@ -80576,6 +80699,9 @@ export namespace Prisma {
     contactName?: StringNullableFilter<"CarrierFacility"> | string | null
     contactPhone?: StringNullableFilter<"CarrierFacility"> | string | null
     contactEmail?: StringNullableFilter<"CarrierFacility"> | string | null
+    lumperRequired?: BoolFilter<"CarrierFacility"> | boolean
+    appointmentRequired?: BoolFilter<"CarrierFacility"> | boolean
+    contacts?: JsonFilter<"CarrierFacility">
     notes?: StringNullableFilter<"CarrierFacility"> | string | null
     createdAt?: DateTimeFilter<"CarrierFacility"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierFacility"> | Date | string
@@ -80601,6 +80727,9 @@ export namespace Prisma {
     contactName?: SortOrderInput | SortOrder
     contactPhone?: SortOrderInput | SortOrder
     contactEmail?: SortOrderInput | SortOrder
+    lumperRequired?: SortOrder
+    appointmentRequired?: SortOrder
+    contacts?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -80629,6 +80758,9 @@ export namespace Prisma {
     contactName?: StringNullableFilter<"CarrierFacility"> | string | null
     contactPhone?: StringNullableFilter<"CarrierFacility"> | string | null
     contactEmail?: StringNullableFilter<"CarrierFacility"> | string | null
+    lumperRequired?: BoolFilter<"CarrierFacility"> | boolean
+    appointmentRequired?: BoolFilter<"CarrierFacility"> | boolean
+    contacts?: JsonFilter<"CarrierFacility">
     notes?: StringNullableFilter<"CarrierFacility"> | string | null
     createdAt?: DateTimeFilter<"CarrierFacility"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierFacility"> | Date | string
@@ -80654,6 +80786,9 @@ export namespace Prisma {
     contactName?: SortOrderInput | SortOrder
     contactPhone?: SortOrderInput | SortOrder
     contactEmail?: SortOrderInput | SortOrder
+    lumperRequired?: SortOrder
+    appointmentRequired?: SortOrder
+    contacts?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -80683,6 +80818,9 @@ export namespace Prisma {
     contactName?: StringNullableWithAggregatesFilter<"CarrierFacility"> | string | null
     contactPhone?: StringNullableWithAggregatesFilter<"CarrierFacility"> | string | null
     contactEmail?: StringNullableWithAggregatesFilter<"CarrierFacility"> | string | null
+    lumperRequired?: BoolWithAggregatesFilter<"CarrierFacility"> | boolean
+    appointmentRequired?: BoolWithAggregatesFilter<"CarrierFacility"> | boolean
+    contacts?: JsonWithAggregatesFilter<"CarrierFacility">
     notes?: StringNullableWithAggregatesFilter<"CarrierFacility"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierFacility"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierFacility"> | Date | string
@@ -86695,6 +86833,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -86729,6 +86869,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -86761,6 +86903,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86795,6 +86939,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86828,6 +86974,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -86853,6 +87001,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86879,6 +87029,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87031,6 +87183,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -87056,6 +87211,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -87079,6 +87237,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87104,6 +87265,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87128,6 +87292,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -87148,6 +87315,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87169,6 +87339,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92507,9 +92680,16 @@ export namespace Prisma {
     status?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type CarrierClientAvgOrderByAggregateInput = {
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrder
   }
 
   export type CarrierClientMaxOrderByAggregateInput = {
@@ -92533,6 +92713,8 @@ export namespace Prisma {
     status?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -92559,9 +92741,16 @@ export namespace Prisma {
     status?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type CarrierClientSumOrderByAggregateInput = {
+    paymentTerms?: SortOrder
+    creditLimit?: SortOrder
   }
 
   export type CarrierClientScalarRelationFilter = {
@@ -92632,6 +92821,29 @@ export namespace Prisma {
     baseRate?: SortOrder
     fuelSurchargeRate?: SortOrder
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type RouteTemplateStopListRelationFilter = {
     every?: RouteTemplateStopWhereInput
@@ -92659,6 +92871,9 @@ export namespace Prisma {
     contactName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
+    lumperRequired?: SortOrder
+    appointmentRequired?: SortOrder
+    contacts?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -92685,6 +92900,8 @@ export namespace Prisma {
     contactName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
+    lumperRequired?: SortOrder
+    appointmentRequired?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -92706,6 +92923,8 @@ export namespace Prisma {
     contactName?: SortOrder
     contactPhone?: SortOrder
     contactEmail?: SortOrder
+    lumperRequired?: SortOrder
+    appointmentRequired?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -92714,6 +92933,32 @@ export namespace Prisma {
   export type CarrierFacilitySumOrderByAggregateInput = {
     latitude?: SortOrder
     longitude?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type CarrierFacilityNullableScalarRelationFilter = {
@@ -102131,6 +102376,29 @@ export namespace Prisma {
     _min?: NestedEnumIncidentSeverityFilter<$PrismaModel>
     _max?: NestedEnumIncidentSeverityFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type UserCreateWithoutTenantInput = {
     id?: string
@@ -103504,6 +103772,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -103536,6 +103806,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -103621,6 +103893,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -103644,6 +103919,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -105220,6 +105498,8 @@ export namespace Prisma {
     status?: StringFilter<"CarrierClient"> | string
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
+    paymentTerms?: IntFilter<"CarrierClient"> | number
+    creditLimit?: DecimalNullableFilter<"CarrierClient"> | Decimal | DecimalJsLike | number | string | null
     notes?: StringNullableFilter<"CarrierClient"> | string | null
     createdAt?: DateTimeFilter<"CarrierClient"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierClient"> | Date | string
@@ -105297,6 +105577,9 @@ export namespace Prisma {
     contactName?: StringNullableFilter<"CarrierFacility"> | string | null
     contactPhone?: StringNullableFilter<"CarrierFacility"> | string | null
     contactEmail?: StringNullableFilter<"CarrierFacility"> | string | null
+    lumperRequired?: BoolFilter<"CarrierFacility"> | boolean
+    appointmentRequired?: BoolFilter<"CarrierFacility"> | boolean
+    contacts?: JsonFilter<"CarrierFacility">
     notes?: StringNullableFilter<"CarrierFacility"> | string | null
     createdAt?: DateTimeFilter<"CarrierFacility"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierFacility"> | Date | string
@@ -124644,6 +124927,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -124677,6 +124962,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -124977,6 +125264,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -125010,6 +125299,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -125727,6 +126018,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -125751,6 +126045,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -126305,6 +126602,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -126329,6 +126629,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -126991,6 +127294,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -127024,6 +127329,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -127445,6 +127752,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127478,6 +127787,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127768,6 +128079,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -127792,6 +128106,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -127893,6 +128210,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127917,6 +128237,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -129491,6 +129814,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -129524,6 +129849,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -129988,6 +130315,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130021,6 +130350,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130227,6 +130558,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -130251,6 +130585,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -130283,6 +130620,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -130316,6 +130655,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -130598,6 +130939,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130622,6 +130966,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130660,6 +131007,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130693,6 +131042,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131005,6 +131356,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -131038,6 +131391,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -131402,6 +131757,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131435,6 +131792,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131786,6 +132145,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -131819,6 +132180,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -132383,6 +132746,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132416,6 +132781,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132948,6 +133315,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -132981,6 +133350,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -133437,6 +133808,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -133470,6 +133843,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -134066,6 +134441,8 @@ export namespace Prisma {
     status?: string
     portalAccess?: boolean
     portalEmail?: string | null
+    paymentTerms?: number
+    creditLimit?: Decimal | DecimalJsLike | number | string | null
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -134103,6 +134480,9 @@ export namespace Prisma {
     contactName?: string | null
     contactPhone?: string | null
     contactEmail?: string | null
+    lumperRequired?: boolean
+    appointmentRequired?: boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -135821,6 +136201,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -135853,6 +136235,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -135885,6 +136269,8 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentTerms?: IntFieldUpdateOperationsInput | number
+    creditLimit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -135960,6 +136346,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -135983,6 +136372,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -136006,6 +136398,9 @@ export namespace Prisma {
     contactName?: NullableStringFieldUpdateOperationsInput | string | null
     contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
     contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    lumperRequired?: BoolFieldUpdateOperationsInput | boolean
+    appointmentRequired?: BoolFieldUpdateOperationsInput | boolean
+    contacts?: JsonNullValueInput | InputJsonValue
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

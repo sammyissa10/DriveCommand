@@ -1267,6 +1267,8 @@ model CarrierClient {
   status         String   @default("active")
   portalAccess   Boolean  @default(false) @map("portal_access")
   portalEmail    String?  @map("portal_email")
+  paymentTerms   Int      @default(30) @map("payment_terms")
+  creditLimit    Decimal? @map("credit_limit") @db.Decimal(12, 2)
   notes          String?
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -1314,24 +1316,27 @@ model CarrierContract {
 }
 
 model CarrierFacility {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId        String   @map("org_id") @db.Uuid
-  name         String
-  facilityType String   @default("terminal") @map("facility_type")
-  addressLine1 String?  @map("address_line1")
-  addressLine2 String?  @map("address_line2")
-  city         String?
-  state        String?
-  zip          String?
-  country      String   @default("US")
-  latitude     Float?
-  longitude    Float?
-  contactName  String?  @map("contact_name")
-  contactPhone String?  @map("contact_phone")
-  contactEmail String?  @map("contact_email")
-  notes        String?
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId               String   @map("org_id") @db.Uuid
+  name                String
+  facilityType        String   @default("terminal") @map("facility_type")
+  addressLine1        String?  @map("address_line1")
+  addressLine2        String?  @map("address_line2")
+  city                String?
+  state               String?
+  zip                 String?
+  country             String   @default("US")
+  latitude            Float?
+  longitude           Float?
+  contactName         String?  @map("contact_name")
+  contactPhone        String?  @map("contact_phone")
+  contactEmail        String?  @map("contact_email")
+  lumperRequired      Boolean  @default(false) @map("lumper_required")
+  appointmentRequired Boolean  @default(false) @map("appointment_required")
+  contacts            Json     @default("[]")
+  notes               String?
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant             Tenant              @relation(fields: [orgId], references: [id])
   carrierDrivers     CarrierDriver[]

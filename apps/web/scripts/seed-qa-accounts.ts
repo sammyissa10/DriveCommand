@@ -255,7 +255,7 @@ async function seedTenant1(): Promise<void> {
       data: {
         orgId: tenantId,
         name: 'QA Shipper Facility',
-        facilityType: 'warehouse',
+        facilityType: 'shipper',
         addressLine1: '100 Shipper Lane',
         city: 'Chicago',
         state: 'IL',
@@ -282,7 +282,7 @@ async function seedTenant1(): Promise<void> {
       data: {
         orgId: tenantId,
         name: 'QA Receiver Facility',
-        facilityType: 'customer_site',
+        facilityType: 'receiver',
         addressLine1: '200 Receiver Ave',
         city: 'Indianapolis',
         state: 'IN',

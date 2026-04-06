@@ -27,6 +27,8 @@ export interface ClientData {
   country: string | null;
   portalAccess: boolean;
   portalEmail: string | null;
+  paymentTerms?: number | null;
+  creditLimit?: string | null;
   notes: string | null;
 }
 
@@ -76,6 +78,8 @@ export function ClientForm({ initialData }: ClientFormProps) {
     country: initialData?.country ?? 'US',
     portalAccess: initialData?.portalAccess ?? false,
     portalEmail: initialData?.portalEmail ?? '',
+    paymentTerms: initialData?.paymentTerms?.toString() ?? '30',
+    creditLimit: initialData?.creditLimit ?? '',
     notes: initialData?.notes ?? '',
   });
 
@@ -119,6 +123,8 @@ export function ClientForm({ initialData }: ClientFormProps) {
         ...(values.country ? { country: values.country } : {}),
         portalAccess: values.portalAccess,
         ...(values.portalEmail ? { portalEmail: values.portalEmail } : {}),
+        paymentTerms: parseInt(values.paymentTerms) || 30,
+        ...(values.creditLimit ? { creditLimit: values.creditLimit } : {}),
         ...(values.notes ? { notes: values.notes } : {}),
       };
 
@@ -359,6 +365,41 @@ export function ClientForm({ initialData }: ClientFormProps) {
               value={values.website}
               onChange={handleChange}
               placeholder="https://example.com"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Billing */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          Billing
+        </h3>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground" htmlFor="paymentTerms">
+              Payment Terms (days)
+            </label>
+            <Input
+              id="paymentTerms"
+              name="paymentTerms"
+              type="number"
+              min={0}
+              value={values.paymentTerms}
+              onChange={handleChange}
+              placeholder="30"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-foreground" htmlFor="creditLimit">
+              Credit Limit
+            </label>
+            <Input
+              id="creditLimit"
+              name="creditLimit"
+              value={values.creditLimit}
+              onChange={handleChange}
+              placeholder="$0.00"
             />
           </div>
         </div>

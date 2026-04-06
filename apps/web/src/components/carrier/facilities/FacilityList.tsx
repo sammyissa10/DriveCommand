@@ -12,27 +12,24 @@ export interface FacilityItem {
   city: string | null;
   state: string | null;
   contactName: string | null;
+  contacts?: Array<{ name: string; phone?: string; email?: string; role?: string }>;
   notes: string | null;
 }
 
 const FACILITY_TYPES = [
-  { value: 'terminal', label: 'Terminal' },
-  { value: 'warehouse', label: 'Warehouse' },
-  { value: 'distribution_center', label: 'Distribution Center' },
-  { value: 'cross_dock', label: 'Cross Dock' },
-  { value: 'customer_location', label: 'Customer Location' },
-  { value: 'pickup', label: 'Pickup' },
-  { value: 'delivery', label: 'Delivery' },
+  { value: 'shipper',   label: 'Shipper' },
+  { value: 'receiver',  label: 'Receiver' },
+  { value: 'terminal',  label: 'Terminal' },
+  { value: 'fuel_stop', label: 'Fuel Stop' },
+  { value: 'other',     label: 'Other' },
 ] as const;
 
 const BADGE_CLASSES: Record<string, string> = {
-  terminal: 'border-blue-500 text-blue-600 dark:text-blue-400',
-  warehouse: 'border-orange-500 text-orange-600 dark:text-orange-400',
-  distribution_center: 'border-purple-500 text-purple-600 dark:text-purple-400',
-  cross_dock: 'border-green-500 text-green-600 dark:text-green-400',
-  customer_location: 'border-slate-500 text-slate-600 dark:text-slate-400',
-  pickup: 'border-emerald-500 text-emerald-600 dark:text-emerald-400',
-  delivery: 'border-amber-500 text-amber-600 dark:text-amber-400',
+  shipper:   'border-blue-500 text-blue-600 dark:text-blue-400',
+  receiver:  'border-green-500 text-green-600 dark:text-green-400',
+  terminal:  'border-purple-500 text-purple-600 dark:text-purple-400',
+  fuel_stop: 'border-amber-500 text-amber-600 dark:text-amber-400',
+  other:     'border-slate-500 text-slate-600 dark:text-slate-400',
 };
 
 function getFacilityTypeLabel(type: string | null): string {
@@ -144,7 +141,9 @@ export function FacilityList({ facilities }: { facilities: FacilityItem[] }) {
                         : f.city ?? f.state ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {f.contactName ?? '—'}
+                      {f.contacts && f.contacts.length > 0
+                        ? f.contacts[0].name
+                        : f.contactName ?? '—'}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground max-w-xs">
                       {f.notes

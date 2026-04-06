@@ -70,6 +70,9 @@ export default async function FacilitiesPage() {
           city: f.city,
           state: f.state,
           contactName: f.contactName,
+          contacts: Array.isArray(f.contacts)
+            ? (f.contacts as Array<{ name: string; phone?: string; email?: string; role?: string }>)
+            : [],
           notes: f.notes,
         }))}
       />
