@@ -68,7 +68,11 @@ export async function POST(req: NextRequest) {
     const client = await createClient(orgId, parsed.data);
     return NextResponse.json({ data: client }, { status: 201 });
   } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
     logger.error('POST /api/v1/carrier/clients failed', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error', detail: process.env.NODE_ENV !== 'production' ? detail : undefined },
+      { status: 500 }
+    );
   }
 }

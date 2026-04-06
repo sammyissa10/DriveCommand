@@ -73,8 +73,12 @@ export async function PATCH(
 
     return NextResponse.json({ data: client });
   } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
     logger.error('PATCH /api/v1/carrier/clients/[id] failed', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error', detail: process.env.NODE_ENV !== 'production' ? detail : undefined },
+      { status: 500 }
+    );
   }
 }
 

@@ -40,6 +40,7 @@ interface FormErrors {
   name?: string;
   email?: string;
   state?: string;
+  portalEmail?: string;
 }
 
 function validate(values: Record<string, string | boolean>): FormErrors {
@@ -52,6 +53,13 @@ function validate(values: Record<string, string | boolean>): FormErrors {
   }
   if (values.state && String(values.state).length > 2) {
     errors.state = 'State must be 2 characters max';
+  }
+  if (values.portalAccess) {
+    if (!String(values.portalEmail).trim()) {
+      errors.portalEmail = 'Portal email is required when portal access is enabled';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(values.portalEmail))) {
+      errors.portalEmail = 'Enter a valid portal email address';
+    }
   }
   return errors;
 }
@@ -90,7 +98,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
     const { name, value, type } = e.target;
     const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
     setValues((prev) => ({ ...prev, [name]: checked !== undefined ? checked : value }));
-    if (errors[name as keyof FormErrors]) {
+    if (errors[name as keyof FormErrors] !== undefined) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   }
@@ -141,7 +149,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to save client');
+        throw new Error(data.detail ?? data.error ?? 'Failed to save client');
       }
 
       toast.success(isEdit ? 'Client updated' : 'Client created');
@@ -392,14 +400,17 @@ export function ClientForm({ initialData }: ClientFormProps) {
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="creditLimit">
-              Credit Limit
+              Credit Limit ($)
             </label>
             <Input
               id="creditLimit"
               name="creditLimit"
+              type="number"
+              min={0}
+              step="0.01"
               value={values.creditLimit}
               onChange={handleChange}
-              placeholder="$0.00"
+              placeholder="0.00"
             />
           </div>
         </div>
@@ -426,7 +437,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
         {values.portalAccess && (
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground" htmlFor="portalEmail">
-              Portal Email
+              Portal Email <span className="text-destructive">*</span>
             </label>
             <Input
               id="portalEmail"
@@ -436,6 +447,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
               onChange={handleChange}
               placeholder="portal@client.com"
             />
+            {errors.portalEmail && <p className="text-xs text-destructive">{errors.portalEmail}</p>}
           </div>
         )}
       </div>
