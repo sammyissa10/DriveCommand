@@ -384,11 +384,11 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname.startsWith("/carrier/dashboard")}
-                    tooltip="Dashboard"
+                    tooltip="Carrier Dashboard"
                   >
                     <Link href="/carrier/dashboard" onClick={handleNavClick}>
                       <LayoutDashboard />
-                      <span>Dashboard</span>
+                      <span>Carrier Dashboard</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -450,11 +450,11 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={pathname.startsWith("/carrier/loads")}
-                    tooltip="Loads (Carrier)"
+                    tooltip="Carrier Loads"
                   >
                     <Link href="/carrier/loads" onClick={handleNavClick}>
                       <Package />
-                      <span>Loads</span>
+                      <span>Carrier Loads</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -474,7 +474,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                         isActive={pathname.startsWith("/carrier/fleet/drivers")}
                       >
                         <Link href="/carrier/fleet/drivers" onClick={handleNavClick}>
-                          Drivers
+                          Carrier Drivers
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
@@ -484,7 +484,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                         isActive={pathname.startsWith("/carrier/fleet/trucks")}
                       >
                         <Link href="/carrier/fleet/trucks" onClick={handleNavClick}>
-                          Trucks
+                          Carrier Trucks
                         </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

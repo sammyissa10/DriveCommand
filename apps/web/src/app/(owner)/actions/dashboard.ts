@@ -104,7 +104,13 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
         make: string;
         model: string;
         documentMetadata: unknown;
-      }>>),
+      }>>).catch(() => [] as Array<{
+        id: string;
+        year: number;
+        make: string;
+        model: string;
+        documentMetadata: unknown;
+      }>),
 
       // --- Driver documents expiring within 60 days (or already expired) ---
       (db.document.findMany({
@@ -132,7 +138,14 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
         expiryDate: Date | null;
         driverId: string | null;
         driver: { firstName: string | null; lastName: string | null } | null;
-      }>>),
+      }>>).catch(() => [] as Array<{
+        id: string;
+        fileName: string;
+        documentType: string | null;
+        expiryDate: Date | null;
+        driverId: string | null;
+        driver: { firstName: string | null; lastName: string | null } | null;
+      }>),
 
       // --- Overdue invoices ---
       (db.invoice.findMany({
@@ -150,7 +163,13 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
         totalAmount: Prisma.Decimal;
         dueDate: Date;
         updatedAt: Date;
-      }>>),
+      }>>).catch(() => [] as Array<{
+        id: string;
+        invoiceNumber: string;
+        totalAmount: Prisma.Decimal;
+        dueDate: Date;
+        updatedAt: Date;
+      }>),
 
       // --- Safety events from last 7 days ---
       (db.safetyEvent.findMany({
@@ -172,7 +191,14 @@ async function _fetchNotificationAlerts(tenantId: string): Promise<NotificationA
         timestamp: Date;
         truck: { licensePlate: string } | null;
         driver: { firstName: string | null; lastName: string | null } | null;
-      }>>),
+      }>>).catch(() => [] as Array<{
+        id: string;
+        eventType: string;
+        severity: string;
+        timestamp: Date;
+        truck: { licensePlate: string } | null;
+        driver: { firstName: string | null; lastName: string | null } | null;
+      }>),
     ]);
 
     const alerts: NotificationAlert[] = [];
@@ -312,48 +338,48 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
       activeLoadsCount,
       completedRoutes,
     ] = await Promise.all([
-      db.user.count({
+      (db.user.count({
         where: { role: 'DRIVER', isActive: true },
-      }) as Promise<number>,
+      }) as Promise<number>).catch(() => 0),
 
-      db.route.count({
+      (db.route.count({
         where: { status: { in: ['PLANNED', 'IN_PROGRESS'] } },
-      }) as Promise<number>,
+      }) as Promise<number>).catch(() => 0),
 
       // Late loads: active status but past their delivery date
-      db.load.count({
+      (db.load.count({
         where: {
           status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
           deliveryDate: { lt: new Date() },
           archivedAt: null,
         },
-      }) as Promise<number>,
+      }) as Promise<number>).catch(() => 0),
 
       // All unpaid invoices (DRAFT, SENT, OVERDUE)
-      db.invoice.findMany({
+      (db.invoice.findMany({
         where: {
           status: { in: ['DRAFT', 'SENT', 'OVERDUE'] },
           paidDate: null,
         },
         select: { totalAmount: true, status: true },
-      }) as Promise<Array<{ totalAmount: Prisma.Decimal; status: string }>>,
+      }) as Promise<Array<{ totalAmount: Prisma.Decimal; status: string }>>).catch(() => [] as Array<{ totalAmount: Prisma.Decimal; status: string }>),
 
       // Overdue invoices only (subset)
-      db.invoice.findMany({
+      (db.invoice.findMany({
         where: {
           status: 'OVERDUE',
           paidDate: null,
         },
         select: { totalAmount: true },
-      }) as Promise<Array<{ totalAmount: Prisma.Decimal }>>,
+      }) as Promise<Array<{ totalAmount: Prisma.Decimal }>>).catch(() => [] as Array<{ totalAmount: Prisma.Decimal }>),
 
       // Active loads: DISPATCHED + PICKED_UP + IN_TRANSIT
-      db.load.count({
+      (db.load.count({
         where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] } },
-      }) as Promise<number>,
+      }) as Promise<number>).catch(() => 0),
 
       // Completed routes with odometer data for revenue per mile — last 90 days only
-      db.route.findMany({
+      (db.route.findMany({
         where: {
           status: 'COMPLETED',
           startOdometer: { not: null },
@@ -373,7 +399,11 @@ async function _fetchDashboardMetrics(tenantId: string): Promise<DashboardMetric
         startOdometer: number | null;
         endOdometer: number | null;
         payments: Array<{ amount: Prisma.Decimal }>;
-      }>>,
+      }>>).catch(() => [] as Array<{
+        startOdometer: number | null;
+        endOdometer: number | null;
+        payments: Array<{ amount: Prisma.Decimal }>;
+      }>),
     ]);
 
     // Calculate unpaid total (all DRAFT+SENT+OVERDUE)

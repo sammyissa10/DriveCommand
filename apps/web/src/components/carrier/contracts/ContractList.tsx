@@ -66,7 +66,7 @@ function isExpiringSoon(expirationDate: string | null, status: string): boolean 
   return exp <= thirtyDaysOut && exp > now;
 }
 
-export function ContractList({ contracts }: { contracts: ContractItem[] }) {
+export function ContractList({ contracts, role }: { contracts: ContractItem[]; role?: string }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -102,15 +102,17 @@ export function ContractList({ contracts }: { contracts: ContractItem[] }) {
             </option>
           ))}
         </select>
-        <div className="sm:ml-auto">
-          <Link
-            href="/carrier/contracts/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            New Contract
-          </Link>
-        </div>
+        {role !== 'MANAGER' && (
+          <div className="sm:ml-auto">
+            <Link
+              href="/carrier/contracts/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              New Contract
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Table */}

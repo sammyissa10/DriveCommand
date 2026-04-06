@@ -70,6 +70,7 @@ export default async function ContractsPage() {
       )}
 
       <ContractList
+        role={session.role ?? undefined}
         contracts={items.map((c) => ({
           id: c.id,
           contractNumber: c.contractNumber,

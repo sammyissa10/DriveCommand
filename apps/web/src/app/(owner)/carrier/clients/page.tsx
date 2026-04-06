@@ -69,6 +69,7 @@ export default async function ClientsPage() {
       )}
 
       <ClientList
+        role={session.role ?? undefined}
         clients={items.map((c) => ({
           id: c.id,
           name: c.name,

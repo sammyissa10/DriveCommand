@@ -23,7 +23,7 @@ export default async function CarrierLayout({
 
   // Drivers should go to their own portal, not the carrier ops section
   if (role === UserRole.DRIVER) {
-    redirect("/my-load")
+    redirect("/my-route")
   }
 
   // Belt-and-suspenders: only OWNER and MANAGER can access carrier ops

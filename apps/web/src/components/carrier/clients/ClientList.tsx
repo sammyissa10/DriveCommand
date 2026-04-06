@@ -30,7 +30,7 @@ const STATUS_OPTIONS = [
   { value: 'blocked', label: 'Blocked' },
 ];
 
-export function ClientList({ clients }: { clients: ClientItem[] }) {
+export function ClientList({ clients, role }: { clients: ClientItem[]; role?: string }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -67,15 +67,17 @@ export function ClientList({ clients }: { clients: ClientItem[] }) {
             </option>
           ))}
         </select>
-        <div className="sm:ml-auto">
-          <Link
-            href="/carrier/clients/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            New Client
-          </Link>
-        </div>
+        {role !== 'MANAGER' && (
+          <div className="sm:ml-auto">
+            <Link
+              href="/carrier/clients/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              New Client
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Table */}

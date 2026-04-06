@@ -101,9 +101,11 @@ function formatRateDisplay(rateType: string | null, baseRate: string | null): st
 export function ClientDetail({
   client,
   initialEdit,
+  role,
 }: {
   client: ClientSerialized;
   initialEdit: boolean;
+  role?: string;
 }) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [isEditing, setIsEditing] = useState(initialEdit);
@@ -370,14 +372,16 @@ export function ClientDetail({
           {/* Tab: Contracts */}
           {activeTab === 'contracts' && (
             <div className="space-y-4">
-              <div className="flex justify-end">
-                <Link
-                  href={`/carrier/contracts/new?clientId=${client.id}`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-                >
-                  New Contract
-                </Link>
-              </div>
+              {role !== 'MANAGER' && (
+                <div className="flex justify-end">
+                  <Link
+                    href={`/carrier/contracts/new?clientId=${client.id}`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                  >
+                    New Contract
+                  </Link>
+                </div>
+              )}
               {contractsLoading ? (
                 <div className="space-y-2">
                   {[1, 2, 3].map((i) => (

@@ -43,5 +43,5 @@ export default async function ClientDetailPage({ params, searchParams }: Props) 
     outstandingAR: client.outstandingAR,
   };
 
-  return <ClientDetail client={serialized} initialEdit={edit === 'true'} />;
+  return <ClientDetail client={serialized} initialEdit={edit === 'true'} role={session.role ?? undefined} />;
 }
