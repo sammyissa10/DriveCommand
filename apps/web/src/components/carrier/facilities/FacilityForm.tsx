@@ -48,6 +48,8 @@ export interface FacilityData {
 
 interface FacilityFormProps {
   initialData?: FacilityData;
+  /** Called after a successful save instead of navigating to /carrier/facilities */
+  onSuccess?: (created: { id: string; name: string; city: string | null; state: string | null; facilityType: string | null }) => void;
 }
 
 const FACILITY_TYPES = [
@@ -95,7 +97,7 @@ function normalizeContacts(raw: unknown): FacilityContact[] {
   });
 }
 
-export function FacilityForm({ initialData }: FacilityFormProps) {
+export function FacilityForm({ initialData, onSuccess }: FacilityFormProps) {
   const router = useRouter();
   const isEdit = Boolean(initialData?.id);
 
@@ -189,9 +191,20 @@ export function FacilityForm({ initialData }: FacilityFormProps) {
         throw new Error(data.error ?? 'Failed to save facility');
       }
 
+      const created = await res.json();
       toast.success(isEdit ? 'Facility updated' : 'Facility created');
-      router.push('/carrier/facilities');
-      router.refresh();
+      if (onSuccess) {
+        onSuccess({
+          id: created.id,
+          name: created.name,
+          city: created.city ?? null,
+          state: created.state ?? null,
+          facilityType: created.facilityType ?? null,
+        });
+      } else {
+        router.push('/carrier/facilities');
+        router.refresh();
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

@@ -142,7 +142,12 @@ export function StopBuilderAddModal({
               <SheetTitle>Create New Facility</SheetTitle>
             </SheetHeader>
             <div className="mt-4">
-              <FacilityForm />
+              <FacilityForm
+                onSuccess={(created) => {
+                  setShowFacilitySheet(false);
+                  handleFacilitySelect(created);
+                }}
+              />
             </div>
           </SheetContent>
         </Sheet>

@@ -92,7 +92,11 @@ export function FacilitySearchModal({
 
   function handleSelect(facility: FacilitySearchResult) {
     onSelect(facility);
-    onOpenChange(false);
+    // Do NOT call onOpenChange(false) here — the parent controls modal state.
+    // For StopBuilderAddModal: onSelect sets step→2, unmounting this Dialog
+    // and rendering the step-2 Dialog instead (open prop stays true).
+    // Closing here would trigger StopBuilderAddModal's reset useEffect
+    // and wipe selectedFacility before step 2 can render.
   }
 
   return (
@@ -173,7 +177,7 @@ export function FacilitySearchModal({
               variant="outline"
               className="w-full"
               onClick={() => {
-                onOpenChange(false);
+                // Do NOT close the search modal — the sheet should open on top
                 onCreateNew();
               }}
             >
