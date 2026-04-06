@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-06 - Completed quick task 185: fix facility search modal bugs in route template stop builder
+Last activity: 2026-04-05 - Completed quick task 186: fix all carrier ops bugs found during QA testing
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -164,6 +164,7 @@ Progress: [███████████████████████
 - Quick-177 (2026-04-05): Carrier Ops Mobile — Expense log screen for drivers — POST /api/mobile/carrier/driver/dispatches/[id]/expenses (validates 8 types + 4 paid-by + stop ownership), ExpenseLogForm (44px chip selects for type+paid-by, decimal-pad amount, auto-computed reimbursable badge, optional notes + receipt), expenses.tsx (header + form + pull-to-refresh list with type/amount/paidBy/reimbursable/timestamp), stop detail Expense Log button wired — 3 tasks, 4 files, ~5min
 - Quick-178 (2026-04-05): Carrier Ops — Fleet management pages (carrier drivers and carrier trucks) — fleet-drivers.ts + fleet-trucks.ts lib modules (CRUD, 400 on duplicate user link), 4 API routes (GET/POST list + GET/PATCH detail), CarrierDriverList + CarrierTruckList (expiry color coding: green/amber/red, AlertTriangle on near-expiry), CarrierDriverForm + CarrierTruckForm, 4 server pages (list + detail for drivers + trucks, dispatch history on detail pages) — 3 tasks, 14 files, ~25min
 - Quick-179 (2026-04-05): Carrier Ops — Sidebar navigation wiring and route guard — DispatchBadge client component (60s poll, needs_assignment count capped at "9+"), sidebar restructured with Fleet sub-group (Drivers/Trucks/Facilities) + Reports sub-group (Revenue/Driver Pay/AR Aging/Performance), CarrierBreadcrumb (pathname→display name mapping), carrier layout.tsx (DRIVER→/my-load redirect, non-OWNER/MANAGER→/unauthorized) — 2 tasks, 4 files, ~15min
+- Quick-186 (2026-04-05): Fix all carrier ops bugs found during QA — 19 bugs fixed: dashboard timeout resilience (.catch() on all 7+4 queries), sidebar label uniqueness (Carrier Dashboard/Loads/Drivers/Trucks), MANAGER role gates on New Contract+New Client+ClientDetail contracts tab, driver layout redirect →/my-route, facility types aligned to spec (shipper/receiver/terminal/fuel_stop/other), contacts JSON array in facility list, paymentTerms+creditLimit added to CarrierClient (db push), Billing section in ClientForm+ClientDetail, portal email shown when access=true — 3 tasks, 18 files, ~25min
 
 ## Accumulated Context
 
@@ -214,6 +215,11 @@ Progress: [███████████████████████
 - percentage_gross creates one DriverPayRecord per load on the dispatch (not one per dispatch)
 - dispatches.ts transitionDispatchStatus completion path also wired to generateDriverPayRecords (plan only mentioned stop-completion.ts)
 - Waze fallback goes to Apple Maps (iOS only) since Waze may not be installed
+
+**Quick-186 decisions (Fix all carrier ops QA bugs):**
+- Used prisma db push (not migrate) to add paymentTerms/creditLimit — no migration file created, no constraint changes
+- Facility type values (shipper/receiver/terminal/fuel_stop/other) enforced at application layer only — facilityType is a plain String column
+- Portal email field shown whenever portalAccess is true (not conditional on email existing) — allows user to enter email after toggling access ON
 
 **Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
 - useThemeColors() called in each sub-component (not passed as prop) — hooks must be called inside React function components
