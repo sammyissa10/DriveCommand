@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-05 - Completed quick task 183: Create QA seed script for carrier operations test accounts
+Last activity: 2026-04-06 - Completed quick task 184: Fix carrier facilities form (type dropdown, boolean toggles, dynamic contacts JSONB)
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -923,6 +923,7 @@ None blocking immediate progress.
 | 181 | Carrier Ops — Multi-tenancy and financial integrity audit | 2026-04-05 | 4de9f89 | [181-carrier-ops-multi-tenancy-and-financial-](./quick/181-carrier-ops-multi-tenancy-and-financial-/) |
 | 182 | Carrier Ops — Update technical documentation | 2026-04-05 | e123c39 | [182-carrier-ops-update-technical-documentati](./quick/182-carrier-ops-update-technical-documentati/) |
 | 183 | Create QA seed script for carrier operations test accounts | 2026-04-05 | 797e683 | [183-create-qa-seed-script-for-carrier-operat](./quick/183-create-qa-seed-script-for-carrier-operat/) |
+| 184 | Fix carrier facilities form: type dropdown, boolean toggles, dynamic contacts JSONB | 2026-04-06 | 623e7f0 | [184-fix-carrier-facilities-form-type-dropdow](./quick/184-fix-carrier-facilities-form-type-dropdow/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
