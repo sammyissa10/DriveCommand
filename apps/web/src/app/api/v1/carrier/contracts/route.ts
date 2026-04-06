@@ -6,13 +6,20 @@ import { listContracts, createContract } from '@/lib/carrier/contracts';
 
 const ContractCreateSchema = z.object({
   clientId: z.string().uuid(),
-  contractType: z.string().optional(),
+  contractName: z.string().optional(),
+  contractType: z.enum(['spot', 'contract', 'dedicated']).optional(),
   effectiveDate: z.string().optional(),
   expirationDate: z.string().optional(),
-  rateType: z.string().optional(),
+  rateType: z.enum(['per_mile', 'flat', 'per_load', 'hourly']).optional(),
   baseRate: z.string().optional(),
   fuelSurchargeRate: z.string().optional(),
-  fuelSurchargeMethod: z.string().optional(),
+  fuelSurchargeMethod: z.enum(['none', 'percentage', 'per_mile', 'table']).optional(),
+  detentionFreeMinutes: z.coerce.number().int().optional(),
+  detentionRatePerHour: z.string().optional(),
+  tonuRate: z.string().optional(),
+  layoverRatePerDay: z.string().optional(),
+  paymentTermsOverride: z.enum(['net_15', 'net_30', 'net_45', 'net_60', 'net_90', 'due_on_receipt']).optional(),
+  autoRenew: z.boolean().optional(),
   notes: z.string().optional(),
 });
 

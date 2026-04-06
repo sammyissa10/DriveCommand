@@ -1,13 +1,5 @@
 'use client';
 
-// TODO: The following fields from the original spec do NOT exist on the CarrierContract schema
-// and are not included in this form. They require a schema migration to add:
-//   - detention_free_minutes, detention_rate_per_hour
-//   - tonu_rate, layover_rate_per_day
-//   - auto_renew
-//   - contract_name
-//   - payment_terms_override
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -26,6 +18,7 @@ import { toast } from 'sonner';
 export interface ContractData {
   id: string;
   clientId: string;
+  contractName: string | null;
   contractType: string | null;
   rateType: string | null;
   baseRate: string | null;
@@ -33,6 +26,12 @@ export interface ContractData {
   fuelSurchargeRate: string | null;
   effectiveDate: string | null;
   expirationDate: string | null;
+  detentionFreeMinutes: number | null;
+  detentionRatePerHour: string | null;
+  tonuRate: string | null;
+  layoverRatePerDay: string | null;
+  paymentTermsOverride: string | null;
+  autoRenew: boolean;
   status: string;
   notes: string | null;
 }
@@ -54,31 +53,38 @@ interface FormErrors {
 
 const CONTRACT_TYPES = [
   { value: 'spot', label: 'Spot' },
+  { value: 'contract', label: 'Contract' },
   { value: 'dedicated', label: 'Dedicated' },
-  { value: 'volume', label: 'Volume' },
-  { value: 'brokerage', label: 'Brokerage' },
 ];
 
 const RATE_TYPES = [
   { value: 'per_mile', label: 'Per Mile' },
   { value: 'flat', label: 'Flat Rate' },
-  { value: 'per_hour', label: 'Per Hour' },
   { value: 'per_load', label: 'Per Load' },
-  { value: 'percentage', label: 'Percentage' },
+  { value: 'hourly', label: 'Hourly' },
 ];
 
 const FUEL_SURCHARGE_METHODS = [
   { value: 'none', label: 'None' },
   { value: 'percentage', label: 'Percentage' },
-  { value: 'flat_rate', label: 'Flat Rate' },
-  { value: 'doe_index', label: 'DOE Index' },
+  { value: 'per_mile', label: 'Per Mile' },
+  { value: 'table', label: 'Table' },
 ];
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active' },
-  { value: 'pending', label: 'Pending' },
   { value: 'expired', label: 'Expired' },
-  { value: 'terminated', label: 'Terminated' },
+  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'draft', label: 'Draft' },
+];
+
+const PAYMENT_TERMS = [
+  { value: 'net_15', label: 'Net 15' },
+  { value: 'net_30', label: 'Net 30' },
+  { value: 'net_45', label: 'Net 45' },
+  { value: 'net_60', label: 'Net 60' },
+  { value: 'net_90', label: 'Net 90' },
+  { value: 'due_on_receipt', label: 'Due on Receipt' },
 ];
 
 function validate(values: { clientId: string; baseRate: string }): FormErrors {
@@ -98,6 +104,7 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
 
   const [values, setValues] = useState({
     clientId: initialData?.clientId ?? defaultClientId ?? '',
+    contractName: initialData?.contractName ?? '',
     contractType: initialData?.contractType ?? '',
     rateType: initialData?.rateType ?? '',
     baseRate: initialData?.baseRate ?? '',
@@ -109,6 +116,14 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
     expirationDate: initialData?.expirationDate
       ? initialData.expirationDate.slice(0, 10)
       : '',
+    detentionFreeMinutes: initialData?.detentionFreeMinutes != null
+      ? String(initialData.detentionFreeMinutes)
+      : '120',
+    detentionRatePerHour: initialData?.detentionRatePerHour ?? '',
+    tonuRate: initialData?.tonuRate ?? '',
+    layoverRatePerDay: initialData?.layoverRatePerDay ?? '',
+    paymentTermsOverride: initialData?.paymentTermsOverride ?? '',
+    autoRenew: initialData?.autoRenew ?? false,
     status: initialData?.status ?? 'active',
     notes: initialData?.notes ?? '',
   });
@@ -130,8 +145,13 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const { name, value } = e.target;
-    setValues((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked;
+      setValues((prev) => ({ ...prev, [name]: checked }));
+    } else {
+      setValues((prev) => ({ ...prev, [name]: value }));
+    }
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -156,6 +176,7 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
     try {
       const body: Record<string, unknown> = {
         clientId: values.clientId,
+        ...(values.contractName ? { contractName: values.contractName } : {}),
         ...(values.contractType ? { contractType: values.contractType } : {}),
         ...(values.rateType ? { rateType: values.rateType } : {}),
         ...(values.baseRate ? { baseRate: values.baseRate } : {}),
@@ -165,6 +186,14 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
           : {}),
         ...(values.effectiveDate ? { effectiveDate: values.effectiveDate } : {}),
         ...(values.expirationDate ? { expirationDate: values.expirationDate } : {}),
+        ...(values.detentionFreeMinutes
+          ? { detentionFreeMinutes: parseInt(values.detentionFreeMinutes, 10) }
+          : {}),
+        ...(values.detentionRatePerHour ? { detentionRatePerHour: values.detentionRatePerHour } : {}),
+        ...(values.tonuRate ? { tonuRate: values.tonuRate } : {}),
+        ...(values.layoverRatePerDay ? { layoverRatePerDay: values.layoverRatePerDay } : {}),
+        ...(values.paymentTermsOverride ? { paymentTermsOverride: values.paymentTermsOverride } : {}),
+        autoRenew: values.autoRenew,
         status: values.status,
         ...(values.notes ? { notes: values.notes } : {}),
       };
@@ -222,6 +251,21 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
           </Select>
         )}
         {errors.clientId && <p className="text-xs text-destructive">{errors.clientId}</p>}
+      </div>
+
+      {/* Contract Name */}
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground" htmlFor="contractName">
+          Contract Name
+        </label>
+        <Input
+          id="contractName"
+          name="contractName"
+          type="text"
+          value={values.contractName}
+          onChange={handleChange}
+          placeholder="e.g. Annual Freight Agreement 2026"
+        />
       </div>
 
       {/* Type + Status */}
@@ -348,6 +392,75 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
             </div>
           )}
         </div>
+
+        {/* Detention / TONU / Layover */}
+        <div className="space-y-3">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Detention / TONU / Layover
+          </h4>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground" htmlFor="detentionFreeMinutes">
+                Free Minutes
+              </label>
+              <Input
+                id="detentionFreeMinutes"
+                name="detentionFreeMinutes"
+                type="number"
+                step="1"
+                min="0"
+                value={values.detentionFreeMinutes}
+                onChange={handleChange}
+                placeholder="120"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground" htmlFor="detentionRatePerHour">
+                Detention Rate/hr
+              </label>
+              <Input
+                id="detentionRatePerHour"
+                name="detentionRatePerHour"
+                type="number"
+                step="0.01"
+                min="0"
+                value={values.detentionRatePerHour}
+                onChange={handleChange}
+                placeholder="75.00"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground" htmlFor="tonuRate">
+                TONU Rate
+              </label>
+              <Input
+                id="tonuRate"
+                name="tonuRate"
+                type="number"
+                step="0.01"
+                min="0"
+                value={values.tonuRate}
+                onChange={handleChange}
+                placeholder="250.00"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground" htmlFor="layoverRatePerDay">
+                Layover Rate/day
+              </label>
+              <Input
+                id="layoverRatePerDay"
+                name="layoverRatePerDay"
+                type="number"
+                step="0.01"
+                min="0"
+                value={values.layoverRatePerDay}
+                onChange={handleChange}
+                placeholder="350.00"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Dates */}
@@ -375,6 +488,48 @@ export function ContractForm({ initialData, defaultClientId }: ContractFormProps
             value={values.expirationDate}
             onChange={handleChange}
           />
+        </div>
+      </div>
+
+      {/* Payment Terms + Auto-Renew */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-foreground" htmlFor="paymentTermsOverride">
+            Payment Terms Override
+          </label>
+          <Select
+            value={values.paymentTermsOverride || undefined}
+            onValueChange={(val) => handleSelectChange('paymentTermsOverride', val)}
+          >
+            <SelectTrigger id="paymentTermsOverride">
+              <SelectValue placeholder="Use client default" />
+            </SelectTrigger>
+            <SelectContent>
+              {PAYMENT_TERMS.map((t) => (
+                <SelectItem key={t.value} value={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-foreground">
+            Auto-Renew
+          </label>
+          <div className="flex items-center gap-3 h-9">
+            <input
+              id="autoRenew"
+              name="autoRenew"
+              type="checkbox"
+              checked={values.autoRenew}
+              onChange={handleChange}
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <label htmlFor="autoRenew" className="text-sm text-foreground cursor-pointer">
+              Automatically renew this contract on expiration
+            </label>
+          </div>
         </div>
       </div>
 

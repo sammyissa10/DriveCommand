@@ -10,6 +10,7 @@ import { ContractForm, ContractData } from '@/components/carrier/contracts/Contr
 interface ContractSerialized {
   id: string;
   contractNumber: string;
+  contractName: string | null;
   clientId: string;
   clientName: string;
   contractType: string | null;
@@ -17,6 +18,12 @@ interface ContractSerialized {
   baseRate: string | null;
   fuelSurchargeMethod: string | null;
   fuelSurchargeRate: string | null;
+  detentionFreeMinutes: number;
+  detentionRatePerHour: string | null;
+  tonuRate: string | null;
+  layoverRatePerDay: string | null;
+  paymentTermsOverride: string | null;
+  autoRenew: boolean;
   status: string;
   effectiveDate: string | null;
   expirationDate: string | null;
@@ -36,9 +43,9 @@ interface LoadsSummary {
 
 const CONTRACT_STATUS_CLASSES: Record<string, string> = {
   active: 'border-green-500 text-green-600 dark:text-green-400',
-  pending: 'border-yellow-500 text-yellow-600 dark:text-yellow-400',
+  draft: 'border-yellow-500 text-yellow-600 dark:text-yellow-400',
   expired: 'border-red-500 text-red-600 dark:text-red-400',
-  terminated: 'border-slate-500 text-slate-600 dark:text-slate-400',
+  cancelled: 'border-slate-500 text-slate-600 dark:text-slate-400',
 };
 
 function fmt(val: string | null | undefined): string {
@@ -54,11 +61,15 @@ function formatRateDisplay(rateType: string | null, baseRate: string | null): st
   switch (rateType) {
     case 'per_mile': return `${formatted}/mi`;
     case 'flat': return `${formatted} flat`;
-    case 'per_hour': return `${formatted}/hr`;
+    case 'hourly': return `${formatted}/hr`;
     case 'per_load': return `${formatted}/load`;
-    case 'percentage': return `${n}%`;
     default: return formatted;
   }
+}
+
+function formatLabel(val: string | null | undefined): string {
+  if (!val) return '—';
+  return val.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
@@ -82,6 +93,7 @@ export function ContractDetail({
   const editFormData: ContractData = {
     id: contract.id,
     clientId: contract.clientId,
+    contractName: contract.contractName,
     contractType: contract.contractType,
     rateType: contract.rateType,
     baseRate: contract.baseRate,
@@ -89,6 +101,12 @@ export function ContractDetail({
     fuelSurchargeRate: contract.fuelSurchargeRate,
     effectiveDate: contract.effectiveDate,
     expirationDate: contract.expirationDate,
+    detentionFreeMinutes: contract.detentionFreeMinutes,
+    detentionRatePerHour: contract.detentionRatePerHour,
+    tonuRate: contract.tonuRate,
+    layoverRatePerDay: contract.layoverRatePerDay,
+    paymentTermsOverride: contract.paymentTermsOverride,
+    autoRenew: contract.autoRenew,
     status: contract.status,
     notes: contract.notes,
   };
@@ -107,7 +125,7 @@ export function ContractDetail({
           </Link>
           <div className="mt-3 flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {contract.contractNumber}
+              {contract.contractName ?? contract.contractNumber}
             </h1>
             <Badge
               variant="outline"
@@ -116,6 +134,9 @@ export function ContractDetail({
               {contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
             </Badge>
           </div>
+          {contract.contractName && (
+            <p className="mt-0.5 text-sm text-muted-foreground font-mono">{contract.contractNumber}</p>
+          )}
           <p className="mt-1 text-sm text-muted-foreground">
             Client:{' '}
             <Link
@@ -165,9 +186,7 @@ export function ContractDetail({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <Field
                 label="Contract Type"
-                value={contract.contractType
-                  ? contract.contractType.charAt(0).toUpperCase() + contract.contractType.slice(1)
-                  : null}
+                value={contract.contractType ? formatLabel(contract.contractType) : null}
               />
               <Field
                 label="Effective Date"
@@ -185,6 +204,16 @@ export function ContractDetail({
                 label="Status"
                 value={contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
               />
+              <Field
+                label="Payment Terms"
+                value={contract.paymentTermsOverride
+                  ? formatLabel(contract.paymentTermsOverride)
+                  : 'Client Default'}
+              />
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Auto-Renew</p>
+                <p className="text-sm text-foreground">{contract.autoRenew ? 'Yes' : 'No'}</p>
+              </div>
             </div>
             {contract.notes && (
               <div className="space-y-1 pt-2">
@@ -202,9 +231,7 @@ export function ContractDetail({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <Field
                 label="Rate Type"
-                value={contract.rateType
-                  ? contract.rateType.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-                  : null}
+                value={contract.rateType ? formatLabel(contract.rateType) : null}
               />
               <Field
                 label="Base Rate"
@@ -213,7 +240,7 @@ export function ContractDetail({
               <Field
                 label="Fuel Surcharge Method"
                 value={contract.fuelSurchargeMethod
-                  ? contract.fuelSurchargeMethod.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+                  ? formatLabel(contract.fuelSurchargeMethod)
                   : 'None'}
               />
               {contract.fuelSurchargeMethod && contract.fuelSurchargeMethod !== 'none' && (
@@ -222,6 +249,31 @@ export function ContractDetail({
                   value={contract.fuelSurchargeRate ? fmt(contract.fuelSurchargeRate) : null}
                 />
               )}
+            </div>
+
+            {/* Detention / TONU / Layover */}
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                Detention / TONU / Layover
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <Field
+                  label="Free Minutes"
+                  value={String(contract.detentionFreeMinutes ?? 120)}
+                />
+                <Field
+                  label="Detention Rate/hr"
+                  value={contract.detentionRatePerHour ? fmt(contract.detentionRatePerHour) : null}
+                />
+                <Field
+                  label="TONU Rate"
+                  value={contract.tonuRate ? fmt(contract.tonuRate) : null}
+                />
+                <Field
+                  label="Layover Rate/day"
+                  value={contract.layoverRatePerDay ? fmt(contract.layoverRatePerDay) : null}
+                />
+              </div>
             </div>
           </div>
 

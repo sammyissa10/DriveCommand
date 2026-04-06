@@ -17,6 +17,7 @@ export interface ListContractsFilters {
 }
 
 export interface ContractCreateInput {
+  contractName?: string;
   contractType?: string;
   effectiveDate?: string;
   expirationDate?: string;
@@ -24,10 +25,16 @@ export interface ContractCreateInput {
   baseRate?: string;
   fuelSurchargeRate?: string;
   fuelSurchargeMethod?: string;
+  detentionFreeMinutes?: number;
+  detentionRatePerHour?: string;
+  tonuRate?: string;
+  layoverRatePerDay?: string;
+  paymentTermsOverride?: string;
+  autoRenew?: boolean;
   notes?: string;
 }
 
-export type ContractUpdateInput = Partial<ContractCreateInput>;
+export type ContractUpdateInput = Partial<ContractCreateInput> & { status?: string };
 
 // ---------------------------------------------------------------------------
 // Functions
@@ -60,6 +67,9 @@ export async function listContracts(orgId: string, filters: ListContractsFilters
     ...c,
     baseRate: decStr(c.baseRate),
     fuelSurchargeRate: decStr(c.fuelSurchargeRate),
+    detentionRatePerHour: decStr(c.detentionRatePerHour),
+    tonuRate: decStr(c.tonuRate),
+    layoverRatePerDay: decStr(c.layoverRatePerDay),
   }));
 
   return { items: serialized, total };
@@ -86,6 +96,9 @@ export async function getContract(orgId: string, id: string) {
     ...contract,
     baseRate: decStr(contract.baseRate),
     fuelSurchargeRate: decStr(contract.fuelSurchargeRate),
+    detentionRatePerHour: decStr(contract.detentionRatePerHour),
+    tonuRate: decStr(contract.tonuRate),
+    layoverRatePerDay: decStr(contract.layoverRatePerDay),
     routeTemplateCount: contract.routeTemplates.length,
     totalLoads: revenueAgg._count.id,
     totalRevenue: decStr(revenueAgg._sum.totalRevenue),
@@ -112,7 +125,17 @@ export async function createContract(
     const seq = String(count + 1).padStart(5, '0');
     const contractNumber = `CN-${year}-${seq}`;
 
-    const { effectiveDate, expirationDate, baseRate, fuelSurchargeRate, ...rest } = data;
+    const {
+      effectiveDate,
+      expirationDate,
+      baseRate,
+      fuelSurchargeRate,
+      detentionRatePerHour,
+      tonuRate,
+      layoverRatePerDay,
+      detentionFreeMinutes,
+      ...rest
+    } = data;
 
     return tx.carrierContract.create({
       data: {
@@ -124,6 +147,10 @@ export async function createContract(
         ...(expirationDate ? { expirationDate: new Date(expirationDate) } : {}),
         ...(baseRate != null ? { baseRate } : {}),
         ...(fuelSurchargeRate != null ? { fuelSurchargeRate } : {}),
+        ...(detentionRatePerHour != null ? { detentionRatePerHour } : {}),
+        ...(tonuRate != null ? { tonuRate } : {}),
+        ...(layoverRatePerDay != null ? { layoverRatePerDay } : {}),
+        ...(detentionFreeMinutes != null ? { detentionFreeMinutes } : {}),
       },
     });
   }, TX_OPTIONS);
@@ -133,7 +160,17 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
   const existing = await prisma.carrierContract.findFirst({ where: { id, orgId } });
   if (!existing) return null;
 
-  const { effectiveDate, expirationDate, baseRate, fuelSurchargeRate, ...rest } = data;
+  const {
+    effectiveDate,
+    expirationDate,
+    baseRate,
+    fuelSurchargeRate,
+    detentionRatePerHour,
+    tonuRate,
+    layoverRatePerDay,
+    detentionFreeMinutes,
+    ...rest
+  } = data;
 
   const updated = await prisma.carrierContract.update({
     where: { id },
@@ -143,6 +180,10 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
       ...(expirationDate ? { expirationDate: new Date(expirationDate) } : {}),
       ...(baseRate != null ? { baseRate } : {}),
       ...(fuelSurchargeRate != null ? { fuelSurchargeRate } : {}),
+      ...(detentionRatePerHour != null ? { detentionRatePerHour } : {}),
+      ...(tonuRate != null ? { tonuRate } : {}),
+      ...(layoverRatePerDay != null ? { layoverRatePerDay } : {}),
+      ...(detentionFreeMinutes != null ? { detentionFreeMinutes } : {}),
     },
   });
 
@@ -150,6 +191,9 @@ export async function updateContract(orgId: string, id: string, data: ContractUp
     ...updated,
     baseRate: decStr(updated.baseRate),
     fuelSurchargeRate: decStr(updated.fuelSurchargeRate),
+    detentionRatePerHour: decStr(updated.detentionRatePerHour),
+    tonuRate: decStr(updated.tonuRate),
+    layoverRatePerDay: decStr(updated.layoverRatePerDay),
   };
 }
 
@@ -159,13 +203,16 @@ export async function softDeleteContract(orgId: string, id: string) {
 
   const updated = await prisma.carrierContract.update({
     where: { id },
-    data: { status: 'terminated' },
+    data: { status: 'cancelled' },
   });
 
   return {
     ...updated,
     baseRate: decStr(updated.baseRate),
     fuelSurchargeRate: decStr(updated.fuelSurchargeRate),
+    detentionRatePerHour: decStr(updated.detentionRatePerHour),
+    tonuRate: decStr(updated.tonuRate),
+    layoverRatePerDay: decStr(updated.layoverRatePerDay),
   };
 }
 
