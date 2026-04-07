@@ -18,6 +18,17 @@ function toNum(d: Prisma.Decimal | null | undefined): number {
   return parseFloat(String(d));
 }
 
+/** Compute net pay from all components — single source of truth */
+function computeNetPay(
+  basePay: number,
+  bonuses: number,
+  tips: number,
+  deductions: number,
+  reimbursements: number
+): number {
+  return basePay + bonuses + tips - deductions + reimbursements;
+}
+
 // ---------------------------------------------------------------------------
 // generateDriverPayRecords
 // ---------------------------------------------------------------------------
@@ -131,7 +142,7 @@ export async function generateDriverPayRecords(
       for (const load of dispatch.carrierLoads) {
         const grossRevenue = toNum(load.totalRevenue);
         const basePay = grossRevenue * payRate;
-        const netPay = basePay + reimbursements;
+        const netPay = computeNetPay(basePay, 0, 0, 0, reimbursements);
 
         await prisma.driverPayRecord.create({
           data: {
@@ -246,7 +257,7 @@ export async function generateDriverPayRecords(
       continue;
     }
 
-    const netPay = basePay + reimbursements;
+    const netPay = computeNetPay(basePay, 0, 0, 0, reimbursements);
 
     await prisma.driverPayRecord.create({
       data: {
@@ -261,4 +272,98 @@ export async function generateDriverPayRecords(
 
   logger.info('generateDriverPayRecords: completed', { orgId, dispatchId, recordsCreated });
   return { data: { recordsCreated } };
+}
+
+// ---------------------------------------------------------------------------
+// recalculatePayRecordReimbursements
+// ---------------------------------------------------------------------------
+
+/**
+ * Re-fetch approved reimbursable expenses for the pay record's driver+dispatch
+ * and update the pay record's reimbursements + net_pay.
+ *
+ * For percentage_gross pay models where multiple records exist for the same
+ * driver+dispatch (one per load), the total reimbursements are split evenly
+ * across all records so the driver isn't double-reimbursed.
+ *
+ * Returns an error descriptor if the record is not found or is paid.
+ */
+export async function recalculatePayRecordReimbursements(
+  orgId: string,
+  payRecordId: string
+): Promise<
+  | { error: string; status: number }
+  | { data: { id: string; reimbursements: number; netPay: number } }
+> {
+  const record = await prisma.driverPayRecord.findFirst({
+    where: { id: payRecordId, orgId },
+  });
+
+  if (!record) {
+    return { error: 'Pay record not found', status: 404 };
+  }
+
+  if (record.status === 'paid') {
+    return { error: 'Cannot recalculate a paid record', status: 422 };
+  }
+
+  if (!record.dispatchId) {
+    return { error: 'Pay record has no associated dispatch', status: 422 };
+  }
+
+  // Sum all approved reimbursable expenses for this driver+dispatch
+  const reimbursableExpenses = await prisma.carrierExpense.findMany({
+    where: {
+      dispatchId: record.dispatchId,
+      driverId: record.driverId,
+      reimbursable: true,
+      approvedAt: { not: null },
+    },
+  });
+
+  const totalReimbursements = reimbursableExpenses.reduce(
+    (sum, e) => sum + toNum(e.amount),
+    0
+  );
+
+  // For percentage_gross, split reimbursements evenly across all records for
+  // this driver+dispatch (one per load). Other pay models have exactly one record.
+  let reimbursementShare = totalReimbursements;
+  if (record.payModel === 'percentage_gross' && record.dispatchId) {
+    const siblingCount = await prisma.driverPayRecord.count({
+      where: {
+        orgId,
+        dispatchId: record.dispatchId,
+        driverId: record.driverId,
+      },
+    });
+    if (siblingCount > 1) {
+      reimbursementShare = totalReimbursements / siblingCount;
+    }
+  }
+
+  const newNetPay = computeNetPay(
+    toNum(record.basePay),
+    toNum(record.bonuses),
+    toNum(record.tips),
+    toNum(record.deductions),
+    reimbursementShare
+  );
+
+  await prisma.driverPayRecord.update({
+    where: { id: payRecordId },
+    data: {
+      reimbursements: new Prisma.Decimal(reimbursementShare),
+      netPay: new Prisma.Decimal(newNetPay),
+    },
+  });
+
+  logger.info('recalculatePayRecordReimbursements: updated', {
+    orgId,
+    payRecordId,
+    reimbursementShare,
+    newNetPay,
+  });
+
+  return { data: { id: payRecordId, reimbursements: reimbursementShare, netPay: newNetPay } };
 }
