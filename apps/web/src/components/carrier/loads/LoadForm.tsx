@@ -20,6 +20,7 @@ interface Client {
 interface Contract {
   id: string;
   contractNumber: string | null;
+  contractName: string | null;
   rateType: string | null;
   baseRate: string | null;
   fuelSurchargeMethod: string | null;
@@ -342,7 +343,7 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
                 <option value="">No contract</option>
                 {contracts.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.contractNumber ?? `Contract ${c.id.slice(0, 8)}`}
+                    {c.contractName || c.contractNumber || `Contract ${c.id.slice(0, 8)}`}
                   </option>
                 ))}
               </select>

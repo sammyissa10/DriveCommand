@@ -55,6 +55,7 @@ interface ClientItem {
 interface ContractItem {
   id: string;
   contractNumber: string;
+  contractName: string | null;
 }
 
 interface DriverItem {
@@ -372,7 +373,12 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
               <SelectContent>
                 {contracts.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
-                    {c.contractNumber}
+                    <span className="flex flex-col">
+                      <span>{c.contractName || c.contractNumber}</span>
+                      {c.contractName && (
+                        <span className="text-xs text-muted-foreground font-mono">{c.contractNumber}</span>
+                      )}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
