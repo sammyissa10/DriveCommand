@@ -16,6 +16,8 @@ interface LoadFinancialsProps {
   fuelSurchargeRate?: number;
   brokerFlag?: boolean;
   carrierCost?: number;
+  plannedMiles?: number;
+  deliveryStopCount?: number;
 }
 
 function formatCurrency(n: number): string {
@@ -57,14 +59,22 @@ function calculateRevenue(props: LoadFinancialsProps) {
       baseRevenue = amount * 8; // hardcoded default 8 hours
       baseNote = '(8 hr default)';
       break;
-    case 'per_mile':
-      baseRevenue = amount; // can't compute without miles
-      baseNote = '(miles needed for exact calc)';
+    case 'per_mile': {
+      const miles = Number(props.plannedMiles) || 0;
+      baseRevenue = amount * miles;
+      if (miles === 0) {
+        baseNote = '(enter planned miles)';
+      }
       break;
-    case 'per_stop':
-      baseRevenue = amount; // can't compute without stop count
-      baseNote = '(stops needed for exact calc)';
+    }
+    case 'per_stop': {
+      const stopCount = Number(props.deliveryStopCount) || 0;
+      baseRevenue = amount * stopCount;
+      if (stopCount === 0) {
+        baseNote = '(add delivery stops)';
+      }
       break;
+    }
     default:
       baseRevenue = amount;
   }
@@ -77,8 +87,11 @@ function calculateRevenue(props: LoadFinancialsProps) {
     if (fuelSurchargeMethod === 'percent_of_linehaul') {
       fuelSurcharge = baseRevenue * fscRate;
     } else if (fuelSurchargeMethod === 'per_mile') {
-      fuelSurcharge = 0;
-      fscNote = 'per-mile FSC (miles needed)';
+      const miles = Number(props.plannedMiles) || 0;
+      fuelSurcharge = miles * fscRate;
+      if (miles === 0) {
+        fscNote = 'per-mile FSC (enter planned miles)';
+      }
     }
   }
 

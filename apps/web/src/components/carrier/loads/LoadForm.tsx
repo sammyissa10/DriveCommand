@@ -50,6 +50,7 @@ export interface LoadData {
   carrierCost?: number | null;
   fuelSurchargeMethod?: string;
   fuelSurchargeRate?: number | null;
+  plannedMiles?: number | null;
   specialInstructions?: string;
   notes?: string;
 }
@@ -113,6 +114,9 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   );
   const [fuelSurchargeRate, setFuelSurchargeRate] = useState<string>(
     initialData?.fuelSurchargeRate != null ? String(initialData.fuelSurchargeRate) : ''
+  );
+  const [plannedMiles, setPlannedMiles] = useState<string>(
+    initialData?.plannedMiles != null ? String(initialData.plannedMiles) : ''
   );
   const [specialInstructions, setSpecialInstructions] = useState(
     initialData?.specialInstructions ?? ''
@@ -517,6 +521,24 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
             />
           </div>
 
+          {rateType === 'per_mile' && (
+            <div>
+              <label className={labelClass}>Planned Miles</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={plannedMiles}
+                onChange={(e) => setPlannedMiles(e.target.value)}
+                placeholder="0"
+                className={inputClass}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Used for revenue calculation: rate x miles
+              </p>
+            </div>
+          )}
+
           <div>
             <label className={labelClass}>
               FSC Method
@@ -567,17 +589,24 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
 
         {/* Live financial preview */}
         <div className="mt-4">
-          <LoadFinancials
-            rateType={rateType}
-            rateAmount={rateAmount ? Number(rateAmount) : 0}
-            weightLbs={commodityWeightLbs ? Number(commodityWeightLbs) : 0}
-            pallets={commodityPallets ? Number(commodityPallets) : 0}
-            otherCharges={otherCharges ? Number(otherCharges) : 0}
-            fuelSurchargeMethod={fuelSurchargeMethod}
-            fuelSurchargeRate={fuelSurchargeRate ? Number(fuelSurchargeRate) : 0}
-            brokerFlag={brokerFlag}
-            carrierCost={carrierCost ? Number(carrierCost) : 0}
-          />
+          {(() => {
+            const deliveryStopCount = stops.filter((s) => s.stop_type === 'delivery').length;
+            return (
+              <LoadFinancials
+                rateType={rateType}
+                rateAmount={rateAmount ? Number(rateAmount) : 0}
+                weightLbs={commodityWeightLbs ? Number(commodityWeightLbs) : 0}
+                pallets={commodityPallets ? Number(commodityPallets) : 0}
+                otherCharges={otherCharges ? Number(otherCharges) : 0}
+                fuelSurchargeMethod={fuelSurchargeMethod}
+                fuelSurchargeRate={fuelSurchargeRate ? Number(fuelSurchargeRate) : 0}
+                brokerFlag={brokerFlag}
+                carrierCost={carrierCost ? Number(carrierCost) : 0}
+                plannedMiles={plannedMiles ? Number(plannedMiles) : 0}
+                deliveryStopCount={deliveryStopCount}
+              />
+            );
+          })()}
         </div>
       </div>
 
