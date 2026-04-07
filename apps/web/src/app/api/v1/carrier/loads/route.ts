@@ -23,6 +23,7 @@ const LoadCreateSchema = z.object({
   rateAmount: z.number().optional(),
   brokerFlag: z.boolean().optional(),
   carrierCost: z.number().optional(),
+  otherCharges: z.number().optional(),
   specialInstructions: z.string().optional(),
   notes: z.string().optional(),
 });

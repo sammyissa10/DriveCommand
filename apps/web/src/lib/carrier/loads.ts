@@ -161,6 +161,7 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
       rateAmount: rateAmount ?? null,
       brokerFlag: data.brokerFlag ?? false,
       carrierCost: data.carrierCost ?? null,
+      otherCharges: data.otherCharges ?? null,
       specialInstructions: data.specialInstructions ?? null,
       notes: data.notes ?? null,
       status: 'pending',
@@ -206,6 +207,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
       ...(data.rateAmount !== undefined ? { rateAmount: data.rateAmount } : {}),
       ...(data.brokerFlag !== undefined ? { brokerFlag: data.brokerFlag } : {}),
       ...(data.carrierCost !== undefined ? { carrierCost: data.carrierCost } : {}),
+      ...(data.otherCharges !== undefined ? { otherCharges: data.otherCharges } : {}),
       ...(data.specialInstructions !== undefined
         ? { specialInstructions: data.specialInstructions }
         : {}),
