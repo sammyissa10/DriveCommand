@@ -27,6 +27,12 @@ interface LoadListProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
+function extractDispatchNumber(notes: string | null): string | null {
+  if (!notes) return null;
+  const match = notes.match(/\[DISPATCH_NUMBER=([^\]]+)\]/);
+  return match ? match[1] : null;
+}
+
 const ALL_STATUSES = ['pending', 'in_transit', 'delivered', 'cancelled', 'invoiced'];
 
 const STATUS_LABEL: Record<string, string> = {
@@ -285,12 +291,10 @@ export function LoadList({ clientMap }: LoadListProps) {
                     {load.dispatchId ? (
                       <Link
                         href={`/carrier/dispatches/${load.dispatchId}`}
-                        className="hover:underline text-foreground"
+                        className="hover:underline text-foreground font-mono text-xs"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {load.dispatch?.notes
-                          ? load.dispatch.notes.slice(0, 20) + (load.dispatch.notes.length > 20 ? '...' : '')
-                          : load.dispatchId.slice(0, 8)}
+                        {extractDispatchNumber(load.dispatch?.notes ?? null) ?? load.dispatchId.slice(0, 8)}
                       </Link>
                     ) : (
                       <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
