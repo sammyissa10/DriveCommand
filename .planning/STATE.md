@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-07 - Completed quick task 196: Fix BOL/POD upload — router.refresh() after upload, relax stop-completion OR→AND logic
+Last activity: 2026-04-07 - Completed quick task 197: Fix contract dropdown name display (Bug 24) and dispatch preview truncated UUIDs (Bug 29)
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -942,6 +942,7 @@ None blocking immediate progress.
 | 194 | Fix document upload on dispatch detail page — Storage upload failed error | 2026-04-07 | 2095dd3 | [194-fix-document-upload-on-dispatch-detail-p](./quick/194-fix-document-upload-on-dispatch-detail-p/) |
 | 195 | Fix dispatch stop timeline — add Arrived button (Bug 35) and Skip Stop button (Bug 34) | 2026-04-07 | 283d5bf | [195-fix-dispatch-stop-timeline-add-arrived-b](./quick/195-fix-dispatch-stop-timeline-add-arrived-b/) |
 | 196 | Fix BOL/POD upload — router.refresh() after upload, relax stop-completion OR→AND logic | 2026-04-07 | 7c7a801 | [196-fix-bol-pod-upload-to-set-stop-bol-uploa](./quick/196-fix-bol-pod-upload-to-set-stop-bol-uploa/) |
+| 197 | Fix contract dropdown name display (Bug 24) and dispatch preview truncated UUIDs (Bug 29) | 2026-04-07 | 4382d4a | [197-fix-contract-dropdown-shows-contract-num](./quick/197-fix-contract-dropdown-shows-contract-num/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
