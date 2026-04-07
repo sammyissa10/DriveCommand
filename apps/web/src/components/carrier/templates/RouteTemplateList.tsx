@@ -351,7 +351,7 @@ export function RouteTemplateList() {
 
                     {/* Schedule */}
                     <td className="px-4 py-3 text-muted-foreground">
-                      {t.scheduleType === 'recurring' ? (
+                      {(t.scheduleType === 'fixed_days' || t.scheduleType === 'frequency') ? (
                         <span className="whitespace-nowrap">
                           {formatRecurrenceRule(
                             t.recurrenceRule,

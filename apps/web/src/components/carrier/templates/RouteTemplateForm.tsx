@@ -63,18 +63,17 @@ interface ContractItem {
 
 const EQUIPMENT_TYPES = [
   { value: 'dry_van', label: 'Dry Van' },
-  { value: 'reefer', label: 'Reefer' },
   { value: 'flatbed', label: 'Flatbed' },
-  { value: 'step_deck', label: 'Step Deck' },
+  { value: 'reefer', label: 'Reefer' },
   { value: 'tanker', label: 'Tanker' },
-  { value: 'intermodal', label: 'Intermodal' },
-  { value: 'power_only', label: 'Power Only' },
+  { value: 'step_deck', label: 'Step Deck' },
+  { value: 'other', label: 'Other' },
 ];
 
 const SCHEDULE_TYPES = [
-  { value: 'recurring', label: 'Recurring' },
-  { value: 'on_demand', label: 'On Demand' },
-  { value: 'seasonal', label: 'Seasonal' },
+  { value: 'fixed_days', label: 'Fixed Days' },
+  { value: 'frequency', label: 'Frequency' },
+  { value: 'on_call', label: 'On Call' },
 ];
 
 const TIMEZONES = [
@@ -100,7 +99,7 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   const [templateName, setTemplateName] = useState(initialData?.templateName ?? '');
   const [clientId, setClientId] = useState(initialData?.clientId ?? '');
   const [contractId, setContractId] = useState(initialData?.contractId ?? '');
-  const [scheduleType, setScheduleType] = useState(initialData?.scheduleType ?? 'recurring');
+  const [scheduleType, setScheduleType] = useState(initialData?.scheduleType ?? 'fixed_days');
   const [recurrenceRule, setRecurrenceRule] = useState(initialData?.recurrenceRule ?? '');
   const [recurrenceRuleError, setRecurrenceRuleError] = useState('');
   const [recurrenceTimezone, setRecurrenceTimezone] = useState(
@@ -365,8 +364,8 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
             )}
           </div>
 
-          {/* Recurrence rule — only shown for recurring */}
-          {scheduleType === 'recurring' && (
+          {/* Recurrence rule — only shown for fixed_days and frequency */}
+          {(scheduleType === 'fixed_days' || scheduleType === 'frequency') && (
             <>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground" htmlFor="recurrenceRule">
