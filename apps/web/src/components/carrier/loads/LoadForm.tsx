@@ -280,7 +280,7 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       toast.success(mode === 'create' ? 'Load created' : 'Load saved');
 
       if (mode === 'create') {
-        router.push(`/carrier/loads/${savedId}`);
+        router.push('/carrier/loads');
       } else {
         router.push('/carrier/loads');
       }
