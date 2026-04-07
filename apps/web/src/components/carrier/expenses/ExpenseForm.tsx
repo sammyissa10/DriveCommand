@@ -23,12 +23,12 @@ interface DriverOption {
 const EXPENSE_TYPE_OPTIONS = [
   { value: '', label: 'Select expense type…' },
   { value: 'fuel', label: 'Fuel' },
-  { value: 'toll', label: 'Toll' },
-  { value: 'repair', label: 'Repair' },
-  { value: 'driver_cash', label: 'Driver Cash' },
+  { value: 'tolls', label: 'Tolls' },
+  { value: 'scales', label: 'Scales' },
   { value: 'lumper', label: 'Lumper' },
-  { value: 'detention', label: 'Detention' },
   { value: 'parking', label: 'Parking' },
+  { value: 'maintenance_emergency', label: 'Emergency Maintenance' },
+  { value: 'driver_advance', label: 'Driver Advance' },
   { value: 'other', label: 'Other' },
 ];
 
@@ -36,7 +36,8 @@ const PAID_BY_OPTIONS = [
   { value: '', label: 'Select who paid…' },
   { value: 'driver_cash', label: 'Driver Cash' },
   { value: 'company_card', label: 'Company Card' },
-  { value: 'owner_advance', label: 'Owner Advance' },
+  { value: 'fuel_card', label: 'Fuel Card' },
+  { value: 'driver_advance', label: 'Driver Advance' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -75,12 +76,11 @@ export function ExpenseForm({ dispatchId, loadId, stopId, onSuccess }: ExpenseFo
   // Auto-set reimbursable based on paid_by
   function handlePaidByChange(value: string) {
     setPaidBy(value);
-    if (value === 'driver_cash') {
+    if (value === 'driver_cash' || value === 'driver_advance') {
       setReimbursable(true);
-    } else if (value === 'company_card') {
+    } else if (value === 'company_card' || value === 'fuel_card') {
       setReimbursable(false);
     }
-    // owner_advance: leave unchanged for manual override
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -118,15 +118,14 @@ export function ExpenseForm({ dispatchId, loadId, stopId, onSuccess }: ExpenseFo
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          expense_type: expenseType,
+          expenseType,
           amount: parsedAmount,
-          paid_by: paidBy,
-          driver_id: driverId,
-          notes: notes.trim() || null,
-          reimbursable,
-          dispatch_id: dispatchId || null,
-          load_id: loadId || null,
-          stop_id: stopId || null,
+          paidBy,
+          driverId: driverId || undefined,
+          notes: notes.trim() || undefined,
+          dispatchId: dispatchId || undefined,
+          loadId: loadId || undefined,
+          stopId: stopId || undefined,
         }),
       });
 
