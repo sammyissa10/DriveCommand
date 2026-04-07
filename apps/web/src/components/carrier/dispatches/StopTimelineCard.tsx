@@ -148,18 +148,42 @@ export function StopTimelineCard({
   const dwell = computeDwell(stop.arrivedAt, stop.departedAt);
 
   const isPickupOrDelivery = stop.stopType === 'pickup' || stop.stopType === 'delivery';
-  const canAct =
-    (stop.status === 'pending' || stop.status === 'arrived') && dispatchStatus === 'in_progress';
+
+  const isStopPending = stop.status === 'pending' && dispatchStatus === 'in_progress';
+  const isStopArrived = stop.status === 'arrived' && dispatchStatus === 'in_progress';
 
   // Document compliance guard for Complete Stop
   const missingDocs =
     (stop.stopType === 'pickup' && bolRequired && !bolUploaded) ||
     (stop.stopType === 'delivery' && podRequired && !podUploaded);
 
-  const canComplete = canAct && !missingDocs;
+  const canComplete = isStopArrived && !missingDocs;
 
-  const canSkip =
-    (stop.status === 'pending' || stop.status === 'arrived') && userRole === 'owner';
+  const isOwnerOrManager =
+    userRole === 'owner' ||
+    userRole === 'OWNER' ||
+    userRole === 'manager' ||
+    userRole === 'MANAGER';
+
+  const canSkip = (isStopPending || isStopArrived) && isOwnerOrManager;
+
+  function handleArrive() {
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/v1/carrier/stops/${stop.id}/arrived`, {
+          method: 'PATCH',
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? 'Failed to mark arrived');
+        }
+        toast.success('Marked as arrived');
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to mark arrived');
+      }
+    });
+  }
 
   function handleComplete() {
     startTransition(async () => {
@@ -233,7 +257,20 @@ export function StopTimelineCard({
 
           {/* Action buttons */}
           <div className="flex items-center gap-2">
-            {canAct && (
+            {isStopPending && (
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={isPending}
+                onClick={handleArrive}
+                className="h-7 text-xs"
+              >
+                <MapPin className="h-3.5 w-3.5 mr-1" />
+                {isPending ? 'Saving…' : 'Mark Arrived'}
+              </Button>
+            )}
+
+            {isStopArrived && (
               <Button
                 size="sm"
                 variant="outline"
