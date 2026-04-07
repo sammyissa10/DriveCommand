@@ -112,8 +112,25 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   const [clientId, setClientId] = useState(initialData?.clientId ?? '');
   const [contractId, setContractId] = useState(initialData?.contractId ?? '');
   const [scheduleType, setScheduleType] = useState(initialData?.scheduleType ?? 'fixed_days');
+  // RRULE builder state
   const [recurrenceRule, setRecurrenceRule] = useState(initialData?.recurrenceRule ?? '');
-  const [recurrenceRuleError, setRecurrenceRuleError] = useState('');
+  const [rruleFrequency, setRruleFrequency] = useState<'DAILY' | 'WEEKLY' | 'MONTHLY'>(() => {
+    const rule = initialData?.recurrenceRule ?? '';
+    if (rule.includes('FREQ=MONTHLY')) return 'MONTHLY';
+    if (rule.includes('FREQ=DAILY')) return 'DAILY';
+    return 'WEEKLY';
+  });
+  const [rruleSelectedDays, setRruleSelectedDays] = useState<string[]>(() => {
+    const rule = initialData?.recurrenceRule ?? '';
+    const match = rule.match(/BYDAY=([^;]+)/);
+    if (!match) return [];
+    return match[1].split(',').map((d) => d.trim().toUpperCase());
+  });
+  const [rruleMonthlyDays, setRruleMonthlyDays] = useState<string>(() => {
+    const rule = initialData?.recurrenceRule ?? '';
+    const match = rule.match(/BYMONTHDAY=([^;]+)/);
+    return match ? match[1] : '';
+  });
   const [recurrenceTimezone, setRecurrenceTimezone] = useState(
     initialData?.recurrenceTimezone ?? 'America/Chicago'
   );
@@ -140,6 +157,26 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   );
   const [notes, setNotes] = useState(initialData?.notes ?? '');
   const [stops, setStops] = useState<StopBuilderStop[]>(initialData?.stops ?? []);
+
+  // Auto-generate RRULE string from builder state
+  useEffect(() => {
+    if (scheduleType !== 'fixed_days' && scheduleType !== 'frequency') return;
+    if (rruleFrequency === 'DAILY') {
+      setRecurrenceRule('FREQ=DAILY');
+    } else if (rruleFrequency === 'WEEKLY') {
+      if (rruleSelectedDays.length === 0) {
+        setRecurrenceRule('FREQ=WEEKLY');
+      } else {
+        setRecurrenceRule(`FREQ=WEEKLY;BYDAY=${rruleSelectedDays.join(',')}`);
+      }
+    } else if (rruleFrequency === 'MONTHLY') {
+      if (rruleMonthlyDays.trim()) {
+        setRecurrenceRule(`FREQ=MONTHLY;BYMONTHDAY=${rruleMonthlyDays.trim()}`);
+      } else {
+        setRecurrenceRule('FREQ=MONTHLY');
+      }
+    }
+  }, [scheduleType, rruleFrequency, rruleSelectedDays, rruleMonthlyDays]);
 
   // Remote data
   const [clients, setClients] = useState<ClientItem[]>([]);
@@ -222,23 +259,12 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
     if (errors.clientId) setErrors((e) => ({ ...e, clientId: '' }));
   }
 
-  function handleRecurrenceRuleBlur() {
-    if (recurrenceRule && !recurrenceRule.startsWith('FREQ=')) {
-      setRecurrenceRuleError('Must start with FREQ=');
-    } else {
-      setRecurrenceRuleError('');
-    }
-  }
-
   function validate(): boolean {
     const newErrors: Record<string, string> = {};
     if (!templateName.trim()) newErrors.templateName = 'Template name is required';
     if (!clientId) newErrors.clientId = 'Client is required';
     if (!equipmentType) newErrors.equipmentType = 'Equipment type is required';
     if (!scheduleType) newErrors.scheduleType = 'Schedule type is required';
-    if (recurrenceRule && !recurrenceRule.startsWith('FREQ=')) {
-      newErrors.recurrenceRule = 'Must start with FREQ=';
-    }
     if (stops.length === 0) newErrors.stops = 'At least one stop is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -413,33 +439,84 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
             )}
           </div>
 
-          {/* Recurrence rule — only shown for fixed_days and frequency */}
+          {/* Recurrence rule builder — only shown for fixed_days and frequency */}
           {(scheduleType === 'fixed_days' || scheduleType === 'frequency') && (
             <>
+              {/* Frequency selector */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground" htmlFor="recurrenceRule">
-                  Recurrence Rule
+                <label className="text-sm font-medium text-foreground" htmlFor="rruleFrequency">
+                  Recurrence Frequency
                 </label>
-                <Input
-                  id="recurrenceRule"
-                  value={recurrenceRule}
-                  onChange={(e) => {
-                    setRecurrenceRule(e.target.value);
-                    setRecurrenceRuleError('');
-                    if (errors.recurrenceRule) setErrors((er) => ({ ...er, recurrenceRule: '' }));
-                  }}
-                  onBlur={handleRecurrenceRuleBlur}
-                  placeholder="e.g. FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR"
-                />
-                <p className="text-xs text-muted-foreground">
-                  RRULE format, e.g. FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR
-                </p>
-                {(recurrenceRuleError || errors.recurrenceRule) && (
-                  <p className="text-xs text-destructive">
-                    {recurrenceRuleError || errors.recurrenceRule}
-                  </p>
-                )}
+                <Select
+                  value={rruleFrequency}
+                  onValueChange={(val) => setRruleFrequency(val as 'DAILY' | 'WEEKLY' | 'MONTHLY')}
+                >
+                  <SelectTrigger id="rruleFrequency">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DAILY">Daily</SelectItem>
+                    <SelectItem value="WEEKLY">Weekly</SelectItem>
+                    <SelectItem value="MONTHLY">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+
+              {/* Weekly day picker */}
+              {rruleFrequency === 'WEEKLY' && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Days of Week</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {(['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'] as const).map((day) => {
+                      const label = { MO: 'Mon', TU: 'Tue', WE: 'Wed', TH: 'Thu', FR: 'Fri', SA: 'Sat', SU: 'Sun' }[day];
+                      const isActive = rruleSelectedDays.includes(day);
+                      return (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() =>
+                            setRruleSelectedDays((prev) =>
+                              isActive ? prev.filter((d) => d !== day) : [...prev, day]
+                            )
+                          }
+                          className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors border ${
+                            isActive
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-muted text-muted-foreground border-border hover:bg-accent hover:text-accent-foreground'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Monthly day picker */}
+              {rruleFrequency === 'MONTHLY' && (
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-foreground" htmlFor="rruleMonthlyDays">
+                    Days of Month
+                  </label>
+                  <Input
+                    id="rruleMonthlyDays"
+                    value={rruleMonthlyDays}
+                    onChange={(e) => setRruleMonthlyDays(e.target.value)}
+                    placeholder="e.g. 1,15"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Comma-separated day numbers (e.g. 1,15 for 1st and 15th of each month)
+                  </p>
+                </div>
+              )}
+
+              {/* Generated RRULE preview */}
+              {recurrenceRule && (
+                <p className="text-xs text-muted-foreground font-mono">
+                  Generated: {recurrenceRule}
+                </p>
+              )}
 
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-foreground" htmlFor="recurrenceTimezone">
