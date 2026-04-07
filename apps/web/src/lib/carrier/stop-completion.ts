@@ -88,8 +88,8 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
         where: { stopId: stop.id, documentType: 'bol' },
       })) > 0;
 
-    if (!hasBolNumber || !hasBolDoc) {
-      return { error: 'BOL document required before completing this stop.', status: 422 };
+    if (!hasBolNumber && !hasBolDoc) {
+      return { error: 'BOL document or BOL number required before completing this stop.', status: 422 };
     }
   }
 
@@ -103,8 +103,8 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
         where: { stopId: stop.id, documentType: 'pod' },
       })) > 0;
 
-    if (!hasPodNumber || !hasPodDoc) {
-      return { error: 'POD document required before completing this stop.', status: 422 };
+    if (!hasPodNumber && !hasPodDoc) {
+      return { error: 'POD document or POD number required before completing this stop.', status: 422 };
     }
   }
 

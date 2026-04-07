@@ -404,7 +404,7 @@ export function StopTimelineCard({
                   parentType="stop"
                   parentId={stop.id}
                   documentType="bol"
-                  onSuccess={() => onStopUpdated?.()}
+                  onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
                 />
               </div>
             )}
@@ -432,7 +432,7 @@ export function StopTimelineCard({
                   parentType="stop"
                   parentId={stop.id}
                   documentType="pod"
-                  onSuccess={() => onStopUpdated?.()}
+                  onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
                 />
               </div>
             )}
