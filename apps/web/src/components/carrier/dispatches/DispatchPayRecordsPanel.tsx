@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { DollarSign, CheckCheck } from 'lucide-react';
+import { DollarSign, CheckCheck, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -55,6 +55,7 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [approvingAll, setApprovingAll] = useState(false);
+  const [recalculatingId, setRecalculatingId] = useState<string | null>(null);
 
   const driverMap: Record<string, string> = {};
   for (const d of drivers) driverMap[d.id] = d.name;
@@ -81,6 +82,25 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
         toast.error(err instanceof Error ? err.message : 'Failed to approve');
       }
     });
+  }
+
+  async function handleRecalculate(id: string) {
+    setRecalculatingId(id);
+    try {
+      const res = await fetch(`/api/v1/carrier/pay-records/${id}/recalculate`, {
+        method: 'PATCH',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? 'Failed to recalculate');
+      }
+      toast.success('Pay record updated');
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to recalculate pay record');
+    } finally {
+      setRecalculatingId(null);
+    }
   }
 
   function handleApproveAll() {
@@ -152,6 +172,19 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadge}`}>
                       {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                     </span>
+                    {(record.status === 'pending' || record.status === 'approved') && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={recalculatingId === record.id}
+                        onClick={() => void handleRecalculate(record.id)}
+                        className="h-7 text-xs"
+                        title="Re-sum approved expenses and recompute net pay"
+                      >
+                        <RefreshCw className={`h-3 w-3 mr-1 ${recalculatingId === record.id ? 'animate-spin' : ''}`} />
+                        {recalculatingId === record.id ? 'Updating…' : 'Recalculate'}
+                      </Button>
+                    )}
                     {record.status === 'pending' && (
                       <Button
                         size="sm"
