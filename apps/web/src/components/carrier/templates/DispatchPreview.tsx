@@ -14,6 +14,9 @@ interface DispatchItem {
   scheduledDeparture: string;
   primaryDriverId: string;
   truckId: string;
+  notes: string | null;
+  primaryDriver: { firstName: string; lastName: string } | null;
+  truck: { unitNumber: string } | null;
 }
 
 interface GenerateResult {
@@ -25,6 +28,12 @@ interface GenerateResult {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function extractDispatchNumber(notes: string | null): string | null {
+  if (!notes) return null;
+  const match = notes.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+  return match ? match[1] : null;
+}
 
 function formatDateTime(iso: string): string {
   try {
@@ -225,14 +234,20 @@ export function DispatchPreview({ templateId }: DispatchPreviewProps) {
                       <td className="px-4 py-3 text-muted-foreground">
                         {date.toLocaleDateString(undefined, { weekday: 'long' })}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                        {d.id.slice(0, 8)}…
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {extractDispatchNumber(d.notes) ?? (
+                          <span className="font-mono text-xs">{d.id.slice(0, 8)}…</span>
+                        )}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                        {d.primaryDriverId.slice(0, 8)}…
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {d.primaryDriver
+                          ? `${d.primaryDriver.firstName} ${d.primaryDriver.lastName}`
+                          : <span className="font-mono text-xs">{d.primaryDriverId.slice(0, 8)}…</span>}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
-                        {d.truckId.slice(0, 8)}…
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {d.truck?.unitNumber ?? (
+                          <span className="font-mono text-xs">{d.truckId.slice(0, 8)}…</span>
+                        )}
                       </td>
                     </tr>
                   );

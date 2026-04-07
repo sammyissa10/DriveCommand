@@ -100,6 +100,12 @@ export async function listDispatches(orgId: string, filters: ListDispatchesFilte
       take: pageSize,
       orderBy: { scheduledDeparture: 'asc' },
       include: {
+        primaryDriver: {
+          select: { firstName: true, lastName: true },
+        },
+        truck: {
+          select: { unitNumber: true },
+        },
         _count: {
           select: { stops: true },
         },
