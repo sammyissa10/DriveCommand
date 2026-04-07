@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-07 - Completed quick task 192: Backfill dispatch numbers — rewrote 12 existing dispatches from old format to [DISPATCH_NUMBER=DC-...] in production DB
+Last activity: 2026-04-07 - Completed quick task 193: Fix Edit button on dispatch detail page — replaced dead link with shadcn Dialog, fixed actualMiles silent failure
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -938,6 +938,7 @@ None blocking immediate progress.
 | 190 | Fix route_templates FK constraints: default_truck_id and default_driver_id point to wrong tables, need to reference carrier_trucks and carrier_drivers | 2026-04-07 | 37b674d | [190-fix-route-templates-fk-constraints-defau](./quick/190-fix-route-templates-fk-constraints-defau/) |
 | 191 | Fix dispatch numbers not generating or displaying — dispatch list and detail show — instead of DC-YYYY-NNNNN | 2026-04-07 | 15731cf | [191-fix-dispatch-numbers-not-generating-or-d](./quick/191-fix-dispatch-numbers-not-generating-or-d/) |
 | 192 | Backfill dispatch numbers for existing dispatches — rewrite old format notes to new [DISPATCH_NUMBER=DC-...] format | 2026-04-07 | — | [192-backfill-dispatch-numbers-for-existing-d](./quick/192-backfill-dispatch-numbers-for-existing-d/) |
+| 193 | Fix Edit button on dispatch detail page — does nothing when clicked, need edit form for scheduled_departure, planned_miles, notes, odometer fields | 2026-04-07 | eaf97b1 | [193-fix-edit-button-on-dispatch-detail-page-](./quick/193-fix-edit-button-on-dispatch-detail-page-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
