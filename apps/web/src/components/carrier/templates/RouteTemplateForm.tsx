@@ -57,6 +57,17 @@ interface ContractItem {
   contractNumber: string;
 }
 
+interface DriverItem {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface TruckItem {
+  id: string;
+  unitNumber: string;
+}
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -132,6 +143,8 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   // Remote data
   const [clients, setClients] = useState<ClientItem[]>([]);
   const [contracts, setContracts] = useState<ContractItem[]>([]);
+  const [drivers, setDrivers] = useState<DriverItem[]>([]);
+  const [trucks, setTrucks] = useState<TruckItem[]>([]);
 
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,6 +184,36 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
     }
     loadContracts();
   }, [clientId]);
+
+  // Fetch active drivers
+  useEffect(() => {
+    async function loadDrivers() {
+      try {
+        const res = await fetch('/api/v1/carrier/fleet/drivers?status=active&pageSize=200');
+        if (!res.ok) return;
+        const data = await res.json();
+        setDrivers((data.data?.items ?? []) as DriverItem[]);
+      } catch {
+        // Ignore
+      }
+    }
+    loadDrivers();
+  }, []);
+
+  // Fetch active trucks
+  useEffect(() => {
+    async function loadTrucks() {
+      try {
+        const res = await fetch('/api/v1/carrier/fleet/trucks?status=active&pageSize=200');
+        if (!res.ok) return;
+        const data = await res.json();
+        setTrucks((data.data?.items ?? []) as TruckItem[]);
+      } catch {
+        // Ignore
+      }
+    }
+    loadTrucks();
+  }, []);
 
   function handleClientChange(val: string) {
     setClientId(val);
@@ -512,32 +555,49 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
             />
           </div>
 
-          {/* Default driver/truck — text inputs (no API endpoint available) */}
-          {/* TODO: Replace with proper selects once /api/v1/carrier/drivers exists */}
+          {/* Default driver / truck */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground" htmlFor="defaultDriverId">
-                Default Driver ID
-                <span className="ml-1 text-xs text-muted-foreground">(UUID, optional)</span>
+                Default Driver <span className="text-muted-foreground text-xs">(optional)</span>
               </label>
-              <Input
-                id="defaultDriverId"
-                value={defaultDriverId}
-                onChange={(e) => setDefaultDriverId(e.target.value)}
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              />
+              <Select
+                value={defaultDriverId || '__none__'}
+                onValueChange={(val) => setDefaultDriverId(val === '__none__' ? '' : val)}
+              >
+                <SelectTrigger id="defaultDriverId">
+                  <SelectValue placeholder={drivers.length === 0 ? 'Loading...' : 'None'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {drivers.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.firstName} {d.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground" htmlFor="defaultTruckId">
-                Default Truck ID
-                <span className="ml-1 text-xs text-muted-foreground">(UUID, optional)</span>
+                Default Truck <span className="text-muted-foreground text-xs">(optional)</span>
               </label>
-              <Input
-                id="defaultTruckId"
-                value={defaultTruckId}
-                onChange={(e) => setDefaultTruckId(e.target.value)}
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              />
+              <Select
+                value={defaultTruckId || '__none__'}
+                onValueChange={(val) => setDefaultTruckId(val === '__none__' ? '' : val)}
+              >
+                <SelectTrigger id="defaultTruckId">
+                  <SelectValue placeholder={trucks.length === 0 ? 'Loading...' : 'None'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {trucks.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.unitNumber}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
