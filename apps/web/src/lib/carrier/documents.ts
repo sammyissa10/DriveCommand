@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 // Constants
 // ---------------------------------------------------------------------------
 
-const BUCKET = 'carrier-documents';
+const BUCKET = process.env.S3_BUCKET || 'driver-documents';
 const ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'];
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
