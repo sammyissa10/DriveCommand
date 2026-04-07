@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import { recalculatePayRecordReimbursements } from './pay-calculator';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -193,5 +194,45 @@ export async function approveExpense(
   });
 
   logger.info('approveExpense: approved', { orgId, expenseId: id, approvedBy: userId });
+
+  // Propagate reimbursement to existing non-paid pay records (best-effort)
+  if (updated.reimbursable && updated.dispatchId && updated.driverId) {
+    try {
+      const affectedRecords = await prisma.driverPayRecord.findMany({
+        where: {
+          orgId,
+          dispatchId: updated.dispatchId,
+          driverId: updated.driverId,
+          status: { not: 'paid' },
+        },
+        select: { id: true },
+      });
+
+      for (const record of affectedRecords) {
+        const result = await recalculatePayRecordReimbursements(orgId, record.id);
+        if ('error' in result) {
+          logger.warn('approveExpense: recalculation skipped', {
+            orgId,
+            payRecordId: record.id,
+            reason: result.error,
+          });
+        } else {
+          logger.info('approveExpense: pay record reimbursements updated', {
+            orgId,
+            payRecordId: record.id,
+            reimbursements: result.data.reimbursements,
+            netPay: result.data.netPay,
+          });
+        }
+      }
+    } catch (err) {
+      logger.warn('approveExpense: failed to propagate reimbursements to pay records', {
+        orgId,
+        expenseId: id,
+        err,
+      });
+    }
+  }
+
   return updated;
 }
