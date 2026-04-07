@@ -14,6 +14,7 @@ const DispatchUpdateSchema = z.object({
   scheduledDeparture: z.string().datetime().optional(),
   scheduledArrival: z.string().datetime().optional(),
   plannedMiles: z.number().optional(),
+  actualMiles: z.number().optional(),
   hosCycle: z.string().optional(),
   notes: z.string().optional(),
 });

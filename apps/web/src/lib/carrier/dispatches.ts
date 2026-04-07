@@ -42,6 +42,7 @@ export type DispatchUpdateInput = Partial<Omit<DispatchCreateInput, 'primaryDriv
   trailerId?: string;
   notes?: string;
   plannedMiles?: number;
+  actualMiles?: number;
 };
 
 // ---------------------------------------------------------------------------
