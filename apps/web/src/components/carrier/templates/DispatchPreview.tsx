@@ -19,7 +19,7 @@ interface DispatchItem {
 interface GenerateResult {
   dispatches_created: number;
   skipped_existing: number;
-  errors: number;
+  errors: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -97,8 +97,12 @@ export function DispatchPreview({ templateId }: DispatchPreviewProps) {
         toast.success(
           `${result.dispatches_created} dispatch${result.dispatches_created !== 1 ? 'es' : ''} generated`
         );
+      } else if (result.errors.length > 0) {
+        toast.error(`Generation failed: ${result.errors[0]}`);
       } else if (result.skipped_existing > 0) {
         toast.info(`All upcoming dispatches already exist (${result.skipped_existing} skipped)`);
+      } else {
+        toast.info('No dispatches to generate for this schedule');
       }
 
       await fetchDispatches();
@@ -147,10 +151,17 @@ export function DispatchPreview({ templateId }: DispatchPreviewProps) {
           {generateResult.dispatches_created} dispatch
           {generateResult.dispatches_created !== 1 ? 'es' : ''} created &mdash;&nbsp;
           {generateResult.skipped_existing} skipped (already exist)
-          {generateResult.errors > 0 && (
+          {generateResult.errors.length > 0 && (
             <span className="ml-2 text-destructive">
-              &mdash; {generateResult.errors} error{generateResult.errors !== 1 ? 's' : ''}
+              &mdash; {generateResult.errors.length} error{generateResult.errors.length !== 1 ? 's' : ''}
             </span>
+          )}
+          {generateResult.errors.length > 0 && (
+            <ul className="mt-2 list-disc list-inside text-destructive text-xs space-y-0.5">
+              {generateResult.errors.map((err, i) => (
+                <li key={i}>{err}</li>
+              ))}
+            </ul>
           )}
         </div>
       )}
