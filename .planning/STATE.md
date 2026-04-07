@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-07 - Completed quick task 198: Fix Bugs 25,32,38,39,40,41,42,43 — recurrence UI, template status toggle, FAB position, load redirect, loads list display fixes, per-mile/per-stop form fields
+Last activity: 2026-04-07 - Completed quick task 199: Fix reimbursements not flowing into driver pay records
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -944,6 +944,7 @@ None blocking immediate progress.
 | 196 | Fix BOL/POD upload — router.refresh() after upload, relax stop-completion OR→AND logic | 2026-04-07 | 7c7a801 | [196-fix-bol-pod-upload-to-set-stop-bol-uploa](./quick/196-fix-bol-pod-upload-to-set-stop-bol-uploa/) |
 | 197 | Fix contract dropdown name display (Bug 24) and dispatch preview truncated UUIDs (Bug 29) | 2026-04-07 | 4382d4a | [197-fix-contract-dropdown-shows-contract-num](./quick/197-fix-contract-dropdown-shows-contract-num/) |
 | 198 | Fix Bugs 25,32,38,39,40,41,42,43 — recurrence UI, template status toggle, FAB position, load redirect, loads list display fixes, per-mile/per-stop form fields | 2026-04-07 | dc55c51 | [198-fix-bugs-25-32-38-39-40-41-42-43-recurre](./quick/198-fix-bugs-25-32-38-39-40-41-42-43-recurre/) |
+| 199 | Fix reimbursements not flowing into driver pay records | 2026-04-07 | 7337e33 | [199-fix-reimbursements-not-flowing-into-driv](./quick/199-fix-reimbursements-not-flowing-into-driv/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
