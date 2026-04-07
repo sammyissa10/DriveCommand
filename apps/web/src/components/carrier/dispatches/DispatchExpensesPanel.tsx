@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Receipt, ChevronDown, ChevronUp } from 'lucide-react';
+import { Receipt, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -13,8 +13,15 @@ import { Button } from '@/components/ui/button';
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
-const EXPENSE_TYPES = [
-  'fuel', 'toll', 'lumper', 'scale', 'parking', 'repair', 'meal', 'lodging', 'other',
+const EXPENSE_TYPES: { value: string; label: string }[] = [
+  { value: 'fuel', label: 'Fuel' },
+  { value: 'tolls', label: 'Tolls' },
+  { value: 'scales', label: 'Scales' },
+  { value: 'lumper', label: 'Lumper' },
+  { value: 'parking', label: 'Parking' },
+  { value: 'maintenance_emergency', label: 'Emergency Maintenance' },
+  { value: 'driver_advance', label: 'Driver Advance' },
+  { value: 'other', label: 'Other' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -40,21 +47,24 @@ interface DispatchExpensesPanelProps {
   expenses: ExpenseItem[];
   dispatchId: string;
   drivers: DriverOption[];
+  /** Show Approve button — true for OWNER/MANAGER, false for DRIVER. Defaults true (panel lives in owner portal). */
+  canApprove?: boolean;
 }
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: DispatchExpensesPanelProps) {
+export function DispatchExpensesPanel({ expenses, dispatchId, drivers, canApprove = true }: DispatchExpensesPanelProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showForm, setShowForm] = useState(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
   // Form state
   const [expenseType, setExpenseType] = useState('fuel');
   const [amount, setAmount] = useState('');
-  const [paidBy, setPaidBy] = useState('company');
+  const [paidBy, setPaidBy] = useState('company_card');
   const [driverId, setDriverId] = useState('');
   const [notes, setNotes] = useState('');
 
@@ -64,9 +74,28 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: Dispatc
   function resetForm() {
     setExpenseType('fuel');
     setAmount('');
-    setPaidBy('company');
+    setPaidBy('company_card');
     setDriverId('');
     setNotes('');
+  }
+
+  async function handleApproveExpense(id: string) {
+    setApprovingId(id);
+    try {
+      const res = await fetch(`/api/v1/carrier/expenses/${id}/approve`, {
+        method: 'PATCH',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? 'Failed to approve expense');
+      }
+      toast.success('Expense approved');
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to approve expense');
+    } finally {
+      setApprovingId(null);
+    }
   }
 
   function handleSubmit() {
@@ -141,8 +170,8 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: Dispatc
                 className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 {EXPENSE_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  <option key={t.value} value={t.value}>
+                    {t.label}
                   </option>
                 ))}
               </select>
@@ -172,8 +201,10 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: Dispatc
                 onChange={(e) => setPaidBy(e.target.value)}
                 className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="company">Company</option>
-                <option value="driver">Driver</option>
+                <option value="company_card">Company Card</option>
+                <option value="fuel_card">Fuel Card</option>
+                <option value="driver_cash">Driver Cash</option>
+                <option value="driver_advance">Driver Advance</option>
               </select>
             </div>
             <div>
@@ -239,7 +270,7 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: Dispatc
                     {expense.expenseType}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {expense.paidBy === 'driver' ? 'Driver-paid' : 'Company-paid'}
+                    {expense.paidBy === 'driver_cash' || expense.paidBy === 'driver_advance' ? 'Driver-paid' : 'Company-paid'}
                     {driverName ? ` · ${driverName}` : ''}
                     {expense.notes ? ` · ${expense.notes}` : ''}
                   </div>
@@ -254,6 +285,18 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers }: Dispatc
                   >
                     {isApproved ? 'Approved' : 'Pending'}
                   </span>
+                  {canApprove && !isApproved && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={approvingId === expense.id}
+                      onClick={() => void handleApproveExpense(expense.id)}
+                      className="h-7 text-xs"
+                    >
+                      <Check className={`h-3 w-3 mr-1 ${approvingId === expense.id ? 'opacity-50' : ''}`} />
+                      {approvingId === expense.id ? 'Approving…' : 'Approve'}
+                    </Button>
+                  )}
                   <span className="text-sm font-semibold text-foreground">
                     {formatCurrency(expense.amount)}
                   </span>
