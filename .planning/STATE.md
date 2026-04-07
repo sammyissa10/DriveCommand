@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-07 - Completed quick task 188: Fix route template form dropdowns to match DB check constraints for schedule_type and equipment_type
+Last activity: 2026-04-07 - Completed quick task 189: Fix Regenerate button on route template detail page — no loading state, no dispatches generated, no error shown
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -934,6 +934,7 @@ None blocking immediate progress.
 | 186 | Fix all carrier ops bugs found during QA testing | 2026-04-06 | b5d9118 | [186-fix-all-carrier-ops-bugs-found-during-qa](./quick/186-fix-all-carrier-ops-bugs-found-during-qa/) |
 | 187 | Fix carrier contract form: query DB for exact CHECK constraint values, update dropdowns to match, add missing fields (contract_name, detention_free_minutes, detention_rate_per_hour, tonu_rate, layover_rate_per_day, payment_terms_override, auto_renew) | 2026-04-06 | 7b3e58c | [187-fix-carrier-contract-form-query-db-for-e](./quick/187-fix-carrier-contract-form-query-db-for-e/) |
 | 188 | Fix route template form dropdowns to match DB check constraints for schedule_type and equipment_type | 2026-04-07 | 56f4781 | [188-fix-route-template-form-dropdowns-to-mat](./quick/188-fix-route-template-form-dropdowns-to-mat/) |
+| 189 | Fix Regenerate button on route template detail page — no loading state, no dispatches generated, no error shown | 2026-04-07 | 85fe9f9 | [189-fix-regenerate-button-on-route-template-](./quick/189-fix-regenerate-button-on-route-template-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
