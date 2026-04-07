@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { getRouteTemplate } from '@/lib/carrier/route-templates';
 import { RouteTemplateForm, type RouteTemplateFormData } from '@/components/carrier/templates/RouteTemplateForm';
 import { DispatchPreview } from '@/components/carrier/templates/DispatchPreview';
+import { TemplateStatusToggle } from './TemplateStatusToggle';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopCard';
 
 interface Props {
@@ -77,6 +78,9 @@ export default async function EditRouteTemplatePage({ params }: Props) {
           Edit Route Template
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{template.templateName}</p>
+        <div className="mt-3">
+          <TemplateStatusToggle templateId={id} initialActive={template.active} />
+        </div>
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6">

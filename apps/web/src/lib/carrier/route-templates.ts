@@ -34,7 +34,7 @@ export interface RouteTemplateCreateInput {
   notes?: string;
 }
 
-export type RouteTemplateUpdateInput = Partial<RouteTemplateCreateInput>;
+export type RouteTemplateUpdateInput = Partial<RouteTemplateCreateInput> & { active?: boolean };
 
 // ---------------------------------------------------------------------------
 // Helper: Parse RRULE and compute next occurrence date
