@@ -63,6 +63,7 @@ export default function DriverPayReportPage() {
   const [payPeriodStart, setPayPeriodStart] = useState('');
   const [payPeriodEnd, setPayPeriodEnd] = useState('');
   const [approving, setApproving] = useState(false);
+  const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
 
   const fetchRows = useCallback(async () => {
     setLoading(true);
@@ -96,6 +97,26 @@ export default function DriverPayReportPage() {
 
   const pendingRows = filtered.filter((r) => r.status === 'pending');
   const hasPending = pendingRows.length > 0;
+
+  async function handleMarkPaid(id: string) {
+    if (!window.confirm('Mark this pay record as paid? This cannot be undone.')) return;
+    setMarkingPaidId(id);
+    try {
+      const res = await fetch(`/api/v1/carrier/pay-records/${id}/mark-paid`, {
+        method: 'PATCH',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? 'Failed to mark as paid');
+      }
+      toast.success('Pay record marked as paid');
+      fetchRows();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to mark pay record as paid');
+    } finally {
+      setMarkingPaidId(null);
+    }
+  }
 
   async function handleBulkApprove() {
     setApproving(true);
@@ -220,6 +241,7 @@ export default function DriverPayReportPage() {
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground whitespace-nowrap">Reimb.</th>
                 <th className="text-right px-4 py-3 font-medium text-muted-foreground whitespace-nowrap">Net Pay</th>
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground whitespace-nowrap">Status</th>
+                <th className="text-center px-4 py-3 font-medium text-muted-foreground whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -247,6 +269,17 @@ export default function DriverPayReportPage() {
                     >
                       {STATUS_LABEL[r.status] ?? r.status}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {r.status === 'approved' && (
+                      <button
+                        onClick={() => void handleMarkPaid(r.id)}
+                        disabled={markingPaidId === r.id}
+                        className="inline-flex items-center rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                      >
+                        {markingPaidId === r.id ? 'Marking...' : 'Mark as Paid'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -17,6 +17,7 @@ const PAY_STATUS_BADGE: Record<string, string> = {
   pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
   approved: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
   voided: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+  paid: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
 };
 
 // ---------------------------------------------------------------------------
@@ -56,6 +57,7 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
   const [isPending, startTransition] = useTransition();
   const [approvingAll, setApprovingAll] = useState(false);
   const [recalculatingId, setRecalculatingId] = useState<string | null>(null);
+  const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
 
   const driverMap: Record<string, string> = {};
   for (const d of drivers) driverMap[d.id] = d.name;
@@ -100,6 +102,26 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
       toast.error(err instanceof Error ? err.message : 'Failed to recalculate pay record');
     } finally {
       setRecalculatingId(null);
+    }
+  }
+
+  async function handleMarkPaid(id: string) {
+    if (!window.confirm('Mark this pay record as paid? This cannot be undone.')) return;
+    setMarkingPaidId(id);
+    try {
+      const res = await fetch(`/api/v1/carrier/pay-records/${id}/mark-paid`, {
+        method: 'PATCH',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? 'Failed to mark as paid');
+      }
+      toast.success('Pay record marked as paid');
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to mark pay record as paid');
+    } finally {
+      setMarkingPaidId(null);
     }
   }
 
@@ -194,6 +216,17 @@ export function DispatchPayRecordsPanel({ payRecords, drivers }: DispatchPayReco
                         className="h-7 text-xs"
                       >
                         Approve
+                      </Button>
+                    )}
+                    {record.status === 'approved' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={markingPaidId === record.id}
+                        onClick={() => void handleMarkPaid(record.id)}
+                        className="h-7 text-xs"
+                      >
+                        {markingPaidId === record.id ? 'Marking...' : 'Mark as Paid'}
                       </Button>
                     )}
                   </div>
