@@ -8,6 +8,7 @@ import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
+import { CopyTenantIdButton } from './copy-tenant-id-button';
 import { logger } from '@/lib/logger';
 
 function getStatusBadgeClasses(status: string): string {
@@ -105,6 +106,15 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
               initialName={tenant.name}
               initialSlug={tenant.slug ?? ''}
             />
+
+            {/* Tenant ID */}
+            <div className="border-t pt-4">
+              <p className="text-gray-500 text-sm">Tenant ID <span className="text-gray-400">(read-only)</span></p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="font-mono text-sm text-gray-900">{tenant.id}</span>
+                <CopyTenantIdButton tenantId={tenant.id} />
+              </div>
+            </div>
 
             {/* Read-only metadata */}
             <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
