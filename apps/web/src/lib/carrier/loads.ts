@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import { recalculateAndStore } from './revenue-calculator';
+import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +37,7 @@ export interface LoadCreateInput {
   hazmatClass?: string;
   rateType?: string;
   rateAmount?: number;
+  plannedMiles?: number;
   brokerFlag?: boolean;
   carrierCost?: number;
   specialInstructions?: string;
@@ -83,7 +84,19 @@ export async function listLoads(orgId: string, filters: ListLoadsFilters = {}) {
     prisma.carrierLoad.count({ where }),
   ]);
 
-  return { items, total };
+  return {
+    items: items.map((load) => ({
+      ...load,
+      rateAmount: decStr(load.rateAmount),
+      carrierCost: decStr(load.carrierCost),
+      fuelSurcharge: decStr(load.fuelSurcharge),
+      detentionAmount: decStr(load.detentionAmount),
+      otherCharges: decStr(load.otherCharges),
+      totalRevenue: decStr(load.totalRevenue),
+      commodityWeightLbs: decStr(load.commodityWeightLbs),
+    })),
+    total,
+  };
 }
 
 export async function getLoad(orgId: string, id: string) {
@@ -208,6 +221,8 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
       ...(data.brokerFlag !== undefined ? { brokerFlag: data.brokerFlag } : {}),
       ...(data.carrierCost !== undefined ? { carrierCost: data.carrierCost } : {}),
       ...(data.otherCharges !== undefined ? { otherCharges: data.otherCharges } : {}),
+      // plannedMiles intentionally omitted — CarrierLoad has no planned_miles column.
+      // The value is used below as a calculation override for per_mile revenue.
       ...(data.specialInstructions !== undefined
         ? { specialInstructions: data.specialInstructions }
         : {}),
@@ -219,6 +234,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   const rateFields: (keyof LoadUpdateInput)[] = [
     'rateType',
     'rateAmount',
+    'plannedMiles',
     'commodityWeightLbs',
     'commodityPallets',
     'otherCharges',
@@ -227,6 +243,76 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   ];
   const needsRecalc = rateFields.some((f) => f in data);
   if (needsRecalc) {
+    // When plannedMiles is supplied by the caller, CarrierLoad has no planned_miles
+    // column so we can't store it. Instead, use it as a miles override for the
+    // per_mile calculation: prefer dispatch actual/planned miles if available,
+    // otherwise fall back to the submitted value.
+    if (data.plannedMiles !== undefined) {
+      const loadForCalc = await prisma.carrierLoad.findFirst({
+        where: { id, orgId },
+        include: { dispatch: true, contract: true },
+      });
+      if (loadForCalc) {
+        const dispatchMiles = {
+          actualMiles:
+            loadForCalc.dispatch?.actualMiles != null
+              ? Number(loadForCalc.dispatch.actualMiles)
+              : null,
+          plannedMiles:
+            loadForCalc.dispatch?.plannedMiles != null
+              ? Number(loadForCalc.dispatch.plannedMiles)
+              : data.plannedMiles,
+        };
+        const contractForRevenue = loadForCalc.contract
+          ? {
+              fuelSurchargeMethod: loadForCalc.contract.fuelSurchargeMethod,
+              fuelSurchargeRate:
+                loadForCalc.contract.fuelSurchargeRate != null
+                  ? Number(loadForCalc.contract.fuelSurchargeRate)
+                  : null,
+            }
+          : null;
+        const result = calculateRevenue(
+          {
+            rateType: loadForCalc.rateType,
+            rateAmount:
+              loadForCalc.rateAmount != null ? Number(loadForCalc.rateAmount) : null,
+            commodityWeightLbs:
+              loadForCalc.commodityWeightLbs != null
+                ? Number(loadForCalc.commodityWeightLbs)
+                : null,
+            commodityPallets: loadForCalc.commodityPallets,
+            otherCharges:
+              loadForCalc.otherCharges != null ? Number(loadForCalc.otherCharges) : null,
+            brokerFlag: loadForCalc.brokerFlag,
+            carrierCost:
+              loadForCalc.carrierCost != null ? Number(loadForCalc.carrierCost) : null,
+          },
+          dispatchMiles,
+          contractForRevenue
+        );
+        const fresh = await prisma.carrierLoad.update({
+          where: { id },
+          data: { totalRevenue: result.totalRevenue, fuelSurcharge: result.fuelSurcharge },
+        });
+        // Write plannedMiles back to the dispatch so pay record recalculation
+        // can resolve miles without needing the load form context.
+        if (loadForCalc.dispatchId && !loadForCalc.dispatch?.plannedMiles) {
+          await prisma.carrierDispatch.update({
+            where: { id: loadForCalc.dispatchId },
+            data: { plannedMiles: data.plannedMiles },
+          });
+        }
+        logger.info('updateLoad: revenue recalculated with plannedMiles override', {
+          orgId,
+          id,
+          plannedMiles: data.plannedMiles,
+          totalRevenue: result.totalRevenue,
+        });
+        return fresh;
+      }
+    }
+
     await recalculateAndStore(orgId, id);
     const fresh = await prisma.carrierLoad.findFirst({ where: { id, orgId } });
     return fresh ?? updated;
