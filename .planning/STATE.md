@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-10 - Completed quick task 201: Add Mark as Paid action to driver pay records
+Last activity: 2026-04-13 - Completed quick task 203: Add tap-to-open navigation button to web driver portal stop detail
 Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
@@ -947,6 +947,7 @@ None blocking immediate progress.
 | 199 | Fix reimbursements not flowing into driver pay records | 2026-04-07 | 7337e33 | [199-fix-reimbursements-not-flowing-into-driv](./quick/199-fix-reimbursements-not-flowing-into-driv/) |
 | 200 | Add tenant UUID display with copy-to-clipboard to sysadmin tenant detail page | 2026-04-10 | a03dbc6 | [200-add-tenant-uuid-display-with-copy-to-cli](./quick/200-add-tenant-uuid-display-with-copy-to-cli/) |
 | 201 | Add Mark as Paid action to driver pay records | 2026-04-10 | c62a386 | [201-add-mark-as-paid-action-to-driver-pay-re](./quick/201-add-mark-as-paid-action-to-driver-pay-re/) |
+| 203 | Add tap-to-open navigation button to web driver portal stop detail | 2026-04-13 | a00e35e | [203-add-tap-to-open-navigation-button-to-web](./quick/203-add-tap-to-open-navigation-button-to-web/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
