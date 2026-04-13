@@ -23,6 +23,7 @@ import {
   Shield,
   CreditCard,
   Palette,
+  Wrench,
 } from 'lucide-react-native'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
@@ -76,6 +77,14 @@ const SECTIONS: MoreSection[] = [
         iconBg: 'rgba(249,115,22,0.15)',
         iconColor: '#f97316',
         route: '/(owner)/more/trucks',
+      },
+      {
+        label: 'Maintenance',
+        subtitle: 'Service scheduling',
+        Icon: Wrench,
+        iconBg: 'rgba(245,158,11,0.15)',
+        iconColor: '#f59e0b',
+        route: '/(owner)/more/maintenance',
       },
       {
         label: 'Compliance',
