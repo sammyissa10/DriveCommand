@@ -10,12 +10,12 @@ import {
 } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { AlertTriangle, ArrowLeft, Navigation, User, ChevronDown } from 'lucide-react-native'
+import { AlertTriangle, ArrowLeft, Navigation, User, ChevronDown, Truck } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Toast from 'react-native-toast-message'
 import { useAuthContext } from '../../../context/AuthContext'
-import { ownerApi, type RouteStop, type DriverOption } from '@drivecommand/api-client'
+import { ownerApi, type RouteStop, type DriverOption, type TruckOption } from '@drivecommand/api-client'
 import { Badge } from '../../../components/ui/Badge'
 import { StopTimelineItem } from '../../../components/driver/StopTimelineItem'
 import { BottomSheet } from '../../../components/ui/BottomSheet'
@@ -141,6 +141,76 @@ function DriverPickerSheet({
   )
 }
 
+// ─── Truck Picker Sheet ─────────────────────────────────────────────────────
+
+interface TruckPickerSheetProps {
+  visible: boolean
+  onClose: () => void
+  currentTruckId: string | null
+  onSelect: (truckId: string, label: string) => void
+  trucks: TruckOption[]
+  loading: boolean
+}
+
+function TruckPickerSheet({
+  visible,
+  onClose,
+  currentTruckId,
+  onSelect,
+  trucks,
+  loading,
+}: TruckPickerSheetProps) {
+  const c = useThemeColors()
+
+  const variantColors: Record<string, string> = {
+    blue: '#3b82f6',
+    amber: '#f59e0b',
+    red: '#ef4444',
+    green: '#22c55e',
+  }
+
+  return (
+    <BottomSheet visible={visible} onClose={onClose} title="Assign Truck" snapPoint="60%">
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={c.brand} />
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {trucks.length === 0 ? (
+            <View className="items-center py-8">
+              <Text className="text-sm" style={{ color: c.textSecondary }}>No trucks found</Text>
+            </View>
+          ) : (
+            trucks.map((truck) => {
+              const isSelected = truck.id === currentTruckId
+              const dotColor = variantColors[truck.variant] ?? c.textTertiary
+              const label = `${truck.make} ${truck.model} — ${truck.licensePlate}`
+              return (
+                <Pressable
+                  key={truck.id}
+                  onPress={() => onSelect(truck.id, label)}
+                  className="flex-row items-center p-3 rounded-xl mb-2 border active:opacity-75"
+                  style={{
+                    backgroundColor: isSelected ? c.brandDark + '40' : c.surfaceElevated,
+                    borderColor: isSelected ? c.brand : c.border,
+                  }}
+                >
+                  <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: dotColor }} />
+                  <Text className="text-sm flex-1" style={{ color: c.textPrimary }} numberOfLines={1}>
+                    {label}
+                  </Text>
+                  {isSelected && <View className="w-2 h-2 rounded-full" style={{ backgroundColor: c.brand }} />}
+                </Pressable>
+              )
+            })
+          )}
+        </ScrollView>
+      )}
+    </BottomSheet>
+  )
+}
+
 // ─── Edit Route Sheet ────────────────────────────────────────────────────────
 
 interface EditRouteSheetProps {
@@ -151,7 +221,9 @@ interface EditRouteSheetProps {
   scheduledDate: string
   currentDriverId: string | null
   currentDriverName: string
-  onSave: (payload: { name?: string; status?: string; driverId?: string }) => void
+  currentTruckId: string | null
+  currentTruckLabel: string
+  onSave: (payload: { name?: string; status?: string; driverId?: string; truckId?: string }) => void
   isPending: boolean
   token: string
 }
@@ -164,6 +236,8 @@ function EditRouteSheet({
   scheduledDate,
   currentDriverId,
   currentDriverName,
+  currentTruckId,
+  currentTruckLabel,
   onSave,
   isPending,
   token,
@@ -174,6 +248,9 @@ function EditRouteSheet({
   const [driverPickerVisible, setDriverPickerVisible] = useState(false)
   const [selectedDriverId, setSelectedDriverId] = useState<string | null>(currentDriverId)
   const [selectedDriverName, setSelectedDriverName] = useState(currentDriverName)
+  const [truckPickerVisible, setTruckPickerVisible] = useState(false)
+  const [selectedTruckId, setSelectedTruckId] = useState<string | null>(currentTruckId)
+  const [selectedTruckLabel, setSelectedTruckLabel] = useState(currentTruckLabel)
 
   const { data: drivers, isLoading: loadingDrivers } = useQuery({
     queryKey: ['owner-active-drivers'],
@@ -182,11 +259,19 @@ function EditRouteSheet({
     staleTime: 60_000,
   })
 
+  const { data: trucks, isLoading: loadingTrucks } = useQuery({
+    queryKey: ['owner-trucks'],
+    queryFn: () => ownerApi.getTruckOptions(token),
+    enabled: !!token && truckPickerVisible,
+    staleTime: 60_000,
+  })
+
   const handleSave = () => {
-    const payload: { name?: string; status?: string; driverId?: string } = {}
+    const payload: { name?: string; status?: string; driverId?: string; truckId?: string } = {}
     if (name !== (currentName ?? '')) payload.name = name
     if (status !== currentStatus) payload.status = status
     if (selectedDriverId && selectedDriverId !== currentDriverId) payload.driverId = selectedDriverId
+    if (selectedTruckId && selectedTruckId !== currentTruckId) payload.truckId = selectedTruckId
     onSave(payload)
   }
 
@@ -197,6 +282,12 @@ function EditRouteSheet({
       setSelectedDriverName(driver.name)
     }
     setDriverPickerVisible(false)
+  }
+
+  const handleTruckSelect = (truckId: string, label: string) => {
+    setSelectedTruckId(truckId)
+    setSelectedTruckLabel(label)
+    setTruckPickerVisible(false)
   }
 
   return (
@@ -264,10 +355,23 @@ function EditRouteSheet({
           </Text>
           <Pressable
             onPress={() => setDriverPickerVisible(true)}
-            className="flex-row items-center justify-between rounded-xl px-3 py-3 mb-6 active:opacity-75"
+            className="flex-row items-center justify-between rounded-xl px-3 py-3 mb-4 active:opacity-75"
             style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
           >
             <Text className="text-sm" style={{ color: c.textPrimary }}>{selectedDriverName}</Text>
+            <ChevronDown color={c.textTertiary} size={16} />
+          </Pressable>
+
+          {/* Truck */}
+          <Text className="text-xs font-medium uppercase tracking-wide mb-1.5" style={{ color: c.textTertiary }}>
+            Truck
+          </Text>
+          <Pressable
+            onPress={() => setTruckPickerVisible(true)}
+            className="flex-row items-center justify-between rounded-xl px-3 py-3 mb-6 active:opacity-75"
+            style={{ backgroundColor: c.surfaceElevated, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="text-sm" style={{ color: c.textPrimary }}>{selectedTruckLabel}</Text>
             <ChevronDown color={c.textTertiary} size={16} />
           </Pressable>
 
@@ -297,6 +401,16 @@ function EditRouteSheet({
         loading={loadingDrivers}
         isPending={false}
       />
+
+      {/* Nested truck picker */}
+      <TruckPickerSheet
+        visible={truckPickerVisible}
+        onClose={() => setTruckPickerVisible(false)}
+        currentTruckId={selectedTruckId}
+        onSelect={handleTruckSelect}
+        trucks={trucks ?? []}
+        loading={loadingTrucks}
+      />
     </>
   )
 }
@@ -325,7 +439,7 @@ export default function OwnerRouteDetailScreen() {
   }, [queryClient, id])
 
   const { mutate: updateRoute, isPending: isUpdating } = useMutation({
-    mutationFn: (payload: { name?: string; status?: string; driverId?: string }) =>
+    mutationFn: (payload: { name?: string; status?: string; driverId?: string; truckId?: string }) =>
       ownerApi.updateRoute(token!, id!, payload),
     onSuccess: () => {
       haptic.success()
@@ -377,6 +491,10 @@ export default function OwnerRouteDetailScreen() {
   const badge = getStatusBadge(route.status)
   const routeName = route.name ?? 'Unnamed Route'
   const isCompleted = route.status === 'COMPLETED'
+
+  const truckLabel = route.truck
+    ? `${route.truck.make} ${route.truck.model} (${route.truck.licensePlate})`
+    : 'Unassigned'
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
@@ -430,6 +548,7 @@ export default function OwnerRouteDetailScreen() {
               <View className="w-1/2"><InfoField label="Destination" value={route.destination} /></View>
               <View className="w-1/2"><InfoField label="Scheduled Date" value={formatDate(route.scheduledDate)} /></View>
               <View className="w-1/2"><InfoField label="Driver" value={route.driver.name} /></View>
+              <View className="w-1/2"><InfoField label="Truck" value={truckLabel} /></View>
             </View>
           </View>
 
@@ -513,7 +632,7 @@ export default function OwnerRouteDetailScreen() {
                 style={{ backgroundColor: c.surfaceElevated, borderColor: c.border }}
               >
                 <View className="flex-row items-center gap-3">
-                  <User color={c.textSecondary} size={18} />
+                  <Truck color={c.textSecondary} size={18} />
                   <Text className="text-sm font-medium" style={{ color: c.textPrimary }}>Edit Route</Text>
                 </View>
                 <ChevronDown color={c.textTertiary} size={16} />
@@ -541,6 +660,8 @@ export default function OwnerRouteDetailScreen() {
           scheduledDate={route.scheduledDate}
           currentDriverId={route.driver.id}
           currentDriverName={route.driver.name}
+          currentTruckId={route.truck?.id ?? null}
+          currentTruckLabel={truckLabel}
           onSave={updateRoute}
           isPending={isUpdating}
           token={token!}
