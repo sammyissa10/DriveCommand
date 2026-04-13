@@ -10,6 +10,7 @@
  */
 
 import { useState } from 'react';
+import { Navigation } from 'lucide-react';
 
 interface RouteStop {
   id: string;
@@ -21,6 +22,16 @@ interface RouteStop {
   arrivedAt: Date | null;
   departedAt: Date | null;
   notes: string | null;
+  lat: number | { toString(): string } | null;
+  lng: number | { toString(): string } | null;
+}
+
+function buildNavigationUrl(stop: RouteStop): string {
+  const destination =
+    stop.lat != null && stop.lng != null
+      ? `${stop.lat},${stop.lng}`
+      : encodeURIComponent(stop.address);
+  return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
 }
 
 interface RouteDetailReadOnlyProps {
@@ -127,6 +138,15 @@ export function RouteDetailReadOnly({
             </p>
           )}
           <div className="mt-2 flex flex-wrap items-center gap-2">
+            <a
+              href={buildNavigationUrl(activeStop)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white min-h-[48px] hover:bg-emerald-700 transition-colors"
+            >
+              <Navigation className="h-4 w-4" />
+              Navigate
+            </a>
             <span
               className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                 activeStop.status === 'ARRIVED'
@@ -218,6 +238,17 @@ export function RouteDetailReadOnly({
                     <p className="text-xs text-muted-foreground">
                       {stop.type} — {stop.status}
                     </p>
+                    {stop.status !== 'DEPARTED' && (
+                      <a
+                        href={buildNavigationUrl(stop)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white min-h-[36px] hover:bg-emerald-700 transition-colors"
+                      >
+                        <Navigation className="h-3.5 w-3.5" />
+                        Navigate
+                      </a>
+                    )}
                   </div>
                 </li>
               ))}
