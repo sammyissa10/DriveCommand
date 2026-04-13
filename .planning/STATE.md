@@ -10,11 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 27 Automated Playwright Tests — COMPLETE
-Current Plan: Plan 6 of 6 complete — 27-06 DONE
-Status: Phase 27 COMPLETE — 70 carrier portal E2E tests across 6 plans: dashboard (7), fleet (11), dispatches (7), loads (7), clients+contracts (8), facilities+templates (8), reports (11), access boundaries (11). Full carrier suite + smoke suite ready.
-Last activity: 2026-04-12 - Completed Phase 27 Plan 06: facilities, reports, and access boundary E2E tests
-Stopped at: Completed 27-06-PLAN.md — facilities+templates tests (8), reports tests (11), access tests (11) = 30 new tests; Phase 27 COMPLETE
+Phase: Phase 37.2 Owner Route Maintenance — IN PROGRESS
+Current Plan: Plan 2 of 4 complete — 37.2-02 DONE
+Status: Plan 02 complete — ScheduledService CRUD API (GET/POST/PATCH per-truck + GET cross-truck), completion flow with MaintenanceEvent audit trail, typed api-client (4 methods + 4 types), MAINTENANCE_SERVICE_TYPES constant (21 items)
+Last activity: 2026-04-13 - Completed Phase 37.2 Plan 02: ScheduledService CRUD API + maintenance constants
+Last session: 2026-04-13T04:02:46Z
+Stopped at: Completed 37.2-02-PLAN.md — 2 tasks, 4 files, 231s
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -93,6 +94,7 @@ Progress: [███████████████████████
 - Phase 37.1.1-01 (2026-04-04): Route/Load/Stop schema links + backfill — RouteStop: loadId/contactName/contactPhone/bolNumber/poNumber + named back-refs; Load: pickupStopId/deliveryStopId + named FK relations; migration applied with idempotent backfill (pickups-first sequencing); pre-existing migration drift resolved — 2 tasks, 2 files, ~4min
 - Phase 37.1.2-01 (2026-04-04): Invoicing trucking standard data layer — InvoiceItemType/InvoiceItemUnit enums, 7 freight header fields on Invoice, itemType/unitType on InvoiceItem, Zod validation exports (arrays+label maps), PERCENT calculation fix in createInvoice/updateInvoice — 2 tasks, 4 files, 18min
 - Phase 37.1.2-02 (2026-04-04): Invoicing trucking standard UI — collapsible Freight Details section (7 fields), item type + unit type selectors per line item, FSC auto-calculation (percent-of-linehaul helper text), PER_MILE preview, quick-add buttons (Linehaul/FSC/Detention/Stop-Off), detail page freight display + type labels, edit page round-trips all fields, new invoice load auto-populate — 2 tasks, 5 files, ~25min
+- Phase 37.2-02 (2026-04-13): ScheduledService CRUD API + maintenance constants — GET/POST/PATCH per-truck endpoint, GET cross-truck listing, server-side status computation (overdue/due_soon/ok), completion flow with MaintenanceEvent audit trail, 4 typed api-client methods, MAINTENANCE_SERVICE_TYPES constant (21 items) — 2 tasks, 4 files, 231s
 
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
