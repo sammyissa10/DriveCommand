@@ -119,7 +119,7 @@ export async function PATCH(
   const { id } = await params;
   const { tenantId } = auth;
 
-  let body: { name?: string; status?: string; scheduledDate?: string; driverId?: string };
+  let body: { name?: string; status?: string; scheduledDate?: string; driverId?: string; truckId?: string };
   try {
     body = await req.json();
   } catch {
@@ -159,11 +159,23 @@ export async function PATCH(
         }
       }
 
+      // Validate truckId if provided
+      if (body.truckId) {
+        const truck = await tx.truck.findFirst({
+          where: { id: body.truckId, tenantId },
+          select: { id: true },
+        });
+        if (!truck) {
+          throw new Error('Truck not found in this tenant');
+        }
+      }
+
       const updateData: Record<string, unknown> = {};
       if (body.name !== undefined) updateData.name = body.name;
       if (body.status !== undefined) updateData.status = body.status;
       if (body.scheduledDate !== undefined) updateData.scheduledDate = new Date(body.scheduledDate);
       if (body.driverId !== undefined) updateData.driverId = body.driverId;
+      if (body.truckId !== undefined) updateData.truckId = body.truckId;
 
       return tx.route.update({
         where: { id },

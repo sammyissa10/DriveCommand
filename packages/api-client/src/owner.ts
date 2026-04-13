@@ -597,11 +597,25 @@ export interface OwnerRouteDetail {
   createdAt: string
 }
 
+export interface CreateRoutePayload {
+  name: string
+  driverId: string
+  truckId: string
+  scheduledDate?: string
+  stops: Array<{
+    address: string
+    type: 'PICKUP' | 'DELIVERY'
+    scheduledAt?: string
+    notes?: string
+  }>
+}
+
 export interface UpdateRoutePayload {
   name?: string
   status?: string
   scheduledDate?: string
   driverId?: string
+  truckId?: string
 }
 
 export interface UpdateTruckPayload {
@@ -781,6 +795,13 @@ export const ownerApi = {
   getRoutes: (token: string, status: 'all' | 'planned' | 'active' | 'completed') =>
     apiRequest<{ routes: OwnerRouteSummary[] }>(`/api/mobile/owner/routes?status=${status}`, { token }).then((r) => r.routes),
 
+  createRoute: (token: string, payload: CreateRoutePayload) =>
+    apiRequest<{ route: { id: string; name: string; status: string } }>('/api/mobile/owner/routes', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
   getRoute: (token: string, id: string) =>
     apiRequest<OwnerRouteDetail>(`/api/mobile/owner/routes/${id}`, { token }),
 
@@ -790,6 +811,9 @@ export const ownerApi = {
       token,
       body: JSON.stringify(payload),
     }),
+
+  getTruckOptions: (token: string) =>
+    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks', { token }).then((r) => r.trucks),
 
   predictProfit: (token: string, payload: PredictProfitPayload) =>
     apiRequest<PredictProfitResult>('/api/mobile/owner/profit-predictor', {
