@@ -247,6 +247,9 @@ Plans:
 - [ ] 27-01-PLAN.md — Playwright setup + auth fixtures + SysAdmin tests: playwright.config.ts, e2e/fixtures/ with storageState for sysadmin/owner/driver roles, e2e/sysadmin/ tests covering login, dashboard, tenant CRUD, support tickets, invoicing lifecycle
 - [ ] 27-02-PLAN.md — Owner portal tests: e2e/owner/ covering dashboard, trucks CRUD, drivers CRUD, full load/dispatch lifecycle (PENDING→DISPATCHED→DELIVERED→INVOICED), route finance, document uploads
 - [ ] 27-03-PLAN.md — Driver portal tests + CI config: e2e/driver/ covering login, load status view, document access, access boundary tests; GitHub Actions workflow (.github/workflows/playwright.yml); e2e/README.md with run instructions; production readiness sign-off
+- [ ] 27-04-PLAN.md — Carrier dashboard + fleet tests: e2e/carrier/dashboard.spec.ts (page load, KPI, quick actions, nav, auth boundary) + e2e/carrier/fleet.spec.ts (driver and truck list, create, edit, form validation)
+- [ ] 27-05-PLAN.md — Carrier dispatches + loads + clients/contracts tests: e2e/carrier/dispatches.spec.ts (list, create-via-url-param, detail panels) + e2e/carrier/loads.spec.ts (list, create, edit) + e2e/carrier/clients.spec.ts (client and contract CRUD)
+- [ ] 27-06-PLAN.md — Carrier facilities + templates + reports + access boundary tests: e2e/carrier/facilities.spec.ts + e2e/carrier/reports.spec.ts (all 4 reports + mark-as-paid) + e2e/carrier/access.spec.ts (driver blocked, unauthenticated blocked, owner allowed)
 
 ---
 
