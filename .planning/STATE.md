@@ -13,8 +13,8 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
 Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
 Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-13 - Completed quick task 203: Add tap-to-open navigation button to web driver portal stop detail
-Stopped at: Completed quick-180 — 15-step contracted route journey E2E test, Prisma @map field mapping fix for all 14 carrier models, pending migration applied
+Last activity: 2026-04-12 - Completed Phase 27 Plan 04: carrier dashboard + fleet E2E tests, plus drivers/new and trucks/new pages
+Stopped at: Completed 27-04-PLAN.md — carrier dashboard tests (7), carrier fleet tests (11), /new pages for drivers and trucks
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -743,6 +743,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-161]: recalculateAndStore wrapped in try/catch so revenue calc failure does not block stop completion
 - [Phase quick-161]: role check for skip (driver=403) placed in API route layer, not lib function
 - [Phase quick-182]: v4.0 MILESTONES entry added after v3.0 to maintain logical milestone document order
+- [Phase 27-04]: Used id-based locators for shadcn Select components (#payModel, #payPeriod) rather than nth(combobox) indexing for stability across forms with multiple Selects
 
 ### Pending Todos
 
