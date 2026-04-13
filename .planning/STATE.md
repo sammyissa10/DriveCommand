@@ -748,6 +748,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27]: LoadForm labels lack htmlFor — commodity field located via placeholder text; client field via getByRole combobox
 - [Phase 27]: Button text in create mode: 'Create Client', 'Create Load', 'Create Contract' — not generic Save/Create
 - [Phase 27]: FacilityForm State field is plain Input (not shadcn Select) — getByLabel('State').fill() used; driver redirect from /carrier/* is /my-route per CarrierLayout; Mark as Paid requires window.confirm dialog accept before PATCH
+- [Phase 37.2-01]: Route list queries status=all always and groups client-side (Active/Scheduled/Completed); Completed collapsed by default
+- [Phase 37.2-01]: getTruckOptions is a named alias of getTrucks reusing /api/mobile/owner/trucks endpoint for semantic clarity in picker contexts
 
 ### Pending Todos
 
@@ -1022,6 +1024,7 @@ None blocking immediate progress.
 | Phase quick-182 P01 | 128s | 2 tasks | 4 files |
 | Phase quick-201 P01 | 10 | 2 tasks | 3 files |
 | Phase 27 P06 | 186 | 2 tasks | 3 files |
+| Phase 37.2-owner-route-maintenance P01 | 389 | 2 tasks | 5 files |
 
 ## Session Continuity
 
