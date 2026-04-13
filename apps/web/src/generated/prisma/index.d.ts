@@ -56462,11 +56462,19 @@ export namespace Prisma {
   export type CarrierContractAvgAggregateOutputType = {
     baseRate: Decimal | null
     fuelSurchargeRate: Decimal | null
+    detentionFreeMinutes: number | null
+    detentionRatePerHour: Decimal | null
+    tonuRate: Decimal | null
+    layoverRatePerDay: Decimal | null
   }
 
   export type CarrierContractSumAggregateOutputType = {
     baseRate: Decimal | null
     fuelSurchargeRate: Decimal | null
+    detentionFreeMinutes: number | null
+    detentionRatePerHour: Decimal | null
+    tonuRate: Decimal | null
+    layoverRatePerDay: Decimal | null
   }
 
   export type CarrierContractMinAggregateOutputType = {
@@ -56474,6 +56482,7 @@ export namespace Prisma {
     orgId: string | null
     clientId: string | null
     contractNumber: string | null
+    contractName: string | null
     contractType: string | null
     effectiveDate: Date | null
     expirationDate: Date | null
@@ -56481,6 +56490,12 @@ export namespace Prisma {
     baseRate: Decimal | null
     fuelSurchargeMethod: string | null
     fuelSurchargeRate: Decimal | null
+    detentionFreeMinutes: number | null
+    detentionRatePerHour: Decimal | null
+    tonuRate: Decimal | null
+    layoverRatePerDay: Decimal | null
+    paymentTermsOverride: string | null
+    autoRenew: boolean | null
     status: string | null
     notes: string | null
     createdAt: Date | null
@@ -56492,6 +56507,7 @@ export namespace Prisma {
     orgId: string | null
     clientId: string | null
     contractNumber: string | null
+    contractName: string | null
     contractType: string | null
     effectiveDate: Date | null
     expirationDate: Date | null
@@ -56499,6 +56515,12 @@ export namespace Prisma {
     baseRate: Decimal | null
     fuelSurchargeMethod: string | null
     fuelSurchargeRate: Decimal | null
+    detentionFreeMinutes: number | null
+    detentionRatePerHour: Decimal | null
+    tonuRate: Decimal | null
+    layoverRatePerDay: Decimal | null
+    paymentTermsOverride: string | null
+    autoRenew: boolean | null
     status: string | null
     notes: string | null
     createdAt: Date | null
@@ -56510,6 +56532,7 @@ export namespace Prisma {
     orgId: number
     clientId: number
     contractNumber: number
+    contractName: number
     contractType: number
     effectiveDate: number
     expirationDate: number
@@ -56517,6 +56540,12 @@ export namespace Prisma {
     baseRate: number
     fuelSurchargeMethod: number
     fuelSurchargeRate: number
+    detentionFreeMinutes: number
+    detentionRatePerHour: number
+    tonuRate: number
+    layoverRatePerDay: number
+    paymentTermsOverride: number
+    autoRenew: number
     status: number
     notes: number
     createdAt: number
@@ -56528,11 +56557,19 @@ export namespace Prisma {
   export type CarrierContractAvgAggregateInputType = {
     baseRate?: true
     fuelSurchargeRate?: true
+    detentionFreeMinutes?: true
+    detentionRatePerHour?: true
+    tonuRate?: true
+    layoverRatePerDay?: true
   }
 
   export type CarrierContractSumAggregateInputType = {
     baseRate?: true
     fuelSurchargeRate?: true
+    detentionFreeMinutes?: true
+    detentionRatePerHour?: true
+    tonuRate?: true
+    layoverRatePerDay?: true
   }
 
   export type CarrierContractMinAggregateInputType = {
@@ -56540,6 +56577,7 @@ export namespace Prisma {
     orgId?: true
     clientId?: true
     contractNumber?: true
+    contractName?: true
     contractType?: true
     effectiveDate?: true
     expirationDate?: true
@@ -56547,6 +56585,12 @@ export namespace Prisma {
     baseRate?: true
     fuelSurchargeMethod?: true
     fuelSurchargeRate?: true
+    detentionFreeMinutes?: true
+    detentionRatePerHour?: true
+    tonuRate?: true
+    layoverRatePerDay?: true
+    paymentTermsOverride?: true
+    autoRenew?: true
     status?: true
     notes?: true
     createdAt?: true
@@ -56558,6 +56602,7 @@ export namespace Prisma {
     orgId?: true
     clientId?: true
     contractNumber?: true
+    contractName?: true
     contractType?: true
     effectiveDate?: true
     expirationDate?: true
@@ -56565,6 +56610,12 @@ export namespace Prisma {
     baseRate?: true
     fuelSurchargeMethod?: true
     fuelSurchargeRate?: true
+    detentionFreeMinutes?: true
+    detentionRatePerHour?: true
+    tonuRate?: true
+    layoverRatePerDay?: true
+    paymentTermsOverride?: true
+    autoRenew?: true
     status?: true
     notes?: true
     createdAt?: true
@@ -56576,6 +56627,7 @@ export namespace Prisma {
     orgId?: true
     clientId?: true
     contractNumber?: true
+    contractName?: true
     contractType?: true
     effectiveDate?: true
     expirationDate?: true
@@ -56583,6 +56635,12 @@ export namespace Prisma {
     baseRate?: true
     fuelSurchargeMethod?: true
     fuelSurchargeRate?: true
+    detentionFreeMinutes?: true
+    detentionRatePerHour?: true
+    tonuRate?: true
+    layoverRatePerDay?: true
+    paymentTermsOverride?: true
+    autoRenew?: true
     status?: true
     notes?: true
     createdAt?: true
@@ -56681,6 +56739,7 @@ export namespace Prisma {
     orgId: string
     clientId: string
     contractNumber: string
+    contractName: string | null
     contractType: string
     effectiveDate: Date | null
     expirationDate: Date | null
@@ -56688,6 +56747,12 @@ export namespace Prisma {
     baseRate: Decimal | null
     fuelSurchargeMethod: string
     fuelSurchargeRate: Decimal | null
+    detentionFreeMinutes: number
+    detentionRatePerHour: Decimal | null
+    tonuRate: Decimal | null
+    layoverRatePerDay: Decimal | null
+    paymentTermsOverride: string | null
+    autoRenew: boolean
     status: string
     notes: string | null
     createdAt: Date
@@ -56718,6 +56783,7 @@ export namespace Prisma {
     orgId?: boolean
     clientId?: boolean
     contractNumber?: boolean
+    contractName?: boolean
     contractType?: boolean
     effectiveDate?: boolean
     expirationDate?: boolean
@@ -56725,6 +56791,12 @@ export namespace Prisma {
     baseRate?: boolean
     fuelSurchargeMethod?: boolean
     fuelSurchargeRate?: boolean
+    detentionFreeMinutes?: boolean
+    detentionRatePerHour?: boolean
+    tonuRate?: boolean
+    layoverRatePerDay?: boolean
+    paymentTermsOverride?: boolean
+    autoRenew?: boolean
     status?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -56741,6 +56813,7 @@ export namespace Prisma {
     orgId?: boolean
     clientId?: boolean
     contractNumber?: boolean
+    contractName?: boolean
     contractType?: boolean
     effectiveDate?: boolean
     expirationDate?: boolean
@@ -56748,6 +56821,12 @@ export namespace Prisma {
     baseRate?: boolean
     fuelSurchargeMethod?: boolean
     fuelSurchargeRate?: boolean
+    detentionFreeMinutes?: boolean
+    detentionRatePerHour?: boolean
+    tonuRate?: boolean
+    layoverRatePerDay?: boolean
+    paymentTermsOverride?: boolean
+    autoRenew?: boolean
     status?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -56761,6 +56840,7 @@ export namespace Prisma {
     orgId?: boolean
     clientId?: boolean
     contractNumber?: boolean
+    contractName?: boolean
     contractType?: boolean
     effectiveDate?: boolean
     expirationDate?: boolean
@@ -56768,6 +56848,12 @@ export namespace Prisma {
     baseRate?: boolean
     fuelSurchargeMethod?: boolean
     fuelSurchargeRate?: boolean
+    detentionFreeMinutes?: boolean
+    detentionRatePerHour?: boolean
+    tonuRate?: boolean
+    layoverRatePerDay?: boolean
+    paymentTermsOverride?: boolean
+    autoRenew?: boolean
     status?: boolean
     notes?: boolean
     createdAt?: boolean
@@ -56781,6 +56867,7 @@ export namespace Prisma {
     orgId?: boolean
     clientId?: boolean
     contractNumber?: boolean
+    contractName?: boolean
     contractType?: boolean
     effectiveDate?: boolean
     expirationDate?: boolean
@@ -56788,13 +56875,19 @@ export namespace Prisma {
     baseRate?: boolean
     fuelSurchargeMethod?: boolean
     fuelSurchargeRate?: boolean
+    detentionFreeMinutes?: boolean
+    detentionRatePerHour?: boolean
+    tonuRate?: boolean
+    layoverRatePerDay?: boolean
+    paymentTermsOverride?: boolean
+    autoRenew?: boolean
     status?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "clientId" | "contractNumber" | "contractType" | "effectiveDate" | "expirationDate" | "rateType" | "baseRate" | "fuelSurchargeMethod" | "fuelSurchargeRate" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierContract"]>
+  export type CarrierContractOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "clientId" | "contractNumber" | "contractName" | "contractType" | "effectiveDate" | "expirationDate" | "rateType" | "baseRate" | "fuelSurchargeMethod" | "fuelSurchargeRate" | "detentionFreeMinutes" | "detentionRatePerHour" | "tonuRate" | "layoverRatePerDay" | "paymentTermsOverride" | "autoRenew" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierContract"]>
   export type CarrierContractInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     client?: boolean | CarrierClientDefaultArgs<ExtArgs>
@@ -56824,6 +56917,7 @@ export namespace Prisma {
       orgId: string
       clientId: string
       contractNumber: string
+      contractName: string | null
       contractType: string
       effectiveDate: Date | null
       expirationDate: Date | null
@@ -56831,6 +56925,12 @@ export namespace Prisma {
       baseRate: Prisma.Decimal | null
       fuelSurchargeMethod: string
       fuelSurchargeRate: Prisma.Decimal | null
+      detentionFreeMinutes: number
+      detentionRatePerHour: Prisma.Decimal | null
+      tonuRate: Prisma.Decimal | null
+      layoverRatePerDay: Prisma.Decimal | null
+      paymentTermsOverride: string | null
+      autoRenew: boolean
       status: string
       notes: string | null
       createdAt: Date
@@ -57266,6 +57366,7 @@ export namespace Prisma {
     readonly orgId: FieldRef<"CarrierContract", 'String'>
     readonly clientId: FieldRef<"CarrierContract", 'String'>
     readonly contractNumber: FieldRef<"CarrierContract", 'String'>
+    readonly contractName: FieldRef<"CarrierContract", 'String'>
     readonly contractType: FieldRef<"CarrierContract", 'String'>
     readonly effectiveDate: FieldRef<"CarrierContract", 'DateTime'>
     readonly expirationDate: FieldRef<"CarrierContract", 'DateTime'>
@@ -57273,6 +57374,12 @@ export namespace Prisma {
     readonly baseRate: FieldRef<"CarrierContract", 'Decimal'>
     readonly fuelSurchargeMethod: FieldRef<"CarrierContract", 'String'>
     readonly fuelSurchargeRate: FieldRef<"CarrierContract", 'Decimal'>
+    readonly detentionFreeMinutes: FieldRef<"CarrierContract", 'Int'>
+    readonly detentionRatePerHour: FieldRef<"CarrierContract", 'Decimal'>
+    readonly tonuRate: FieldRef<"CarrierContract", 'Decimal'>
+    readonly layoverRatePerDay: FieldRef<"CarrierContract", 'Decimal'>
+    readonly paymentTermsOverride: FieldRef<"CarrierContract", 'String'>
+    readonly autoRenew: FieldRef<"CarrierContract", 'Boolean'>
     readonly status: FieldRef<"CarrierContract", 'String'>
     readonly notes: FieldRef<"CarrierContract", 'String'>
     readonly createdAt: FieldRef<"CarrierContract", 'DateTime'>
@@ -75549,6 +75656,7 @@ export namespace Prisma {
     orgId: 'orgId',
     clientId: 'clientId',
     contractNumber: 'contractNumber',
+    contractName: 'contractName',
     contractType: 'contractType',
     effectiveDate: 'effectiveDate',
     expirationDate: 'expirationDate',
@@ -75556,6 +75664,12 @@ export namespace Prisma {
     baseRate: 'baseRate',
     fuelSurchargeMethod: 'fuelSurchargeMethod',
     fuelSurchargeRate: 'fuelSurchargeRate',
+    detentionFreeMinutes: 'detentionFreeMinutes',
+    detentionRatePerHour: 'detentionRatePerHour',
+    tonuRate: 'tonuRate',
+    layoverRatePerDay: 'layoverRatePerDay',
+    paymentTermsOverride: 'paymentTermsOverride',
+    autoRenew: 'autoRenew',
     status: 'status',
     notes: 'notes',
     createdAt: 'createdAt',
@@ -80572,6 +80686,7 @@ export namespace Prisma {
     orgId?: UuidFilter<"CarrierContract"> | string
     clientId?: UuidFilter<"CarrierContract"> | string
     contractNumber?: StringFilter<"CarrierContract"> | string
+    contractName?: StringNullableFilter<"CarrierContract"> | string | null
     contractType?: StringFilter<"CarrierContract"> | string
     effectiveDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
     expirationDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
@@ -80579,6 +80694,12 @@ export namespace Prisma {
     baseRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFilter<"CarrierContract"> | string
     fuelSurchargeRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFilter<"CarrierContract"> | number
+    detentionRatePerHour?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: StringNullableFilter<"CarrierContract"> | string | null
+    autoRenew?: BoolFilter<"CarrierContract"> | boolean
     status?: StringFilter<"CarrierContract"> | string
     notes?: StringNullableFilter<"CarrierContract"> | string | null
     createdAt?: DateTimeFilter<"CarrierContract"> | Date | string
@@ -80594,6 +80715,7 @@ export namespace Prisma {
     orgId?: SortOrder
     clientId?: SortOrder
     contractNumber?: SortOrder
+    contractName?: SortOrderInput | SortOrder
     contractType?: SortOrder
     effectiveDate?: SortOrderInput | SortOrder
     expirationDate?: SortOrderInput | SortOrder
@@ -80601,6 +80723,12 @@ export namespace Prisma {
     baseRate?: SortOrderInput | SortOrder
     fuelSurchargeMethod?: SortOrder
     fuelSurchargeRate?: SortOrderInput | SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrderInput | SortOrder
+    tonuRate?: SortOrderInput | SortOrder
+    layoverRatePerDay?: SortOrderInput | SortOrder
+    paymentTermsOverride?: SortOrderInput | SortOrder
+    autoRenew?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -80619,6 +80747,7 @@ export namespace Prisma {
     NOT?: CarrierContractWhereInput | CarrierContractWhereInput[]
     orgId?: UuidFilter<"CarrierContract"> | string
     clientId?: UuidFilter<"CarrierContract"> | string
+    contractName?: StringNullableFilter<"CarrierContract"> | string | null
     contractType?: StringFilter<"CarrierContract"> | string
     effectiveDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
     expirationDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
@@ -80626,6 +80755,12 @@ export namespace Prisma {
     baseRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFilter<"CarrierContract"> | string
     fuelSurchargeRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFilter<"CarrierContract"> | number
+    detentionRatePerHour?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: StringNullableFilter<"CarrierContract"> | string | null
+    autoRenew?: BoolFilter<"CarrierContract"> | boolean
     status?: StringFilter<"CarrierContract"> | string
     notes?: StringNullableFilter<"CarrierContract"> | string | null
     createdAt?: DateTimeFilter<"CarrierContract"> | Date | string
@@ -80641,6 +80776,7 @@ export namespace Prisma {
     orgId?: SortOrder
     clientId?: SortOrder
     contractNumber?: SortOrder
+    contractName?: SortOrderInput | SortOrder
     contractType?: SortOrder
     effectiveDate?: SortOrderInput | SortOrder
     expirationDate?: SortOrderInput | SortOrder
@@ -80648,6 +80784,12 @@ export namespace Prisma {
     baseRate?: SortOrderInput | SortOrder
     fuelSurchargeMethod?: SortOrder
     fuelSurchargeRate?: SortOrderInput | SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrderInput | SortOrder
+    tonuRate?: SortOrderInput | SortOrder
+    layoverRatePerDay?: SortOrderInput | SortOrder
+    paymentTermsOverride?: SortOrderInput | SortOrder
+    autoRenew?: SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -80667,6 +80809,7 @@ export namespace Prisma {
     orgId?: UuidWithAggregatesFilter<"CarrierContract"> | string
     clientId?: UuidWithAggregatesFilter<"CarrierContract"> | string
     contractNumber?: StringWithAggregatesFilter<"CarrierContract"> | string
+    contractName?: StringNullableWithAggregatesFilter<"CarrierContract"> | string | null
     contractType?: StringWithAggregatesFilter<"CarrierContract"> | string
     effectiveDate?: DateTimeNullableWithAggregatesFilter<"CarrierContract"> | Date | string | null
     expirationDate?: DateTimeNullableWithAggregatesFilter<"CarrierContract"> | Date | string | null
@@ -80674,6 +80817,12 @@ export namespace Prisma {
     baseRate?: DecimalNullableWithAggregatesFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringWithAggregatesFilter<"CarrierContract"> | string
     fuelSurchargeRate?: DecimalNullableWithAggregatesFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntWithAggregatesFilter<"CarrierContract"> | number
+    detentionRatePerHour?: DecimalNullableWithAggregatesFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: DecimalNullableWithAggregatesFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: DecimalNullableWithAggregatesFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: StringNullableWithAggregatesFilter<"CarrierContract"> | string | null
+    autoRenew?: BoolWithAggregatesFilter<"CarrierContract"> | boolean
     status?: StringWithAggregatesFilter<"CarrierContract"> | string
     notes?: StringNullableWithAggregatesFilter<"CarrierContract"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierContract"> | Date | string
@@ -87039,6 +87188,7 @@ export namespace Prisma {
   export type CarrierContractCreateInput = {
     id?: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -87046,6 +87196,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -87061,6 +87217,7 @@ export namespace Prisma {
     orgId: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -87068,6 +87225,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -87079,6 +87242,7 @@ export namespace Prisma {
   export type CarrierContractUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -87086,6 +87250,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87101,6 +87271,7 @@ export namespace Prisma {
     orgId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -87108,6 +87279,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87121,6 +87298,7 @@ export namespace Prisma {
     orgId: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -87128,6 +87306,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -87137,6 +87321,7 @@ export namespace Prisma {
   export type CarrierContractUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -87144,6 +87329,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -87155,6 +87346,7 @@ export namespace Prisma {
     orgId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -87162,6 +87354,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -92763,6 +92961,7 @@ export namespace Prisma {
     orgId?: SortOrder
     clientId?: SortOrder
     contractNumber?: SortOrder
+    contractName?: SortOrder
     contractType?: SortOrder
     effectiveDate?: SortOrder
     expirationDate?: SortOrder
@@ -92770,6 +92969,12 @@ export namespace Prisma {
     baseRate?: SortOrder
     fuelSurchargeMethod?: SortOrder
     fuelSurchargeRate?: SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrder
+    tonuRate?: SortOrder
+    layoverRatePerDay?: SortOrder
+    paymentTermsOverride?: SortOrder
+    autoRenew?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -92779,6 +92984,10 @@ export namespace Prisma {
   export type CarrierContractAvgOrderByAggregateInput = {
     baseRate?: SortOrder
     fuelSurchargeRate?: SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrder
+    tonuRate?: SortOrder
+    layoverRatePerDay?: SortOrder
   }
 
   export type CarrierContractMaxOrderByAggregateInput = {
@@ -92786,6 +92995,7 @@ export namespace Prisma {
     orgId?: SortOrder
     clientId?: SortOrder
     contractNumber?: SortOrder
+    contractName?: SortOrder
     contractType?: SortOrder
     effectiveDate?: SortOrder
     expirationDate?: SortOrder
@@ -92793,6 +93003,12 @@ export namespace Prisma {
     baseRate?: SortOrder
     fuelSurchargeMethod?: SortOrder
     fuelSurchargeRate?: SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrder
+    tonuRate?: SortOrder
+    layoverRatePerDay?: SortOrder
+    paymentTermsOverride?: SortOrder
+    autoRenew?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -92804,6 +93020,7 @@ export namespace Prisma {
     orgId?: SortOrder
     clientId?: SortOrder
     contractNumber?: SortOrder
+    contractName?: SortOrder
     contractType?: SortOrder
     effectiveDate?: SortOrder
     expirationDate?: SortOrder
@@ -92811,6 +93028,12 @@ export namespace Prisma {
     baseRate?: SortOrder
     fuelSurchargeMethod?: SortOrder
     fuelSurchargeRate?: SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrder
+    tonuRate?: SortOrder
+    layoverRatePerDay?: SortOrder
+    paymentTermsOverride?: SortOrder
+    autoRenew?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
@@ -92820,6 +93043,10 @@ export namespace Prisma {
   export type CarrierContractSumOrderByAggregateInput = {
     baseRate?: SortOrder
     fuelSurchargeRate?: SortOrder
+    detentionFreeMinutes?: SortOrder
+    detentionRatePerHour?: SortOrder
+    tonuRate?: SortOrder
+    layoverRatePerDay?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -103833,6 +104060,7 @@ export namespace Prisma {
   export type CarrierContractCreateWithoutTenantInput = {
     id?: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -103840,6 +104068,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -103853,6 +104087,7 @@ export namespace Prisma {
     id?: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -103860,6 +104095,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -105529,6 +105770,7 @@ export namespace Prisma {
     orgId?: UuidFilter<"CarrierContract"> | string
     clientId?: UuidFilter<"CarrierContract"> | string
     contractNumber?: StringFilter<"CarrierContract"> | string
+    contractName?: StringNullableFilter<"CarrierContract"> | string | null
     contractType?: StringFilter<"CarrierContract"> | string
     effectiveDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
     expirationDate?: DateTimeNullableFilter<"CarrierContract"> | Date | string | null
@@ -105536,6 +105778,12 @@ export namespace Prisma {
     baseRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFilter<"CarrierContract"> | string
     fuelSurchargeRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFilter<"CarrierContract"> | number
+    detentionRatePerHour?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: DecimalNullableFilter<"CarrierContract"> | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: StringNullableFilter<"CarrierContract"> | string | null
+    autoRenew?: BoolFilter<"CarrierContract"> | boolean
     status?: StringFilter<"CarrierContract"> | string
     notes?: StringNullableFilter<"CarrierContract"> | string | null
     createdAt?: DateTimeFilter<"CarrierContract"> | Date | string
@@ -124119,6 +124367,7 @@ export namespace Prisma {
   export type CarrierContractCreateWithoutClientInput = {
     id?: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -124126,6 +124375,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -124139,6 +124394,7 @@ export namespace Prisma {
     id?: string
     orgId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -124146,6 +124402,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -127350,6 +127612,7 @@ export namespace Prisma {
   export type CarrierContractCreateWithoutRouteTemplatesInput = {
     id?: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -127357,6 +127620,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -127371,6 +127640,7 @@ export namespace Prisma {
     orgId: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -127378,6 +127648,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -127814,6 +128090,7 @@ export namespace Prisma {
   export type CarrierContractUpdateWithoutRouteTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -127821,6 +128098,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127835,6 +128118,7 @@ export namespace Prisma {
     orgId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -127842,6 +128126,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -129754,6 +130044,7 @@ export namespace Prisma {
   export type CarrierContractCreateWithoutCarrierLoadsInput = {
     id?: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -129761,6 +130052,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -129775,6 +130072,7 @@ export namespace Prisma {
     orgId: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -129782,6 +130080,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -130249,6 +130553,7 @@ export namespace Prisma {
   export type CarrierContractUpdateWithoutCarrierLoadsInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -130256,6 +130561,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130270,6 +130581,7 @@ export namespace Prisma {
     orgId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -130277,6 +130589,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -134452,6 +134770,7 @@ export namespace Prisma {
     id?: string
     clientId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -134459,6 +134778,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -136279,6 +136604,7 @@ export namespace Prisma {
   export type CarrierContractUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -136286,6 +136612,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -136299,6 +136631,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -136306,6 +136639,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -136318,6 +136657,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -136325,6 +136665,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -141425,6 +141771,7 @@ export namespace Prisma {
     id?: string
     orgId: string
     contractNumber: string
+    contractName?: string | null
     contractType?: string
     effectiveDate?: Date | string | null
     expirationDate?: Date | string | null
@@ -141432,6 +141779,12 @@ export namespace Prisma {
     baseRate?: Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: string
     fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
     status?: string
     notes?: string | null
     createdAt?: Date | string
@@ -141594,6 +141947,7 @@ export namespace Prisma {
   export type CarrierContractUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -141601,6 +141955,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -141614,6 +141974,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -141621,6 +141982,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -141633,6 +142000,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
     contractType?: StringFieldUpdateOperationsInput | string
     effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -141640,6 +142008,12 @@ export namespace Prisma {
     baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
     fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
     status?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

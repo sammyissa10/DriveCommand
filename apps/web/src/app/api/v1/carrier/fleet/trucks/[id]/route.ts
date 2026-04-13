@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
@@ -18,9 +19,9 @@ const CarrierTruckUpdateSchema = z.object({
   currentOdometerMiles: z.number().int().optional(),
   licensePlate: z.string().optional(),
   licenseState: z.string().max(2).optional(),
-  registrationExpiry: z.string().optional(),
-  licenseExpiry: z.string().optional(),
-  insuranceExpiry: z.string().optional(),
+  registrationExpiry: z.string().nullable().optional(),
+  licenseExpiry: z.string().nullable().optional(),
+  insuranceExpiry: z.string().nullable().optional(),
   status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
   notes: z.string().optional(),
 });
@@ -68,6 +69,9 @@ export async function PATCH(
 
     const truck = await updateCarrierTruck(orgId, id, parsed.data);
     if (!truck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+    revalidatePath(`/carrier/fleet/trucks/${id}`);
+    revalidatePath('/carrier/fleet/trucks');
 
     return NextResponse.json({ data: truck });
   } catch (err) {

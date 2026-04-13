@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Plus, RefreshCw, ClipboardList } from 'lucide-react';
 import {
   Sheet,
@@ -82,6 +82,7 @@ const STATUS_ACTIVE_CLASS: Record<string, string> = {
 
 export function DispatchList({ driverMap, truckMap }: DispatchListProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [dispatches, setDispatches] = useState<DispatchItem[]>([]);
   const [clientNames, setClientNames] = useState<Record<string, string>>({});
@@ -91,7 +92,7 @@ export function DispatchList({ driverMap, truckMap }: DispatchListProps) {
   const [dateTo, setDateTo] = useState(getTomorrowISO());
   const [needsAssignment, setNeedsAssignment] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(() => searchParams.get('new') === 'true');
 
   const fetchData = useCallback(async () => {
     setLoading(true);

@@ -69,9 +69,7 @@ export interface AgingRow {
   bucket_61_90: string;
   bucket_over_90: string;
   total_outstanding: string;
-  // NOTE: over_credit_limit always false — credit_limit column not yet added to schema.
-  // Add via migration when credit management feature is built.
-  over_credit_limit: false;
+  over_credit_limit: boolean;
 }
 
 export interface PerformanceFilters {
@@ -270,6 +268,7 @@ interface RawAgingRow {
   bucket_31_60: string | null;
   bucket_61_90: string | null;
   bucket_over_90: string | null;
+  credit_limit: string | null;
 }
 
 export async function getAgingReport(orgId: string): Promise<AgingRow[]> {
@@ -278,6 +277,7 @@ export async function getAgingReport(orgId: string): Promise<AgingRow[]> {
       SELECT
         l.client_id::text                                         AS client_id,
         c.name                                                    AS client_name,
+        c.credit_limit::text                                      AS credit_limit,
         COALESCE(SUM(CASE
           WHEN EXTRACT(DAY FROM now() - l.created_at) <= 30
           THEN l.total_revenue ELSE 0 END), 0)::text             AS bucket_0_30,
@@ -294,7 +294,7 @@ export async function getAgingReport(orgId: string): Promise<AgingRow[]> {
       JOIN clients c ON l.client_id = c.id
       WHERE l.org_id = ${orgId}::uuid
         AND l.status != 'cancelled'
-      GROUP BY l.client_id, c.name
+      GROUP BY l.client_id, c.name, c.credit_limit
       ORDER BY c.name
     `);
 
@@ -303,6 +303,8 @@ export async function getAgingReport(orgId: string): Promise<AgingRow[]> {
       const b1 = parseFloat(r.bucket_31_60 ?? '0');
       const b2 = parseFloat(r.bucket_61_90 ?? '0');
       const b3 = parseFloat(r.bucket_over_90 ?? '0');
+      const total = b0 + b1 + b2 + b3;
+      const creditLimit = r.credit_limit != null ? parseFloat(r.credit_limit) : null;
       return {
         client_id: r.client_id,
         client_name: r.client_name,
@@ -310,10 +312,8 @@ export async function getAgingReport(orgId: string): Promise<AgingRow[]> {
         bucket_31_60: b1.toFixed(2),
         bucket_61_90: b2.toFixed(2),
         bucket_over_90: b3.toFixed(2),
-        total_outstanding: (b0 + b1 + b2 + b3).toFixed(2),
-        // NOTE: over_credit_limit always false — credit_limit column not yet added to schema.
-        // Add via migration when credit management feature is built.
-        over_credit_limit: false as const,
+        total_outstanding: total.toFixed(2),
+        over_credit_limit: creditLimit !== null && total > creditLimit,
       };
     });
   } catch (err) {

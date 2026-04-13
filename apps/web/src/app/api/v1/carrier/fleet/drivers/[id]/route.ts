@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
@@ -66,6 +67,7 @@ export async function PATCH(
     const driver = await updateCarrierDriver(orgId, id, parsed.data);
     if (!driver) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
+    revalidatePath(`/carrier/fleet/drivers/${id}`);
     return NextResponse.json({ data: driver });
   } catch (err) {
     logger.error('PATCH /api/v1/carrier/fleet/drivers/[id] failed', err);

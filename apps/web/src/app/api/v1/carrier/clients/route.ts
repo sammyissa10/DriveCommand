@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     const parsed = ClientCreateSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.issues[0].message },
+        { error: parsed.error.message, details: parsed.error.issues },
         { status: 400 }
       );
     }

@@ -110,9 +110,9 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
           : {}),
         ...(values.licensePlate ? { licensePlate: values.licensePlate } : {}),
         ...(values.licenseState ? { licenseState: values.licenseState } : {}),
-        ...(values.registrationExpiry ? { registrationExpiry: values.registrationExpiry } : {}),
-        ...(values.licenseExpiry ? { licenseExpiry: values.licenseExpiry } : {}),
-        ...(values.insuranceExpiry ? { insuranceExpiry: values.insuranceExpiry } : {}),
+        registrationExpiry: values.registrationExpiry || null,
+        licenseExpiry: values.licenseExpiry || null,
+        insuranceExpiry: values.insuranceExpiry || null,
         status: values.status,
         ...(values.notes ? { notes: values.notes } : {}),
       };
@@ -134,8 +134,12 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
       }
 
       toast.success(isEdit ? 'Truck updated' : 'Truck created');
-      router.push('/carrier/fleet/trucks');
-      router.refresh();
+      if (isEdit) {
+        router.refresh();
+      } else {
+        router.push('/carrier/fleet/trucks');
+        router.refresh();
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

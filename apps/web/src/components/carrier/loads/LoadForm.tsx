@@ -249,6 +249,7 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       poNumber: poNumber || undefined,
       rateType,
       rateAmount: rateAmount ? Number(rateAmount) : undefined,
+      plannedMiles: plannedMiles ? parseInt(plannedMiles, 10) : undefined,
       otherCharges: otherCharges ? Number(otherCharges) : undefined,
       brokerFlag,
       carrierCost: brokerFlag && carrierCost ? Number(carrierCost) : undefined,

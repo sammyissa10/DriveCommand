@@ -144,8 +144,11 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
       }
 
       toast.success(isEdit ? 'Driver updated' : 'Driver created');
-      router.push('/carrier/fleet/drivers');
-      router.refresh();
+      if (isEdit) {
+        router.refresh();
+      } else {
+        router.push('/carrier/fleet/drivers');
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {

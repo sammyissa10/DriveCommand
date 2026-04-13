@@ -18,6 +18,23 @@ function toNum(d: Prisma.Decimal | null | undefined): number {
   return parseFloat(String(d));
 }
 
+/**
+ * Resolve the total loaded miles for a dispatch using the priority chain:
+ *   1. dispatch.actualMiles (set from odometer or manual entry)
+ *   2. dispatch.plannedMiles (set on the dispatch or written back from the load form)
+ *
+ * Note: CarrierLoad has no stored miles column; the per-load plannedMiles
+ * field is a form-only override used only during revenue calculation.
+ * Callers that want load-level miles to influence pay records must persist
+ * those miles to dispatch.plannedMiles before calling this function.
+ */
+function resolveDispatchMiles(
+  actualMiles: Prisma.Decimal | null | undefined,
+  plannedMiles: Prisma.Decimal | null | undefined
+): number {
+  return toNum(actualMiles) || toNum(plannedMiles);
+}
+
 /** Compute net pay from all components — single source of truth */
 function computeNetPay(
   basePay: number,
@@ -65,8 +82,8 @@ export async function generateDriverPayRecords(
     ? dispatch.stops.find((s) => s.id === dispatch.relayHandoffStopId) ?? null
     : null;
 
-  // Step 3: Calculate total miles
-  const totalMiles = toNum(dispatch.actualMiles ?? dispatch.plannedMiles);
+  // Step 3: Calculate total miles — prefer actual (odometer), fall back to planned
+  const totalMiles = resolveDispatchMiles(dispatch.actualMiles, dispatch.plannedMiles);
 
   // Step 4: Split miles for relay
   const totalStops = dispatch.stops.length;
@@ -293,7 +310,7 @@ export async function recalculatePayRecordReimbursements(
   payRecordId: string
 ): Promise<
   | { error: string; status: number }
-  | { data: { id: string; reimbursements: number; netPay: number } }
+  | { data: { id: string; basePay: number; reimbursements: number; netPay: number } }
 > {
   const record = await prisma.driverPayRecord.findFirst({
     where: { id: payRecordId, orgId },
@@ -311,14 +328,24 @@ export async function recalculatePayRecordReimbursements(
     return { error: 'Pay record has no associated dispatch', status: 422 };
   }
 
-  // Sum all approved reimbursable expenses for this driver+dispatch
+  // Sum all approved reimbursable expenses for this driver+dispatch.
+  // Include expenses where driverId IS NULL (dispatcher-added expenses have no
+  // driverId set but still belong to the dispatch and should be reimbursed).
   const reimbursableExpenses = await prisma.carrierExpense.findMany({
     where: {
       dispatchId: record.dispatchId,
-      driverId: record.driverId,
       reimbursable: true,
       approvedAt: { not: null },
+      OR: [{ driverId: record.driverId }, { driverId: null }],
     },
+  });
+
+  logger.info('recalculatePayRecordReimbursements: expenses found', {
+    orgId,
+    payRecordId,
+    dispatchId: record.dispatchId,
+    driverId: record.driverId,
+    expenseCount: reimbursableExpenses.length,
   });
 
   const totalReimbursements = reimbursableExpenses.reduce(
@@ -342,8 +369,36 @@ export async function recalculatePayRecordReimbursements(
     }
   }
 
+  // For mile-based pay models, re-derive miles from the dispatch (including the
+  // load plannedMiles fallback) and recompute basePay. This handles the common
+  // case where the dispatch has no odometer data yet but loads have plannedMiles.
+  let newBasePay = toNum(record.basePay);
+  let newLoadedMiles = record.loadedMiles ?? 0;
+  let newEmptyMiles = record.emptyMiles ?? 0;
+
+  if (record.payModel === 'per_mile' || record.payModel === 'team_split') {
+    const dispatch = await prisma.carrierDispatch.findFirst({
+      where: { id: record.dispatchId, orgId },
+    });
+
+    if (dispatch) {
+      const resolvedMiles = resolveDispatchMiles(dispatch.actualMiles, dispatch.plannedMiles);
+
+      if (resolvedMiles > 0) {
+        const loadedMiles =
+          record.payModel === 'team_split' ? resolvedMiles / 2 : resolvedMiles;
+        const emptyMiles = Math.round(loadedMiles * 0.1);
+        const loadedRate = toNum(record.loadedRate);
+        const emptyRate = toNum(record.emptyRate);
+        newBasePay = loadedMiles * loadedRate + emptyMiles * emptyRate;
+        newLoadedMiles = Math.round(loadedMiles);
+        newEmptyMiles = emptyMiles;
+      }
+    }
+  }
+
   const newNetPay = computeNetPay(
-    toNum(record.basePay),
+    newBasePay,
     toNum(record.bonuses),
     toNum(record.tips),
     toNum(record.deductions),
@@ -353,6 +408,9 @@ export async function recalculatePayRecordReimbursements(
   await prisma.driverPayRecord.update({
     where: { id: payRecordId },
     data: {
+      loadedMiles: newLoadedMiles,
+      emptyMiles: newEmptyMiles,
+      basePay: new Prisma.Decimal(newBasePay),
       reimbursements: new Prisma.Decimal(reimbursementShare),
       netPay: new Prisma.Decimal(newNetPay),
     },
@@ -361,9 +419,12 @@ export async function recalculatePayRecordReimbursements(
   logger.info('recalculatePayRecordReimbursements: updated', {
     orgId,
     payRecordId,
+    newBasePay,
     reimbursementShare,
     newNetPay,
   });
 
-  return { data: { id: payRecordId, reimbursements: reimbursementShare, netPay: newNetPay } };
+  return {
+    data: { id: payRecordId, basePay: newBasePay, reimbursements: reimbursementShare, netPay: newNetPay },
+  };
 }

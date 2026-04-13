@@ -41,7 +41,7 @@ export default async function CarrierDashboardPage() {
           <h2 className="text-base font-semibold text-foreground">Quick Actions</h2>
           <div className="space-y-2">
             <Link
-              href="/carrier/dispatches"
+              href="/carrier/dispatches?new=true"
               className="flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
             >
               <Send className="h-4 w-4 text-muted-foreground" />

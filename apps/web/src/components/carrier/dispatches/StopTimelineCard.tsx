@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -314,13 +313,13 @@ export function StopTimelineCard({
                   />
                   <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => setSkipReason('')}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
+                    <Button
                       disabled={!skipReason.trim() || isPending}
                       onClick={handleSkipConfirm}
                       className="bg-yellow-600 hover:bg-yellow-700 text-white"
                     >
                       {isPending ? 'Skipping…' : 'Skip Stop'}
-                    </AlertDialogAction>
+                    </Button>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

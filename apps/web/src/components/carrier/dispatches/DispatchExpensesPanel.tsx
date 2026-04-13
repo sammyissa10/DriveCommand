@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Receipt, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Receipt, ChevronDown, ChevronUp, Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -206,6 +206,17 @@ export function DispatchExpensesPanel({ expenses, dispatchId, drivers, canApprov
                 <option value="driver_cash">Driver Cash</option>
                 <option value="driver_advance">Driver Advance</option>
               </select>
+              {paidBy === 'driver_cash' ? (
+                <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                  <Check className="h-3 w-3" />
+                  Reimbursable
+                </span>
+              ) : (
+                <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                  <X className="h-3 w-3" />
+                  Not Reimbursable
+                </span>
+              )}
             </div>
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">Driver (optional)</label>

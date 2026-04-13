@@ -33,8 +33,8 @@ function daysFromNow(date: Date): number {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-function severity(daysLeft: number): AlertSeverity {
-  return daysLeft <= 7 || daysLeft < 0 ? 'critical' : 'warning';
+function severity(daysLeft: number, criticalThreshold: number): AlertSeverity {
+  return daysLeft <= criticalThreshold || daysLeft < 0 ? 'critical' : 'warning';
 }
 
 // ---------------------------------------------------------------------------
@@ -65,13 +65,13 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
       const expired = days < 0;
       alerts.push({
         type: 'cdl_expiry',
-        severity: severity(days),
+        severity: severity(days, 30),
         message: expired
           ? `${d.firstName} ${d.lastName}: CDL expired ${Math.abs(days)}d ago`
           : `${d.firstName} ${d.lastName}: CDL expires in ${days}d`,
         entityId: d.id,
         entityType: 'driver',
-        link: '/carrier/drivers',
+        link: `/carrier/fleet/drivers/${d.id}`,
       });
     }
 
@@ -91,13 +91,13 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
       const expired = days < 0;
       alerts.push({
         type: 'registration_expiry',
-        severity: severity(days),
+        severity: severity(days, 14),
         message: expired
           ? `Truck ${t.unitNumber}: registration expired ${Math.abs(days)}d ago`
           : `Truck ${t.unitNumber}: registration expires in ${days}d`,
         entityId: t.id,
         entityType: 'truck',
-        link: '/carrier/trucks',
+        link: `/carrier/fleet/trucks/${t.id}`,
       });
     }
 
@@ -117,13 +117,13 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
       const expired = days < 0;
       alerts.push({
         type: 'insurance_expiry',
-        severity: severity(days),
+        severity: severity(days, 14),
         message: expired
           ? `Truck ${t.unitNumber}: insurance expired ${Math.abs(days)}d ago`
           : `Truck ${t.unitNumber}: insurance expires in ${days}d`,
         entityId: t.id,
         entityType: 'truck',
-        link: '/carrier/trucks',
+        link: `/carrier/fleet/trucks/${t.id}`,
       });
     }
 
@@ -143,13 +143,13 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
       const expired = days < 0;
       alerts.push({
         type: 'license_expiry',
-        severity: severity(days),
+        severity: severity(days, 14),
         message: expired
           ? `Truck ${t.unitNumber}: license expired ${Math.abs(days)}d ago`
           : `Truck ${t.unitNumber}: license expires in ${days}d`,
         entityId: t.id,
         entityType: 'truck',
-        link: '/carrier/trucks',
+        link: `/carrier/fleet/trucks/${t.id}`,
       });
     }
 
@@ -170,7 +170,7 @@ export async function getComplianceAlerts(orgId: string): Promise<ComplianceAler
       const label = c.contractNumber ?? c.id.slice(0, 8);
       alerts.push({
         type: 'contract_expiry',
-        severity: severity(days),
+        severity: severity(days, 14),
         message: expired
           ? `Contract ${label} expired ${Math.abs(days)}d ago`
           : `Contract ${label} expires in ${days}d`,

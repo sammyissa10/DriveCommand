@@ -21,6 +21,7 @@ const LoadUpdateSchema = z.object({
   hazmatClass: z.string().optional(),
   rateType: z.enum(['per_mile', 'flat', 'per_stop', 'per_cwt', 'per_pallet', 'hourly']).optional(),
   rateAmount: z.number().optional(),
+  plannedMiles: z.number().int().optional(),
   brokerFlag: z.boolean().optional(),
   carrierCost: z.number().optional(),
   otherCharges: z.number().optional(),
@@ -74,7 +75,10 @@ export async function PATCH(
 
     return NextResponse.json({ data: load });
   } catch (err) {
-    logger.error('PATCH /api/v1/carrier/loads/[id] failed', err);
+    logger.error('PATCH /api/v1/carrier/loads/[id] failed', {
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
