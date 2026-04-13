@@ -104,7 +104,7 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 36. Owner Map + Fleet Communication | v5.0 | 3/3 | ✓ Complete | 2026-03-25 |
 | 37. Polish + Performance | v5.0 | 7/7 | ✓ Complete | 2026-03-28 |
 | 37.1. Driver Portal Gaps | v5.0 | 0/3 | ○ Not started | — |
-| 37.2. Owner Route + Maintenance Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.2. Owner Route + Maintenance Mobile | v5.0 | 0/4 | ○ Not started | — |
 | 37.3. Owner Financial Tools Mobile | v5.0 | 0/? | ○ Not started | — |
 | 37.4. Owner Analytics + Support Mobile | v5.0 | 0/? | ○ Not started | — |
 | 37.5. Mobile UI/UX Design Overhaul | v5.0 | 0/? | ○ Not started | — |
@@ -420,10 +420,13 @@ Plans:
 
 **Goal:** Bring route management and truck maintenance to the owner mobile portal. Route management: list all routes, view route detail (stops, assigned driver/truck, status), create new route, edit existing route. Truck maintenance: view service history per truck, log a new service event (date, type, mileage, notes), schedule upcoming service with due date/mileage trigger.
 **Depends on:** Phase 37.1
-**Plans:** TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] TBD
+- [ ] 37.2-01-PLAN.md — Route creation API + collapsible status list redesign
+- [ ] 37.2-02-PLAN.md — ScheduledService CRUD API + maintenance constants
+- [ ] 37.2-03-PLAN.md — Multi-step route creation form screen
+- [ ] 37.2-04-PLAN.md — Maintenance UI: top-level screen, truck detail enhancements, truck list badges
 
 ---
 
