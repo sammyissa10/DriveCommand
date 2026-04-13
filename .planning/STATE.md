@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — IN PROGRESS
-Current Plan: Plan 2 of 4 complete — 37.2-02 DONE
-Status: Plan 02 complete — ScheduledService CRUD API (GET/POST/PATCH per-truck + GET cross-truck), completion flow with MaintenanceEvent audit trail, typed api-client (4 methods + 4 types), MAINTENANCE_SERVICE_TYPES constant (21 items)
-Last activity: 2026-04-13 - Completed Phase 37.2 Plan 02: ScheduledService CRUD API + maintenance constants
-Last session: 2026-04-13T04:02:46Z
-Stopped at: Completed 37.2-02-PLAN.md — 2 tasks, 4 files, 231s
+Current Plan: Plan 3 of 4 complete — 37.2-03 DONE
+Status: Plan 03 complete — Multi-step route creation screen: Step 1 (name/driver/truck/date), Step 2 (multi-stop with AddressInput, type toggle, delete button), submits via ownerApi.createRoute
+Last activity: 2026-04-13 - Completed Phase 37.2 Plan 03: Multi-step route creation screen
+Last session: 2026-04-13T04:13:02Z
+Stopped at: Completed 37.2-03-PLAN.md — 1 task, 1 file, 215s
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -752,6 +752,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27]: FacilityForm State field is plain Input (not shadcn Select) — getByLabel('State').fill() used; driver redirect from /carrier/* is /my-route per CarrierLayout; Mark as Paid requires window.confirm dialog accept before PATCH
 - [Phase 37.2-01]: Route list queries status=all always and groups client-side (Active/Scheduled/Completed); Completed collapsed by default
 - [Phase 37.2-01]: getTruckOptions is a named alias of getTrucks reusing /api/mobile/owner/trucks endpoint for semantic clarity in picker contexts
+- [Phase 37.2]: Swipeable replaced with Trash2 delete icon button since react-native-gesture-handler is not installed in mobile app
 
 ### Pending Todos
 
@@ -1027,6 +1028,7 @@ None blocking immediate progress.
 | Phase quick-201 P01 | 10 | 2 tasks | 3 files |
 | Phase 27 P06 | 186 | 2 tasks | 3 files |
 | Phase 37.2-owner-route-maintenance P01 | 389 | 2 tasks | 5 files |
+| Phase 37.2 P03 | 215 | 1 tasks | 1 files |
 
 ## Session Continuity
 
