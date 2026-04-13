@@ -519,6 +519,37 @@ export interface LogMaintenancePayload {
 }
 
 // ---------------------------------------------------------------------------
+// Scheduled Service
+// ---------------------------------------------------------------------------
+
+export interface ScheduledServiceSummary {
+  id: string
+  serviceType: string
+  dueDate: string | null
+  dueMileage: number | null
+  status: 'overdue' | 'due_soon' | 'ok'
+  notes: string | null
+  createdAt: string
+}
+
+export interface ScheduledServiceWithTruck extends ScheduledServiceSummary {
+  truck: { id: string; make: string; model: string; licensePlate: string; odometer: number }
+}
+
+export interface CreateScheduledServicePayload {
+  serviceType: string
+  dueDate?: string
+  dueMileage?: number
+  notes?: string
+}
+
+export interface CompleteScheduledServicePayload {
+  serviceId: string
+  actualDate?: string
+  actualOdometer?: number
+}
+
+// ---------------------------------------------------------------------------
 // Safety
 // ---------------------------------------------------------------------------
 
@@ -844,4 +875,28 @@ export const ownerApi = {
 
   getSafetyAlerts: (token: string) =>
     apiRequest<SafetyAlertsResponse>('/api/mobile/owner/safety', { token }),
+
+  getScheduledServices: (token: string, truckId: string) =>
+    apiRequest<{ services: ScheduledServiceSummary[] }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { token }
+    ).then((r) => r.services),
+
+  createScheduledService: (token: string, truckId: string, payload: CreateScheduledServicePayload) =>
+    apiRequest<{ service: { id: string; serviceType: string } }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { method: 'POST', token, body: JSON.stringify(payload) }
+    ),
+
+  completeScheduledService: (token: string, truckId: string, payload: CompleteScheduledServicePayload) =>
+    apiRequest<{ success: boolean }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
+
+  getAllScheduledServices: (token: string) =>
+    apiRequest<{ services: ScheduledServiceWithTruck[] }>(
+      '/api/mobile/owner/maintenance',
+      { token }
+    ).then((r) => r.services),
 }

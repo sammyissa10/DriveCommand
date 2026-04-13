@@ -1,0 +1,25 @@
+export const MAINTENANCE_SERVICE_TYPES = [
+  'Oil Change',
+  'Tire Rotation',
+  'Tire Replacement',
+  'Brake Inspection',
+  'Brake Service',
+  'DOT Inspection',
+  'Annual Inspection',
+  'Transmission Service',
+  'Coolant Flush',
+  'Air Filter Replacement',
+  'Fuel Filter Replacement',
+  'Battery Replacement',
+  'Wheel Alignment',
+  'Wheel Bearing Service',
+  'DEF System Service',
+  'DPF Cleaning',
+  'Engine Tune-Up',
+  'Belts & Hoses',
+  'AC Service',
+  'Body Repair',
+  'Other',
+] as const
+
+export type MaintenanceServiceType = (typeof MAINTENANCE_SERVICE_TYPES)[number]
