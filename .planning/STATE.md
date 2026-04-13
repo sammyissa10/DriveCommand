@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.1.2 Invoicing — Trucking Standard — IN PROGRESS
-Current Plan: Plan 2 of 2 complete — 37.1.2-02 DONE
-Status: 37.1.2 COMPLETE — Collapsible Freight Details form section (BOL/PRO/PO/commodity/weight/pieces/loaded miles), typed line items with item type + unit type selectors, FSC auto-calculation (percent of linehaul with helper text), PER_MILE preview, quick-add buttons, invoice detail freight display, edit page round-trips all new fields, new invoice from load auto-populates freight fields.
-Last activity: 2026-04-12 - Completed Phase 27 Plan 05: carrier dispatches, loads, clients, and contracts E2E tests
-Stopped at: Completed 27-05-PLAN.md — dispatch tests (7), load tests (7), client+contract tests (8) = 40 carrier portal E2E tests total
+Phase: Phase 27 Automated Playwright Tests — COMPLETE
+Current Plan: Plan 6 of 6 complete — 27-06 DONE
+Status: Phase 27 COMPLETE — 70 carrier portal E2E tests across 6 plans: dashboard (7), fleet (11), dispatches (7), loads (7), clients+contracts (8), facilities+templates (8), reports (11), access boundaries (11). Full carrier suite + smoke suite ready.
+Last activity: 2026-04-12 - Completed Phase 27 Plan 06: facilities, reports, and access boundary E2E tests
+Stopped at: Completed 27-06-PLAN.md — facilities+templates tests (8), reports tests (11), access tests (11) = 30 new tests; Phase 27 COMPLETE
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -52,6 +52,7 @@ Progress: [███████████████████████
 - Phase 26-03 (2026-03-13): Driver portal QA test scripts + README — 2 tasks, 2 files, 4min
 - Phase 27-01 (2026-03-16): Multi-role Playwright auth + SysAdmin E2E tests — 2 tasks, 14 files, 7min
 - Phase 27-02 (2026-03-16): Owner portal E2E tests — 2 tasks, 6 files, 5min
+- Phase 27-06 (2026-04-12): Carrier facilities, reports, and access boundary E2E tests — 2 tasks, 3 files, 186s
 - Phase 28-01 (2026-03-21): Driver history server actions (getMyCompletedLoads + getMyCompletedRoutes) — 2 tasks, 2 files, 67s
 - Phase 28-02 (2026-03-21): Driver history UI — CompletedLoadHistory + CompletedRouteHistory components, page wiring — 4 tasks, 4 files, ~5min
 
@@ -746,6 +747,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 27-04]: Used id-based locators for shadcn Select components (#payModel, #payPeriod) rather than nth(combobox) indexing for stability across forms with multiple Selects
 - [Phase 27]: LoadForm labels lack htmlFor — commodity field located via placeholder text; client field via getByRole combobox
 - [Phase 27]: Button text in create mode: 'Create Client', 'Create Load', 'Create Contract' — not generic Save/Create
+- [Phase 27]: FacilityForm State field is plain Input (not shadcn Select) — getByLabel('State').fill() used; driver redirect from /carrier/* is /my-route per CarrierLayout; Mark as Paid requires window.confirm dialog accept before PATCH
 
 ### Pending Todos
 
@@ -1019,6 +1021,7 @@ None blocking immediate progress.
 | Phase quick-161 P01 | 142s | 2 tasks | 7 files |
 | Phase quick-182 P01 | 128s | 2 tasks | 4 files |
 | Phase quick-201 P01 | 10 | 2 tasks | 3 files |
+| Phase 27 P06 | 186 | 2 tasks | 3 files |
 
 ## Session Continuity
 
