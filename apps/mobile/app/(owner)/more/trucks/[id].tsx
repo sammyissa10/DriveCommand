@@ -22,9 +22,13 @@ import {
   type UpdateTruckPayload,
   type MaintenanceEventSummary,
   type LogMaintenancePayload,
+  type ScheduledServiceSummary,
+  type CompleteScheduledServicePayload,
 } from '@drivecommand/api-client'
 import { BottomSheet } from '../../../../components/ui/BottomSheet'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
+import { MaintenanceServicePicker } from '../../../../components/owner/MaintenanceServicePicker'
+import { ScheduleServiceSheet } from '../../../../components/owner/ScheduleServiceSheet'
 import { haptic } from '../../../../lib/haptics'
 import { useThemeColors } from '../../../../constants/tokens'
 
@@ -300,6 +304,7 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
   const [cost, setCost] = useState('')
   const [odometer, setOdometer] = useState(String(initialOdometer))
   const [serviceDate, setServiceDate] = useState(todayISO())
+  const [pickerVisible, setPickerVisible] = useState(false)
 
   useEffect(() => {
     if (visible) {
@@ -362,29 +367,30 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
   }
 
   return (
-    <BottomSheet visible={visible} onClose={onClose} title="Log Maintenance" snapPoint="80%">
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingBottom: 16 }}
+    <>
+      <BottomSheet visible={visible} onClose={onClose} title="Log Maintenance" snapPoint="80%">
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-          {/* Service Type */}
-          <View className="mb-4">
-            <Text style={labelStyle}>Service Type</Text>
-            <TextInput
-              style={inputStyle}
-              placeholder="e.g. Oil Change, Tire Rotation, Inspection..."
-              placeholderTextColor={c.textMuted}
-              value={serviceType}
-              onChangeText={setServiceType}
-              autoCapitalize="words"
-              editable={!isPending}
-            />
-          </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ paddingBottom: 16 }}
+          >
+            {/* Service Type */}
+            <View className="mb-4">
+              <Text style={labelStyle}>Service Type</Text>
+              <Pressable
+                onPress={() => { haptic.light(); setPickerVisible(true) }}
+                style={[inputStyle, { justifyContent: 'center' }]}
+                disabled={isPending}
+              >
+                <Text style={{ color: serviceType ? c.textPrimary : c.textMuted, fontSize: 14 }}>
+                  {serviceType || 'Select service type'}
+                </Text>
+              </Pressable>
+            </View>
 
           {/* Service Date + Odometer row */}
           <View className="flex-row gap-3 mb-4">
@@ -456,9 +462,17 @@ function LogMaintenanceSheet({ visible, onClose, initialOdometer, onSave, isPend
               : <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>Save Record</Text>
             }
           </Pressable>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </BottomSheet>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </BottomSheet>
+
+      <MaintenanceServicePicker
+        visible={pickerVisible}
+        onClose={() => setPickerVisible(false)}
+        onSelect={setServiceType}
+        selectedType={serviceType}
+      />
+    </>
   )
 }
 
@@ -475,6 +489,11 @@ export default function TruckDetailScreen() {
 
   const [editSheetVisible, setEditSheetVisible] = useState(false)
   const [maintenanceSheetVisible, setMaintenanceSheetVisible] = useState(false)
+  const [scheduleSheetVisible, setScheduleSheetVisible] = useState(false)
+  const [completeSheetVisible, setCompleteSheetVisible] = useState(false)
+  const [completingService, setCompletingService] = useState<ScheduledServiceSummary | null>(null)
+  const [actualDate, setActualDate] = useState('')
+  const [actualOdometer, setActualOdometer] = useState('')
 
   const { data: truck, isLoading, isError, error, refetch, isRefetching } = useQuery<TruckDetail>({
     queryKey: ['owner-truck', id],
@@ -485,6 +504,12 @@ export default function TruckDetailScreen() {
   const { data: maintenance, isLoading: maintenanceLoading, refetch: refetchMaintenance } = useQuery<MaintenanceEventSummary[]>({
     queryKey: ['owner-truck-maintenance', id],
     queryFn: () => ownerApi.getTruckMaintenance(token!, id!),
+    enabled: !!token && !!id,
+  })
+
+  const { data: scheduledServices, isLoading: scheduledLoading, refetch: refetchScheduled } = useQuery<ScheduledServiceSummary[]>({
+    queryKey: ['truck-scheduled-services', id],
+    queryFn: () => ownerApi.getScheduledServices(token!, id!),
     enabled: !!token && !!id,
   })
 
@@ -517,10 +542,48 @@ export default function TruckDetailScreen() {
     },
   })
 
+  const { mutate: completeService, isPending: isCompleting } = useMutation({
+    mutationFn: (payload: CompleteScheduledServicePayload) => ownerApi.completeScheduledService(token!, id!, payload),
+    onSuccess: () => {
+      haptic.success()
+      queryClient.invalidateQueries({ queryKey: ['truck-scheduled-services', id] })
+      queryClient.invalidateQueries({ queryKey: ['owner-truck-maintenance', id] })
+      queryClient.invalidateQueries({ queryKey: ['all-scheduled-services'] })
+      Toast.show({ type: 'success', text1: 'Service completed', text2: 'Maintenance record created.', visibilityTime: 3000 })
+      setCompleteSheetVisible(false)
+      setCompletingService(null)
+    },
+    onError: (err: Error) => {
+      haptic.error()
+      Toast.show({ type: 'error', text1: 'Failed to complete', text2: err.message || 'Please try again.', visibilityTime: 4000 })
+    },
+  })
+
   const onRefresh = useCallback(() => {
     refetch()
     refetchMaintenance()
-  }, [refetch, refetchMaintenance])
+    refetchScheduled()
+  }, [refetch, refetchMaintenance, refetchScheduled])
+
+  function openCompleteSheet(service: ScheduledServiceSummary) {
+    setCompletingService(service)
+    setActualDate(todayISO())
+    setActualOdometer(String(truck?.odometer ?? ''))
+    setCompleteSheetVisible(true)
+  }
+
+  function handleCompleteService() {
+    if (!completingService) return
+    const payload: CompleteScheduledServicePayload = {
+      serviceId: completingService.id,
+    }
+    if (actualDate.trim()) payload.actualDate = actualDate.trim()
+    if (actualOdometer.trim()) {
+      const miles = parseInt(actualOdometer, 10)
+      if (!isNaN(miles) && miles >= 0) payload.actualOdometer = miles
+    }
+    completeService(payload)
+  }
 
   const statusColors = STATUS_COLORS[truck?.status ?? ''] ?? STATUS_COLORS['Ready to Use']
   const docMeta = truck?.documentMetadata
@@ -661,7 +724,7 @@ export default function TruckDetailScreen() {
                 ) : !maintenance || maintenance.length === 0 ? (
                   <Text className="text-sm" style={{ color: c.textTertiary }}>No maintenance records</Text>
                 ) : (
-                  maintenance.slice(0, 5).map((event, index) => (
+                  maintenance.map((event, index) => (
                     <View key={event.id}>
                       {index > 0 && <View className="h-px my-3" style={{ backgroundColor: c.border }} />}
                       <View className="flex-row items-start justify-between">
@@ -676,6 +739,64 @@ export default function TruckDetailScreen() {
                       </View>
                     </View>
                   ))
+                )}
+              </View>
+
+              {/* Scheduled Services */}
+              <View
+                className="rounded-xl p-4 mb-4"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
+                <View className="flex-row items-center justify-between mb-4">
+                  <View className="flex-row items-center gap-2">
+                    <Wrench color={c.textTertiary} size={16} />
+                    <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>Scheduled Services</Text>
+                  </View>
+                  <Pressable
+                    onPress={() => { haptic.light(); setScheduleSheetVisible(true) }}
+                    hitSlop={8}
+                    className="active:opacity-75"
+                  >
+                    <Text style={{ color: c.brand, fontSize: 14, fontWeight: '600' }}>Schedule</Text>
+                  </Pressable>
+                </View>
+
+                {scheduledLoading ? (
+                  <ActivityIndicator size="small" color={c.brand} />
+                ) : !scheduledServices || scheduledServices.length === 0 ? (
+                  <Text className="text-sm" style={{ color: c.textTertiary }}>No scheduled services</Text>
+                ) : (
+                  scheduledServices.map((service, index) => {
+                    const statusLabel = service.status === 'overdue' ? 'Overdue' : service.status === 'due_soon' ? 'Due Soon' : 'OK'
+                    const statusColor = service.status === 'overdue' ? '#ef4444' : service.status === 'due_soon' ? '#f59e0b' : '#22c55e'
+                    const statusBg = service.status === 'overdue' ? '#ef444420' : service.status === 'due_soon' ? '#f59e0b20' : '#22c55e20'
+                    return (
+                      <View key={service.id}>
+                        {index > 0 && <View className="h-px my-3" style={{ backgroundColor: c.border }} />}
+                        <View className="flex-row items-start justify-between">
+                          <View className="flex-1 min-w-0 mr-3">
+                            <Text className="font-semibold text-sm" style={{ color: c.textPrimary }}>{service.serviceType}</Text>
+                            <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>
+                              {service.dueDate ? `Due ${formatDateShort(service.dueDate)}` : ''}
+                              {service.dueDate && service.dueMileage ? '  ·  ' : ''}
+                              {service.dueMileage ? `${service.dueMileage.toLocaleString()} mi` : ''}
+                            </Text>
+                          </View>
+                          <View className="items-end gap-1.5">
+                            <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: statusBg }}>
+                              <Text className="text-[11px] font-semibold" style={{ color: statusColor }}>{statusLabel}</Text>
+                            </View>
+                            <Pressable
+                              onPress={() => { haptic.light(); openCompleteSheet(service) }}
+                              className="active:opacity-75"
+                            >
+                              <Text style={{ color: c.brand, fontSize: 12, fontWeight: '600' }}>Mark Complete</Text>
+                            </Pressable>
+                          </View>
+                        </View>
+                      </View>
+                    )
+                  })
                 )}
               </View>
 
@@ -714,6 +835,116 @@ export default function TruckDetailScreen() {
               onSave={logMaintenance}
               isPending={isLogging}
             />
+
+            <ScheduleServiceSheet
+              visible={scheduleSheetVisible}
+              onClose={() => setScheduleSheetVisible(false)}
+              truckId={id!}
+              token={token!}
+              onSuccess={() => queryClient.invalidateQueries({ queryKey: ['truck-scheduled-services', id] })}
+            />
+
+            {/* Mark Complete confirmation sheet */}
+            <BottomSheet
+              visible={completeSheetVisible}
+              onClose={() => { setCompleteSheetVisible(false); setCompletingService(null) }}
+              title="Mark Service Complete"
+              snapPoint="60%"
+            >
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              >
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  contentContainerStyle={{ paddingBottom: 16 }}
+                >
+                  {completingService && (
+                    <View
+                      className="rounded-xl px-3 py-2.5 mb-4"
+                      style={{ backgroundColor: `${c.brand}10`, borderWidth: 1, borderColor: `${c.brand}30` }}
+                    >
+                      <Text className="text-sm font-semibold" style={{ color: c.textPrimary }}>
+                        {completingService.serviceType}
+                      </Text>
+                    </View>
+                  )}
+
+                  {/* Actual Date */}
+                  <View className="mb-4">
+                    <Text style={{
+                      color: c.textSecondary,
+                      fontSize: 11,
+                      fontWeight: '600',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      marginBottom: 6,
+                    }}>Actual Service Date</Text>
+                    <TextInput
+                      style={{
+                        backgroundColor: c.surfaceInput,
+                        borderWidth: 1,
+                        borderColor: c.border,
+                        color: c.textPrimary,
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        paddingVertical: 12,
+                        fontSize: 14,
+                      }}
+                      placeholder="YYYY-MM-DD"
+                      placeholderTextColor={c.textMuted}
+                      value={actualDate}
+                      onChangeText={setActualDate}
+                      keyboardType="numeric"
+                      editable={!isCompleting}
+                    />
+                  </View>
+
+                  {/* Actual Odometer */}
+                  <View className="mb-6">
+                    <Text style={{
+                      color: c.textSecondary,
+                      fontSize: 11,
+                      fontWeight: '600',
+                      textTransform: 'uppercase',
+                      letterSpacing: 0.5,
+                      marginBottom: 6,
+                    }}>Odometer at Service (mi)</Text>
+                    <TextInput
+                      style={{
+                        backgroundColor: c.surfaceInput,
+                        borderWidth: 1,
+                        borderColor: c.border,
+                        color: c.textPrimary,
+                        borderRadius: 12,
+                        paddingHorizontal: 16,
+                        paddingVertical: 12,
+                        fontSize: 14,
+                      }}
+                      placeholder="150000"
+                      placeholderTextColor={c.textMuted}
+                      value={actualOdometer}
+                      onChangeText={setActualOdometer}
+                      keyboardType="numeric"
+                      editable={!isCompleting}
+                    />
+                  </View>
+
+                  <Pressable
+                    onPress={handleCompleteService}
+                    disabled={isCompleting}
+                    className="rounded-xl py-4 items-center"
+                    style={{ backgroundColor: isCompleting ? c.brandDark : c.brand, opacity: isCompleting ? 0.7 : 1 }}
+                  >
+                    {isCompleting
+                      ? <ActivityIndicator size="small" color="white" />
+                      : <Text style={{ color: 'white', fontWeight: '700', fontSize: 16 }}>Confirm Complete</Text>
+                    }
+                  </Pressable>
+                </ScrollView>
+              </KeyboardAvoidingView>
+            </BottomSheet>
           </>
         ) : null}
       </AnimatedScreen>

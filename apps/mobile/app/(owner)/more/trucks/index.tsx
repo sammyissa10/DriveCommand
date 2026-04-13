@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import {
   Pressable,
   RefreshControl,
@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
 import { AlertTriangle, ChevronLeft, ChevronRight, Truck } from 'lucide-react-native'
 import { useAuthContext } from '../../../../context/AuthContext'
-import { ownerApi, type TruckOption } from '@drivecommand/api-client'
+import { ownerApi, type TruckOption, type ScheduledServiceWithTruck } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
 import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
 import { TruckCardSkeleton } from '../../../../components/skeletons/TruckCardSkeleton'
@@ -28,9 +28,10 @@ const STATUS_COLORS: Record<string, { text: string; bg: string }> = {
   'Ready to Use':     { text: '#22c55e', bg: '#22c55e20' },
 }
 
-function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void }) {
+function TruckCard({ truck, onPress, maintenanceWarning }: { truck: TruckOption; onPress: () => void; maintenanceWarning?: 'overdue' | 'due_soon' | null }) {
   const c = useThemeColors()
   const colors = STATUS_COLORS[truck.status] ?? STATUS_COLORS['Ready to Use']
+  const warningColor = maintenanceWarning === 'overdue' ? '#ef4444' : '#f59e0b'
 
   return (
     <Pressable
@@ -56,8 +57,11 @@ function TruckCard({ truck, onPress }: { truck: TruckOption; onPress: () => void
         </Text>
       </View>
 
-      {/* Status badge + chevron */}
+      {/* Status badge + maintenance warning + chevron */}
       <View className="flex-row items-center gap-2">
+        {maintenanceWarning && (
+          <AlertTriangle color={warningColor} size={15} />
+        )}
         <View className="px-2.5 py-1 rounded-[20px]" style={{ backgroundColor: colors.bg }}>
           <Text className="text-xs font-semibold" style={{ color: colors.text }}>
             {truck.status}
@@ -85,14 +89,36 @@ export default function TrucksScreen() {
     staleTime: 60_000,
   })
 
+  const { data: scheduledServices } = useQuery<ScheduledServiceWithTruck[]>({
+    queryKey: ['all-scheduled-services'],
+    queryFn: () => ownerApi.getAllScheduledServices(token!),
+    enabled: !!token,
+    staleTime: 60_000,
+  })
+
+  // Build a map of truckId -> worst maintenance warning level
+  const truckWarnings = useMemo(() => {
+    const map = new Map<string, 'overdue' | 'due_soon'>()
+    if (!scheduledServices) return map
+    for (const s of scheduledServices) {
+      if (s.status === 'overdue') {
+        map.set(s.truck.id, 'overdue')
+      } else if (s.status === 'due_soon' && map.get(s.truck.id) !== 'overdue') {
+        map.set(s.truck.id, 'due_soon')
+      }
+    }
+    return map
+  }, [scheduledServices])
+
   const onRefresh = useCallback(() => { refetch() }, [refetch])
 
   const renderTruck = useCallback(({ item: truck }: { item: TruckOption }) => (
     <TruckCard
       truck={truck}
       onPress={() => router.push(`/(owner)/more/trucks/${truck.id}` as never)}
+      maintenanceWarning={truckWarnings.get(truck.id) ?? null}
     />
-  ), [router])
+  ), [router, truckWarnings])
 
   const totalCount = data?.length ?? 0
   const inUseCount = data?.filter((t) => t.status === 'In Use').length ?? 0
