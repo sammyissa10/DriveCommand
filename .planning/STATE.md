@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.2 Owner Route Maintenance — IN PROGRESS
-Current Plan: Plan 3 of 4 complete — 37.2-03 DONE
-Status: Plan 03 complete — Multi-step route creation screen: Step 1 (name/driver/truck/date), Step 2 (multi-stop with AddressInput, type toggle, delete button), submits via ownerApi.createRoute
-Last activity: 2026-04-13 - Completed Phase 37.2 Plan 03: Multi-step route creation screen
-Last session: 2026-04-13T04:13:02Z
-Stopped at: Completed 37.2-03-PLAN.md — 1 task, 1 file, 215s
+Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
+Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
+Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
+Last activity: 2026-04-13 - Completed Phase 37.2 Plan 04: Maintenance UI
+Last session: 2026-04-13T04:23:01Z
+Stopped at: Completed 37.2-04-PLAN.md — 2 tasks, 7 files, ~8min
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -95,6 +95,8 @@ Progress: [███████████████████████
 - Phase 37.1.2-01 (2026-04-04): Invoicing trucking standard data layer — InvoiceItemType/InvoiceItemUnit enums, 7 freight header fields on Invoice, itemType/unitType on InvoiceItem, Zod validation exports (arrays+label maps), PERCENT calculation fix in createInvoice/updateInvoice — 2 tasks, 4 files, 18min
 - Phase 37.1.2-02 (2026-04-04): Invoicing trucking standard UI — collapsible Freight Details section (7 fields), item type + unit type selectors per line item, FSC auto-calculation (percent-of-linehaul helper text), PER_MILE preview, quick-add buttons (Linehaul/FSC/Detention/Stop-Off), detail page freight display + type labels, edit page round-trips all fields, new invoice load auto-populate — 2 tasks, 5 files, ~25min
 - Phase 37.2-02 (2026-04-13): ScheduledService CRUD API + maintenance constants — GET/POST/PATCH per-truck endpoint, GET cross-truck listing, server-side status computation (overdue/due_soon/ok), completion flow with MaintenanceEvent audit trail, 4 typed api-client methods, MAINTENANCE_SERVICE_TYPES constant (21 items) — 2 tasks, 4 files, 231s
+- Phase 37.2-03 (2026-04-13): Multi-step route creation screen — RouteCreationSheet (Step 1: name/driver/truck/date; Step 2: multi-stop with AddressInput, type toggle, delete button), submits via ownerApi.createRoute — 1 task, 1 file, 215s
+- Phase 37.2-04 (2026-04-13): Maintenance UI — MaintenanceServicePicker (21 predefined types), ScheduleServiceSheet (date/mileage triggers), top-level maintenance screen with Due Soon alerts + grouped fleet view, Scheduled Services section on truck detail with mark-complete flow, warning badge on truck list — 2 tasks, 7 files, ~8min
 
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
@@ -223,6 +225,13 @@ Progress: [███████████████████████
 - Used prisma db push (not migrate) to add paymentTerms/creditLimit — no migration file created, no constraint changes
 - Facility type values (shipper/receiver/terminal/fuel_stop/other) enforced at application layer only — facilityType is a plain String column
 - Portal email field shown whenever portalAccess is true (not conditional on email existing) — allows user to enter email after toggling access ON
+
+**Phase 37.2-04 decisions (Maintenance UI):**
+- ScheduleServiceSheet uses <>form BottomSheet + MaintenanceServicePicker</> fragment pattern — picker modal must be sibling of parent sheet, not nested, to layer correctly above it
+- Mark Complete sheet is inline BottomSheet inside TruckDetailScreen (not extracted) — completeService mutation and completingService state are naturally co-located with truck detail
+- Truck list warning uses AlertTriangle icon at size=15 (not a dot) — more visible on small card rows; amber=due_soon, red=overdue; useMemo builds worst-status map from getAllScheduledServices
+- api-client dist must be rebuilt after exporting new types — ScheduledServiceSummary/ScheduledServiceWithTruck/CreateScheduledServicePayload/CompleteScheduledServicePayload were in owner.ts since 37.2-02 but not re-exported from index.ts
+- BottomSheet only accepts 40%/60%/80%/full snapPoints — plan specified "70%" for MaintenanceServicePicker; used "80%"
 
 **Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
 - useThemeColors() called in each sub-component (not passed as prop) — hooks must be called inside React function components
