@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-14 - Completed quick task 206: Multi-tenant data isolation security breach — audit and fix all tenantId filter gaps
+Last activity: 2026-04-14 - Completed quick task 207: P0 CRITICAL — rewrite withTenantRLS to inject tenantId at application layer (postgres BYPASSRLS defeated all PostgreSQL RLS)
 Last session: 2026-04-13T04:23:01Z
 Stopped at: Completed 37.2-04-PLAN.md — 2 tasks, 7 files, ~8min
 
@@ -971,6 +971,7 @@ None blocking immediate progress.
 | 204 | Add AddressAutocomplete to carrier facilities and client forms | 2026-04-14 | 4241e51 | [204-add-addressautocomplete-to-carrier-facil](./quick/204-add-addressautocomplete-to-carrier-facil/) |
 | 205 | Fix account deactivation so it actually blocks login | 2026-04-14 | 1d5af5a | [205-fix-account-deactivation-so-it-actually-](./quick/205-fix-account-deactivation-so-it-actually-/) |
 | 206 | Multi-tenant data isolation security breach — audit and fix all tenantId filter gaps | 2026-04-14 | d3d8af4 | [206-multi-tenant-data-isolation-security-bre](./quick/206-multi-tenant-data-isolation-security-bre/) |
+| 207 | P0 CRITICAL: rewrite withTenantRLS to inject tenantId at application layer — postgres BYPASSRLS defeated all PostgreSQL RLS policies | 2026-04-14 | 528da2d | [207-fix-critical-multi-tenant-breach-rewrite](./quick/207-fix-critical-multi-tenant-breach-rewrite/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
