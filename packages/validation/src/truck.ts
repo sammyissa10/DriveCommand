@@ -10,10 +10,25 @@ import { z } from 'zod';
  */
 export const documentMetadataSchema = z
   .object({
-    registrationNumber: z.string().optional(),
-    registrationExpiry: z.string().optional(), // ISO date string
-    insuranceNumber: z.string().optional(),
-    insuranceExpiry: z.string().optional(), // ISO date string
+    // z.preprocess handles null/empty-string from FormData edge cases.
+    // FormData.get() returns null for absent fields; preprocess coerces to undefined
+    // before z.string().optional() so Zod does not error with "expected string, received null".
+    registrationNumber: z.preprocess(
+      (v) => (v === null || v === '' ? undefined : v),
+      z.string().optional()
+    ),
+    registrationExpiry: z.preprocess(
+      (v) => (v === null || v === '' ? undefined : v),
+      z.string().optional()
+    ), // ISO date string
+    insuranceNumber: z.preprocess(
+      (v) => (v === null || v === '' ? undefined : v),
+      z.string().optional()
+    ),
+    insuranceExpiry: z.preprocess(
+      (v) => (v === null || v === '' ? undefined : v),
+      z.string().optional()
+    ), // ISO date string
   })
   .strict();
 

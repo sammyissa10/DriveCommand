@@ -9,6 +9,22 @@ import { Prisma } from '@/generated/prisma';
  */
 
 import { requireRole, requireAuth } from '@/lib/auth/supabase';
+
+/**
+ * Null-safe FormData string extraction helpers.
+ * FormData.get() returns string | File | null. The `as string` cast is a lie —
+ * it passes null through, which Zod z.string() rejects with "expected string, received null".
+ */
+function formString(fd: FormData, key: string): string {
+  const val = fd.get(key);
+  return typeof val === 'string' ? val : '';
+}
+
+function formStringOrUndefined(fd: FormData, key: string): string | undefined {
+  const val = fd.get(key);
+  if (typeof val !== 'string' || val === '') return undefined;
+  return val;
+}
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import {
@@ -28,21 +44,22 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Parse FormData fields — pass raw strings; Zod preprocess handles conversion
+  // Parse FormData fields using null-safe helpers.
+  // formData.get() returns string | File | null — casting `as string` is unsafe.
   const rawData = {
-    make: formData.get('make') as string,
-    model: formData.get('model') as string,
-    year: formData.get('year') as string,
-    vin: formData.get('vin') as string,
-    licensePlate: formData.get('licensePlate') as string,
-    odometer: formData.get('odometer') as string,
+    make: formString(formData, 'make'),
+    model: formString(formData, 'model'),
+    year: formString(formData, 'year'),
+    vin: formString(formData, 'vin'),
+    licensePlate: formString(formData, 'licensePlate'),
+    odometer: formString(formData, 'odometer'),
   };
 
   // Build documentMetadata if any document fields are provided
-  const registrationNumber = formData.get('registrationNumber') as string;
-  const registrationExpiry = formData.get('registrationExpiry') as string;
-  const insuranceNumber = formData.get('insuranceNumber') as string;
-  const insuranceExpiry = formData.get('insuranceExpiry') as string;
+  const registrationNumber = formStringOrUndefined(formData, 'registrationNumber');
+  const registrationExpiry = formStringOrUndefined(formData, 'registrationExpiry');
+  const insuranceNumber = formStringOrUndefined(formData, 'insuranceNumber');
+  const insuranceExpiry = formStringOrUndefined(formData, 'insuranceExpiry');
 
   let documentMetadata: DocumentMetadata | undefined;
   if (registrationNumber || registrationExpiry || insuranceNumber || insuranceExpiry) {
@@ -66,18 +83,20 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
       values: {
         make: rawData.make,
         model: rawData.model,
-        year: formData.get('year') as string,
+        year: rawData.year,
         vin: rawData.vin,
         licensePlate: rawData.licensePlate,
-        odometer: formData.get('odometer') as string,
-        registrationNumber: registrationNumber || '',
-        registrationExpiry: registrationExpiry || '',
-        insuranceNumber: insuranceNumber || '',
-        insuranceExpiry: insuranceExpiry || '',
+        odometer: rawData.odometer,
+        registrationNumber: registrationNumber ?? '',
+        registrationExpiry: registrationExpiry ?? '',
+        insuranceNumber: insuranceNumber ?? '',
+        insuranceExpiry: insuranceExpiry ?? '',
       },
     };
   }
 
+  // SECURITY: tenantId sourced exclusively from session middleware (x-tenant-id header).
+  // Never accepted from client payload. getTenantPrisma() applies RLS scoping.
   // Get tenant ID and create truck via tenant-scoped Prisma client
   let truckId: string;
   try {
@@ -120,29 +139,30 @@ export async function updateTruck(id: string, prevState: ActionState | null, for
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Parse FormData fields
+  // Parse FormData fields using null-safe helpers.
+  // formData.get() returns string | File | null — casting `as string` is unsafe.
   const rawData: any = {};
 
-  const make = formData.get('make') as string;
+  const make = formStringOrUndefined(formData, 'make');
   if (make) rawData.make = make;
 
-  const model = formData.get('model') as string;
+  const model = formStringOrUndefined(formData, 'model');
   if (model) rawData.model = model;
 
-  const year = formData.get('year') as string;
+  const year = formStringOrUndefined(formData, 'year');
   if (year) rawData.year = year;
 
-  const licensePlate = formData.get('licensePlate') as string;
+  const licensePlate = formStringOrUndefined(formData, 'licensePlate');
   if (licensePlate) rawData.licensePlate = licensePlate;
 
-  const odometer = formData.get('odometer') as string;
+  const odometer = formStringOrUndefined(formData, 'odometer');
   if (odometer) rawData.odometer = odometer;
 
   // Build documentMetadata if any document fields are provided
-  const registrationNumber = formData.get('registrationNumber') as string;
-  const registrationExpiry = formData.get('registrationExpiry') as string;
-  const insuranceNumber = formData.get('insuranceNumber') as string;
-  const insuranceExpiry = formData.get('insuranceExpiry') as string;
+  const registrationNumber = formStringOrUndefined(formData, 'registrationNumber');
+  const registrationExpiry = formStringOrUndefined(formData, 'registrationExpiry');
+  const insuranceNumber = formStringOrUndefined(formData, 'insuranceNumber');
+  const insuranceExpiry = formStringOrUndefined(formData, 'insuranceExpiry');
 
   if (registrationNumber || registrationExpiry || insuranceNumber || insuranceExpiry) {
     rawData.documentMetadata = {
@@ -160,15 +180,15 @@ export async function updateTruck(id: string, prevState: ActionState | null, for
     return {
       error: result.error.flatten().fieldErrors,
       values: {
-        make: make || '',
-        model: formData.get('model') as string || '',
-        year: year || '',
-        licensePlate: licensePlate || '',
-        odometer: odometer || '',
-        registrationNumber: registrationNumber || '',
-        registrationExpiry: registrationExpiry || '',
-        insuranceNumber: insuranceNumber || '',
-        insuranceExpiry: insuranceExpiry || '',
+        make: make ?? '',
+        model: model ?? '',
+        year: year ?? '',
+        licensePlate: licensePlate ?? '',
+        odometer: odometer ?? '',
+        registrationNumber: registrationNumber ?? '',
+        registrationExpiry: registrationExpiry ?? '',
+        insuranceNumber: insuranceNumber ?? '',
+        insuranceExpiry: insuranceExpiry ?? '',
       },
     };
   }
