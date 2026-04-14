@@ -66,8 +66,8 @@ export async function GET(
       if (!invoice) return null;
 
       const customerName = invoice.customerId
-        ? (await tx.customer.findUnique({
-            where: { id: invoice.customerId },
+        ? (await tx.customer.findFirst({
+            where: { id: invoice.customerId, tenantId },
             select: { companyName: true },
           }))?.companyName ?? 'Unknown Customer'
         : 'No Customer';

@@ -28,7 +28,7 @@ export async function GET(
   const limited = await applyRateLimit(mobileLimiter, auth.userId);
   if (limited) return limited;
 
-  const { driverId } = auth;
+  const { driverId, tenantId } = auth;
   const { id } = await params;
 
   if (!id) {
@@ -46,8 +46,8 @@ export async function GET(
      */
     const document = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      return tx.document.findUnique({
-        where: { id },
+      return tx.document.findFirst({
+        where: { id, tenantId },
         select: { id: true, driverId: true, s3Key: true, contentType: true },
       });
     }, TX_OPTIONS);

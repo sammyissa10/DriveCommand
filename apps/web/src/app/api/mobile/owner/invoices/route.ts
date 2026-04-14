@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
       const customerIds = [...new Set(invoices.map((i) => i.customerId).filter(Boolean))] as string[];
       const customers = customerIds.length > 0
         ? await tx.customer.findMany({
-            where: { id: { in: customerIds } },
+            where: { id: { in: customerIds }, tenantId },
             select: { id: true, companyName: true },
           })
         : [];

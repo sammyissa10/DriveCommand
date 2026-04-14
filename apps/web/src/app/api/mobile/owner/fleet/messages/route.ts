@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
       const users = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findMany({
-          where: { id: { in: Array.from(participantIds) } },
+          where: { id: { in: Array.from(participantIds) }, tenantId },
           select: { id: true, firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
       const loads = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.load.findMany({
-          where: { id: { in: loadIds } },
+          where: { id: { in: loadIds }, tenantId },
           select: { id: true, loadNumber: true },
         });
       }, TX_OPTIONS);
@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
       const routes = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.route.findMany({
-          where: { id: { in: routeIds } },
+          where: { id: { in: routeIds }, tenantId },
           select: { id: true, name: true, origin: true, destination: true },
         });
       }, TX_OPTIONS);
@@ -301,8 +301,8 @@ export async function POST(req: NextRequest) {
     if (!isBroadcast && recipientId) {
       const recipient = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        return tx.user.findUnique({
-          where: { id: recipientId },
+        return tx.user.findFirst({
+          where: { id: recipientId, tenantId },
           select: { firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
