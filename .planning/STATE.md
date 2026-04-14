@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-14 - Completed quick task 212: Fix Internal Server Error on contract creation with tenant isolation
+Last activity: 2026-04-14 - Completed quick task 213: Carrier Operations server actions audit — 21 findings (4 Critical, 6 High, 5 Medium, 6 Low)
 Last session: 2026-04-14T18:44:19Z
 Stopped at: Completed quick-208-PLAN.md — 1 task, 0 files modified (audit only)
 
@@ -979,6 +979,7 @@ None blocking immediate progress.
 | 210 | Security audit batch 2: rate limiting added to 11 routes (public track + uploads), error.message leakage fixed in 8 routes; tokens/NEXT_PUBLIC_ vars/sensitive responses all clean | 2026-04-14 | 444f0e3 | [210-security-audit-and-fix-batch-2-rate-limi](./quick/210-security-audit-and-fix-batch-2-rate-limi/) |
 | 211 | Fix null string fields and tenant isolation on truck creation — formString() helpers + null-tolerant Zod schema; tenant isolation confirmed via requireTenantId() + security comment | 2026-04-14 | 9d6e2f2 | [211-fix-null-string-fields-and-tenant-isolat](./quick/211-fix-null-string-fields-and-tenant-isolat/) |
 | 212 | Fix 500 on contract creation — status field missing from Zod schema (Prisma NOT NULL constraint); add client_id ownership check for cross-tenant isolation | 2026-04-14 | 4d13ac7 | [212-fix-internal-server-error-on-contract-cr](./quick/212-fix-internal-server-error-on-contract-cr/) |
+| 213 | Carrier Operations audit: 21 findings across 4 audits (CHECK constraints, Zod vs NOT NULL, null string inits, tenant isolation) — report only, no fixes | 2026-04-14 | 5c08a4d | [213-carrier-operations-server-actions-audit-](./quick/213-carrier-operations-server-actions-audit-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
