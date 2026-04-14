@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/db/prisma';
 import { listContracts, createContract } from '@/lib/carrier/contracts';
 
 const ContractCreateSchema = z.object({
@@ -63,6 +64,18 @@ export async function POST(req: NextRequest) {
     }
 
     const { clientId, ...contractData } = parsed.data;
+
+    // Verify client belongs to this org (prevents cross-tenant contract creation)
+    const client = await prisma.carrierClient.findFirst({
+      where: { id: clientId, orgId },
+    });
+    if (!client) {
+      return NextResponse.json(
+        { error: 'Invalid client' },
+        { status: 400 }
+      );
+    }
+
     const contract = await createContract(orgId, clientId, contractData);
 
     return NextResponse.json({ data: contract }, { status: 201 });
