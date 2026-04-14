@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-13 - Completed Phase 37.2 Plan 04: Maintenance UI
+Last activity: 2026-04-14 - Completed quick task 204: Add AddressAutocomplete to carrier facilities and client forms
 Last session: 2026-04-13T04:23:01Z
 Stopped at: Completed 37.2-04-PLAN.md — 2 tasks, 7 files, ~8min
 
@@ -967,6 +967,7 @@ None blocking immediate progress.
 | 200 | Add tenant UUID display with copy-to-clipboard to sysadmin tenant detail page | 2026-04-10 | a03dbc6 | [200-add-tenant-uuid-display-with-copy-to-cli](./quick/200-add-tenant-uuid-display-with-copy-to-cli/) |
 | 201 | Add Mark as Paid action to driver pay records | 2026-04-10 | c62a386 | [201-add-mark-as-paid-action-to-driver-pay-re](./quick/201-add-mark-as-paid-action-to-driver-pay-re/) |
 | 203 | Add tap-to-open navigation button to web driver portal stop detail | 2026-04-13 | a00e35e | [203-add-tap-to-open-navigation-button-to-web](./quick/203-add-tap-to-open-navigation-button-to-web/) |
+| 204 | Add AddressAutocomplete to carrier facilities and client forms | 2026-04-14 | 4241e51 | [204-add-addressautocomplete-to-carrier-facil](./quick/204-add-addressautocomplete-to-carrier-facil/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
