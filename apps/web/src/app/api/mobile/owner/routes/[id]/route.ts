@@ -177,6 +177,7 @@ export async function PATCH(
       if (body.driverId !== undefined) updateData.driverId = body.driverId;
       if (body.truckId !== undefined) updateData.truckId = body.truckId;
 
+      // SAFE: tenant ownership verified by findUnique above within this same transaction
       return tx.route.update({
         where: { id },
         data: updateData,

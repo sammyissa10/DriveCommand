@@ -324,7 +324,7 @@ export async function PATCH(
       });
       if (!svc) return 'not_found';
 
-      // Mark complete
+      // SAFE: tenant ownership verified by findFirst({ tenantId, truckId }) above within this same transaction
       await tx.scheduledService.update({
         where: { id: serviceId },
         data: { isCompleted: true, completedAt: new Date() },

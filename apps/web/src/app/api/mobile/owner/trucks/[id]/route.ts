@@ -208,6 +208,7 @@ export async function PATCH(
       });
       if (!existing) return null;
 
+      // SAFE: tenant ownership verified by findUnique above within this same transaction
       return tx.truck.update({
         where: { id },
         data: updateData,

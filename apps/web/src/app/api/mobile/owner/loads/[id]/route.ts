@@ -247,6 +247,9 @@ export async function PATCH(
         updateData.deliveryLng = geocoded.deliveryLng != null ? new Decimal(geocoded.deliveryLng) : null;
       }
 
+      // SAFE: tenant ownership verified by findUnique({ id, tenantId }) in the pre-check
+      // transaction above. Geocoding must occur outside the transaction, preventing a
+      // single-transaction approach; the pre-check ensures this load belongs to this tenant.
       const updatedLoad = await tx.load.update({
         where: { id },
         data: updateData,

@@ -88,7 +88,7 @@ export async function PATCH(
         };
       }
 
-      // Update load status
+      // SAFE: tenant ownership and driver assignment verified by findUnique above within this same transaction
       const updatedLoad = await tx.load.update({
         where: { id },
         data: { status: previousStatus as any },

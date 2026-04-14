@@ -109,22 +109,26 @@ export async function saveRouteTemplate(
     }));
 
     if (templateId) {
-      // Edit mode: update template + replace stops in a transaction
-      const existing = await prisma.routeTemplate.findFirst({ where: { id: templateId, orgId } });
-      if (!existing) return { success: false, error: 'Template not found' };
+      // Edit mode: update template + replace stops in a single transaction (ownership
+      // check and update are atomic to prevent TOCTOU).
+      const notFound = await prisma.$transaction(async (tx) => {
+        const existing = await tx.routeTemplate.findFirst({ where: { id: templateId, orgId } });
+        if (!existing) return true;
 
-      await prisma.$transaction([
-        prisma.routeTemplate.update({
+        await tx.routeTemplate.update({
           where: { id: templateId },
           data: templateData,
-        }),
-        prisma.routeTemplateStop.deleteMany({ where: { routeTemplateId: templateId } }),
-        ...stopData.map((s) =>
-          prisma.routeTemplateStop.create({
+        });
+        await tx.routeTemplateStop.deleteMany({ where: { routeTemplateId: templateId } });
+        for (const s of stopData) {
+          await tx.routeTemplateStop.create({
             data: { routeTemplateId: templateId, ...s },
-          })
-        ),
-      ]);
+          });
+        }
+        return false;
+      });
+
+      if (notFound) return { success: false, error: 'Template not found' };
 
       return { success: true, templateId };
     } else {

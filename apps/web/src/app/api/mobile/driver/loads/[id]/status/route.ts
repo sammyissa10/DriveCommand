@@ -117,6 +117,7 @@ export async function POST(
       }
 
       // Map to DB status and update
+      // SAFE: tenant ownership and driver assignment verified by findUnique above within this same transaction
       const newDbStatus = DRIVER_STATUS_TO_DB[newDriverStatus];
       const updatedLoad = await tx.load.update({
         where: { id },
