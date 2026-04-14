@@ -290,7 +290,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ load: normalized }, { status: 201 });
   } catch (err) {
     logger.error('[mobile/owner/loads POST] error:', err);
-    const message = err instanceof Error ? err.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
