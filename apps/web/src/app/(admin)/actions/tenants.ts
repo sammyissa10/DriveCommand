@@ -10,6 +10,7 @@ import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 import { sendEmail } from '@/lib/email/gmail-client';
 import React from 'react';
 import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -162,6 +163,7 @@ export async function createTenant(formData: FormData) {
 
 /**
  * Suspend a tenant (set isActive to false).
+ * Also bans all tenant users in Supabase Auth and invalidates their sessions.
  */
 export async function suspendTenant(tenantId: string) {
   await requireAdminAccess();
@@ -175,6 +177,24 @@ export async function suspendTenant(tenantId: string) {
     data: { isActive: false },
   });
 
+  // Ban all tenant users in Supabase Auth and invalidate their sessions
+  const tenantUsers = await prisma.user.findMany({
+    where: { tenantId },
+    select: { id: true },
+  });
+
+  const supabaseAdmin = createAdminClient();
+  await Promise.allSettled(
+    tenantUsers.map(async (user) => {
+      try {
+        await supabaseAdmin.auth.admin.updateUserById(user.id, { ban_duration: '87600h' });
+        await supabaseAdmin.auth.admin.signOut(user.id, 'global');
+      } catch (err) {
+        logger.error('[suspendTenant] Supabase ban/signOut failed for user:' + user.id, err);
+      }
+    })
+  );
+
   revalidatePath('/tenants');
 
   return { success: true };
@@ -182,6 +202,7 @@ export async function suspendTenant(tenantId: string) {
 
 /**
  * Reactivate a suspended tenant (set isActive to true).
+ * Also lifts the Supabase Auth ban for all tenant users.
  */
 export async function reactivateTenant(tenantId: string) {
   await requireAdminAccess();
@@ -194,6 +215,23 @@ export async function reactivateTenant(tenantId: string) {
     where: { id: tenantId },
     data: { isActive: true },
   });
+
+  // Lift the Supabase Auth ban for all tenant users
+  const tenantUsers = await prisma.user.findMany({
+    where: { tenantId },
+    select: { id: true },
+  });
+
+  const supabaseAdmin = createAdminClient();
+  await Promise.allSettled(
+    tenantUsers.map(async (user) => {
+      try {
+        await supabaseAdmin.auth.admin.updateUserById(user.id, { ban_duration: 'none' });
+      } catch (err) {
+        logger.error('[reactivateTenant] Supabase unban failed for user:' + user.id, err);
+      }
+    })
+  );
 
   revalidatePath('/tenants');
 

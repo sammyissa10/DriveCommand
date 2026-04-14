@@ -15,6 +15,7 @@ import { driverInviteSchema, driverUpdateSchema } from '@drivecommand/validation
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 /**
  * Invite a new driver.
@@ -254,7 +255,7 @@ export async function updateDriver(id: string, prevState: ActionState | null, fo
 
 /**
  * Deactivate a driver (soft delete).
- * Sets isActive=false.
+ * Sets isActive=false and bans the user in Supabase Auth.
  * Requires OWNER or MANAGER role.
  */
 export async function deactivateDriver(id: string) {
@@ -268,6 +269,15 @@ export async function deactivateDriver(id: string) {
     data: { isActive: false },
   });
 
+  // Ban in Supabase Auth and invalidate existing sessions
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: '87600h' });
+    await supabaseAdmin.auth.admin.signOut(id, 'global');
+  } catch (err) {
+    logger.error('[deactivateDriver] Supabase ban failed for user:' + id, err);
+  }
+
   // Revalidate
   revalidatePath('/drivers');
   revalidateTag('dashboard-metrics', 'max');
@@ -277,7 +287,7 @@ export async function deactivateDriver(id: string) {
 
 /**
  * Reactivate a driver.
- * Sets isActive=true.
+ * Sets isActive=true and lifts the Supabase Auth ban.
  * Requires OWNER or MANAGER role.
  */
 export async function reactivateDriver(id: string) {
@@ -290,6 +300,14 @@ export async function reactivateDriver(id: string) {
     where: { id },
     data: { isActive: true },
   });
+
+  // Lift the Supabase Auth ban
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: 'none' });
+  } catch (err) {
+    logger.error('[reactivateDriver] Supabase unban failed for user:' + id, err);
+  }
 
   // Revalidate
   revalidatePath('/drivers');
