@@ -14,6 +14,8 @@ import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
 
+const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+
 export async function POST(req: NextRequest) {
   let step = 'init';
   try {
@@ -29,6 +31,13 @@ export async function POST(req: NextRequest) {
 
     if (!entityType || !entityId || !fileName || !contentType || !sizeBytes) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!ALLOWED_TYPES.includes(contentType)) {
+      return NextResponse.json(
+        { error: 'Content type not allowed. Allowed: PDF, JPEG, PNG.' },
+        { status: 400 }
+      );
     }
 
     if (sizeBytes > MAX_FILE_SIZE) {

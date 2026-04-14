@@ -1,6 +1,8 @@
 'use server';
 
 import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { requireRole } from '@/lib/auth/supabase';
+import { UserRole } from '@/lib/auth/roles';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { RateConfirmationDocument, RateConfirmationData } from '@/lib/pdf/rate-confirmation';
 
@@ -16,6 +18,7 @@ const ELIGIBLE_STATUSES = ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED']
 export async function generateRateConfirmationPDF(
   loadId: string
 ): Promise<{ pdf: string; filename: string }> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const prisma = await getTenantPrisma();
 
   const load = await prisma.load.findUnique({

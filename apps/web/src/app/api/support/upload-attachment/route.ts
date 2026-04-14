@@ -13,6 +13,7 @@ import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
 
 const SUPPORT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
 export async function POST(req: NextRequest) {
   let step = 'init';
@@ -31,10 +32,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields: fileName, contentType, sizeBytes' }, { status: 400 });
     }
 
-    // Validate content type: must be image/* or application/pdf
-    if (!contentType.startsWith('image/') && contentType !== 'application/pdf') {
+    // Validate content type: explicit allowlist to block SVG (XSS) and other exotic types
+    if (!ALLOWED_TYPES.includes(contentType)) {
       return NextResponse.json(
-        { error: 'Only images and PDFs are accepted' },
+        { error: 'Only JPEG, PNG, and PDF files are accepted.' },
         { status: 400 }
       );
     }
