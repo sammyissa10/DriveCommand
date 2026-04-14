@@ -11,6 +11,7 @@ import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 const SUPPORT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
@@ -23,6 +24,10 @@ export async function POST(req: NextRequest) {
 
     step = 'require-tenant';
     const tenantId = await requireTenantId();
+
+    step = 'rate-limit';
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
 
     step = 'parse-body';
     const body = await req.json();

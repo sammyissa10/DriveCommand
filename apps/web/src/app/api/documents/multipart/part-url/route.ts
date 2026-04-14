@@ -11,6 +11,7 @@ import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { getPartUploadUrl } from '@/lib/storage/multipart';
 import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +20,9 @@ export async function POST(req: NextRequest) {
 
     // Get tenant ID
     const tenantId = await requireTenantId();
+
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
 
     // Parse request body
     const body = await req.json();
@@ -47,7 +51,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logger.error('Multipart part-url error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to generate part upload URL' },
+      { error: 'Failed to generate part upload URL' },
       { status: 500 }
     );
   }

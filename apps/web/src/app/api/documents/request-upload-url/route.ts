@@ -13,6 +13,7 @@ import { generateUploadUrl } from '@/lib/storage/presigned';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
 import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
@@ -24,6 +25,10 @@ export async function POST(req: NextRequest) {
 
     step = 'require-tenant';
     const tenantId = await requireTenantId();
+
+    step = 'rate-limit';
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
 
     step = 'parse-body';
     const body = await req.json();

@@ -14,6 +14,7 @@ import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { documentCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +23,10 @@ export async function POST(req: NextRequest) {
 
     // Get tenant ID and current user
     const tenantId = await requireTenantId();
+
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
+
     const user = await getCurrentUser();
 
     if (!user) {
@@ -124,7 +129,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     logger.error('Multipart complete error:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to complete multipart upload' },
+      { error: 'Failed to complete multipart upload' },
       { status: 500 }
     );
   }

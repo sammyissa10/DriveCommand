@@ -69,6 +69,32 @@ export const mobileLimiter = redis
   : null;
 
 /**
+ * Public endpoint limiter: 30 requests per minute per IP.
+ * Applied to unauthenticated public pages (e.g. /api/track/[token]).
+ * Prevents token enumeration attacks.
+ */
+export const publicLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, '1 m'),
+      prefix: 'rl:public',
+    })
+  : null;
+
+/**
+ * Upload limiter: 20 requests per minute per user/tenant.
+ * Applied to document upload URL generation and file upload routes.
+ * Prevents storage abuse.
+ */
+export const uploadLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, '1 m'),
+      prefix: 'rl:upload',
+    })
+  : null;
+
+/**
  * Apply a rate limiter to a request.
  *
  * Returns null if the request is allowed (caller proceeds normally).
