@@ -764,6 +764,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 37.2]: Swipeable replaced with Trash2 delete icon button since react-native-gesture-handler is not installed in mobile app
 - [Phase quick-207]: Application-layer tenantId injection chosen over RLS-only: Supabase postgres role has BYPASSRLS defeating RLS entirely; findUnique/findUniqueOrThrow use post-query verification since unique-where cannot include tenantId
 - [Phase quick-209]: ALLOWED_TYPES for uploads set to PDF/JPEG/PNG only; SVG blocked at support attachment route (XSS vector via embedded scripts)
+- [Phase quick-210]: Use tenantId as rate limit key for document routes; publicLimiter on track endpoint uses IP from x-forwarded-for
 
 ### Pending Todos
 
@@ -1046,6 +1047,7 @@ None blocking immediate progress.
 | Phase 27 P06 | 186 | 2 tasks | 3 files |
 | Phase 37.2-owner-route-maintenance P01 | 389 | 2 tasks | 5 files |
 | Phase 37.2 P03 | 215 | 1 tasks | 1 files |
+| Phase quick-210 P01 | 15m | 2 tasks | 14 files |
 
 ## Session Continuity
 
