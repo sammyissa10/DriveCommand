@@ -7,6 +7,37 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+
+const US_STATES: Record<string, string> = {
+  'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+  'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+  'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+  'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+  'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+  'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+  'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+  'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+  'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+  'wisconsin': 'WI', 'wyoming': 'WY', 'district of columbia': 'DC',
+  'puerto rico': 'PR', 'guam': 'GU', 'virgin islands': 'VI',
+  'american samoa': 'AS', 'northern mariana islands': 'MP',
+};
+
+function parseFormattedAddress(displayName: string) {
+  const parts = displayName.split(',').map((s) => s.trim());
+  const street = parts[0] || '';
+  const city = parts.length >= 3 ? parts[1] : '';
+  const lastPart = parts[parts.length - 1] || '';
+  const stateZipMatch = lastPart.match(/^([A-Za-z\s]+?)(?:\s+(\d{5}(?:-\d{4})?))?$/);
+  const rawState = stateZipMatch?.[1]?.trim() || '';
+  const zip = stateZipMatch?.[2] || '';
+  const state = US_STATES[rawState.toLowerCase()] ?? rawState;
+  return { street, city, state, zip };
+}
 
 export interface ClientData {
   id: string;
@@ -244,12 +275,22 @@ export function ClientForm({ initialData }: ClientFormProps) {
             <label className="text-sm font-medium text-foreground" htmlFor="addressLine1">
               Address Line 1
             </label>
-            <Input
+            <AddressAutocomplete
               id="addressLine1"
               name="addressLine1"
-              value={values.addressLine1}
-              onChange={handleChange}
+              defaultValue={values.addressLine1}
               placeholder="123 Main St"
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              onPlaceSelect={(place) => {
+                const parsed = parseFormattedAddress(place.displayName);
+                setValues((prev) => ({
+                  ...prev,
+                  addressLine1: parsed.street || place.displayName,
+                  city: parsed.city || prev.city,
+                  state: parsed.state || prev.state,
+                  zip: parsed.zip || prev.zip,
+                }));
+              }}
             />
           </div>
           <div className="space-y-1.5">
