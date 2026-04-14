@@ -763,6 +763,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 37.2-01]: getTruckOptions is a named alias of getTrucks reusing /api/mobile/owner/trucks endpoint for semantic clarity in picker contexts
 - [Phase 37.2]: Swipeable replaced with Trash2 delete icon button since react-native-gesture-handler is not installed in mobile app
 - [Phase quick-207]: Application-layer tenantId injection chosen over RLS-only: Supabase postgres role has BYPASSRLS defeating RLS entirely; findUnique/findUniqueOrThrow use post-query verification since unique-where cannot include tenantId
+- [Phase quick-209]: ALLOWED_TYPES for uploads set to PDF/JPEG/PNG only; SVG blocked at support attachment route (XSS vector via embedded scripts)
 
 ### Pending Todos
 
