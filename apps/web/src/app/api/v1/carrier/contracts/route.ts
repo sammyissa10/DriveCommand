@@ -20,6 +20,7 @@ const ContractCreateSchema = z.object({
   layoverRatePerDay: z.string().optional(),
   paymentTermsOverride: z.enum(['net_15', 'net_30', 'net_45', 'net_60', 'net_90', 'due_on_receipt']).optional(),
   autoRenew: z.boolean().optional(),
+  status: z.enum(['active', 'expired', 'cancelled', 'draft']).default('active').optional(),
   notes: z.string().optional(),
 });
 

@@ -1,4 +1,4 @@
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 
 // Helper: convert Prisma Decimal | null to string | null
@@ -31,6 +31,7 @@ export interface ContractCreateInput {
   layoverRatePerDay?: string;
   paymentTermsOverride?: string;
   autoRenew?: boolean;
+  status?: string;
   notes?: string;
 }
 
@@ -110,50 +111,61 @@ export async function createContract(
   clientId: string,
   data: ContractCreateInput
 ) {
-  return prisma.$transaction(async (tx) => {
-    const year = new Date().getFullYear();
-    const yearStart = new Date(`${year}-01-01T00:00:00.000Z`);
-    const yearEnd = new Date(`${year + 1}-01-01T00:00:00.000Z`);
+  const year = new Date().getFullYear();
+  const yearStart = new Date(`${year}-01-01T00:00:00.000Z`);
+  const yearEnd = new Date(`${year + 1}-01-01T00:00:00.000Z`);
 
-    const count = await tx.carrierContract.count({
-      where: {
-        orgId,
-        createdAt: { gte: yearStart, lt: yearEnd },
-      },
+  const {
+    effectiveDate,
+    expirationDate,
+    baseRate,
+    fuelSurchargeRate,
+    detentionRatePerHour,
+    tonuRate,
+    layoverRatePerDay,
+    detentionFreeMinutes,
+    ...rest
+  } = data;
+
+  // Retry up to 5 times on unique contract number collision (race condition guard)
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const count = await prisma.carrierContract.count({
+      where: { orgId, createdAt: { gte: yearStart, lt: yearEnd } },
     });
 
-    const seq = String(count + 1).padStart(5, '0');
+    const seq = String(count + 1 + attempt).padStart(5, '0');
     const contractNumber = `CN-${year}-${seq}`;
 
-    const {
-      effectiveDate,
-      expirationDate,
-      baseRate,
-      fuelSurchargeRate,
-      detentionRatePerHour,
-      tonuRate,
-      layoverRatePerDay,
-      detentionFreeMinutes,
-      ...rest
-    } = data;
+    try {
+      return await prisma.carrierContract.create({
+        data: {
+          ...rest,
+          orgId,
+          clientId,
+          contractNumber,
+          ...(effectiveDate ? { effectiveDate: new Date(effectiveDate) } : {}),
+          ...(expirationDate ? { expirationDate: new Date(expirationDate) } : {}),
+          ...(baseRate != null ? { baseRate } : {}),
+          ...(fuelSurchargeRate != null ? { fuelSurchargeRate } : {}),
+          ...(detentionRatePerHour != null ? { detentionRatePerHour } : {}),
+          ...(tonuRate != null ? { tonuRate } : {}),
+          ...(layoverRatePerDay != null ? { layoverRatePerDay } : {}),
+          ...(detentionFreeMinutes != null ? { detentionFreeMinutes } : {}),
+        },
+      });
+    } catch (err) {
+      logger.error('createContract failed', { orgId, clientId, data, err });
+      const isUniqueViolation =
+        err != null &&
+        typeof err === 'object' &&
+        'code' in err &&
+        (err as { code: string }).code === 'P2002';
+      if (isUniqueViolation && attempt < 4) continue;
+      throw err;
+    }
+  }
 
-    return tx.carrierContract.create({
-      data: {
-        ...rest,
-        orgId,
-        clientId,
-        contractNumber,
-        ...(effectiveDate ? { effectiveDate: new Date(effectiveDate) } : {}),
-        ...(expirationDate ? { expirationDate: new Date(expirationDate) } : {}),
-        ...(baseRate != null ? { baseRate } : {}),
-        ...(fuelSurchargeRate != null ? { fuelSurchargeRate } : {}),
-        ...(detentionRatePerHour != null ? { detentionRatePerHour } : {}),
-        ...(tonuRate != null ? { tonuRate } : {}),
-        ...(layoverRatePerDay != null ? { layoverRatePerDay } : {}),
-        ...(detentionFreeMinutes != null ? { detentionFreeMinutes } : {}),
-      },
-    });
-  }, TX_OPTIONS);
+  throw new Error('Failed to generate a unique contract number after 5 attempts');
 }
 
 export async function updateContract(orgId: string, id: string, data: ContractUpdateInput) {
