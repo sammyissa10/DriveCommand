@@ -92,6 +92,39 @@ export async function createExpense(
     return { error: 'At least one of dispatchId or loadId is required', status: 400 };
   }
 
+  // Verify dispatchId belongs to this org
+  if (data.dispatchId) {
+    const dispatch = await prisma.carrierDispatch.findFirst({
+      where: { id: data.dispatchId, orgId },
+      select: { id: true },
+    });
+    if (!dispatch) {
+      return { error: 'Invalid dispatch — does not belong to this organization', status: 400 };
+    }
+  }
+
+  // Verify stopId belongs to this org (stop's dispatch must belong to this org)
+  if (data.stopId) {
+    const stop = await prisma.carrierStop.findFirst({
+      where: { id: data.stopId, dispatch: { orgId } },
+      select: { id: true },
+    });
+    if (!stop) {
+      return { error: 'Invalid stop — does not belong to this organization', status: 400 };
+    }
+  }
+
+  // Verify driverId belongs to this org
+  if (data.driverId) {
+    const driver = await prisma.carrierDriver.findFirst({
+      where: { id: data.driverId, orgId },
+      select: { id: true },
+    });
+    if (!driver) {
+      return { error: 'Invalid driver — does not belong to this organization', status: 400 };
+    }
+  }
+
   // Propagate clientId from load if loadId provided
   let clientId: string | null = null;
   if (data.loadId) {
