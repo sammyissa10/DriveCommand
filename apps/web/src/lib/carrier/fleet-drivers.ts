@@ -120,6 +120,16 @@ export async function createCarrierDriver(orgId: string, data: CarrierDriverCrea
     }
   }
 
+  // Verify homeTerminalId belongs to this org (FK ownership check)
+  if (data.homeTerminalId) {
+    const facility = await prisma.carrierFacility.findFirst({
+      where: { id: data.homeTerminalId, orgId },
+    });
+    if (!facility) {
+      throw new Error('Invalid homeTerminalId: facility not found in this organization');
+    }
+  }
+
   return prisma.carrierDriver.create({
     data: {
       ...rest,
@@ -140,6 +150,26 @@ export async function updateCarrierDriver(
   if (!existing) return null;
 
   const { cdlExpiry, payRate, userId, ...rest } = data;
+
+  // Verify userId belongs to this org when being set (FK ownership check)
+  if (userId !== undefined && userId) {
+    const user = await prisma.user.findFirst({
+      where: { id: userId, tenantId: orgId },
+    });
+    if (!user) {
+      throw new Error('Invalid userId: user not found in this organization');
+    }
+  }
+
+  // Verify homeTerminalId belongs to this org when being set (FK ownership check)
+  if (data.homeTerminalId !== undefined && data.homeTerminalId) {
+    const facility = await prisma.carrierFacility.findFirst({
+      where: { id: data.homeTerminalId, orgId },
+    });
+    if (!facility) {
+      throw new Error('Invalid homeTerminalId: facility not found in this organization');
+    }
+  }
 
   return prisma.carrierDriver.update({
     where: { id },
