@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-15 - Completed quick task 219: Add active dispatch and load context to Live Fleet Map sidebar rows
+Last activity: 2026-04-15 - Completed quick task 220: Fix "Truck not found" 500 error on live map marker click
 Last session: 2026-04-14T18:44:19Z
 Stopped at: Completed quick-218-PLAN.md — 2 tasks, 8 files created, 8 files modified
 
@@ -993,6 +993,7 @@ None blocking immediate progress.
 | 217 | Fix duplicate contract/dispatch/load number generators — replace COUNT-based with MAX-based sequence query (findFirst orderBy desc) in contracts.ts, dispatches.ts, loads.ts; preserve P2002 retry loop in contracts | 2026-04-15 | 624d6b2 | [217-fix-duplicate-contract-number-unique-con](./quick/217-fix-duplicate-contract-number-unique-con/) |
 | 218 | Upgrade Live Fleet Map — fully functional implementation, all 7 features connected to real data | 2026-04-15 | fb849bd | [218-upgrade-live-fleet-map-fully-functional-](./quick/218-upgrade-live-fleet-map-fully-functional-/) |
 | 219 | Add active dispatch and load context to Live Fleet Map sidebar rows | 2026-04-15 | f902e26 | [219-add-active-dispatch-and-load-context-to-](./quick/219-add-active-dispatch-and-load-context-to-/) |
+| 220 | Fix "Truck not found" 500 error on live map marker click | 2026-04-15 | 1a1bd39 | [220-fix-truck-not-found-500-error-on-live-ma](./quick/220-fix-truck-not-found-500-error-on-live-ma/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
