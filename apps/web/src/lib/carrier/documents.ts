@@ -49,6 +49,32 @@ export async function uploadDocument(
     return { error: 'File too large. Maximum size is 25MB.', status: 400 };
   }
 
+  // Verify parent entity belongs to this org (cross-tenant isolation)
+  let orgVerified = false;
+
+  if (parentType === 'stop') {
+    const stop = await prisma.carrierStop.findFirst({
+      where: { id: parentId, dispatch: { orgId } },
+    });
+    orgVerified = !!stop;
+  } else if (parentType === 'load') {
+    const load = await prisma.carrierLoad.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!load;
+  } else if (parentType === 'dispatch') {
+    const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!dispatch;
+  } else if (parentType === 'contract') {
+    const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!contract;
+  } else if (parentType === 'expense') {
+    const expense = await prisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!expense;
+  }
+
+  if (!orgVerified) {
+    return { error: 'Invalid parent', status: 400 };
+  }
+
   // Build storage path: {orgId}/{parentType}/{parentId}/{documentType}/{uuid}.{ext}
   const uuid = crypto.randomUUID();
   const storagePath = `${orgId}/${parentType}/${parentId}/${documentType}/${uuid}.${ext}`;
