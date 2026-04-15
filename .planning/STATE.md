@@ -987,6 +987,7 @@ None blocking immediate progress.
 | 212 | Fix 500 on contract creation — status field missing from Zod schema (Prisma NOT NULL constraint); add client_id ownership check for cross-tenant isolation | 2026-04-14 | 4d13ac7 | [212-fix-internal-server-error-on-contract-cr](./quick/212-fix-internal-server-error-on-contract-cr/) |
 | 213 | Carrier Operations audit: 21 findings across 4 audits (CHECK constraints, Zod vs NOT NULL, null string inits, tenant isolation) — report only, no fixes | 2026-04-14 | 5c08a4d | [213-carrier-operations-server-actions-audit-](./quick/213-carrier-operations-server-actions-audit-/) |
 | 214 | Fix 4 Critical audit-213 findings: payModel enum mismatch (drivers), clientId+contractId ownership (createLoad), driver+truck ownership (createDispatch), parentId ownership check for all 5 parent types (uploadDocument) | 2026-04-15 | 14b0049 | [214-fix-4-critical-findings-from-carrier-ope](./quick/214-fix-4-critical-findings-from-carrier-ope/) |
+| 215 | Fix 6 High audit-213 findings: per_load rateType enum, facility soft-delete guard, FK ownership checks on createExpense/createRouteTemplate/saveRouteTemplate/createStop (loadId+clientId), batch facilityId ownership in saveRouteTemplate stops | 2026-04-15 | 99c0398 | [215-fix-6-high-findings-from-carrier-operati](./quick/215-fix-6-high-findings-from-carrier-operati/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
