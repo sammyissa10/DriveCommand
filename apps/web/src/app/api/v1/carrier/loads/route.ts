@@ -89,6 +89,12 @@ export async function POST(req: NextRequest) {
     const load = await createLoad(orgId, parsed.data);
     return NextResponse.json({ data: load }, { status: 201 });
   } catch (err) {
+    if (err instanceof Error && (
+      err.message === 'Invalid client' ||
+      err.message === 'Invalid contract'
+    )) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     // Also catch clientId error thrown from lib (belt-and-suspenders)
     if (
       err instanceof Error &&

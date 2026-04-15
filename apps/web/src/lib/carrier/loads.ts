@@ -129,6 +129,14 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
     throw new Error('client_id is required — every load must be attributed to a client.');
   }
 
+  // Verify client belongs to this org (cross-tenant isolation)
+  const client = await prisma.carrierClient.findFirst({
+    where: { id: data.clientId, orgId },
+  });
+  if (!client) {
+    throw new Error('Invalid client');
+  }
+
   let rateType = data.rateType;
   let rateAmount = data.rateAmount;
 
@@ -137,11 +145,12 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
     const contract = await prisma.carrierContract.findFirst({
       where: { id: data.contractId, orgId },
     });
-    if (contract) {
-      if (!rateType) rateType = contract.rateType;
-      if (rateAmount == null && contract.baseRate != null) {
-        rateAmount = Number(contract.baseRate);
-      }
+    if (!contract) {
+      throw new Error('Invalid contract');
+    }
+    if (!rateType) rateType = contract.rateType;
+    if (rateAmount == null && contract.baseRate != null) {
+      rateAmount = Number(contract.baseRate);
     }
   }
 
