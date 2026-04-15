@@ -14,7 +14,7 @@ const CarrierDriverCreateSchema = z.object({
   cdlClass: z.string().optional(),
   cdlExpiry: z.string().optional(),
   homeTerminalId: z.string().uuid().optional(),
-  payModel: z.enum(['per_mile', 'percentage', 'flat_rate', 'per_stop']).optional(),
+  payModel: z.enum(['per_mile', 'percentage_gross', 'hourly', 'flat_rate', 'team_split']).optional(),
   payRate: z.number().optional(),
   payPeriod: z.enum(['weekly', 'biweekly', 'monthly']).optional(),
   userId: z.string().uuid().optional(),

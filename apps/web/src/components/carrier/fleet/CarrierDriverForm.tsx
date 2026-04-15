@@ -54,9 +54,10 @@ const US_STATES = [
 
 const PAY_RATE_LABELS: Record<string, string> = {
   per_mile: 'Rate per Mile ($)',
-  percentage: 'Percentage (%)',
+  percentage_gross: 'Percentage of Gross (%)',
+  hourly: 'Hourly Rate ($)',
   flat_rate: 'Flat Rate ($)',
-  per_stop: 'Rate per Stop ($)',
+  team_split: 'Rate per Mile ($)',
 };
 
 function toDateInputValue(val: Date | string | null | undefined): string {
@@ -334,9 +335,10 @@ export function CarrierDriverForm({ driver, facilities = [] }: CarrierDriverForm
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="per_mile">Per Mile</SelectItem>
-                <SelectItem value="percentage">Percentage</SelectItem>
+                <SelectItem value="percentage_gross">Percentage of Gross</SelectItem>
+                <SelectItem value="hourly">Hourly</SelectItem>
                 <SelectItem value="flat_rate">Flat Rate</SelectItem>
-                <SelectItem value="per_stop">Per Stop</SelectItem>
+                <SelectItem value="team_split">Team Split</SelectItem>
               </SelectContent>
             </Select>
           </div>
