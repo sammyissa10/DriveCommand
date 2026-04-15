@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-15 - Completed quick task 214: Fixed all 4 Critical findings from audit 213 — payModel enum, load/dispatch/document cross-tenant leakage
+Last activity: 2026-04-15 - Completed quick task 215: Fixed all 6 High findings from audit 213 — per_load enum, facility soft-delete guard, FK ownership checks on expense/route-template/stop
 Last session: 2026-04-14T18:44:19Z
 Stopped at: Completed quick-208-PLAN.md — 1 task, 0 files modified (audit only)
 
@@ -170,6 +170,7 @@ Progress: [███████████████████████
 - Quick-178 (2026-04-05): Carrier Ops — Fleet management pages (carrier drivers and carrier trucks) — fleet-drivers.ts + fleet-trucks.ts lib modules (CRUD, 400 on duplicate user link), 4 API routes (GET/POST list + GET/PATCH detail), CarrierDriverList + CarrierTruckList (expiry color coding: green/amber/red, AlertTriangle on near-expiry), CarrierDriverForm + CarrierTruckForm, 4 server pages (list + detail for drivers + trucks, dispatch history on detail pages) — 3 tasks, 14 files, ~25min
 - Quick-179 (2026-04-05): Carrier Ops — Sidebar navigation wiring and route guard — DispatchBadge client component (60s poll, needs_assignment count capped at "9+"), sidebar restructured with Fleet sub-group (Drivers/Trucks/Facilities) + Reports sub-group (Revenue/Driver Pay/AR Aging/Performance), CarrierBreadcrumb (pathname→display name mapping), carrier layout.tsx (DRIVER→/my-load redirect, non-OWNER/MANAGER→/unauthorized) — 2 tasks, 4 files, ~15min
 - Quick-186 (2026-04-05): Fix all carrier ops bugs found during QA — 19 bugs fixed: dashboard timeout resilience (.catch() on all 7+4 queries), sidebar label uniqueness (Carrier Dashboard/Loads/Drivers/Trucks), MANAGER role gates on New Contract+New Client+ClientDetail contracts tab, driver layout redirect →/my-route, facility types aligned to spec (shipper/receiver/terminal/fuel_stop/other), contacts JSON array in facility list, paymentTerms+creditLimit added to CarrierClient (db push), Billing section in ClientForm+ClientDetail, portal email shown when access=true — 3 tasks, 18 files, ~25min
+- Quick-215 (2026-04-15): Fix 6 High findings from carrier operations audit 213 — per_load enum added to loads API + LoadForm, getFacility/updateFacility guard against inactive_ soft-deleted records, FK ownership checks on createExpense (dispatch/stop/driver), createRouteTemplate (client/contract/driver/truck), saveRouteTemplate (same 4 + batch facility check), createStop (load/client) — 6 tasks, 8 files, ~18min
 
 ## Accumulated Context
 
@@ -220,6 +221,11 @@ Progress: [███████████████████████
 - percentage_gross creates one DriverPayRecord per load on the dispatch (not one per dispatch)
 - dispatches.ts transitionDispatchStatus completion path also wired to generateDriverPayRecords (plan only mentioned stop-completion.ts)
 - Waze fallback goes to Apple Maps (iOS only) since Waze may not be installed
+
+**Quick-215 decisions (Fix 6 High findings from carrier audit 213):**
+- App-layer soft-delete guard instead of schema migration — facilityType inactive_ prefix convention preserved; getFacility/updateFacility now exclude inactive_ prefixed records without touching schema
+- Batch facility ownership check in saveRouteTemplate — single findMany for all stop facilityIds is more efficient than N individual queries
+- createStop returns null (not error object) for FK ownership failures — matches existing null-returns-404 pattern in the function
 
 **Quick-186 decisions (Fix all carrier ops QA bugs):**
 - Used prisma db push (not migrate) to add paymentTerms/creditLimit — no migration file created, no constraint changes
