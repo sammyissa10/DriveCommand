@@ -183,16 +183,24 @@ export async function getVehicleRouteHistory(
 /**
  * Get comprehensive diagnostics for a vehicle
  * Returns truck info, latest GPS location, latest fuel record, engine state, and estimated fuel level
+ * Returns null if the truck is not found or the truckId is invalid.
  */
 export async function getVehicleDiagnostics(truckId: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
+  // Validate truckId — reject empty strings and non-UUID values early
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!truckId || !UUID_RE.test(truckId)) {
+    return null;
+  }
+
+  const tenantId = await requireTenantId();
   const db = await getTenantPrisma();
 
   // Fetch truck data, latest GPS, latest fuel, and active load in parallel
   const [truck, latestGPS, latestFuel, activeLoad] = await Promise.all([
     db.truck.findUnique({
-      where: { id: truckId },
+      where: { id: truckId, tenantId },
       select: {
         make: true,
         model: true,
@@ -202,7 +210,7 @@ export async function getVehicleDiagnostics(truckId: string) {
       },
     }),
     db.gPSLocation.findFirst({
-      where: { truckId },
+      where: { truckId, tenantId },
       orderBy: { timestamp: 'desc' },
       select: {
         latitude: true,
@@ -213,7 +221,7 @@ export async function getVehicleDiagnostics(truckId: string) {
       },
     }),
     db.fuelRecord.findFirst({
-      where: { truckId },
+      where: { truckId, tenantId },
       orderBy: { timestamp: 'desc' },
       select: {
         quantity: true,
@@ -224,6 +232,7 @@ export async function getVehicleDiagnostics(truckId: string) {
     db.load.findFirst({
       where: {
         truckId,
+        tenantId,
         status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
       },
       orderBy: { pickupDate: 'desc' },
@@ -246,7 +255,7 @@ export async function getVehicleDiagnostics(truckId: string) {
   ]);
 
   if (!truck) {
-    throw new Error('Truck not found');
+    return null;
   }
 
   // Derive engine state from speed
