@@ -154,7 +154,16 @@ export async function createContract(
         },
       });
     } catch (err) {
-      logger.error('createContract failed', { orgId, clientId, data, err });
+      console.error('createContract raw error:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+      logger.error(
+        'createContract failed',
+        err instanceof Error ? err : new Error(String(err)),
+        {
+          code: (err as any)?.code,
+          meta: (err as any)?.meta,
+          raw: JSON.stringify(err, Object.getOwnPropertyNames(err)),
+        }
+      );
       const isUniqueViolation =
         err != null &&
         typeof err === 'object' &&
