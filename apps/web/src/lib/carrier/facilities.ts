@@ -87,7 +87,11 @@ export async function listFacilities(orgId: string, filters: ListFacilitiesFilte
 
 export async function getFacility(orgId: string, id: string) {
   return prisma.carrierFacility.findFirst({
-    where: { id, orgId },
+    where: {
+      id,
+      orgId,
+      NOT: { facilityType: { startsWith: 'inactive_' } },
+    },
   });
 }
 
@@ -101,7 +105,9 @@ export async function createFacility(orgId: string, data: FacilityCreateInput) {
 }
 
 export async function updateFacility(orgId: string, id: string, data: FacilityUpdateInput) {
-  const existing = await prisma.carrierFacility.findFirst({ where: { id, orgId } });
+  const existing = await prisma.carrierFacility.findFirst({
+    where: { id, orgId, NOT: { facilityType: { startsWith: 'inactive_' } } },
+  });
   if (!existing) return null;
 
   return prisma.carrierFacility.update({
