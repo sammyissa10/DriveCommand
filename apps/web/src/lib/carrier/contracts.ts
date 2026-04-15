@@ -128,7 +128,7 @@ export async function createContract(
   // Retry up to 5 times on unique contract number collision (race condition guard)
   for (let attempt = 0; attempt < 5; attempt++) {
     const last = await prisma.carrierContract.findFirst({
-      where: { orgId, contractNumber: { startsWith: `CN-${year}-` } },
+      where: { contractNumber: { startsWith: `CN-${year}-` } },
       orderBy: { contractNumber: 'desc' },
       select: { contractNumber: true },
     });
@@ -154,7 +154,6 @@ export async function createContract(
         },
       });
     } catch (err) {
-      console.error('createContract raw error:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
       logger.error(
         'createContract failed',
         err instanceof Error ? err : new Error(String(err)),
