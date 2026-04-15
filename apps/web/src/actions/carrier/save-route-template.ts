@@ -117,6 +117,20 @@ export async function saveRouteTemplate(
       }
     }
 
+    // Verify all stop facilityIds belong to this org (batch check)
+    const facilityIds = [...new Set(stops.map((s) => s.facility_id).filter(Boolean))] as string[];
+    if (facilityIds.length > 0) {
+      const validFacilities = await prisma.carrierFacility.findMany({
+        where: { id: { in: facilityIds }, orgId },
+        select: { id: true },
+      });
+      const validFacilityIds = new Set(validFacilities.map((f) => f.id));
+      const invalidFacility = facilityIds.find((id) => !validFacilityIds.has(id));
+      if (invalidFacility) {
+        return { success: false, error: 'Invalid facility — does not belong to this organization' };
+      }
+    }
+
     // Build template payload — only include optional fields if set
     const templateData = {
       templateName: templateName.trim(),
