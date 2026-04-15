@@ -128,6 +128,29 @@ export default function VehicleSidebar({
                   {formatRelativeTime(vehicle.timestamp)}
                 </span>
               </div>
+
+              {/* Dispatch context */}
+              <div className="mt-1 text-xs truncate">
+                {vehicle.dispatch ? (
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-flex items-center rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary truncate max-w-[140px]">
+                        {vehicle.dispatch.routeName}
+                      </span>
+                      <span className="text-muted-foreground shrink-0">
+                        {vehicle.dispatch.loadCount} {vehicle.dispatch.loadCount === 1 ? 'load' : 'loads'}
+                      </span>
+                    </div>
+                    {vehicle.dispatch.nextStopAddress && (
+                      <span className="text-muted-foreground truncate">
+                        Next: {vehicle.dispatch.nextStopAddress}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground italic">No active route</span>
+                )}
+              </div>
             </button>
           );
         })}
