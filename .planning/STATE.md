@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-15 - Completed quick task 215: Fixed all 6 High findings from audit 213 — per_load enum, facility soft-delete guard, FK ownership checks on expense/route-template/stop
+Last activity: 2026-04-15 - Completed quick task 216: Fixed all 5 Medium findings from audit 213 — stopType/scheduleType/equipmentType enums, documents FormData hardening, fleet-driver FK ownership checks
 Last session: 2026-04-14T18:44:19Z
 Stopped at: Completed quick-208-PLAN.md — 1 task, 0 files modified (audit only)
 
@@ -988,6 +988,7 @@ None blocking immediate progress.
 | 213 | Carrier Operations audit: 21 findings across 4 audits (CHECK constraints, Zod vs NOT NULL, null string inits, tenant isolation) — report only, no fixes | 2026-04-14 | 5c08a4d | [213-carrier-operations-server-actions-audit-](./quick/213-carrier-operations-server-actions-audit-/) |
 | 214 | Fix 4 Critical audit-213 findings: payModel enum mismatch (drivers), clientId+contractId ownership (createLoad), driver+truck ownership (createDispatch), parentId ownership check for all 5 parent types (uploadDocument) | 2026-04-15 | 14b0049 | [214-fix-4-critical-findings-from-carrier-ope](./quick/214-fix-4-critical-findings-from-carrier-ope/) |
 | 215 | Fix 6 High audit-213 findings: per_load rateType enum, facility soft-delete guard, FK ownership checks on createExpense/createRouteTemplate/saveRouteTemplate/createStop (loadId+clientId), batch facilityId ownership in saveRouteTemplate stops | 2026-04-15 | 99c0398 | [215-fix-6-high-findings-from-carrier-operati](./quick/215-fix-6-high-findings-from-carrier-operati/) |
+| 216 | Fix all 5 Medium findings from Carrier Operations audit 213: stopType enum, documents FormData safe extraction + parentType enum, scheduleType/equipmentType enums in route-templates, homeTerminalId/userId FK ownership in fleet-drivers | 2026-04-15 | b197d3d | [216-fix-all-5-medium-findings-from-carrier-o](./quick/216-fix-all-5-medium-findings-from-carrier-o/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
