@@ -97,6 +97,28 @@ export async function createStop(orgId: string, data: StopCreateInput) {
     return null;
   }
 
+  // Verify loadId belongs to this org (if supplied)
+  if (data.loadId) {
+    const load = await prisma.carrierLoad.findFirst({
+      where: { id: data.loadId, orgId },
+      select: { id: true },
+    });
+    if (!load) {
+      return null;
+    }
+  }
+
+  // Verify clientId belongs to this org (if supplied)
+  if (data.clientId) {
+    const clientRecord = await prisma.carrierClient.findFirst({
+      where: { id: data.clientId, orgId },
+      select: { id: true },
+    });
+    if (!clientRecord) {
+      return null;
+    }
+  }
+
   // Fetch facility to build address_snapshot
   const facility = await prisma.carrierFacility.findFirst({
     where: { id: data.facilityId, orgId },
