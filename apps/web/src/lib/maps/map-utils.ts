@@ -2,6 +2,12 @@ import { point } from '@turf/helpers';
 import bbox from '@turf/bbox';
 import { VehicleStatus } from './vehicle-status';
 
+export interface VehicleDispatch {
+  routeName: string;
+  loadCount: number;
+  nextStopAddress: string | null;
+}
+
 export interface VehicleLocation {
   id: string;
   truckId: string;
@@ -21,6 +27,7 @@ export interface VehicleLocation {
     name: string;
   } | null;
   status: VehicleStatus;
+  dispatch: VehicleDispatch | null;
 }
 
 /**

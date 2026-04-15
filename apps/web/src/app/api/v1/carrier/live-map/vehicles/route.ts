@@ -26,6 +26,24 @@ interface DriverRow {
   lastName: string;
 }
 
+interface DispatchRow {
+  truckId: string;
+  routeId: string;
+  routeName: string | null;
+  origin: string;
+  destination: string;
+}
+
+interface LoadCountRow {
+  routeId: string;
+  loadCount: number;
+}
+
+interface NextStopRow {
+  routeId: string;
+  nextStopAddress: string;
+}
+
 /**
  * GET /api/v1/carrier/live-map/vehicles
  *
@@ -127,6 +145,70 @@ export async function GET() {
       }
     }
 
+    // Step 3.5: Query active routes for dispatch context (PLANNED or IN_PROGRESS, scheduled today)
+    const dispatchRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT r.id AS "routeId", r."truckId", r.name AS "routeName", r.origin, r.destination
+        FROM "Route" r
+        WHERE r."tenantId" = ${orgId}::uuid
+          AND r.status IN ('PLANNED', 'IN_PROGRESS')
+          AND r."truckId" = ANY(${truckIds}::uuid[])
+          AND r."scheduledDate"::date = CURRENT_DATE
+          AND r."archivedAt" IS NULL
+      `
+    )) as DispatchRow[];
+
+    // Build truckId → dispatch info map
+    const dispatchMap = new Map<string, { routeId: string; routeName: string }>();
+    for (const row of dispatchRows) {
+      if (!dispatchMap.has(row.truckId)) {
+        // Use route name if set; otherwise derive from origin > destination (city only)
+        const originCity = row.origin.includes(',') ? row.origin.split(',')[0].trim() : row.origin;
+        const destCity = row.destination.includes(',') ? row.destination.split(',')[0].trim() : row.destination;
+        const routeName = row.routeName ?? `Route: ${originCity} > ${destCity}`;
+        dispatchMap.set(row.truckId, { routeId: row.routeId, routeName });
+      }
+    }
+
+    // Gather load counts and next pending stop for all active route IDs in one batch each
+    const activeRouteIds = [...dispatchMap.values()].map((d) => d.routeId);
+
+    const loadCountMap = new Map<string, number>();
+    const nextStopMap = new Map<string, string>();
+
+    if (activeRouteIds.length > 0) {
+      const loadCountRows = (await tenantRawQuery((tx) =>
+        tx.$queryRaw`
+          SELECT l."routeId", COUNT(*)::int AS "loadCount"
+          FROM "Load" l
+          WHERE l."routeId" = ANY(${activeRouteIds}::uuid[])
+            AND l."tenantId" = ${orgId}::uuid
+            AND l."archivedAt" IS NULL
+          GROUP BY l."routeId"
+        `
+      )) as LoadCountRow[];
+
+      for (const row of loadCountRows) {
+        loadCountMap.set(row.routeId, row.loadCount);
+      }
+
+      const nextStopRows = (await tenantRawQuery((tx) =>
+        tx.$queryRaw`
+          SELECT DISTINCT ON (rs."routeId")
+            rs."routeId", rs.address AS "nextStopAddress"
+          FROM "RouteStop" rs
+          WHERE rs."routeId" = ANY(${activeRouteIds}::uuid[])
+            AND rs."tenantId" = ${orgId}::uuid
+            AND rs.status = 'PENDING'
+          ORDER BY rs."routeId", rs.position ASC
+        `
+      )) as NextStopRow[];
+
+      for (const row of nextStopRows) {
+        nextStopMap.set(row.routeId, row.nextStopAddress);
+      }
+    }
+
     // Step 4: Map to VehicleLocation
     const vehicles: VehicleLocation[] = truckRows.map((row: TruckRow) => {
       const lat = row.latitude != null ? Number(row.latitude) : null;
@@ -137,6 +219,15 @@ export async function GET() {
       const driverName = driverMap.get(row.truckId) ?? null;
 
       const status = getVehicleStatus(spd, ts ? new Date(ts) : null);
+
+      const dispatchEntry = dispatchMap.get(row.truckId) ?? null;
+      const dispatch = dispatchEntry
+        ? {
+            routeName: dispatchEntry.routeName,
+            loadCount: loadCountMap.get(dispatchEntry.routeId) ?? 0,
+            nextStopAddress: nextStopMap.get(dispatchEntry.routeId) ?? null,
+          }
+        : null;
 
       return {
         id: row.gpsId ?? row.truckId, // fallback to truckId if no GPS row
@@ -155,6 +246,7 @@ export async function GET() {
         },
         driver: driverName ? { name: driverName } : null,
         status,
+        dispatch,
       };
     });
 

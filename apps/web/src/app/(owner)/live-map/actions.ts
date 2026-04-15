@@ -139,6 +139,7 @@ export async function getLatestVehicleLocations(): Promise<VehicleLocation[]> {
       },
       driver: driverName ? { name: driverName } : null,
       status,
+      dispatch: null,
     };
   });
 }
