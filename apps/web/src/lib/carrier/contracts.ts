@@ -112,8 +112,6 @@ export async function createContract(
   data: ContractCreateInput
 ) {
   const year = new Date().getFullYear();
-  const yearStart = new Date(`${year}-01-01T00:00:00.000Z`);
-  const yearEnd = new Date(`${year + 1}-01-01T00:00:00.000Z`);
 
   const {
     effectiveDate,
@@ -129,11 +127,13 @@ export async function createContract(
 
   // Retry up to 5 times on unique contract number collision (race condition guard)
   for (let attempt = 0; attempt < 5; attempt++) {
-    const count = await prisma.carrierContract.count({
-      where: { orgId, createdAt: { gte: yearStart, lt: yearEnd } },
+    const last = await prisma.carrierContract.findFirst({
+      where: { orgId, contractNumber: { startsWith: `CN-${year}-` } },
+      orderBy: { contractNumber: 'desc' },
+      select: { contractNumber: true },
     });
-
-    const seq = String(count + 1 + attempt).padStart(5, '0');
+    const lastSeq = last ? parseInt(last.contractNumber.slice(-5), 10) : 0;
+    const seq = String(lastSeq + 1 + attempt).padStart(5, '0');
     const contractNumber = `CN-${year}-${seq}`;
 
     try {
