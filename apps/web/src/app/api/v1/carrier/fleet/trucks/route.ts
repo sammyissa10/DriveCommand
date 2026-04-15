@@ -1,28 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { z, ZodError } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierTrucks, createCarrierTruck } from '@/lib/carrier/fleet-trucks';
 
+const nullableString = z.preprocess(
+  (v) => (v === null || v === '' ? undefined : v),
+  z.string().optional()
+);
+
 const CarrierTruckCreateSchema = z.object({
   unitNumber: z.string().min(1),
-  vin: z.string().optional(),
+  vin: nullableString,
   year: z.number().int().optional(),
-  make: z.string().optional(),
-  model: z.string().optional(),
+  make: nullableString,
+  model: nullableString,
   truckType: z
-    .enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck'])
-    .optional(),
+    .preprocess(
+      (v) => (v === null || v === '' ? undefined : v),
+      z.enum(['semi', 'box_truck', 'flatbed', 'reefer', 'tanker', 'day_cab', 'straight_truck']).optional()
+    ),
   grossWeightLbs: z.number().int().optional(),
   payloadCapacityLbs: z.number().int().optional(),
   currentOdometerMiles: z.number().int().optional(),
-  licensePlate: z.string().optional(),
-  licenseState: z.string().max(2).optional(),
-  registrationExpiry: z.string().optional(),
-  licenseExpiry: z.string().optional(),
-  insuranceExpiry: z.string().optional(),
-  status: z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional(),
-  notes: z.string().optional(),
+  licensePlate: nullableString,
+  licenseState: z.preprocess(
+    (v) => (v === null || v === '' ? undefined : v),
+    z.string().max(2).optional()
+  ),
+  registrationExpiry: nullableString,
+  licenseExpiry: nullableString,
+  insuranceExpiry: nullableString,
+  status: z.preprocess(
+    (v) => (v === null || v === '' ? undefined : v),
+    z.enum(['active', 'inactive', 'maintenance', 'out_of_service']).optional()
+  ),
+  notes: nullableString,
 });
 
 export async function GET(req: NextRequest) {
@@ -55,10 +68,19 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const parsed = CarrierTruckCreateSchema.safeParse(body);
+    const cleaned = Object.fromEntries(
+      Object.entries(body).map(([k, v]) => [k, v === null ? undefined : v])
+    );
+    const parsed = CarrierTruckCreateSchema.safeParse(cleaned);
     if (!parsed.success) {
       return NextResponse.json(
-        { error: parsed.error.issues[0].message },
+        {
+          error: 'Validation failed',
+          fields: parsed.error.issues.map((e) => ({
+            field: e.path.join('.'),
+            message: e.message,
+          })),
+        },
         { status: 400 }
       );
     }
@@ -66,7 +88,16 @@ export async function POST(req: NextRequest) {
     const truck = await createCarrierTruck(orgId, parsed.data);
     return NextResponse.json({ data: truck }, { status: 201 });
   } catch (err) {
-    logger.error('POST /api/v1/carrier/fleet/trucks failed', err);
+    if (err instanceof ZodError) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          fields: err.issues.map((e) => ({ field: e.path.join('.'), message: e.message })),
+        },
+        { status: 400 }
+      );
+    }
+    logger.error('POST /api/v1/carrier/fleet/trucks failed', err instanceof Error ? err : new Error(String(err)));
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
