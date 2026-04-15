@@ -11,8 +11,16 @@ interface VehicleMarkerProps {
 }
 
 export default function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) {
-  // Calculate status (note: timestamp comes serialized, must wrap in Date)
-  const status = getVehicleStatus(vehicle.speed, new Date(vehicle.timestamp));
+  // Skip rendering if no GPS data (should be filtered by caller, but defensive)
+  if (vehicle.latitude === null || vehicle.longitude === null) {
+    return null;
+  }
+
+  // Calculate status using the pre-computed status or recompute client-side
+  const status = vehicle.status !== 'no-location'
+    ? vehicle.status
+    : getVehicleStatus(vehicle.speed, vehicle.timestamp ? new Date(vehicle.timestamp) : null);
+
   const colors = STATUS_COLORS[status];
 
   // Create DivIcon with truck SVG
@@ -68,6 +76,9 @@ export default function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) 
           <div className="text-sm text-muted-foreground">
             {vehicle.truck.licensePlate}
           </div>
+          {vehicle.driver && (
+            <div className="text-sm">Driver: {vehicle.driver.name}</div>
+          )}
           <div className="flex items-center gap-2">
             <span
               className={`inline-block w-3 h-3 rounded-full ${colors.bg}`}

@@ -1,7 +1,15 @@
-export type VehicleStatus = 'moving' | 'idle' | 'offline';
+export type VehicleStatus = 'moving' | 'idle' | 'offline' | 'no-location';
 
-export function getVehicleStatus(speed: number | null, lastUpdate: Date): VehicleStatus {
-  const tenMinutesAgo = Date.now() - (10 * 60 * 1000);
+export function getVehicleStatus(
+  speed: number | null,
+  lastUpdate: Date | null | undefined
+): VehicleStatus {
+  // No GPS data at all
+  if (!lastUpdate) {
+    return 'no-location';
+  }
+
+  const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
 
   // Check if offline (no GPS update in 10+ minutes)
   if (lastUpdate.getTime() < tenMinutesAgo) {
@@ -30,4 +38,15 @@ export const STATUS_COLORS = {
     bg: 'bg-red-500',
     border: 'border-red-700',
   },
+  'no-location': {
+    bg: 'bg-gray-400',
+    border: 'border-gray-600',
+  },
 } as const;
+
+export const STATUS_LABELS: Record<VehicleStatus, string> = {
+  moving: 'Moving',
+  idle: 'Idle',
+  offline: 'Offline',
+  'no-location': 'No Location',
+};

@@ -4,71 +4,143 @@ import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { VehicleLocation } from '@/lib/maps/map-utils';
+import { getVehicleStatus } from '@/lib/maps/vehicle-status';
 
 // ─── Typed SQL result row interfaces ─────────────────────────────────────────
 
-interface GPSLocationRow {
-  id: string
-  truckId: string
-  latitude: number | { toNumber(): number }
-  longitude: number | { toNumber(): number }
-  speed: number | { toNumber(): number } | null
-  heading: number | { toNumber(): number } | null
-  timestamp: Date
-  make: string
-  model: string
-  licensePlate: string
+interface TruckGPSRow {
+  truckId: string;
+  make: string;
+  model: string;
+  year: number;
+  vin: string;
+  licensePlate: string;
+  gpsId: string | null;
+  latitude: unknown;
+  longitude: unknown;
+  speed: number | null;
+  heading: number | null;
+  timestamp: Date | null;
+}
+
+interface DriverRow {
+  truckId: string;
+  firstName: string;
+  lastName: string;
 }
 
 /**
- * Get the latest GPS location for each vehicle in the fleet
- * Uses DISTINCT ON to fetch only the most recent position per truck
- * Optionally filters by tag
+ * Get the latest GPS location for each vehicle in the fleet (enriched with driver + status)
+ * Includes trucks with no GPS data (they appear with null lat/lng and 'no-location' status)
+ * Used for SSR initial render of the live map page.
  */
-export async function getLatestVehicleLocations(tagId?: string): Promise<VehicleLocation[]> {
+export async function getLatestVehicleLocations(): Promise<VehicleLocation[]> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const tenantId = await requireTenantId();
 
   // Use tenantRawQuery to ensure RLS context is set for raw SQL
-  const results = await tenantRawQuery((tx) =>
-    tagId
-      ? tx.$queryRaw`
-          SELECT DISTINCT ON (gps."truckId")
-            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-            t.make, t.model, t."licensePlate"
-          FROM "GPSLocation" gps
-          INNER JOIN "Truck" t ON gps."truckId" = t.id
-          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-          WHERE gps."tenantId" = ${tenantId}::uuid
-          ORDER BY gps."truckId", gps.timestamp DESC
-        `
-      : tx.$queryRaw`
-          SELECT DISTINCT ON (gps."truckId")
-            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-            t.make, t.model, t."licensePlate"
-          FROM "GPSLocation" gps
-          INNER JOIN "Truck" t ON gps."truckId" = t.id
-          WHERE gps."tenantId" = ${tenantId}::uuid
-          ORDER BY gps."truckId", gps.timestamp DESC
-        `
-  );
+  const truckRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT
+        t.id AS "truckId",
+        t.make,
+        t.model,
+        t.year,
+        t.vin,
+        t."licensePlate",
+        gps.id AS "gpsId",
+        gps.latitude,
+        gps.longitude,
+        gps.speed,
+        gps.heading,
+        gps.timestamp
+      FROM "Truck" t
+      LEFT JOIN LATERAL (
+        SELECT g.id, g.latitude, g.longitude, g.speed, g.heading, g.timestamp
+        FROM "GPSLocation" g
+        WHERE g."truckId" = t.id
+        ORDER BY g.timestamp DESC
+        LIMIT 1
+      ) gps ON TRUE
+      WHERE t."tenantId" = ${tenantId}::uuid
+        AND t."archivedAt" IS NULL
+      ORDER BY t."licensePlate" ASC
+    `
+  )) as TruckGPSRow[];
 
-  // Map results and convert Decimal lat/lng to Number
-  return (results as GPSLocationRow[]).map((row) => ({
-    id: row.id,
-    truckId: row.truckId,
-    latitude: Number(row.latitude),
-    longitude: Number(row.longitude),
-    speed: row.speed ? Number(row.speed) : null,
-    heading: row.heading ? Number(row.heading) : null,
-    timestamp: row.timestamp,
-    truck: {
-      make: row.make,
-      model: row.model,
-      licensePlate: row.licensePlate,
-    },
-  }));
+  if (truckRows.length === 0) return [];
+
+  const truckIds = truckRows.map((r: TruckGPSRow) => r.truckId);
+
+  // Find drivers from active routes
+  const routeDriverRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT r."truckId", u."firstName", u."lastName"
+      FROM "Route" r
+      JOIN "User" u ON r."driverId" = u.id
+      WHERE r."tenantId" = ${tenantId}::uuid
+        AND r.status = 'IN_PROGRESS'
+        AND r."truckId" = ANY(${truckIds}::uuid[])
+    `
+  )) as DriverRow[];
+
+  const driverMap = new Map<string, string>();
+  for (const row of routeDriverRows) {
+    driverMap.set(row.truckId, `${row.firstName} ${row.lastName}`);
+  }
+
+  // For trucks without an active route, check active loads
+  const truckIdsNeedingLoadDriver = truckIds.filter((id: string) => !driverMap.has(id));
+  if (truckIdsNeedingLoadDriver.length > 0) {
+    const loadDriverRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT l."truckId", u."firstName", u."lastName"
+        FROM "Load" l
+        JOIN "User" u ON l."driverId" = u.id
+        WHERE l."tenantId" = ${tenantId}::uuid
+          AND l.status IN ('DISPATCHED', 'PICKED_UP', 'IN_TRANSIT')
+          AND l."truckId" = ANY(${truckIdsNeedingLoadDriver}::uuid[])
+        ORDER BY l."pickupDate" DESC
+      `
+    )) as DriverRow[];
+    for (const row of loadDriverRows) {
+      if (!driverMap.has(row.truckId)) {
+        driverMap.set(row.truckId, `${row.firstName} ${row.lastName}`);
+      }
+    }
+  }
+
+  // Map rows to enriched VehicleLocation
+  return truckRows.map((row: TruckGPSRow) => {
+    const lat = row.latitude != null ? Number(row.latitude) : null;
+    const lng = row.longitude != null ? Number(row.longitude) : null;
+    const spd = row.speed != null ? Number(row.speed) : null;
+    const hdg = row.heading != null ? Number(row.heading) : null;
+    const ts = row.timestamp ?? null;
+    const driverName = driverMap.get(row.truckId) ?? null;
+
+    const status = getVehicleStatus(spd, ts ? new Date(ts) : null);
+
+    return {
+      id: row.gpsId ?? row.truckId,
+      truckId: row.truckId,
+      latitude: lat,
+      longitude: lng,
+      speed: spd,
+      heading: hdg,
+      timestamp: ts,
+      truck: {
+        make: row.make,
+        model: row.model,
+        licensePlate: row.licensePlate,
+        year: row.year,
+        vin: row.vin,
+      },
+      driver: driverName ? { name: driverName } : null,
+      status,
+    };
+  });
 }
 
 /**

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getLatestVehicleLocations } from '@/app/(owner)/live-map/actions';
@@ -8,10 +8,10 @@ import { logger } from '@/lib/logger';
  * GET /api/gps/locations
  *
  * Authenticated endpoint returning current vehicle positions for the tenant.
- * Used by the live map for client-side 30-second polling.
+ * Used by legacy integrations. New code should use /api/v1/carrier/live-map/vehicles.
  * Requires OWNER or MANAGER role.
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     // 1. Authenticate
     const session = await getSession();
@@ -24,11 +24,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // 3. Read optional tagId filter
-    const tagId = req.nextUrl.searchParams.get('tagId') ?? undefined;
-
-    // 4. Fetch latest vehicle locations (calls requireRole + tenantRawQuery internally)
-    const vehicles = await getLatestVehicleLocations(tagId);
+    // 3. Fetch latest vehicle locations
+    const vehicles = await getLatestVehicleLocations();
 
     return NextResponse.json(vehicles);
   } catch (error) {
