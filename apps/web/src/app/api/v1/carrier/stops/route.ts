@@ -8,7 +8,7 @@ const StopCreateSchema = z.object({
   dispatchId: z.string().uuid(),
   loadId: z.string().uuid().optional(),
   sequenceOrder: z.number(),
-  stopType: z.string(),
+  stopType: z.enum(['pickup', 'delivery', 'fuel_stop', 'layover']),
   facilityId: z.string().uuid(),
   clientId: z.string().uuid().optional(),
   appointmentStart: z.string().datetime().optional(),

@@ -11,14 +11,22 @@ export async function POST(req: NextRequest) {
 
   try {
     const formData = await req.formData();
-    const parentType = formData.get('parent_type') as string | null;
-    const parentId = formData.get('parent_id') as string | null;
-    const documentType = formData.get('document_type') as string | null;
+    const parentType = formData.get('parent_type')?.toString() ?? null;
+    const parentId = formData.get('parent_id')?.toString() ?? null;
+    const documentType = formData.get('document_type')?.toString() ?? null;
     const file = formData.get('file') as File | null;
 
     if (!parentType || !parentId || !documentType) {
       return NextResponse.json(
         { error: 'parent_type, parent_id, and document_type are required' },
+        { status: 400 }
+      );
+    }
+
+    const validParentTypes = ['stop', 'load', 'dispatch', 'contract', 'expense'] as const;
+    if (!validParentTypes.includes(parentType as (typeof validParentTypes)[number])) {
+      return NextResponse.json(
+        { error: `parent_type must be one of: ${validParentTypes.join(', ')}` },
         { status: 400 }
       );
     }
