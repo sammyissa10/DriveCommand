@@ -149,6 +149,32 @@ export async function getDispatch(orgId: string, id: string) {
 }
 
 export async function createDispatch(orgId: string, data: DispatchCreateInput) {
+  // Verify primary driver belongs to this org
+  const driver = await prisma.carrierDriver.findFirst({
+    where: { id: data.primaryDriverId, orgId },
+  });
+  if (!driver) {
+    throw new Error('Invalid driver');
+  }
+
+  // Verify truck belongs to this org
+  const truck = await prisma.carrierTruck.findFirst({
+    where: { id: data.truckId, orgId },
+  });
+  if (!truck) {
+    throw new Error('Invalid truck');
+  }
+
+  // Verify co-driver belongs to this org (if provided)
+  if (data.coDriverId) {
+    const coDriver = await prisma.carrierDriver.findFirst({
+      where: { id: data.coDriverId, orgId },
+    });
+    if (!coDriver) {
+      throw new Error('Invalid co-driver');
+    }
+  }
+
   // Auto-generate dispatch number as DC-YYYY-NNNNN, stored in notes
   const existingCount = await prisma.carrierDispatch.count({ where: { orgId } });
   const year = new Date().getFullYear();

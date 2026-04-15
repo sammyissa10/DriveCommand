@@ -74,6 +74,13 @@ export async function POST(req: NextRequest) {
     const dispatch = await createDispatch(orgId, parsed.data);
     return NextResponse.json({ data: dispatch }, { status: 201 });
   } catch (err) {
+    if (err instanceof Error && (
+      err.message === 'Invalid driver' ||
+      err.message === 'Invalid truck' ||
+      err.message === 'Invalid co-driver'
+    )) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     logger.error('POST /api/v1/carrier/dispatches failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
