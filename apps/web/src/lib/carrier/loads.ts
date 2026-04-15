@@ -157,9 +157,14 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
   // Auto-generate referenceNumber as LD-YYYY-NNNNN if not provided
   let referenceNumber = data.referenceNumber;
   if (referenceNumber == null || referenceNumber === undefined) {
-    const existingCount = await prisma.carrierLoad.count({ where: { orgId } });
     const year = new Date().getFullYear();
-    referenceNumber = `LD-${year}-${String(existingCount + 1).padStart(5, '0')}`;
+    const lastLoad = await prisma.carrierLoad.findFirst({
+      where: { orgId, referenceNumber: { startsWith: `LD-${year}-` } },
+      orderBy: { referenceNumber: 'desc' },
+      select: { referenceNumber: true },
+    });
+    const lastSeq = lastLoad?.referenceNumber ? parseInt(lastLoad.referenceNumber.slice(-5), 10) : 0;
+    referenceNumber = `LD-${year}-${String(lastSeq + 1).padStart(5, '0')}`;
   }
 
   const load = await prisma.carrierLoad.create({

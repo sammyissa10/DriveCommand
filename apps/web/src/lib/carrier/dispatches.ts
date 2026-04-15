@@ -176,9 +176,18 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
   }
 
   // Auto-generate dispatch number as DC-YYYY-NNNNN, stored in notes
-  const existingCount = await prisma.carrierDispatch.count({ where: { orgId } });
   const year = new Date().getFullYear();
-  const dispatchNumber = `DC-${year}-${String(existingCount + 1).padStart(5, '0')}`;
+  const lastDispatch = await prisma.carrierDispatch.findFirst({
+    where: { orgId, notes: { contains: `DC-${year}-` } },
+    orderBy: { createdAt: 'desc' },
+    select: { notes: true },
+  });
+  let lastSeq = 0;
+  if (lastDispatch?.notes) {
+    const match = lastDispatch.notes.match(/\[DISPATCH_NUMBER=DC-\d{4}-(\d{5})\]/);
+    if (match) lastSeq = parseInt(match[1], 10);
+  }
+  const dispatchNumber = `DC-${year}-${String(lastSeq + 1).padStart(5, '0')}`;
   const dispatchNumberTag = `[DISPATCH_NUMBER=${dispatchNumber}]`;
 
   const userNotes = data.notes ?? '';
