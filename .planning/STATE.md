@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-15 - Completed quick task 217: Fixed COUNT-based auto-number generators in contracts/dispatches/loads — now MAX-based (no collision on concurrent creates or after deletions)
+Last activity: 2026-04-14 - Completed quick task 218: Upgraded live fleet map — 3 API routes (vehicles/history/trips), two-panel layout, vehicle sidebar, client-side filter bar, History tab with GPS trail, Trips tab with completed routes
 Last session: 2026-04-14T18:44:19Z
-Stopped at: Completed quick-208-PLAN.md — 1 task, 0 files modified (audit only)
+Stopped at: Completed quick-218-PLAN.md — 2 tasks, 8 files created, 8 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -171,6 +171,7 @@ Progress: [███████████████████████
 - Quick-179 (2026-04-05): Carrier Ops — Sidebar navigation wiring and route guard — DispatchBadge client component (60s poll, needs_assignment count capped at "9+"), sidebar restructured with Fleet sub-group (Drivers/Trucks/Facilities) + Reports sub-group (Revenue/Driver Pay/AR Aging/Performance), CarrierBreadcrumb (pathname→display name mapping), carrier layout.tsx (DRIVER→/my-load redirect, non-OWNER/MANAGER→/unauthorized) — 2 tasks, 4 files, ~15min
 - Quick-186 (2026-04-05): Fix all carrier ops bugs found during QA — 19 bugs fixed: dashboard timeout resilience (.catch() on all 7+4 queries), sidebar label uniqueness (Carrier Dashboard/Loads/Drivers/Trucks), MANAGER role gates on New Contract+New Client+ClientDetail contracts tab, driver layout redirect →/my-route, facility types aligned to spec (shipper/receiver/terminal/fuel_stop/other), contacts JSON array in facility list, paymentTerms+creditLimit added to CarrierClient (db push), Billing section in ClientForm+ClientDetail, portal email shown when access=true — 3 tasks, 18 files, ~25min
 - Quick-215 (2026-04-15): Fix 6 High findings from carrier operations audit 213 — per_load enum added to loads API + LoadForm, getFacility/updateFacility guard against inactive_ soft-deleted records, FK ownership checks on createExpense (dispatch/stop/driver), createRouteTemplate (client/contract/driver/truck), saveRouteTemplate (same 4 + batch facility check), createStop (load/client) — 6 tasks, 8 files, ~18min
+- Quick-218 (2026-04-14): Upgrade live fleet map — 3 tenant-isolated API routes (vehicles with LEFT JOIN LATERAL, history by truck+date, trips paginated), two-panel layout, VehicleSidebar (click-to-fly, last-seen, driver name), VehicleFilterBar (client-side multi-select), LiveMapTabs (Live/History/Trips), HistoryTab (GPS trail + timeline), TripsTab (paginated completed routes), 30s polling on Live tab only, no-location trucks in sidebar but not on map — 2 tasks, 8 files created, 8 files modified, 11 min
 
 ## Accumulated Context
 
