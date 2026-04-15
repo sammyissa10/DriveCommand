@@ -71,6 +71,51 @@ export async function saveRouteTemplate(
       return { success: false, error: 'Recurrence rule must start with FREQ=' };
     }
     if (stops.length === 0) return { success: false, error: 'At least one stop is required' };
+    if (stops.some((s) => !s.facility_id)) {
+      return { success: false, error: 'All stops must have a facility selected.' };
+    }
+
+    // Verify clientId belongs to this org
+    const client = await prisma.carrierClient.findFirst({
+      where: { id: clientId, orgId },
+      select: { id: true },
+    });
+    if (!client) {
+      return { success: false, error: 'Invalid client — does not belong to this organization' };
+    }
+
+    // Verify contractId if supplied
+    if (contractId) {
+      const contract = await prisma.carrierContract.findFirst({
+        where: { id: contractId, orgId },
+        select: { id: true },
+      });
+      if (!contract) {
+        return { success: false, error: 'Invalid contract — does not belong to this organization' };
+      }
+    }
+
+    // Verify defaultDriverId if supplied
+    if (defaultDriverId) {
+      const driver = await prisma.carrierDriver.findFirst({
+        where: { id: defaultDriverId, orgId },
+        select: { id: true },
+      });
+      if (!driver) {
+        return { success: false, error: 'Invalid driver — does not belong to this organization' };
+      }
+    }
+
+    // Verify defaultTruckId if supplied
+    if (defaultTruckId) {
+      const truck = await prisma.carrierTruck.findFirst({
+        where: { id: defaultTruckId, orgId },
+        select: { id: true },
+      });
+      if (!truck) {
+        return { success: false, error: 'Invalid truck — does not belong to this organization' };
+      }
+    }
 
     // Build template payload — only include optional fields if set
     const templateData = {

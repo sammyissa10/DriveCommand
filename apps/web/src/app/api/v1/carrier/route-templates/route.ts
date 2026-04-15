@@ -69,6 +69,9 @@ export async function POST(req: NextRequest) {
     const template = await createRouteTemplate(orgId, parsed.data);
     return NextResponse.json({ data: template }, { status: 201 });
   } catch (err) {
+    if (err instanceof Error && err.message.startsWith('Invalid ')) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     logger.error('POST /api/v1/carrier/route-templates failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

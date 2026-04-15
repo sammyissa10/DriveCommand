@@ -220,6 +220,48 @@ export async function getRouteTemplate(orgId: string, id: string) {
 }
 
 export async function createRouteTemplate(orgId: string, data: RouteTemplateCreateInput) {
+  // Verify clientId belongs to this org
+  const client = await prisma.carrierClient.findFirst({
+    where: { id: data.clientId, orgId },
+    select: { id: true },
+  });
+  if (!client) {
+    throw new Error('Invalid client — does not belong to this organization');
+  }
+
+  // Verify contractId if supplied
+  if (data.contractId) {
+    const contract = await prisma.carrierContract.findFirst({
+      where: { id: data.contractId, orgId },
+      select: { id: true },
+    });
+    if (!contract) {
+      throw new Error('Invalid contract — does not belong to this organization');
+    }
+  }
+
+  // Verify defaultDriverId if supplied
+  if (data.defaultDriverId) {
+    const driver = await prisma.carrierDriver.findFirst({
+      where: { id: data.defaultDriverId, orgId },
+      select: { id: true },
+    });
+    if (!driver) {
+      throw new Error('Invalid driver — does not belong to this organization');
+    }
+  }
+
+  // Verify defaultTruckId if supplied
+  if (data.defaultTruckId) {
+    const truck = await prisma.carrierTruck.findFirst({
+      where: { id: data.defaultTruckId, orgId },
+      select: { id: true },
+    });
+    if (!truck) {
+      throw new Error('Invalid truck — does not belong to this organization');
+    }
+  }
+
   return prisma.routeTemplate.create({
     data: {
       ...data,
