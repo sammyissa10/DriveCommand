@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-16 - Completed quick task 223: Add hard delete and resend invitation to carrier driver management
+Last activity: 2026-04-16 - Completed quick task 224: Add email notifications for all carrier lifecycle events
 Last session: 2026-04-14T18:44:19Z
 Stopped at: Completed quick-218-PLAN.md — 2 tasks, 8 files created, 8 files modified
 
@@ -172,6 +172,7 @@ Progress: [███████████████████████
 - Quick-186 (2026-04-05): Fix all carrier ops bugs found during QA — 19 bugs fixed: dashboard timeout resilience (.catch() on all 7+4 queries), sidebar label uniqueness (Carrier Dashboard/Loads/Drivers/Trucks), MANAGER role gates on New Contract+New Client+ClientDetail contracts tab, driver layout redirect →/my-route, facility types aligned to spec (shipper/receiver/terminal/fuel_stop/other), contacts JSON array in facility list, paymentTerms+creditLimit added to CarrierClient (db push), Billing section in ClientForm+ClientDetail, portal email shown when access=true — 3 tasks, 18 files, ~25min
 - Quick-215 (2026-04-15): Fix 6 High findings from carrier operations audit 213 — per_load enum added to loads API + LoadForm, getFacility/updateFacility guard against inactive_ soft-deleted records, FK ownership checks on createExpense (dispatch/stop/driver), createRouteTemplate (client/contract/driver/truck), saveRouteTemplate (same 4 + batch facility check), createStop (load/client) — 6 tasks, 8 files, ~18min
 - Quick-218 (2026-04-14): Upgrade live fleet map — 3 tenant-isolated API routes (vehicles with LEFT JOIN LATERAL, history by truck+date, trips paginated), two-panel layout, VehicleSidebar (click-to-fly, last-seen, driver name), VehicleFilterBar (client-side multi-select), LiveMapTabs (Live/History/Trips), HistoryTab (GPS trail + timeline), TripsTab (paginated completed routes), 30s polling on Live tab only, no-location trucks in sidebar but not on map — 2 tasks, 8 files created, 8 files modified, 11 min
+- Quick-224 (2026-04-16): Add email notifications for all carrier lifecycle events — 5 React Email templates (dispatch-assigned, load-delivered, pay-record-ready, invoice-generated, compliance-alert), notifications.ts helper with full idempotency via NotificationLog, triggers wired in dispatches.ts (create+reassign), stop-completion.ts (delivered cascade), pay-calculator.ts (pay records), loads.ts (invoiced status), compliance-alerts cron — 2 tasks, 6 files created, 6 files modified, ~20min
 
 ## Accumulated Context
 
