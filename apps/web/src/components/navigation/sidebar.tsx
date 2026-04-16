@@ -103,33 +103,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
           </SidebarGroup>
         )}
 
-        {/* Business */}
-        {canViewFleetIntelligence && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
-              Business
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <PermissionGuard permission="canViewAIDocuments">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/ai-documents")}
-                      tooltip="AI Documents"
-                    >
-                      <Link href="/ai-documents" onClick={handleNavClick}>
-                        <FileSearch />
-                        <span>AI Documents</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-
         {/* Carrier Ops - OWNER/MANAGER only */}
         {canViewFleetIntelligence && (
           <SidebarGroup>
@@ -311,6 +284,33 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuSubItem>
                   </SidebarMenuSub>
                 </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Business */}
+        {canViewFleetIntelligence && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Business
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <PermissionGuard permission="canViewAIDocuments">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/ai-documents")}
+                      tooltip="AI Documents"
+                    >
+                      <Link href="/ai-documents" onClick={handleNavClick}>
+                        <FileSearch />
+                        <span>AI Documents</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
