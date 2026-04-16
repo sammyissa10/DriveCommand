@@ -70,23 +70,14 @@ export async function sendDispatchAssignedNotification(
   dispatchId: string,
   driverId: string
 ): Promise<void> {
-  try {
-    const idempotencyKey = `carrier-dispatch-assigned-${dispatchId}-${driverId}`;
+  const idempotencyKey = `carrier-dispatch-assigned-${dispatchId}-${driverId}`;
 
+  try {
     const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
     if (alreadySent) return;
 
-    const driverEmail = await getDriverEmail(driverId);
-    if (!driverEmail) {
-      logger.warn('sendDispatchAssignedNotification: driver has no email', {
-        orgId,
-        dispatchId,
-        driverId,
-      });
-      return;
-    }
-
-    const dispatch = await prisma.carrierDispatch.findFirst({
+    // Resolve the dispatch number from notes for use in the subject/log
+    const dispatchRaw = await prisma.carrierDispatch.findFirst({
       where: { id: dispatchId, orgId },
       include: {
         truck: { select: { unitNumber: true } },
@@ -94,8 +85,40 @@ export async function sendDispatchAssignedNotification(
       },
     });
 
-    if (!dispatch) {
+    if (!dispatchRaw) {
       logger.warn('sendDispatchAssignedNotification: dispatch not found', { orgId, dispatchId });
+      return;
+    }
+
+    const dispatchNumberMatch = dispatchRaw.notes?.match(
+      /\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/
+    );
+    const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : dispatchId.slice(0, 8);
+    const subject = `New Dispatch Assigned - ${dispatchNumber}`;
+
+    // Look up driver email — may be null if driver has no portal account and no email on file
+    const driverEmail = await getDriverEmail(driverId);
+
+    // Write the NotificationLog row now (PENDING) so the attempt is always traceable,
+    // even if we cannot deliver (e.g. driver has no email address yet).
+    const recipientEmail = driverEmail ?? 'unknown';
+    const logId = await recordNotification(prisma, {
+      tenantId: orgId,
+      idempotencyKey,
+      notificationType: 'carrier-dispatch-assigned',
+      entityType: 'dispatch',
+      entityId: dispatchId,
+      recipientEmail,
+      emailSubject: subject,
+    });
+
+    if (!driverEmail) {
+      logger.warn('sendDispatchAssignedNotification: driver has no email — notification logged as failed', {
+        orgId,
+        dispatchId,
+        driverId,
+      });
+      await markNotificationFailed(prisma, logId, 'Driver has no email address on file');
       return;
     }
 
@@ -104,19 +127,12 @@ export async function sendDispatchAssignedNotification(
       select: { name: true },
     });
 
-    // Extract dispatch number from notes
-    const dispatchNumberMatch = dispatch.notes?.match(
-      /\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/
-    );
-    const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : dispatchId.slice(0, 8);
-
-    const subject = `New Dispatch Assigned - ${dispatchNumber}`;
     const baseUrl = getAppBaseUrl();
     const driverPortalUrl = `${baseUrl}/driver/dispatches/${dispatchId}`;
     const companyName = tenant?.name ?? 'Your Company';
 
-    const scheduledDeparture = dispatch.scheduledDeparture
-      ? new Date(dispatch.scheduledDeparture).toLocaleString('en-US', {
+    const scheduledDeparture = dispatchRaw.scheduledDeparture
+      ? new Date(dispatchRaw.scheduledDeparture).toLocaleString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric',
@@ -126,24 +142,14 @@ export async function sendDispatchAssignedNotification(
         })
       : 'TBD';
 
-    const logId = await recordNotification(prisma, {
-      tenantId: orgId,
-      idempotencyKey,
-      notificationType: 'carrier-dispatch-assigned',
-      entityType: 'dispatch',
-      entityId: dispatchId,
-      recipientEmail: driverEmail,
-      emailSubject: subject,
-    });
-
     const result = await sendEmail({
       to: driverEmail,
       subject,
       react: React.createElement(DispatchAssignedEmail, {
         dispatchNumber,
         scheduledDeparture,
-        stopCount: dispatch._count.stops,
-        truckUnitNumber: dispatch.truck.unitNumber,
+        stopCount: dispatchRaw._count.stops,
+        truckUnitNumber: dispatchRaw.truck.unitNumber,
         driverPortalUrl,
         companyName,
       }),
