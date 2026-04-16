@@ -1000,6 +1000,7 @@ None blocking immediate progress.
 | 223 | Add hard delete and resend invitation to carrier driver management | 2026-04-16 | 8278b41 | [223-add-hard-delete-and-resend-invitation-to](./quick/223-add-hard-delete-and-resend-invitation-to/) |
 | 224 | Add email notifications for all Carrier Ops events | 2026-04-16 | 24bc849 | [224-add-email-notifications-for-all-carrier-](./quick/224-add-email-notifications-for-all-carrier-/) |
 | 225 | Fix carrier driver creation to write user_id back to carrier_drivers record | 2026-04-16 | 5c40d3b | [225-fix-carrier-driver-creation-to-write-use](./quick/225-fix-carrier-driver-creation-to-write-use/) |
+| 226 | Replace fire-and-forget notification calls with after() across Carrier Ops triggers | 2026-04-16 | d95496e | [226-replace-fire-and-forget-notification-cal](./quick/226-replace-fire-and-forget-notification-cal/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
