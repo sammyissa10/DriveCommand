@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
@@ -220,8 +221,12 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
 
   logger.info('createDispatch: created', { orgId, dispatchId: dispatch.id, dispatchNumber });
 
-  // Fire-and-forget: notify assigned driver
-  sendDispatchAssignedNotification(orgId, dispatch.id, data.primaryDriverId).catch(() => {});
+  // Schedule notification to run after the HTTP response is sent.
+  // after() guarantees the async work completes even in serverless environments
+  // where the execution context is frozen once the response is delivered.
+  after(() =>
+    sendDispatchAssignedNotification(orgId, dispatch.id, data.primaryDriverId)
+  );
 
   return dispatch;
 }
@@ -260,7 +265,9 @@ export async function updateDispatch(
 
   // Notify new driver if primaryDriverId changed
   if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
-    sendDispatchAssignedNotification(orgId, id, data.primaryDriverId).catch(() => {});
+    after(() =>
+      sendDispatchAssignedNotification(orgId, id, data.primaryDriverId!)
+    );
   }
 
   return updated;
