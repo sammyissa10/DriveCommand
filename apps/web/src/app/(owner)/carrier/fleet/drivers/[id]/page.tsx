@@ -2,9 +2,10 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
-import { getCarrierDriver } from '@/lib/carrier/fleet-drivers';
+import { getCarrierDriver, getLatestInvitationStatus } from '@/lib/carrier/fleet-drivers';
 import { listFacilities } from '@/lib/carrier/facilities';
 import { CarrierDriverForm } from '@/components/carrier/fleet/CarrierDriverForm';
+import { DriverDetailActions } from '@/components/carrier/fleet/DriverDetailActions';
 import { Badge } from '@/components/ui/badge';
 
 interface Props {
@@ -62,6 +63,10 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
 
   if (!driver) notFound();
 
+  const invitationStatus = driver.email
+    ? await getLatestInvitationStatus(orgId, driver.email)
+    : null;
+
   const cdlDays = daysUntil(driver.cdlExpiry);
 
   // Combine dispatches with role labels
@@ -85,12 +90,22 @@ export default async function CarrierDriverDetailPage({ params }: Props) {
           <ArrowLeft className="h-4 w-4" />
           Back to Carrier Drivers
         </Link>
-        <h1 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          {driver.firstName} {driver.lastName}
-        </h1>
-        {driver.email && (
-          <p className="mt-1 text-sm text-muted-foreground">{driver.email}</p>
-        )}
+        <div className="mt-3 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              {driver.firstName} {driver.lastName}
+            </h1>
+            {driver.email && (
+              <p className="mt-1 text-sm text-muted-foreground">{driver.email}</p>
+            )}
+          </div>
+          <DriverDetailActions
+            driverId={driver.id}
+            driverName={`${driver.firstName} ${driver.lastName}`}
+            driverEmail={driver.email ?? null}
+            invitationStatus={invitationStatus}
+          />
+        </div>
       </div>
 
       {/* Compliance card */}
