@@ -1,6 +1,7 @@
 import { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import { sendPayRecordReadyNotification } from '@/lib/carrier/notifications';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -288,6 +289,31 @@ export async function generateDriverPayRecords(
   }
 
   logger.info('generateDriverPayRecords: completed', { orgId, dispatchId, recordsCreated });
+
+  // Notify owner about each newly created pay record
+  if (recordsCreated > 0) {
+    const newRecords = await prisma.driverPayRecord.findMany({
+      where: { dispatchId, orgId },
+      select: {
+        id: true,
+        netPay: true,
+        driver: { select: { firstName: true, lastName: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: recordsCreated,
+    });
+    for (const rec of newRecords) {
+      const driverName = `${rec.driver.firstName} ${rec.driver.lastName}`.trim();
+      sendPayRecordReadyNotification(
+        orgId,
+        rec.id,
+        driverName,
+        dispatchId,
+        Number(rec.netPay ?? 0)
+      ).catch(() => {});
+    }
+  }
+
   return { data: { recordsCreated } };
 }
 

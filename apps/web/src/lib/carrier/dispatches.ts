@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
+import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -218,6 +219,10 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
   });
 
   logger.info('createDispatch: created', { orgId, dispatchId: dispatch.id, dispatchNumber });
+
+  // Fire-and-forget: notify assigned driver
+  sendDispatchAssignedNotification(orgId, dispatch.id, data.primaryDriverId).catch(() => {});
+
   return dispatch;
 }
 
@@ -240,7 +245,7 @@ export async function updateDispatch(
     delete updateData.truckId;
   }
 
-  return prisma.carrierDispatch.update({
+  const updated = await prisma.carrierDispatch.update({
     where: { id },
     data: {
       ...updateData,
@@ -252,6 +257,13 @@ export async function updateDispatch(
         : undefined,
     },
   });
+
+  // Notify new driver if primaryDriverId changed
+  if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
+    sendDispatchAssignedNotification(orgId, id, data.primaryDriverId).catch(() => {});
+  }
+
+  return updated;
 }
 
 export async function transitionDispatchStatus(

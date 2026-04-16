@@ -27,6 +27,7 @@ const LoadUpdateSchema = z.object({
   otherCharges: z.number().optional(),
   specialInstructions: z.string().optional(),
   notes: z.string().optional(),
+  status: z.enum(['pending', 'in_transit', 'delivered', 'cancelled', 'invoiced']).optional(),
 });
 
 export async function GET(

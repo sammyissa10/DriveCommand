@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { getComplianceAlerts } from '@/lib/carrier/compliance';
+import { sendComplianceAlertNotifications } from '@/lib/carrier/notifications';
 import { logger } from '@/lib/logger';
 import { Prisma } from '@/generated/prisma';
 
@@ -90,6 +91,18 @@ export async function GET(request: NextRequest) {
             INSERT INTO carrier_compliance_alert_log (org_id, alert_type, entity_id, message, severity)
             VALUES (${tenant.id}::uuid, ${alert.type}, ${alert.entityId}, ${alert.message}, ${alert.severity})
           `);
+        }
+      }
+
+      // Send batched email notification for this org's alerts
+      if (alerts.length > 0) {
+        try {
+          await sendComplianceAlertNotifications(tenant.id, alerts);
+        } catch (err) {
+          logger.error('[CRON] carrier-compliance-alerts: email notification failed', {
+            tenantId: tenant.id,
+            error: err,
+          });
         }
       }
 

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
+import { sendInvoiceGeneratedNotification } from '@/lib/carrier/notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,7 +46,9 @@ export interface LoadCreateInput {
   otherCharges?: number;
 }
 
-export type LoadUpdateInput = Partial<LoadCreateInput>;
+export type LoadUpdateInput = Partial<LoadCreateInput> & {
+  status?: string;
+};
 
 // ---------------------------------------------------------------------------
 // Functions
@@ -241,8 +244,14 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
         ? { specialInstructions: data.specialInstructions }
         : {}),
       ...(data.notes !== undefined ? { notes: data.notes } : {}),
+      ...(data.status !== undefined ? { status: data.status } : {}),
     },
   });
+
+  // Notify client when load is marked as invoiced
+  if (data.status === 'invoiced' && existing.status !== 'invoiced') {
+    sendInvoiceGeneratedNotification(orgId, id).catch(() => {});
+  }
 
   // Trigger revenue recalculation if any rate-affecting fields changed
   const rateFields: (keyof LoadUpdateInput)[] = [

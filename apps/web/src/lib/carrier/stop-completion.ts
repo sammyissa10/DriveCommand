@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
+import { sendLoadDeliveredNotification } from '@/lib/carrier/notifications';
 import type { CarrierStop } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
@@ -165,6 +166,9 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
       }
 
       logger.info('completeStop: load marked delivered', { orgId, loadId: stop.loadId });
+
+      // Fire-and-forget: notify owner that load was delivered
+      sendLoadDeliveredNotification(orgId, stop.loadId).catch(() => {});
     }
   }
 
