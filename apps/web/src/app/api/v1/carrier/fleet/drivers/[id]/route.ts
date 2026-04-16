@@ -3,7 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
-import { getCarrierDriver, updateCarrierDriver } from '@/lib/carrier/fleet-drivers';
+import { getCarrierDriver, updateCarrierDriver, deleteCarrierDriver } from '@/lib/carrier/fleet-drivers';
 
 const CarrierDriverUpdateSchema = z.object({
   firstName: z.string().min(1).optional(),
@@ -40,6 +40,33 @@ export async function GET(
     return NextResponse.json({ data: driver });
   } catch (err) {
     logger.error('GET /api/v1/carrier/fleet/drivers/[id] failed', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const orgId = session.tenantId;
+  if (!orgId) return NextResponse.json({ error: 'No organization' }, { status: 403 });
+
+  try {
+    const { id } = await params;
+    const result = await deleteCarrierDriver(orgId, id);
+
+    if ('error' in result) {
+      if (result.error === 'Not found') {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 });
+      }
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+
+    return NextResponse.json({ deleted: true });
+  } catch (err) {
+    logger.error('DELETE /api/v1/carrier/fleet/drivers/[id] failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

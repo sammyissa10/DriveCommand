@@ -226,6 +226,162 @@ export async function createCarrierDriver(
   return { driver, emailSent: false };
 }
 
+export async function deleteCarrierDriver(
+  orgId: string,
+  driverId: string
+): Promise<{ deleted: true } | { error: string }> {
+  const driver = await prisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
+  if (!driver) return { error: 'Not found' };
+
+  // Check for active dispatches
+  const activeDispatchCount = await prisma.carrierDispatch.count({
+    where: {
+      OR: [{ primaryDriverId: driverId }, { coDriverId: driverId }],
+      status: 'in_progress',
+    },
+  });
+  if (activeDispatchCount > 0) {
+    return {
+      error: 'Cannot delete a driver with an active dispatch. Complete or cancel the dispatch first.',
+    };
+  }
+
+  // Check for approved/paid pay records
+  const lockedPayCount = await prisma.driverPayRecord.count({
+    where: { driverId, status: { in: ['approved', 'paid'] } },
+  });
+  if (lockedPayCount > 0) {
+    return { error: 'Cannot delete a driver with approved or paid pay records.' };
+  }
+
+  // Delete in correct order inside a transaction
+  await prisma.$transaction(async (tx) => {
+    // Delete all pay records (only pending/voided remain after safety checks)
+    await tx.driverPayRecord.deleteMany({ where: { driverId } });
+
+    // Delete carrier expenses linked to this driver
+    await tx.carrierExpense.deleteMany({ where: { driverId } });
+
+    // Delete invitations linked to this driver's email
+    if (driver.email) {
+      await tx.driverInvitation.deleteMany({
+        where: { email: driver.email, tenantId: orgId },
+      });
+    }
+
+    // Delete the carrier driver record
+    await tx.carrierDriver.delete({ where: { id: driverId } });
+
+    // Optionally clean up the linked user if exclusively owned by this org
+    if (driver.userId) {
+      const user = await tx.user.findUnique({ where: { id: driver.userId } });
+      if (user && user.tenantId === orgId) {
+        // Check no other CarrierDriver records reference this userId
+        const otherDriverLinks = await tx.carrierDriver.count({
+          where: { userId: driver.userId },
+        });
+        if (otherDriverLinks === 0) {
+          await tx.user.delete({ where: { id: driver.userId } });
+        }
+      }
+    }
+  });
+
+  return { deleted: true };
+}
+
+export async function resendCarrierDriverInvitation(
+  orgId: string,
+  driverId: string
+): Promise<{ sent: true; email: string; warning?: string } | { error: string }> {
+  const driver = await prisma.carrierDriver.findFirst({ where: { id: driverId, orgId } });
+  if (!driver) return { error: 'Not found' };
+
+  if (!driver.email) return { error: 'Driver has no email address on file.' };
+
+  // Find the most recent invitation
+  const latestInvitation = await prisma.driverInvitation.findFirst({
+    where: { email: driver.email, tenantId: orgId },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  if (latestInvitation && latestInvitation.status === 'ACCEPTED') {
+    return {
+      error: 'This driver has already accepted their invitation and has an active account.',
+    };
+  }
+
+  // Cancel any existing PENDING or EXPIRED invitations
+  if (latestInvitation && ['PENDING', 'EXPIRED'].includes(latestInvitation.status)) {
+    await prisma.driverInvitation.updateMany({
+      where: { email: driver.email, tenantId: orgId, status: { in: ['PENDING', 'EXPIRED'] } },
+      data: { status: 'CANCELLED' },
+    });
+  }
+
+  // Create a new invitation record
+  const invitation = await prisma.driverInvitation.create({
+    data: {
+      tenantId: orgId,
+      email: driver.email,
+      firstName: driver.firstName,
+      lastName: driver.lastName,
+      licenseNumber: driver.cdlNumber || null,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      status: 'PENDING',
+    },
+  });
+
+  // Fetch tenant name for the email
+  let organizationName = 'your fleet';
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: orgId },
+      select: { name: true },
+    });
+    organizationName = tenant?.name || 'your fleet';
+  } catch {
+    // Fall back to generic name — non-critical
+  }
+
+  // Build the accept URL and send the invitation email
+  const acceptUrl = `${getAppBaseUrl()}/accept-invitation?id=${invitation.id}`;
+
+  try {
+    await sendDriverInvitation(driver.email, {
+      firstName: driver.firstName,
+      lastName: driver.lastName,
+      organizationName,
+      acceptUrl,
+      expiresAt: invitation.expiresAt.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+    });
+    return { sent: true, email: driver.email };
+  } catch (emailError) {
+    logger.error('Failed to send resend carrier driver invitation email:', emailError);
+    return {
+      sent: true,
+      email: driver.email,
+      warning: 'Invitation created but email failed to send',
+    };
+  }
+}
+
+export async function getLatestInvitationStatus(
+  orgId: string,
+  email: string
+): Promise<string | null> {
+  const invitation = await prisma.driverInvitation.findFirst({
+    where: { email, tenantId: orgId },
+    orderBy: { createdAt: 'desc' },
+    select: { status: true },
+  });
+  return invitation?.status ?? null;
+}
+
 export async function updateCarrierDriver(
   orgId: string,
   id: string,
