@@ -7,25 +7,14 @@ import {
   LayoutDashboard,
   MapPin,
   Shield,
-  Fuel,
   Truck,
-  Users,
-  Route as RouteIcon,
   Tag,
-  Plus,
-  Building2,
-  Receipt,
-  DollarSign,
   Package,
-  TrendingUp,
-  ClipboardCheck,
   FileSearch,
-  Calculator,
   FileSpreadsheet,
   Settings,
   LifeBuoy,
   CreditCard,
-  Warehouse,
   Users2,
   FileText,
   CalendarDays,
@@ -89,46 +78,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
 
       {/* Main navigation content */}
       <SidebarContent className="pt-2">
-        {/* Dashboard - standalone at top */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === "/dashboard"}
-                  tooltip="Dashboard"
-                >
-                  <Link href="/dashboard" onClick={handleNavClick}>
-                    <LayoutDashboard />
-                    <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Quick Create */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  tooltip="Add Truck"
-                  className="bg-sidebar-primary/10 text-sidebar-primary hover:bg-sidebar-primary/20 hover:text-sidebar-primary font-medium"
-                >
-                  <Link href="/trucks/new" onClick={handleNavClick}>
-                    <Plus />
-                    <span>Add Truck</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         {/* Fleet Intelligence - OWNER/MANAGER only */}
         {canViewFleetIntelligence && (
           <SidebarGroup>
@@ -149,84 +98,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/safety")}
-                    tooltip="Safety"
-                  >
-                    <Link href="/safety" onClick={handleNavClick}>
-                      <Shield />
-                      <span>Safety</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/fuel")}
-                    tooltip="Fuel & Energy"
-                  >
-                    <Link href="/fuel" onClick={handleNavClick}>
-                      <Fuel />
-                      <span>Fuel & Energy</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <PermissionGuard permission="canViewLaneAnalytics">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/lane-analytics")}
-                      tooltip="Lane Profitability"
-                    >
-                      <Link href="/lane-analytics" onClick={handleNavClick}>
-                        <TrendingUp />
-                        <span>Lane Profitability</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
-                <PermissionGuard permission="canViewProfitPredictor">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/profit-predictor")}
-                      tooltip="Profit Predictor"
-                    >
-                      <Link href="/profit-predictor" onClick={handleNavClick}>
-                        <Calculator />
-                        <span>Profit Predictor</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/compliance")}
-                    tooltip="Compliance"
-                  >
-                    <Link href="/compliance" onClick={handleNavClick}>
-                      <ClipboardCheck />
-                      <span>Compliance</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <PermissionGuard permission="canViewIFTA">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/ifta")}
-                      tooltip="IFTA Reports"
-                    >
-                      <Link href="/ifta" onClick={handleNavClick}>
-                        <FileSpreadsheet />
-                        <span>IFTA Reports</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -240,60 +111,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith("/loads")}
-                    tooltip="Loads"
-                  >
-                    <Link href="/loads" onClick={handleNavClick}>
-                      <Package />
-                      <span>Loads</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <PermissionGuard permission="canViewCRM">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/crm")}
-                      tooltip="CRM"
-                    >
-                      <Link href="/crm" onClick={handleNavClick}>
-                        <Building2 />
-                        <span>CRM</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
-                <PermissionGuard permission="canViewInvoices">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/invoices")}
-                      tooltip="Invoices"
-                    >
-                      <Link href="/invoices" onClick={handleNavClick}>
-                        <Receipt />
-                        <span>Invoices</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
-                <PermissionGuard permission="canViewPayroll">
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith("/payroll")}
-                      tooltip="Payroll"
-                    >
-                      <Link href="/payroll" onClick={handleNavClick}>
-                        <DollarSign />
-                        <span>Payroll</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </PermissionGuard>
                 <PermissionGuard permission="canViewAIDocuments">
                   <SidebarMenuItem>
                     <SidebarMenuButton
@@ -313,64 +130,6 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
           </SidebarGroup>
         )}
 
-        {/* Fleet Management */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
-            Management
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith("/trucks")}
-                  tooltip="Trucks"
-                >
-                  <Link href="/trucks" onClick={handleNavClick}>
-                    <Truck />
-                    <span>Trucks</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith("/drivers")}
-                  tooltip="Drivers"
-                >
-                  <Link href="/drivers" onClick={handleNavClick}>
-                    <Users />
-                    <span>Drivers</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith("/routes")}
-                  tooltip="Routes"
-                >
-                  <Link href="/routes" onClick={handleNavClick}>
-                    <RouteIcon />
-                    <span>Routes</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith("/tags")}
-                  tooltip="Tags"
-                >
-                  <Link href="/tags" onClick={handleNavClick}>
-                    <Tag />
-                    <span>Tags</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
         {/* Carrier Ops - OWNER/MANAGER only */}
         {canViewFleetIntelligence && (
           <SidebarGroup>
