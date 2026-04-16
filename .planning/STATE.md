@@ -998,6 +998,7 @@ None blocking immediate progress.
 | 221 | Fix blinking marker tooltip on Live Fleet Map | 2026-04-15 | 881de28 | [221-fix-blinking-marker-tooltip-on-live-flee](./quick/221-fix-blinking-marker-tooltip-on-live-flee/) |
 | 222 | Fix carrier driver creation to send invitation email on account creation | 2026-04-16 | a9ec1e5 | [222-fix-carrier-driver-creation-to-send-invi](./quick/222-fix-carrier-driver-creation-to-send-invi/) |
 | 223 | Add hard delete and resend invitation to carrier driver management | 2026-04-16 | 8278b41 | [223-add-hard-delete-and-resend-invitation-to](./quick/223-add-hard-delete-and-resend-invitation-to/) |
+| 224 | Add email notifications for all Carrier Ops events | 2026-04-16 | 24bc849 | [224-add-email-notifications-for-all-carrier-](./quick/224-add-email-notifications-for-all-carrier-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
