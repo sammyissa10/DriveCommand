@@ -1,4 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
+import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { logger } from '@/lib/logger';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -29,6 +32,12 @@ export interface CarrierDriverCreateInput {
 }
 
 export type CarrierDriverUpdateInput = Partial<CarrierDriverCreateInput>;
+
+export interface CreateCarrierDriverResult {
+  driver: Awaited<ReturnType<typeof prisma.carrierDriver.create>>;
+  emailSent: boolean;
+  emailWarning?: string;
+}
 
 // ---------------------------------------------------------------------------
 // Functions
@@ -109,7 +118,10 @@ export async function getCarrierDriver(orgId: string, id: string) {
   });
 }
 
-export async function createCarrierDriver(orgId: string, data: CarrierDriverCreateInput) {
+export async function createCarrierDriver(
+  orgId: string,
+  data: CarrierDriverCreateInput
+): Promise<CreateCarrierDriverResult> {
   const { userId, cdlExpiry, payRate, ...rest } = data;
 
   // If userId is provided, check for existing link
@@ -130,7 +142,7 @@ export async function createCarrierDriver(orgId: string, data: CarrierDriverCrea
     }
   }
 
-  return prisma.carrierDriver.create({
+  const driver = await prisma.carrierDriver.create({
     data: {
       ...rest,
       orgId,
@@ -139,6 +151,79 @@ export async function createCarrierDriver(orgId: string, data: CarrierDriverCrea
       ...(payRate != null ? { payRate } : {}),
     },
   });
+
+  // Send invitation email if email is provided
+  if (data.email) {
+    try {
+      // Cancel any existing PENDING invitations for the same email + org
+      await prisma.driverInvitation.updateMany({
+        where: { email: data.email, tenantId: orgId, status: 'PENDING' },
+        data: { status: 'CANCELLED' },
+      });
+
+      // Create a DriverInvitation record
+      const invitation = await prisma.driverInvitation.create({
+        data: {
+          tenantId: orgId,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          licenseNumber: data.cdlNumber || null,
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+          status: 'PENDING',
+        },
+      });
+
+      // Fetch tenant name for the invitation email
+      let organizationName = 'your fleet';
+      try {
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: orgId },
+          select: { name: true },
+        });
+        organizationName = tenant?.name || 'your fleet';
+      } catch {
+        // Fall back to generic name — non-critical
+      }
+
+      // Build the accept URL and send the invitation email
+      const acceptUrl = `${getAppBaseUrl()}/accept-invitation?id=${invitation.id}`;
+
+      try {
+        await sendDriverInvitation(data.email, {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          organizationName,
+          acceptUrl,
+          expiresAt: invitation.expiresAt.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }),
+        });
+        return { driver, emailSent: true };
+      } catch (emailError) {
+        logger.error('Failed to send carrier driver invitation email:', emailError);
+        return {
+          driver,
+          emailSent: false,
+          emailWarning:
+            'Driver created but invitation email failed to send. Please resend manually.',
+        };
+      }
+    } catch (invitationError) {
+      // DriverInvitation DB insert failed — driver record still created successfully
+      logger.error('Failed to create carrier driver invitation record:', invitationError);
+      return {
+        driver,
+        emailSent: false,
+        emailWarning:
+          'Driver created but invitation email failed to send. Please resend manually.',
+      };
+    }
+  }
+
+  return { driver, emailSent: false };
 }
 
 export async function updateCarrierDriver(

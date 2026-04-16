@@ -58,8 +58,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const driver = await createCarrierDriver(orgId, parsed.data);
-    return NextResponse.json({ data: driver }, { status: 201 });
+    const result = await createCarrierDriver(orgId, parsed.data);
+    return NextResponse.json(
+      { data: result.driver, ...(result.emailWarning ? { warning: result.emailWarning } : {}) },
+      { status: 201 }
+    );
   } catch (err) {
     if (err instanceof Error && err.message === 'User already linked to a carrier driver') {
       return NextResponse.json({ error: err.message }, { status: 400 });
