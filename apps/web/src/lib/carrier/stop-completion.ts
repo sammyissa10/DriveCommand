@@ -3,6 +3,7 @@
 // (2) finalize the stop and compute dwell,
 // (3) check parent load and dispatch for cascade completion — all in a single transaction.
 
+import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
@@ -168,7 +169,7 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
       logger.info('completeStop: load marked delivered', { orgId, loadId: stop.loadId });
 
       // Fire-and-forget: notify owner that load was delivered
-      sendLoadDeliveredNotification(orgId, stop.loadId).catch(() => {});
+      if (stop.loadId) after(() => sendLoadDeliveredNotification(orgId, stop.loadId!));
     }
   }
 

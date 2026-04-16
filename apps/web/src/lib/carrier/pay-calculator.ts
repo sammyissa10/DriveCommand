@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import { Prisma } from '@/generated/prisma';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
@@ -304,13 +305,13 @@ export async function generateDriverPayRecords(
     });
     for (const rec of newRecords) {
       const driverName = `${rec.driver.firstName} ${rec.driver.lastName}`.trim();
-      sendPayRecordReadyNotification(
+      after(() => sendPayRecordReadyNotification(
         orgId,
         rec.id,
         driverName,
         dispatchId,
         Number(rec.netPay ?? 0)
-      ).catch(() => {});
+      ));
     }
   }
 

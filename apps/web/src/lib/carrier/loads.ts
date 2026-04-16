@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
@@ -250,7 +251,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
 
   // Notify client when load is marked as invoiced
   if (data.status === 'invoiced' && existing.status !== 'invoiced') {
-    sendInvoiceGeneratedNotification(orgId, id).catch(() => {});
+    after(() => sendInvoiceGeneratedNotification(orgId, id));
   }
 
   // Trigger revenue recalculation if any rate-affecting fields changed
