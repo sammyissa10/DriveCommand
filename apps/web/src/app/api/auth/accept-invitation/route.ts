@@ -233,6 +233,18 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Link carrier_drivers record to the newly created user
+      await tx.carrierDriver.updateMany({
+        where: {
+          orgId: invitation.tenantId,
+          email: userEmail,
+          userId: null, // Only link records that have no user yet
+        },
+        data: {
+          userId: newUser.id,
+        },
+      });
+
       return newUser;
     }, TX_OPTIONS);
 

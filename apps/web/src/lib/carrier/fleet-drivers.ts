@@ -152,6 +152,27 @@ export async function createCarrierDriver(
     },
   });
 
+  // Link to existing User if one exists for this email in the same org
+  if (data.email && !userId) {
+    try {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          email: data.email.toLowerCase().trim(),
+          tenantId: orgId,
+        },
+      });
+      if (existingUser) {
+        await prisma.carrierDriver.update({
+          where: { id: driver.id },
+          data: { userId: existingUser.id },
+        });
+      }
+    } catch (linkError) {
+      logger.error('Failed to link existing user to carrier driver:', linkError);
+      // Non-fatal — driver record still valid, can be linked later
+    }
+  }
+
   // Send invitation email if email is provided
   if (data.email) {
     try {
