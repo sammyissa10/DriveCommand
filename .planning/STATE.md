@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 239: Fix driver portal stop state machine — Begin Navigation -> Mark Arrived -> Complete Stop
+Last activity: 2026-04-17 - Completed quick task 240: Add in-app notification to driver when owner starts trip
 Last session: 2026-04-17T20:53:09Z
 Stopped at: Completed quick-239-PLAN.md — 1 task, 1 file modified
 
@@ -1025,6 +1025,7 @@ None blocking immediate progress.
 | 237 | Fix driver portal stop flow — correct button labels, navigation triggers, dispatch query, BOL bypass | 2026-04-17 | 577595f | [237-fix-driver-portal-stop-flow-correct-butt](./quick/237-fix-driver-portal-stop-flow-correct-butt/) |
 | 238 | Add client portal notifications for Carrier Ops events — pickup, delivery, invoice | 2026-04-17 | c1676ca | [238-add-client-portal-notifications-for-carr](./quick/238-add-client-portal-notifications-for-carr/) |
 | 239 | Fix driver portal stop state machine — Begin Navigation, Mark Arrived, Complete Stop flow | 2026-04-17 | 304d43b | [239-fix-driver-portal-stop-state-machine-beg](./quick/239-fix-driver-portal-stop-state-machine-beg/) |
+| 240 | Add in-app notification to driver when owner starts trip | 2026-04-17 | 117ec81 | [240-add-in-app-notification-to-driver-when-o](./quick/240-add-in-app-notification-to-driver-when-o/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
