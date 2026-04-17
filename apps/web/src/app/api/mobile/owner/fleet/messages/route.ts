@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { sendPushToUser, sendPushToOrg } from '@/lib/notifications/send-push';
 import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
@@ -311,25 +311,25 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Send push notifications — fire and forget
-    const pushTitle = 'Fleet Message';
-    const pushBody = messageBody.slice(0, 100);
+    // Send push notifications via after() to survive serverless context freezing
+    const pushBodyText = messageBody.slice(0, 100);
 
     if (isBroadcast) {
-      // Fetch all active drivers in tenant then send push to each
-      const drivers = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        return tx.user.findMany({
-          where: { tenantId, role: 'DRIVER', isActive: true },
-          select: { id: true },
-        });
-      }, TX_OPTIONS);
-
-      for (const driver of drivers) {
-        void sendPushToUser(driver.id, { title: pushTitle, body: pushBody });
-      }
+      after(() =>
+        sendPushToOrg(tenantId, {
+          title: 'New Message from Dispatcher',
+          body: pushBodyText,
+          data: { type: 'fleet_message', messageId: created.id },
+        }, { role: 'DRIVER' })
+      );
     } else if (recipientId) {
-      void sendPushToUser(recipientId, { title: pushTitle, body: pushBody });
+      after(() =>
+        sendPushToUser(recipientId, {
+          title: 'New Message from Dispatcher',
+          body: pushBodyText,
+          data: { type: 'fleet_message', messageId: created.id },
+        })
+      );
     }
 
     const message = {

@@ -2,6 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types'
 
+import { after } from 'next/server';
 import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
@@ -146,16 +147,15 @@ export async function sendOwnerLoadReply(prevState: ActionState | null, formData
     },
   });
 
-  // Fire-and-forget: push notification to driver
+  // Push notification to driver via after() — survives serverless context freezing
   if (load.driverId) {
-    const senderName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
-
-    // Push notification — best-effort, never blocks the action
-    void sendPushToUser(load.driverId, {
-      title: `New message from ${senderName}`,
-      body: message.trim().slice(0, 100),
-      data: { screen: 'messages' },
-    });
+    after(() =>
+      sendPushToUser(load.driverId!, {
+        title: 'New Message from Dispatcher',
+        body: message.trim().slice(0, 100),
+        data: { type: 'fleet_message', messageId: 'load-reply' },
+      })
+    );
   }
 
   return { success: true };
@@ -215,12 +215,14 @@ export async function sendOwnerReply(prevState: ActionState | null, formData: Fo
       logger.error('[sendOwnerReply] driver notification email failed:', emailError);
     }
 
-    // Push notification — best-effort, never blocks the action
-    void sendPushToUser(route.driverId, {
-      title: `New message from ${senderName}`,
-      body: message.trim().slice(0, 100),
-      data: { screen: 'messages' },
-    });
+    // Push notification via after() — survives serverless context freezing
+    after(() =>
+      sendPushToUser(route.driverId!, {
+        title: 'New Message from Dispatcher',
+        body: message.trim().slice(0, 100),
+        data: { type: 'fleet_message', messageId: 'route-reply' },
+      })
+    );
   }
 
   return { success: true };
