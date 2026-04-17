@@ -44,12 +44,37 @@ interface NextStopRow {
   nextStopAddress: string;
 }
 
+interface CarrierTruckRow {
+  truckId: string;
+  unitNumber: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  vin: string | null;
+  licensePlate: string | null;
+  gpsId: string | null;
+  latitude: unknown;
+  longitude: unknown;
+  speed: number | null;
+  heading: number | null;
+  timestamp: Date | null;
+}
+
+interface CarrierDriverRow {
+  truckId: string;
+  firstName: string;
+  lastName: string;
+}
+
 /**
  * GET /api/v1/carrier/live-map/vehicles
  *
  * Returns all trucks for the tenant, enriched with their latest GPS ping,
  * currently assigned driver, and computed status. Trucks with no GPS data
  * are included with null lat/lng and status = 'no-location'.
+ *
+ * Includes both legacy Truck table vehicles AND carrier_trucks with
+ * GPSLocation rows written via the driver gps-ping endpoint.
  *
  * Used by the live map sidebar and vehicle list for 30-second polling.
  */
@@ -94,23 +119,56 @@ export async function GET() {
       `
     )) as TruckRow[];
 
-    if (truckRows.length === 0) {
+    // Step 1b: Fetch carrier trucks with their latest GPS ping
+    const carrierTruckRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT
+          ct.id AS "truckId",
+          ct.unit_number AS "unitNumber",
+          ct.make,
+          ct.model,
+          ct.year,
+          ct.vin,
+          ct.license_plate AS "licensePlate",
+          gps.id AS "gpsId",
+          gps.latitude,
+          gps.longitude,
+          gps.speed,
+          gps.heading,
+          gps.timestamp
+        FROM carrier_trucks ct
+        LEFT JOIN LATERAL (
+          SELECT g.id, g.latitude, g.longitude, g.speed, g.heading, g.timestamp
+          FROM "GPSLocation" g
+          WHERE g."carrierTruckId" = ct.id
+          ORDER BY g.timestamp DESC
+          LIMIT 1
+        ) gps ON TRUE
+        WHERE ct.org_id = ${orgId}::uuid
+          AND ct.status = 'active'
+        ORDER BY ct.license_plate ASC
+      `
+    )) as CarrierTruckRow[];
+
+    if (truckRows.length === 0 && carrierTruckRows.length === 0) {
       return NextResponse.json({ data: [] });
     }
 
     const truckIds = truckRows.map((r: TruckRow) => r.truckId);
 
     // Step 2: Find driver from active routes (IN_PROGRESS)
-    const routeDriverRows = (await tenantRawQuery((tx) =>
-      tx.$queryRaw`
-        SELECT r."truckId", u."firstName", u."lastName"
-        FROM "Route" r
-        JOIN "User" u ON r."driverId" = u.id
-        WHERE r."tenantId" = ${orgId}::uuid
-          AND r.status = 'IN_PROGRESS'
-          AND r."truckId" = ANY(${truckIds}::uuid[])
-      `
-    )) as DriverRow[];
+    const routeDriverRows = truckIds.length > 0
+      ? (await tenantRawQuery((tx) =>
+          tx.$queryRaw`
+            SELECT r."truckId", u."firstName", u."lastName"
+            FROM "Route" r
+            JOIN "User" u ON r."driverId" = u.id
+            WHERE r."tenantId" = ${orgId}::uuid
+              AND r.status = 'IN_PROGRESS'
+              AND r."truckId" = ANY(${truckIds}::uuid[])
+          `
+        )) as DriverRow[]
+      : [];
 
     // Build truckId → driverName map from routes
     const driverMap = new Map<string, string>();
@@ -146,17 +204,19 @@ export async function GET() {
     }
 
     // Step 3.5: Query active routes for dispatch context (PLANNED or IN_PROGRESS, scheduled today)
-    const dispatchRows = (await tenantRawQuery((tx) =>
-      tx.$queryRaw`
-        SELECT r.id AS "routeId", r."truckId", r.name AS "routeName", r.origin, r.destination
-        FROM "Route" r
-        WHERE r."tenantId" = ${orgId}::uuid
-          AND r.status IN ('PLANNED', 'IN_PROGRESS')
-          AND r."truckId" = ANY(${truckIds}::uuid[])
-          AND r."scheduledDate"::date = CURRENT_DATE
-          AND r."archivedAt" IS NULL
-      `
-    )) as DispatchRow[];
+    const dispatchRows = truckIds.length > 0
+      ? (await tenantRawQuery((tx) =>
+          tx.$queryRaw`
+            SELECT r.id AS "routeId", r."truckId", r.name AS "routeName", r.origin, r.destination
+            FROM "Route" r
+            WHERE r."tenantId" = ${orgId}::uuid
+              AND r.status IN ('PLANNED', 'IN_PROGRESS')
+              AND r."truckId" = ANY(${truckIds}::uuid[])
+              AND r."scheduledDate"::date = CURRENT_DATE
+              AND r."archivedAt" IS NULL
+          `
+        )) as DispatchRow[]
+      : [];
 
     // Build truckId → dispatch info map
     const dispatchMap = new Map<string, { routeId: string; routeName: string }>();
@@ -250,7 +310,64 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ data: vehicles });
+    // Step 2b: Find carrier truck drivers from active dispatches
+    const carrierTruckIds = carrierTruckRows.map((r) => r.truckId);
+    const carrierDriverMap = new Map<string, string>();
+
+    if (carrierTruckIds.length > 0) {
+      const carrierDriverRows = (await tenantRawQuery((tx) =>
+        tx.$queryRaw`
+          SELECT cd.truck_id AS "truckId", u."firstName", u."lastName"
+          FROM dispatches cd
+          JOIN carrier_drivers cdr ON cd.primary_driver_id = cdr.id
+          JOIN "User" u ON cdr.user_id = u.id
+          WHERE cd.org_id = ${orgId}::uuid
+            AND cd.status IN ('planned', 'in_progress')
+            AND cd.truck_id = ANY(${carrierTruckIds}::uuid[])
+        `
+      )) as CarrierDriverRow[];
+
+      for (const row of carrierDriverRows) {
+        if (!carrierDriverMap.has(row.truckId)) {
+          carrierDriverMap.set(row.truckId, `${row.firstName} ${row.lastName}`);
+        }
+      }
+    }
+
+    // Step 4b: Map carrier trucks to VehicleLocation and merge
+    const carrierVehicles: VehicleLocation[] = carrierTruckRows.map((row) => {
+      const lat = row.latitude != null ? Number(row.latitude) : null;
+      const lng = row.longitude != null ? Number(row.longitude) : null;
+      const spd = row.speed != null ? Number(row.speed) : null;
+      const hdg = row.heading != null ? Number(row.heading) : null;
+      const ts = row.timestamp ?? null;
+      const driverName = carrierDriverMap.get(row.truckId) ?? null;
+      const status = getVehicleStatus(spd, ts ? new Date(ts) : null);
+
+      return {
+        id: row.gpsId ?? row.truckId,
+        truckId: row.truckId,
+        latitude: lat,
+        longitude: lng,
+        speed: spd,
+        heading: hdg,
+        timestamp: ts,
+        truck: {
+          make: row.make ?? 'Unknown',
+          model: row.model ?? '',
+          licensePlate: row.licensePlate ?? row.unitNumber,
+          year: row.year ?? 0,
+          vin: row.vin ?? '',
+        },
+        driver: driverName ? { name: driverName } : null,
+        status,
+        dispatch: null, // Carrier dispatches use different structure; omit for now
+      };
+    });
+
+    const allVehicles = [...vehicles, ...carrierVehicles];
+
+    return NextResponse.json({ data: allVehicles });
   } catch (error) {
     logger.error('Live map vehicles error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
