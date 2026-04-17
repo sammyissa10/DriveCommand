@@ -7,7 +7,7 @@ import { getDispatch, updateDispatch } from '@/lib/carrier/dispatches';
 const DispatchUpdateSchema = z.object({
   primaryDriverId: z.string().uuid().optional(),
   truckId: z.string().uuid().optional(),
-  coDriverId: z.string().uuid().optional(),
+  coDriverId: z.string().uuid().nullable().optional(),
   trailerId: z.string().uuid().optional(),
   dispatcherId: z.string().uuid().optional(),
   routeTemplateId: z.string().uuid().optional(),

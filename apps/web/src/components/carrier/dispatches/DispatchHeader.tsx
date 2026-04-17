@@ -60,6 +60,8 @@ interface DispatchHeaderProps {
   coDriverName: string;
   truckUnit: string;
   allStopsDone: boolean;
+  allDrivers?: Array<{ id: string; name: string }>;
+  allTrucks?: Array<{ id: string; unitNumber: string }>;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,6 +131,8 @@ export function DispatchHeader({
   coDriverName,
   truckUnit,
   allStopsDone,
+  allDrivers = [],
+  allTrucks = [],
 }: DispatchHeaderProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -151,6 +155,9 @@ export function DispatchHeader({
     plannedMiles: '',
     actualMiles: '',
     notes: '',
+    primaryDriverId: '',
+    coDriverId: '',
+    truckId: '',
   });
 
   const isLocked = dispatch.status === 'completed' || dispatch.status === 'cancelled' || dispatch.status === 'tonu';
@@ -197,6 +204,9 @@ export function DispatchHeader({
       plannedMiles: String(dispatch.plannedMiles ?? ''),
       actualMiles: String(dispatch.actualMiles ?? ''),
       notes: cleanedNotes,
+      primaryDriverId: dispatch.primaryDriverId,
+      coDriverId: dispatch.coDriverId ?? '',
+      truckId: dispatch.truckId,
     });
     setEditOpen(true);
   }
@@ -204,6 +214,16 @@ export function DispatchHeader({
   function handleEditSave() {
     startTransition(async () => {
       try {
+        // Validate co-driver is not same as primary driver
+        if (
+          dispatch.status === 'planned' &&
+          editForm.coDriverId &&
+          editForm.coDriverId === editForm.primaryDriverId
+        ) {
+          toast.error('Co-driver cannot be the same as primary driver');
+          return;
+        }
+
         // Extract the [DISPATCH_NUMBER=...] tag to re-prepend on save
         const dnMatch = dispatch.notes?.match(/^\[DISPATCH_NUMBER=[^\]]*\]/) ?? null;
         const dnTag = dnMatch?.[0] ?? null;
@@ -234,6 +254,13 @@ export function DispatchHeader({
         if (editForm.actualMiles !== '') {
           const val = parseFloat(editForm.actualMiles);
           if (!isNaN(val)) payload.actualMiles = val;
+        }
+
+        // Include assignment fields only when status is planned
+        if (dispatch.status === 'planned') {
+          payload.primaryDriverId = editForm.primaryDriverId;
+          payload.truckId = editForm.truckId;
+          payload.coDriverId = editForm.coDriverId || null;
         }
 
         await patchDispatch(payload);
@@ -452,6 +479,66 @@ export function DispatchHeader({
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
+            {dispatch.status === 'planned' && (
+              <>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Primary Driver</label>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={editForm.primaryDriverId}
+                    onChange={(e) =>
+                      setEditForm((f) => ({
+                        ...f,
+                        primaryDriverId: e.target.value,
+                        // Clear co-driver if it matches the newly selected primary
+                        coDriverId: f.coDriverId === e.target.value ? '' : f.coDriverId,
+                      }))
+                    }
+                  >
+                    {allDrivers.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Co-Driver</label>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={editForm.coDriverId}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, coDriverId: e.target.value }))
+                    }
+                  >
+                    <option value="">None</option>
+                    {allDrivers
+                      .filter((d) => d.id !== editForm.primaryDriverId)
+                      .map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Truck</label>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={editForm.truckId}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, truckId: e.target.value }))
+                    }
+                  >
+                    {allTrucks.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.unitNumber}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Scheduled Departure</label>
               <input

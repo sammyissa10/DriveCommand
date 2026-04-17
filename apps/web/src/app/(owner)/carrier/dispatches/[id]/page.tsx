@@ -112,7 +112,6 @@ export default async function DispatchDetailPage({ params }: Props) {
     name: `${d.firstName} ${d.lastName}`,
   }));
   const trucksForAttach = allTrucks.map((t) => ({ id: t.id, unitNumber: t.unitNumber }));
-  void trucksForAttach; // available for future use
 
   const driverName = driverMap[dispatch.primaryDriverId] ?? 'Unknown Driver';
   const coDriverName = dispatch.coDriverId ? (driverMap[dispatch.coDriverId] ?? '') : '';
@@ -204,6 +203,8 @@ export default async function DispatchDetailPage({ params }: Props) {
         coDriverName={coDriverName}
         truckUnit={truckUnit}
         allStopsDone={allStopsDone}
+        allDrivers={driversForPanels}
+        allTrucks={trucksForAttach}
       />
 
       {/* Stop Timeline */}

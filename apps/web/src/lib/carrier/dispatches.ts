@@ -38,9 +38,10 @@ export interface DispatchCreateInput {
   notes?: string;
 }
 
-export type DispatchUpdateInput = Partial<Omit<DispatchCreateInput, 'primaryDriverId' | 'truckId'>> & {
+export type DispatchUpdateInput = Partial<Omit<DispatchCreateInput, 'primaryDriverId' | 'truckId' | 'coDriverId'>> & {
   primaryDriverId?: string;
   truckId?: string;
+  coDriverId?: string | null;
   trailerId?: string;
   notes?: string;
   plannedMiles?: number;
@@ -241,6 +242,33 @@ export async function updateDispatch(
 
   if (existing.status === 'completed') {
     return { error: 'Cannot update completed dispatch' };
+  }
+
+  // Tenant isolation: validate driver/truck belong to this org
+  if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
+    const driver = await prisma.carrierDriver.findFirst({
+      where: { id: data.primaryDriverId, orgId },
+    });
+    if (!driver) return { error: 'Invalid driver' };
+  }
+
+  if (data.coDriverId) {
+    const coDriver = await prisma.carrierDriver.findFirst({
+      where: { id: data.coDriverId, orgId },
+    });
+    if (!coDriver) return { error: 'Invalid co-driver' };
+
+    const effectivePrimaryId = data.primaryDriverId ?? existing.primaryDriverId;
+    if (data.coDriverId === effectivePrimaryId) {
+      return { error: 'Co-driver cannot be the same as primary driver' };
+    }
+  }
+
+  if (data.truckId && data.truckId !== existing.truckId) {
+    const truck = await prisma.carrierTruck.findFirst({
+      where: { id: data.truckId, orgId },
+    });
+    if (!truck) return { error: 'Invalid truck' };
   }
 
   // Strip locked fields when in_progress
