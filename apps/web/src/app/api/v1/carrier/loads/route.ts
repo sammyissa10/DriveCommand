@@ -36,7 +36,7 @@ const LoadCreateSchema = z.object({
   commodityPallets: z.number().int().optional(),
   hazmat: z.boolean().optional(),
   hazmatClass: z.string().optional(),
-  rateType: z.enum(['per_mile', 'flat', 'per_load', 'per_stop', 'per_cwt', 'per_pallet', 'hourly']).optional(),
+  rateType: z.enum(['per_mile', 'per_load', 'per_hour', 'per_stop', 'flat', 'per_cwt', 'per_pallet', 'hourly']).optional(),
   rateAmount: z.number().optional(),
   brokerFlag: z.boolean().optional(),
   carrierCost: z.number().optional(),

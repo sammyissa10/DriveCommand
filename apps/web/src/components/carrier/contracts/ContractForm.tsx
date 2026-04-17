@@ -59,8 +59,12 @@ const CONTRACT_TYPES = [
 
 const RATE_TYPES = [
   { value: 'per_mile', label: 'Per Mile' },
-  { value: 'flat', label: 'Flat Rate' },
   { value: 'per_load', label: 'Per Load' },
+  { value: 'per_hour', label: 'Per Hour' },
+  { value: 'per_stop', label: 'Per Stop' },
+  { value: 'flat', label: 'Flat Rate' },
+  { value: 'per_cwt', label: 'Per CWT' },
+  { value: 'per_pallet', label: 'Per Pallet' },
   { value: 'hourly', label: 'Hourly' },
 ];
 

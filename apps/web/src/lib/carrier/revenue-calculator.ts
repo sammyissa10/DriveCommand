@@ -59,6 +59,7 @@ export function calculateRevenue(
       break;
     }
     case 'flat':
+    case 'per_load':
       baseRevenue = rateAmount;
       break;
     case 'per_stop': {
@@ -77,6 +78,7 @@ export function calculateRevenue(
       break;
     }
     case 'hourly':
+    case 'per_hour':
       baseRevenue = rateAmount * 8; // hardcoded default hours
       break;
     default:

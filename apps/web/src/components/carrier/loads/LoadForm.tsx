@@ -72,11 +72,12 @@ interface LoadFormProps {
 
 const RATE_TYPE_LABELS: Record<string, string> = {
   per_mile: 'Rate per Mile ($)',
-  flat: 'Flat Rate ($)',
   per_load: 'Rate per Load ($)',
+  per_hour: 'Rate per Hour ($/hr)',
+  per_stop: 'Rate per Delivery Stop ($)',
+  flat: 'Flat Rate ($)',
   per_cwt: 'Rate per CWT ($)',
   per_pallet: 'Rate per Pallet ($)',
-  per_stop: 'Rate per Delivery Stop ($)',
   hourly: 'Hourly Rate ($/hr)',
 };
 
@@ -553,11 +554,12 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
               className={selectClass}
             >
               <option value="per_mile">Per Mile</option>
-              <option value="flat">Flat Rate</option>
               <option value="per_load">Per Load</option>
+              <option value="per_hour">Per Hour</option>
+              <option value="per_stop">Per Stop</option>
+              <option value="flat">Flat Rate</option>
               <option value="per_cwt">Per CWT</option>
               <option value="per_pallet">Per Pallet</option>
-              <option value="per_stop">Per Stop</option>
               <option value="hourly">Hourly</option>
             </select>
           </div>

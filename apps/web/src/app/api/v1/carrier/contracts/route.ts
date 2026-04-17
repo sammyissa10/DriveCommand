@@ -11,7 +11,7 @@ const ContractCreateSchema = z.object({
   contractType: z.enum(['spot', 'contract', 'dedicated']).optional(),
   effectiveDate: z.string().optional(),
   expirationDate: z.string().optional(),
-  rateType: z.enum(['per_mile', 'flat', 'per_load', 'hourly']).optional(),
+  rateType: z.enum(['per_mile', 'per_load', 'per_hour', 'per_stop', 'flat', 'per_cwt', 'per_pallet', 'hourly']).optional(),
   baseRate: z.string().optional(),
   fuelSurchargeRate: z.string().optional(),
   fuelSurchargeMethod: z.enum(['none', 'percentage', 'per_mile', 'table']).optional(),
