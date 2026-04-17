@@ -27,6 +27,7 @@ import {
 } from '@/lib/notifications/notification-deduplication';
 import type { ComplianceAlert } from '@/lib/carrier/compliance';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
+import { sendPushToUser } from '@/lib/notifications/send-push';
 import { DispatchAssignedEmail } from '@/emails/carrier/dispatch-assigned';
 import { LoadDeliveredEmail } from '@/emails/carrier/load-delivered';
 import { PayRecordReadyEmail } from '@/emails/carrier/pay-record-ready';
@@ -173,6 +174,19 @@ export async function sendDispatchAssignedNotification(
       entityType: 'dispatch',
       entityId: dispatchId,
     });
+
+    // Send mobile push notification to the driver
+    const driverRecord = await prisma.carrierDriver.findFirst({
+      where: { id: driverId },
+      select: { userId: true },
+    });
+    if (driverRecord?.userId) {
+      await sendPushToUser(driverRecord.userId, {
+        title: 'New Dispatch Assigned',
+        body: `${dispatchNumber} — ${dispatchRaw._count.stops} stops — Departs ${scheduledDeparture}`,
+        data: { type: 'dispatch_assigned', dispatchId },
+      });
+    }
 
     logger.info('sendDispatchAssignedNotification: sent', { orgId, dispatchId, driverId });
   } catch (err) {

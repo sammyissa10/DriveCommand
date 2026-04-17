@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
+import { sendPushToUser } from '@/lib/notifications/send-push';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -339,6 +340,24 @@ export async function transitionDispatchStatus(
         ...(notes ? { notes: dispatch.notes ? `${dispatch.notes} ${notes}` : notes } : {}),
       },
     });
+
+    // Notify driver that their trip has started
+    const driver = await prisma.carrierDriver.findFirst({
+      where: { id: dispatch.primaryDriverId },
+      select: { userId: true },
+    });
+    const dispatchNumberMatch = dispatch.notes?.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+    const dispatchNumber = dispatchNumberMatch ? dispatchNumberMatch[1] : id.slice(0, 8);
+    if (driver?.userId) {
+      after(() =>
+        sendPushToUser(driver.userId!, {
+          title: 'Trip Started',
+          body: `${dispatchNumber} is now in progress`,
+          data: { type: 'dispatch_in_progress', dispatchId: id },
+        })
+      );
+    }
+
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }
 
