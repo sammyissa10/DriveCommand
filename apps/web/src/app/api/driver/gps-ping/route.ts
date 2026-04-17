@@ -10,13 +10,9 @@ import { logger } from '@/lib/logger';
  * Accepts GPS coordinates from web driver portal via browser geolocation API.
  * Uses cookie-based session auth (web only — no Bearer token needed).
  *
- * NOTE: GPSLocation table has FK to legacy Truck table, NOT CarrierTruck.
- * Since Carrier Ops drivers use CarrierTruck, we CANNOT write to GPSLocation
- * without a matching legacy Truck row. Instead, we log coordinates structured
- * and return success so the UI shows green status.
- *
- * TODO: When GPSLocation table adds CarrierTruck FK or a new CarrierGPSLocation
- *       table is created, persist coordinates here instead of just logging.
+ * When the driver has an active CarrierDispatch, resolves the carrierTruckId
+ * and persists a GPSLocation row with that FK set (truckId null).
+ * Legacy Truck-based GPS pings are unaffected (truckId-based path unchanged).
  */
 export async function POST(req: NextRequest) {
   try {
@@ -90,7 +86,20 @@ export async function POST(req: NextRequest) {
       // Non-fatal — we still log and return success even without truckId
     }
 
-    // 6. Log GPS coordinates (cannot persist to GPSLocation — see NOTE above)
+    // 6. Persist GPS coordinates to GPSLocation when carrierTruckId is resolved
+    if (carrierTruckId) {
+      await prisma.gPSLocation.create({
+        data: {
+          tenantId,
+          carrierTruckId,
+          latitude: lat,
+          longitude: lng,
+          accuracy: accuracy ?? null,
+          timestamp: new Date(),
+        },
+      });
+    }
+
     logger.info('driver-gps-ping', {
       driverId: userId,
       lat,
@@ -100,6 +109,7 @@ export async function POST(req: NextRequest) {
       carrierTruckId,
       orgId: tenantId,
       source: 'web_driver_portal',
+      persisted: !!carrierTruckId,
     });
 
     return NextResponse.json({ saved: true, source: 'web_driver_portal' });
