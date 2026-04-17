@@ -1028,6 +1028,7 @@ None blocking immediate progress.
 | 239 | Fix driver portal stop state machine — Begin Navigation, Mark Arrived, Complete Stop flow | 2026-04-17 | 304d43b | [239-fix-driver-portal-stop-state-machine-beg](./quick/239-fix-driver-portal-stop-state-machine-beg/) |
 | 240 | Add in-app notification to driver when owner starts trip | 2026-04-17 | 117ec81 | [240-add-in-app-notification-to-driver-when-o](./quick/240-add-in-app-notification-to-driver-when-o/) |
 | 241 | Fix 5 driver portal issues — load status sync, auto-navigation on stop completion, wrong dispatch query, timestamps, and Route tab cleanup | 2026-04-17 | decc4d3 | [241-fix-5-driver-portal-issues-load-status-s](./quick/241-fix-5-driver-portal-issues-load-status-s/) |
+| 242 | Fix driver portal GPS ping to write to GPSLocation using carrier_trucks instead of legacy Truck table | 2026-04-17 | 687c71b | [242-fix-driver-portal-gps-ping-to-write-to-g](./quick/242-fix-driver-portal-gps-ping-to-write-to-g/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
