@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { DriverDispatchCard } from './driver-dispatch-card';
 import { DriverQuickActions } from './driver-quick-actions';
 import { DriverHosWidget } from './driver-hos-widget';
@@ -59,23 +60,23 @@ interface DriverDashboardProps {
   recentMessages: MessagePreview[];
 }
 
-function getTimeGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return 'Good morning';
-  if (hour >= 12 && hour < 17) return 'Good afternoon';
-  return 'Good evening';
-}
-
 export function DriverDashboard({ firstName, dispatch, hos, recentMessages }: DriverDashboardProps) {
-  const greeting = firstName
-    ? `${getTimeGreeting()}, ${firstName}.`
-    : `${getTimeGreeting()}.`;
+  // Greeting is deferred to client to avoid hydration mismatch: server renders UTC hours,
+  // client renders local hours — different values cause React error #418.
+  const [greeting, setGreeting] = useState('Hello');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    const salutation =
+      hour >= 5 && hour < 12 ? 'Good morning' : hour >= 12 && hour < 17 ? 'Good afternoon' : 'Good evening';
+    setGreeting(firstName ? `${salutation}, ${firstName}.` : `${salutation}.`);
+  }, [firstName]);
 
   return (
     <div className="max-w-lg mx-auto space-y-5 px-0">
       {/* Header row: greeting + GPS indicator */}
       <div className="flex items-start justify-between gap-3">
-        <h1 className="text-xl font-bold text-foreground leading-snug">{greeting}</h1>
+        <h1 className="text-xl font-bold text-foreground leading-snug min-h-[1.75rem]">{greeting}</h1>
         <div className="flex items-center gap-2 shrink-0 pt-0.5">
           <DriverGpsPing />
         </div>
