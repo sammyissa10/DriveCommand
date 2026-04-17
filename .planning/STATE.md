@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 227: Allow editing driver, truck, and load assignments on planned dispatches
-Last session: 2026-04-17T01:34:53Z
-Stopped at: Completed quick-227-PLAN.md — 2 tasks, 1 file created, 7 files modified
+Last activity: 2026-04-17 - Completed quick task 228: In-app notification center for owner portal
+Last session: 2026-04-17T01:51:12Z
+Stopped at: Completed quick-228-PLAN.md — 4 tasks, 6 files created, 3 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -173,6 +173,7 @@ Progress: [███████████████████████
 - Quick-215 (2026-04-15): Fix 6 High findings from carrier operations audit 213 — per_load enum added to loads API + LoadForm, getFacility/updateFacility guard against inactive_ soft-deleted records, FK ownership checks on createExpense (dispatch/stop/driver), createRouteTemplate (client/contract/driver/truck), saveRouteTemplate (same 4 + batch facility check), createStop (load/client) — 6 tasks, 8 files, ~18min
 - Quick-218 (2026-04-14): Upgrade live fleet map — 3 tenant-isolated API routes (vehicles with LEFT JOIN LATERAL, history by truck+date, trips paginated), two-panel layout, VehicleSidebar (click-to-fly, last-seen, driver name), VehicleFilterBar (client-side multi-select), LiveMapTabs (Live/History/Trips), HistoryTab (GPS trail + timeline), TripsTab (paginated completed routes), 30s polling on Live tab only, no-location trucks in sidebar but not on map — 2 tasks, 8 files created, 8 files modified, 11 min
 - Quick-224 (2026-04-16): Add email notifications for all carrier lifecycle events — 5 React Email templates (dispatch-assigned, load-delivered, pay-record-ready, invoice-generated, compliance-alert), notifications.ts helper with full idempotency via NotificationLog, triggers wired in dispatches.ts (create+reassign), stop-completion.ts (delivered cascade), pay-calculator.ts (pay records), loads.ts (invoiced status), compliance-alerts cron — 2 tasks, 6 files created, 6 files modified, ~20min
+- Quick-228 (2026-04-17): In-app notification center for owner portal — InAppNotification table + RLS, createNotification() fire-and-forget helper wired into 5 send* functions, GET/PATCH notification API routes, NotificationBell (polling badge) + NotificationCenter (dropdown with type icons, relative timestamps, deep links) in owner shell header — 4 tasks, 6 files created, 3 files modified, ~75min
 
 ## Accumulated Context
 
@@ -228,6 +229,12 @@ Progress: [███████████████████████
 - App-layer soft-delete guard instead of schema migration — facilityType inactive_ prefix convention preserved; getFacility/updateFacility now exclude inactive_ prefixed records without touching schema
 - Batch facility ownership check in saveRouteTemplate — single findMany for all stop facilityIds is more efficient than N individual queries
 - createStop returns null (not error object) for FK ownership failures — matches existing null-returns-404 pattern in the function
+
+**Quick-228 decisions (In-app notification center):**
+- RLS INSERT policy uses WITH CHECK (true) — app always writes via service role key, not JWT claims; SELECT/UPDATE use org_id = (auth.jwt() ->> 'org_id')::uuid
+- Compliance alerts create one in-app notification per alert (not one batch row) — individual actionability
+- entityId defaults to orgId for compliance alerts without extractable entity UUID from the link
+- Mark-all-read uses optimistic local state update — avoids second fetch round-trip
 
 **Quick-186 decisions (Fix all carrier ops QA bugs):**
 - Used prisma db push (not migrate) to add paymentTerms/creditLimit — no migration file created, no constraint changes
