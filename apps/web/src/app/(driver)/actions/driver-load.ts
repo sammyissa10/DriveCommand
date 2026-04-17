@@ -1,181 +1,80 @@
 'use server';
 
 /**
- * Driver-scoped load server actions.
- * All actions enforce DRIVER role check and filter data by authenticated user's ID.
- * CRITICAL SECURITY: No action accepts driverId as input — identity resolved from getCurrentUser().
+ * Driver-scoped load server actions — Carrier Ops edition.
+ * All actions enforce DRIVER role check and resolve driver identity via
+ * carrierDriver.userId = session.userId (NOT from URL/params).
+ *
+ * CRITICAL SECURITY: No action accepts driverId as input. Identity is
+ * resolved server-side from the session cookie.
  */
 
-import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { revalidatePath } from 'next/cache';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+
+// ---------------------------------------------------------------------------
+// getMyLoads
+// ---------------------------------------------------------------------------
 
 /**
- * Get the active load assigned to the authenticated driver.
- * Returns the earliest active load (DISPATCHED, PICKED_UP, IN_TRANSIT, or DELIVERED).
- * Returns null if no active load assignment exists.
+ * Get CarrierLoads linked to the authenticated driver's active dispatches.
+ * Returns loads from planned or in_progress dispatches.
  *
- * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
+ * SECURITY: Filters by carrierDriver.userId = session.userId AND orgId = session.tenantId.
  */
-export async function getMyActiveLoad() {
-  // CRITICAL: Auth check FIRST before any data access
+export async function getMyLoads() {
   await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
 
-  // Get current user from database
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error('User not found');
-  }
+  /**
+   * @bypass_rls reason: driver-server-action
+   * WHY: Server actions use Supabase session auth, not the RLS-scoped tenant
+   *      connection. Carrier Ops tables require bypass_rls for server-side reads.
+   * SCOPE: Reads only loads linked to dispatches where carrierDriver.userId = session.userId
+   *        AND orgId = session.tenantId. Double-scoped.
+   * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
+   */
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-  // Get tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
 
-  // Query load assigned to this driver (filter by user.id in WHERE clause)
-  const load = await prisma.load.findFirst({
-    where: {
-      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
-      status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] },
-    },
-    include: {
-      customer: {
-        select: { companyName: true },
+    if (!carrierDriver) return [];
+
+    // Find dispatches for this driver that are active
+    const activeDispatches = await tx.carrierDispatch.findMany({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: session.tenantId,
+        status: { in: ['planned', 'in_progress'] },
       },
-      route: {
-        select: { id: true, name: true, origin: true, destination: true, status: true },
+      select: { id: true },
+    });
+
+    const dispatchIds = activeDispatches.map((d) => d.id);
+    if (dispatchIds.length === 0) return [];
+
+    return tx.carrierLoad.findMany({
+      where: {
+        dispatchId: { in: dispatchIds },
+        orgId: session.tenantId,
       },
-    },
-    orderBy: {
-      pickupDate: 'asc', // Earliest active load first
-    },
-  });
-
-  return load;
-}
-
-/**
- * Get a lightweight summary of the active load assigned to the authenticated driver.
- * Returns only fields needed for cross-reference info card: id, loadNumber, origin, destination, status.
- * Returns null if no active load assignment exists.
- *
- * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
- */
-export async function getMyActiveLoadSummary() {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.DRIVER]);
-
-  // Get current user from database
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // Get tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
-
-  // Query load assigned to this driver — select only summary fields
-  const load = await prisma.load.findFirst({
-    where: {
-      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
-      status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] },
-    },
-    select: {
-      id: true,
-      loadNumber: true,
-      origin: true,
-      destination: true,
-      status: true,
-      routeId: true,
-      route: {
-        select: { id: true, name: true, origin: true, destination: true, status: true },
+      include: {
+        client: { select: { id: true, name: true } },
+        stops: {
+          orderBy: { sequenceOrder: 'asc' },
+          include: {
+            facility: {
+              select: { id: true, name: true, city: true, state: true },
+            },
+          },
+        },
       },
-    },
-    orderBy: {
-      pickupDate: 'asc', // Earliest active load first
-    },
-  });
-
-  return load;
-}
-
-/**
- * Advance the authenticated driver's load status one step forward.
- * Status progression: DISPATCHED -> PICKED_UP -> IN_TRANSIT -> DELIVERED
- * SECURITY: Verifies load ownership (driverId = user.id) before updating.
- */
-export async function advanceLoadStatus(loadId: string) {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.DRIVER]);
-
-  // Get current user from database
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // Get tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
-
-  // Find load and verify ownership
-  const load = await prisma.load.findFirst({
-    where: {
-      id: loadId,
-      driverId: user.id, // SECURITY: verify the load belongs to this driver
-    },
-  });
-
-  if (!load) {
-    return { error: 'Load not found or not assigned to you' };
-  }
-
-  // Define forward-only status progression map
-  const STATUS_PROGRESSION: Record<string, string> = {
-    DISPATCHED: 'PICKED_UP',
-    PICKED_UP: 'IN_TRANSIT',
-    IN_TRANSIT: 'DELIVERED',
-  };
-
-  const nextStatus = STATUS_PROGRESSION[load.status];
-  if (!nextStatus) {
-    return { error: 'Cannot advance this load status' };
-  }
-
-  // Update load status
-  await prisma.load.update({
-    where: { id: loadId },
-    data: { status: nextStatus as 'PICKED_UP' | 'IN_TRANSIT' | 'DELIVERED' },
-  });
-
-  revalidatePath('/my-load');
-  return { success: true, newStatus: nextStatus };
-}
-
-/**
- * Get all completed loads assigned to the authenticated driver.
- * Returns DELIVERED and INVOICED loads ordered most-recent-first.
- * SECURITY: Filters by driverId = user.id from DB (NEVER from params).
- */
-export async function getMyCompletedLoads() {
-  await requireRole([UserRole.DRIVER]);
-
-  const user = await getCurrentUser();
-  if (!user) throw new Error('User not found');
-
-  const prisma = await getTenantPrisma();
-
-  return prisma.load.findMany({
-    where: {
-      driverId: user.id,
-      status: { in: ['DELIVERED', 'INVOICED'] },
-      archivedAt: null,
-    },
-    include: {
-      customer: { select: { companyName: true } },
-      route: { select: { id: true, name: true } },
-    },
-    orderBy: [
-      { deliveryDate: 'desc' },
-      { pickupDate: 'desc' },
-    ],
-  });
+      orderBy: { createdAt: 'asc' },
+    });
+  }, TX_OPTIONS);
 }
