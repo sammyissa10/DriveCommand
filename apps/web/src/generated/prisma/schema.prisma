@@ -103,6 +103,15 @@ enum RouteStopStatus {
   DEPARTED
 }
 
+enum InAppNotificationType {
+  dispatch_assigned
+  load_delivered
+  pay_record_ready
+  invoice_generated
+  compliance_alert
+  needs_assignment
+}
+
 // Models
 model Tenant {
   id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -146,16 +155,17 @@ model Tenant {
   driverIncidents      DriverIncident[]
 
   // Carrier Operations reverse relations
-  carrierClients    CarrierClient[]
-  carrierContracts  CarrierContract[]
-  carrierFacilities CarrierFacility[]
-  carrierDrivers    CarrierDriver[]
-  carrierTrucks     CarrierTruck[]
-  routeTemplates    RouteTemplate[]
-  carrierDispatches CarrierDispatch[]
-  carrierLoads      CarrierLoad[]
-  carrierExpenses   CarrierExpense[]
-  driverPayRecords  DriverPayRecord[]
+  carrierClients     CarrierClient[]
+  carrierContracts   CarrierContract[]
+  carrierFacilities  CarrierFacility[]
+  carrierDrivers     CarrierDriver[]
+  carrierTrucks      CarrierTruck[]
+  routeTemplates     RouteTemplate[]
+  carrierDispatches  CarrierDispatch[]
+  carrierLoads       CarrierLoad[]
+  carrierExpenses    CarrierExpense[]
+  driverPayRecords   DriverPayRecord[]
+  inAppNotifications InAppNotification[]
 }
 
 model User {
@@ -198,12 +208,13 @@ model User {
   pushTokens        PushToken[]
 
   // Carrier Operations reverse relations
-  carrierDriverProfile CarrierDriver?    @relation(name: "CarrierDriverUser")
-  dispatchedRuns       CarrierDispatch[] @relation(name: "CarrierDispatcher")
-  uploadedCarrierDocs  CarrierDocument[] @relation(name: "CarrierDocUploader")
-  verifiedCarrierDocs  CarrierDocument[] @relation(name: "CarrierDocVerifier")
-  approvedExpenses     CarrierExpense[]  @relation(name: "CarrierExpenseApprover")
-  approvedPayRecords   DriverPayRecord[] @relation(name: "DriverPayApprover")
+  carrierDriverProfile CarrierDriver?      @relation(name: "CarrierDriverUser")
+  dispatchedRuns       CarrierDispatch[]   @relation(name: "CarrierDispatcher")
+  uploadedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocUploader")
+  verifiedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocVerifier")
+  approvedExpenses     CarrierExpense[]    @relation(name: "CarrierExpenseApprover")
+  approvedPayRecords   DriverPayRecord[]   @relation(name: "DriverPayApprover")
+  inAppNotifications   InAppNotification[]
 
   @@unique([email, tenantId])
   @@index([tenantId])
@@ -1744,4 +1755,24 @@ model CarrierCatalogMeta {
 
   @@unique([enumGroup, enumValue])
   @@map("carrier_catalog_meta")
+}
+
+model InAppNotification {
+  id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId      String                @map("org_id") @db.Uuid
+  userId     String?               @map("user_id") @db.Uuid
+  type       InAppNotificationType
+  title      String                @db.VarChar(200)
+  message    String
+  entityType String                @map("entity_type") @db.VarChar(50)
+  entityId   String                @map("entity_id") @db.Uuid
+  read       Boolean               @default(false)
+  createdAt  DateTime              @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [orgId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([orgId, read, createdAt(sort: Desc)])
+  @@index([orgId, createdAt(sort: Desc)])
+  @@map("in_app_notifications")
 }

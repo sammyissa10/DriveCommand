@@ -1031,6 +1031,19 @@ exports.Prisma.CarrierCatalogMetaScalarFieldEnum = {
   active: 'active'
 };
 
+exports.Prisma.InAppNotificationScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  read: 'read',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1282,6 +1295,15 @@ exports.IncidentSeverity = exports.$Enums.IncidentSeverity = {
   HIGH: 'HIGH'
 };
 
+exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
+  dispatch_assigned: 'dispatch_assigned',
+  load_delivered: 'load_delivered',
+  pay_record_ready: 'pay_record_ready',
+  invoice_generated: 'invoice_generated',
+  compliance_alert: 'compliance_alert',
+  needs_assignment: 'needs_assignment'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -1333,7 +1355,8 @@ exports.Prisma.ModelName = {
   CarrierDocument: 'CarrierDocument',
   CarrierExpense: 'CarrierExpense',
   DriverPayRecord: 'DriverPayRecord',
-  CarrierCatalogMeta: 'CarrierCatalogMeta'
+  CarrierCatalogMeta: 'CarrierCatalogMeta',
+  InAppNotification: 'InAppNotification'
 };
 
 /**

@@ -6,7 +6,7 @@ import { listFacilities, createFacility } from '@/lib/carrier/facilities';
 
 const FacilityCreateSchema = z.object({
   name: z.string().min(1),
-  facilityType: z.string().optional(),
+  facilityType: z.enum(['terminal', 'yard', 'warehouse', 'drop_yard', 'customer_site']).optional(),
   addressLine1: z.string().optional(),
   addressLine2: z.string().optional(),
   city: z.string().optional(),

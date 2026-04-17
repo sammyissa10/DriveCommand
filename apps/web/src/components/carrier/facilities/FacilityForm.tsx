@@ -84,11 +84,11 @@ interface FacilityFormProps {
 }
 
 const FACILITY_TYPES = [
-  { value: 'shipper',   label: 'Shipper' },
-  { value: 'receiver',  label: 'Receiver' },
-  { value: 'terminal',  label: 'Terminal' },
-  { value: 'fuel_stop', label: 'Fuel Stop' },
-  { value: 'other',     label: 'Other' },
+  { value: 'terminal',      label: 'Terminal' },
+  { value: 'yard',          label: 'Yard' },
+  { value: 'warehouse',     label: 'Warehouse' },
+  { value: 'drop_yard',     label: 'Drop Yard' },
+  { value: 'customer_site', label: 'Customer Site' },
 ];
 
 interface FormErrors {
@@ -222,7 +222,8 @@ export function FacilityForm({ initialData, onSuccess }: FacilityFormProps) {
         throw new Error(data.error ?? 'Failed to save facility');
       }
 
-      const created = await res.json();
+      const json = await res.json();
+      const created = json.data ?? json;
       toast.success(isEdit ? 'Facility updated' : 'Facility created');
       if (onSuccess) {
         onSuccess({

@@ -10,6 +10,10 @@ import { DispatchDetail } from '@/components/driver/route-detail-readonly';
 import { MapPin } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
+// Force dynamic rendering — this page requires auth cookies and must never be
+// statically cached at build time (no session exists at build time).
+export const dynamic = 'force-dynamic';
+
 /**
  * Driver Route tab — Carrier Ops edition.
  * Shows the driver's active CarrierDispatch with stops timeline and action buttons.
@@ -33,6 +37,8 @@ export default async function MyRoutePage() {
   } catch (err) {
     logger.error('[MyRoutePage] Failed to fetch dispatch history:', err);
   }
+
+  console.log('ROUTE PAGE RENDER', JSON.stringify(dispatch, null, 2));
 
   // No active dispatch — show empty state + history
   if (!dispatch) {
@@ -63,8 +69,13 @@ export default async function MyRoutePage() {
       </div>
 
       {/* Active dispatch detail with stops timeline and action buttons */}
+      {/* Normalize plannedMiles from Prisma Decimal to plain number to avoid
+          serialization errors when passing from server component to client component */}
       <DispatchDetail
-        dispatch={dispatch}
+        dispatch={{
+          ...dispatch,
+          plannedMiles: dispatch.plannedMiles != null ? Number(dispatch.plannedMiles) : null,
+        }}
         startAction={startTrip}
         arriveAction={arriveAtStop}
         completeAction={completeCurrentStop}

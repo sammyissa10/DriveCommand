@@ -268,6 +268,11 @@ export type DriverPayRecord = $Result.DefaultSelection<Prisma.$DriverPayRecordPa
  * 
  */
 export type CarrierCatalogMeta = $Result.DefaultSelection<Prisma.$CarrierCatalogMetaPayload>
+/**
+ * Model InAppNotification
+ * 
+ */
+export type InAppNotification = $Result.DefaultSelection<Prisma.$InAppNotificationPayload>
 
 /**
  * Enums
@@ -402,6 +407,18 @@ export const RouteStopStatus: {
 };
 
 export type RouteStopStatus = (typeof RouteStopStatus)[keyof typeof RouteStopStatus]
+
+
+export const InAppNotificationType: {
+  dispatch_assigned: 'dispatch_assigned',
+  load_delivered: 'load_delivered',
+  pay_record_ready: 'pay_record_ready',
+  invoice_generated: 'invoice_generated',
+  compliance_alert: 'compliance_alert',
+  needs_assignment: 'needs_assignment'
+};
+
+export type InAppNotificationType = (typeof InAppNotificationType)[keyof typeof InAppNotificationType]
 
 
 export const CustomerPriority: {
@@ -637,6 +654,10 @@ export const RouteStopType: typeof $Enums.RouteStopType
 export type RouteStopStatus = $Enums.RouteStopStatus
 
 export const RouteStopStatus: typeof $Enums.RouteStopStatus
+
+export type InAppNotificationType = $Enums.InAppNotificationType
+
+export const InAppNotificationType: typeof $Enums.InAppNotificationType
 
 export type CustomerPriority = $Enums.CustomerPriority
 
@@ -1336,6 +1357,16 @@ export class PrismaClient<
     * ```
     */
   get carrierCatalogMeta(): Prisma.CarrierCatalogMetaDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.inAppNotification`: Exposes CRUD operations for the **InAppNotification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InAppNotifications
+    * const inAppNotifications = await prisma.inAppNotification.findMany()
+    * ```
+    */
+  get inAppNotification(): Prisma.InAppNotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1820,7 +1851,8 @@ export namespace Prisma {
     CarrierDocument: 'CarrierDocument',
     CarrierExpense: 'CarrierExpense',
     DriverPayRecord: 'DriverPayRecord',
-    CarrierCatalogMeta: 'CarrierCatalogMeta'
+    CarrierCatalogMeta: 'CarrierCatalogMeta',
+    InAppNotification: 'InAppNotification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1836,7 +1868,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5614,6 +5646,80 @@ export namespace Prisma {
           }
         }
       }
+      InAppNotification: {
+        payload: Prisma.$InAppNotificationPayload<ExtArgs>
+        fields: Prisma.InAppNotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InAppNotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InAppNotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.InAppNotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InAppNotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          findMany: {
+            args: Prisma.InAppNotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>[]
+          }
+          create: {
+            args: Prisma.InAppNotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          createMany: {
+            args: Prisma.InAppNotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InAppNotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.InAppNotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          update: {
+            args: Prisma.InAppNotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.InAppNotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InAppNotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.InAppNotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.InAppNotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InAppNotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.InAppNotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInAppNotification>
+          }
+          groupBy: {
+            args: Prisma.InAppNotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InAppNotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InAppNotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<InAppNotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5773,6 +5879,7 @@ export namespace Prisma {
     carrierExpense?: CarrierExpenseOmit
     driverPayRecord?: DriverPayRecordOmit
     carrierCatalogMeta?: CarrierCatalogMetaOmit
+    inAppNotification?: InAppNotificationOmit
   }
 
   /* Types for Logging */
@@ -5893,6 +6000,7 @@ export namespace Prisma {
     carrierLoads: number
     carrierExpenses: number
     driverPayRecords: number
+    inAppNotifications: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5936,6 +6044,7 @@ export namespace Prisma {
     carrierLoads?: boolean | TenantCountOutputTypeCountCarrierLoadsArgs
     carrierExpenses?: boolean | TenantCountOutputTypeCountCarrierExpensesArgs
     driverPayRecords?: boolean | TenantCountOutputTypeCountDriverPayRecordsArgs
+    inAppNotifications?: boolean | TenantCountOutputTypeCountInAppNotificationsArgs
   }
 
   // Custom InputTypes
@@ -6229,6 +6338,13 @@ export namespace Prisma {
     where?: DriverPayRecordWhereInput
   }
 
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountInAppNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InAppNotificationWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -6262,6 +6378,7 @@ export namespace Prisma {
     verifiedCarrierDocs: number
     approvedExpenses: number
     approvedPayRecords: number
+    inAppNotifications: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6292,6 +6409,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: boolean | UserCountOutputTypeCountVerifiedCarrierDocsArgs
     approvedExpenses?: boolean | UserCountOutputTypeCountApprovedExpensesArgs
     approvedPayRecords?: boolean | UserCountOutputTypeCountApprovedPayRecordsArgs
+    inAppNotifications?: boolean | UserCountOutputTypeCountInAppNotificationsArgs
   }
 
   // Custom InputTypes
@@ -6492,6 +6610,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountApprovedPayRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverPayRecordWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountInAppNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InAppNotificationWhereInput
   }
 
 
@@ -7759,6 +7884,7 @@ export namespace Prisma {
     carrierLoads?: boolean | Tenant$carrierLoadsArgs<ExtArgs>
     carrierExpenses?: boolean | Tenant$carrierExpensesArgs<ExtArgs>
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
+    inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -7837,6 +7963,7 @@ export namespace Prisma {
     carrierLoads?: boolean | Tenant$carrierLoadsArgs<ExtArgs>
     carrierExpenses?: boolean | Tenant$carrierExpensesArgs<ExtArgs>
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
+    inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -7885,6 +8012,7 @@ export namespace Prisma {
       carrierLoads: Prisma.$CarrierLoadPayload<ExtArgs>[]
       carrierExpenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
+      inAppNotifications: Prisma.$InAppNotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8329,6 +8457,7 @@ export namespace Prisma {
     carrierLoads<T extends Tenant$carrierLoadsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierLoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierExpenses<T extends Tenant$carrierExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends Tenant$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    inAppNotifications<T extends Tenant$inAppNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$inAppNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9719,6 +9848,30 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.inAppNotifications
+   */
+  export type Tenant$inAppNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    where?: InAppNotificationWhereInput
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    cursor?: InAppNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
+  }
+
+  /**
    * Tenant without action
    */
   export type TenantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9990,6 +10143,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: boolean | User$verifiedCarrierDocsArgs<ExtArgs>
     approvedExpenses?: boolean | User$approvedExpensesArgs<ExtArgs>
     approvedPayRecords?: boolean | User$approvedPayRecordsArgs<ExtArgs>
+    inAppNotifications?: boolean | User$inAppNotificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -10074,6 +10228,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: boolean | User$verifiedCarrierDocsArgs<ExtArgs>
     approvedExpenses?: boolean | User$approvedExpensesArgs<ExtArgs>
     approvedPayRecords?: boolean | User$approvedPayRecordsArgs<ExtArgs>
+    inAppNotifications?: boolean | User$inAppNotificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10115,6 +10270,7 @@ export namespace Prisma {
       verifiedCarrierDocs: Prisma.$CarrierDocumentPayload<ExtArgs>[]
       approvedExpenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       approvedPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
+      inAppNotifications: Prisma.$InAppNotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10553,6 +10709,7 @@ export namespace Prisma {
     verifiedCarrierDocs<T extends User$verifiedCarrierDocsArgs<ExtArgs> = {}>(args?: Subset<T, User$verifiedCarrierDocsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     approvedExpenses<T extends User$approvedExpensesArgs<ExtArgs> = {}>(args?: Subset<T, User$approvedExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     approvedPayRecords<T extends User$approvedPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, User$approvedPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    inAppNotifications<T extends User$inAppNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$inAppNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11660,6 +11817,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverPayRecordScalarFieldEnum | DriverPayRecordScalarFieldEnum[]
+  }
+
+  /**
+   * User.inAppNotifications
+   */
+  export type User$inAppNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    where?: InAppNotificationWhereInput
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    cursor?: InAppNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
   }
 
   /**
@@ -74917,6 +75098,1161 @@ export namespace Prisma {
 
 
   /**
+   * Model InAppNotification
+   */
+
+  export type AggregateInAppNotification = {
+    _count: InAppNotificationCountAggregateOutputType | null
+    _min: InAppNotificationMinAggregateOutputType | null
+    _max: InAppNotificationMaxAggregateOutputType | null
+  }
+
+  export type InAppNotificationMinAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    userId: string | null
+    type: $Enums.InAppNotificationType | null
+    title: string | null
+    message: string | null
+    entityType: string | null
+    entityId: string | null
+    read: boolean | null
+    createdAt: Date | null
+  }
+
+  export type InAppNotificationMaxAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    userId: string | null
+    type: $Enums.InAppNotificationType | null
+    title: string | null
+    message: string | null
+    entityType: string | null
+    entityId: string | null
+    read: boolean | null
+    createdAt: Date | null
+  }
+
+  export type InAppNotificationCountAggregateOutputType = {
+    id: number
+    orgId: number
+    userId: number
+    type: number
+    title: number
+    message: number
+    entityType: number
+    entityId: number
+    read: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type InAppNotificationMinAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    entityType?: true
+    entityId?: true
+    read?: true
+    createdAt?: true
+  }
+
+  export type InAppNotificationMaxAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    entityType?: true
+    entityId?: true
+    read?: true
+    createdAt?: true
+  }
+
+  export type InAppNotificationCountAggregateInputType = {
+    id?: true
+    orgId?: true
+    userId?: true
+    type?: true
+    title?: true
+    message?: true
+    entityType?: true
+    entityId?: true
+    read?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type InAppNotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InAppNotification to aggregate.
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InAppNotifications to fetch.
+     */
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InAppNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InAppNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InAppNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InAppNotifications
+    **/
+    _count?: true | InAppNotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InAppNotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InAppNotificationMaxAggregateInputType
+  }
+
+  export type GetInAppNotificationAggregateType<T extends InAppNotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregateInAppNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInAppNotification[P]>
+      : GetScalarType<T[P], AggregateInAppNotification[P]>
+  }
+
+
+
+
+  export type InAppNotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InAppNotificationWhereInput
+    orderBy?: InAppNotificationOrderByWithAggregationInput | InAppNotificationOrderByWithAggregationInput[]
+    by: InAppNotificationScalarFieldEnum[] | InAppNotificationScalarFieldEnum
+    having?: InAppNotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InAppNotificationCountAggregateInputType | true
+    _min?: InAppNotificationMinAggregateInputType
+    _max?: InAppNotificationMaxAggregateInputType
+  }
+
+  export type InAppNotificationGroupByOutputType = {
+    id: string
+    orgId: string
+    userId: string | null
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read: boolean
+    createdAt: Date
+    _count: InAppNotificationCountAggregateOutputType | null
+    _min: InAppNotificationMinAggregateOutputType | null
+    _max: InAppNotificationMaxAggregateOutputType | null
+  }
+
+  type GetInAppNotificationGroupByPayload<T extends InAppNotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InAppNotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InAppNotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InAppNotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], InAppNotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InAppNotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    read?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }, ExtArgs["result"]["inAppNotification"]>
+
+  export type InAppNotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    read?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }, ExtArgs["result"]["inAppNotification"]>
+
+  export type InAppNotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    read?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }, ExtArgs["result"]["inAppNotification"]>
+
+  export type InAppNotificationSelectScalar = {
+    id?: boolean
+    orgId?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    message?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    read?: boolean
+    createdAt?: boolean
+  }
+
+  export type InAppNotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "userId" | "type" | "title" | "message" | "entityType" | "entityId" | "read" | "createdAt", ExtArgs["result"]["inAppNotification"]>
+  export type InAppNotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }
+  export type InAppNotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }
+  export type InAppNotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    user?: boolean | InAppNotification$userArgs<ExtArgs>
+  }
+
+  export type $InAppNotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InAppNotification"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orgId: string
+      userId: string | null
+      type: $Enums.InAppNotificationType
+      title: string
+      message: string
+      entityType: string
+      entityId: string
+      read: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["inAppNotification"]>
+    composites: {}
+  }
+
+  type InAppNotificationGetPayload<S extends boolean | null | undefined | InAppNotificationDefaultArgs> = $Result.GetResult<Prisma.$InAppNotificationPayload, S>
+
+  type InAppNotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<InAppNotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: InAppNotificationCountAggregateInputType | true
+    }
+
+  export interface InAppNotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InAppNotification'], meta: { name: 'InAppNotification' } }
+    /**
+     * Find zero or one InAppNotification that matches the filter.
+     * @param {InAppNotificationFindUniqueArgs} args - Arguments to find a InAppNotification
+     * @example
+     * // Get one InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InAppNotificationFindUniqueArgs>(args: SelectSubset<T, InAppNotificationFindUniqueArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one InAppNotification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {InAppNotificationFindUniqueOrThrowArgs} args - Arguments to find a InAppNotification
+     * @example
+     * // Get one InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InAppNotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, InAppNotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first InAppNotification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationFindFirstArgs} args - Arguments to find a InAppNotification
+     * @example
+     * // Get one InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InAppNotificationFindFirstArgs>(args?: SelectSubset<T, InAppNotificationFindFirstArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first InAppNotification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationFindFirstOrThrowArgs} args - Arguments to find a InAppNotification
+     * @example
+     * // Get one InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InAppNotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, InAppNotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more InAppNotifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InAppNotifications
+     * const inAppNotifications = await prisma.inAppNotification.findMany()
+     * 
+     * // Get first 10 InAppNotifications
+     * const inAppNotifications = await prisma.inAppNotification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const inAppNotificationWithIdOnly = await prisma.inAppNotification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InAppNotificationFindManyArgs>(args?: SelectSubset<T, InAppNotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a InAppNotification.
+     * @param {InAppNotificationCreateArgs} args - Arguments to create a InAppNotification.
+     * @example
+     * // Create one InAppNotification
+     * const InAppNotification = await prisma.inAppNotification.create({
+     *   data: {
+     *     // ... data to create a InAppNotification
+     *   }
+     * })
+     * 
+     */
+    create<T extends InAppNotificationCreateArgs>(args: SelectSubset<T, InAppNotificationCreateArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many InAppNotifications.
+     * @param {InAppNotificationCreateManyArgs} args - Arguments to create many InAppNotifications.
+     * @example
+     * // Create many InAppNotifications
+     * const inAppNotification = await prisma.inAppNotification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InAppNotificationCreateManyArgs>(args?: SelectSubset<T, InAppNotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InAppNotifications and returns the data saved in the database.
+     * @param {InAppNotificationCreateManyAndReturnArgs} args - Arguments to create many InAppNotifications.
+     * @example
+     * // Create many InAppNotifications
+     * const inAppNotification = await prisma.inAppNotification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InAppNotifications and only return the `id`
+     * const inAppNotificationWithIdOnly = await prisma.inAppNotification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InAppNotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, InAppNotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a InAppNotification.
+     * @param {InAppNotificationDeleteArgs} args - Arguments to delete one InAppNotification.
+     * @example
+     * // Delete one InAppNotification
+     * const InAppNotification = await prisma.inAppNotification.delete({
+     *   where: {
+     *     // ... filter to delete one InAppNotification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InAppNotificationDeleteArgs>(args: SelectSubset<T, InAppNotificationDeleteArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one InAppNotification.
+     * @param {InAppNotificationUpdateArgs} args - Arguments to update one InAppNotification.
+     * @example
+     * // Update one InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InAppNotificationUpdateArgs>(args: SelectSubset<T, InAppNotificationUpdateArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more InAppNotifications.
+     * @param {InAppNotificationDeleteManyArgs} args - Arguments to filter InAppNotifications to delete.
+     * @example
+     * // Delete a few InAppNotifications
+     * const { count } = await prisma.inAppNotification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InAppNotificationDeleteManyArgs>(args?: SelectSubset<T, InAppNotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InAppNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InAppNotifications
+     * const inAppNotification = await prisma.inAppNotification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InAppNotificationUpdateManyArgs>(args: SelectSubset<T, InAppNotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InAppNotifications and returns the data updated in the database.
+     * @param {InAppNotificationUpdateManyAndReturnArgs} args - Arguments to update many InAppNotifications.
+     * @example
+     * // Update many InAppNotifications
+     * const inAppNotification = await prisma.inAppNotification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more InAppNotifications and only return the `id`
+     * const inAppNotificationWithIdOnly = await prisma.inAppNotification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends InAppNotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, InAppNotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one InAppNotification.
+     * @param {InAppNotificationUpsertArgs} args - Arguments to update or create a InAppNotification.
+     * @example
+     * // Update or create a InAppNotification
+     * const inAppNotification = await prisma.inAppNotification.upsert({
+     *   create: {
+     *     // ... data to create a InAppNotification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InAppNotification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InAppNotificationUpsertArgs>(args: SelectSubset<T, InAppNotificationUpsertArgs<ExtArgs>>): Prisma__InAppNotificationClient<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of InAppNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationCountArgs} args - Arguments to filter InAppNotifications to count.
+     * @example
+     * // Count the number of InAppNotifications
+     * const count = await prisma.inAppNotification.count({
+     *   where: {
+     *     // ... the filter for the InAppNotifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends InAppNotificationCountArgs>(
+      args?: Subset<T, InAppNotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InAppNotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InAppNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InAppNotificationAggregateArgs>(args: Subset<T, InAppNotificationAggregateArgs>): Prisma.PrismaPromise<GetInAppNotificationAggregateType<T>>
+
+    /**
+     * Group by InAppNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InAppNotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InAppNotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InAppNotificationGroupByArgs['orderBy'] }
+        : { orderBy?: InAppNotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InAppNotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInAppNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InAppNotification model
+   */
+  readonly fields: InAppNotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InAppNotification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InAppNotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends InAppNotification$userArgs<ExtArgs> = {}>(args?: Subset<T, InAppNotification$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InAppNotification model
+   */
+  interface InAppNotificationFieldRefs {
+    readonly id: FieldRef<"InAppNotification", 'String'>
+    readonly orgId: FieldRef<"InAppNotification", 'String'>
+    readonly userId: FieldRef<"InAppNotification", 'String'>
+    readonly type: FieldRef<"InAppNotification", 'InAppNotificationType'>
+    readonly title: FieldRef<"InAppNotification", 'String'>
+    readonly message: FieldRef<"InAppNotification", 'String'>
+    readonly entityType: FieldRef<"InAppNotification", 'String'>
+    readonly entityId: FieldRef<"InAppNotification", 'String'>
+    readonly read: FieldRef<"InAppNotification", 'Boolean'>
+    readonly createdAt: FieldRef<"InAppNotification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InAppNotification findUnique
+   */
+  export type InAppNotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InAppNotification to fetch.
+     */
+    where: InAppNotificationWhereUniqueInput
+  }
+
+  /**
+   * InAppNotification findUniqueOrThrow
+   */
+  export type InAppNotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InAppNotification to fetch.
+     */
+    where: InAppNotificationWhereUniqueInput
+  }
+
+  /**
+   * InAppNotification findFirst
+   */
+  export type InAppNotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InAppNotification to fetch.
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InAppNotifications to fetch.
+     */
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InAppNotifications.
+     */
+    cursor?: InAppNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InAppNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InAppNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InAppNotifications.
+     */
+    distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * InAppNotification findFirstOrThrow
+   */
+  export type InAppNotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InAppNotification to fetch.
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InAppNotifications to fetch.
+     */
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InAppNotifications.
+     */
+    cursor?: InAppNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InAppNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InAppNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InAppNotifications.
+     */
+    distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * InAppNotification findMany
+   */
+  export type InAppNotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which InAppNotifications to fetch.
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InAppNotifications to fetch.
+     */
+    orderBy?: InAppNotificationOrderByWithRelationInput | InAppNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InAppNotifications.
+     */
+    cursor?: InAppNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InAppNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InAppNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InAppNotifications.
+     */
+    distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * InAppNotification create
+   */
+  export type InAppNotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InAppNotification.
+     */
+    data: XOR<InAppNotificationCreateInput, InAppNotificationUncheckedCreateInput>
+  }
+
+  /**
+   * InAppNotification createMany
+   */
+  export type InAppNotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InAppNotifications.
+     */
+    data: InAppNotificationCreateManyInput | InAppNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InAppNotification createManyAndReturn
+   */
+  export type InAppNotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many InAppNotifications.
+     */
+    data: InAppNotificationCreateManyInput | InAppNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InAppNotification update
+   */
+  export type InAppNotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InAppNotification.
+     */
+    data: XOR<InAppNotificationUpdateInput, InAppNotificationUncheckedUpdateInput>
+    /**
+     * Choose, which InAppNotification to update.
+     */
+    where: InAppNotificationWhereUniqueInput
+  }
+
+  /**
+   * InAppNotification updateMany
+   */
+  export type InAppNotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InAppNotifications.
+     */
+    data: XOR<InAppNotificationUpdateManyMutationInput, InAppNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which InAppNotifications to update
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * Limit how many InAppNotifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * InAppNotification updateManyAndReturn
+   */
+  export type InAppNotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update InAppNotifications.
+     */
+    data: XOR<InAppNotificationUpdateManyMutationInput, InAppNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which InAppNotifications to update
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * Limit how many InAppNotifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InAppNotification upsert
+   */
+  export type InAppNotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InAppNotification to update in case it exists.
+     */
+    where: InAppNotificationWhereUniqueInput
+    /**
+     * In case the InAppNotification found by the `where` argument doesn't exist, create a new InAppNotification with this data.
+     */
+    create: XOR<InAppNotificationCreateInput, InAppNotificationUncheckedCreateInput>
+    /**
+     * In case the InAppNotification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InAppNotificationUpdateInput, InAppNotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * InAppNotification delete
+   */
+  export type InAppNotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+    /**
+     * Filter which InAppNotification to delete.
+     */
+    where: InAppNotificationWhereUniqueInput
+  }
+
+  /**
+   * InAppNotification deleteMany
+   */
+  export type InAppNotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InAppNotifications to delete
+     */
+    where?: InAppNotificationWhereInput
+    /**
+     * Limit how many InAppNotifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * InAppNotification.user
+   */
+  export type InAppNotification$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * InAppNotification without action
+   */
+  export type InAppNotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InAppNotification
+     */
+    select?: InAppNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the InAppNotification
+     */
+    omit?: InAppNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InAppNotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -75994,6 +77330,22 @@ export namespace Prisma {
   export type CarrierCatalogMetaScalarFieldEnum = (typeof CarrierCatalogMetaScalarFieldEnum)[keyof typeof CarrierCatalogMetaScalarFieldEnum]
 
 
+  export const InAppNotificationScalarFieldEnum: {
+    id: 'id',
+    orgId: 'orgId',
+    userId: 'userId',
+    type: 'type',
+    title: 'title',
+    message: 'message',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    read: 'read',
+    createdAt: 'createdAt'
+  };
+
+  export type InAppNotificationScalarFieldEnum = (typeof InAppNotificationScalarFieldEnum)[keyof typeof InAppNotificationScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -76556,6 +77908,20 @@ export namespace Prisma {
    */
   export type ListEnumIncidentSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IncidentSeverity[]'>
     
+
+
+  /**
+   * Reference to a field of type 'InAppNotificationType'
+   */
+  export type EnumInAppNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InAppNotificationType'>
+    
+
+
+  /**
+   * Reference to a field of type 'InAppNotificationType[]'
+   */
+  export type ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InAppNotificationType[]'>
+    
   /**
    * Deep Input Types
    */
@@ -76613,6 +77979,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadListRelationFilter
     carrierExpenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    inAppNotifications?: InAppNotificationListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -76664,6 +78031,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadOrderByRelationAggregateInput
     carrierExpenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
+    inAppNotifications?: InAppNotificationOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -76718,6 +78086,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadListRelationFilter
     carrierExpenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    inAppNotifications?: InAppNotificationListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -76796,6 +78165,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentListRelationFilter
     approvedExpenses?: CarrierExpenseListRelationFilter
     approvedPayRecords?: DriverPayRecordListRelationFilter
+    inAppNotifications?: InAppNotificationListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -76841,6 +78211,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentOrderByRelationAggregateInput
     approvedExpenses?: CarrierExpenseOrderByRelationAggregateInput
     approvedPayRecords?: DriverPayRecordOrderByRelationAggregateInput
+    inAppNotifications?: InAppNotificationOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -76890,6 +78261,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentListRelationFilter
     approvedExpenses?: CarrierExpenseListRelationFilter
     approvedPayRecords?: DriverPayRecordListRelationFilter
+    inAppNotifications?: InAppNotificationListRelationFilter
   }, "id" | "email_tenantId">
 
   export type UserOrderByWithAggregationInput = {
@@ -82599,6 +83971,89 @@ export namespace Prisma {
     active?: BoolWithAggregatesFilter<"CarrierCatalogMeta"> | boolean
   }
 
+  export type InAppNotificationWhereInput = {
+    AND?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
+    OR?: InAppNotificationWhereInput[]
+    NOT?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
+    id?: UuidFilter<"InAppNotification"> | string
+    orgId?: UuidFilter<"InAppNotification"> | string
+    userId?: UuidNullableFilter<"InAppNotification"> | string | null
+    type?: EnumInAppNotificationTypeFilter<"InAppNotification"> | $Enums.InAppNotificationType
+    title?: StringFilter<"InAppNotification"> | string
+    message?: StringFilter<"InAppNotification"> | string
+    entityType?: StringFilter<"InAppNotification"> | string
+    entityId?: UuidFilter<"InAppNotification"> | string
+    read?: BoolFilter<"InAppNotification"> | boolean
+    createdAt?: DateTimeFilter<"InAppNotification"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type InAppNotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type InAppNotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
+    OR?: InAppNotificationWhereInput[]
+    NOT?: InAppNotificationWhereInput | InAppNotificationWhereInput[]
+    orgId?: UuidFilter<"InAppNotification"> | string
+    userId?: UuidNullableFilter<"InAppNotification"> | string | null
+    type?: EnumInAppNotificationTypeFilter<"InAppNotification"> | $Enums.InAppNotificationType
+    title?: StringFilter<"InAppNotification"> | string
+    message?: StringFilter<"InAppNotification"> | string
+    entityType?: StringFilter<"InAppNotification"> | string
+    entityId?: UuidFilter<"InAppNotification"> | string
+    read?: BoolFilter<"InAppNotification"> | boolean
+    createdAt?: DateTimeFilter<"InAppNotification"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type InAppNotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+    _count?: InAppNotificationCountOrderByAggregateInput
+    _max?: InAppNotificationMaxOrderByAggregateInput
+    _min?: InAppNotificationMinOrderByAggregateInput
+  }
+
+  export type InAppNotificationScalarWhereWithAggregatesInput = {
+    AND?: InAppNotificationScalarWhereWithAggregatesInput | InAppNotificationScalarWhereWithAggregatesInput[]
+    OR?: InAppNotificationScalarWhereWithAggregatesInput[]
+    NOT?: InAppNotificationScalarWhereWithAggregatesInput | InAppNotificationScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"InAppNotification"> | string
+    orgId?: UuidWithAggregatesFilter<"InAppNotification"> | string
+    userId?: UuidNullableWithAggregatesFilter<"InAppNotification"> | string | null
+    type?: EnumInAppNotificationTypeWithAggregatesFilter<"InAppNotification"> | $Enums.InAppNotificationType
+    title?: StringWithAggregatesFilter<"InAppNotification"> | string
+    message?: StringWithAggregatesFilter<"InAppNotification"> | string
+    entityType?: StringWithAggregatesFilter<"InAppNotification"> | string
+    entityId?: UuidWithAggregatesFilter<"InAppNotification"> | string
+    read?: BoolWithAggregatesFilter<"InAppNotification"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"InAppNotification"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -82648,6 +84103,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -82699,6 +84155,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -82750,6 +84207,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -82801,6 +84259,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -82878,6 +84337,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -82922,6 +84382,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -82966,6 +84427,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -83010,6 +84472,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -89366,6 +90829,95 @@ export namespace Prisma {
     active?: BoolFieldUpdateOperationsInput | boolean
   }
 
+  export type InAppNotificationCreateInput = {
+    id?: string
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutInAppNotificationsInput
+    user?: UserCreateNestedOneWithoutInAppNotificationsInput
+  }
+
+  export type InAppNotificationUncheckedCreateInput = {
+    id?: string
+    orgId: string
+    userId?: string | null
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type InAppNotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutInAppNotificationsNestedInput
+    user?: UserUpdateOneWithoutInAppNotificationsNestedInput
+  }
+
+  export type InAppNotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InAppNotificationCreateManyInput = {
+    id?: string
+    orgId: string
+    userId?: string | null
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type InAppNotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InAppNotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -89675,6 +91227,12 @@ export namespace Prisma {
     none?: DriverPayRecordWhereInput
   }
 
+  export type InAppNotificationListRelationFilter = {
+    every?: InAppNotificationWhereInput
+    some?: InAppNotificationWhereInput
+    none?: InAppNotificationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -89837,6 +91395,10 @@ export namespace Prisma {
   }
 
   export type DriverPayRecordOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InAppNotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -94196,6 +95758,62 @@ export namespace Prisma {
     sortOrder?: SortOrder
   }
 
+  export type EnumInAppNotificationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.InAppNotificationType | EnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInAppNotificationTypeFilter<$PrismaModel> | $Enums.InAppNotificationType
+  }
+
+  export type InAppNotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type InAppNotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type InAppNotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    message?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    read?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumInAppNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InAppNotificationType | EnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInAppNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.InAppNotificationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
+    _max?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -94476,6 +96094,13 @@ export namespace Prisma {
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
   }
 
+  export type InAppNotificationCreateNestedManyWithoutTenantInput = {
+    create?: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput> | InAppNotificationCreateWithoutTenantInput[] | InAppNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutTenantInput | InAppNotificationCreateOrConnectWithoutTenantInput[]
+    createMany?: InAppNotificationCreateManyTenantInputEnvelope
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -94754,6 +96379,13 @@ export namespace Prisma {
     connectOrCreate?: DriverPayRecordCreateOrConnectWithoutTenantInput | DriverPayRecordCreateOrConnectWithoutTenantInput[]
     createMany?: DriverPayRecordCreateManyTenantInputEnvelope
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
+  }
+
+  export type InAppNotificationUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput> | InAppNotificationCreateWithoutTenantInput[] | InAppNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutTenantInput | InAppNotificationCreateOrConnectWithoutTenantInput[]
+    createMany?: InAppNotificationCreateManyTenantInputEnvelope
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -95340,6 +96972,20 @@ export namespace Prisma {
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
   }
 
+  export type InAppNotificationUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput> | InAppNotificationCreateWithoutTenantInput[] | InAppNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutTenantInput | InAppNotificationCreateOrConnectWithoutTenantInput[]
+    upsert?: InAppNotificationUpsertWithWhereUniqueWithoutTenantInput | InAppNotificationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: InAppNotificationCreateManyTenantInputEnvelope
+    set?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    disconnect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    delete?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    update?: InAppNotificationUpdateWithWhereUniqueWithoutTenantInput | InAppNotificationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: InAppNotificationUpdateManyWithWhereWithoutTenantInput | InAppNotificationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -95900,6 +97546,20 @@ export namespace Prisma {
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
   }
 
+  export type InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput> | InAppNotificationCreateWithoutTenantInput[] | InAppNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutTenantInput | InAppNotificationCreateOrConnectWithoutTenantInput[]
+    upsert?: InAppNotificationUpsertWithWhereUniqueWithoutTenantInput | InAppNotificationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: InAppNotificationCreateManyTenantInputEnvelope
+    set?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    disconnect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    delete?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    update?: InAppNotificationUpdateWithWhereUniqueWithoutTenantInput | InAppNotificationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: InAppNotificationUpdateManyWithWhereWithoutTenantInput | InAppNotificationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+  }
+
   export type TenantCreateNestedOneWithoutUsersInput = {
     create?: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
     connectOrCreate?: TenantCreateOrConnectWithoutUsersInput
@@ -96101,6 +97761,13 @@ export namespace Prisma {
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
   }
 
+  export type InAppNotificationCreateNestedManyWithoutUserInput = {
+    create?: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput> | InAppNotificationCreateWithoutUserInput[] | InAppNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutUserInput | InAppNotificationCreateOrConnectWithoutUserInput[]
+    createMany?: InAppNotificationCreateManyUserInputEnvelope
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+  }
+
   export type RouteUncheckedCreateNestedManyWithoutDriverInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -96294,6 +97961,13 @@ export namespace Prisma {
     connectOrCreate?: DriverPayRecordCreateOrConnectWithoutApproverInput | DriverPayRecordCreateOrConnectWithoutApproverInput[]
     createMany?: DriverPayRecordCreateManyApproverInputEnvelope
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
+  }
+
+  export type InAppNotificationUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput> | InAppNotificationCreateWithoutUserInput[] | InAppNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutUserInput | InAppNotificationCreateOrConnectWithoutUserInput[]
+    createMany?: InAppNotificationCreateManyUserInputEnvelope
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
   }
 
   export type EnumUserRoleFieldUpdateOperationsInput = {
@@ -96696,6 +98370,20 @@ export namespace Prisma {
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
   }
 
+  export type InAppNotificationUpdateManyWithoutUserNestedInput = {
+    create?: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput> | InAppNotificationCreateWithoutUserInput[] | InAppNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutUserInput | InAppNotificationCreateOrConnectWithoutUserInput[]
+    upsert?: InAppNotificationUpsertWithWhereUniqueWithoutUserInput | InAppNotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: InAppNotificationCreateManyUserInputEnvelope
+    set?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    disconnect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    delete?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    update?: InAppNotificationUpdateWithWhereUniqueWithoutUserInput | InAppNotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: InAppNotificationUpdateManyWithWhereWithoutUserInput | InAppNotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+  }
+
   export type RouteUncheckedUpdateManyWithoutDriverNestedInput = {
     create?: XOR<RouteCreateWithoutDriverInput, RouteUncheckedCreateWithoutDriverInput> | RouteCreateWithoutDriverInput[] | RouteUncheckedCreateWithoutDriverInput[]
     connectOrCreate?: RouteCreateOrConnectWithoutDriverInput | RouteCreateOrConnectWithoutDriverInput[]
@@ -97082,6 +98770,20 @@ export namespace Prisma {
     update?: DriverPayRecordUpdateWithWhereUniqueWithoutApproverInput | DriverPayRecordUpdateWithWhereUniqueWithoutApproverInput[]
     updateMany?: DriverPayRecordUpdateManyWithWhereWithoutApproverInput | DriverPayRecordUpdateManyWithWhereWithoutApproverInput[]
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
+  }
+
+  export type InAppNotificationUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput> | InAppNotificationCreateWithoutUserInput[] | InAppNotificationUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: InAppNotificationCreateOrConnectWithoutUserInput | InAppNotificationCreateOrConnectWithoutUserInput[]
+    upsert?: InAppNotificationUpsertWithWhereUniqueWithoutUserInput | InAppNotificationUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: InAppNotificationCreateManyUserInputEnvelope
+    set?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    disconnect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    delete?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+    update?: InAppNotificationUpdateWithWhereUniqueWithoutUserInput | InAppNotificationUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: InAppNotificationUpdateManyWithWhereWithoutUserInput | InAppNotificationUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutTrucksInput = {
@@ -101750,6 +103452,40 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutApprovedPayRecordsInput, UserUpdateWithoutApprovedPayRecordsInput>, UserUncheckedUpdateWithoutApprovedPayRecordsInput>
   }
 
+  export type TenantCreateNestedOneWithoutInAppNotificationsInput = {
+    create?: XOR<TenantCreateWithoutInAppNotificationsInput, TenantUncheckedCreateWithoutInAppNotificationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutInAppNotificationsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutInAppNotificationsInput = {
+    create?: XOR<UserCreateWithoutInAppNotificationsInput, UserUncheckedCreateWithoutInAppNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInAppNotificationsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumInAppNotificationTypeFieldUpdateOperationsInput = {
+    set?: $Enums.InAppNotificationType
+  }
+
+  export type TenantUpdateOneRequiredWithoutInAppNotificationsNestedInput = {
+    create?: XOR<TenantCreateWithoutInAppNotificationsInput, TenantUncheckedCreateWithoutInAppNotificationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutInAppNotificationsInput
+    upsert?: TenantUpsertWithoutInAppNotificationsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutInAppNotificationsInput, TenantUpdateWithoutInAppNotificationsInput>, TenantUncheckedUpdateWithoutInAppNotificationsInput>
+  }
+
+  export type UserUpdateOneWithoutInAppNotificationsNestedInput = {
+    create?: XOR<UserCreateWithoutInAppNotificationsInput, UserUncheckedCreateWithoutInAppNotificationsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInAppNotificationsInput
+    upsert?: UserUpsertWithoutInAppNotificationsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInAppNotificationsInput, UserUpdateWithoutInAppNotificationsInput>, UserUncheckedUpdateWithoutInAppNotificationsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -102627,6 +104363,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumInAppNotificationTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.InAppNotificationType | EnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInAppNotificationTypeFilter<$PrismaModel> | $Enums.InAppNotificationType
+  }
+
+  export type NestedEnumInAppNotificationTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InAppNotificationType | EnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InAppNotificationType[] | ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumInAppNotificationTypeWithAggregatesFilter<$PrismaModel> | $Enums.InAppNotificationType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
+    _max?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutTenantInput = {
     id?: string
     email: string
@@ -102668,6 +104421,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTenantInput = {
@@ -102711,6 +104465,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTenantInput = {
@@ -104631,6 +106386,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type InAppNotificationCreateWithoutTenantInput = {
+    id?: string
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+    user?: UserCreateNestedOneWithoutInAppNotificationsInput
+  }
+
+  export type InAppNotificationUncheckedCreateWithoutTenantInput = {
+    id?: string
+    userId?: string | null
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type InAppNotificationCreateOrConnectWithoutTenantInput = {
+    where: InAppNotificationWhereUniqueInput
+    create: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type InAppNotificationCreateManyTenantInputEnvelope = {
+    data: InAppNotificationCreateManyTenantInput | InAppNotificationCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutTenantInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutTenantInput, UserUncheckedUpdateWithoutTenantInput>
@@ -106146,6 +107935,38 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"DriverPayRecord"> | Date | string
   }
 
+  export type InAppNotificationUpsertWithWhereUniqueWithoutTenantInput = {
+    where: InAppNotificationWhereUniqueInput
+    update: XOR<InAppNotificationUpdateWithoutTenantInput, InAppNotificationUncheckedUpdateWithoutTenantInput>
+    create: XOR<InAppNotificationCreateWithoutTenantInput, InAppNotificationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type InAppNotificationUpdateWithWhereUniqueWithoutTenantInput = {
+    where: InAppNotificationWhereUniqueInput
+    data: XOR<InAppNotificationUpdateWithoutTenantInput, InAppNotificationUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type InAppNotificationUpdateManyWithWhereWithoutTenantInput = {
+    where: InAppNotificationScalarWhereInput
+    data: XOR<InAppNotificationUpdateManyMutationInput, InAppNotificationUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type InAppNotificationScalarWhereInput = {
+    AND?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+    OR?: InAppNotificationScalarWhereInput[]
+    NOT?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+    id?: UuidFilter<"InAppNotification"> | string
+    orgId?: UuidFilter<"InAppNotification"> | string
+    userId?: UuidNullableFilter<"InAppNotification"> | string | null
+    type?: EnumInAppNotificationTypeFilter<"InAppNotification"> | $Enums.InAppNotificationType
+    title?: StringFilter<"InAppNotification"> | string
+    message?: StringFilter<"InAppNotification"> | string
+    entityType?: StringFilter<"InAppNotification"> | string
+    entityId?: UuidFilter<"InAppNotification"> | string
+    read?: BoolFilter<"InAppNotification"> | boolean
+    createdAt?: DateTimeFilter<"InAppNotification"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -106194,6 +108015,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -106244,6 +108066,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -107782,6 +109605,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type InAppNotificationCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutInAppNotificationsInput
+  }
+
+  export type InAppNotificationUncheckedCreateWithoutUserInput = {
+    id?: string
+    orgId: string
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type InAppNotificationCreateOrConnectWithoutUserInput = {
+    where: InAppNotificationWhereUniqueInput
+    create: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type InAppNotificationCreateManyUserInputEnvelope = {
+    data: InAppNotificationCreateManyUserInput | InAppNotificationCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutUsersInput = {
     update: XOR<TenantUpdateWithoutUsersInput, TenantUncheckedUpdateWithoutUsersInput>
     create: XOR<TenantCreateWithoutUsersInput, TenantUncheckedCreateWithoutUsersInput>
@@ -107841,6 +109698,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -107891,6 +109749,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -108432,6 +110291,22 @@ export namespace Prisma {
     data: XOR<DriverPayRecordUpdateManyMutationInput, DriverPayRecordUncheckedUpdateManyWithoutApproverInput>
   }
 
+  export type InAppNotificationUpsertWithWhereUniqueWithoutUserInput = {
+    where: InAppNotificationWhereUniqueInput
+    update: XOR<InAppNotificationUpdateWithoutUserInput, InAppNotificationUncheckedUpdateWithoutUserInput>
+    create: XOR<InAppNotificationCreateWithoutUserInput, InAppNotificationUncheckedCreateWithoutUserInput>
+  }
+
+  export type InAppNotificationUpdateWithWhereUniqueWithoutUserInput = {
+    where: InAppNotificationWhereUniqueInput
+    data: XOR<InAppNotificationUpdateWithoutUserInput, InAppNotificationUncheckedUpdateWithoutUserInput>
+  }
+
+  export type InAppNotificationUpdateManyWithWhereWithoutUserInput = {
+    where: InAppNotificationScalarWhereInput
+    data: XOR<InAppNotificationUpdateManyMutationInput, InAppNotificationUncheckedUpdateManyWithoutUserInput>
+  }
+
   export type TenantCreateWithoutTrucksInput = {
     id?: string
     name: string
@@ -108480,6 +110355,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -108530,6 +110406,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -108578,6 +110455,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksCreatedInput = {
@@ -108621,6 +110499,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksCreatedInput = {
@@ -108669,6 +110548,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTrucksUpdatedInput = {
@@ -108712,6 +110592,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTrucksUpdatedInput = {
@@ -109204,6 +111085,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -109254,6 +111136,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -109308,6 +111191,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksCreatedInput = {
@@ -109351,6 +111235,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutTrucksUpdatedInput = {
@@ -109405,6 +111290,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTrucksUpdatedInput = {
@@ -109448,6 +111334,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutTruckInput = {
@@ -109642,6 +111529,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -109692,6 +111580,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -109758,6 +111647,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -109808,6 +111698,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -109858,6 +111749,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -109908,6 +111800,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -109956,6 +111849,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignedRoutesInput = {
@@ -109999,6 +111893,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignedRoutesInput = {
@@ -110104,6 +111999,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesCreatedInput = {
@@ -110147,6 +112043,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesCreatedInput = {
@@ -110195,6 +112092,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRoutesUpdatedInput = {
@@ -110238,6 +112136,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRoutesUpdatedInput = {
@@ -110670,6 +112569,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -110720,6 +112620,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -110774,6 +112675,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedRoutesInput = {
@@ -110817,6 +112719,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutAssignedRoutesInput = {
@@ -110934,6 +112837,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesCreatedInput = {
@@ -110977,6 +112881,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutRoutesUpdatedInput = {
@@ -111031,6 +112936,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRoutesUpdatedInput = {
@@ -111074,6 +112980,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DocumentUpsertWithWhereUniqueWithoutRouteInput = {
@@ -111310,6 +113217,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRouteCoDriversInput = {
@@ -111353,6 +113261,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRouteCoDriversInput = {
@@ -111483,6 +113392,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRouteCoDriversInput = {
@@ -111526,6 +113436,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDocumentsInput = {
@@ -111576,6 +113487,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -111626,6 +113538,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -111796,6 +113709,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverDocumentsInput = {
@@ -111839,6 +113753,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverDocumentsInput = {
@@ -111962,6 +113877,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
@@ -112005,6 +113921,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadedDocumentsInput = {
@@ -112071,6 +113988,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -112121,6 +114039,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -112309,6 +114228,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverDocumentsInput = {
@@ -112352,6 +114272,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutDocumentsInput = {
@@ -112487,6 +114408,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
@@ -112530,6 +114452,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutMaintenanceEventsInput = {
@@ -112580,6 +114503,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -112630,6 +114554,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -112753,6 +114678,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -112803,6 +114729,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -112916,6 +114843,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -112966,6 +114894,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -113089,6 +115018,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -113139,6 +115069,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -113252,6 +115183,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -113302,6 +115234,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -113368,6 +115301,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -113418,6 +115352,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -113468,6 +115403,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -113518,6 +115454,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -113641,6 +115578,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -113691,6 +115629,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -113804,6 +115743,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -113854,6 +115794,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -113959,6 +115900,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSafetyEventsInput = {
@@ -114002,6 +115944,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSafetyEventsInput = {
@@ -114133,6 +116076,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -114183,6 +116127,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -114300,6 +116245,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSafetyEventsInput = {
@@ -114343,6 +116289,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RouteUpsertWithoutSafetyEventsInput = {
@@ -114464,6 +116411,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -114514,6 +116462,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -114637,6 +116586,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -114687,6 +116637,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -114800,6 +116751,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -114850,6 +116802,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -114942,6 +116895,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -114992,6 +116946,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -115058,6 +117013,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -115108,6 +117064,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -115236,6 +117193,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTagAssignmentsInput = {
@@ -115279,6 +117237,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTagAssignmentsInput = {
@@ -115345,6 +117304,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -115395,6 +117355,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -115541,6 +117502,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -115584,6 +117546,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutExpenseCategoriesInput = {
@@ -115634,6 +117597,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -115684,6 +117648,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -115810,6 +117775,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -115860,6 +117826,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -115942,6 +117909,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -115992,6 +117960,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -116148,6 +118117,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -116198,6 +118168,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -116350,6 +118321,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -116400,6 +118372,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -116492,6 +118465,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -116542,6 +118516,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -116654,6 +118629,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -116704,6 +118680,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -116828,6 +118805,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -116878,6 +118856,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -116928,6 +118907,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -116978,6 +118958,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -117109,6 +119090,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -117159,6 +119141,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -117280,6 +119263,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -117330,6 +119314,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -117508,6 +119493,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -117558,6 +119544,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -117640,6 +119627,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -117690,6 +119678,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -117807,6 +119796,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -117857,6 +119847,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -117964,6 +119955,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -118014,6 +120006,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -118062,6 +120055,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesCreatedInput = {
@@ -118105,6 +120099,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesCreatedInput = {
@@ -118153,6 +120148,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvoicesUpdatedInput = {
@@ -118196,6 +120192,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvoicesUpdatedInput = {
@@ -118369,6 +120366,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -118419,6 +120417,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -118473,6 +120472,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesCreatedInput = {
@@ -118516,6 +120516,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutInvoicesUpdatedInput = {
@@ -118570,6 +120571,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvoicesUpdatedInput = {
@@ -118613,6 +120615,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type LoadUpsertWithoutInvoicesInput = {
@@ -118823,6 +120826,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -118873,6 +120877,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -119008,6 +121013,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -119058,6 +121064,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -119108,6 +121115,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -119158,6 +121166,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -119252,6 +121261,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -119302,6 +121312,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -119473,6 +121484,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -119523,6 +121535,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -119571,6 +121584,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollRecordsInput = {
@@ -119614,6 +121628,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollRecordsInput = {
@@ -119662,6 +121677,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsCreatedInput = {
@@ -119705,6 +121721,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsCreatedInput = {
@@ -119753,6 +121770,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPayrollsUpdatedInput = {
@@ -119796,6 +121814,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPayrollsUpdatedInput = {
@@ -119862,6 +121881,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -119912,6 +121932,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -119966,6 +121987,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -120009,6 +122031,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsCreatedInput = {
@@ -120063,6 +122086,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsCreatedInput = {
@@ -120106,6 +122130,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutPayrollsUpdatedInput = {
@@ -120160,6 +122185,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPayrollsUpdatedInput = {
@@ -120203,6 +122229,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutLoadsInput = {
@@ -120253,6 +122280,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -120303,6 +122331,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -120467,6 +122496,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverLoadsInput = {
@@ -120510,6 +122540,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverLoadsInput = {
@@ -120615,6 +122646,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsCreatedInput = {
@@ -120658,6 +122690,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsCreatedInput = {
@@ -120706,6 +122739,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoadsUpdatedInput = {
@@ -120749,6 +122783,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoadsUpdatedInput = {
@@ -121103,6 +123138,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -121153,6 +123189,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -121335,6 +123372,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverLoadsInput = {
@@ -121378,6 +123416,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TruckUpsertWithoutLoadsInput = {
@@ -121495,6 +123534,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsCreatedInput = {
@@ -121538,6 +123578,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutLoadsUpdatedInput = {
@@ -121592,6 +123633,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoadsUpdatedInput = {
@@ -121635,6 +123677,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type InvoiceUpsertWithWhereUniqueWithoutLoadInput = {
@@ -121855,6 +123898,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -121905,6 +123949,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -121971,6 +124016,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -122021,6 +124067,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -122136,6 +124183,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -122186,6 +124234,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -122558,6 +124607,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -122608,6 +124658,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadUpsertWithoutRouteStopsInput = {
@@ -122771,6 +124822,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -122821,6 +124873,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -122934,6 +124987,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -122977,6 +125031,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -123043,6 +125098,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -123093,6 +125149,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -123218,6 +125275,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -123261,6 +125319,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPushTokensInput = {
@@ -123304,6 +125363,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPushTokensInput = {
@@ -123347,6 +125407,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPushTokensInput = {
@@ -123406,6 +125467,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPushTokensInput = {
@@ -123449,6 +125511,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverHOSEntriesInput = {
@@ -123499,6 +125562,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
@@ -123549,6 +125613,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
@@ -123597,6 +125662,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutHosEntriesInput = {
@@ -123640,6 +125706,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutHosEntriesInput = {
@@ -123706,6 +125773,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
@@ -123756,6 +125824,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHosEntriesInput = {
@@ -123810,6 +125879,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutHosEntriesInput = {
@@ -123853,6 +125923,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverIncidentsInput = {
@@ -123903,6 +125974,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
@@ -123953,6 +126025,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
@@ -124001,6 +126074,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIncidentsInput = {
@@ -124044,6 +126118,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIncidentsInput = {
@@ -124110,6 +126185,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
@@ -124160,6 +126236,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutIncidentsInput = {
@@ -124214,6 +126291,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIncidentsInput = {
@@ -124257,6 +126335,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutCarrierClientsInput = {
@@ -124307,6 +126386,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierClientsInput = {
@@ -124357,6 +126437,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierClientsInput = {
@@ -124867,6 +126948,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierClientsInput = {
@@ -124917,6 +126999,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierContractUpsertWithWhereUniqueWithoutClientInput = {
@@ -125112,6 +127195,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierContractsInput = {
@@ -125162,6 +127246,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierContractsInput = {
@@ -125443,6 +127528,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierContractsInput = {
@@ -125493,6 +127579,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutContractsInput = {
@@ -125654,6 +127741,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierFacilitiesInput = {
@@ -125704,6 +127792,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierFacilitiesInput = {
@@ -125948,6 +128037,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierFacilitiesInput = {
@@ -125998,6 +128088,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithWhereUniqueWithoutHomeTerminalInput = {
@@ -126117,6 +128208,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDriversInput = {
@@ -126167,6 +128259,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDriversInput = {
@@ -126215,6 +128308,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCarrierDriverProfileInput = {
@@ -126258,6 +128352,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCarrierDriverProfileInput = {
@@ -126689,6 +128784,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDriversInput = {
@@ -126739,6 +128835,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCarrierDriverProfileInput = {
@@ -126793,6 +128890,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCarrierDriverProfileInput = {
@@ -126836,6 +128934,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierFacilityUpsertWithoutCarrierDriversInput = {
@@ -127029,6 +129128,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierTrucksInput = {
@@ -127079,6 +129179,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierTrucksInput = {
@@ -127331,6 +129432,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierTrucksInput = {
@@ -127381,6 +129483,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithWhereUniqueWithoutTruckInput = {
@@ -127479,6 +129582,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteTemplatesInput = {
@@ -127529,6 +129633,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteTemplatesInput = {
@@ -127945,6 +130050,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -127995,6 +130101,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutRouteTemplatesInput = {
@@ -128585,6 +130692,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDispatchesInput = {
@@ -128635,6 +130743,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDispatchesInput = {
@@ -128968,6 +131077,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDispatchedRunsInput = {
@@ -129011,6 +131121,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDispatchedRunsInput = {
@@ -129351,6 +131462,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDispatchesInput = {
@@ -129401,6 +131513,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteTemplateUpsertWithoutDispatchesInput = {
@@ -129770,6 +131883,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDispatchedRunsInput = {
@@ -129813,6 +131927,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierStopUpsertWithWhereUniqueWithoutDispatchInput = {
@@ -129927,6 +132042,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierLoadsInput = {
@@ -129977,6 +132093,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierLoadsInput = {
@@ -130424,6 +132541,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -130474,6 +132592,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutCarrierLoadsInput = {
@@ -131446,6 +133565,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUploadedCarrierDocsInput = {
@@ -131489,6 +133609,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUploadedCarrierDocsInput = {
@@ -131537,6 +133658,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVerifiedCarrierDocsInput = {
@@ -131580,6 +133702,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVerifiedCarrierDocsInput = {
@@ -131829,6 +133952,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUploadedCarrierDocsInput = {
@@ -131872,6 +133996,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutVerifiedCarrierDocsInput = {
@@ -131926,6 +134051,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVerifiedCarrierDocsInput = {
@@ -131969,6 +134095,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CarrierStopUpsertWithoutDocumentsInput = {
@@ -132187,6 +134314,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierExpensesInput = {
@@ -132237,6 +134365,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierExpensesInput = {
@@ -132655,6 +134784,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovedExpensesInput = {
@@ -132698,6 +134828,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovedExpensesInput = {
@@ -132764,6 +134895,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierExpensesInput = {
@@ -132814,6 +134946,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutExpensesInput = {
@@ -133274,6 +135407,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedExpensesInput = {
@@ -133317,6 +135451,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TenantCreateWithoutDriverPayRecordsInput = {
@@ -133367,6 +135502,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -133417,6 +135553,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -133727,6 +135864,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
     verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovedPayRecordsInput = {
@@ -133770,6 +135908,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
     verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
     approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovedPayRecordsInput = {
@@ -133836,6 +135975,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -133886,6 +136026,7 @@ export namespace Prisma {
     carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverPayRecordsInput = {
@@ -134226,6 +136367,7 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovedPayRecordsInput = {
@@ -134269,6 +136411,419 @@ export namespace Prisma {
     uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type TenantCreateWithoutInAppNotificationsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutInAppNotificationsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutInAppNotificationsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutInAppNotificationsInput, TenantUncheckedCreateWithoutInAppNotificationsInput>
+  }
+
+  export type UserCreateWithoutInAppNotificationsInput = {
+    id?: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutUsersInput
+    assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordCreateNestedManyWithoutApproverInput
+  }
+
+  export type UserUncheckedCreateWithoutInAppNotificationsInput = {
+    id?: string
+    tenantId: string
+    email: string
+    passwordHash?: string | null
+    role: $Enums.UserRole
+    isSystemAdmin?: boolean
+    firstName?: string | null
+    lastName?: string | null
+    licenseNumber?: string | null
+    isActive?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
+    uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
+    driverDocuments?: DocumentUncheckedCreateNestedManyWithoutDriverInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutDriverInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutUserInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutDriverInput
+    driverLoads?: LoadUncheckedCreateNestedManyWithoutDriverInput
+    routeCoDrivers?: RouteDriverUncheckedCreateNestedManyWithoutDriverInput
+    trucksCreated?: TruckUncheckedCreateNestedManyWithoutCreatedByInput
+    trucksUpdated?: TruckUncheckedCreateNestedManyWithoutUpdatedByInput
+    routesCreated?: RouteUncheckedCreateNestedManyWithoutCreatedByInput
+    routesUpdated?: RouteUncheckedCreateNestedManyWithoutUpdatedByInput
+    loadsCreated?: LoadUncheckedCreateNestedManyWithoutCreatedByInput
+    loadsUpdated?: LoadUncheckedCreateNestedManyWithoutUpdatedByInput
+    invoicesCreated?: InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+    invoicesUpdated?: InvoiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    payrollsCreated?: PayrollRecordUncheckedCreateNestedManyWithoutCreatedByInput
+    payrollsUpdated?: PayrollRecordUncheckedCreateNestedManyWithoutUpdatedByInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutDriverInput
+    hosEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutDriverInput
+    incidents?: DriverIncidentUncheckedCreateNestedManyWithoutDriverInput
+    pushTokens?: PushTokenUncheckedCreateNestedManyWithoutUserInput
+    carrierDriverProfile?: CarrierDriverUncheckedCreateNestedOneWithoutUserInput
+    dispatchedRuns?: CarrierDispatchUncheckedCreateNestedManyWithoutDispatcherInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutUploaderInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedCreateNestedManyWithoutVerifierInput
+    approvedExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutApproverInput
+    approvedPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutApproverInput
+  }
+
+  export type UserCreateOrConnectWithoutInAppNotificationsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInAppNotificationsInput, UserUncheckedCreateWithoutInAppNotificationsInput>
+  }
+
+  export type TenantUpsertWithoutInAppNotificationsInput = {
+    update: XOR<TenantUpdateWithoutInAppNotificationsInput, TenantUncheckedUpdateWithoutInAppNotificationsInput>
+    create: XOR<TenantCreateWithoutInAppNotificationsInput, TenantUncheckedCreateWithoutInAppNotificationsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutInAppNotificationsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutInAppNotificationsInput, TenantUncheckedUpdateWithoutInAppNotificationsInput>
+  }
+
+  export type TenantUpdateWithoutInAppNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutInAppNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type UserUpsertWithoutInAppNotificationsInput = {
+    update: XOR<UserUpdateWithoutInAppNotificationsInput, UserUncheckedUpdateWithoutInAppNotificationsInput>
+    create: XOR<UserCreateWithoutInAppNotificationsInput, UserUncheckedCreateWithoutInAppNotificationsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutInAppNotificationsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutInAppNotificationsInput, UserUncheckedUpdateWithoutInAppNotificationsInput>
+  }
+
+  export type UserUpdateWithoutInAppNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
+    assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutInAppNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isSystemAdmin?: BoolFieldUpdateOperationsInput | boolean
+    firstName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastName?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
+    uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    driverDocuments?: DocumentUncheckedUpdateManyWithoutDriverNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutDriverNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutDriverNestedInput
+    driverLoads?: LoadUncheckedUpdateManyWithoutDriverNestedInput
+    routeCoDrivers?: RouteDriverUncheckedUpdateManyWithoutDriverNestedInput
+    trucksCreated?: TruckUncheckedUpdateManyWithoutCreatedByNestedInput
+    trucksUpdated?: TruckUncheckedUpdateManyWithoutUpdatedByNestedInput
+    routesCreated?: RouteUncheckedUpdateManyWithoutCreatedByNestedInput
+    routesUpdated?: RouteUncheckedUpdateManyWithoutUpdatedByNestedInput
+    loadsCreated?: LoadUncheckedUpdateManyWithoutCreatedByNestedInput
+    loadsUpdated?: LoadUncheckedUpdateManyWithoutUpdatedByNestedInput
+    invoicesCreated?: InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    invoicesUpdated?: InvoiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    payrollsCreated?: PayrollRecordUncheckedUpdateManyWithoutCreatedByNestedInput
+    payrollsUpdated?: PayrollRecordUncheckedUpdateManyWithoutUpdatedByNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutDriverNestedInput
+    hosEntries?: DriverHOSEntryUncheckedUpdateManyWithoutDriverNestedInput
+    incidents?: DriverIncidentUncheckedUpdateManyWithoutDriverNestedInput
+    pushTokens?: PushTokenUncheckedUpdateManyWithoutUserNestedInput
+    carrierDriverProfile?: CarrierDriverUncheckedUpdateOneWithoutUserNestedInput
+    dispatchedRuns?: CarrierDispatchUncheckedUpdateManyWithoutDispatcherNestedInput
+    uploadedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutUploaderNestedInput
+    verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
+    approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
+    approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -134986,6 +137541,18 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type InAppNotificationCreateManyTenantInput = {
+    id?: string
+    userId?: string | null
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
+    createdAt?: Date | string
+  }
+
   export type UserUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -135027,6 +137594,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTenantInput = {
@@ -135070,6 +137638,7 @@ export namespace Prisma {
     verifiedCarrierDocs?: CarrierDocumentUncheckedUpdateManyWithoutVerifierNestedInput
     approvedExpenses?: CarrierExpenseUncheckedUpdateManyWithoutApproverNestedInput
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -137305,6 +139874,42 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type InAppNotificationUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutInAppNotificationsNestedInput
+  }
+
+  export type InAppNotificationUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InAppNotificationUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RouteCreateManyDriverInput = {
     id?: string
     tenantId: string
@@ -137845,6 +140450,18 @@ export namespace Prisma {
     approvedAt?: Date | string | null
     notes?: string | null
     orgId: string
+    createdAt?: Date | string
+  }
+
+  export type InAppNotificationCreateManyUserInput = {
+    id?: string
+    orgId: string
+    type: $Enums.InAppNotificationType
+    title: string
+    message: string
+    entityType: string
+    entityId: string
+    read?: boolean
     createdAt?: Date | string
   }
 
@@ -139592,6 +142209,42 @@ export namespace Prisma {
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     orgId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InAppNotificationUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutInAppNotificationsNestedInput
+  }
+
+  export type InAppNotificationUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InAppNotificationUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    type?: EnumInAppNotificationTypeFieldUpdateOperationsInput | $Enums.InAppNotificationType
+    title?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

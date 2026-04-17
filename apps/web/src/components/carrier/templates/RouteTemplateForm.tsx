@@ -187,6 +187,7 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [stopErrors, setStopErrors] = useState<Record<string, string>>({});
 
   // Fetch clients
   useEffect(() => {
@@ -266,6 +267,16 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
     if (!equipmentType) newErrors.equipmentType = 'Equipment type is required';
     if (!scheduleType) newErrors.scheduleType = 'Schedule type is required';
     if (stops.length === 0) newErrors.stops = 'At least one stop is required';
+
+    const newStopErrors: Record<string, string> = {};
+    stops.forEach((s) => {
+      if (!s.facility_id) newStopErrors[s.id] = 'Facility is required.';
+    });
+    setStopErrors(newStopErrors);
+    if (Object.keys(newStopErrors).length > 0) {
+      newErrors.stops = newErrors.stops ?? 'All stops must have a facility selected.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
@@ -728,7 +739,22 @@ export function RouteTemplateForm({ initialData, templateId }: RouteTemplateForm
           {errors.stops && (
             <p className="text-xs text-destructive">{errors.stops}</p>
           )}
-          <StopBuilder stops={stops} onChange={setStops} mode="template" />
+          <StopBuilder
+            stops={stops}
+            onChange={(updated) => {
+              setStops(updated);
+              // Clear per-stop errors for stops that now have a facility
+              if (Object.keys(stopErrors).length > 0) {
+                setStopErrors((prev) => {
+                  const next = { ...prev };
+                  updated.forEach((s) => { if (s.facility_id) delete next[s.id]; });
+                  return next;
+                });
+              }
+            }}
+            mode="template"
+            stopErrors={stopErrors}
+          />
         </div>
       </div>
 

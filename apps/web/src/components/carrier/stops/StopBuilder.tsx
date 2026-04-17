@@ -31,13 +31,15 @@ interface StopBuilderProps {
   stops: StopBuilderStop[];
   onChange: (stops: StopBuilderStop[]) => void;
   mode: 'template' | 'load';
+  /** Per-stop validation errors keyed by stop id */
+  stopErrors?: Record<string, string>;
 }
 
 function resequence(stops: StopBuilderStop[]): StopBuilderStop[] {
   return stops.map((s, i) => ({ ...s, sequence_order: i + 1 }));
 }
 
-export function StopBuilder({ stops, onChange, mode }: StopBuilderProps) {
+export function StopBuilder({ stops, onChange, mode, stopErrors }: StopBuilderProps) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -116,6 +118,7 @@ export function StopBuilder({ stops, onChange, mode }: StopBuilderProps) {
                     mode={mode}
                     onUpdate={(updated) => handleUpdate(stop.id, updated)}
                     onRemove={() => handleRemove(stop.id)}
+                    error={stopErrors?.[stop.id]}
                   />
                 ))}
               </SortableContext>

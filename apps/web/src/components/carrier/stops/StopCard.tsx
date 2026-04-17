@@ -48,6 +48,8 @@ interface StopCardProps {
   onRemove: () => void;
   /** When true the card is being used as the DragOverlay clone — no interactivity */
   isDragOverlay?: boolean;
+  /** Inline validation error to show below the stop header row */
+  error?: string;
 }
 
 const STOP_TYPE_CLASSES: Record<StopBuilderStop['stop_type'], string> = {
@@ -75,6 +77,7 @@ export function StopCard({
   onUpdate,
   onRemove,
   isDragOverlay = false,
+  error,
 }: StopCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -228,6 +231,11 @@ export function StopCard({
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
+
+      {/* Per-stop validation error */}
+      {error && !isDragOverlay && (
+        <p className="px-3 pb-2 text-xs text-destructive">{error}</p>
+      )}
 
       {/* Inline edit panel */}
       {isExpanded && !isDragOverlay && (
