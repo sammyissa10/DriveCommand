@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 interface MessagePreview {
@@ -33,6 +34,9 @@ function senderLabel(role: string): string {
 }
 
 export function DriverMessagesPreview({ messages }: DriverMessagesPreviewProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <div>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
@@ -57,7 +61,7 @@ export function DriverMessagesPreview({ messages }: DriverMessagesPreviewProps) 
                 </p>
               </div>
               <span className="text-xs text-muted-foreground shrink-0">
-                {relativeTime(msg.createdAt)}
+                {mounted ? relativeTime(msg.createdAt) : '\u00A0'}
               </span>
             </div>
           ))}
