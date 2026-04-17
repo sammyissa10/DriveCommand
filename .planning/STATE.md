@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 238: Add client portal notifications for Carrier Ops events — pickup, delivery, invoice
-Last session: 2026-04-16T00:00:00Z
-Stopped at: Completed quick-237-PLAN.md — 4 tasks, 6 files modified
+Last activity: 2026-04-17 - Completed quick task 239: Fix driver portal stop state machine — Begin Navigation -> Mark Arrived -> Complete Stop
+Last session: 2026-04-17T20:53:09Z
+Stopped at: Completed quick-239-PLAN.md — 1 task, 1 file modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -176,6 +176,7 @@ Progress: [███████████████████████
 - Quick-228 (2026-04-17): In-app notification center for owner portal — InAppNotification table + RLS, createNotification() fire-and-forget helper wired into 5 send* functions, GET/PATCH notification API routes, NotificationBell (polling badge) + NotificationCenter (dropdown with type icons, relative timestamps, deep links) in owner shell header — 4 tasks, 6 files created, 3 files modified, ~75min
 - Quick-231 (2026-04-16): Rebuild carrier load form + stop builder — 5-section form (Client & Contract, Freight Details, Stops, Rate & Financials, References), removed PRO Number/Pallets/FSC editable fields/Appointments, StopBuilder in both create+edit modes, info banner for no-dispatch, R2 rate confirmation upload wired, LoadFinancials hides zero rows, LoadList uses client.name from API, stop persistence via persistStops helper (tenant isolation + transaction diff) — 2 tasks, 7 files
 - Quick-232 (2026-04-17): Complete driver portal redesign — Dashboard landing page (greeting, dispatch card, quick actions, HOS widget, messages preview), browser GPS pinging (watchPosition+30s throttle), notification bell (60s poll, unread badge, dropdown panel), 5-tab nav (Dashboard/Route/Load/Messages/More, 60px height), More menu page (Hours/Documents/Incidents/Support/LogOut), dark branded header (bg-slate-900), GPS logging endpoint, driver-scoped notifications API — 2 tasks, 18 files created, 3 files modified
+- Quick-239 (2026-04-17): Fix driver portal stop state machine — getStopAction() helper (5 states), navigatingStopId in DispatchDetail, Begin Navigation opens Google Maps + sets navigating state, Mark Arrived calls arriveAtStop + clears state, Complete Stop auto-opens Maps to next pending stop, navigating circle pulses blue, all buttons full-width — 1 task, 1 file modified
 
 ## Accumulated Context
 
