@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/navigation/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 import { UserMenu } from "@/components/navigation/user-menu"
+import { NotificationBell } from "@/components/navigation/notification-bell"
 
 interface OwnerShellProps {
   children: React.ReactNode;
@@ -23,7 +24,8 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
           {tenantName && (
             <span className="text-sm font-semibold text-foreground truncate">{tenantName}</span>
           )}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationBell />
             <UserMenu />
           </div>
         </header>
