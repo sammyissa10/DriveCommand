@@ -2,7 +2,7 @@ import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { calculateRevenue, recalculateAndStore } from './revenue-calculator';
-import { sendInvoiceGeneratedNotification } from '@/lib/carrier/notifications';
+import { sendInvoiceGeneratedNotification, sendClientDeliveredNotification, sendClientInvoiceReadyNotification } from '@/lib/carrier/notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -372,9 +372,15 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     },
   });
 
-  // Notify client when load is marked as invoiced
+  // Notify client when load is marked as delivered
+  if (data.status === 'delivered' && existing.status !== 'delivered') {
+    after(() => sendClientDeliveredNotification(orgId, id));
+  }
+
+  // Notify owner + client when load is marked as invoiced
   if (data.status === 'invoiced' && existing.status !== 'invoiced') {
     after(() => sendInvoiceGeneratedNotification(orgId, id));
+    after(() => sendClientInvoiceReadyNotification(orgId, id));
   }
 
   // Persist stops when load has a dispatchId (newly assigned or pre-existing)
