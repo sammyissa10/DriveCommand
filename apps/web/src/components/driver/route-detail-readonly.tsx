@@ -7,7 +7,45 @@
  * Client component: useTransition for server action calls.
  */
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
+
+// ---------------------------------------------------------------------------
+// Hydration-safe local time helpers
+// ---------------------------------------------------------------------------
+
+function useMounted() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted;
+}
+
+function formatLocalTime(timestamp: string | Date) {
+  return new Date(timestamp).toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
+
+function formatLocalDate(timestamp: string | Date) {
+  return new Date(timestamp).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function LocalTime({ date, format = 'datetime' }: { date: string | Date; format?: 'datetime' | 'date' | 'time' }) {
+  const mounted = useMounted();
+  // On server (not mounted): render ISO-ish string to avoid hydration mismatch
+  if (!mounted) return <span>{new Date(date).toISOString().slice(0, 16).replace('T', ' ')}</span>;
+  if (format === 'date') return <span>{formatLocalDate(date)}</span>;
+  if (format === 'time') return <span>{new Date(date).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', hour12: true })}</span>;
+  return <span>{formatLocalTime(date)}</span>;
+}
 import { Truck, Clock, Play, CheckCircle, Navigation } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -201,6 +239,14 @@ export function StopActionButtons({
 
   const action = getStopAction(stop, allStops, navigatingStopId);
 
+  // Pre-calculate next stop at render time — avoids stale closure after server
+  // action + revalidatePath causes allStops to still show old statuses inside the
+  // async callback. Capturing values before the transition is safe.
+  const nextStop = allStops
+    .filter((s) => s.sequenceOrder > stop.sequenceOrder && s.status === 'pending')
+    .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0] ?? null;
+  const nextStopNavUrl = nextStop ? buildNavUrl(nextStop) : null;
+
   if (action === 'completed') {
     return null;
   }
@@ -263,13 +309,11 @@ export function StopActionButtons({
                 return;
               }
 
-              // Find next pending stop by sequence order
-              const nextStop = allStops
-                .filter((s) => s.sequenceOrder > stop.sequenceOrder && s.status === 'pending')
-                .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
-
+              // Open navigation to pre-calculated next stop (avoids stale closure)
+              if (nextStopNavUrl) {
+                window.open(nextStopNavUrl, '_blank');
+              }
               if (nextStop) {
-                window.open(buildNavUrl(nextStop), '_blank');
                 setNavigatingStopId(nextStop.id);
               }
             });
@@ -315,7 +359,7 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
           <div>
             <h2 className="text-lg font-bold text-foreground">Active Dispatch</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Departure: {new Date(dispatch.scheduledDeparture).toLocaleString()}
+              Departure: <LocalTime date={dispatch.scheduledDeparture} />
             </p>
           </div>
           <span
@@ -344,7 +388,7 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
               <dt className="text-muted-foreground flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" /> Departed
               </dt>
-              <dd className="font-medium mt-0.5">{new Date(dispatch.actualDeparture).toLocaleString()}</dd>
+              <dd className="font-medium mt-0.5"><LocalTime date={dispatch.actualDeparture} /></dd>
             </div>
           )}
         </dl>
@@ -406,20 +450,20 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
                   {stop.appointmentStart && (
                     <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      Appt: {new Date(stop.appointmentStart).toLocaleString()}
-                      {stop.appointmentEnd && ` – ${new Date(stop.appointmentEnd).toLocaleTimeString()}`}
+                      Appt: <LocalTime date={stop.appointmentStart} />
+                      {stop.appointmentEnd && <> – <LocalTime date={stop.appointmentEnd} format="time" /></>}
                     </p>
                   )}
 
                   {/* Timestamps */}
                   {stop.arrivedAt && (
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Arrived: {new Date(stop.arrivedAt).toLocaleString()}
+                      Arrived: <LocalTime date={stop.arrivedAt} />
                     </p>
                   )}
                   {stop.departedAt && (
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Departed: {new Date(stop.departedAt).toLocaleString()}
+                      Departed: <LocalTime date={stop.departedAt} />
                     </p>
                   )}
 
