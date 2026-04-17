@@ -1,11 +1,9 @@
 import {
   getMyActiveDispatch,
-  getMyDispatchHistory,
   startTrip,
   arriveAtStop,
   completeCurrentStop,
 } from '@/app/(driver)/actions/driver-routes';
-import { CompletedRouteHistory } from '@/components/driver/completed-route-history';
 import { DispatchDetail } from '@/components/driver/route-detail-readonly';
 import { MapPin } from 'lucide-react';
 import { logger } from '@/lib/logger';
@@ -30,28 +28,17 @@ export default async function MyRoutePage() {
     logger.error('[MyRoutePage] Failed to fetch active dispatch:', err);
   }
 
-  // Fetch dispatch history regardless of active dispatch status
-  let history: Awaited<ReturnType<typeof getMyDispatchHistory>> = [];
-  try {
-    history = await getMyDispatchHistory();
-  } catch (err) {
-    logger.error('[MyRoutePage] Failed to fetch dispatch history:', err);
-  }
-
-  // No active dispatch — show empty state + history
+  // No active dispatch — show empty state
   if (!dispatch) {
     return (
-      <div className="space-y-4 lg:space-y-6">
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-            <MapPin className="h-7 w-7 text-muted-foreground" />
-          </div>
-          <h2 className="text-lg font-semibold text-foreground">No route assigned</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            You don&apos;t have an active route right now. Check back later or contact your dispatcher.
-          </p>
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+          <MapPin className="h-7 w-7 text-muted-foreground" />
         </div>
-        <CompletedRouteHistory completedDispatches={history} />
+        <h2 className="text-lg font-semibold text-foreground">No route assigned</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          You don&apos;t have an active route right now. Check back later or contact your dispatcher.
+        </p>
       </div>
     );
   }
@@ -81,9 +68,6 @@ export default async function MyRoutePage() {
 
       {/* TODO: Reconnect Documents section to CarrierDocument table */}
       {/* TODO: Reconnect Messages section to Carrier Ops messaging */}
-
-      {/* Completed dispatches history */}
-      <CompletedRouteHistory completedDispatches={history} />
     </div>
   );
 }

@@ -165,6 +165,23 @@ export async function completeStop(
   }
 
   // -------------------------------------------------------------------------
+  // Step 4b — Load in_transit: if this is a pickup stop, update load to in_transit
+  // -------------------------------------------------------------------------
+  if (stop.loadId && stop.stopType === 'pickup') {
+    // Update load to in_transit if currently pending/booked/assigned.
+    // updateMany with status filter is idempotent — won't downgrade a load
+    // that's already in_transit or delivered.
+    await prisma.carrierLoad.updateMany({
+      where: {
+        id: stop.loadId,
+        status: { in: ['pending', 'booked', 'assigned'] },
+      },
+      data: { status: 'in_transit' },
+    });
+    logger.info('completeStop: load marked in_transit on pickup', { orgId, loadId: stop.loadId });
+  }
+
+  // -------------------------------------------------------------------------
   // Step 5 — Load cascade: if last delivery stop completed, mark load delivered
   // -------------------------------------------------------------------------
   if (stop.loadId) {
