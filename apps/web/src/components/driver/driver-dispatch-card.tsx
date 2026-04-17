@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { MapPin } from 'lucide-react';
 
 // The dispatch type returned by getMyActiveDispatch — stops + truck included
@@ -30,10 +30,24 @@ interface DispatchData {
     model?: string | null;
   } | null;
   stops?: DispatchStop[];
+  firstDeliveryStop?: {
+    id: string;
+    sequenceOrder: number;
+    stopType: string;
+    facility: {
+      name: string;
+      addressLine1: string | null;
+      city: string | null;
+      state: string | null;
+      latitude?: number | null;
+      longitude?: number | null;
+    };
+  } | null;
 }
 
 interface DriverDispatchCardProps {
   dispatch: DispatchData | null;
+  startAction?: (dispatchId: string) => Promise<unknown>;
 }
 
 function formatDate(date: string | Date | null | undefined): string {
@@ -45,6 +59,21 @@ function formatDate(date: string | Date | null | undefined): string {
     hour: 'numeric',
     minute: '2-digit',
   }).format(d);
+}
+
+function buildGoogleMapsUrl(facility: {
+  name: string;
+  addressLine1: string | null;
+  city: string | null;
+  state: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+}): string {
+  if (facility.latitude != null && facility.longitude != null) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${facility.latitude},${facility.longitude}&travelmode=driving`;
+  }
+  const addr = [facility.addressLine1, facility.city, facility.state].filter(Boolean).join(', ');
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr || facility.name)}&travelmode=driving`;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -61,8 +90,11 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'Cancelled',
 };
 
-export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
+export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCardProps) {
   const [mounted, setMounted] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
   useEffect(() => setMounted(true), []);
 
   if (!dispatch) {
@@ -84,8 +116,35 @@ export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
   const totalStops = stops.length;
   const nextStop = stops.find((s) => s.status !== 'completed' && s.status !== 'cancelled');
 
-  const ctaHref = '/my-route';
-  const ctaLabel = dispatch.status === 'planned' ? 'Start Trip' : 'Continue to Stops';
+  function handleStartTrip() {
+    if (!startAction) return;
+    startTransition(async () => {
+      const result = await startAction(dispatch!.id);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const r = result as any;
+      if (r?.error) {
+        alert(r.error);
+        return;
+      }
+      if (dispatch!.firstDeliveryStop) {
+        window.open(buildGoogleMapsUrl(dispatch!.firstDeliveryStop.facility), '_blank');
+      }
+      router.push('/my-route');
+    });
+  }
+
+  function handleBeginNav() {
+    startTransition(async () => {
+      if (dispatch!.firstDeliveryStop) {
+        window.open(buildGoogleMapsUrl(dispatch!.firstDeliveryStop.facility), '_blank');
+      }
+      router.push('/my-route');
+    });
+  }
+
+  const isPlanned = dispatch.status === 'planned';
+  const ctaLabel = isPlanned ? 'Start Trip & Navigate' : 'Begin Navigation';
+  const ctaPending = isPlanned ? 'Starting...' : 'Loading...';
 
   return (
     <div className="bg-card rounded-xl shadow-sm border border-border p-4">
@@ -138,12 +197,13 @@ export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
       )}
 
       {/* CTA */}
-      <Link
-        href={ctaHref}
-        className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98]"
+      <button
+        onClick={isPlanned ? handleStartTrip : handleBeginNav}
+        disabled={isPending}
+        className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
       >
-        {ctaLabel}
-      </Link>
+        {isPending ? ctaPending : ctaLabel}
+      </button>
     </div>
   );
 }

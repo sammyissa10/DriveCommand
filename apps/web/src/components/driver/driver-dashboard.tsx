@@ -6,6 +6,7 @@ import { DriverQuickActions } from './driver-quick-actions';
 import { DriverHosWidget } from './driver-hos-widget';
 import { DriverMessagesPreview } from './driver-messages-preview';
 import { DriverGpsPing } from './driver-gps-ping';
+import { startTrip } from '@/app/(driver)/actions/driver-routes';
 
 // Types derived from getMyActiveDispatch and getDriverHOS return shapes
 interface DispatchStop {
@@ -83,7 +84,7 @@ export function DriverDashboard({ firstName, dispatch, hos, recentMessages }: Dr
       </div>
 
       {/* Active dispatch card */}
-      <DriverDispatchCard dispatch={dispatch} />
+      <DriverDispatchCard dispatch={dispatch} startAction={startTrip} />
 
       {/* Quick action tiles */}
       <DriverQuickActions />
