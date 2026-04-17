@@ -789,6 +789,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-207]: Application-layer tenantId injection chosen over RLS-only: Supabase postgres role has BYPASSRLS defeating RLS entirely; findUnique/findUniqueOrThrow use post-query verification since unique-where cannot include tenantId
 - [Phase quick-209]: ALLOWED_TYPES for uploads set to PDF/JPEG/PNG only; SVG blocked at support attachment route (XSS vector via embedded scripts)
 - [Phase quick-210]: Use tenantId as rate limit key for document routes; publicLimiter on track endpoint uses IP from x-forwarded-for
+- [Phase quick-241]: updateMany with status filter for in_transit cascade — idempotent, won't downgrade a load already past in_transit
 
 ### Pending Todos
 
