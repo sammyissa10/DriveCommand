@@ -33,6 +33,8 @@ import { LoadDeliveredEmail } from '@/emails/carrier/load-delivered';
 import { PayRecordReadyEmail } from '@/emails/carrier/pay-record-ready';
 import { InvoiceGeneratedEmail } from '@/emails/carrier/invoice-generated';
 import { ComplianceAlertEmail } from '@/emails/carrier/compliance-alert';
+import { ClientShipmentUpdateEmail } from '@/emails/carrier/client-shipment-update';
+import { ClientInvoiceReadyEmail } from '@/emails/carrier/client-invoice-ready';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -614,5 +616,424 @@ export async function sendComplianceAlertNotifications(
     });
   } catch (err) {
     logger.error('sendComplianceAlertNotifications: failed', { orgId, error: err });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Client notification helpers
+// ---------------------------------------------------------------------------
+
+/** Load data needed for all 3 client notifications */
+async function getClientEmailForLoad(orgId: string, loadId: string) {
+  return prisma.carrierLoad.findFirst({
+    where: { id: loadId, orgId },
+    include: {
+      client: {
+        select: {
+          name: true,
+          email: true,
+          portalAccess: true,
+          portalEmail: true,
+          paymentTerms: true,
+        },
+      },
+      contract: {
+        select: {
+          paymentTermsOverride: true,
+        },
+      },
+      dispatch: {
+        select: {
+          primaryDriverId: true,
+          truckId: true,
+          primaryDriver: {
+            select: { firstName: true, lastName: true },
+          },
+          truck: {
+            select: { unitNumber: true },
+          },
+        },
+      },
+      stops: {
+        orderBy: { sequenceOrder: 'asc' },
+        include: {
+          facility: {
+            select: { name: true, city: true, state: true },
+          },
+        },
+      },
+    },
+  });
+}
+
+// ---------------------------------------------------------------------------
+// sendClientPickupNotification
+// ---------------------------------------------------------------------------
+
+export async function sendClientPickupNotification(
+  orgId: string,
+  loadId: string,
+  completedStopId: string
+): Promise<void> {
+  const idempotencyKey = `carrier-client-pickup-${loadId}`;
+
+  try {
+    const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
+    if (alreadySent) return;
+
+    const load = await getClientEmailForLoad(orgId, loadId);
+    if (!load) {
+      logger.warn('sendClientPickupNotification: load not found', { orgId, loadId });
+      return;
+    }
+
+    // Only send to clients with portal access
+    if (!load.client.portalAccess) return;
+
+    const recipientEmail = load.client.email;
+    if (!recipientEmail) {
+      logger.warn('sendClientPickupNotification: client has no email', { orgId, loadId });
+      const logId = await recordNotification(prisma, {
+        tenantId: orgId,
+        idempotencyKey,
+        notificationType: 'carrier-client-pickup',
+        entityType: 'load',
+        entityId: loadId,
+        recipientEmail: 'unknown',
+        emailSubject: `Shipment Picked Up - ${load.referenceNumber ?? loadId.slice(0, 8)}`,
+      });
+      await markNotificationFailed(prisma, logId, 'Client has no email address on file');
+      return;
+    }
+
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: orgId },
+      select: { name: true },
+    });
+
+    const loadNumber = load.referenceNumber ?? loadId.slice(0, 8);
+    const companyName = tenant?.name ?? 'Your Company';
+
+    // Find the completed pickup stop
+    const completedStop = load.stops.find((s) => s.id === completedStopId);
+    const facilityName = completedStop?.facility
+      ? [completedStop.facility.name, completedStop.facility.city, completedStop.facility.state]
+          .filter(Boolean)
+          .join(', ')
+      : 'Unknown Facility';
+
+    const timestamp = new Date().toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    const driverName =
+      [load.dispatch?.primaryDriver?.firstName, load.dispatch?.primaryDriver?.lastName]
+        .filter(Boolean)
+        .join(' ') || 'Driver';
+
+    const truckUnitNumber = load.dispatch?.truck?.unitNumber ?? 'N/A';
+
+    const referenceNumbers = [load.bolNumber, load.proNumber, load.poNumber]
+      .filter(Boolean)
+      .join(' / ');
+
+    const commodity = load.commodityDescription ?? undefined;
+
+    // Find last delivery stop with appointment
+    const deliveryStops = load.stops.filter((s) => s.stopType === 'delivery');
+    const lastDelivery = deliveryStops[deliveryStops.length - 1];
+    const estimatedDelivery = lastDelivery?.appointmentStart
+      ? new Date(lastDelivery.appointmentStart).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        })
+      : undefined;
+
+    const baseUrl = getAppBaseUrl();
+    const portalUrl = `${baseUrl}/track/${loadId}`;
+
+    const subject = `Shipment Picked Up - ${loadNumber}`;
+
+    const logId = await recordNotification(prisma, {
+      tenantId: orgId,
+      idempotencyKey,
+      notificationType: 'carrier-client-pickup',
+      entityType: 'load',
+      entityId: loadId,
+      recipientEmail,
+      emailSubject: subject,
+    });
+
+    const result = await sendEmail({
+      to: recipientEmail,
+      subject,
+      react: React.createElement(ClientShipmentUpdateEmail, {
+        status: 'picked_up',
+        loadNumber,
+        companyName,
+        facilityName,
+        timestamp,
+        driverName,
+        truckUnitNumber,
+        referenceNumbers,
+        commodity,
+        estimatedDelivery,
+        portalUrl,
+      }),
+    });
+
+    await markNotificationSent(prisma, logId, result.id);
+    logger.info('sendClientPickupNotification: sent', { orgId, loadId, recipientEmail });
+  } catch (err) {
+    logger.error('sendClientPickupNotification: failed', { orgId, loadId, error: err });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// sendClientDeliveredNotification
+// ---------------------------------------------------------------------------
+
+export async function sendClientDeliveredNotification(
+  orgId: string,
+  loadId: string
+): Promise<void> {
+  const idempotencyKey = `carrier-client-delivered-${loadId}`;
+
+  try {
+    const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
+    if (alreadySent) return;
+
+    const load = await getClientEmailForLoad(orgId, loadId);
+    if (!load) {
+      logger.warn('sendClientDeliveredNotification: load not found', { orgId, loadId });
+      return;
+    }
+
+    // Only send to clients with portal access
+    if (!load.client.portalAccess) return;
+
+    const recipientEmail = load.client.email;
+    if (!recipientEmail) {
+      logger.warn('sendClientDeliveredNotification: client has no email', { orgId, loadId });
+      const logId = await recordNotification(prisma, {
+        tenantId: orgId,
+        idempotencyKey,
+        notificationType: 'carrier-client-delivered',
+        entityType: 'load',
+        entityId: loadId,
+        recipientEmail: 'unknown',
+        emailSubject: `Shipment Delivered - ${load.referenceNumber ?? loadId.slice(0, 8)}`,
+      });
+      await markNotificationFailed(prisma, logId, 'Client has no email address on file');
+      return;
+    }
+
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: orgId },
+      select: { name: true },
+    });
+
+    const loadNumber = load.referenceNumber ?? loadId.slice(0, 8);
+    const companyName = tenant?.name ?? 'Your Company';
+
+    // Find last delivery stop
+    const deliveryStops = load.stops.filter((s) => s.stopType === 'delivery');
+    const lastDelivery = deliveryStops[deliveryStops.length - 1];
+
+    const facilityName = lastDelivery?.facility
+      ? [lastDelivery.facility.name, lastDelivery.facility.city, lastDelivery.facility.state]
+          .filter(Boolean)
+          .join(', ')
+      : 'Unknown Facility';
+
+    const timestamp = lastDelivery?.departedAt
+      ? new Date(lastDelivery.departedAt).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        })
+      : new Date().toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
+
+    const driverName =
+      [load.dispatch?.primaryDriver?.firstName, load.dispatch?.primaryDriver?.lastName]
+        .filter(Boolean)
+        .join(' ') || 'Driver';
+
+    const truckUnitNumber = load.dispatch?.truck?.unitNumber ?? 'N/A';
+
+    const referenceNumbers = [load.bolNumber, load.proNumber, load.poNumber]
+      .filter(Boolean)
+      .join(' / ');
+
+    // Check if POD document exists for last delivery stop
+    let podNote: string | undefined;
+    if (lastDelivery) {
+      const podCount = await prisma.carrierDocument.count({
+        where: { stopId: lastDelivery.id, documentType: 'pod' },
+      });
+      if (podCount > 0) {
+        podNote = 'Proof of Delivery document has been uploaded';
+      }
+    }
+
+    const baseUrl = getAppBaseUrl();
+    const portalUrl = `${baseUrl}/track/${loadId}`;
+
+    const subject = `Shipment Delivered - ${loadNumber}`;
+
+    const logId = await recordNotification(prisma, {
+      tenantId: orgId,
+      idempotencyKey,
+      notificationType: 'carrier-client-delivered',
+      entityType: 'load',
+      entityId: loadId,
+      recipientEmail,
+      emailSubject: subject,
+    });
+
+    const result = await sendEmail({
+      to: recipientEmail,
+      subject,
+      react: React.createElement(ClientShipmentUpdateEmail, {
+        status: 'delivered',
+        loadNumber,
+        companyName,
+        facilityName,
+        timestamp,
+        driverName,
+        truckUnitNumber,
+        referenceNumbers,
+        commodity: load.commodityDescription ?? undefined,
+        podNote,
+        portalUrl,
+      }),
+    });
+
+    await markNotificationSent(prisma, logId, result.id);
+    logger.info('sendClientDeliveredNotification: sent', { orgId, loadId, recipientEmail });
+  } catch (err) {
+    logger.error('sendClientDeliveredNotification: failed', { orgId, loadId, error: err });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// sendClientInvoiceReadyNotification
+// ---------------------------------------------------------------------------
+
+export async function sendClientInvoiceReadyNotification(
+  orgId: string,
+  loadId: string
+): Promise<void> {
+  const idempotencyKey = `carrier-client-invoice-${loadId}`;
+
+  try {
+    const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
+    if (alreadySent) return;
+
+    const load = await getClientEmailForLoad(orgId, loadId);
+    if (!load) {
+      logger.warn('sendClientInvoiceReadyNotification: load not found', { orgId, loadId });
+      return;
+    }
+
+    // Invoice notifications always send — do NOT check portalAccess
+    const recipientEmail = load.client.email;
+    if (!recipientEmail) {
+      logger.warn('sendClientInvoiceReadyNotification: client has no email', { orgId, loadId });
+      const logId = await recordNotification(prisma, {
+        tenantId: orgId,
+        idempotencyKey,
+        notificationType: 'carrier-client-invoice-ready',
+        entityType: 'load',
+        entityId: loadId,
+        recipientEmail: 'unknown',
+        emailSubject: `Invoice Ready - ${load.referenceNumber ?? loadId.slice(0, 8)}`,
+      });
+      await markNotificationFailed(prisma, logId, 'Client has no email address on file');
+      return;
+    }
+
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: orgId },
+      select: { name: true },
+    });
+
+    const loadNumber = load.referenceNumber ?? loadId.slice(0, 8);
+    const companyName = tenant?.name ?? 'Your Company';
+
+    const invoiceTotal = load.totalRevenue ? Number(load.totalRevenue) : 0;
+
+    // Compute payment terms: contract override > client terms > 30
+    const paymentTermsOverrideStr = load.contract?.paymentTermsOverride;
+    const paymentTermsDays = paymentTermsOverrideStr
+      ? parseInt(paymentTermsOverrideStr, 10) || load.client.paymentTerms
+      : load.client.paymentTerms;
+
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + paymentTermsDays);
+    const dueDateStr = dueDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+
+    // Build line items summary from load fields
+    const lineItems: string[] = ['Linehaul'];
+    if (load.fuelSurcharge && Number(load.fuelSurcharge) > 0) lineItems.push('Fuel Surcharge');
+    if (load.detentionAmount && Number(load.detentionAmount) > 0) lineItems.push('Detention');
+    if (load.otherCharges && Number(load.otherCharges) > 0) lineItems.push('Other Charges');
+    const lineItemsSummary = lineItems.join(', ');
+
+    const baseUrl = getAppBaseUrl();
+    const portalUrl = load.client.portalAccess ? `${baseUrl}/track/${loadId}` : undefined;
+
+    const subject = `Invoice Ready - ${loadNumber} - $${invoiceTotal.toFixed(2)}`;
+
+    const logId = await recordNotification(prisma, {
+      tenantId: orgId,
+      idempotencyKey,
+      notificationType: 'carrier-client-invoice-ready',
+      entityType: 'load',
+      entityId: loadId,
+      recipientEmail,
+      emailSubject: subject,
+    });
+
+    const result = await sendEmail({
+      to: recipientEmail,
+      subject,
+      react: React.createElement(ClientInvoiceReadyEmail, {
+        loadNumber,
+        companyName,
+        invoiceTotal,
+        dueDate: dueDateStr,
+        lineItemsSummary,
+        portalUrl,
+      }),
+    });
+
+    await markNotificationSent(prisma, logId, result.id);
+    logger.info('sendClientInvoiceReadyNotification: sent', { orgId, loadId, recipientEmail });
+  } catch (err) {
+    logger.error('sendClientInvoiceReadyNotification: failed', { orgId, loadId, error: err });
   }
 }
