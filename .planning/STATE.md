@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 230: Reconnect web driver portal to Carrier Ops dispatch data
-Last session: 2026-04-17T02:38:00Z
-Stopped at: Completed quick-230-PLAN.md — 2 tasks, 9 files modified
+Last activity: 2026-04-16 - Completed quick task 231: Rebuild carrier load form + stop builder
+Last session: 2026-04-16T00:00:00Z
+Stopped at: Completed quick-231-PLAN.md — 2 tasks, 7 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -174,6 +174,7 @@ Progress: [███████████████████████
 - Quick-218 (2026-04-14): Upgrade live fleet map — 3 tenant-isolated API routes (vehicles with LEFT JOIN LATERAL, history by truck+date, trips paginated), two-panel layout, VehicleSidebar (click-to-fly, last-seen, driver name), VehicleFilterBar (client-side multi-select), LiveMapTabs (Live/History/Trips), HistoryTab (GPS trail + timeline), TripsTab (paginated completed routes), 30s polling on Live tab only, no-location trucks in sidebar but not on map — 2 tasks, 8 files created, 8 files modified, 11 min
 - Quick-224 (2026-04-16): Add email notifications for all carrier lifecycle events — 5 React Email templates (dispatch-assigned, load-delivered, pay-record-ready, invoice-generated, compliance-alert), notifications.ts helper with full idempotency via NotificationLog, triggers wired in dispatches.ts (create+reassign), stop-completion.ts (delivered cascade), pay-calculator.ts (pay records), loads.ts (invoiced status), compliance-alerts cron — 2 tasks, 6 files created, 6 files modified, ~20min
 - Quick-228 (2026-04-17): In-app notification center for owner portal — InAppNotification table + RLS, createNotification() fire-and-forget helper wired into 5 send* functions, GET/PATCH notification API routes, NotificationBell (polling badge) + NotificationCenter (dropdown with type icons, relative timestamps, deep links) in owner shell header — 4 tasks, 6 files created, 3 files modified, ~75min
+- Quick-231 (2026-04-16): Rebuild carrier load form + stop builder — 5-section form (Client & Contract, Freight Details, Stops, Rate & Financials, References), removed PRO Number/Pallets/FSC editable fields/Appointments, StopBuilder in both create+edit modes, info banner for no-dispatch, R2 rate confirmation upload wired, LoadFinancials hides zero rows, LoadList uses client.name from API, stop persistence via persistStops helper (tenant isolation + transaction diff) — 2 tasks, 7 files
 
 ## Accumulated Context
 
@@ -229,6 +230,12 @@ Progress: [███████████████████████
 - App-layer soft-delete guard instead of schema migration — facilityType inactive_ prefix convention preserved; getFacility/updateFacility now exclude inactive_ prefixed records without touching schema
 - Batch facility ownership check in saveRouteTemplate — single findMany for all stop facilityIds is more efficient than N individual queries
 - createStop returns null (not error object) for FK ownership failures — matches existing null-returns-404 pattern in the function
+
+**Quick-231 decisions (Rebuild carrier load form + stop builder):**
+- CarrierStop.dispatchId is required (non-nullable) — stops only persist when load has dispatchId; info banner shown otherwise (no schema change needed)
+- FSC removed from load form entirely — inherited from contract and computed read-only in LoadFinancials; editing FSC per-load was confusing and redundant
+- persistStops uses $transaction for atomic diff (delete removed pending + update changed + create new) — prevents partial state on network error
+- LoadFinancials hides zero rows: FSC only shown if >0 or has note, Accessorial only if >0, Detention removed entirely — cleaned up visual noise
 
 **Quick-228 decisions (In-app notification center):**
 - RLS INSERT policy uses WITH CHECK (true) — app always writes via service role key, not JWT claims; SELECT/UPDATE use org_id = (auth.jwt() ->> 'org_id')::uuid
