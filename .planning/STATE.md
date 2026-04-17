@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 236: Fix rate_type enum mismatch between contracts and loads blocking Load form submission
-Last session: 2026-04-17T04:07:53Z
-Stopped at: Completed quick-232-PLAN.md — 2 tasks, 18 files created, 3 files modified
+Last activity: 2026-04-16 - Completed quick task 237: Fix driver portal stop flow — correct button labels, Google Maps navigation, BOL/POD bypass
+Last session: 2026-04-16T00:00:00Z
+Stopped at: Completed quick-237-PLAN.md — 4 tasks, 6 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
