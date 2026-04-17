@@ -106,6 +106,7 @@ export async function getIFTAReport(
   // Group by truckId for segment calculation
   const truckPings = new Map<string, Array<{ lat: number; lng: number }>>();
   for (const record of gpsRecords) {
+    if (!record.truckId) continue;
     const lat = parseFloat(record.latitude.toString());
     const lng = parseFloat(record.longitude.toString());
     if (!truckPings.has(record.truckId)) {
