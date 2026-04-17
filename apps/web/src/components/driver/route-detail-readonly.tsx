@@ -7,7 +7,7 @@
  * Client component: useTransition for server action calls.
  */
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { Truck, Clock, Play, CheckCircle, Navigation } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -102,10 +102,11 @@ function stopTypeBadge(type: string) {
   return map[type] ?? 'bg-muted text-muted-foreground';
 }
 
-function stopCircleColor(status: string) {
+function stopCircleColor(status: string, isNavigating: boolean) {
   if (status === 'completed') return 'bg-green-500 text-white';
   if (status === 'arrived') return 'bg-blue-500 text-white';
   if (status === 'skipped') return 'bg-red-400 text-white';
+  if (isNavigating) return 'bg-blue-500 text-white animate-pulse';
   return 'bg-muted text-muted-foreground';
 }
 
@@ -117,6 +118,27 @@ function stopStatusBadge(status: string) {
     skipped: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
   };
   return map[status] ?? 'bg-muted text-muted-foreground';
+}
+
+// ---------------------------------------------------------------------------
+// Stop state machine
+// ---------------------------------------------------------------------------
+
+function getStopAction(
+  stop: CarrierStopShape,
+  allStops: CarrierStopShape[],
+  navigatingStopId: string | null
+): 'completed' | 'start_route' | 'complete_stop' | 'mark_arrived' | 'begin_navigation' {
+  if (stop.status === 'completed') return 'completed';
+  if (stop.status === 'arrived') return stop.stopType === 'pickup' ? 'start_route' : 'complete_stop';
+  // status = pending
+  const firstPendingStop = allStops
+    .filter((s) => s.status === 'pending')
+    .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
+  const isFirstPending = firstPendingStop?.id === stop.id;
+  if (isFirstPending && stop.stopType === 'pickup') return 'mark_arrived';
+  if (navigatingStopId === stop.id) return 'mark_arrived';
+  return 'begin_navigation';
 }
 
 // ---------------------------------------------------------------------------
@@ -161,77 +183,108 @@ export function StartTripButton({ dispatchId, startAction }: StartTripButtonProp
 interface StopActionButtonsProps {
   stop: CarrierStopShape;
   allStops: CarrierStopShape[];
+  navigatingStopId: string | null;
+  setNavigatingStopId: (id: string | null) => void;
   arriveAction: (id: string) => Promise<unknown>;
   completeAction: (id: string) => Promise<unknown>;
 }
 
-export function StopActionButtons({ stop, allStops, arriveAction, completeAction }: StopActionButtonsProps) {
+export function StopActionButtons({
+  stop,
+  allStops,
+  navigatingStopId,
+  setNavigatingStopId,
+  arriveAction,
+  completeAction,
+}: StopActionButtonsProps) {
   const [isPending, startTransition] = useTransition();
 
-  function handleArrive() {
-    startTransition(async () => {
-      const result = await arriveAction(stop.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = result as any;
-      if (r?.error) alert(r.error);
-    });
+  const action = getStopAction(stop, allStops, navigatingStopId);
+
+  if (action === 'completed') {
+    return null;
   }
 
-  function handleComplete() {
-    startTransition(async () => {
-      const result = await completeAction(stop.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const r = result as any;
-      if (r?.error) {
-        alert(r.error);
-        return;
-      }
-
-      // Auto-navigate to next relevant stop after completion
-      let nextStop: CarrierStopShape | undefined;
-      if (stop.stopType === 'pickup') {
-        // Navigate to first pending delivery stop
-        nextStop = allStops
-          .filter((s) => s.stopType === 'delivery' && s.status === 'pending')
-          .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
-      } else if (stop.stopType === 'delivery') {
-        // Navigate to next pending stop after this one
-        nextStop = allStops
-          .filter((s) => s.sequenceOrder > stop.sequenceOrder && s.status === 'pending')
-          .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
-      }
-      // fuel_stop / layover / other: no navigation
-
-      if (nextStop) {
-        window.open(buildNavUrl(nextStop), '_blank');
-      }
-    });
-  }
-
-  if (stop.status === 'pending') {
+  if (action === 'begin_navigation') {
     return (
       <button
-        onClick={handleArrive}
-        disabled={isPending}
-        className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        onClick={() => {
+          window.open(buildNavUrl(stop), '_blank');
+          setNavigatingStopId(stop.id);
+        }}
+        className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-blue-700 transition-colors"
       >
         <Navigation className="h-3.5 w-3.5" />
-        {isPending ? 'Marking...' : 'Mark Arrived'}
+        Begin Navigation
       </button>
     );
   }
 
-  if (stop.status === 'arrived') {
-    const isPickup = stop.stopType === 'pickup';
+  if (action === 'mark_arrived') {
+    const isNavigating = navigatingStopId === stop.id;
     return (
-      <button
-        onClick={handleComplete}
-        disabled={isPending}
-        className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-      >
-        {isPickup ? <Play className="h-3.5 w-3.5" /> : <CheckCircle className="h-3.5 w-3.5" />}
-        {isPending ? 'Processing...' : isPickup ? 'Start Route' : 'Complete Stop'}
-      </button>
+      <div className="w-full space-y-1">
+        {isNavigating && (
+          <p className="text-xs text-muted-foreground text-center">You&apos;re on your way...</p>
+        )}
+        <button
+          onClick={() => {
+            startTransition(async () => {
+              const result = await arriveAction(stop.id);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const r = result as any;
+              if (r?.error) alert(r.error);
+              setNavigatingStopId(null);
+            });
+          }}
+          disabled={isPending}
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          <Navigation className="h-3.5 w-3.5" />
+          {isPending ? 'Marking...' : 'Mark Arrived'}
+        </button>
+      </div>
+    );
+  }
+
+  if (action === 'complete_stop' || action === 'start_route') {
+    const isPickup = action === 'start_route';
+    return (
+      <div className="w-full space-y-1">
+        <p className="text-xs text-muted-foreground text-center">You&apos;ve arrived</p>
+        <button
+          onClick={() => {
+            startTransition(async () => {
+              const result = await completeAction(stop.id);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const r = result as any;
+              if (r?.error) {
+                alert(r.error);
+                return;
+              }
+
+              // Find next pending stop by sequence order
+              const nextStop = allStops
+                .filter((s) => s.sequenceOrder > stop.sequenceOrder && s.status === 'pending')
+                .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
+
+              if (nextStop) {
+                window.open(buildNavUrl(nextStop), '_blank');
+                setNavigatingStopId(nextStop.id);
+              }
+            });
+          }}
+          disabled={isPending}
+          className={`inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-white min-h-[40px] disabled:opacity-50 transition-colors ${
+            isPickup
+              ? 'bg-green-600 hover:bg-green-700'
+              : 'bg-emerald-600 hover:bg-emerald-700'
+          }`}
+        >
+          {isPickup ? <Play className="h-3.5 w-3.5" /> : <CheckCircle className="h-3.5 w-3.5" />}
+          {isPending ? 'Processing...' : isPickup ? 'Start Route' : 'Complete Stop'}
+        </button>
+      </div>
     );
   }
 
@@ -252,6 +305,7 @@ interface DispatchDetailProps {
 export function DispatchDetail({ dispatch, startAction, arriveAction, completeAction }: DispatchDetailProps) {
   const truck = dispatch.truck;
   const truckLabel = [truck.year, truck.make, truck.model].filter(Boolean).join(' ') || truck.unitNumber;
+  const [navigatingStopId, setNavigatingStopId] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
@@ -310,84 +364,89 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
         </h3>
 
         <ol className="space-y-4">
-          {dispatch.stops.map((stop, idx) => (
-            <li key={stop.id} className="flex gap-3 items-start">
-              {/* Sequence circle */}
-              <div
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold mt-0.5 ${stopCircleColor(stop.status)}`}
-              >
-                {stop.status === 'completed' ? '✓' : stop.status === 'skipped' ? '✕' : idx + 1}
-              </div>
-
-              {/* Stop content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-foreground">{stop.facility.name}</p>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${stopTypeBadge(stop.stopType)}`}
-                  >
-                    {stop.stopType.replace(/_/g, ' ')}
-                  </span>
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${stopStatusBadge(stop.status)}`}
-                  >
-                    {stop.status}
-                  </span>
+          {dispatch.stops.map((stop, idx) => {
+            const isNavigating = navigatingStopId === stop.id;
+            return (
+              <li key={stop.id} className="flex gap-3 items-start">
+                {/* Sequence circle */}
+                <div
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold mt-0.5 ${stopCircleColor(stop.status, isNavigating)}`}
+                >
+                  {stop.status === 'completed' ? '✓' : stop.status === 'skipped' ? '✕' : idx + 1}
                 </div>
 
-                {/* Location — tappable Google Maps link */}
-                <a
-                  href={buildNavUrl(stop)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 dark:text-blue-400 underline mt-0.5 flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300"
-                >
-                  <Navigation className="h-3 w-3" />
-                  {[stop.facility.addressLine1, stop.facility.city, stop.facility.state].filter(Boolean).join(', ') || stop.facility.name}
-                </a>
-
-                {/* Appointment window */}
-                {stop.appointmentStart && (
-                  <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    Appt: {new Date(stop.appointmentStart).toLocaleString()}
-                    {stop.appointmentEnd && ` – ${new Date(stop.appointmentEnd).toLocaleTimeString()}`}
-                  </p>
-                )}
-
-                {/* Timestamps */}
-                {stop.arrivedAt && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Arrived: {new Date(stop.arrivedAt).toLocaleString()}
-                  </p>
-                )}
-                {stop.departedAt && (
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Departed: {new Date(stop.departedAt).toLocaleString()}
-                  </p>
-                )}
-
-                {/* Special instructions */}
-                {stop.specialInstructions && (
-                  <p className="text-xs text-amber-700 dark:text-amber-400 mt-1 italic">
-                    {stop.specialInstructions}
-                  </p>
-                )}
-
-                {/* Action buttons (in_progress dispatches only) */}
-                {dispatch.status === 'in_progress' && (
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <StopActionButtons
-                      stop={stop}
-                      allStops={dispatch.stops}
-                      arriveAction={arriveAction}
-                      completeAction={completeAction}
-                    />
+                {/* Stop content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm font-semibold text-foreground">{stop.facility.name}</p>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${stopTypeBadge(stop.stopType)}`}
+                    >
+                      {stop.stopType.replace(/_/g, ' ')}
+                    </span>
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${stopStatusBadge(stop.status)}`}
+                    >
+                      {stop.status}
+                    </span>
                   </div>
-                )}
-              </div>
-            </li>
-          ))}
+
+                  {/* Location — tappable Google Maps link */}
+                  <a
+                    href={buildNavUrl(stop)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 dark:text-blue-400 underline mt-0.5 flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300"
+                  >
+                    <Navigation className="h-3 w-3" />
+                    {[stop.facility.addressLine1, stop.facility.city, stop.facility.state].filter(Boolean).join(', ') || stop.facility.name}
+                  </a>
+
+                  {/* Appointment window */}
+                  {stop.appointmentStart && (
+                    <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      Appt: {new Date(stop.appointmentStart).toLocaleString()}
+                      {stop.appointmentEnd && ` – ${new Date(stop.appointmentEnd).toLocaleTimeString()}`}
+                    </p>
+                  )}
+
+                  {/* Timestamps */}
+                  {stop.arrivedAt && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Arrived: {new Date(stop.arrivedAt).toLocaleString()}
+                    </p>
+                  )}
+                  {stop.departedAt && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Departed: {new Date(stop.departedAt).toLocaleString()}
+                    </p>
+                  )}
+
+                  {/* Special instructions */}
+                  {stop.specialInstructions && (
+                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-1 italic">
+                      {stop.specialInstructions}
+                    </p>
+                  )}
+
+                  {/* Action buttons (in_progress dispatches only) */}
+                  {dispatch.status === 'in_progress' && (
+                    <div className="mt-2">
+                      <StopActionButtons
+                        stop={stop}
+                        allStops={dispatch.stops}
+                        navigatingStopId={navigatingStopId}
+                        setNavigatingStopId={setNavigatingStopId}
+                        arriveAction={arriveAction}
+                        completeAction={completeAction}
+                      />
+                    </div>
+                  )}
+                </div>
+              </li>
+            );
+          })}
         </ol>
       </div>
     </div>
