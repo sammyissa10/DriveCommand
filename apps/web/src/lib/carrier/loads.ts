@@ -47,7 +47,8 @@ export interface LoadCreateInput {
   otherCharges?: number;
 }
 
-export type LoadUpdateInput = Partial<LoadCreateInput> & {
+export type LoadUpdateInput = Partial<Omit<LoadCreateInput, 'dispatchId'>> & {
+  dispatchId?: string | null;
   status?: string;
 };
 

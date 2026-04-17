@@ -68,7 +68,8 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
   const [unassignedLoads, setUnassignedLoads] = useState<UnassignedLoad[]>([]);
   const [searching, setSearching] = useState(false);
 
-  const canAttach = dispatchStatus === 'planned' || dispatchStatus === 'in_progress';
+  const canAttach = dispatchStatus === 'planned';
+  const canRemove = dispatchStatus === 'planned';
 
   async function fetchUnassigned(query: string) {
     setSearching(true);
@@ -103,6 +104,26 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
   function handleSearch(q: string) {
     setSearchQuery(q);
     fetchUnassigned(q);
+  }
+
+  function handleRemove(loadId: string) {
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/v1/carrier/dispatches/${dispatchId}/remove-load`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loadId }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? 'Failed to remove load');
+        }
+        toast.success('Load removed from dispatch');
+        router.refresh();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to remove load');
+      }
+    });
   }
 
   function handleAttach(loadId: string) {
@@ -221,6 +242,17 @@ export function DispatchLoadsPanel({ loads, dispatchId, dispatchStatus }: Dispat
                     <span className="text-sm font-medium text-foreground">
                       {formatCurrency(load.totalRevenue)}
                     </span>
+                  )}
+                  {canRemove && (
+                    <button
+                      onClick={() => handleRemove(load.id)}
+                      disabled={isPending}
+                      title="Remove load from dispatch"
+                      className="ml-1 rounded p-1 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Remove load from dispatch"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   )}
                 </div>
               </div>

@@ -6,7 +6,7 @@ import { getLoad, updateLoad } from '@/lib/carrier/loads';
 
 const LoadUpdateSchema = z.object({
   clientId: z.string().uuid().optional(),
-  dispatchId: z.string().uuid().optional(),
+  dispatchId: z.string().uuid().nullable().optional(),
   contractId: z.string().uuid().optional(),
   loadType: z.enum(['ftl', 'ltl', 'partial', 'drayage', 'intermodal']).optional(),
   referenceNumber: z.string().optional(),
