@@ -4,6 +4,23 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { getLoad, updateLoad } from '@/lib/carrier/loads';
 
+const StopInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  facility_id: z.string().uuid(),
+  stop_type: z.enum(['pickup', 'delivery', 'fuel_stop', 'layover']),
+  sequence_order: z.number().int(),
+  contact_name: z.string().nullable().optional(),
+  contact_phone: z.string().nullable().optional(),
+  commodity_description: z.string().nullable().optional(),
+  pieces: z.number().int().nullable().optional(),
+  weight_lbs: z.number().nullable().optional(),
+  bol_required: z.boolean().optional(),
+  pod_required: z.boolean().optional(),
+  special_instructions: z.string().nullable().optional(),
+  appointment_start: z.string().nullable().optional(),
+  appointment_end: z.string().nullable().optional(),
+});
+
 const LoadUpdateSchema = z.object({
   clientId: z.string().uuid().optional(),
   dispatchId: z.string().uuid().nullable().optional(),
@@ -28,6 +45,7 @@ const LoadUpdateSchema = z.object({
   specialInstructions: z.string().optional(),
   notes: z.string().optional(),
   status: z.enum(['pending', 'in_transit', 'delivered', 'cancelled', 'invoiced']).optional(),
+  stops: z.array(StopInputSchema).optional(),
 });
 
 export async function GET(
