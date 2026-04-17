@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic"
  * The parent (owner)/layout.tsx already blocks unauthenticated users and
  * redirects non-OWNER/MANAGER roles to /unauthorized.
  *
- * This layout adds the DRIVER-specific redirect to /my-load (belt-and-suspenders)
+ * This layout adds the DRIVER-specific redirect to /home (belt-and-suspenders)
  * and renders the pathname-based CarrierBreadcrumb above all carrier pages.
  */
 export default async function CarrierLayout({
@@ -23,7 +23,7 @@ export default async function CarrierLayout({
 
   // Drivers should go to their own portal, not the carrier ops section
   if (role === UserRole.DRIVER) {
-    redirect("/my-route")
+    redirect("/home")
   }
 
   // Belt-and-suspenders: only OWNER and MANAGER can access carrier ops

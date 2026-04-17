@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     let redirectUrl = '/dashboard';
     if (appMeta.isSystemAdmin) redirectUrl = '/admin-dashboard';
-    else if (appMeta.role === 'DRIVER') redirectUrl = '/my-route';
+    else if (appMeta.role === 'DRIVER') redirectUrl = '/home';
 
     return NextResponse.json({
       success: true,

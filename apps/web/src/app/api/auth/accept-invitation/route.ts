@@ -252,7 +252,7 @@ export async function POST(req: NextRequest) {
     const supabase = await createSupabaseServerClient();
     await supabase.auth.signInWithPassword({ email: userEmail, password });
 
-    const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/dashboard' : '/my-route';
+    const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/dashboard' : '/home';
 
     return NextResponse.json({
       success: true,

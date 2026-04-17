@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Home, MapPin, Package, MessageSquare, LayoutGrid } from 'lucide-react';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: Home, exact: true },
+  { href: '/home', label: 'Dashboard', icon: Home, exact: true },
   { href: '/my-route', label: 'Route', icon: MapPin, exact: false },
   { href: '/my-load', label: 'Load', icon: Package, exact: false },
   { href: '/messages', label: 'Messages', icon: MessageSquare, exact: false },

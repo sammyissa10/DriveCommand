@@ -63,7 +63,7 @@ const PUBLIC_PATHS = [
   '/site.webmanifest',
 ];
 
-// Paths that belong to the owner portal — drivers navigating here get redirected to /my-route
+// Paths that belong to the owner portal — drivers navigating here get redirected to /home
 const OWNER_PATHS = [
   '/dashboard',
   '/trucks',
@@ -154,7 +154,7 @@ export default async function middleware(request: NextRequest) {
 
   // Driver guard: redirect DRIVER role away from owner-only paths
   if (appMeta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL('/my-route', request.url));
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
   // MANAGER permission guard: check granular permissions for gated paths
