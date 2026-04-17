@@ -38,8 +38,6 @@ export default async function MyRoutePage() {
     logger.error('[MyRoutePage] Failed to fetch dispatch history:', err);
   }
 
-  console.log('ROUTE PAGE RENDER', JSON.stringify(dispatch, null, 2));
-
   // No active dispatch — show empty state + history
   if (!dispatch) {
     return (
