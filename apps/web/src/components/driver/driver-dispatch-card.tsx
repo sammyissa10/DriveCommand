@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 
@@ -61,6 +62,9 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   if (!dispatch) {
     return (
       <div className="bg-card rounded-xl shadow-sm border border-border p-6 flex flex-col items-center text-center gap-3">
@@ -103,7 +107,7 @@ export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
         </div>
         {dispatch.scheduledDeparture && (
           <p className="text-xs text-muted-foreground ml-3 shrink-0">
-            {formatDate(dispatch.scheduledDeparture)}
+            {mounted ? formatDate(dispatch.scheduledDeparture) : '\u00A0'}
           </p>
         )}
       </div>
@@ -126,7 +130,7 @@ export function DriverDispatchCard({ dispatch }: DriverDispatchCardProps) {
             <p className="text-xs text-muted-foreground">
               {[nextStop.facility.city, nextStop.facility.state].filter(Boolean).join(', ')}
               {nextStop.scheduledArrival && (
-                <> · {formatDate(nextStop.scheduledArrival)}</>
+                <> · {mounted ? formatDate(nextStop.scheduledArrival) : '\u00A0'}</>
               )}
             </p>
           </div>
