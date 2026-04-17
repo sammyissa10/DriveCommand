@@ -8,7 +8,7 @@
  */
 
 import { useTransition } from 'react';
-import { MapPin, Truck, Clock, Navigation, Play, CheckCircle } from 'lucide-react';
+import { Truck, Clock, Play, CheckCircle, Navigation } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types — mirrors the Prisma include shape from getMyActiveDispatch()
@@ -58,20 +58,26 @@ export interface CarrierDispatchShape {
   notes?: string | null;
   truck: CarrierTruckShape;
   stops: CarrierStopShape[];
+  firstDeliveryStop?: {
+    id: string;
+    sequenceOrder: number;
+    stopType: string;
+    facility: Facility;
+  } | null;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildNavUrl(stop: CarrierStopShape): string {
+function buildNavUrl(stop: CarrierStopShape | { facility: Facility }): string {
   if (stop.facility.latitude != null && stop.facility.longitude != null) {
-    return `https://www.google.com/maps/dir/?api=1&destination=${stop.facility.latitude},${stop.facility.longitude}`;
+    return `https://www.google.com/maps/dir/?api=1&destination=${stop.facility.latitude},${stop.facility.longitude}&travelmode=driving`;
   }
   const addr = [stop.facility.addressLine1, stop.facility.city, stop.facility.state]
     .filter(Boolean)
     .join(', ');
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr || stop.facility.name)}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(addr || stop.facility.name)}&travelmode=driving`;
 }
 
 function statusBadge(status: string) {
@@ -154,11 +160,12 @@ export function StartTripButton({ dispatchId, startAction }: StartTripButtonProp
 
 interface StopActionButtonsProps {
   stop: CarrierStopShape;
+  allStops: CarrierStopShape[];
   arriveAction: (id: string) => Promise<unknown>;
   completeAction: (id: string) => Promise<unknown>;
 }
 
-export function StopActionButtons({ stop, arriveAction, completeAction }: StopActionButtonsProps) {
+export function StopActionButtons({ stop, allStops, arriveAction, completeAction }: StopActionButtonsProps) {
   const [isPending, startTransition] = useTransition();
 
   function handleArrive() {
@@ -175,7 +182,29 @@ export function StopActionButtons({ stop, arriveAction, completeAction }: StopAc
       const result = await completeAction(stop.id);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const r = result as any;
-      if (r?.error) alert(r.error);
+      if (r?.error) {
+        alert(r.error);
+        return;
+      }
+
+      // Auto-navigate to next relevant stop after completion
+      let nextStop: CarrierStopShape | undefined;
+      if (stop.stopType === 'pickup') {
+        // Navigate to first pending delivery stop
+        nextStop = allStops
+          .filter((s) => s.stopType === 'delivery' && s.status === 'pending')
+          .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
+      } else if (stop.stopType === 'delivery') {
+        // Navigate to next pending stop after this one
+        nextStop = allStops
+          .filter((s) => s.sequenceOrder > stop.sequenceOrder && s.status === 'pending')
+          .sort((a, b) => a.sequenceOrder - b.sequenceOrder)[0];
+      }
+      // fuel_stop / layover / other: no navigation
+
+      if (nextStop) {
+        window.open(buildNavUrl(nextStop), '_blank');
+      }
     });
   }
 
@@ -186,21 +215,22 @@ export function StopActionButtons({ stop, arriveAction, completeAction }: StopAc
         disabled={isPending}
         className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-blue-700 disabled:opacity-50 transition-colors"
       >
-        <MapPin className="h-3.5 w-3.5" />
-        {isPending ? 'Marking...' : 'Arrive'}
+        <Navigation className="h-3.5 w-3.5" />
+        {isPending ? 'Marking...' : 'Mark Arrived'}
       </button>
     );
   }
 
   if (stop.status === 'arrived') {
+    const isPickup = stop.stopType === 'pickup';
     return (
       <button
         onClick={handleComplete}
         disabled={isPending}
         className="inline-flex items-center gap-1.5 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white min-h-[40px] hover:bg-emerald-700 disabled:opacity-50 transition-colors"
       >
-        <CheckCircle className="h-3.5 w-3.5" />
-        {isPending ? 'Completing...' : 'Complete Stop'}
+        {isPickup ? <Play className="h-3.5 w-3.5" /> : <CheckCircle className="h-3.5 w-3.5" />}
+        {isPending ? 'Processing...' : isPickup ? 'Start Route' : 'Complete Stop'}
       </button>
     );
   }
@@ -222,9 +252,6 @@ interface DispatchDetailProps {
 export function DispatchDetail({ dispatch, startAction, arriveAction, completeAction }: DispatchDetailProps) {
   const truck = dispatch.truck;
   const truckLabel = [truck.year, truck.make, truck.model].filter(Boolean).join(' ') || truck.unitNumber;
-
-  // Find the first non-completed, non-skipped stop for navigation highlight
-  const activeStop = dispatch.stops.find((s) => s.status === 'pending' || s.status === 'arrived') ?? null;
 
   return (
     <div className="space-y-4">
@@ -274,21 +301,6 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
             <StartTripButton dispatchId={dispatch.id} startAction={startAction} />
           </div>
         )}
-
-        {/* Navigation link to active stop */}
-        {activeStop && (
-          <div className="mt-4 pt-4 border-t border-border">
-            <a
-              href={buildNavUrl(activeStop)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground min-h-[44px] hover:opacity-90 transition-opacity"
-            >
-              <Navigation className="h-4 w-4" />
-              Navigate to Next Stop
-            </a>
-          </div>
-        )}
       </div>
 
       {/* Stops timeline */}
@@ -323,13 +335,16 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
                   </span>
                 </div>
 
-                {/* Location */}
-                {(stop.facility.city || stop.facility.state) && (
-                  <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {[stop.facility.city, stop.facility.state].filter(Boolean).join(', ')}
-                  </p>
-                )}
+                {/* Location — tappable Google Maps link */}
+                <a
+                  href={buildNavUrl(stop)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 dark:text-blue-400 underline mt-0.5 flex items-center gap-1 hover:text-blue-700 dark:hover:text-blue-300"
+                >
+                  <Navigation className="h-3 w-3" />
+                  {[stop.facility.addressLine1, stop.facility.city, stop.facility.state].filter(Boolean).join(', ') || stop.facility.name}
+                </a>
 
                 {/* Appointment window */}
                 {stop.appointmentStart && (
@@ -364,20 +379,10 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
                   <div className="mt-2 flex flex-wrap gap-2">
                     <StopActionButtons
                       stop={stop}
+                      allStops={dispatch.stops}
                       arriveAction={arriveAction}
                       completeAction={completeAction}
                     />
-                    {(stop.status === 'pending' || stop.status === 'arrived') && (
-                      <a
-                        href={buildNavUrl(stop)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground min-h-[40px] hover:bg-muted transition-colors"
-                      >
-                        <Navigation className="h-3.5 w-3.5" />
-                        Navigate
-                      </a>
-                    )}
                   </div>
                 )}
               </div>
