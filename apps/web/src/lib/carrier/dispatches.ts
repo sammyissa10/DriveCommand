@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { createNotification } from '@/lib/carrier/in-app-notifications';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -354,6 +355,17 @@ export async function transitionDispatchStatus(
           title: 'Trip Started',
           body: `${dispatchNumber} is now in progress`,
           data: { type: 'dispatch_in_progress', dispatchId: id },
+        })
+      );
+      after(() =>
+        createNotification({
+          orgId,
+          userId: driver.userId!,
+          type: 'dispatch_assigned',
+          title: 'Trip Started',
+          message: `Your dispatch ${dispatchNumber} has been started. Head to your first stop.`,
+          entityType: 'dispatch',
+          entityId: id,
         })
       );
     }
