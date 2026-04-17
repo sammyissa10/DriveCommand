@@ -40,7 +40,6 @@ export async function getMyActiveDispatch() {
    *        AND orgId = session.tenantId. Double-scoped.
    * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
    */
-  console.log('[getMyActiveDispatch] SESSION', { userId: session.userId, tenantId: session.tenantId });
 
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -49,39 +48,55 @@ export async function getMyActiveDispatch() {
       where: { userId: session.userId, orgId: session.tenantId },
     });
 
-    console.log('[getMyActiveDispatch] CARRIER DRIVER', carrierDriver?.id ?? 'NOT FOUND');
-
     if (!carrierDriver) return null;
 
-    const dispatch = await tx.carrierDispatch.findFirst({
+    const dispatchInclude = {
+      truck: {
+        select: { id: true, unitNumber: true, year: true, make: true, model: true },
+      },
+      stops: {
+        orderBy: { sequenceOrder: 'asc' as const },
+        include: {
+          facility: {
+            select: { id: true, name: true, city: true, state: true, latitude: true, longitude: true, addressLine1: true },
+          },
+        },
+      },
+      carrierLoads: {
+        include: {
+          client: { select: { id: true, name: true } },
+        },
+      },
+    };
+
+    // Prioritize in_progress dispatches over planned
+    let dispatch = await tx.carrierDispatch.findFirst({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: session.tenantId,
-        status: { in: ['planned', 'in_progress'] },
+        status: 'in_progress',
       },
-      orderBy: { scheduledDeparture: 'asc' },
-      include: {
-        truck: {
-          select: { id: true, unitNumber: true, year: true, make: true, model: true },
-        },
-        stops: {
-          orderBy: { sequenceOrder: 'asc' },
-          include: {
-            facility: {
-              select: { id: true, name: true, city: true, state: true, latitude: true, longitude: true, addressLine1: true },
-            },
-          },
-        },
-        carrierLoads: {
-          include: {
-            client: { select: { id: true, name: true } },
-          },
-        },
-      },
+      orderBy: { actualDeparture: 'desc' },
+      include: dispatchInclude,
     });
 
-    console.log('[getMyActiveDispatch] DISPATCH RESULT', dispatch?.id ?? 'NOT FOUND');
-    return dispatch;
+    if (!dispatch) {
+      dispatch = await tx.carrierDispatch.findFirst({
+        where: {
+          primaryDriverId: carrierDriver.id,
+          orgId: session.tenantId,
+          status: 'planned',
+        },
+        orderBy: { scheduledDeparture: 'asc' },
+        include: dispatchInclude,
+      });
+    }
+
+    const firstDeliveryStop = dispatch
+      ? dispatch.stops.find((s) => s.stopType === 'delivery' && s.status === 'pending') ?? null
+      : null;
+
+    return dispatch ? { ...dispatch, firstDeliveryStop } : null;
   }, TX_OPTIONS);
 }
 
@@ -258,7 +273,7 @@ export async function completeCurrentStop(stopId: string) {
     return { error: 'Stop not found or not assigned to you' };
   }
 
-  const result = await completeStop(session.tenantId, stopId);
+  const result = await completeStop(session.tenantId, stopId, { bypassDocumentCheck: true });
   revalidatePath('/my-route');
   return result;
 }

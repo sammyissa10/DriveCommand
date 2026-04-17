@@ -50,7 +50,11 @@ export async function arriveStop(orgId: string, stopId: string): StopResult {
 // completeStop
 // ---------------------------------------------------------------------------
 
-export async function completeStop(orgId: string, stopId: string): StopResult {
+export async function completeStop(
+  orgId: string,
+  stopId: string,
+  options?: { bypassDocumentCheck?: boolean }
+): StopResult {
   const stop = await prisma.carrierStop.findFirst({
     where: { id: stopId, dispatch: { orgId } },
     include: { dispatch: { select: { orgId: true, routeTemplateId: true } } },
@@ -83,30 +87,31 @@ export async function completeStop(orgId: string, stopId: string): StopResult {
     podRequired = routeTemplateStop.podRequired;
   }
 
-  if (bolRequired) {
-    const hasBolNumber = stop.bolNumber != null;
-    const hasBolDoc =
-      (await prisma.carrierDocument.count({
-        where: { stopId: stop.id, documentType: 'bol' },
-      })) > 0;
+  if (!options?.bypassDocumentCheck) {
+    // Step 1 — BOL check
+    if (bolRequired) {
+      const hasBolNumber = stop.bolNumber != null;
+      const hasBolDoc =
+        (await prisma.carrierDocument.count({
+          where: { stopId: stop.id, documentType: 'bol' },
+        })) > 0;
 
-    if (!hasBolNumber && !hasBolDoc) {
-      return { error: 'BOL document or BOL number required before completing this stop.', status: 422 };
+      if (!hasBolNumber && !hasBolDoc) {
+        return { error: 'BOL document or BOL number required before completing this stop.', status: 422 };
+      }
     }
-  }
 
-  // -------------------------------------------------------------------------
-  // Step 2 — POD check
-  // -------------------------------------------------------------------------
-  if (podRequired) {
-    const hasPodNumber = stop.podNumber != null;
-    const hasPodDoc =
-      (await prisma.carrierDocument.count({
-        where: { stopId: stop.id, documentType: 'pod' },
-      })) > 0;
+    // Step 2 — POD check
+    if (podRequired) {
+      const hasPodNumber = stop.podNumber != null;
+      const hasPodDoc =
+        (await prisma.carrierDocument.count({
+          where: { stopId: stop.id, documentType: 'pod' },
+        })) > 0;
 
-    if (!hasPodNumber && !hasPodDoc) {
-      return { error: 'POD document or POD number required before completing this stop.', status: 422 };
+      if (!hasPodNumber && !hasPodDoc) {
+        return { error: 'POD document or POD number required before completing this stop.', status: 422 };
+      }
     }
   }
 
