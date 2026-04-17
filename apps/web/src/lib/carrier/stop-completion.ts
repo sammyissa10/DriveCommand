@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
-import { sendLoadDeliveredNotification } from '@/lib/carrier/notifications';
+import { sendLoadDeliveredNotification, sendClientPickupNotification } from '@/lib/carrier/notifications';
 import type { CarrierStop } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
@@ -146,6 +146,23 @@ export async function completeStop(
   });
 
   logger.info('completeStop: completed', { orgId, stopId, dwellMinutes });
+
+  // -------------------------------------------------------------------------
+  // Fire client pickup notification when first pickup stop is completed
+  // -------------------------------------------------------------------------
+  if (stop.loadId && stop.stopType === 'pickup') {
+    const completedPickups = await prisma.carrierStop.count({
+      where: {
+        loadId: stop.loadId,
+        stopType: 'pickup',
+        status: 'completed',
+      },
+    });
+    // Only notify on the FIRST completed pickup (count=1 means this one just completed)
+    if (completedPickups === 1) {
+      after(() => sendClientPickupNotification(orgId, stop.loadId!, stopId));
+    }
+  }
 
   // -------------------------------------------------------------------------
   // Step 5 — Load cascade: if last delivery stop completed, mark load delivered
