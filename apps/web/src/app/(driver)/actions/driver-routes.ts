@@ -40,6 +40,8 @@ export async function getMyActiveDispatch() {
    *        AND orgId = session.tenantId. Double-scoped.
    * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
    */
+  console.log('[getMyActiveDispatch] SESSION', { userId: session.userId, tenantId: session.tenantId });
+
   return prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
@@ -47,9 +49,11 @@ export async function getMyActiveDispatch() {
       where: { userId: session.userId, orgId: session.tenantId },
     });
 
+    console.log('[getMyActiveDispatch] CARRIER DRIVER', carrierDriver?.id ?? 'NOT FOUND');
+
     if (!carrierDriver) return null;
 
-    return tx.carrierDispatch.findFirst({
+    const dispatch = await tx.carrierDispatch.findFirst({
       where: {
         primaryDriverId: carrierDriver.id,
         orgId: session.tenantId,
@@ -75,6 +79,9 @@ export async function getMyActiveDispatch() {
         },
       },
     });
+
+    console.log('[getMyActiveDispatch] DISPATCH RESULT', dispatch?.id ?? 'NOT FOUND');
+    return dispatch;
   }, TX_OPTIONS);
 }
 
