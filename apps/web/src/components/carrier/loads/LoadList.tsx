@@ -12,6 +12,7 @@ interface LoadItem {
   id: string;
   referenceNumber: string;
   clientId: string;
+  client: { name: string } | null;
   dispatchId: string | null;
   loadType: string;
   status: string;
@@ -284,7 +285,7 @@ export function LoadList({ clientMap }: LoadListProps) {
                       className="hover:underline text-foreground"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {clientMap[load.clientId] ?? load.clientId}
+                      {load.client?.name ?? clientMap[load.clientId] ?? 'Unknown'}
                     </Link>
                   </td>
                   <td className="px-4 py-3">

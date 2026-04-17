@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
@@ -27,6 +27,13 @@ interface Contract {
   fuelSurchargeRate: string | null;
 }
 
+interface ExistingDocument {
+  id: string;
+  fileName: string;
+  fileUrl?: string;
+  documentType: string;
+}
+
 export interface LoadData {
   id?: string;
   clientId?: string;
@@ -35,12 +42,10 @@ export interface LoadData {
   loadType?: string;
   referenceNumber?: string;
   bolNumber?: string;
-  proNumber?: string;
   poNumber?: string;
   commodityDescription?: string;
   commodityWeightLbs?: number | null;
   commodityPieces?: number | null;
-  commodityPallets?: number | null;
   hazmat?: boolean;
   hazmatClass?: string;
   rateType?: string;
@@ -48,11 +53,10 @@ export interface LoadData {
   otherCharges?: number | null;
   brokerFlag?: boolean;
   carrierCost?: number | null;
-  fuelSurchargeMethod?: string;
-  fuelSurchargeRate?: number | null;
   plannedMiles?: number | null;
   specialInstructions?: string;
   notes?: string;
+  stops?: StopBuilderStop[];
 }
 
 interface LoadFormProps {
@@ -96,9 +100,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   const [commodityPieces, setCommodityPieces] = useState<string>(
     initialData?.commodityPieces != null ? String(initialData.commodityPieces) : ''
   );
-  const [commodityPallets, setCommodityPallets] = useState<string>(
-    initialData?.commodityPallets != null ? String(initialData.commodityPallets) : ''
-  );
   const [rateType, setRateType] = useState(initialData?.rateType ?? 'flat');
   const [rateAmount, setRateAmount] = useState<string>(
     initialData?.rateAmount != null ? String(initialData.rateAmount) : ''
@@ -110,12 +111,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   const [carrierCost, setCarrierCost] = useState<string>(
     initialData?.carrierCost != null ? String(initialData.carrierCost) : ''
   );
-  const [fuelSurchargeMethod, setFuelSurchargeMethod] = useState(
-    initialData?.fuelSurchargeMethod ?? 'none'
-  );
-  const [fuelSurchargeRate, setFuelSurchargeRate] = useState<string>(
-    initialData?.fuelSurchargeRate != null ? String(initialData.fuelSurchargeRate) : ''
-  );
   const [plannedMiles, setPlannedMiles] = useState<string>(
     initialData?.plannedMiles != null ? String(initialData.plannedMiles) : ''
   );
@@ -123,7 +118,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
     initialData?.specialInstructions ?? ''
   );
   const [bolNumber, setBolNumber] = useState(initialData?.bolNumber ?? '');
-  const [proNumber, setProNumber] = useState(initialData?.proNumber ?? '');
   const [poNumber, setPoNumber] = useState(initialData?.poNumber ?? '');
   const [hazmat, setHazmat] = useState(initialData?.hazmat ?? false);
 
@@ -131,15 +125,9 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [contractAutoFilled, setContractAutoFilled] = useState<Set<string>>(new Set());
 
-  // Appointment fields (stop-level, not load-level — display only)
-  // TODO: appointment fields are stop-level, not load-level — wire to stops when stop creation is integrated
-  const [pickupApptStart, setPickupApptStart] = useState('');
-  const [pickupApptEnd, setPickupApptEnd] = useState('');
-  const [deliveryApptStart, setDeliveryApptStart] = useState('');
-  const [deliveryApptEnd, setDeliveryApptEnd] = useState('');
-
-  // Stops (for create mode without dispatch)
-  const [stops, setStops] = useState<StopBuilderStop[]>([]);
+  // Stops state — initialized from initialData for edit mode
+  const [stops, setStops] = useState<StopBuilderStop[]>(initialData?.stops ?? []);
+  const [stopErrors, setStopErrors] = useState<Record<string, string>>({});
 
   // Validation
   const [clientError, setClientError] = useState('');
@@ -147,6 +135,33 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
 
   // Submitting
   const [submitting, setSubmitting] = useState(false);
+
+  // Rate confirmation upload state
+  const [rateConfFile, setRateConfFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'done' | 'error'>('idle');
+  const [uploadedFileName, setUploadedFileName] = useState<string>('');
+  const [existingDocs, setExistingDocs] = useState<ExistingDocument[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ---------------------------------------------------------------------------
+  // Fetch existing rate confirmation docs (edit mode)
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    if (mode !== 'edit' || !loadId) return;
+    async function fetchDocs() {
+      try {
+        const res = await fetch(`/api/v1/carrier/documents?parent_type=load&parent_id=${loadId}`);
+        if (!res.ok) return;
+        const json = await res.json();
+        const items = (json.data ?? []) as ExistingDocument[];
+        const rateDocs = items.filter((d) => d.documentType === 'rate_confirmation');
+        setExistingDocs(rateDocs);
+      } catch {
+        // non-critical — silently ignore
+      }
+    }
+    fetchDocs();
+  }, [mode, loadId]);
 
   // ---------------------------------------------------------------------------
   // Fetch contracts when client changes
@@ -199,15 +214,36 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       setRateAmount(String(contract.baseRate));
       autoFilled.add('rateAmount');
     }
-    if (contract.fuelSurchargeMethod) {
-      setFuelSurchargeMethod(contract.fuelSurchargeMethod);
-      autoFilled.add('fuelSurchargeMethod');
-    }
-    if (contract.fuelSurchargeRate != null) {
-      setFuelSurchargeRate(String(contract.fuelSurchargeRate));
-      autoFilled.add('fuelSurchargeRate');
-    }
     setContractAutoFilled(autoFilled);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Upload rate confirmation file
+  // ---------------------------------------------------------------------------
+  async function uploadRateConfirmation(currentLoadId: string, file: File): Promise<boolean> {
+    setUploadStatus('uploading');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('parent_type', 'load');
+      fd.append('parent_id', currentLoadId);
+      fd.append('document_type', 'rate_confirmation');
+
+      const res = await fetch('/api/v1/carrier/documents', { method: 'POST', body: fd });
+      if (!res.ok) {
+        const json = await res.json();
+        toast.error(json.error ?? 'Failed to upload rate confirmation');
+        setUploadStatus('error');
+        return false;
+      }
+      setUploadStatus('done');
+      setUploadedFileName(file.name);
+      return true;
+    } catch {
+      toast.error('Failed to upload rate confirmation');
+      setUploadStatus('error');
+      return false;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -232,6 +268,16 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       setCommodityError('');
     }
 
+    // Validate stops: every stop must have a facility selected
+    const newStopErrors: Record<string, string> = {};
+    for (const stop of stops) {
+      if (!stop.facility_id) {
+        newStopErrors[stop.id] = 'Please select a facility for this stop';
+        valid = false;
+      }
+    }
+    setStopErrors(newStopErrors);
+
     if (!valid) return;
 
     setSubmitting(true);
@@ -243,10 +289,8 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       commodityDescription: commodityDescription.trim() || undefined,
       commodityWeightLbs: commodityWeightLbs ? Number(commodityWeightLbs) : undefined,
       commodityPieces: commodityPieces ? parseInt(commodityPieces, 10) : undefined,
-      commodityPallets: commodityPallets ? parseInt(commodityPallets, 10) : undefined,
       hazmat,
       bolNumber: bolNumber || undefined,
-      proNumber: proNumber || undefined,
       poNumber: poNumber || undefined,
       rateType,
       rateAmount: rateAmount ? Number(rateAmount) : undefined,
@@ -255,7 +299,20 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       brokerFlag,
       carrierCost: brokerFlag && carrierCost ? Number(carrierCost) : undefined,
       specialInstructions: specialInstructions || undefined,
-      // TODO: persist stops on save — currently display-only
+      stops: stops.map((s) => ({
+        id: s.id,
+        facility_id: s.facility_id,
+        stop_type: s.stop_type,
+        sequence_order: s.sequence_order,
+        contact_name: s.contact_name,
+        contact_phone: s.contact_phone,
+        commodity_description: s.commodity_description,
+        bol_required: s.bol_required,
+        pod_required: s.pod_required,
+        special_instructions: s.special_instructions,
+        appointment_start: s.appointment_start,
+        appointment_end: s.appointment_end,
+      })),
     };
 
     try {
@@ -282,6 +339,11 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
 
       const json = await res.json();
       const savedId = json.data?.id ?? loadId;
+
+      // Upload rate confirmation if a file was selected
+      if (rateConfFile && savedId) {
+        await uploadRateConfirmation(savedId, rateConfFile);
+      }
 
       toast.success(mode === 'create' ? 'Load created' : 'Load saved');
 
@@ -311,6 +373,8 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   const fromContractLabel = (
     <span className="text-xs text-muted-foreground ml-2">from contract</span>
   );
+
+  const hasDispatch = !!(initialData?.dispatchId);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -423,19 +487,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
           </div>
 
           <div>
-            <label className={labelClass}>Pallets</label>
-            <input
-              type="number"
-              min="0"
-              step="1"
-              value={commodityPallets}
-              onChange={(e) => setCommodityPallets(e.target.value)}
-              placeholder="0"
-              className={inputClass}
-            />
-          </div>
-
-          <div>
             <div className="flex items-center gap-3 mt-2">
               <Switch
                 checked={hazmat}
@@ -450,7 +501,7 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
         </div>
 
         {/* Reference numbers row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
           <div>
             <label className={labelClass}>BOL Number</label>
             <input
@@ -458,16 +509,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
               value={bolNumber}
               onChange={(e) => setBolNumber(e.target.value)}
               placeholder="BOL-XXXXX"
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>PRO Number</label>
-            <input
-              type="text"
-              value={proNumber}
-              onChange={(e) => setProNumber(e.target.value)}
-              placeholder="PRO-XXXXX"
               className={inputClass}
             />
           </div>
@@ -484,9 +525,22 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
         </div>
       </div>
 
-      {/* Section 3 — Rate + Financial Preview */}
+      {/* Section 3 — Stops */}
       <div className={sectionClass}>
-        <h3 className={sectionTitleClass}>Rate</h3>
+        <h3 className={sectionTitleClass}>Stops</h3>
+        {!hasDispatch && (
+          <div className="rounded-md bg-blue-50 border border-blue-200 dark:bg-blue-950/40 dark:border-blue-800 px-4 py-3 mb-3">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Stops added here will be saved when this load is assigned to a dispatch.
+            </p>
+          </div>
+        )}
+        <StopBuilder stops={stops} onChange={setStops} mode="load" stopErrors={stopErrors} />
+      </div>
+
+      {/* Section 4 — Rate and Financials */}
+      <div className={sectionClass}>
+        <h3 className={sectionTitleClass}>Rate &amp; Financials</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>
@@ -543,40 +597,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
           )}
 
           <div>
-            <label className={labelClass}>
-              FSC Method
-              {contractAutoFilled.has('fuelSurchargeMethod') && fromContractLabel}
-            </label>
-            <select
-              value={fuelSurchargeMethod}
-              onChange={(e) => setFuelSurchargeMethod(e.target.value)}
-              className={selectClass}
-            >
-              <option value="none">None</option>
-              <option value="percent_of_linehaul">% of Linehaul</option>
-              <option value="per_mile">Per Mile</option>
-            </select>
-          </div>
-
-          {fuelSurchargeMethod !== 'none' && (
-            <div>
-              <label className={labelClass}>
-                FSC Rate
-                {contractAutoFilled.has('fuelSurchargeRate') && fromContractLabel}
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.001"
-                value={fuelSurchargeRate}
-                onChange={(e) => setFuelSurchargeRate(e.target.value)}
-                placeholder={fuelSurchargeMethod === 'percent_of_linehaul' ? '0.12 = 12%' : '0.00'}
-                className={inputClass}
-              />
-            </div>
-          )}
-
-          <div>
             <label className={labelClass}>Accessorial / Other Charges ($)</label>
             <input
               type="number"
@@ -590,6 +610,34 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
           </div>
         </div>
 
+        {/* Broker Mode */}
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={brokerFlag}
+              onCheckedChange={setBrokerFlag}
+              id="broker-flag-toggle"
+            />
+            <label htmlFor="broker-flag-toggle" className="text-sm font-medium cursor-pointer select-none">
+              Brokered load (we are acting as broker, not carrier)
+            </label>
+          </div>
+          {brokerFlag && (
+            <div className="mt-4">
+              <label className={labelClass}>Carrier Cost ($)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={carrierCost}
+                onChange={(e) => setCarrierCost(e.target.value)}
+                placeholder="0.00"
+                className={`${inputClass} max-w-xs`}
+              />
+            </div>
+          )}
+        </div>
+
         {/* Live financial preview */}
         <div className="mt-4">
           {(() => {
@@ -599,10 +647,7 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
                 rateType={rateType}
                 rateAmount={rateAmount ? Number(rateAmount) : 0}
                 weightLbs={commodityWeightLbs ? Number(commodityWeightLbs) : 0}
-                pallets={commodityPallets ? Number(commodityPallets) : 0}
                 otherCharges={otherCharges ? Number(otherCharges) : 0}
-                fuelSurchargeMethod={fuelSurchargeMethod}
-                fuelSurchargeRate={fuelSurchargeRate ? Number(fuelSurchargeRate) : 0}
                 brokerFlag={brokerFlag}
                 carrierCost={carrierCost ? Number(carrierCost) : 0}
                 plannedMiles={plannedMiles ? Number(plannedMiles) : 0}
@@ -613,102 +658,66 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
         </div>
       </div>
 
-      {/* Section 4 — Appointments */}
+      {/* Section 5 — References */}
       <div className={sectionClass}>
-        {/* TODO: appointment fields are stop-level, not load-level — wire to stops when stop creation is integrated */}
-        <h3 className={sectionTitleClass}>Appointments</h3>
-        <p className="text-xs text-muted-foreground mb-3">
-          Note: These appointment fields are for reference only — they will be stored per stop when stop integration is complete.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Pickup Appt Start</label>
-            <input
-              type="datetime-local"
-              value={pickupApptStart}
-              onChange={(e) => setPickupApptStart(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Pickup Appt End</label>
-            <input
-              type="datetime-local"
-              value={pickupApptEnd}
-              onChange={(e) => setPickupApptEnd(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Delivery Appt Start</label>
-            <input
-              type="datetime-local"
-              value={deliveryApptStart}
-              onChange={(e) => setDeliveryApptStart(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Delivery Appt End</label>
-            <input
-              type="datetime-local"
-              value={deliveryApptEnd}
-              onChange={(e) => setDeliveryApptEnd(e.target.value)}
-              className={inputClass}
-            />
-          </div>
-        </div>
-      </div>
+        <h3 className={sectionTitleClass}>References</h3>
 
-      {/* Section 5 — Broker Toggle */}
-      <div className={sectionClass}>
-        <h3 className={sectionTitleClass}>Broker Mode</h3>
-        <div className="flex items-center gap-3">
-          <Switch
-            checked={brokerFlag}
-            onCheckedChange={setBrokerFlag}
-            id="broker-flag-toggle"
-          />
-          <label htmlFor="broker-flag-toggle" className="text-sm font-medium cursor-pointer select-none">
-            This load is brokered (we are acting as broker, not carrier)
-          </label>
-        </div>
-        {brokerFlag && (
-          <div className="mt-4">
-            <label className={labelClass}>Carrier Cost ($)</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={carrierCost}
-              onChange={(e) => setCarrierCost(e.target.value)}
-              placeholder="0.00"
-              className={`${inputClass} max-w-xs`}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Section 6 — Rate Confirmation */}
-      <div className={sectionClass}>
-        <h3 className={sectionTitleClass}>Rate Confirmation</h3>
+        {/* Rate Confirmation Upload */}
         <div>
-          <label className={labelClass}>Upload Rate Confirmation PDF</label>
-          {/* TODO: wire file upload to R2 presigned URL endpoint */}
+          <label className={labelClass}>Rate Confirmation</label>
+
+          {/* Show existing rate confirmation docs in edit mode */}
+          {existingDocs.length > 0 && (
+            <div className="mb-3 space-y-1">
+              {existingDocs.map((doc) => (
+                <div key={doc.id} className="flex items-center gap-2 text-sm">
+                  <span className="text-muted-foreground">Current:</span>
+                  {doc.fileUrl ? (
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline font-medium truncate max-w-xs"
+                    >
+                      {doc.fileName}
+                    </a>
+                  ) : (
+                    <span className="font-medium truncate max-w-xs">{doc.fileName}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
           <input
+            ref={fileInputRef}
             type="file"
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+            onChange={(e) => setRateConfFile(e.target.files?.[0] ?? null)}
             className="flex w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
           />
-          <p className="mt-1 text-xs text-muted-foreground">File upload will be wired to R2 storage in a future update.</p>
-        </div>
-      </div>
 
-      {/* Section 7 — Driver Instructions */}
-      <div className={sectionClass}>
-        <h3 className={sectionTitleClass}>Driver Instructions</h3>
-        <div>
-          <label className={labelClass}>Special Instructions</label>
+          {uploadStatus === 'uploading' && (
+            <p className="mt-1 text-xs text-muted-foreground">Uploading…</p>
+          )}
+          {uploadStatus === 'done' && (
+            <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+              Uploaded: {uploadedFileName}
+            </p>
+          )}
+          {uploadStatus === 'error' && (
+            <p className="mt-1 text-xs text-red-500">Upload failed — please try again.</p>
+          )}
+          {uploadStatus === 'idle' && rateConfFile && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Ready to upload: {rateConfFile.name}
+            </p>
+          )}
+        </div>
+
+        {/* Special Instructions */}
+        <div className="mt-4">
+          <label className={labelClass}>Special / Driver Instructions</label>
           <textarea
             value={specialInstructions}
             onChange={(e) => setSpecialInstructions(e.target.value)}
@@ -718,18 +727,6 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
           />
         </div>
       </div>
-
-      {/* Section 8 — Stop Builder (create mode, no dispatchId only) */}
-      {mode === 'create' && !initialData?.dispatchId && (
-        <div className={sectionClass}>
-          <h3 className={sectionTitleClass}>Stops</h3>
-          <p className="text-xs text-muted-foreground mb-3">
-            Add pickup and delivery stops. Stop data is for planning purposes — stops will be linked to the load in a future update.
-          </p>
-          {/* TODO: persist stops on save — currently display-only */}
-          <StopBuilder stops={stops} onChange={setStops} mode="load" />
-        </div>
-      )}
 
       {/* Submit */}
       <div className="flex items-center justify-end gap-3 pt-2">

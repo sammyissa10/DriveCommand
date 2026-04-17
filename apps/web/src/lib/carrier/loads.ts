@@ -22,6 +22,23 @@ export interface ListLoadsFilters {
   pageSize?: number;
 }
 
+export interface StopInput {
+  id?: string;
+  facility_id: string;
+  stop_type: 'pickup' | 'delivery' | 'fuel_stop' | 'layover';
+  sequence_order: number;
+  contact_name?: string | null;
+  contact_phone?: string | null;
+  commodity_description?: string | null;
+  pieces?: number | null;
+  weight_lbs?: number | null;
+  bol_required?: boolean;
+  pod_required?: boolean;
+  special_instructions?: string | null;
+  appointment_start?: string | null;
+  appointment_end?: string | null;
+}
+
 export interface LoadCreateInput {
   clientId: string;
   dispatchId?: string;
@@ -45,11 +62,13 @@ export interface LoadCreateInput {
   specialInstructions?: string;
   notes?: string;
   otherCharges?: number;
+  stops?: StopInput[];
 }
 
 export type LoadUpdateInput = Partial<Omit<LoadCreateInput, 'dispatchId'>> & {
   dispatchId?: string | null;
   status?: string;
+  stops?: StopInput[];
 };
 
 // ---------------------------------------------------------------------------
@@ -111,7 +130,10 @@ export async function getLoad(orgId: string, id: string) {
       client: true,
       dispatch: true,
       contract: true,
-      stops: { orderBy: { sequenceOrder: 'asc' } },
+      stops: {
+        orderBy: { sequenceOrder: 'asc' },
+        include: { facility: { select: { name: true, city: true, state: true } } },
+      },
       expenses: true,
     },
   });
@@ -202,12 +224,112 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
 
   logger.info('createLoad: created', { orgId, loadId: load.id, referenceNumber });
 
+  // Persist stops when load has a dispatchId (CarrierStop.dispatchId is required)
+  if (data.stops && data.stops.length > 0 && load.dispatchId) {
+    await persistStops(orgId, load.id, load.dispatchId, data.stops);
+  }
+
   // Compute initial revenue
   await recalculateAndStore(orgId, load.id);
 
   // Return updated load
   const updated = await prisma.carrierLoad.findFirst({ where: { id: load.id, orgId } });
   return updated ?? load;
+}
+
+// ---------------------------------------------------------------------------
+// Stop persistence helper
+// ---------------------------------------------------------------------------
+
+async function persistStops(
+  orgId: string,
+  loadId: string,
+  dispatchId: string,
+  stops: StopInput[]
+) {
+  // Verify all facilities belong to this org (tenant isolation)
+  const facilityIds = [...new Set(stops.map((s) => s.facility_id))];
+  const validFacilities = await prisma.carrierFacility.findMany({
+    where: { id: { in: facilityIds }, orgId },
+    select: { id: true },
+  });
+  const validIds = new Set(validFacilities.map((f) => f.id));
+  for (const facilityId of facilityIds) {
+    if (!validIds.has(facilityId)) {
+      throw new Error(`Invalid facility: ${facilityId}`);
+    }
+  }
+
+  // Fetch existing stops for this load
+  const existingStops = await prisma.carrierStop.findMany({
+    where: { loadId },
+    select: { id: true, status: true },
+  });
+  const existingIds = new Set(existingStops.map((s) => s.id));
+
+  // Determine incoming stop IDs (those with an existing id in the payload)
+  const incomingWithId = stops.filter((s) => s.id && existingIds.has(s.id));
+  const incomingNewStops = stops.filter((s) => !s.id || !existingIds.has(s.id));
+
+  // Find stops to delete: existing stops not in the incoming payload AND status is 'pending'
+  const incomingIdSet = new Set(incomingWithId.map((s) => s.id));
+  const toDelete = existingStops
+    .filter((s) => !incomingIdSet.has(s.id) && s.status === 'pending')
+    .map((s) => s.id);
+
+  await prisma.$transaction(async (tx) => {
+    // Delete removed pending stops
+    if (toDelete.length > 0) {
+      await tx.carrierStop.deleteMany({ where: { id: { in: toDelete } } });
+    }
+
+    // Update existing stops
+    for (const stop of incomingWithId) {
+      await tx.carrierStop.update({
+        where: { id: stop.id },
+        data: {
+          facilityId: stop.facility_id,
+          stopType: stop.stop_type,
+          sequenceOrder: stop.sequence_order,
+          contactName: stop.contact_name ?? null,
+          contactPhone: stop.contact_phone ?? null,
+          commodityDescription: stop.commodity_description ?? null,
+          pieces: stop.pieces ?? null,
+          weightLbs: stop.weight_lbs ?? null,
+          bolRequired: stop.bol_required ?? true,
+          podRequired: stop.pod_required ?? true,
+          specialInstructions: stop.special_instructions ?? null,
+          appointmentStart: stop.appointment_start ? new Date(stop.appointment_start) : null,
+          appointmentEnd: stop.appointment_end ? new Date(stop.appointment_end) : null,
+        },
+      });
+    }
+
+    // Create new stops
+    if (incomingNewStops.length > 0) {
+      await tx.carrierStop.createMany({
+        data: incomingNewStops.map((s) => ({
+          dispatchId,
+          loadId,
+          facilityId: s.facility_id,
+          stopType: s.stop_type,
+          sequenceOrder: s.sequence_order,
+          contactName: s.contact_name ?? null,
+          contactPhone: s.contact_phone ?? null,
+          commodityDescription: s.commodity_description ?? null,
+          pieces: s.pieces ?? null,
+          weightLbs: s.weight_lbs ?? null,
+          bolRequired: s.bol_required ?? true,
+          podRequired: s.pod_required ?? true,
+          specialInstructions: s.special_instructions ?? null,
+          appointmentStart: s.appointment_start ? new Date(s.appointment_start) : null,
+          appointmentEnd: s.appointment_end ? new Date(s.appointment_end) : null,
+        })),
+      });
+    }
+  });
+
+  logger.info('persistStops: synced stops', { orgId, loadId, count: stops.length });
 }
 
 export async function updateLoad(orgId: string, id: string, data: LoadUpdateInput) {
@@ -253,6 +375,15 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   // Notify client when load is marked as invoiced
   if (data.status === 'invoiced' && existing.status !== 'invoiced') {
     after(() => sendInvoiceGeneratedNotification(orgId, id));
+  }
+
+  // Persist stops when load has a dispatchId (newly assigned or pre-existing)
+  if (data.stops !== undefined && data.stops.length > 0) {
+    const effectiveDispatchId =
+      data.dispatchId !== undefined ? data.dispatchId : existing.dispatchId;
+    if (effectiveDispatchId) {
+      await persistStops(orgId, id, effectiveDispatchId, data.stops);
+    }
   }
 
   // Trigger revenue recalculation if any rate-affecting fields changed

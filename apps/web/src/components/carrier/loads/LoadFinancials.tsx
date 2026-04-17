@@ -95,16 +95,15 @@ function calculateRevenue(props: LoadFinancialsProps) {
     }
   }
 
-  const detentionAmount = 0;
   const other = Number(otherCharges) || 0;
-  const totalRevenue = baseRevenue + fuelSurcharge + detentionAmount + other;
+  const totalRevenue = baseRevenue + fuelSurcharge + other;
 
   let grossMargin: number | null = null;
   if (brokerFlag) {
     grossMargin = totalRevenue - (Number(carrierCost) || 0);
   }
 
-  return { baseRevenue, baseNote, fuelSurcharge, fscNote, detentionAmount, other, totalRevenue, grossMargin };
+  return { baseRevenue, baseNote, fuelSurcharge, fscNote, other, totalRevenue, grossMargin };
 }
 
 export function LoadFinancials(props: LoadFinancialsProps) {
@@ -115,7 +114,7 @@ export function LoadFinancials(props: LoadFinancialsProps) {
     <div className="rounded-lg border bg-muted/30 p-4 space-y-2">
       <h4 className="text-sm font-semibold text-foreground">Financial Preview</h4>
 
-      {/* Base revenue */}
+      {/* Base revenue — always show */}
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">
           Base Revenue{baseNote ? <span className="ml-1 text-xs italic">{baseNote}</span> : null}
@@ -123,33 +122,31 @@ export function LoadFinancials(props: LoadFinancialsProps) {
         <span className="tabular-nums">{formatCurrency(baseRevenue)}</span>
       </div>
 
-      {/* FSC */}
-      <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">
-          Fuel Surcharge{fscNote ? <span className="ml-1 text-xs italic">{fscNote}</span> : null}
-        </span>
-        <span className="tabular-nums">{fscNote ? '—' : formatCurrency(fuelSurcharge)}</span>
-      </div>
+      {/* FSC — only show if non-zero or has a note */}
+      {(fuelSurcharge !== 0 || fscNote) && (
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">
+            Fuel Surcharge{fscNote ? <span className="ml-1 text-xs italic">{fscNote}</span> : null}
+          </span>
+          <span className="tabular-nums">{fscNote ? '—' : formatCurrency(fuelSurcharge)}</span>
+        </div>
+      )}
 
-      {/* Detention */}
-      <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Detention</span>
-        <span className="tabular-nums text-muted-foreground">$0.00</span>
-      </div>
+      {/* Accessorial / Other — only show if non-zero */}
+      {other !== 0 && (
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Accessorial / Other</span>
+          <span className="tabular-nums">{formatCurrency(other)}</span>
+        </div>
+      )}
 
-      {/* Other/Accessorial */}
-      <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Accessorial / Other</span>
-        <span className="tabular-nums">{formatCurrency(other)}</span>
-      </div>
-
-      {/* Total */}
+      {/* Total — always show */}
       <div className="flex justify-between text-sm font-bold border-t border-border pt-2 mt-2">
         <span>Invoice Total</span>
         <span className="tabular-nums">{formatCurrency(totalRevenue)}</span>
       </div>
 
-      {/* Gross margin (broker only) */}
+      {/* Gross margin (broker only) — always show when broker mode active */}
       {props.brokerFlag && (
         <div className={`flex justify-between text-sm font-medium ${grossMargin != null && grossMargin >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
           <span>Gross Margin</span>

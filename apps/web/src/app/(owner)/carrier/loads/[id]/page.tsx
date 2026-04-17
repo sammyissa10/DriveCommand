@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db/prisma';
 import { getLoad } from '@/lib/carrier/loads';
 import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import type { LoadData } from '@/components/carrier/loads/LoadForm';
+import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -29,6 +30,29 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   if (!load) notFound();
 
+  // Map CarrierStop records to StopBuilderStop format for the stop builder
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mappedStops: StopBuilderStop[] = (load.stops as any[]).map((s) => ({
+    id: s.id,
+    facility_id: s.facilityId,
+    facility_name: s.facility?.name ?? 'Unknown Facility',
+    facility_city: s.facility?.city ?? null,
+    facility_state: s.facility?.state ?? null,
+    sequence_order: s.sequenceOrder,
+    stop_type: s.stopType as StopBuilderStop['stop_type'],
+    contact_name: s.contactName ?? null,
+    contact_phone: s.contactPhone ?? null,
+    expected_dwell_minutes: null,
+    commodity_description: s.commodityDescription ?? null,
+    bol_required: s.bolRequired,
+    pod_required: s.podRequired,
+    special_instructions: s.specialInstructions ?? null,
+    appt_window_start_offset_min: null,
+    appt_window_end_offset_min: null,
+    appointment_start: s.appointmentStart ? (s.appointmentStart as Date).toISOString() : null,
+    appointment_end: s.appointmentEnd ? (s.appointmentEnd as Date).toISOString() : null,
+  }));
+
   // Transform load data — convert Decimal fields to numbers for LoadForm
   const initialData: LoadData = {
     id: load.id,
@@ -38,13 +62,11 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     loadType: load.loadType,
     referenceNumber: load.referenceNumber ?? undefined,
     bolNumber: load.bolNumber ?? undefined,
-    proNumber: load.proNumber ?? undefined,
     poNumber: load.poNumber ?? undefined,
     commodityDescription: load.commodityDescription ?? undefined,
     commodityWeightLbs:
       load.commodityWeightLbs != null ? Number(load.commodityWeightLbs) : null,
     commodityPieces: load.commodityPieces != null ? Number(load.commodityPieces) : null,
-    commodityPallets: load.commodityPallets != null ? Number(load.commodityPallets) : null,
     hazmat: load.hazmat,
     hazmatClass: load.hazmatClass ?? undefined,
     rateType: load.rateType,
@@ -55,13 +77,9 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     brokerFlag: load.brokerFlag,
     carrierCost:
       load.financials.carrierCost != null ? Number(load.financials.carrierCost) : null,
-    fuelSurchargeMethod: load.contract?.fuelSurchargeMethod ?? undefined,
-    fuelSurchargeRate:
-      load.contract?.fuelSurchargeRate != null
-        ? Number(load.contract.fuelSurchargeRate)
-        : null,
     specialInstructions: load.specialInstructions ?? undefined,
     notes: load.notes ?? undefined,
+    stops: mappedStops,
   };
 
   return (
