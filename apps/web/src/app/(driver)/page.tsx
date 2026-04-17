@@ -1,35 +1,41 @@
-import { redirect } from 'next/navigation';
-import { Route } from 'lucide-react';
-import { getMyActiveDispatch } from '@/app/(driver)/actions/driver-routes';
+import { getSession } from '@/lib/auth/supabase';
+import { getDriverDashboardData } from '@/app/(driver)/actions/driver-dashboard';
+import { DriverDashboard } from '@/components/driver/driver-dashboard';
 import { logger } from '@/lib/logger';
 
+// Prevent static pre-rendering — dashboard requires live auth + dispatch data
+export const dynamic = 'force-dynamic';
+
 /**
- * Driver landing page.
- * Checks for active CarrierDispatch assignment:
- * - If assigned: redirect to /my-route
- * - If not assigned: show "No Route Assigned" message
+ * Driver dashboard landing page (server component).
+ * Fetches all dashboard data server-side and passes to the client dashboard component.
+ * Drivers land here after login — no automatic redirect.
  */
 export default async function DriverHomePage() {
-  let dispatch = null;
+  const session = await getSession();
+
   try {
-    dispatch = await getMyActiveDispatch();
+    const data = await getDriverDashboardData();
+
+    return (
+      <DriverDashboard
+        firstName={session?.firstName}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        dispatch={data.dispatch as any}
+        hos={data.hos}
+        recentMessages={data.recentMessages}
+      />
+    );
   } catch (err) {
-    logger.error('[DriverHomePage] Failed to fetch active dispatch:', err);
-  }
+    logger.error('[DriverHomePage] Failed to load dashboard data:', err);
 
-  // If driver has an active dispatch, redirect to route detail page
-  if (dispatch) {
-    redirect('/my-route');
+    return (
+      <DriverDashboard
+        firstName={session?.firstName}
+        dispatch={null}
+        hos={null}
+        recentMessages={[]}
+      />
+    );
   }
-
-  // No dispatch assigned - show empty state
-  return (
-    <div className="max-w-2xl mx-auto text-center py-16">
-      <Route className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
-      <h1 className="text-2xl font-semibold text-foreground">No Route Assigned</h1>
-      <p className="mt-3 text-muted-foreground">
-        You don&apos;t have an active route assignment. Contact your manager for details.
-      </p>
-    </div>
-  );
 }

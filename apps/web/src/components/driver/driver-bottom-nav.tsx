@@ -2,15 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MapPin, Package, MessageSquare, Clock, AlertTriangle, LifeBuoy } from 'lucide-react';
+import { Home, MapPin, Package, MessageSquare, LayoutGrid } from 'lucide-react';
 
 const navItems = [
-  { href: '/my-route', label: 'Route', icon: MapPin },
-  { href: '/my-load', label: 'Load', icon: Package },
-  { href: '/messages', label: 'Messages', icon: MessageSquare },
-  { href: '/hours', label: 'Hours', icon: Clock },
-  { href: '/incidents', label: 'Report', icon: AlertTriangle },
-  { href: '/my-tickets', label: 'Support', icon: LifeBuoy },
+  { href: '/', label: 'Dashboard', icon: Home, exact: true },
+  { href: '/my-route', label: 'Route', icon: MapPin, exact: false },
+  { href: '/my-load', label: 'Load', icon: Package, exact: false },
+  { href: '/messages', label: 'Messages', icon: MessageSquare, exact: false },
+  { href: '/more', label: 'More', icon: LayoutGrid, exact: false },
 ];
 
 export function DriverBottomNav() {
@@ -22,13 +21,15 @@ export function DriverBottomNav() {
       aria-label="Driver navigation"
     >
       <div className="flex items-stretch">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || pathname.startsWith(href + '/');
+        {navItems.map(({ href, label, icon: Icon, exact }) => {
+          const isActive = exact
+            ? pathname === href
+            : pathname === href || pathname.startsWith(href + '/');
           return (
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center justify-center min-h-[56px] flex-1 gap-0.5 transition-colors ${
+              className={`flex flex-col items-center justify-center min-h-[60px] flex-1 gap-0.5 transition-colors ${
                 isActive
                   ? 'text-primary font-semibold'
                   : 'text-muted-foreground hover:text-foreground'
