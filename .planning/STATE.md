@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 235: Fix driver portal default landing tab and notification dropdown mobile positioning
+Last activity: 2026-04-17 - Completed quick task 236: Fix rate_type enum mismatch between contracts and loads blocking Load form submission
 Last session: 2026-04-17T04:07:53Z
 Stopped at: Completed quick-232-PLAN.md — 2 tasks, 18 files created, 3 files modified
 
@@ -1020,6 +1020,7 @@ None blocking immediate progress.
 | 233 | Fix React hydration error #418 on driver dashboard — greeting useEffect pattern | 2026-04-17 | 93e0264 | [233-fix-react-hydration-error-418-on-driver-](./quick/233-fix-react-hydration-error-418-on-driver-/) |
 | 234 | Fix all remaining React hydration mismatches on driver portal dashboard | 2026-04-17 | ba4f573 | [234-fix-all-remaining-react-hydration-mismat](./quick/234-fix-all-remaining-react-hydration-mismat/) |
 | 235 | Fix driver portal default landing tab and notification dropdown mobile positioning | 2026-04-17 | 0ee5488 | [235-fix-driver-portal-default-landing-tab-an](./quick/235-fix-driver-portal-default-landing-tab-an/) |
+| 236 | Fix rate_type enum mismatch between contracts and loads blocking Load form submission | 2026-04-17 | 4126b16 | [236-fix-rate-type-enum-mismatch-between-cont](./quick/236-fix-rate-type-enum-mismatch-between-cont/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
