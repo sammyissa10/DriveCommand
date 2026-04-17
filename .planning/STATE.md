@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-16 - Completed quick task 231: Rebuild carrier load form + stop builder
-Last session: 2026-04-16T00:00:00Z
-Stopped at: Completed quick-231-PLAN.md — 2 tasks, 7 files modified
+Last activity: 2026-04-17 - Completed quick task 232: Complete driver portal redesign (dashboard, GPS, notifications, 5-tab nav)
+Last session: 2026-04-17T04:07:53Z
+Stopped at: Completed quick-232-PLAN.md — 2 tasks, 18 files created, 3 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -175,6 +175,7 @@ Progress: [███████████████████████
 - Quick-224 (2026-04-16): Add email notifications for all carrier lifecycle events — 5 React Email templates (dispatch-assigned, load-delivered, pay-record-ready, invoice-generated, compliance-alert), notifications.ts helper with full idempotency via NotificationLog, triggers wired in dispatches.ts (create+reassign), stop-completion.ts (delivered cascade), pay-calculator.ts (pay records), loads.ts (invoiced status), compliance-alerts cron — 2 tasks, 6 files created, 6 files modified, ~20min
 - Quick-228 (2026-04-17): In-app notification center for owner portal — InAppNotification table + RLS, createNotification() fire-and-forget helper wired into 5 send* functions, GET/PATCH notification API routes, NotificationBell (polling badge) + NotificationCenter (dropdown with type icons, relative timestamps, deep links) in owner shell header — 4 tasks, 6 files created, 3 files modified, ~75min
 - Quick-231 (2026-04-16): Rebuild carrier load form + stop builder — 5-section form (Client & Contract, Freight Details, Stops, Rate & Financials, References), removed PRO Number/Pallets/FSC editable fields/Appointments, StopBuilder in both create+edit modes, info banner for no-dispatch, R2 rate confirmation upload wired, LoadFinancials hides zero rows, LoadList uses client.name from API, stop persistence via persistStops helper (tenant isolation + transaction diff) — 2 tasks, 7 files
+- Quick-232 (2026-04-17): Complete driver portal redesign — Dashboard landing page (greeting, dispatch card, quick actions, HOS widget, messages preview), browser GPS pinging (watchPosition+30s throttle), notification bell (60s poll, unread badge, dropdown panel), 5-tab nav (Dashboard/Route/Load/Messages/More, 60px height), More menu page (Hours/Documents/Incidents/Support/LogOut), dark branded header (bg-slate-900), GPS logging endpoint, driver-scoped notifications API — 2 tasks, 18 files created, 3 files modified
 
 ## Accumulated Context
 
