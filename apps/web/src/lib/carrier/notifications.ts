@@ -26,6 +26,7 @@ import {
   markNotificationFailed,
 } from '@/lib/notifications/notification-deduplication';
 import type { ComplianceAlert } from '@/lib/carrier/compliance';
+import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { DispatchAssignedEmail } from '@/emails/carrier/dispatch-assigned';
 import { LoadDeliveredEmail } from '@/emails/carrier/load-delivered';
 import { PayRecordReadyEmail } from '@/emails/carrier/pay-record-ready';
@@ -156,6 +157,23 @@ export async function sendDispatchAssignedNotification(
     });
 
     await markNotificationSent(prisma, logId, result.id);
+
+    // Persist in-app notification for the owner portal notification center
+    const driver = await prisma.carrierDriver.findFirst({
+      where: { id: driverId },
+      select: { firstName: true, lastName: true },
+    });
+    const driverFullName =
+      [driver?.firstName, driver?.lastName].filter(Boolean).join(' ') || 'Driver';
+    await createNotification({
+      orgId,
+      type: 'dispatch_assigned',
+      title: 'Dispatch Assigned',
+      message: `${driverFullName} assigned to ${dispatchNumber}`,
+      entityType: 'dispatch',
+      entityId: dispatchId,
+    });
+
     logger.info('sendDispatchAssignedNotification: sent', { orgId, dispatchId, driverId });
   } catch (err) {
     logger.error('sendDispatchAssignedNotification: failed', {
@@ -260,6 +278,17 @@ export async function sendLoadDeliveredNotification(
     });
 
     await markNotificationSent(prisma, logId, result.id);
+
+    // Persist in-app notification for the owner portal notification center
+    await createNotification({
+      orgId,
+      type: 'load_delivered',
+      title: 'Load Delivered',
+      message: `${loadNumber} delivered to ${load.client.name}`,
+      entityType: 'load',
+      entityId: loadId,
+    });
+
     logger.info('sendLoadDeliveredNotification: sent', { orgId, loadId });
   } catch (err) {
     logger.error('sendLoadDeliveredNotification: failed', { orgId, loadId, error: err });
@@ -337,6 +366,17 @@ export async function sendPayRecordReadyNotification(
     });
 
     await markNotificationSent(prisma, logId, result.id);
+
+    // Persist in-app notification for the owner portal notification center
+    await createNotification({
+      orgId,
+      type: 'pay_record_ready',
+      title: 'Pay Record Ready',
+      message: `${driverName} — ${dispatchNumber} — $${netPay.toFixed(2)}`,
+      entityType: 'driver_pay_record',
+      entityId: payRecordId,
+    });
+
     logger.info('sendPayRecordReadyNotification: sent', { orgId, payRecordId, driverName });
   } catch (err) {
     logger.error('sendPayRecordReadyNotification: failed', { orgId, payRecordId, error: err });
@@ -451,6 +491,17 @@ export async function sendInvoiceGeneratedNotification(
     });
 
     await markNotificationSent(prisma, logId, result.id);
+
+    // Persist in-app notification for the owner portal notification center
+    await createNotification({
+      orgId,
+      type: 'invoice_generated',
+      title: 'Invoice Generated',
+      message: `${loadNumber} — $${invoiceTotal.toFixed(2)} due in ${paymentTermsDays} days`,
+      entityType: 'load',
+      entityId: loadId,
+    });
+
     logger.info('sendInvoiceGeneratedNotification: sent', { orgId, loadId, clientEmail });
   } catch (err) {
     logger.error('sendInvoiceGeneratedNotification: failed', { orgId, loadId, error: err });
@@ -519,6 +570,30 @@ export async function sendComplianceAlertNotifications(
     });
 
     await markNotificationSent(prisma, logId, result.id);
+
+    // Persist in-app notifications for the owner portal notification center
+    // One notification per alert so each is individually actionable
+    for (const alert of alerts) {
+      const linkParts = alert.link.split('/');
+      let entityType = 'compliance';
+      let entityId = orgId;
+      if (alert.link.includes('/fleet/drivers/')) {
+        entityType = 'driver';
+        entityId = linkParts[linkParts.length - 1] || orgId;
+      } else if (alert.link.includes('/fleet/trucks/')) {
+        entityType = 'truck';
+        entityId = linkParts[linkParts.length - 1] || orgId;
+      }
+      await createNotification({
+        orgId,
+        type: 'compliance_alert',
+        title: 'Compliance Alert',
+        message: alert.message,
+        entityType,
+        entityId,
+      });
+    }
+
     logger.info('sendComplianceAlertNotifications: sent', {
       orgId,
       alertCount: alerts.length,
