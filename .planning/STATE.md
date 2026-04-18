@@ -179,6 +179,7 @@ Progress: [███████████████████████
 - Quick-239 (2026-04-17): Fix driver portal stop state machine — getStopAction() helper (5 states), navigatingStopId in DispatchDetail, Begin Navigation opens Google Maps + sets navigating state, Mark Arrived calls arriveAtStop + clears state, Complete Stop auto-opens Maps to next pending stop, navigating circle pulses blue, all buttons full-width — 1 task, 1 file modified
 - Quick-246 (2026-04-18): Fix GPS tracking — ping on all pages, accurate movement detection, auto-update live map — DriverGpsPing moved to driver layout (all tabs), haversine calculateSpeed(), setInterval 15s backup ping, calculatedSpeed stored in GPSLocation.speed, vehicles endpoint uses stored speed, live map polls 15s + manual Refresh button — 2 tasks, 6 files modified
 - Quick-247 (2026-04-18): Fix live map History tab — history endpoint was querying truckId but carrier trucks use carrierTruckId FK; added fallback CarrierTruck ownership check + conditional FK in GPS query — 1 task, 1 file modified
+- Quick-248 (2026-04-18): Add VIN auto-fill from NHTSA API and auto-generated vehicle ID with editable display name to carrier trucks — vehicleId (VH-YYYY-NNNNN globally unique) + displayName columns, migration backfills existing trucks, VIN Lookup button calls vpic.nhtsa.dot.gov client-side, display_name shown across trucks list, live map sidebar, dispatch detail, driver route tab — 3 tasks, 16 files modified
 
 ## Accumulated Context
 
