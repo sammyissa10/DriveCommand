@@ -398,7 +398,7 @@ export async function GET() {
               s.dispatch_id AS "dispatchId",
               COALESCE(f.name, f.city || ', ' || f.state, 'Unknown') AS "nextStopName"
             FROM stops s
-            LEFT JOIN carrier_facilities f ON s.facility_id = f.id
+            LEFT JOIN facilities f ON s.facility_id = f.id
             WHERE s.dispatch_id = ANY(${activeCarrierDispatchIds}::uuid[])
               AND s.status = 'pending'
             ORDER BY s.dispatch_id, s.sequence_order ASC
