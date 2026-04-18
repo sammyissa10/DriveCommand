@@ -218,8 +218,8 @@ export function LoadList({ clientMap }: LoadListProps) {
 
       {/* Table */}
       {loading ? (
-        <div className="rounded-lg border bg-card overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="rounded-lg border bg-card overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead>
               <tr className="border-b bg-muted/40">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">Load #</th>
@@ -251,8 +251,8 @@ export function LoadList({ clientMap }: LoadListProps) {
           <p className="mt-1 text-sm text-muted-foreground">Try adjusting your filters or create a new load</p>
         </div>
       ) : (
-        <div className="rounded-lg border bg-card overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="rounded-lg border bg-card overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
             <thead>
               <tr className="border-b bg-muted/40">
                 <th className="px-4 py-3 text-left font-medium text-muted-foreground">Load #</th>

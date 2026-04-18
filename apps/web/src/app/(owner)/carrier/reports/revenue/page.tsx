@@ -296,8 +296,8 @@ export default function RevenueReportPage() {
 
       {/* Summary Table */}
       {!loading && clientSummary.length > 0 && (
-        <div className="rounded-lg border border-border bg-card overflow-hidden">
-          <table className="w-full text-sm border-collapse">
+        <div className="rounded-lg border border-border bg-card overflow-x-auto">
+          <table className="w-full text-sm border-collapse min-w-[600px]">
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 <th className="text-left px-4 py-3 font-medium text-muted-foreground">Client</th>
