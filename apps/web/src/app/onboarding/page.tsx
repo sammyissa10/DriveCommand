@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
 
   // Tenant is ready - redirect to appropriate portal based on role
   if (session.tenantId) {
-    redirect(session.role === 'DRIVER' ? '/home' : '/dashboard');
+    redirect(session.role === 'DRIVER' ? '/home' : '/carrier/dashboard');
   }
 
   // No tenant assigned - show message

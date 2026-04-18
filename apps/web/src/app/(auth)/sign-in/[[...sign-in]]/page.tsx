@@ -29,7 +29,7 @@ export default function SignInPage() {
       }
 
       // Full page reload to pick up new session cookie
-      window.location.href = data.redirectUrl || "/dashboard";
+      window.location.href = data.redirectUrl || "/carrier/dashboard";
     } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {

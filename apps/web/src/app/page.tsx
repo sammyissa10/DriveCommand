@@ -6,7 +6,7 @@ export default async function Home() {
   const session = await getSession();
 
   if (session) {
-    redirect(session.role === 'DRIVER' ? '/home' : '/dashboard');
+    redirect(session.role === 'DRIVER' ? '/home' : '/carrier/dashboard');
   }
 
   return <LandingPage />;

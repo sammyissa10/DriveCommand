@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
 
     const name = [userMeta.firstName, userMeta.lastName].filter(Boolean).join(' ') || data.user.email;
 
-    let redirectUrl = '/dashboard';
+    let redirectUrl = '/carrier/dashboard';
     if (appMeta.isSystemAdmin) redirectUrl = '/admin-dashboard';
     else if (appMeta.role === 'DRIVER') redirectUrl = '/home';
 
