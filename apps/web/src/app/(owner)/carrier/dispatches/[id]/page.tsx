@@ -88,10 +88,10 @@ export default async function DispatchDetailPage({ params }: Props) {
   const driverMap: Record<string, string> = {};
   for (const d of drivers) driverMap[d.id] = `${d.firstName} ${d.lastName}`;
 
-  // Fetch truck unit number
+  // Fetch truck unit number and display name
   const truck = await prisma.carrierTruck.findFirst({
     where: { id: dispatch.truckId, orgId },
-    select: { id: true, unitNumber: true },
+    select: { id: true, unitNumber: true, displayName: true },
   });
 
   // Fetch all active drivers and trucks for the expenses panel
@@ -103,7 +103,7 @@ export default async function DispatchDetailPage({ params }: Props) {
     }),
     prisma.carrierTruck.findMany({
       where: { orgId, status: 'active' },
-      select: { id: true, unitNumber: true },
+      select: { id: true, unitNumber: true, displayName: true },
       orderBy: { unitNumber: 'asc' },
     }),
   ]);
@@ -111,11 +111,14 @@ export default async function DispatchDetailPage({ params }: Props) {
     id: d.id,
     name: `${d.firstName} ${d.lastName}`,
   }));
-  const trucksForAttach = allTrucks.map((t) => ({ id: t.id, unitNumber: t.unitNumber }));
+  const trucksForAttach = allTrucks.map((t) => ({
+    id: t.id,
+    unitNumber: t.displayName || t.unitNumber,
+  }));
 
   const driverName = driverMap[dispatch.primaryDriverId] ?? 'Unknown Driver';
   const coDriverName = dispatch.coDriverId ? (driverMap[dispatch.coDriverId] ?? '') : '';
-  const truckUnit = truck?.unitNumber ?? '—';
+  const truckUnit = truck?.displayName || truck?.unitNumber || '—';
 
   const allStopsDone =
     dispatch.stops.length > 0 &&

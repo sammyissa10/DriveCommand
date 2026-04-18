@@ -49,7 +49,7 @@ export default async function MyRoutePage() {
       <div>
         <h1 className="text-xl lg:text-2xl font-bold text-foreground">My Route</h1>
         <p className="mt-1 text-muted-foreground text-sm">
-          {dispatch.stops.length} stop{dispatch.stops.length !== 1 ? 's' : ''} &middot; Unit #{dispatch.truck.unitNumber}
+          {dispatch.stops.length} stop{dispatch.stops.length !== 1 ? 's' : ''} &middot; {dispatch.truck.displayName || dispatch.truck.unitNumber}
         </p>
       </div>
 

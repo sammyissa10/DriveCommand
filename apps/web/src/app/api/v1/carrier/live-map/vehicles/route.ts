@@ -47,6 +47,7 @@ interface NextStopRow {
 interface CarrierTruckRow {
   truckId: string;
   unitNumber: string;
+  displayName: string | null;
   make: string | null;
   model: string | null;
   year: number | null;
@@ -142,6 +143,7 @@ export async function GET() {
         SELECT
           ct.id AS "truckId",
           ct.unit_number AS "unitNumber",
+          ct.display_name AS "displayName",
           ct.make,
           ct.model,
           ct.year,
@@ -432,7 +434,7 @@ export async function GET() {
         truck: {
           make: row.make ?? 'Unknown',
           model: row.model ?? '',
-          licensePlate: row.licensePlate ?? row.unitNumber,
+          licensePlate: row.displayName || row.licensePlate || row.unitNumber,
           year: row.year ?? 0,
           vin: row.vin ?? '',
         },

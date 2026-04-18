@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 
 export interface CarrierTruckItem {
   id: string;
+  vehicleId: string;
+  displayName: string | null;
   unitNumber: string;
   vin: string | null;
   year: number | null;
@@ -95,6 +97,8 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
     const matchesSearch =
       !q ||
       t.unitNumber.toLowerCase().includes(q) ||
+      (t.displayName ?? '').toLowerCase().includes(q) ||
+      t.vehicleId.toLowerCase().includes(q) ||
       (t.vin ?? '').toLowerCase().includes(q);
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
     const matchesType = typeFilter === 'all' || t.truckType === typeFilter;
@@ -165,6 +169,7 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
               <thead className="bg-muted/50 border-b border-border">
                 <tr>
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">Unit #</th>
+                  <th className="text-left px-4 py-3 font-medium text-muted-foreground">Vehicle ID</th>
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">VIN</th>
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">Year / Make / Model</th>
                   <th className="text-left px-4 py-3 font-medium text-muted-foreground">Type</th>
@@ -189,13 +194,21 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
                           {hasAlert && (
                             <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-500" />
                           )}
-                          <Link
-                            href={`/carrier/fleet/trucks/${t.id}`}
-                            className="font-medium text-foreground hover:text-primary transition-colors"
-                          >
-                            {t.unitNumber}
-                          </Link>
+                          <div>
+                            <Link
+                              href={`/carrier/fleet/trucks/${t.id}`}
+                              className="font-medium text-foreground hover:text-primary transition-colors"
+                            >
+                              {t.displayName || t.unitNumber}
+                            </Link>
+                            {t.displayName && t.displayName !== t.unitNumber && (
+                              <p className="text-xs text-muted-foreground">{t.unitNumber}</p>
+                            )}
+                          </div>
                         </div>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                        {t.vehicleId}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground font-mono text-xs">
                         {t.vin ?? '—'}

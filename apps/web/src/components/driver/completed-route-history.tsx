@@ -79,7 +79,7 @@ export function CompletedRouteHistory({ completedDispatches }: CompletedRouteHis
                     {firstStop?.facility.name ?? '—'}
                     {lastStop && lastStop.id !== firstStop?.id && ` \u2192 ${lastStop.facility.name}`}
                     {' \u00b7 '}
-                    Unit #{dispatch.truck.unitNumber}
+                    {dispatch.truck.displayName || dispatch.truck.unitNumber}
                   </p>
                 </button>
 
@@ -105,7 +105,7 @@ export function CompletedRouteHistory({ completedDispatches }: CompletedRouteHis
 
                       <div>
                         <dt className="text-xs text-muted-foreground mb-1">Truck</dt>
-                        <dd className="font-medium">Unit #{dispatch.truck.unitNumber}</dd>
+                        <dd className="font-medium">{dispatch.truck.displayName || dispatch.truck.unitNumber}</dd>
                       </div>
 
                       <div>

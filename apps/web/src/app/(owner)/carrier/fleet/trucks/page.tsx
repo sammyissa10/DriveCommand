@@ -75,6 +75,8 @@ export default async function CarrierTrucksPage() {
       <CarrierTruckList
         trucks={items.map((t) => ({
           id: t.id,
+          vehicleId: t.vehicleId,
+          displayName: t.displayName,
           unitNumber: t.unitNumber,
           vin: t.vin,
           year: t.year,

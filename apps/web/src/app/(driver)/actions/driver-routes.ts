@@ -52,7 +52,7 @@ export async function getMyActiveDispatch() {
 
     const dispatchInclude = {
       truck: {
-        select: { id: true, unitNumber: true, year: true, make: true, model: true },
+        select: { id: true, unitNumber: true, displayName: true, year: true, make: true, model: true },
       },
       stops: {
         orderBy: { sequenceOrder: 'asc' as const },
@@ -132,7 +132,7 @@ export async function getMyDispatchHistory() {
       take: 10,
       include: {
         truck: {
-          select: { id: true, unitNumber: true },
+          select: { id: true, unitNumber: true, displayName: true },
         },
         stops: {
           orderBy: { sequenceOrder: 'asc' },

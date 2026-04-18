@@ -25,6 +25,7 @@ interface DispatchData {
   truck?: {
     id: string;
     unitNumber: string;
+    displayName?: string | null;
     year?: number | null;
     make?: string | null;
     model?: string | null;
@@ -160,7 +161,7 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
           </span>
           {dispatch.truck && (
             <p className="text-xs text-muted-foreground mt-1">
-              Truck {dispatch.truck.unitNumber}
+              Truck {dispatch.truck.displayName || dispatch.truck.unitNumber}
             </p>
           )}
         </div>

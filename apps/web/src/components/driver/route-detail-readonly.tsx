@@ -80,6 +80,7 @@ interface CarrierStopShape {
 interface CarrierTruckShape {
   id: string;
   unitNumber: string;
+  displayName?: string | null;
   year: number | null;
   make: string | null;
   model: string | null;
@@ -348,7 +349,7 @@ interface DispatchDetailProps {
 
 export function DispatchDetail({ dispatch, startAction, arriveAction, completeAction }: DispatchDetailProps) {
   const truck = dispatch.truck;
-  const truckLabel = [truck.year, truck.make, truck.model].filter(Boolean).join(' ') || truck.unitNumber;
+  const truckLabel = [truck.year, truck.make, truck.model].filter(Boolean).join(' ') || truck.displayName || truck.unitNumber;
   const [navigatingStopId, setNavigatingStopId] = useState<string | null>(null);
 
   return (
@@ -375,7 +376,7 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
               <Truck className="h-3.5 w-3.5" /> Truck
             </dt>
             <dd className="font-medium mt-0.5">{truckLabel}</dd>
-            <dd className="text-xs text-muted-foreground">Unit #{truck.unitNumber}</dd>
+            <dd className="text-xs text-muted-foreground">{truck.displayName ? `Unit #${truck.unitNumber}` : `Unit #${truck.unitNumber}`}</dd>
           </div>
           {dispatch.plannedMiles && (
             <div>
