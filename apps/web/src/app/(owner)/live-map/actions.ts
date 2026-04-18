@@ -255,7 +255,8 @@ export async function getVehicleDiagnostics(truckId: string) {
   ]);
 
   if (!truck) {
-    return null;
+    // Fallback: try carrier_trucks table
+    return getCarrierTruckDiagnostics(truckId, tenantId, db);
   }
 
   // Derive engine state from speed
@@ -314,6 +315,142 @@ export async function getVehicleDiagnostics(truckId: string) {
           driverName: activeLoad.driver
             ? `${activeLoad.driver.firstName} ${activeLoad.driver.lastName}`
             : null,
+        }
+      : null,
+  };
+}
+
+// ─── Carrier truck diagnostics fallback ──────────────────────────────────────
+
+interface CarrierTruckDBRow {
+  unit_number: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  license_plate: string | null;
+  vin: string | null;
+}
+
+interface CarrierDispatchDBRow {
+  id: string;
+  notes: string | null;
+  status: string;
+  scheduled_departure: Date | null;
+  planned_miles: number | null;
+}
+
+interface CarrierDriverDBRow {
+  firstName: string;
+  lastName: string;
+}
+
+/**
+ * Diagnostics fallback for carrier_trucks (not in Prisma's Truck model).
+ * Returns the same shape as getVehicleDiagnostics so vehicle-details-sheet.tsx works unchanged.
+ */
+async function getCarrierTruckDiagnostics(
+  truckId: string,
+  tenantId: string,
+  db: Awaited<ReturnType<typeof getTenantPrisma>>
+) {
+  const DISPATCH_NUM_RE = /\[DISPATCH_NUMBER=([^\]]+)\]/;
+
+  // 1. Query carrier_trucks table
+  const carrierTruckRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT ct.unit_number, ct.make, ct.model, ct.year, ct.license_plate, ct.vin
+      FROM carrier_trucks ct
+      WHERE ct.id = ${truckId}::uuid AND ct.org_id = ${tenantId}::uuid
+    `
+  )) as CarrierTruckDBRow[];
+
+  if (!carrierTruckRows.length) return null;
+  const ct = carrierTruckRows[0];
+
+  // 2. Latest GPS location for this carrier truck
+  const latestGPS = await db.gPSLocation.findFirst({
+    where: { carrierTruckId: truckId },
+    orderBy: { timestamp: 'desc' },
+    select: { latitude: true, longitude: true, speed: true, heading: true, timestamp: true },
+  });
+
+  // 3. Active dispatch
+  const dispatchRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT d.id, d.notes, d.status, d.scheduled_departure, d.planned_miles
+      FROM dispatches d
+      WHERE d.truck_id = ${truckId}::uuid
+        AND d.org_id = ${tenantId}::uuid
+        AND d.status IN ('planned', 'in_progress')
+      ORDER BY d.scheduled_departure DESC
+      LIMIT 1
+    `
+  )) as CarrierDispatchDBRow[];
+
+  const dispatch = dispatchRows[0] ?? null;
+  const dispatchId = dispatch?.id ?? null;
+  const dispatchNumber = dispatch?.notes
+    ? (DISPATCH_NUM_RE.exec(dispatch.notes)?.[1] ?? 'Dispatch')
+    : 'Dispatch';
+
+  // 4. Assigned driver (if dispatch exists)
+  let driverName: string | null = null;
+  if (dispatchId) {
+    const driverRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT u."firstName", u."lastName"
+        FROM dispatches d
+        JOIN carrier_drivers cd ON d.primary_driver_id = cd.id
+        JOIN "User" u ON cd.user_id = u.id
+        WHERE d.id = ${dispatchId}::uuid
+      `
+    )) as CarrierDriverDBRow[];
+
+    if (driverRows.length) {
+      driverName = `${driverRows[0].firstName} ${driverRows[0].lastName}`;
+    }
+  }
+
+  // 5. Derive engine state from GPS speed
+  let engineState: 'running' | 'idle' | 'off' = 'off';
+  if (latestGPS && latestGPS.speed !== null) {
+    if (latestGPS.speed > 5) {
+      engineState = 'running';
+    } else if (latestGPS.speed > 0) {
+      engineState = 'idle';
+    }
+  }
+
+  return {
+    truck: {
+      make: ct.make ?? 'Unknown',
+      model: ct.model ?? '',
+      year: ct.year ?? 0,
+      licensePlate: ct.license_plate ?? ct.unit_number,
+      odometer: 0, // carrier_trucks does not track odometer
+    },
+    latestGPS: latestGPS
+      ? {
+          latitude: Number(latestGPS.latitude),
+          longitude: Number(latestGPS.longitude),
+          speed: latestGPS.speed,
+          heading: latestGPS.heading,
+          timestamp: latestGPS.timestamp,
+        }
+      : null,
+    latestFuel: null,
+    engineState,
+    estimatedFuelLevel: 50, // No fuel data for carrier trucks
+    activeLoad: dispatch
+      ? {
+          id: dispatch.id,
+          loadNumber: dispatchNumber,
+          origin: 'Dispatch',
+          destination: dispatch.status,
+          status: dispatch.status,
+          pickupDate: dispatch.scheduled_departure ?? new Date(),
+          deliveryDate: null,
+          driverName,
         }
       : null,
   };
