@@ -229,7 +229,9 @@ async function seedTenant1(): Promise<void> {
     const truck = await prisma.carrierTruck.create({
       data: {
         orgId: tenantId,
+        vehicleId: `VH-${new Date().getFullYear()}-QA001`,
         unitNumber: 'UNIT-QA-01',
+        displayName: 'QA Truck 01',
         truckType: 'semi',
         year: 2022,
         make: 'Kenworth',

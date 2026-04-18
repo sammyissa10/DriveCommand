@@ -14,7 +14,7 @@ export interface ListCarrierTrucksFilters {
 
 export interface CarrierTruckCreateInput {
   unitNumber: string;
-  displayName?: string;
+  displayName?: string | null;
   vin?: string;
   year?: number | null;
   make?: string;

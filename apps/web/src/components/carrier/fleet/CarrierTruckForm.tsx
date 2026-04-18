@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -17,6 +18,8 @@ import { toast } from 'sonner';
 
 export interface CarrierTruckData {
   id: string;
+  vehicleId: string | null;
+  displayName: string | null;
   unitNumber: string;
   vin: string | null;
   year: number | null;
@@ -54,12 +57,42 @@ const US_STATES = [
   'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
 ];
 
+// Map NHTSA Body Class to our truck type enum values
+function mapBodyClassToTruckType(bodyClass: string): string | null {
+  const bc = bodyClass.toLowerCase();
+  if (bc.includes('tractor')) return 'day_cab';
+  if (bc.includes('truck') && bc.includes('box')) return 'box_truck';
+  if (bc.includes('truck') && bc.includes('flat')) return 'flatbed';
+  if (bc.includes('truck')) return 'semi';
+  return null;
+}
+
+// Parse GVWR string like "Class 8: 33,001 lb (14,970 kg) and over" → extract numeric lbs
+function parseGvwr(gvwrStr: string): number | null {
+  if (!gvwrStr) return null;
+  // Try to find a number followed by "lb"
+  const match = gvwrStr.match(/([\d,]+)\s*lb/i);
+  if (match) {
+    const num = parseInt(match[1].replace(/,/g, ''), 10);
+    return isNaN(num) ? null : num;
+  }
+  return null;
+}
+
+interface NhtsaResult {
+  Variable: string;
+  Value: string | null;
+  ValueId: string | null;
+  ErrorCode: string | null;
+}
+
 export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
   const router = useRouter();
   const isEdit = Boolean(truck?.id);
 
   const [values, setValues] = useState({
     unitNumber: truck?.unitNumber ?? '',
+    displayName: truck?.displayName ?? '',
     vin: truck?.vin ?? '',
     year: truck?.year != null ? String(truck.year) : '',
     make: truck?.make ?? '',
@@ -78,10 +111,70 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLookingUp, setIsLookingUp] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setValues((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleVinLookup() {
+    const vin = values.vin.trim();
+    if (!vin || vin.length !== 17) {
+      toast.error('Enter a valid 17-character VIN first');
+      return;
+    }
+
+    setIsLookingUp(true);
+    try {
+      const res = await fetch(
+        `https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${encodeURIComponent(vin)}?format=json`
+      );
+      if (!res.ok) throw new Error('NHTSA API request failed');
+
+      const data = await res.json() as { Results: NhtsaResult[] };
+      const results: NhtsaResult[] = data.Results ?? [];
+
+      const get = (variable: string) =>
+        results.find((r) => r.Variable === variable)?.Value ?? null;
+
+      const make = get('Make');
+      const model = get('Model');
+      const yearStr = get('Model Year');
+      const bodyClass = get('Body Class') ?? '';
+      const gvwrStr = get('Gross Vehicle Weight Rating From') ?? '';
+      const errorCode = get('Error Code') ?? '';
+
+      // If error code is not "0" (success), consider it no-data
+      if (errorCode && !errorCode.startsWith('0')) {
+        toast.error('VIN not found — please enter details manually');
+        return;
+      }
+
+      const updates: Partial<typeof values> = {};
+      if (make && make !== 'Not Applicable') updates.make = make;
+      if (model && model !== 'Not Applicable') updates.model = model;
+      if (yearStr && yearStr !== 'Not Applicable') {
+        const yr = parseInt(yearStr, 10);
+        if (!isNaN(yr)) updates.year = String(yr);
+      }
+      const mappedType = mapBodyClassToTruckType(bodyClass);
+      if (mappedType) updates.truckType = mappedType;
+      const gvwr = parseGvwr(gvwrStr);
+      if (gvwr) updates.grossWeightLbs = String(gvwr);
+
+      if (Object.keys(updates).length === 0) {
+        toast.error('VIN not found — please enter details manually');
+        return;
+      }
+
+      setValues((prev) => ({ ...prev, ...updates }));
+      toast.success('Vehicle details filled from VIN');
+    } catch {
+      toast.error('VIN lookup failed — please enter details manually');
+    } finally {
+      setIsLookingUp(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -96,6 +189,7 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
     try {
       const body: Record<string, unknown> = {
         unitNumber: values.unitNumber.trim(),
+        ...(values.displayName ? { displayName: values.displayName.trim() } : {}),
         ...(values.vin ? { vin: values.vin } : {}),
         ...(values.year ? { year: parseInt(values.year, 10) } : {}),
         ...(values.make ? { make: values.make } : {}),
@@ -130,7 +224,7 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? 'Failed to save truck');
+        throw new Error((data as { error?: string }).error ?? 'Failed to save truck');
       }
 
       toast.success(isEdit ? 'Truck updated' : 'Truck created');
@@ -149,6 +243,16 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Vehicle ID badge (edit mode only) */}
+      {isEdit && truck?.vehicleId && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="font-medium">Vehicle ID</span>
+          <Badge variant="secondary" className="font-mono">
+            {truck.vehicleId}
+          </Badge>
+        </div>
+      )}
+
       {/* Basic info */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="space-y-1.5">
@@ -164,17 +268,45 @@ export function CarrierTruckForm({ truck }: CarrierTruckFormProps) {
           />
         </div>
         <div className="space-y-1.5">
+          <label className="text-sm font-medium text-foreground" htmlFor="displayName">
+            Display Name
+          </label>
+          <Input
+            id="displayName"
+            name="displayName"
+            value={values.displayName}
+            onChange={handleChange}
+            placeholder="e.g. Big Red, Unit Alpha, Truck 7"
+          />
+        </div>
+        <div className="space-y-1.5 lg:col-span-2">
           <label className="text-sm font-medium text-foreground" htmlFor="vin">
             VIN
           </label>
-          <Input
-            id="vin"
-            name="vin"
-            value={values.vin}
-            onChange={handleChange}
-            placeholder="1HGBH41JXMN109186"
-            className="font-mono"
-          />
+          <div className="flex gap-2">
+            <Input
+              id="vin"
+              name="vin"
+              value={values.vin}
+              onChange={handleChange}
+              placeholder="1HGBH41JXMN109186"
+              className="font-mono flex-1"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleVinLookup}
+              disabled={isLookingUp || values.vin.length !== 17}
+              className="shrink-0"
+            >
+              {isLookingUp ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
+              <span className="ml-1.5">{isLookingUp ? 'Looking up…' : 'Lookup'}</span>
+            </Button>
+          </div>
         </div>
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-foreground" htmlFor="year">

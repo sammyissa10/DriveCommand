@@ -222,6 +222,8 @@ export default async function CarrierTruckDetailPage({ params }: Props) {
         <CarrierTruckForm
           truck={{
             id: truck.id,
+            vehicleId: truck.vehicleId,
+            displayName: truck.displayName,
             unitNumber: truck.unitNumber,
             vin: truck.vin,
             year: truck.year,
