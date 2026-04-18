@@ -64,7 +64,7 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
       {/* Header with company branding */}
       <SidebarHeader className="border-b border-sidebar-border">
         <Link
-          href="/dashboard"
+          href="/carrier/dashboard"
           onClick={handleNavClick}
           className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-sidebar-accent transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-3"
         >

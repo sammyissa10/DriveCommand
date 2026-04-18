@@ -69,7 +69,7 @@ export default function TeamPermissionsPage() {
   const [invitePermissions, setInvitePermissions] = useState<UserPermissions>({ ...DEFAULT_MANAGER_PERMISSIONS });
 
   useEffect(() => {
-    if (isLoaded && user?.role === UserRole.MANAGER) router.replace('/dashboard');
+    if (isLoaded && user?.role === UserRole.MANAGER) router.replace('/carrier/dashboard');
   }, [isLoaded, user, router]);
 
   useEffect(() => {

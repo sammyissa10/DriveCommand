@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Users, Truck, Route as RouteIcon } from 'lucide-react';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/carrier/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/loads', label: 'Loads', icon: Package, exact: false },
   { href: '/drivers', label: 'Drivers', icon: Users, exact: false },
   { href: '/trucks', label: 'Trucks', icon: Truck, exact: false },

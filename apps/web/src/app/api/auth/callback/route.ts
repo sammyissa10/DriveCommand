@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
   // Validate that `next` is a relative path — prevents open redirect via
   // external URLs (e.g. ?next=https://evil.com) and protocol-relative
   // bypass (e.g. ?next=//evil.com).
-  const safeNext = next?.startsWith('/') && !next.startsWith('//') ? next : '/dashboard';
+  const safeNext = next?.startsWith('/') && !next.startsWith('//') ? next : '/carrier/dashboard';
 
   if (code) {
     const supabase = await createSupabaseServerClient();
