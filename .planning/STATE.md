@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-18 - Completed quick task 246: Fix GPS tracking — ping on all pages, accurate movement detection, auto-update live map
+Last activity: 2026-04-18 - Completed quick task 247: Fix live map History tab and speed storage — wrong column names
 Last session: 2026-04-17T23:30:00Z
 Stopped at: Completed quick-242-PLAN.md — 3 tasks, 4 files modified
 
@@ -178,6 +178,7 @@ Progress: [███████████████████████
 - Quick-232 (2026-04-17): Complete driver portal redesign — Dashboard landing page (greeting, dispatch card, quick actions, HOS widget, messages preview), browser GPS pinging (watchPosition+30s throttle), notification bell (60s poll, unread badge, dropdown panel), 5-tab nav (Dashboard/Route/Load/Messages/More, 60px height), More menu page (Hours/Documents/Incidents/Support/LogOut), dark branded header (bg-slate-900), GPS logging endpoint, driver-scoped notifications API — 2 tasks, 18 files created, 3 files modified
 - Quick-239 (2026-04-17): Fix driver portal stop state machine — getStopAction() helper (5 states), navigatingStopId in DispatchDetail, Begin Navigation opens Google Maps + sets navigating state, Mark Arrived calls arriveAtStop + clears state, Complete Stop auto-opens Maps to next pending stop, navigating circle pulses blue, all buttons full-width — 1 task, 1 file modified
 - Quick-246 (2026-04-18): Fix GPS tracking — ping on all pages, accurate movement detection, auto-update live map — DriverGpsPing moved to driver layout (all tabs), haversine calculateSpeed(), setInterval 15s backup ping, calculatedSpeed stored in GPSLocation.speed, vehicles endpoint uses stored speed, live map polls 15s + manual Refresh button — 2 tasks, 6 files modified
+- Quick-247 (2026-04-18): Fix live map History tab — history endpoint was querying truckId but carrier trucks use carrierTruckId FK; added fallback CarrierTruck ownership check + conditional FK in GPS query — 1 task, 1 file modified
 
 ## Accumulated Context
 
