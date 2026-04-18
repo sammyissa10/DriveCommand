@@ -6,9 +6,22 @@ import { usePathname } from 'next/navigation';
 import { Truck, Package, Home, Map, LayoutGrid } from 'lucide-react';
 import { OwnerMoreMenu } from '@/components/navigation/owner-more-menu';
 
+const moreMenuPaths = [
+  '/carrier/clients',
+  '/carrier/contracts',
+  '/carrier/templates',
+  '/carrier/fleet',
+  '/carrier/facilities',
+  '/carrier/reports',
+  '/ai-documents',
+  '/settings',
+  '/support',
+];
+
 export function OwnerBottomNav() {
   const pathname = usePathname();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const isOnMorePage = moreMenuPaths.some((p) => pathname.startsWith(p));
 
   type Tab = {
     href: string;
@@ -76,7 +89,7 @@ export function OwnerBottomNav() {
           <button
             onClick={() => setIsMoreOpen(true)}
             className={`flex flex-col items-center justify-center flex-1 gap-0.5 transition-colors py-2 ${
-              isMoreOpen ? 'text-blue-400' : 'text-slate-400 hover:text-slate-200'
+              isMoreOpen || isOnMorePage ? 'text-blue-400' : 'text-slate-400 hover:text-slate-200'
             }`}
             aria-label="More menu"
           >
