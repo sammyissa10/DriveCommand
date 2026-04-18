@@ -66,6 +66,23 @@ interface CarrierDriverRow {
   lastName: string;
 }
 
+interface CarrierDispatchRow {
+  truckId: string;
+  dispatchId: string;
+  notes: string | null;
+  status: string;
+}
+
+interface CarrierStopCountRow {
+  dispatchId: string;
+  stopCount: number;
+}
+
+interface CarrierNextStopRow {
+  dispatchId: string;
+  nextStopName: string;
+}
+
 /**
  * GET /api/v1/carrier/live-map/vehicles
  *
@@ -334,6 +351,66 @@ export async function GET() {
       }
     }
 
+    // Step 2c: Query dispatch context for carrier trucks
+    const carrierDispatchMap = new Map<string, { dispatchId: string; dispatchNumber: string }>();
+    const carrierStopCountMap = new Map<string, number>();
+    const carrierNextStopMap = new Map<string, string>();
+
+    if (carrierTruckIds.length > 0) {
+      const carrierDispatchRows = (await tenantRawQuery((tx) =>
+        tx.$queryRaw`
+          SELECT d.id AS "dispatchId", d.truck_id AS "truckId", d.notes, d.status
+          FROM dispatches d
+          WHERE d.org_id = ${orgId}::uuid
+            AND d.status IN ('planned', 'in_progress')
+            AND d.truck_id = ANY(${carrierTruckIds}::uuid[])
+        `
+      )) as CarrierDispatchRow[];
+
+      const DISPATCH_NUM_RE = /\[DISPATCH_NUMBER=([^\]]+)\]/;
+      for (const row of carrierDispatchRows) {
+        if (!carrierDispatchMap.has(row.truckId)) {
+          const match = row.notes ? DISPATCH_NUM_RE.exec(row.notes) : null;
+          const dispatchNumber = match ? match[1] : 'Dispatch';
+          carrierDispatchMap.set(row.truckId, { dispatchId: row.dispatchId, dispatchNumber });
+        }
+      }
+
+      const activeCarrierDispatchIds = [...carrierDispatchMap.values()].map((d) => d.dispatchId);
+
+      if (activeCarrierDispatchIds.length > 0) {
+        const carrierStopCountRows = (await tenantRawQuery((tx) =>
+          tx.$queryRaw`
+            SELECT s.dispatch_id AS "dispatchId", COUNT(*)::int AS "stopCount"
+            FROM stops s
+            WHERE s.dispatch_id = ANY(${activeCarrierDispatchIds}::uuid[])
+            GROUP BY s.dispatch_id
+          `
+        )) as CarrierStopCountRow[];
+
+        for (const row of carrierStopCountRows) {
+          carrierStopCountMap.set(row.dispatchId, row.stopCount);
+        }
+
+        const carrierNextStopRows = (await tenantRawQuery((tx) =>
+          tx.$queryRaw`
+            SELECT DISTINCT ON (s.dispatch_id)
+              s.dispatch_id AS "dispatchId",
+              COALESCE(f.name, f.city || ', ' || f.state, 'Unknown') AS "nextStopName"
+            FROM stops s
+            LEFT JOIN carrier_facilities f ON s.facility_id = f.id
+            WHERE s.dispatch_id = ANY(${activeCarrierDispatchIds}::uuid[])
+              AND s.status = 'pending'
+            ORDER BY s.dispatch_id, s.sequence_order ASC
+          `
+        )) as CarrierNextStopRow[];
+
+        for (const row of carrierNextStopRows) {
+          carrierNextStopMap.set(row.dispatchId, row.nextStopName);
+        }
+      }
+    }
+
     // Step 4b: Map carrier trucks to VehicleLocation and merge
     const carrierVehicles: VehicleLocation[] = carrierTruckRows.map((row) => {
       const lat = row.latitude != null ? Number(row.latitude) : null;
@@ -361,7 +438,15 @@ export async function GET() {
         },
         driver: driverName ? { name: driverName } : null,
         status,
-        dispatch: null, // Carrier dispatches use different structure; omit for now
+        dispatch: (() => {
+          const carrierDisp = carrierDispatchMap.get(row.truckId);
+          if (!carrierDisp) return null;
+          return {
+            routeName: carrierDisp.dispatchNumber,
+            loadCount: carrierStopCountMap.get(carrierDisp.dispatchId) ?? 0,
+            nextStopAddress: carrierNextStopMap.get(carrierDisp.dispatchId) ?? null,
+          };
+        })(),
       };
     });
 
