@@ -790,6 +790,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-209]: ALLOWED_TYPES for uploads set to PDF/JPEG/PNG only; SVG blocked at support attachment route (XSS vector via embedded scripts)
 - [Phase quick-210]: Use tenantId as rate limit key for document routes; publicLimiter on track endpoint uses IP from x-forwarded-for
 - [Phase quick-241]: updateMany with status filter for in_transit cascade — idempotent, won't downgrade a load already past in_transit
+- [Phase quick-243]: Used getSession() instead of requireRole() to get userId and tenantId in a single call for HOS actions
 
 ### Pending Todos
 
@@ -1101,6 +1102,7 @@ None blocking immediate progress.
 | Phase 37.2-owner-route-maintenance P01 | 389 | 2 tasks | 5 files |
 | Phase 37.2 P03 | 215 | 1 tasks | 1 files |
 | Phase quick-210 P01 | 15m | 2 tasks | 14 files |
+| Phase quick-243 P01 | 10 | 2 tasks | 2 files |
 
 ## Session Continuity
 
