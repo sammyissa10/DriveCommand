@@ -11,6 +11,7 @@ const nullableString = z.preprocess(
 
 const CarrierTruckCreateSchema = z.object({
   unitNumber: z.string().min(1),
+  displayName: nullableString,
   vin: nullableString,
   year: z.number().int().optional(),
   make: nullableString,

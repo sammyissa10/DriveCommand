@@ -454,25 +454,29 @@ model NotificationLog {
 }
 
 model GPSLocation {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @db.Uuid
-  truckId   String   @db.Uuid
-  latitude  Decimal  @db.Decimal(10, 8)
-  longitude Decimal  @db.Decimal(11, 8)
-  speed     Int?
-  heading   Int?
-  altitude  Int?
-  accuracy  Decimal? @db.Decimal(6, 2)
-  timestamp DateTime @db.Timestamptz
-  createdAt DateTime @default(now()) @db.Timestamptz
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @db.Uuid
+  truckId        String?  @db.Uuid
+  carrierTruckId String?  @db.Uuid
+  latitude       Decimal  @db.Decimal(10, 8)
+  longitude      Decimal  @db.Decimal(11, 8)
+  speed          Int?
+  heading        Int?
+  altitude       Int?
+  accuracy       Decimal? @db.Decimal(6, 2)
+  timestamp      DateTime @db.Timestamptz
+  createdAt      DateTime @default(now()) @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  truck  Truck  @relation(fields: [truckId], references: [id])
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  truck        Truck?        @relation(fields: [truckId], references: [id])
+  carrierTruck CarrierTruck? @relation(fields: [carrierTruckId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([truckId])
   @@index([timestamp])
   @@index([tenantId, timestamp])
+  @@index([carrierTruckId])
+  @@index([carrierTruckId, timestamp])
 }
 
 model SafetyEvent {
@@ -1404,6 +1408,8 @@ model CarrierDriver {
 model CarrierTruck {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgId                String    @map("org_id") @db.Uuid
+  vehicleId            String    @unique @map("vehicle_id") @db.VarChar(50)
+  displayName          String?   @map("display_name") @db.VarChar(200)
   unitNumber           String    @map("unit_number")
   year                 Int?
   make                 String?
@@ -1428,6 +1434,7 @@ model CarrierTruck {
   primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryTruck")
   trailerDispatches     CarrierDispatch[] @relation(name: "TrailerTruck")
   defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultTruck")
+  gpsLocations          GPSLocation[]
 
   @@index([orgId])
   @@index([status])

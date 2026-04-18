@@ -293,6 +293,7 @@ exports.Prisma.GPSLocationScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   truckId: 'truckId',
+  carrierTruckId: 'carrierTruckId',
   latitude: 'latitude',
   longitude: 'longitude',
   speed: 'speed',
@@ -801,6 +802,8 @@ exports.Prisma.CarrierDriverScalarFieldEnum = {
 exports.Prisma.CarrierTruckScalarFieldEnum = {
   id: 'id',
   orgId: 'orgId',
+  vehicleId: 'vehicleId',
+  displayName: 'displayName',
   unitNumber: 'unitNumber',
   year: 'year',
   make: 'make',

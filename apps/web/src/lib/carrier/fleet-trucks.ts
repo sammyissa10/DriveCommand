@@ -14,6 +14,7 @@ export interface ListCarrierTrucksFilters {
 
 export interface CarrierTruckCreateInput {
   unitNumber: string;
+  displayName?: string;
   vin?: string;
   year?: number | null;
   make?: string;
@@ -34,6 +35,37 @@ export interface CarrierTruckCreateInput {
 export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate the next globally unique vehicle ID in the format VH-YYYY-NNNNN.
+ * Queries the max vehicle_id to determine the next sequence number.
+ */
+async function generateVehicleId(): Promise<string> {
+  const year = new Date().getFullYear();
+  const prefix = `VH-${year}-`;
+
+  // Find the highest existing vehicle_id for this year
+  const rows = await prisma.$queryRawUnsafe<Array<{ vehicle_id: string }>>(
+    `SELECT vehicle_id FROM carrier_trucks WHERE vehicle_id LIKE $1 ORDER BY vehicle_id DESC LIMIT 1`,
+    `${prefix}%`
+  );
+
+  let nextSeq = 1;
+  if (rows.length > 0) {
+    const lastId = rows[0].vehicle_id;
+    const suffix = lastId.slice(prefix.length);
+    const parsed = parseInt(suffix, 10);
+    if (!isNaN(parsed)) {
+      nextSeq = parsed + 1;
+    }
+  }
+
+  return `${prefix}${String(nextSeq).padStart(5, '0')}`;
+}
+
+// ---------------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------------
 
@@ -49,6 +81,8 @@ export async function listCarrierTrucks(orgId: string, filters: ListCarrierTruck
       ? {
           OR: [
             { unitNumber: { contains: search, mode: 'insensitive' as const } },
+            { displayName: { contains: search, mode: 'insensitive' as const } },
+            { vehicleId: { contains: search, mode: 'insensitive' as const } },
             { vin: { contains: search, mode: 'insensitive' as const } },
             { make: { contains: search, mode: 'insensitive' as const } },
             { model: { contains: search, mode: 'insensitive' as const } },
@@ -95,12 +129,17 @@ export async function getCarrierTruck(orgId: string, id: string) {
 }
 
 export async function createCarrierTruck(orgId: string, data: CarrierTruckCreateInput) {
-  const { registrationExpiry, licenseExpiry, insuranceExpiry, ...rest } = data;
+  const { registrationExpiry, licenseExpiry, insuranceExpiry, displayName, ...rest } = data;
+
+  const vehicleId = await generateVehicleId();
+  const resolvedDisplayName = displayName || data.unitNumber;
 
   return prisma.carrierTruck.create({
     data: {
       ...rest,
       orgId,
+      vehicleId,
+      displayName: resolvedDisplayName,
       ...(registrationExpiry ? { registrationExpiry: new Date(registrationExpiry) } : {}),
       ...(licenseExpiry ? { licenseExpiry: new Date(licenseExpiry) } : {}),
       ...(insuranceExpiry ? { insuranceExpiry: new Date(insuranceExpiry) } : {}),

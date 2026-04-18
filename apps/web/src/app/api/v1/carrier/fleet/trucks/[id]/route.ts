@@ -7,6 +7,7 @@ import { getCarrierTruck, updateCarrierTruck } from '@/lib/carrier/fleet-trucks'
 
 const CarrierTruckUpdateSchema = z.object({
   unitNumber: z.string().min(1).optional(),
+  displayName: z.string().nullable().optional(),
   vin: z.string().optional(),
   year: z.number().int().optional(),
   make: z.string().optional(),

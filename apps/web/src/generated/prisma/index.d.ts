@@ -7359,12 +7359,14 @@ export namespace Prisma {
     primaryDispatches: number
     trailerDispatches: number
     defaultRouteTemplates: number
+    gpsLocations: number
   }
 
   export type CarrierTruckCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     primaryDispatches?: boolean | CarrierTruckCountOutputTypeCountPrimaryDispatchesArgs
     trailerDispatches?: boolean | CarrierTruckCountOutputTypeCountTrailerDispatchesArgs
     defaultRouteTemplates?: boolean | CarrierTruckCountOutputTypeCountDefaultRouteTemplatesArgs
+    gpsLocations?: boolean | CarrierTruckCountOutputTypeCountGpsLocationsArgs
   }
 
   // Custom InputTypes
@@ -7397,6 +7399,13 @@ export namespace Prisma {
    */
   export type CarrierTruckCountOutputTypeCountDefaultRouteTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RouteTemplateWhereInput
+  }
+
+  /**
+   * CarrierTruckCountOutputType without action
+   */
+  export type CarrierTruckCountOutputTypeCountGpsLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GPSLocationWhereInput
   }
 
 
@@ -22382,6 +22391,7 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     truckId: string | null
+    carrierTruckId: string | null
     latitude: Decimal | null
     longitude: Decimal | null
     speed: number | null
@@ -22396,6 +22406,7 @@ export namespace Prisma {
     id: string | null
     tenantId: string | null
     truckId: string | null
+    carrierTruckId: string | null
     latitude: Decimal | null
     longitude: Decimal | null
     speed: number | null
@@ -22410,6 +22421,7 @@ export namespace Prisma {
     id: number
     tenantId: number
     truckId: number
+    carrierTruckId: number
     latitude: number
     longitude: number
     speed: number
@@ -22444,6 +22456,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     truckId?: true
+    carrierTruckId?: true
     latitude?: true
     longitude?: true
     speed?: true
@@ -22458,6 +22471,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     truckId?: true
+    carrierTruckId?: true
     latitude?: true
     longitude?: true
     speed?: true
@@ -22472,6 +22486,7 @@ export namespace Prisma {
     id?: true
     tenantId?: true
     truckId?: true
+    carrierTruckId?: true
     latitude?: true
     longitude?: true
     speed?: true
@@ -22572,7 +22587,8 @@ export namespace Prisma {
   export type GPSLocationGroupByOutputType = {
     id: string
     tenantId: string
-    truckId: string
+    truckId: string | null
+    carrierTruckId: string | null
     latitude: Decimal
     longitude: Decimal
     speed: number | null
@@ -22606,6 +22622,7 @@ export namespace Prisma {
     id?: boolean
     tenantId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     latitude?: boolean
     longitude?: boolean
     speed?: boolean
@@ -22615,13 +22632,15 @@ export namespace Prisma {
     timestamp?: boolean
     createdAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }, ExtArgs["result"]["gPSLocation"]>
 
   export type GPSLocationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     tenantId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     latitude?: boolean
     longitude?: boolean
     speed?: boolean
@@ -22631,13 +22650,15 @@ export namespace Prisma {
     timestamp?: boolean
     createdAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }, ExtArgs["result"]["gPSLocation"]>
 
   export type GPSLocationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     tenantId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     latitude?: boolean
     longitude?: boolean
     speed?: boolean
@@ -22647,13 +22668,15 @@ export namespace Prisma {
     timestamp?: boolean
     createdAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }, ExtArgs["result"]["gPSLocation"]>
 
   export type GPSLocationSelectScalar = {
     id?: boolean
     tenantId?: boolean
     truckId?: boolean
+    carrierTruckId?: boolean
     latitude?: boolean
     longitude?: boolean
     speed?: boolean
@@ -22664,30 +22687,35 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type GPSLocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "truckId" | "latitude" | "longitude" | "speed" | "heading" | "altitude" | "accuracy" | "timestamp" | "createdAt", ExtArgs["result"]["gPSLocation"]>
+  export type GPSLocationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "truckId" | "carrierTruckId" | "latitude" | "longitude" | "speed" | "heading" | "altitude" | "accuracy" | "timestamp" | "createdAt", ExtArgs["result"]["gPSLocation"]>
   export type GPSLocationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }
   export type GPSLocationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }
   export type GPSLocationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
-    truck?: boolean | TruckDefaultArgs<ExtArgs>
+    truck?: boolean | GPSLocation$truckArgs<ExtArgs>
+    carrierTruck?: boolean | GPSLocation$carrierTruckArgs<ExtArgs>
   }
 
   export type $GPSLocationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GPSLocation"
     objects: {
       tenant: Prisma.$TenantPayload<ExtArgs>
-      truck: Prisma.$TruckPayload<ExtArgs>
+      truck: Prisma.$TruckPayload<ExtArgs> | null
+      carrierTruck: Prisma.$CarrierTruckPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
-      truckId: string
+      truckId: string | null
+      carrierTruckId: string | null
       latitude: Prisma.Decimal
       longitude: Prisma.Decimal
       speed: number | null
@@ -23091,7 +23119,8 @@ export namespace Prisma {
   export interface Prisma__GPSLocationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    truck<T extends TruckDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TruckDefaultArgs<ExtArgs>>): Prisma__TruckClient<$Result.GetResult<Prisma.$TruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    truck<T extends GPSLocation$truckArgs<ExtArgs> = {}>(args?: Subset<T, GPSLocation$truckArgs<ExtArgs>>): Prisma__TruckClient<$Result.GetResult<Prisma.$TruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    carrierTruck<T extends GPSLocation$carrierTruckArgs<ExtArgs> = {}>(args?: Subset<T, GPSLocation$carrierTruckArgs<ExtArgs>>): Prisma__CarrierTruckClient<$Result.GetResult<Prisma.$CarrierTruckPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -23124,6 +23153,7 @@ export namespace Prisma {
     readonly id: FieldRef<"GPSLocation", 'String'>
     readonly tenantId: FieldRef<"GPSLocation", 'String'>
     readonly truckId: FieldRef<"GPSLocation", 'String'>
+    readonly carrierTruckId: FieldRef<"GPSLocation", 'String'>
     readonly latitude: FieldRef<"GPSLocation", 'Decimal'>
     readonly longitude: FieldRef<"GPSLocation", 'Decimal'>
     readonly speed: FieldRef<"GPSLocation", 'Int'>
@@ -23530,6 +23560,44 @@ export namespace Prisma {
      * Limit how many GPSLocations to delete.
      */
     limit?: number
+  }
+
+  /**
+   * GPSLocation.truck
+   */
+  export type GPSLocation$truckArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Truck
+     */
+    select?: TruckSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Truck
+     */
+    omit?: TruckOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TruckInclude<ExtArgs> | null
+    where?: TruckWhereInput
+  }
+
+  /**
+   * GPSLocation.carrierTruck
+   */
+  export type GPSLocation$carrierTruckArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierTruck
+     */
+    select?: CarrierTruckSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierTruck
+     */
+    omit?: CarrierTruckOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierTruckInclude<ExtArgs> | null
+    where?: CarrierTruckWhereInput
   }
 
   /**
@@ -60927,6 +60995,8 @@ export namespace Prisma {
   export type CarrierTruckMinAggregateOutputType = {
     id: string | null
     orgId: string | null
+    vehicleId: string | null
+    displayName: string | null
     unitNumber: string | null
     year: number | null
     make: string | null
@@ -60951,6 +61021,8 @@ export namespace Prisma {
   export type CarrierTruckMaxAggregateOutputType = {
     id: string | null
     orgId: string | null
+    vehicleId: string | null
+    displayName: string | null
     unitNumber: string | null
     year: number | null
     make: string | null
@@ -60975,6 +61047,8 @@ export namespace Prisma {
   export type CarrierTruckCountAggregateOutputType = {
     id: number
     orgId: number
+    vehicleId: number
+    displayName: number
     unitNumber: number
     year: number
     make: number
@@ -61015,6 +61089,8 @@ export namespace Prisma {
   export type CarrierTruckMinAggregateInputType = {
     id?: true
     orgId?: true
+    vehicleId?: true
+    displayName?: true
     unitNumber?: true
     year?: true
     make?: true
@@ -61039,6 +61115,8 @@ export namespace Prisma {
   export type CarrierTruckMaxAggregateInputType = {
     id?: true
     orgId?: true
+    vehicleId?: true
+    displayName?: true
     unitNumber?: true
     year?: true
     make?: true
@@ -61063,6 +61141,8 @@ export namespace Prisma {
   export type CarrierTruckCountAggregateInputType = {
     id?: true
     orgId?: true
+    vehicleId?: true
+    displayName?: true
     unitNumber?: true
     year?: true
     make?: true
@@ -61174,6 +61254,8 @@ export namespace Prisma {
   export type CarrierTruckGroupByOutputType = {
     id: string
     orgId: string
+    vehicleId: string
+    displayName: string | null
     unitNumber: string
     year: number | null
     make: string | null
@@ -61217,6 +61299,8 @@ export namespace Prisma {
   export type CarrierTruckSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orgId?: boolean
+    vehicleId?: boolean
+    displayName?: boolean
     unitNumber?: boolean
     year?: boolean
     make?: boolean
@@ -61240,12 +61324,15 @@ export namespace Prisma {
     primaryDispatches?: boolean | CarrierTruck$primaryDispatchesArgs<ExtArgs>
     trailerDispatches?: boolean | CarrierTruck$trailerDispatchesArgs<ExtArgs>
     defaultRouteTemplates?: boolean | CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>
+    gpsLocations?: boolean | CarrierTruck$gpsLocationsArgs<ExtArgs>
     _count?: boolean | CarrierTruckCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierTruck"]>
 
   export type CarrierTruckSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orgId?: boolean
+    vehicleId?: boolean
+    displayName?: boolean
     unitNumber?: boolean
     year?: boolean
     make?: boolean
@@ -61271,6 +61358,8 @@ export namespace Prisma {
   export type CarrierTruckSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     orgId?: boolean
+    vehicleId?: boolean
+    displayName?: boolean
     unitNumber?: boolean
     year?: boolean
     make?: boolean
@@ -61296,6 +61385,8 @@ export namespace Prisma {
   export type CarrierTruckSelectScalar = {
     id?: boolean
     orgId?: boolean
+    vehicleId?: boolean
+    displayName?: boolean
     unitNumber?: boolean
     year?: boolean
     make?: boolean
@@ -61317,12 +61408,13 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
+  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "vehicleId" | "displayName" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
   export type CarrierTruckInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     primaryDispatches?: boolean | CarrierTruck$primaryDispatchesArgs<ExtArgs>
     trailerDispatches?: boolean | CarrierTruck$trailerDispatchesArgs<ExtArgs>
     defaultRouteTemplates?: boolean | CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>
+    gpsLocations?: boolean | CarrierTruck$gpsLocationsArgs<ExtArgs>
     _count?: boolean | CarrierTruckCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierTruckIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -61339,10 +61431,13 @@ export namespace Prisma {
       primaryDispatches: Prisma.$CarrierDispatchPayload<ExtArgs>[]
       trailerDispatches: Prisma.$CarrierDispatchPayload<ExtArgs>[]
       defaultRouteTemplates: Prisma.$RouteTemplatePayload<ExtArgs>[]
+      gpsLocations: Prisma.$GPSLocationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       orgId: string
+      vehicleId: string
+      displayName: string | null
       unitNumber: string
       year: number | null
       make: string | null
@@ -61760,6 +61855,7 @@ export namespace Prisma {
     primaryDispatches<T extends CarrierTruck$primaryDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$primaryDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDispatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     trailerDispatches<T extends CarrierTruck$trailerDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$trailerDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDispatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultRouteTemplates<T extends CarrierTruck$defaultRouteTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$defaultRouteTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    gpsLocations<T extends CarrierTruck$gpsLocationsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierTruck$gpsLocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GPSLocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -61791,6 +61887,8 @@ export namespace Prisma {
   interface CarrierTruckFieldRefs {
     readonly id: FieldRef<"CarrierTruck", 'String'>
     readonly orgId: FieldRef<"CarrierTruck", 'String'>
+    readonly vehicleId: FieldRef<"CarrierTruck", 'String'>
+    readonly displayName: FieldRef<"CarrierTruck", 'String'>
     readonly unitNumber: FieldRef<"CarrierTruck", 'String'>
     readonly year: FieldRef<"CarrierTruck", 'Int'>
     readonly make: FieldRef<"CarrierTruck", 'String'>
@@ -62280,6 +62378,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RouteTemplateScalarFieldEnum | RouteTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierTruck.gpsLocations
+   */
+  export type CarrierTruck$gpsLocationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GPSLocation
+     */
+    select?: GPSLocationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GPSLocation
+     */
+    omit?: GPSLocationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GPSLocationInclude<ExtArgs> | null
+    where?: GPSLocationWhereInput
+    orderBy?: GPSLocationOrderByWithRelationInput | GPSLocationOrderByWithRelationInput[]
+    cursor?: GPSLocationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GPSLocationScalarFieldEnum | GPSLocationScalarFieldEnum[]
   }
 
   /**
@@ -76469,6 +76591,7 @@ export namespace Prisma {
     id: 'id',
     tenantId: 'tenantId',
     truckId: 'truckId',
+    carrierTruckId: 'carrierTruckId',
     latitude: 'latitude',
     longitude: 'longitude',
     speed: 'speed',
@@ -77070,6 +77193,8 @@ export namespace Prisma {
   export const CarrierTruckScalarFieldEnum: {
     id: 'id',
     orgId: 'orgId',
+    vehicleId: 'vehicleId',
+    displayName: 'displayName',
     unitNumber: 'unitNumber',
     year: 'year',
     make: 'make',
@@ -79245,7 +79370,8 @@ export namespace Prisma {
     NOT?: GPSLocationWhereInput | GPSLocationWhereInput[]
     id?: UuidFilter<"GPSLocation"> | string
     tenantId?: UuidFilter<"GPSLocation"> | string
-    truckId?: UuidFilter<"GPSLocation"> | string
+    truckId?: UuidNullableFilter<"GPSLocation"> | string | null
+    carrierTruckId?: UuidNullableFilter<"GPSLocation"> | string | null
     latitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     speed?: IntNullableFilter<"GPSLocation"> | number | null
@@ -79255,13 +79381,15 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"GPSLocation"> | Date | string
     createdAt?: DateTimeFilter<"GPSLocation"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
-    truck?: XOR<TruckScalarRelationFilter, TruckWhereInput>
+    truck?: XOR<TruckNullableScalarRelationFilter, TruckWhereInput> | null
+    carrierTruck?: XOR<CarrierTruckNullableScalarRelationFilter, CarrierTruckWhereInput> | null
   }
 
   export type GPSLocationOrderByWithRelationInput = {
     id?: SortOrder
     tenantId?: SortOrder
-    truckId?: SortOrder
+    truckId?: SortOrderInput | SortOrder
+    carrierTruckId?: SortOrderInput | SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
     speed?: SortOrderInput | SortOrder
@@ -79272,6 +79400,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
     truck?: TruckOrderByWithRelationInput
+    carrierTruck?: CarrierTruckOrderByWithRelationInput
   }
 
   export type GPSLocationWhereUniqueInput = Prisma.AtLeast<{
@@ -79280,7 +79409,8 @@ export namespace Prisma {
     OR?: GPSLocationWhereInput[]
     NOT?: GPSLocationWhereInput | GPSLocationWhereInput[]
     tenantId?: UuidFilter<"GPSLocation"> | string
-    truckId?: UuidFilter<"GPSLocation"> | string
+    truckId?: UuidNullableFilter<"GPSLocation"> | string | null
+    carrierTruckId?: UuidNullableFilter<"GPSLocation"> | string | null
     latitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     speed?: IntNullableFilter<"GPSLocation"> | number | null
@@ -79290,13 +79420,15 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"GPSLocation"> | Date | string
     createdAt?: DateTimeFilter<"GPSLocation"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
-    truck?: XOR<TruckScalarRelationFilter, TruckWhereInput>
+    truck?: XOR<TruckNullableScalarRelationFilter, TruckWhereInput> | null
+    carrierTruck?: XOR<CarrierTruckNullableScalarRelationFilter, CarrierTruckWhereInput> | null
   }, "id">
 
   export type GPSLocationOrderByWithAggregationInput = {
     id?: SortOrder
     tenantId?: SortOrder
-    truckId?: SortOrder
+    truckId?: SortOrderInput | SortOrder
+    carrierTruckId?: SortOrderInput | SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
     speed?: SortOrderInput | SortOrder
@@ -79318,7 +79450,8 @@ export namespace Prisma {
     NOT?: GPSLocationScalarWhereWithAggregatesInput | GPSLocationScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"GPSLocation"> | string
     tenantId?: UuidWithAggregatesFilter<"GPSLocation"> | string
-    truckId?: UuidWithAggregatesFilter<"GPSLocation"> | string
+    truckId?: UuidNullableWithAggregatesFilter<"GPSLocation"> | string | null
+    carrierTruckId?: UuidNullableWithAggregatesFilter<"GPSLocation"> | string | null
     latitude?: DecimalWithAggregatesFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     longitude?: DecimalWithAggregatesFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     speed?: IntNullableWithAggregatesFilter<"GPSLocation"> | number | null
@@ -82501,6 +82634,8 @@ export namespace Prisma {
     NOT?: CarrierTruckWhereInput | CarrierTruckWhereInput[]
     id?: UuidFilter<"CarrierTruck"> | string
     orgId?: UuidFilter<"CarrierTruck"> | string
+    vehicleId?: StringFilter<"CarrierTruck"> | string
+    displayName?: StringNullableFilter<"CarrierTruck"> | string | null
     unitNumber?: StringFilter<"CarrierTruck"> | string
     year?: IntNullableFilter<"CarrierTruck"> | number | null
     make?: StringNullableFilter<"CarrierTruck"> | string | null
@@ -82524,11 +82659,14 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchListRelationFilter
     trailerDispatches?: CarrierDispatchListRelationFilter
     defaultRouteTemplates?: RouteTemplateListRelationFilter
+    gpsLocations?: GPSLocationListRelationFilter
   }
 
   export type CarrierTruckOrderByWithRelationInput = {
     id?: SortOrder
     orgId?: SortOrder
+    vehicleId?: SortOrder
+    displayName?: SortOrderInput | SortOrder
     unitNumber?: SortOrder
     year?: SortOrderInput | SortOrder
     make?: SortOrderInput | SortOrder
@@ -82552,14 +82690,17 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchOrderByRelationAggregateInput
     trailerDispatches?: CarrierDispatchOrderByRelationAggregateInput
     defaultRouteTemplates?: RouteTemplateOrderByRelationAggregateInput
+    gpsLocations?: GPSLocationOrderByRelationAggregateInput
   }
 
   export type CarrierTruckWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    vehicleId?: string
     AND?: CarrierTruckWhereInput | CarrierTruckWhereInput[]
     OR?: CarrierTruckWhereInput[]
     NOT?: CarrierTruckWhereInput | CarrierTruckWhereInput[]
     orgId?: UuidFilter<"CarrierTruck"> | string
+    displayName?: StringNullableFilter<"CarrierTruck"> | string | null
     unitNumber?: StringFilter<"CarrierTruck"> | string
     year?: IntNullableFilter<"CarrierTruck"> | number | null
     make?: StringNullableFilter<"CarrierTruck"> | string | null
@@ -82583,11 +82724,14 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchListRelationFilter
     trailerDispatches?: CarrierDispatchListRelationFilter
     defaultRouteTemplates?: RouteTemplateListRelationFilter
-  }, "id">
+    gpsLocations?: GPSLocationListRelationFilter
+  }, "id" | "vehicleId">
 
   export type CarrierTruckOrderByWithAggregationInput = {
     id?: SortOrder
     orgId?: SortOrder
+    vehicleId?: SortOrder
+    displayName?: SortOrderInput | SortOrder
     unitNumber?: SortOrder
     year?: SortOrderInput | SortOrder
     make?: SortOrderInput | SortOrder
@@ -82620,6 +82764,8 @@ export namespace Prisma {
     NOT?: CarrierTruckScalarWhereWithAggregatesInput | CarrierTruckScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"CarrierTruck"> | string
     orgId?: UuidWithAggregatesFilter<"CarrierTruck"> | string
+    vehicleId?: StringWithAggregatesFilter<"CarrierTruck"> | string
+    displayName?: StringNullableWithAggregatesFilter<"CarrierTruck"> | string | null
     unitNumber?: StringWithAggregatesFilter<"CarrierTruck"> | string
     year?: IntNullableWithAggregatesFilter<"CarrierTruck"> | number | null
     make?: StringNullableWithAggregatesFilter<"CarrierTruck"> | string | null
@@ -85573,13 +85719,15 @@ export namespace Prisma {
     timestamp: Date | string
     createdAt?: Date | string
     tenant: TenantCreateNestedOneWithoutGpsLocationsInput
-    truck: TruckCreateNestedOneWithoutGpsLocationsInput
+    truck?: TruckCreateNestedOneWithoutGpsLocationsInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutGpsLocationsInput
   }
 
   export type GPSLocationUncheckedCreateInput = {
     id?: string
     tenantId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -85601,13 +85749,15 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutGpsLocationsNestedInput
-    truck?: TruckUpdateOneRequiredWithoutGpsLocationsNestedInput
+    truck?: TruckUpdateOneWithoutGpsLocationsNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutGpsLocationsNestedInput
   }
 
   export type GPSLocationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -85621,7 +85771,8 @@ export namespace Prisma {
   export type GPSLocationCreateManyInput = {
     id?: string
     tenantId: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -85647,7 +85798,8 @@ export namespace Prisma {
   export type GPSLocationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -89181,6 +89333,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -89204,11 +89358,14 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateInput = {
     id?: string
     orgId: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -89231,10 +89388,13 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89258,11 +89418,14 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89285,11 +89448,14 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckCreateManyInput = {
     id?: string
     orgId: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -89313,6 +89479,8 @@ export namespace Prisma {
 
   export type CarrierTruckUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -89337,6 +89505,8 @@ export namespace Prisma {
   export type CarrierTruckUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -92446,10 +92616,16 @@ export namespace Prisma {
     _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
   }
 
+  export type CarrierTruckNullableScalarRelationFilter = {
+    is?: CarrierTruckWhereInput | null
+    isNot?: CarrierTruckWhereInput | null
+  }
+
   export type GPSLocationCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
     speed?: SortOrder
@@ -92473,6 +92649,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
     speed?: SortOrder
@@ -92487,6 +92664,7 @@ export namespace Prisma {
     id?: SortOrder
     tenantId?: SortOrder
     truckId?: SortOrder
+    carrierTruckId?: SortOrder
     latitude?: SortOrder
     longitude?: SortOrder
     speed?: SortOrder
@@ -94832,6 +95010,8 @@ export namespace Prisma {
   export type CarrierTruckCountOrderByAggregateInput = {
     id?: SortOrder
     orgId?: SortOrder
+    vehicleId?: SortOrder
+    displayName?: SortOrder
     unitNumber?: SortOrder
     year?: SortOrder
     make?: SortOrder
@@ -94863,6 +95043,8 @@ export namespace Prisma {
   export type CarrierTruckMaxOrderByAggregateInput = {
     id?: SortOrder
     orgId?: SortOrder
+    vehicleId?: SortOrder
+    displayName?: SortOrder
     unitNumber?: SortOrder
     year?: SortOrder
     make?: SortOrder
@@ -94887,6 +95069,8 @@ export namespace Prisma {
   export type CarrierTruckMinOrderByAggregateInput = {
     id?: SortOrder
     orgId?: SortOrder
+    vehicleId?: SortOrder
+    displayName?: SortOrder
     unitNumber?: SortOrder
     year?: SortOrder
     make?: SortOrder
@@ -94918,11 +95102,6 @@ export namespace Prisma {
   export type CarrierContractNullableScalarRelationFilter = {
     is?: CarrierContractWhereInput | null
     isNot?: CarrierContractWhereInput | null
-  }
-
-  export type CarrierTruckNullableScalarRelationFilter = {
-    is?: CarrierTruckWhereInput | null
-    isNot?: CarrierTruckWhereInput | null
   }
 
   export type RouteTemplateCountOrderByAggregateInput = {
@@ -99888,6 +100067,12 @@ export namespace Prisma {
     connect?: TruckWhereUniqueInput
   }
 
+  export type CarrierTruckCreateNestedOneWithoutGpsLocationsInput = {
+    create?: XOR<CarrierTruckCreateWithoutGpsLocationsInput, CarrierTruckUncheckedCreateWithoutGpsLocationsInput>
+    connectOrCreate?: CarrierTruckCreateOrConnectWithoutGpsLocationsInput
+    connect?: CarrierTruckWhereUniqueInput
+  }
+
   export type TenantUpdateOneRequiredWithoutGpsLocationsNestedInput = {
     create?: XOR<TenantCreateWithoutGpsLocationsInput, TenantUncheckedCreateWithoutGpsLocationsInput>
     connectOrCreate?: TenantCreateOrConnectWithoutGpsLocationsInput
@@ -99896,12 +100081,24 @@ export namespace Prisma {
     update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutGpsLocationsInput, TenantUpdateWithoutGpsLocationsInput>, TenantUncheckedUpdateWithoutGpsLocationsInput>
   }
 
-  export type TruckUpdateOneRequiredWithoutGpsLocationsNestedInput = {
+  export type TruckUpdateOneWithoutGpsLocationsNestedInput = {
     create?: XOR<TruckCreateWithoutGpsLocationsInput, TruckUncheckedCreateWithoutGpsLocationsInput>
     connectOrCreate?: TruckCreateOrConnectWithoutGpsLocationsInput
     upsert?: TruckUpsertWithoutGpsLocationsInput
+    disconnect?: TruckWhereInput | boolean
+    delete?: TruckWhereInput | boolean
     connect?: TruckWhereUniqueInput
     update?: XOR<XOR<TruckUpdateToOneWithWhereWithoutGpsLocationsInput, TruckUpdateWithoutGpsLocationsInput>, TruckUncheckedUpdateWithoutGpsLocationsInput>
+  }
+
+  export type CarrierTruckUpdateOneWithoutGpsLocationsNestedInput = {
+    create?: XOR<CarrierTruckCreateWithoutGpsLocationsInput, CarrierTruckUncheckedCreateWithoutGpsLocationsInput>
+    connectOrCreate?: CarrierTruckCreateOrConnectWithoutGpsLocationsInput
+    upsert?: CarrierTruckUpsertWithoutGpsLocationsInput
+    disconnect?: CarrierTruckWhereInput | boolean
+    delete?: CarrierTruckWhereInput | boolean
+    connect?: CarrierTruckWhereUniqueInput
+    update?: XOR<XOR<CarrierTruckUpdateToOneWithWhereWithoutGpsLocationsInput, CarrierTruckUpdateWithoutGpsLocationsInput>, CarrierTruckUncheckedUpdateWithoutGpsLocationsInput>
   }
 
   export type TenantCreateNestedOneWithoutSafetyEventsInput = {
@@ -102225,6 +102422,13 @@ export namespace Prisma {
     connect?: RouteTemplateWhereUniqueInput | RouteTemplateWhereUniqueInput[]
   }
 
+  export type GPSLocationCreateNestedManyWithoutCarrierTruckInput = {
+    create?: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput> | GPSLocationCreateWithoutCarrierTruckInput[] | GPSLocationUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: GPSLocationCreateOrConnectWithoutCarrierTruckInput | GPSLocationCreateOrConnectWithoutCarrierTruckInput[]
+    createMany?: GPSLocationCreateManyCarrierTruckInputEnvelope
+    connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+  }
+
   export type CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput = {
     create?: XOR<CarrierDispatchCreateWithoutTruckInput, CarrierDispatchUncheckedCreateWithoutTruckInput> | CarrierDispatchCreateWithoutTruckInput[] | CarrierDispatchUncheckedCreateWithoutTruckInput[]
     connectOrCreate?: CarrierDispatchCreateOrConnectWithoutTruckInput | CarrierDispatchCreateOrConnectWithoutTruckInput[]
@@ -102244,6 +102448,13 @@ export namespace Prisma {
     connectOrCreate?: RouteTemplateCreateOrConnectWithoutDefaultTruckInput | RouteTemplateCreateOrConnectWithoutDefaultTruckInput[]
     createMany?: RouteTemplateCreateManyDefaultTruckInputEnvelope
     connect?: RouteTemplateWhereUniqueInput | RouteTemplateWhereUniqueInput[]
+  }
+
+  export type GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput = {
+    create?: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput> | GPSLocationCreateWithoutCarrierTruckInput[] | GPSLocationUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: GPSLocationCreateOrConnectWithoutCarrierTruckInput | GPSLocationCreateOrConnectWithoutCarrierTruckInput[]
+    createMany?: GPSLocationCreateManyCarrierTruckInputEnvelope
+    connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput = {
@@ -102296,6 +102507,20 @@ export namespace Prisma {
     deleteMany?: RouteTemplateScalarWhereInput | RouteTemplateScalarWhereInput[]
   }
 
+  export type GPSLocationUpdateManyWithoutCarrierTruckNestedInput = {
+    create?: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput> | GPSLocationCreateWithoutCarrierTruckInput[] | GPSLocationUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: GPSLocationCreateOrConnectWithoutCarrierTruckInput | GPSLocationCreateOrConnectWithoutCarrierTruckInput[]
+    upsert?: GPSLocationUpsertWithWhereUniqueWithoutCarrierTruckInput | GPSLocationUpsertWithWhereUniqueWithoutCarrierTruckInput[]
+    createMany?: GPSLocationCreateManyCarrierTruckInputEnvelope
+    set?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    disconnect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    delete?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    update?: GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput | GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput[]
+    updateMany?: GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput | GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput[]
+    deleteMany?: GPSLocationScalarWhereInput | GPSLocationScalarWhereInput[]
+  }
+
   export type CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput = {
     create?: XOR<CarrierDispatchCreateWithoutTruckInput, CarrierDispatchUncheckedCreateWithoutTruckInput> | CarrierDispatchCreateWithoutTruckInput[] | CarrierDispatchUncheckedCreateWithoutTruckInput[]
     connectOrCreate?: CarrierDispatchCreateOrConnectWithoutTruckInput | CarrierDispatchCreateOrConnectWithoutTruckInput[]
@@ -102336,6 +102561,20 @@ export namespace Prisma {
     update?: RouteTemplateUpdateWithWhereUniqueWithoutDefaultTruckInput | RouteTemplateUpdateWithWhereUniqueWithoutDefaultTruckInput[]
     updateMany?: RouteTemplateUpdateManyWithWhereWithoutDefaultTruckInput | RouteTemplateUpdateManyWithWhereWithoutDefaultTruckInput[]
     deleteMany?: RouteTemplateScalarWhereInput | RouteTemplateScalarWhereInput[]
+  }
+
+  export type GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput = {
+    create?: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput> | GPSLocationCreateWithoutCarrierTruckInput[] | GPSLocationUncheckedCreateWithoutCarrierTruckInput[]
+    connectOrCreate?: GPSLocationCreateOrConnectWithoutCarrierTruckInput | GPSLocationCreateOrConnectWithoutCarrierTruckInput[]
+    upsert?: GPSLocationUpsertWithWhereUniqueWithoutCarrierTruckInput | GPSLocationUpsertWithWhereUniqueWithoutCarrierTruckInput[]
+    createMany?: GPSLocationCreateManyCarrierTruckInputEnvelope
+    set?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    disconnect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    delete?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    connect?: GPSLocationWhereUniqueInput | GPSLocationWhereUniqueInput[]
+    update?: GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput | GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput[]
+    updateMany?: GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput | GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput[]
+    deleteMany?: GPSLocationScalarWhereInput | GPSLocationScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutRouteTemplatesInput = {
@@ -104846,12 +105085,14 @@ export namespace Prisma {
     accuracy?: Decimal | DecimalJsLike | number | string | null
     timestamp: Date | string
     createdAt?: Date | string
-    truck: TruckCreateNestedOneWithoutGpsLocationsInput
+    truck?: TruckCreateNestedOneWithoutGpsLocationsInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutGpsLocationsInput
   }
 
   export type GPSLocationUncheckedCreateWithoutTenantInput = {
     id?: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -106000,6 +106241,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateWithoutTenantInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -106022,10 +106265,13 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutTenantInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -106048,6 +106294,7 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutTenantInput = {
@@ -106744,7 +106991,8 @@ export namespace Prisma {
     NOT?: GPSLocationScalarWhereInput | GPSLocationScalarWhereInput[]
     id?: UuidFilter<"GPSLocation"> | string
     tenantId?: UuidFilter<"GPSLocation"> | string
-    truckId?: UuidFilter<"GPSLocation"> | string
+    truckId?: UuidNullableFilter<"GPSLocation"> | string | null
+    carrierTruckId?: UuidNullableFilter<"GPSLocation"> | string | null
     latitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFilter<"GPSLocation"> | Decimal | DecimalJsLike | number | string
     speed?: IntNullableFilter<"GPSLocation"> | number | null
@@ -107685,6 +107933,8 @@ export namespace Prisma {
     NOT?: CarrierTruckScalarWhereInput | CarrierTruckScalarWhereInput[]
     id?: UuidFilter<"CarrierTruck"> | string
     orgId?: UuidFilter<"CarrierTruck"> | string
+    vehicleId?: StringFilter<"CarrierTruck"> | string
+    displayName?: StringNullableFilter<"CarrierTruck"> | string | null
     unitNumber?: StringFilter<"CarrierTruck"> | string
     year?: IntNullableFilter<"CarrierTruck"> | number | null
     make?: StringNullableFilter<"CarrierTruck"> | string | null
@@ -110807,11 +111057,13 @@ export namespace Prisma {
     timestamp: Date | string
     createdAt?: Date | string
     tenant: TenantCreateNestedOneWithoutGpsLocationsInput
+    carrierTruck?: CarrierTruckCreateNestedOneWithoutGpsLocationsInput
   }
 
   export type GPSLocationUncheckedCreateWithoutTruckInput = {
     id?: string
     tenantId: string
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -115519,6 +115771,69 @@ export namespace Prisma {
     create: XOR<TruckCreateWithoutGpsLocationsInput, TruckUncheckedCreateWithoutGpsLocationsInput>
   }
 
+  export type CarrierTruckCreateWithoutGpsLocationsInput = {
+    id?: string
+    vehicleId: string
+    displayName?: string | null
+    unitNumber: string
+    year?: number | null
+    make?: string | null
+    model?: string | null
+    vin?: string | null
+    truckType?: string
+    payloadCapacityLbs?: number | null
+    grossWeightLbs?: number | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    licenseExpiry?: Date | string | null
+    registrationExpiry?: Date | string | null
+    insuranceExpiry?: Date | string | null
+    currentOdometerMiles?: number | null
+    lastOdometerDate?: Date | string | null
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
+    primaryDispatches?: CarrierDispatchCreateNestedManyWithoutTruckInput
+    trailerDispatches?: CarrierDispatchCreateNestedManyWithoutTrailerInput
+    defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+  }
+
+  export type CarrierTruckUncheckedCreateWithoutGpsLocationsInput = {
+    id?: string
+    orgId: string
+    vehicleId: string
+    displayName?: string | null
+    unitNumber: string
+    year?: number | null
+    make?: string | null
+    model?: string | null
+    vin?: string | null
+    truckType?: string
+    payloadCapacityLbs?: number | null
+    grossWeightLbs?: number | null
+    licensePlate?: string | null
+    licenseState?: string | null
+    licenseExpiry?: Date | string | null
+    registrationExpiry?: Date | string | null
+    insuranceExpiry?: Date | string | null
+    currentOdometerMiles?: number | null
+    lastOdometerDate?: Date | string | null
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    primaryDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput
+    trailerDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTrailerInput
+    defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+  }
+
+  export type CarrierTruckCreateOrConnectWithoutGpsLocationsInput = {
+    where: CarrierTruckWhereUniqueInput
+    create: XOR<CarrierTruckCreateWithoutGpsLocationsInput, CarrierTruckUncheckedCreateWithoutGpsLocationsInput>
+  }
+
   export type TenantUpsertWithoutGpsLocationsInput = {
     update: XOR<TenantUpdateWithoutGpsLocationsInput, TenantUncheckedUpdateWithoutGpsLocationsInput>
     create: XOR<TenantCreateWithoutGpsLocationsInput, TenantUncheckedCreateWithoutGpsLocationsInput>
@@ -115693,6 +116008,75 @@ export namespace Prisma {
     fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTruckNestedInput
     tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTruckNestedInput
     loads?: LoadUncheckedUpdateManyWithoutTruckNestedInput
+  }
+
+  export type CarrierTruckUpsertWithoutGpsLocationsInput = {
+    update: XOR<CarrierTruckUpdateWithoutGpsLocationsInput, CarrierTruckUncheckedUpdateWithoutGpsLocationsInput>
+    create: XOR<CarrierTruckCreateWithoutGpsLocationsInput, CarrierTruckUncheckedCreateWithoutGpsLocationsInput>
+    where?: CarrierTruckWhereInput
+  }
+
+  export type CarrierTruckUpdateToOneWithWhereWithoutGpsLocationsInput = {
+    where?: CarrierTruckWhereInput
+    data: XOR<CarrierTruckUpdateWithoutGpsLocationsInput, CarrierTruckUncheckedUpdateWithoutGpsLocationsInput>
+  }
+
+  export type CarrierTruckUpdateWithoutGpsLocationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    unitNumber?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    vin?: NullableStringFieldUpdateOperationsInput | string | null
+    truckType?: StringFieldUpdateOperationsInput | string
+    payloadCapacityLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    grossWeightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    registrationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    insuranceExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
+    lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
+    primaryDispatches?: CarrierDispatchUpdateManyWithoutTruckNestedInput
+    trailerDispatches?: CarrierDispatchUpdateManyWithoutTrailerNestedInput
+    defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+  }
+
+  export type CarrierTruckUncheckedUpdateWithoutGpsLocationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    unitNumber?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    make?: NullableStringFieldUpdateOperationsInput | string | null
+    model?: NullableStringFieldUpdateOperationsInput | string | null
+    vin?: NullableStringFieldUpdateOperationsInput | string | null
+    truckType?: StringFieldUpdateOperationsInput | string
+    payloadCapacityLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    grossWeightLbs?: NullableIntFieldUpdateOperationsInput | number | null
+    licensePlate?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseState?: NullableStringFieldUpdateOperationsInput | string | null
+    licenseExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    registrationExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    insuranceExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
+    lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    primaryDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput
+    trailerDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTrailerNestedInput
+    defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
   }
 
   export type TenantCreateWithoutSafetyEventsInput = {
@@ -129373,6 +129757,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type GPSLocationCreateWithoutCarrierTruckInput = {
+    id?: string
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
+    speed?: number | null
+    heading?: number | null
+    altitude?: number | null
+    accuracy?: Decimal | DecimalJsLike | number | string | null
+    timestamp: Date | string
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutGpsLocationsInput
+    truck?: TruckCreateNestedOneWithoutGpsLocationsInput
+  }
+
+  export type GPSLocationUncheckedCreateWithoutCarrierTruckInput = {
+    id?: string
+    tenantId: string
+    truckId?: string | null
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
+    speed?: number | null
+    heading?: number | null
+    altitude?: number | null
+    accuracy?: Decimal | DecimalJsLike | number | string | null
+    timestamp: Date | string
+    createdAt?: Date | string
+  }
+
+  export type GPSLocationCreateOrConnectWithoutCarrierTruckInput = {
+    where: GPSLocationWhereUniqueInput
+    create: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput>
+  }
+
+  export type GPSLocationCreateManyCarrierTruckInputEnvelope = {
+    data: GPSLocationCreateManyCarrierTruckInput | GPSLocationCreateManyCarrierTruckInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierTrucksInput = {
     update: XOR<TenantUpdateWithoutCarrierTrucksInput, TenantUncheckedUpdateWithoutCarrierTrucksInput>
     create: XOR<TenantCreateWithoutCarrierTrucksInput, TenantUncheckedCreateWithoutCarrierTrucksInput>
@@ -129532,6 +129954,22 @@ export namespace Prisma {
   export type RouteTemplateUpdateManyWithWhereWithoutDefaultTruckInput = {
     where: RouteTemplateScalarWhereInput
     data: XOR<RouteTemplateUpdateManyMutationInput, RouteTemplateUncheckedUpdateManyWithoutDefaultTruckInput>
+  }
+
+  export type GPSLocationUpsertWithWhereUniqueWithoutCarrierTruckInput = {
+    where: GPSLocationWhereUniqueInput
+    update: XOR<GPSLocationUpdateWithoutCarrierTruckInput, GPSLocationUncheckedUpdateWithoutCarrierTruckInput>
+    create: XOR<GPSLocationCreateWithoutCarrierTruckInput, GPSLocationUncheckedCreateWithoutCarrierTruckInput>
+  }
+
+  export type GPSLocationUpdateWithWhereUniqueWithoutCarrierTruckInput = {
+    where: GPSLocationWhereUniqueInput
+    data: XOR<GPSLocationUpdateWithoutCarrierTruckInput, GPSLocationUncheckedUpdateWithoutCarrierTruckInput>
+  }
+
+  export type GPSLocationUpdateManyWithWhereWithoutCarrierTruckInput = {
+    where: GPSLocationScalarWhereInput
+    data: XOR<GPSLocationUpdateManyMutationInput, GPSLocationUncheckedUpdateManyWithoutCarrierTruckInput>
   }
 
   export type TenantCreateWithoutRouteTemplatesInput = {
@@ -129830,6 +130268,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateWithoutDefaultRouteTemplatesInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -129852,11 +130292,14 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
     primaryDispatches?: CarrierDispatchCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchCreateNestedManyWithoutTrailerInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutDefaultRouteTemplatesInput = {
     id?: string
     orgId: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -129878,6 +130321,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     primaryDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput
     trailerDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTrailerInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutDefaultRouteTemplatesInput = {
@@ -130322,6 +130766,8 @@ export namespace Prisma {
 
   export type CarrierTruckUpdateWithoutDefaultRouteTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130344,11 +130790,14 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
     primaryDispatches?: CarrierDispatchUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUpdateManyWithoutTrailerNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutDefaultRouteTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -130370,6 +130819,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     primaryDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTrailerNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type RouteTemplateStopUpsertWithWhereUniqueWithoutRouteTemplateInput = {
@@ -130924,6 +131374,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateWithoutPrimaryDispatchesInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -130946,11 +131398,14 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
     trailerDispatches?: CarrierDispatchCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutPrimaryDispatchesInput = {
     id?: string
     orgId: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -130972,6 +131427,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     trailerDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTrailerInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutPrimaryDispatchesInput = {
@@ -130981,6 +131437,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateWithoutTrailerDispatchesInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -131003,11 +131461,14 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierTrucksInput
     primaryDispatches?: CarrierDispatchCreateNestedManyWithoutTruckInput
     defaultRouteTemplates?: RouteTemplateCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckUncheckedCreateWithoutTrailerDispatchesInput = {
     id?: string
     orgId: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -131029,6 +131490,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     primaryDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTruckInput
     defaultRouteTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutDefaultTruckInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutCarrierTruckInput
   }
 
   export type CarrierTruckCreateOrConnectWithoutTrailerDispatchesInput = {
@@ -131718,6 +132180,8 @@ export namespace Prisma {
 
   export type CarrierTruckUpdateWithoutPrimaryDispatchesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131740,11 +132204,14 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
     trailerDispatches?: CarrierDispatchUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutPrimaryDispatchesInput = {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131766,6 +132233,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     trailerDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUpsertWithoutTrailerDispatchesInput = {
@@ -131781,6 +132249,8 @@ export namespace Prisma {
 
   export type CarrierTruckUpdateWithoutTrailerDispatchesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131803,11 +132273,14 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierTrucksNestedInput
     primaryDispatches?: CarrierDispatchUpdateManyWithoutTruckNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutTrailerDispatchesInput = {
     id?: StringFieldUpdateOperationsInput | string
     orgId?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -131829,6 +132302,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     primaryDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type UserUpsertWithoutDispatchedRunsInput = {
@@ -136970,7 +137444,8 @@ export namespace Prisma {
 
   export type GPSLocationCreateManyTenantInput = {
     id?: string
-    truckId: string
+    truckId?: string | null
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -137391,6 +137866,8 @@ export namespace Prisma {
 
   export type CarrierTruckCreateManyTenantInput = {
     id?: string
+    vehicleId: string
+    displayName?: string | null
     unitNumber: string
     year?: number | null
     make?: string | null
@@ -138081,12 +138558,14 @@ export namespace Prisma {
     accuracy?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    truck?: TruckUpdateOneRequiredWithoutGpsLocationsNestedInput
+    truck?: TruckUpdateOneWithoutGpsLocationsNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutGpsLocationsNestedInput
   }
 
   export type GPSLocationUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -138099,7 +138578,8 @@ export namespace Prisma {
 
   export type GPSLocationUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
-    truckId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -139396,6 +139876,8 @@ export namespace Prisma {
 
   export type CarrierTruckUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -139418,10 +139900,13 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -139444,10 +139929,13 @@ export namespace Prisma {
     primaryDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTruckNestedInput
     trailerDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTrailerNestedInput
     defaultRouteTemplates?: RouteTemplateUncheckedUpdateManyWithoutDefaultTruckNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutCarrierTruckNestedInput
   }
 
   export type CarrierTruckUncheckedUpdateManyWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
+    vehicleId?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
     unitNumber?: StringFieldUpdateOperationsInput | string
     year?: NullableIntFieldUpdateOperationsInput | number | null
     make?: NullableStringFieldUpdateOperationsInput | string | null
@@ -142321,6 +142809,7 @@ export namespace Prisma {
   export type GPSLocationCreateManyTruckInput = {
     id?: string
     tenantId: string
+    carrierTruckId?: string | null
     latitude: Decimal | DecimalJsLike | number | string
     longitude: Decimal | DecimalJsLike | number | string
     speed?: number | null
@@ -142642,11 +143131,13 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutGpsLocationsNestedInput
+    carrierTruck?: CarrierTruckUpdateOneWithoutGpsLocationsNestedInput
   }
 
   export type GPSLocationUncheckedUpdateWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -142660,6 +143151,7 @@ export namespace Prisma {
   export type GPSLocationUncheckedUpdateManyWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     tenantId?: StringFieldUpdateOperationsInput | string
+    carrierTruckId?: NullableStringFieldUpdateOperationsInput | string | null
     latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     speed?: NullableIntFieldUpdateOperationsInput | number | null
@@ -146228,6 +146720,20 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type GPSLocationCreateManyCarrierTruckInput = {
+    id?: string
+    tenantId: string
+    truckId?: string | null
+    latitude: Decimal | DecimalJsLike | number | string
+    longitude: Decimal | DecimalJsLike | number | string
+    speed?: number | null
+    heading?: number | null
+    altitude?: number | null
+    accuracy?: Decimal | DecimalJsLike | number | string | null
+    timestamp: Date | string
+    createdAt?: Date | string
+  }
+
   export type CarrierDispatchUpdateWithoutTruckInput = {
     id?: StringFieldUpdateOperationsInput | string
     scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -146450,6 +146956,48 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GPSLocationUpdateWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    speed?: NullableIntFieldUpdateOperationsInput | number | null
+    heading?: NullableIntFieldUpdateOperationsInput | number | null
+    altitude?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutGpsLocationsNestedInput
+    truck?: TruckUpdateOneWithoutGpsLocationsNestedInput
+  }
+
+  export type GPSLocationUncheckedUpdateWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    speed?: NullableIntFieldUpdateOperationsInput | number | null
+    heading?: NullableIntFieldUpdateOperationsInput | number | null
+    altitude?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GPSLocationUncheckedUpdateManyWithoutCarrierTruckInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    truckId?: NullableStringFieldUpdateOperationsInput | string | null
+    latitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    longitude?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    speed?: NullableIntFieldUpdateOperationsInput | number | null
+    heading?: NullableIntFieldUpdateOperationsInput | number | null
+    altitude?: NullableIntFieldUpdateOperationsInput | number | null
+    accuracy?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RouteTemplateStopCreateManyRouteTemplateInput = {

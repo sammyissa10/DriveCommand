@@ -1408,6 +1408,8 @@ model CarrierDriver {
 model CarrierTruck {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orgId                  String    @map("org_id") @db.Uuid
+  vehicleId              String    @unique @map("vehicle_id") @db.VarChar(50)
+  displayName            String?   @map("display_name") @db.VarChar(200)
   unitNumber             String    @map("unit_number")
   year                   Int?
   make                   String?
