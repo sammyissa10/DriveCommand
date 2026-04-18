@@ -2,10 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { X, List } from 'lucide-react';
 import { VehicleLocation } from '@/lib/maps/map-utils';
 import { logger } from '@/lib/logger';
-import { cn } from '@/lib/utils';
 import LiveMapTabs from './live-map-tabs';
 import VehicleSidebar from './vehicle-sidebar';
 import VehicleFilterBar from './vehicle-filter-bar';
@@ -44,7 +43,7 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
   const [flyToTarget, setFlyToTarget] = useState<{ lat: number; lng: number } | null>(null);
   const [historyPoints, setHistoryPoints] = useState<HistoryPoint[]>([]);
   const [historySegments, setHistorySegments] = useState<RouteSegment[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(() => new Date());
   const [secondsAgo, setSecondsAgo] = useState(0);
 
@@ -143,26 +142,63 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
 
   return (
     <div className="h-full flex relative">
-      {/* Mobile sidebar toggle */}
+      {/* Mobile vehicle list toggle — positioned above bottom nav */}
       <button
-        className="md:hidden fixed bottom-4 left-4 z-50 bg-background border rounded-full p-2 shadow-lg"
+        className="lg:hidden fixed bottom-24 left-4 z-40 bg-background border border-border rounded-full p-3 shadow-lg hover:bg-muted transition-colors"
         onClick={() => setSidebarOpen((p) => !p)}
-        aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        aria-label={sidebarOpen ? 'Close vehicle list' : 'Open vehicle list'}
       >
-        {sidebarOpen ? (
-          <PanelLeftClose className="h-5 w-5" />
-        ) : (
-          <PanelLeftOpen className="h-5 w-5" />
-        )}
+        {sidebarOpen ? <X className="h-5 w-5" /> : <List className="h-5 w-5" />}
       </button>
 
-      {/* Left sidebar — 320px fixed */}
-      <div
-        className={cn(
-          'w-80 border-r flex flex-col shrink-0 bg-background',
-          !sidebarOpen && 'hidden md:flex'
-        )}
-      >
+      {/* Mobile bottom sheet for vehicle list */}
+      {sidebarOpen && (
+        <div className="lg:hidden fixed inset-x-0 bottom-20 z-30 flex flex-col" style={{ height: '60vh' }}>
+          {/* Backdrop — tapping closes */}
+          <div
+            className="absolute inset-0 -top-[40vh] bg-black/40"
+            onClick={() => setSidebarOpen(false)}
+          />
+          {/* Sheet content */}
+          <div className="relative bg-background border-t border-border rounded-t-2xl flex flex-col h-full shadow-2xl">
+            {/* Drag handle */}
+            <div className="flex justify-center py-2">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+            </div>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 pb-2">
+              <span className="text-sm font-semibold">Vehicles</span>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-1 rounded-md hover:bg-muted"
+                aria-label="Close vehicle list"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {/* Tab bar */}
+            <LiveMapTabs activeTab={activeTab} onTabChange={setActiveTab} />
+            {/* Tab content — scrollable */}
+            <div className="flex-1 overflow-y-auto">
+              {activeTab === 'live' && (
+                <>
+                  <VehicleFilterBar vehicles={vehicles} onFilteredChange={setFilteredVehicles} />
+                  <VehicleSidebar vehicles={filteredVehicles} onVehicleClick={handleVehicleClick} selectedVehicleId={selectedVehicleId} />
+                </>
+              )}
+              {activeTab === 'history' && (
+                <HistoryTab orgTrucks={orgTrucks} onHistoryPoints={setHistoryPoints} onHistorySegments={setHistorySegments} initialTruckId={historyPrefillTruckId} initialDate={historyPrefillDate} />
+              )}
+              {activeTab === 'trips' && (
+                <TripsTab onViewTrip={handleViewTrip} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Left sidebar — desktop only (always visible on lg+) */}
+      <div className="w-80 border-r flex-col shrink-0 bg-background hidden lg:flex">
         {/* Tab bar */}
         <LiveMapTabs activeTab={activeTab} onTabChange={setActiveTab} />
 

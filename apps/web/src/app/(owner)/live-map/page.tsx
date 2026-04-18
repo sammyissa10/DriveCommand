@@ -12,7 +12,7 @@ export default async function LiveMapPage() {
   const vehicles = await getLatestVehicleLocations().catch(() => []);
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
+    <div className="h-[calc(100vh-3.5rem-5rem)] lg:h-[calc(100vh-8rem)]">
       <LiveMapWrapper initialVehicles={vehicles} />
     </div>
   );
