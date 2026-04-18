@@ -5,7 +5,6 @@ import { DriverDispatchCard } from './driver-dispatch-card';
 import { DriverQuickActions } from './driver-quick-actions';
 import { DriverHosWidget } from './driver-hos-widget';
 import { DriverMessagesPreview } from './driver-messages-preview';
-import { DriverGpsPing } from './driver-gps-ping';
 import { startTrip } from '@/app/(driver)/actions/driver-routes';
 
 // Types derived from getMyActiveDispatch and getDriverHOS return shapes
@@ -75,13 +74,8 @@ export function DriverDashboard({ firstName, dispatch, hos, recentMessages }: Dr
 
   return (
     <div className="max-w-lg mx-auto space-y-5 px-0">
-      {/* Header row: greeting + GPS indicator */}
-      <div className="flex items-start justify-between gap-3">
-        <h1 className="text-xl font-bold text-foreground leading-snug min-h-[1.75rem]">{greeting}</h1>
-        <div className="flex items-center gap-2 shrink-0 pt-0.5">
-          <DriverGpsPing />
-        </div>
-      </div>
+      {/* Header row: greeting */}
+      <h1 className="text-xl font-bold text-foreground leading-snug min-h-[1.75rem]">{greeting}</h1>
 
       {/* Active dispatch card */}
       <DriverDispatchCard dispatch={dispatch} startAction={startTrip} />

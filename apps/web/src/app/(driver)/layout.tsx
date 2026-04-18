@@ -6,6 +6,7 @@ import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { DriverNav } from "@/components/driver/driver-nav";
 import { DriverBottomNav } from "@/components/driver/driver-bottom-nav";
 import { DriverNotificationBell } from "@/components/driver/driver-notification-bell";
+import { DriverGpsPing } from "@/components/driver/driver-gps-ping";
 
 // Prevent static pre-rendering at build time — driver pages require auth context
 export const dynamic = 'force-dynamic';
@@ -16,9 +17,8 @@ export const dynamic = 'force-dynamic';
  * Accessible by DRIVER role only.
  * Unauthorized users are redirected to /unauthorized.
  *
- * GPS pinging is handled by the DriverGpsPing component on the dashboard,
- * not at the layout level. This keeps layout clean and avoids layout-level
- * truckId resolution (which was incompatible with CarrierTruck anyway).
+ * GPS pinging is handled by the DriverGpsPing component at the layout level,
+ * so GPS pings fire on ALL driver portal pages (not just the dashboard).
  */
 export default async function DriverLayout({
   children,
@@ -45,6 +45,8 @@ export default async function DriverLayout({
             <DriveCommandWordmark size="md" className="text-white" />
           </div>
           <div className="flex items-center gap-2">
+            {/* GPS ping + status dot — fires on all driver pages */}
+            <DriverGpsPing />
             {/* Notification bell — accessible from any driver page */}
             <DriverNotificationBell />
             <UserMenu compactOnMobile />
