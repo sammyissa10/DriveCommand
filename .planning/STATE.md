@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-18 - Completed quick task 249: Remove old dashboard and fix owner navigation to carrier dashboard
+Last activity: 2026-04-18 - Completed quick task 250: Add mobile bottom nav to owner portal
 Last session: 2026-04-18T05:01:36Z
 Stopped at: Completed quick-248-PLAN.md — 3 tasks, 16 files modified
 
@@ -1037,6 +1037,7 @@ None blocking immediate progress.
 | 244 | Fix live map vehicle detail panel and sidebar active route display | 2026-04-18 | 432735b | [244-fix-live-map-vehicle-detail-panel-and-si](./quick/244-fix-live-map-vehicle-detail-panel-and-si/) |
 | 245 | Fix live map vehicles endpoint wrong table name carrier_facilities → facilities | 2026-04-18 | fb08ecc | [245-fix-live-map-vehicles-endpoint-wrong-tab](./quick/245-fix-live-map-vehicles-endpoint-wrong-tab/) |
 | 249 | Remove old dashboard and fix owner navigation to carrier dashboard | 2026-04-18 | c55762c | [249-remove-old-dashboard-and-fix-owner-navig](./quick/249-remove-old-dashboard-and-fix-owner-navig/) |
+| 250 | Add mobile bottom nav to owner portal | 2026-04-18 | e42c9e0 | [250-add-mobile-bottom-nav-to-owner-portal](./quick/250-add-mobile-bottom-nav-to-owner-portal/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
