@@ -56,12 +56,8 @@ export function DriverHosWidget({ hos }: DriverHosWidgetProps) {
   const [optimisticStatus, setOptimisticStatus] = useOptimistic(defaultStatus);
   const [state, formAction] = useActionState<ActionState | null, FormData>(updateDutyStatus, null);
 
-  if (!hos) {
-    return null;
-  }
-
   const colors = STATUS_COLORS[optimisticStatus] ?? STATUS_COLORS.OFF_DUTY;
-  const onDutyDisplay = formatHoursMinutes(hos.onDutyHoursUsed);
+  const onDutyDisplay = formatHoursMinutes(hos?.onDutyHoursUsed ?? 0);
 
   return (
     <div className="bg-card rounded-xl shadow-sm border border-border p-4">
