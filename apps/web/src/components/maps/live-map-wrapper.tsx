@@ -34,7 +34,7 @@ interface LiveMapWrapperProps {
   initialVehicles: VehicleLocation[];
 }
 
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 15_000;
 
 export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps) {
   const [vehicles, setVehicles] = useState<VehicleLocation[]>(initialVehicles);
@@ -206,9 +206,16 @@ export default function LiveMapWrapper({ initialVehicles }: LiveMapWrapperProps)
           onVehicleClick={(truckId) => setSelectedVehicleId(truckId)}
         />
         {activeTab === 'live' && (
-          <p className="absolute bottom-1 right-2 text-xs text-muted-foreground bg-background/80 px-1.5 rounded z-10">
-            Last updated {secondsAgo}s ago
-          </p>
+          <div className="absolute bottom-1 right-2 flex items-center gap-1.5 bg-background/80 px-1.5 rounded z-10">
+            <p className="text-xs text-muted-foreground">Last updated {secondsAgo}s ago</p>
+            <button
+              onClick={fetchVehicles}
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+              aria-label="Refresh vehicles"
+            >
+              Refresh
+            </button>
+          </div>
         )}
       </div>
     </div>

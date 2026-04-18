@@ -16,8 +16,8 @@ export function getVehicleStatus(
     return 'offline';
   }
 
-  // Check if idle (speed is null or < 5 mph)
-  if (speed === null || speed < 5) {
+  // Check if idle (speed is null or < 3 mph — aligns with 2mph haversine threshold + GPS jitter buffer)
+  if (speed === null || speed < 3) {
     return 'idle';
   }
 

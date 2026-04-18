@@ -35,11 +35,12 @@ export async function POST(req: NextRequest) {
 
     // 4. Parse and validate body
     const body = await req.json();
-    const { lat, lng, accuracy, dispatchId } = body as {
+    const { lat, lng, accuracy, dispatchId, calculatedSpeed } = body as {
       lat?: number;
       lng?: number;
       accuracy?: number | null;
       dispatchId?: string | null;
+      calculatedSpeed?: number | null;
     };
 
     if (lat === undefined || lng === undefined || typeof lat !== 'number' || typeof lng !== 'number') {
@@ -95,6 +96,7 @@ export async function POST(req: NextRequest) {
           latitude: lat,
           longitude: lng,
           accuracy: accuracy ?? null,
+          speed: calculatedSpeed != null ? Math.round(calculatedSpeed) : null,
           timestamp: new Date(),
         },
       });
@@ -105,6 +107,7 @@ export async function POST(req: NextRequest) {
       lat,
       lng,
       accuracy,
+      calculatedSpeed,
       dispatchId,
       carrierTruckId,
       orgId: tenantId,
