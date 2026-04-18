@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-17 - Completed quick task 242: Fix driver portal GPS ping to write to GPSLocation for carrier trucks + show carrier trucks on live map
+Last activity: 2026-04-18 - Completed quick task 243: Fix driver dashboard HOS duty status not saving to database
 Last session: 2026-04-17T23:30:00Z
 Stopped at: Completed quick-242-PLAN.md — 3 tasks, 4 files modified
 
@@ -1030,6 +1030,7 @@ None blocking immediate progress.
 | 240 | Add in-app notification to driver when owner starts trip | 2026-04-17 | 117ec81 | [240-add-in-app-notification-to-driver-when-o](./quick/240-add-in-app-notification-to-driver-when-o/) |
 | 241 | Fix 5 driver portal issues — load status sync, auto-navigation on stop completion, wrong dispatch query, timestamps, and Route tab cleanup | 2026-04-17 | decc4d3 | [241-fix-5-driver-portal-issues-load-status-s](./quick/241-fix-5-driver-portal-issues-load-status-s/) |
 | 242 | Fix driver portal GPS ping to write to GPSLocation using carrier_trucks instead of legacy Truck table | 2026-04-17 | 687c71b | [242-fix-driver-portal-gps-ping-to-write-to-g](./quick/242-fix-driver-portal-gps-ping-to-write-to-g/) |
+| 243 | Fix driver dashboard HOS duty status not saving to database | 2026-04-18 | 3a41a08 | [243-fix-driver-dashboard-hos-duty-status-not](./quick/243-fix-driver-dashboard-hos-duty-status-not/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
