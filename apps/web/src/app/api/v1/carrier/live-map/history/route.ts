@@ -47,13 +47,23 @@ export async function GET(req: NextRequest) {
 
     const db = await getTenantPrisma();
 
-    // Verify truck belongs to this tenant
+    // Verify truck belongs to this tenant — try legacy Truck table first, then CarrierTruck
     const truck = await db.truck.findFirst({
       where: { id: truckId, tenantId: orgId },
       select: { id: true },
     });
+
+    let isCarrierTruck = false;
     if (!truck) {
-      return NextResponse.json({ error: 'Truck not found' }, { status: 404 });
+      // Carrier trucks use orgId (not tenantId)
+      const carrierTruck = await db.carrierTruck.findFirst({
+        where: { id: truckId, orgId },
+        select: { id: true },
+      });
+      if (!carrierTruck) {
+        return NextResponse.json({ error: 'Truck not found' }, { status: 404 });
+      }
+      isCarrierTruck = true;
     }
 
     // Fetch GPS points for truck on that UTC day
@@ -62,7 +72,7 @@ export async function GET(req: NextRequest) {
 
     const rawPoints = await db.gPSLocation.findMany({
       where: {
-        truckId,
+        ...(isCarrierTruck ? { carrierTruckId: truckId } : { truckId }),
         timestamp: { gte: startOfDay, lte: endOfDay },
       },
       orderBy: { timestamp: 'asc' },
