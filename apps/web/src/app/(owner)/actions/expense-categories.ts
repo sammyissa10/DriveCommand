@@ -9,7 +9,7 @@ import type { ActionState } from '@drivecommand/types'
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole, requirePermission } from '@/lib/auth/supabase';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { categoryCreateSchema } from '@drivecommand/validation';
@@ -24,7 +24,6 @@ import { logger } from '@/lib/logger';
 export async function createCategory(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const rawData = {
@@ -85,7 +84,6 @@ export async function createCategory(prevState: ActionState | null, formData: Fo
 export async function deleteCategory(categoryId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 

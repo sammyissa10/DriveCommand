@@ -68,7 +68,7 @@ export async function analyzeDocument(formData: FormData): Promise<AnalyzeDocume
   try {
     // 1. Auth check — FIRST before any data access
     await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewAIDocuments');
+  await requirePermission('aiDocuments');
 
     // 2. Extract file
     const file = formData.get('file') as File;

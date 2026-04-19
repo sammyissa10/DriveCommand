@@ -2,7 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types';
 import { Prisma } from '@/generated/prisma';
-import { requireRole, requirePermission, getSession } from '@/lib/auth/supabase';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@drivecommand/validation';
@@ -15,7 +15,6 @@ import { logger } from '@/lib/logger';
  */
 export async function createCustomer(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -81,7 +80,6 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
  */
 export async function updateCustomer(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -139,7 +137,6 @@ export async function updateCustomer(id: string, prevState: ActionState | null, 
  */
 export async function deleteCustomer(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const prisma = await getTenantPrisma();
 
@@ -161,7 +158,6 @@ export async function deleteCustomer(id: string) {
  */
 export async function addInteraction(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     customerId: formData.get('customerId') as string,

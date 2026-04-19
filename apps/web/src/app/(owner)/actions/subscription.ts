@@ -1,6 +1,6 @@
 'use server';
 
-import { getSession, requirePermission } from '@/lib/auth/supabase';
+import { getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { prisma } from '@/lib/db/prisma';
 
@@ -22,7 +22,7 @@ async function requireOwnerOrManager(): Promise<{ tenantId: string }> {
  */
 export async function getMySubscriptionInvoices() {
   const { tenantId } = await requireOwnerOrManager();
-  await requirePermission('canViewBilling');
+  // Subscription page is owner-only — enforced via middleware + sidebar (OWNER_ONLY_PATHS)
 
   return prisma.sysAdminInvoice.findMany({
     where: { tenantId, archivedAt: null },

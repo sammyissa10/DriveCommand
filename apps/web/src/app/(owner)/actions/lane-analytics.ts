@@ -2,7 +2,7 @@
 
 import { Prisma } from '@/generated/prisma';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { requireRole, requirePermission } from '@/lib/auth/supabase';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 
 const Decimal = Prisma.Decimal;
@@ -43,7 +43,6 @@ export async function getLaneAnalytics(
 ): Promise<LaneAnalytics> {
   // OWNER/MANAGER only — drivers cannot see fleet-wide financial data
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewLaneAnalytics');
 
   const prisma = await getTenantPrisma();
 

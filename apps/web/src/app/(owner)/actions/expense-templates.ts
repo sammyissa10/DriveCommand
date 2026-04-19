@@ -7,7 +7,7 @@ import type { ActionState } from '@drivecommand/types'
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole, requirePermission } from '@/lib/auth/supabase';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
@@ -26,7 +26,6 @@ const Decimal = Prisma.Decimal;
 export async function createTemplate(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const name = formData.get('name') as string;
@@ -112,7 +111,6 @@ export async function createTemplate(prevState: ActionState | null, formData: Fo
 export async function deleteTemplate(templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 
@@ -174,7 +172,6 @@ export async function listTemplates() {
 export async function applyTemplate(routeId: string, templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();

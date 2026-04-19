@@ -13,6 +13,7 @@ import {
 import { revalidatePath } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export interface TeamMember {
   id: string;
@@ -20,6 +21,7 @@ export interface TeamMember {
   firstName: string | null;
   lastName: string | null;
   permissions: UserPermissions;
+  updatedAt: string;
 }
 
 /**
@@ -42,6 +44,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
       firstName: true,
       lastName: true,
       permissions: true,
+      updatedAt: true,
     },
     orderBy: [{ firstName: 'asc' }, { email: 'asc' }],
   });
@@ -52,6 +55,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
     firstName: user.firstName,
     lastName: user.lastName,
     permissions: getPermissions({ role: 'MANAGER', permissions: user.permissions }),
+    updatedAt: user.updatedAt.toISOString(),
   }));
 }
 
@@ -76,7 +80,7 @@ export async function updateUserPermissions(
       tenantId,
       role: UserRole.MANAGER,
     },
-    select: { id: true },
+    select: { id: true, email: true },
   });
 
   if (!targetUser) {
@@ -87,6 +91,22 @@ export async function updateUserPermissions(
     where: { id: userId },
     data: { permissions: permissions as unknown as Prisma.JsonObject },
   });
+
+  // Sync permissions to Supabase app_metadata so middleware can read them
+  // Middleware reads from appMeta.permissions (Supabase session), not the DB directly
+  try {
+    const adminClient = createAdminClient();
+    const { data: { users: supaUsers } } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    const supaUser = supaUsers.find((u) => u.email === targetUser.email);
+    if (supaUser) {
+      await adminClient.auth.admin.updateUserById(supaUser.id, {
+        app_metadata: { ...supaUser.app_metadata, permissions },
+      });
+    }
+  } catch (err) {
+    logger.error('[updateUserPermissions] Failed to sync permissions to Supabase app_metadata:', err);
+    // Non-fatal: DB is source of truth; Supabase sync is for middleware perf
+  }
 
   revalidatePath('/settings/team-permissions');
 

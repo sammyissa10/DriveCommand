@@ -2,7 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types'
 
-import { requireRole, requireAuth, requirePermission } from '@/lib/auth/supabase';
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@drivecommand/validation';
@@ -17,7 +17,6 @@ const Decimal = Prisma.Decimal;
  */
 export async function createPayrollRecord(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -86,7 +85,6 @@ export async function createPayrollRecord(prevState: ActionState | null, formDat
  */
 export async function updatePayrollRecord(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -154,7 +152,6 @@ export async function getDriverPayPeriodStats(
   periodEnd: string,
 ): Promise<{ loadsCompleted: number; milesLogged: number } | { error: string }> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   if (!driverId || !periodStart || !periodEnd) {
     return { error: 'Missing required fields.' };
@@ -196,7 +193,6 @@ export async function getDriverPayPeriodStats(
  */
 export async function deletePayrollRecord(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const prisma = await getTenantPrisma();
 

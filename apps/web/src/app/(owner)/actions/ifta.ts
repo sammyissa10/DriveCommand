@@ -1,7 +1,7 @@
 'use server';
 
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { requireRole, requirePermission } from '@/lib/auth/supabase';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import {
   getStateFromCoordinates,
@@ -76,7 +76,6 @@ export async function getIFTAReport(
 ): Promise<IFTAReportData> {
   // OWNER/MANAGER only — drivers do not have access to IFTA tax data
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewIFTA');
 
   const prisma = await getTenantPrisma();
   const { startDate, endDate } = getQuarterDateRange(quarter, year);

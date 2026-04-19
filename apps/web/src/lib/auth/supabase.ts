@@ -186,9 +186,10 @@ export async function requirePermission(key: keyof UserPermissions): Promise<voi
   }
 
   // MANAGER: check the specific permission from the session
+  // Default-all-true: if permission not set or not explicitly false, allow access
   if (session.role === 'MANAGER') {
     const perms = (session.permissions ?? {}) as UserPermissions;
-    if (!perms[key]) {
+    if (perms[key] === false) {
       throw new Error('PERMISSION_DENIED: You do not have access to this feature');
     }
     return;

@@ -2,7 +2,7 @@
 
 import type { ActionState } from '@drivecommand/types'
 
-import { requireRole, requireAuth, requirePermission } from '@/lib/auth/supabase';
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
@@ -18,7 +18,6 @@ const Decimal = Prisma.Decimal;
  */
 export async function createInvoice(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   // Parse items from JSON hidden field
   let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
@@ -133,7 +132,6 @@ export async function createInvoice(prevState: ActionState | null, formData: For
  */
 export async function updateInvoice(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
   try {
@@ -249,7 +247,6 @@ export async function updateInvoice(id: string, prevState: ActionState | null, f
  */
 export async function markInvoicePaid(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   const prisma = await getTenantPrisma();
 
@@ -284,7 +281,6 @@ export async function markInvoicePaid(id: string) {
  */
 export async function deleteInvoice(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   const prisma = await getTenantPrisma();
 
