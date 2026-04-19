@@ -113,9 +113,19 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
   }
 
   const stops = dispatch.stops ?? [];
-  const completedStops = stops.filter((s) => s.status === 'completed').length;
+  const completedStops = stops.filter((s) => s.status === 'completed' || s.status === 'skipped').length;
   const totalStops = stops.length;
-  const nextStop = stops.find((s) => s.status !== 'completed' && s.status !== 'cancelled');
+  const nextStop = stops.find((s) => s.status !== 'completed' && s.status !== 'skipped' && s.status !== 'cancelled');
+  const allStopsDone = totalStops > 0 && completedStops === totalStops;
+  const currentStop = stops.find((s) => s.status === 'arrived');
+  const nextPendingStop = stops.find((s) => s.status === 'pending');
+
+  // Index for "Stop X of Y" display
+  const activeStopIndex = currentStop
+    ? stops.indexOf(currentStop) + 1
+    : nextPendingStop
+    ? stops.indexOf(nextPendingStop) + 1
+    : null;
 
   function handleStartTrip() {
     if (!startAction) return;
@@ -143,9 +153,28 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
     });
   }
 
+  function handleCompleteCurrentStop() {
+    router.push('/my-route');
+  }
+
+  // Determine CTA state
+  type CtaState = 'start' | 'complete_stop' | 'continue' | 'trip_done' | 'completed';
+  let ctaState: CtaState = 'continue';
+  if (dispatch.status === 'planned') {
+    ctaState = 'start';
+  } else if (dispatch.status === 'completed') {
+    ctaState = 'completed';
+  } else if (dispatch.status === 'in_progress') {
+    if (allStopsDone) {
+      ctaState = 'trip_done';
+    } else if (currentStop) {
+      ctaState = 'complete_stop';
+    } else {
+      ctaState = 'continue';
+    }
+  }
+
   const isPlanned = dispatch.status === 'planned';
-  const ctaLabel = isPlanned ? 'Start Trip & Navigate' : 'Begin Navigation';
-  const ctaPending = isPlanned ? 'Starting...' : 'Loading...';
 
   return (
     <div className="bg-card rounded-xl shadow-sm border border-border p-4">
@@ -197,14 +226,68 @@ export function DriverDispatchCard({ dispatch, startAction }: DriverDispatchCard
         </div>
       )}
 
+      {/* Current stop status indicator — only when in_progress */}
+      {dispatch.status === 'in_progress' && (currentStop || nextPendingStop) && activeStopIndex !== null && (
+        <div className="flex items-center justify-between mb-3 px-3 py-2 bg-muted/30 rounded-lg border border-border">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-muted-foreground">
+              Stop {activeStopIndex} of {totalStops}
+            </p>
+            {(currentStop ?? nextPendingStop)?.facility && (
+              <p className="text-sm font-medium text-foreground truncate">
+                {(currentStop ?? nextPendingStop)!.facility!.name}
+              </p>
+            )}
+          </div>
+          {currentStop ? (
+            <span className="ml-2 shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+              Arrived
+            </span>
+          ) : (
+            <span className="ml-2 shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+              Pending
+            </span>
+          )}
+        </div>
+      )}
+
       {/* CTA */}
-      <button
-        onClick={isPlanned ? handleStartTrip : handleBeginNav}
-        disabled={isPending}
-        className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
-      >
-        {isPending ? ctaPending : ctaLabel}
-      </button>
+      {ctaState === 'completed' ? (
+        <div className="flex items-center justify-center w-full h-12 rounded-lg bg-green-100 dark:bg-green-900">
+          <span className="text-sm font-semibold text-green-700 dark:text-green-300">Completed</span>
+        </div>
+      ) : ctaState === 'trip_done' ? (
+        <button
+          disabled
+          className="flex items-center justify-center w-full h-12 rounded-lg bg-muted text-muted-foreground font-semibold text-sm cursor-not-allowed"
+        >
+          Trip Complete
+        </button>
+      ) : ctaState === 'complete_stop' ? (
+        <button
+          onClick={handleCompleteCurrentStop}
+          disabled={isPending}
+          className="flex items-center justify-center w-full h-12 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold text-sm transition-colors active:scale-[0.98] disabled:opacity-50"
+        >
+          {isPending ? 'Loading...' : 'Complete Current Stop'}
+        </button>
+      ) : ctaState === 'start' ? (
+        <button
+          onClick={handleStartTrip}
+          disabled={isPending}
+          className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
+        >
+          {isPending ? 'Starting...' : 'Start Trip & Navigate'}
+        </button>
+      ) : (
+        <button
+          onClick={handleBeginNav}
+          disabled={isPending}
+          className="flex items-center justify-center w-full h-12 rounded-lg bg-primary text-primary-foreground font-semibold text-sm transition-colors hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50"
+        >
+          {isPending ? 'Loading...' : 'Continue to Stops'}
+        </button>
+      )}
     </div>
   );
 }
