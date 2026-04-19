@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-19 - Completed quick task 252: Driver portal quick actions carousel, GPS indicator fix, owner portal mobile header fix, and dashboard KPI replacement
-Last session: 2026-04-18T05:01:36Z
-Stopped at: Completed quick-248-PLAN.md — 3 tasks, 16 files modified
+Last activity: 2026-04-18 - Completed quick task 253: Rebuilt team permissions system with 16 route-based keys, default-all-true, middleware/sidebar enforcement, and grouped toggle UI
+Last session: 2026-04-18T00:00:00Z
+Stopped at: Completed quick-253-PLAN.md — 3 tasks, 18 files modified
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -180,6 +180,7 @@ Progress: [███████████████████████
 - Quick-246 (2026-04-18): Fix GPS tracking — ping on all pages, accurate movement detection, auto-update live map — DriverGpsPing moved to driver layout (all tabs), haversine calculateSpeed(), setInterval 15s backup ping, calculatedSpeed stored in GPSLocation.speed, vehicles endpoint uses stored speed, live map polls 15s + manual Refresh button — 2 tasks, 6 files modified
 - Quick-247 (2026-04-18): Fix live map History tab — history endpoint was querying truckId but carrier trucks use carrierTruckId FK; added fallback CarrierTruck ownership check + conditional FK in GPS query — 1 task, 1 file modified
 - Quick-248 (2026-04-18): Add VIN auto-fill from NHTSA API and auto-generated vehicle ID with editable display name to carrier trucks — vehicleId (VH-YYYY-NNNNN globally unique) + displayName columns, migration backfills existing trucks, VIN Lookup button calls vpic.nhtsa.dot.gov client-side, display_name shown across trucks list, live map sidebar, dispatch detail, driver route tab — 3 tasks, 16 files modified
+- Quick-253 (2026-04-18): Rebuild team permissions with 16 route-based keys, default-all-true, middleware/sidebar enforcement, grouped toggle UI — 3 tasks, 18 files modified
 
 ## Accumulated Context
 
@@ -259,6 +260,13 @@ Progress: [███████████████████████
 - Truck list warning uses AlertTriangle icon at size=15 (not a dot) — more visible on small card rows; amber=due_soon, red=overdue; useMemo builds worst-status map from getAllScheduledServices
 - api-client dist must be rebuilt after exporting new types — ScheduledServiceSummary/ScheduledServiceWithTruck/CreateScheduledServicePayload/CompleteScheduledServicePayload were in owner.ts since 37.2-02 but not re-exported from index.ts
 - BottomSheet only accepts 40%/60%/80%/full snapPoints — plan specified "70%" for MaintenanceServicePicker; used "80%"
+
+**Quick-253 decisions (Rebuild team permissions system):**
+- Default-all-true: MANAGER permissions default to true, owner restricts by toggling off (reversed from old all-false default)
+- Legacy server actions: removed requirePermission calls from old routes (payroll, invoices, crm, ifta, lane-analytics, profit-predictor) since those routes are not in the new carrier ops system
+- Settings pages (expense categories, templates, integrations) always accessible to managers — no permission gate
+- Subscription and Team Permissions: owner-only enforced in both middleware OWNER_ONLY_PATHS and sidebar role check
+- Supabase app_metadata sync: use admin.auth.admin.listUsers() email lookup to find Supabase auth UID — DB User.id is not the same as Supabase auth UID
 
 **Quick-149 decisions (Migrate all mobile screens to useThemeColors):**
 - useThemeColors() called in each sub-component (not passed as prop) — hooks must be called inside React function components
