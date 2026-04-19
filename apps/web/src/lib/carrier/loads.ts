@@ -224,9 +224,23 @@ export async function createLoad(orgId: string, data: LoadCreateInput) {
 
   logger.info('createLoad: created', { orgId, loadId: load.id, referenceNumber });
 
-  // Persist stops when load has a dispatchId (CarrierStop.dispatchId is required)
-  if (data.stops && data.stops.length > 0 && load.dispatchId) {
-    await persistStops(orgId, load.id, load.dispatchId, data.stops);
+  // Persist stops — if a dispatchId exists, create CarrierStop records immediately.
+  // Otherwise store as JSON so they survive until a dispatch is attached.
+  if (data.stops && data.stops.length > 0) {
+    if (load.dispatchId) {
+      await persistStops(orgId, load.id, load.dispatchId, data.stops);
+    } else {
+      // No dispatch yet — store stops as JSON for later persistence when dispatch is assigned
+      await prisma.carrierLoad.update({
+        where: { id: load.id },
+        data: { pendingStopsJson: JSON.stringify(data.stops) },
+      });
+      logger.info('createLoad: stored pending stops as JSON (no dispatchId)', {
+        orgId,
+        loadId: load.id,
+        stopCount: data.stops.length,
+      });
+    }
   }
 
   // Compute initial revenue
@@ -411,6 +425,29 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
         loadId: id,
         newDispatchId: data.dispatchId,
       });
+
+      // Also persist any stops that were stored as JSON during load creation (no dispatch at the time)
+      const loadWithPending = await prisma.carrierLoad.findFirst({
+        where: { id, orgId },
+        select: { pendingStopsJson: true },
+      });
+      if (loadWithPending?.pendingStopsJson) {
+        const pendingStops: StopInput[] = JSON.parse(loadWithPending.pendingStopsJson);
+        if (pendingStops.length > 0) {
+          await persistStops(orgId, id, data.dispatchId, pendingStops);
+          // Clear the pending JSON now that stops are persisted as CarrierStop records
+          await prisma.carrierLoad.update({
+            where: { id },
+            data: { pendingStopsJson: null },
+          });
+          logger.info('updateLoad: persisted pending stops from JSON on dispatch attach', {
+            orgId,
+            loadId: id,
+            dispatchId: data.dispatchId,
+            stopCount: pendingStops.length,
+          });
+        }
+      }
     } else {
       // Detaching from a dispatch: delete pending stops for this load
       // (completed/skipped stops are preserved as historical records)
@@ -429,12 +466,31 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     }
   }
 
-  // Persist stops when load has a dispatchId (newly assigned or pre-existing)
+  // Persist stops when load has a dispatchId (newly assigned or pre-existing).
+  // When no dispatchId exists, store/update stops as JSON for later persistence.
   if (data.stops !== undefined) {
     const effectiveDispatchId =
       data.dispatchId !== undefined ? data.dispatchId : existing.dispatchId;
     if (effectiveDispatchId) {
       await persistStops(orgId, id, effectiveDispatchId, data.stops);
+      // Clear pending JSON since stops are now persisted as CarrierStop records
+      if (existing.pendingStopsJson) {
+        await prisma.carrierLoad.update({
+          where: { id },
+          data: { pendingStopsJson: null },
+        });
+      }
+    } else {
+      // No dispatch — store/update pending stops JSON
+      await prisma.carrierLoad.update({
+        where: { id },
+        data: { pendingStopsJson: data.stops.length > 0 ? JSON.stringify(data.stops) : null },
+      });
+      logger.info('updateLoad: updated pending stops JSON (no dispatchId)', {
+        orgId,
+        loadId: id,
+        stopCount: data.stops.length,
+      });
     }
   }
 

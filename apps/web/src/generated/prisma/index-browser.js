@@ -920,6 +920,7 @@ exports.Prisma.CarrierLoadScalarFieldEnum = {
   status: 'status',
   specialInstructions: 'specialInstructions',
   notes: 'notes',
+  pendingStopsJson: 'pendingStopsJson',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1304,6 +1305,7 @@ exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   pay_record_ready: 'pay_record_ready',
   invoice_generated: 'invoice_generated',
   compliance_alert: 'compliance_alert',
+  stop_completed: 'stop_completed',
   needs_assignment: 'needs_assignment'
 };
 

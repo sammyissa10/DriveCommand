@@ -415,6 +415,7 @@ export const InAppNotificationType: {
   pay_record_ready: 'pay_record_ready',
   invoice_generated: 'invoice_generated',
   compliance_alert: 'compliance_alert',
+  stop_completed: 'stop_completed',
   needs_assignment: 'needs_assignment'
 };
 
@@ -66750,6 +66751,7 @@ export namespace Prisma {
     status: string | null
     specialInstructions: string | null
     notes: string | null
+    pendingStopsJson: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -66783,6 +66785,7 @@ export namespace Prisma {
     status: string | null
     specialInstructions: string | null
     notes: string | null
+    pendingStopsJson: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -66816,6 +66819,7 @@ export namespace Prisma {
     status: number
     specialInstructions: number
     notes: number
+    pendingStopsJson: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -66875,6 +66879,7 @@ export namespace Prisma {
     status?: true
     specialInstructions?: true
     notes?: true
+    pendingStopsJson?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -66908,6 +66913,7 @@ export namespace Prisma {
     status?: true
     specialInstructions?: true
     notes?: true
+    pendingStopsJson?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -66941,6 +66947,7 @@ export namespace Prisma {
     status?: true
     specialInstructions?: true
     notes?: true
+    pendingStopsJson?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -67061,6 +67068,7 @@ export namespace Prisma {
     status: string
     specialInstructions: string | null
     notes: string | null
+    pendingStopsJson: string | null
     createdAt: Date
     updatedAt: Date
     _count: CarrierLoadCountAggregateOutputType | null
@@ -67113,6 +67121,7 @@ export namespace Prisma {
     status?: boolean
     specialInstructions?: boolean
     notes?: boolean
+    pendingStopsJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -67154,6 +67163,7 @@ export namespace Prisma {
     status?: boolean
     specialInstructions?: boolean
     notes?: boolean
+    pendingStopsJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -67191,6 +67201,7 @@ export namespace Prisma {
     status?: boolean
     specialInstructions?: boolean
     notes?: boolean
+    pendingStopsJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -67228,11 +67239,12 @@ export namespace Prisma {
     status?: boolean
     specialInstructions?: boolean
     notes?: boolean
+    pendingStopsJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierLoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "dispatchId" | "contractId" | "clientId" | "loadType" | "referenceNumber" | "bolNumber" | "proNumber" | "poNumber" | "commodityDescription" | "commodityWeightLbs" | "commodityPieces" | "commodityPallets" | "hazmat" | "hazmatClass" | "rateType" | "rateAmount" | "currency" | "brokerFlag" | "carrierCost" | "fuelSurcharge" | "detentionAmount" | "otherCharges" | "totalRevenue" | "status" | "specialInstructions" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierLoad"]>
+  export type CarrierLoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "dispatchId" | "contractId" | "clientId" | "loadType" | "referenceNumber" | "bolNumber" | "proNumber" | "poNumber" | "commodityDescription" | "commodityWeightLbs" | "commodityPieces" | "commodityPallets" | "hazmat" | "hazmatClass" | "rateType" | "rateAmount" | "currency" | "brokerFlag" | "carrierCost" | "fuelSurcharge" | "detentionAmount" | "otherCharges" | "totalRevenue" | "status" | "specialInstructions" | "notes" | "pendingStopsJson" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierLoad"]>
   export type CarrierLoadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     dispatch?: boolean | CarrierLoad$dispatchArgs<ExtArgs>
@@ -67296,6 +67308,7 @@ export namespace Prisma {
       status: string
       specialInstructions: string | null
       notes: string | null
+      pendingStopsJson: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["carrierLoad"]>
@@ -67756,6 +67769,7 @@ export namespace Prisma {
     readonly status: FieldRef<"CarrierLoad", 'String'>
     readonly specialInstructions: FieldRef<"CarrierLoad", 'String'>
     readonly notes: FieldRef<"CarrierLoad", 'String'>
+    readonly pendingStopsJson: FieldRef<"CarrierLoad", 'String'>
     readonly createdAt: FieldRef<"CarrierLoad", 'DateTime'>
     readonly updatedAt: FieldRef<"CarrierLoad", 'DateTime'>
   }
@@ -77323,6 +77337,7 @@ export namespace Prisma {
     status: 'status',
     specialInstructions: 'specialInstructions',
     notes: 'notes',
+    pendingStopsJson: 'pendingStopsJson',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -83252,6 +83267,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierLoad"> | string
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
+    pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
     createdAt?: DateTimeFilter<"CarrierLoad"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierLoad"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -83292,6 +83308,7 @@ export namespace Prisma {
     status?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    pendingStopsJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -83335,6 +83352,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierLoad"> | string
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
+    pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
     createdAt?: DateTimeFilter<"CarrierLoad"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierLoad"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -83375,6 +83393,7 @@ export namespace Prisma {
     status?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    pendingStopsJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CarrierLoadCountOrderByAggregateInput
@@ -83416,6 +83435,7 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"CarrierLoad"> | string
     specialInstructions?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
     notes?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
+    pendingStopsJson?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierLoad"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierLoad"> | Date | string
   }
@@ -90025,6 +90045,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -90065,6 +90086,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -90097,6 +90119,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -90137,6 +90160,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -90173,6 +90197,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -90202,6 +90227,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -90235,6 +90261,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -95406,6 +95433,7 @@ export namespace Prisma {
     status?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
+    pendingStopsJson?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -95451,6 +95479,7 @@ export namespace Prisma {
     status?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
+    pendingStopsJson?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -95484,6 +95513,7 @@ export namespace Prisma {
     status?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
+    pendingStopsJson?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -106456,6 +106486,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatch?: CarrierDispatchCreateNestedOneWithoutCarrierLoadsInput
@@ -106494,6 +106525,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -108090,6 +108122,7 @@ export namespace Prisma {
     status?: StringFilter<"CarrierLoad"> | string
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
+    pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
     createdAt?: DateTimeFilter<"CarrierLoad"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierLoad"> | Date | string
   }
@@ -127218,6 +127251,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -127256,6 +127290,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -127798,6 +127833,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -127836,6 +127872,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -131688,6 +131725,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -131726,6 +131764,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -133404,6 +133443,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -133443,6 +133483,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
@@ -133779,6 +133820,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -133818,6 +133860,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
@@ -134929,6 +134972,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -134968,6 +135012,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -135522,6 +135567,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -135561,6 +135607,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -136174,6 +136221,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
@@ -136213,6 +136261,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
@@ -136665,6 +136714,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -136704,6 +136754,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -137963,6 +138014,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -140132,6 +140184,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatch?: CarrierDispatchUpdateOneWithoutCarrierLoadsNestedInput
@@ -140170,6 +140223,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -140205,6 +140259,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -145085,6 +145140,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -145563,6 +145619,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -145601,6 +145658,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -145636,6 +145694,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -145692,6 +145751,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -145797,6 +145857,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -145835,6 +145896,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -145870,6 +145932,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -147221,6 +147284,7 @@ export namespace Prisma {
     status?: string
     specialInstructions?: string | null
     notes?: string | null
+    pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -147392,6 +147456,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
@@ -147430,6 +147495,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
@@ -147465,6 +147531,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

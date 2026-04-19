@@ -109,6 +109,7 @@ enum InAppNotificationType {
   pay_record_ready
   invoice_generated
   compliance_alert
+  stop_completed
   needs_assignment
 }
 
@@ -1577,6 +1578,7 @@ model CarrierLoad {
   status               String   @default("pending")
   specialInstructions  String?  @map("special_instructions")
   notes                String?
+  pendingStopsJson     String?  @map("pending_stops_json") @db.Text
   createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
