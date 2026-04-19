@@ -5,6 +5,7 @@ import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
+import { computeNextOccurrence } from '@/lib/carrier/route-templates';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -568,6 +569,166 @@ export async function transitionDispatchStatus(
       logger.error('transitionDispatchStatus: generateDriverPayRecords failed', err);
     }
     logger.info('transitionDispatchStatus: completed dispatch', { orgId, dispatchId: id });
+
+    // Auto-generate next recurring dispatch if this dispatch has a template
+    if (dispatch.routeTemplateId) {
+      after(async () => {
+        try {
+          const template = await prisma.routeTemplate.findFirst({
+            where: { id: dispatch.routeTemplateId!, active: true },
+            select: {
+              id: true,
+              recurrenceRule: true,
+              recurrenceTimezone: true,
+              scheduledDepartureTime: true,
+              templateName: true,
+              defaultDriverId: true,
+              defaultTruckId: true,
+              estimatedMiles: true,
+              stops: {
+                orderBy: { sequenceOrder: 'asc' },
+                include: { facility: true },
+              },
+            },
+          });
+
+          if (!template || !template.recurrenceRule) return;
+
+          const nextDateStr = computeNextOccurrence(template.recurrenceRule, template.recurrenceTimezone);
+          if (!nextDateStr) return;
+
+          // Check if dispatch already exists for that date + template (dedup)
+          const dayStart = new Date(`${nextDateStr}T00:00:00`);
+          const dayEnd = new Date(`${nextDateStr}T23:59:59`);
+          const existingNext = await prisma.carrierDispatch.findFirst({
+            where: {
+              routeTemplateId: template.id,
+              orgId,
+              scheduledDeparture: { gte: dayStart, lt: dayEnd },
+            },
+          });
+          if (existingNext) {
+            logger.info('transitionDispatchStatus: next recurring dispatch already exists, skipping', {
+              orgId,
+              completedDispatchId: id,
+              existingNextId: existingNext.id,
+              nextDate: nextDateStr,
+            });
+            return;
+          }
+
+          // Generate dispatch number
+          const year = new Date().getFullYear();
+          const lastDispatchForNumber = await prisma.carrierDispatch.findFirst({
+            where: { orgId, notes: { contains: `DC-${year}-` } },
+            orderBy: { createdAt: 'desc' },
+            select: { notes: true },
+          });
+          let lastSeq = 0;
+          if (lastDispatchForNumber?.notes) {
+            const match = lastDispatchForNumber.notes.match(/\[DISPATCH_NUMBER=DC-\d{4}-(\d{5})\]/);
+            if (match) lastSeq = parseInt(match[1], 10);
+          }
+          const nextDispatchNumber = `DC-${year}-${String(lastSeq + 1).padStart(5, '0')}`;
+
+          // Compute scheduled departure for next date using template departure time
+          const [h, m] = (template.scheduledDepartureTime ?? '08:00').split(':').map(Number);
+          const scheduledDeparture = new Date(`${nextDateStr}T00:00:00`);
+          scheduledDeparture.setHours(h ?? 8, m ?? 0, 0, 0);
+
+          // Use driver/truck from completed dispatch (carry-forward assignment)
+          const driverId = dispatch.primaryDriverId;
+          const truckId = dispatch.truckId;
+
+          const nextDispatch = await prisma.carrierDispatch.create({
+            data: {
+              orgId,
+              routeTemplateId: template.id,
+              primaryDriverId: driverId,
+              truckId: truckId,
+              scheduledDeparture,
+              status: 'planned',
+              plannedMiles: template.estimatedMiles ?? null,
+              notes: `[DISPATCH_NUMBER=${nextDispatchNumber}] [Template: ${template.templateName}]`,
+            },
+          });
+
+          // Clone stops from template
+          for (const ts of template.stops) {
+            let appointmentStart: Date | null = null;
+            let appointmentEnd: Date | null = null;
+
+            if (ts.apptWindowStartOffsetMin != null) {
+              appointmentStart = new Date(scheduledDeparture.getTime() + ts.apptWindowStartOffsetMin * 60000);
+            }
+            if (ts.apptWindowEndOffsetMin != null) {
+              appointmentEnd = new Date(scheduledDeparture.getTime() + ts.apptWindowEndOffsetMin * 60000);
+            }
+
+            const stopNotes = JSON.stringify({
+              address_snapshot: {
+                address_line1: ts.facility.addressLine1,
+                city: ts.facility.city,
+                state: ts.facility.state,
+                zip: ts.facility.zip,
+                lat: ts.facility.latitude,
+                lng: ts.facility.longitude,
+              },
+            });
+
+            await prisma.carrierStop.create({
+              data: {
+                dispatchId: nextDispatch.id,
+                sequenceOrder: ts.sequenceOrder,
+                stopType: ts.stopType,
+                facilityId: ts.facilityId,
+                contactName: ts.contactName,
+                contactPhone: ts.contactPhone,
+                appointmentStart,
+                appointmentEnd,
+                commodityDescription: ts.commodityDescription,
+                specialInstructions: ts.specialInstructions,
+                bolRequired: ts.bolRequired,
+                podRequired: ts.podRequired,
+                notes: stopNotes,
+              },
+            });
+          }
+
+          // Notify driver about next scheduled dispatch
+          const driver = await prisma.carrierDriver.findFirst({
+            where: { id: driverId },
+            select: { userId: true },
+          });
+          if (driver?.userId) {
+            await sendPushToUser(driver.userId, {
+              title: 'Next Recurring Dispatch',
+              body: `${nextDispatchNumber} has been scheduled for ${nextDateStr}`,
+              data: { type: 'dispatch_assigned', dispatchId: nextDispatch.id },
+            });
+            await createNotification({
+              orgId,
+              userId: driver.userId,
+              type: 'dispatch_assigned',
+              title: 'Next Recurring Dispatch Scheduled',
+              message: `Your next recurring dispatch ${nextDispatchNumber} has been automatically scheduled for ${nextDateStr}.`,
+              entityType: 'dispatch',
+              entityId: nextDispatch.id,
+            });
+          }
+
+          logger.info('transitionDispatchStatus: auto-generated next recurring dispatch', {
+            orgId,
+            completedDispatchId: id,
+            nextDispatchId: nextDispatch.id,
+            nextDispatchNumber,
+            nextDate: nextDateStr,
+          });
+        } catch (err) {
+          logger.error('transitionDispatchStatus: auto-generate next dispatch failed', { dispatchId: id, err });
+        }
+      });
+    }
 
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }

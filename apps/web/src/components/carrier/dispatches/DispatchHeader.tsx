@@ -2,7 +2,8 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Truck, ChevronDown, Edit2 } from 'lucide-react';
+import Link from 'next/link';
+import { User, Truck, ChevronDown, Edit2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,9 +40,81 @@ function extractDispatchNumber(notes: string | null): string {
   return match ? match[1] : '—';
 }
 
+/**
+ * Format a recurrence rule (iCal RRULE) into a human-readable summary.
+ * E.g. "FREQ=WEEKLY;BYDAY=MO,WE,FR" → "Mon, Wed, Fri"
+ * E.g. "FREQ=DAILY;INTERVAL=1" → "Daily"
+ */
+function formatRecurrenceRule(rule: string | null, tz: string | null, departureTime: string | null): string {
+  if (!rule) return '';
+
+  try {
+    const parts: Record<string, string> = {};
+    for (const seg of rule.split(';')) {
+      const eq = seg.indexOf('=');
+      if (eq === -1) continue;
+      parts[seg.slice(0, eq).toUpperCase()] = seg.slice(eq + 1);
+    }
+
+    const freq = parts['FREQ'];
+    const byDay = parts['BYDAY'];
+    const interval = parseInt(parts['INTERVAL'] ?? '1', 10);
+
+    const DAY_LABELS: Record<string, string> = {
+      MO: 'Mon', TU: 'Tue', WE: 'Wed', TH: 'Thu', FR: 'Fri', SA: 'Sat', SU: 'Sun',
+    };
+
+    let schedule = '';
+    if (freq === 'DAILY') {
+      schedule = interval === 1 ? 'Daily' : `Every ${interval} days`;
+    } else if (freq === 'WEEKLY') {
+      if (byDay) {
+        const days = byDay.split(',').map((d) => DAY_LABELS[d] ?? d).join(', ');
+        schedule = interval === 1 ? days : `Every ${interval} weeks: ${days}`;
+      } else {
+        schedule = interval === 1 ? 'Weekly' : `Every ${interval} weeks`;
+      }
+    } else if (freq === 'MONTHLY') {
+      schedule = interval === 1 ? 'Monthly' : `Every ${interval} months`;
+    } else {
+      schedule = rule;
+    }
+
+    if (departureTime) {
+      const [h, m] = departureTime.split(':').map(Number);
+      const ampm = (h ?? 0) >= 12 ? 'PM' : 'AM';
+      const hour12 = ((h ?? 0) % 12) || 12;
+      const min = String(m ?? 0).padStart(2, '0');
+      const tzAbbr = tz ? tz.split('/').pop()?.replace(/_/g, ' ') ?? tz : '';
+      schedule += ` at ${hour12}:${min} ${ampm}${tzAbbr ? ` ${tzAbbr}` : ''}`;
+    }
+
+    return schedule;
+  } catch {
+    return rule;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+interface Template {
+  id: string;
+  templateName: string;
+  recurrenceRule: string | null;
+  scheduledDepartureTime: string | null;
+  recurrenceTimezone: string;
+  estimatedMiles: number | null;
+  defaultDriverId: string | null;
+  defaultTruckId: string | null;
+  client: { name: string } | null;
+  stops: Array<{
+    sequenceOrder: number;
+    stopType: string;
+    facility: { name: string; city: string | null; state: string | null };
+  }>;
+}
 
 interface DispatchHeaderProps {
   dispatch: {
@@ -55,6 +128,12 @@ interface DispatchHeaderProps {
     actualMiles: number | null;
     scheduledDeparture: string;
     scheduledArrival: string | null;
+    // Route template fields (optional — only present when dispatch has a template)
+    routeTemplateId?: string | null;
+    routeTemplateName?: string | null;
+    routeTemplateRecurrenceRule?: string | null;
+    routeTemplateRecurrenceTimezone?: string | null;
+    routeTemplateScheduledDepartureTime?: string | null;
   };
   driverName: string;
   coDriverName: string;
@@ -158,7 +237,12 @@ export function DispatchHeader({
     primaryDriverId: '',
     coDriverId: '',
     truckId: '',
+    routeTemplateId: '',
   });
+
+  // Templates for edit dialog
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templatesLoaded, setTemplatesLoaded] = useState(false);
 
   const isLocked = dispatch.status === 'completed' || dispatch.status === 'cancelled' || dispatch.status === 'tonu';
   const isInProgress = dispatch.status === 'in_progress';
@@ -193,10 +277,11 @@ export function DispatchHeader({
       ? dispatch.scheduledDeparture.slice(0, 16)
       : '';
 
-    // Strip [DISPATCH_NUMBER=...] prefix and [AUTO-GENERATED] suffix from notes for display
+    // Strip [DISPATCH_NUMBER=...] prefix, [AUTO-GENERATED] suffix, and [Template: ...] tag from notes
     const cleanedNotes = dispatch.notes
       ?.replace(/^\[DISPATCH_NUMBER=[^\]]*\]\s*/, '')
       .replace(/\s*\[AUTO-GENERATED\]\s*$/, '')
+      .replace(/\s*\[Template:[^\]]*\]\s*/g, '')
       .trim() ?? '';
 
     setEditForm({
@@ -207,7 +292,20 @@ export function DispatchHeader({
       primaryDriverId: dispatch.primaryDriverId,
       coDriverId: dispatch.coDriverId ?? '',
       truckId: dispatch.truckId,
+      routeTemplateId: dispatch.routeTemplateId ?? '',
     });
+
+    // Load templates lazily when edit dialog first opens
+    if (!templatesLoaded && dispatch.status === 'planned') {
+      fetch('/api/v1/carrier/route-templates/active')
+        .then((r) => r.json())
+        .then((body) => {
+          if (body.data) setTemplates(body.data as Template[]);
+          setTemplatesLoaded(true);
+        })
+        .catch(() => setTemplatesLoaded(true));
+    }
+
     setEditOpen(true);
   }
 
@@ -261,6 +359,10 @@ export function DispatchHeader({
           payload.primaryDriverId = editForm.primaryDriverId;
           payload.truckId = editForm.truckId;
           payload.coDriverId = editForm.coDriverId || null;
+          // Include template if changed
+          if (editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '')) {
+            payload.routeTemplateId = editForm.routeTemplateId || undefined;
+          }
         }
 
         await patchDispatch(payload);
@@ -348,17 +450,46 @@ export function DispatchHeader({
     }
   }
 
+  // Recurrence info for display
+  const recurrenceSummary = dispatch.routeTemplateId
+    ? formatRecurrenceRule(
+        dispatch.routeTemplateRecurrenceRule ?? null,
+        dispatch.routeTemplateRecurrenceTimezone ?? null,
+        dispatch.routeTemplateScheduledDepartureTime ?? null,
+      )
+    : null;
+
+  const editSelectedTemplate = templates.find((t) => t.id === editForm.routeTemplateId) ?? null;
+
   return (
     <div className="rounded-lg border bg-card p-6 space-y-5">
       {/* Top row: dispatch number + status badge */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-xl font-bold text-foreground">{dispatchNumber}</h2>
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClass}`}
           >
             {statusLabel}
           </span>
+
+          {/* Recurring badge */}
+          {dispatch.routeTemplateId && (
+            <>
+              <span className="inline-flex items-center rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 px-2.5 py-0.5 text-xs font-medium">
+                <RefreshCw className="h-3 w-3 mr-1" />
+                Recurring
+              </span>
+              {dispatch.routeTemplateName && (
+                <Link
+                  href={`/carrier/templates/${dispatch.routeTemplateId}`}
+                  className="text-sm text-primary hover:underline"
+                >
+                  {dispatch.routeTemplateName}
+                </Link>
+              )}
+            </>
+          )}
         </div>
 
         {/* Edit button + status actions */}
@@ -418,6 +549,14 @@ export function DispatchHeader({
           )}
         </div>
       </div>
+
+      {/* Recurrence summary row */}
+      {recurrenceSummary && (
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <RefreshCw className="h-3.5 w-3.5 text-purple-500" />
+          <span>Recurrence: {recurrenceSummary}</span>
+        </div>
+      )}
 
       {/* Driver / truck chips */}
       <div className="flex flex-wrap items-center gap-2">
@@ -481,6 +620,51 @@ export function DispatchHeader({
           <div className="space-y-4 py-2">
             {dispatch.status === 'planned' && (
               <>
+                {/* Route Template */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Route Template</label>
+                  <select
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value={editForm.routeTemplateId}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, routeTemplateId: e.target.value }))
+                    }
+                  >
+                    <option value="">No template</option>
+                    {templates.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.templateName}{t.client ? ` — ${t.client.name}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {/* Warning when changing template */}
+                  {editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '') && editForm.routeTemplateId && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 flex items-start gap-1 pt-0.5">
+                      <span className="shrink-0 mt-0.5">⚠</span>
+                      Changing the template will replace all existing stops on this dispatch.
+                    </p>
+                  )}
+                  {/* Stop preview for newly selected template */}
+                  {editSelectedTemplate && editSelectedTemplate.stops.length > 0 &&
+                    editForm.routeTemplateId !== (dispatch.routeTemplateId ?? '') && (
+                    <div className="rounded-md bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 p-2.5 space-y-1">
+                      {editSelectedTemplate.stops.map((stop) => (
+                        <div key={stop.sequenceOrder} className="flex items-center gap-2 text-xs">
+                          <span className="text-muted-foreground shrink-0">Stop {stop.sequenceOrder}</span>
+                          <span className="text-foreground truncate">
+                            {stop.facility.name}
+                            {(stop.facility.city || stop.facility.state) && (
+                              <span className="text-muted-foreground">
+                                {' '}({[stop.facility.city, stop.facility.state].filter(Boolean).join(', ')})
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium">Primary Driver</label>
                   <select

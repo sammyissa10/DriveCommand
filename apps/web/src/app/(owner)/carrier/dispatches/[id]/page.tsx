@@ -25,6 +25,19 @@ export default async function DispatchDetailPage({ params }: Props) {
   const dispatch = await getDispatch(orgId, id);
   if (!dispatch) notFound();
 
+  // Fetch route template details for recurring badge
+  const routeTemplate = dispatch.routeTemplateId
+    ? await prisma.routeTemplate.findFirst({
+        where: { id: dispatch.routeTemplateId },
+        select: {
+          templateName: true,
+          recurrenceRule: true,
+          recurrenceTimezone: true,
+          scheduledDepartureTime: true,
+        },
+      })
+    : null;
+
   // Fetch facility names for all stops
   const facilityIds = [...new Set(dispatch.stops.map((s) => s.facilityId))];
   const facilities = facilityIds.length
@@ -201,7 +214,14 @@ export default async function DispatchDetailPage({ params }: Props) {
 
       {/* Header */}
       <DispatchHeader
-        dispatch={serializedDispatch}
+        dispatch={{
+          ...serializedDispatch,
+          routeTemplateId: dispatch.routeTemplateId ?? null,
+          routeTemplateName: routeTemplate?.templateName ?? null,
+          routeTemplateRecurrenceRule: routeTemplate?.recurrenceRule ?? null,
+          routeTemplateRecurrenceTimezone: routeTemplate?.recurrenceTimezone ?? null,
+          routeTemplateScheduledDepartureTime: routeTemplate?.scheduledDepartureTime ?? null,
+        }}
         driverName={driverName}
         coDriverName={coDriverName}
         truckUnit={truckUnit}

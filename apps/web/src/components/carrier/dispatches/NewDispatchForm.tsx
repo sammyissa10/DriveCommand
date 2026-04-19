@@ -1,12 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Info, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+interface Template {
+  id: string;
+  templateName: string;
+  recurrenceRule: string | null;
+  scheduledDepartureTime: string | null;
+  recurrenceTimezone: string;
+  estimatedMiles: number | null;
+  defaultDriverId: string | null;
+  defaultTruckId: string | null;
+  client: { name: string } | null;
+  stops: Array<{
+    sequenceOrder: number;
+    stopType: string;
+    facility: { name: string; city: string | null; state: string | null };
+  }>;
+}
 
 interface NewDispatchFormProps {
   driverMap: Record<string, string>;
@@ -36,6 +53,24 @@ const SELECT_CLASSES =
 
 const LABEL_CLASSES = 'block text-sm font-medium text-foreground mb-1';
 
+const STOP_TYPE_LABEL: Record<string, string> = {
+  pickup: 'Pickup',
+  delivery: 'Delivery',
+  fuel: 'Fuel',
+  rest: 'Rest',
+  customs: 'Customs',
+  other: 'Other',
+};
+
+const STOP_TYPE_BADGE: Record<string, string> = {
+  pickup: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+  delivery: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+  fuel: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300',
+  rest: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+  customs: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
+  other: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+};
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -49,6 +84,47 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel }: Ne
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Template state
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+
+  // Load templates on mount
+  useEffect(() => {
+    fetch('/api/v1/carrier/route-templates/active')
+      .then((r) => r.json())
+      .then((body) => {
+        if (body.data) setTemplates(body.data as Template[]);
+      })
+      .catch(() => {
+        // Non-critical — just show empty dropdown
+      });
+  }, []);
+
+  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) ?? null;
+
+  function handleTemplateChange(newTemplateId: string) {
+    setSelectedTemplateId(newTemplateId);
+
+    if (!newTemplateId) return;
+    const template = templates.find((t) => t.id === newTemplateId);
+    if (!template) return;
+
+    // Auto-populate planned miles (only if not already set by user)
+    if (plannedMiles === '' && template.estimatedMiles != null) {
+      setPlannedMiles(template.estimatedMiles);
+    }
+
+    // Auto-populate primary driver (only if not already selected)
+    if (!primaryDriverId && template.defaultDriverId && template.defaultDriverId in driverMap) {
+      setPrimaryDriverId(template.defaultDriverId);
+    }
+
+    // Auto-populate truck (only if not already selected)
+    if (!truckId && template.defaultTruckId && template.defaultTruckId in truckMap) {
+      setTruckId(template.defaultTruckId);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -77,6 +153,7 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel }: Ne
       if (coDriverId) body.coDriverId = coDriverId;
       if (plannedMiles !== '') body.plannedMiles = plannedMiles;
       if (notes.trim()) body.notes = notes.trim();
+      if (selectedTemplateId) body.routeTemplateId = selectedTemplateId;
 
       const res = await fetch('/api/v1/carrier/dispatches', {
         method: 'POST',
@@ -109,6 +186,53 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel }: Ne
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+      {/* Route Template (optional) */}
+      <div>
+        <label className={LABEL_CLASSES}>Route Template (optional)</label>
+        <select
+          value={selectedTemplateId}
+          onChange={(e) => handleTemplateChange(e.target.value)}
+          className={SELECT_CLASSES}
+        >
+          <option value="">No template</option>
+          {templates.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.templateName}{t.client ? ` — ${t.client.name}` : ''}
+            </option>
+          ))}
+        </select>
+
+        {/* Stop preview */}
+        {selectedTemplate && selectedTemplate.stops.length > 0 && (
+          <div className="mt-2 rounded-md bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 p-3 space-y-1.5">
+            <div className="flex items-center gap-1.5 mb-1">
+              <RefreshCw className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              <span className="text-xs font-medium text-blue-700 dark:text-blue-300">
+                {selectedTemplate.stops.length} stop{selectedTemplate.stops.length !== 1 ? 's' : ''} will be created
+              </span>
+            </div>
+            {selectedTemplate.stops.map((stop) => (
+              <div key={stop.sequenceOrder} className="flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground w-12 shrink-0">Stop {stop.sequenceOrder}</span>
+                <span
+                  className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium shrink-0 ${STOP_TYPE_BADGE[stop.stopType] ?? STOP_TYPE_BADGE.other}`}
+                >
+                  {STOP_TYPE_LABEL[stop.stopType] ?? stop.stopType}
+                </span>
+                <span className="text-foreground truncate">
+                  {stop.facility.name}
+                  {(stop.facility.city || stop.facility.state) && (
+                    <span className="text-muted-foreground">
+                      {' '}({[stop.facility.city, stop.facility.state].filter(Boolean).join(', ')})
+                    </span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Primary Driver */}
       <div>
         <label className={LABEL_CLASSES}>
@@ -210,7 +334,9 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel }: Ne
       <div className="flex items-start gap-2 bg-muted rounded-lg p-3">
         <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
         <p className="text-sm text-muted-foreground">
-          Add loads to this dispatch from the dispatch detail page.
+          {selectedTemplateId
+            ? 'Stops from the selected template will be added automatically.'
+            : 'Add loads and stops to this dispatch from the dispatch detail page.'}
         </p>
       </div>
 
