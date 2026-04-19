@@ -1,5 +1,5 @@
 import { getSession } from '@/lib/auth/supabase';
-import { getDriverDashboardData } from '@/app/(driver)/actions/driver-dashboard';
+import { getDriverDashboardData, getDriverQuickActionBadges } from '@/app/(driver)/actions/driver-dashboard';
 import { DriverDashboard } from '@/components/driver/driver-dashboard';
 import { logger } from '@/lib/logger';
 
@@ -15,7 +15,15 @@ export default async function DriverHomePage() {
   const session = await getSession();
 
   try {
-    const data = await getDriverDashboardData();
+    const [data, quickActionBadges] = await Promise.all([
+      getDriverDashboardData(),
+      getDriverQuickActionBadges().catch(() => ({
+        stopsRemaining: 0,
+        unreadMessages: 0,
+        hosStatus: 'OFF',
+        expiringDocs: 0,
+      })),
+    ]);
 
     return (
       <DriverDashboard
@@ -24,6 +32,7 @@ export default async function DriverHomePage() {
         dispatch={data.dispatch as any}
         hos={data.hos}
         recentMessages={data.recentMessages}
+        quickActionBadges={quickActionBadges}
       />
     );
   } catch (err) {
@@ -35,6 +44,7 @@ export default async function DriverHomePage() {
         dispatch={null}
         hos={null}
         recentMessages={[]}
+        quickActionBadges={{ stopsRemaining: 0, unreadMessages: 0, hosStatus: 'OFF', expiringDocs: 0 }}
       />
     );
   }

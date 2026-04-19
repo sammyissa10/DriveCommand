@@ -9,6 +9,9 @@
  * Uses haversine formula to calculate speed between pings and determine
  * movement state: moving (>2mph), idle (<=2mph), or off (no GPS / timed out).
  *
+ * variant="header" — compact inline indicator (used in driver layout header)
+ * variant="pill"   — pill badge below greeting on driver dashboard
+ *
  * Rendered at the driver layout level so GPS pings fire on ALL driver pages.
  */
 
@@ -55,7 +58,15 @@ function calculateHaversineSpeed(
   return distanceMiles / hours;
 }
 
-export function DriverGpsPing() {
+interface DriverGpsPingProps {
+  /** 'header' — compact inline indicator (legacy)
+   *  'pill'   — pill badge below greeting on dashboard
+   *  'silent' — no visual output, only fires GPS pings (used at layout level)
+   */
+  variant?: 'header' | 'pill' | 'silent';
+}
+
+export function DriverGpsPing({ variant = 'silent' }: DriverGpsPingProps) {
   const [movementState, setMovementState] = useState<MovementState>('off');
   const [denied, setDenied] = useState<GpsDenied>(false);
 
@@ -161,6 +172,45 @@ export function DriverGpsPing() {
     };
   }, []);
 
+  const isActive = movementState === 'moving' || movementState === 'idle';
+
+  // -------------------------------------------------------------------------
+  // Silent variant — GPS pinging only, no visual output (used in layout)
+  // -------------------------------------------------------------------------
+  if (variant === 'silent') {
+    return null;
+  }
+
+  // -------------------------------------------------------------------------
+  // Pill variant — shown below greeting on driver dashboard
+  // -------------------------------------------------------------------------
+  if (variant === 'pill') {
+    const dotClass = isActive
+      ? 'bg-green-500 animate-pulse'
+      : 'bg-gray-400';
+    const label = isActive ? 'Location sharing on' : 'Location sharing off';
+
+    return (
+      <div className="flex flex-col gap-1 mt-1 mb-2">
+        <div className="flex items-center gap-2">
+          <span
+            className={`inline-block h-2 w-2 rounded-full flex-shrink-0 ${dotClass}`}
+            aria-hidden="true"
+          />
+          <span className="text-sm text-muted-foreground">{label}</span>
+        </div>
+        {denied && (
+          <p className="text-xs text-amber-600 dark:text-amber-400">
+            Location sharing is off. Enable in browser settings.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Header variant — compact inline indicator (default)
+  // -------------------------------------------------------------------------
   const dotClass =
     movementState === 'moving'
       ? 'bg-green-500 animate-pulse'

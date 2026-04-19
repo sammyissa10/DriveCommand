@@ -1,63 +1,104 @@
 'use client';
 
-import Link from 'next/link';
-import { MapPin, MessageSquare, Clock, FileText, AlertTriangle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { MapPin, MessageSquare, Clock, FileText, AlertTriangle, LucideIcon } from 'lucide-react';
 
-const actions = [
+interface QuickActionBadges {
+  stopsRemaining: number;
+  unreadMessages: number;
+  hosStatus: string;
+  expiringDocs: number;
+}
+
+interface Action {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  color: string;
+  getBadge: (badges: QuickActionBadges) => string;
+}
+
+const actions: Action[] = [
   {
     href: '/my-route',
     label: 'My Route',
     icon: MapPin,
-    bgClass: 'bg-blue-50 dark:bg-blue-950',
-    iconClass: 'text-blue-600 dark:text-blue-400',
+    color: '#3B82F6',
+    getBadge: (b) =>
+      b.stopsRemaining > 0 ? `${b.stopsRemaining} stops remaining` : 'No active route',
   },
   {
     href: '/messages',
     label: 'Messages',
     icon: MessageSquare,
-    bgClass: 'bg-green-50 dark:bg-green-950',
-    iconClass: 'text-green-600 dark:text-green-400',
+    color: '#10B981',
+    getBadge: (b) =>
+      b.unreadMessages > 0 ? `${b.unreadMessages} unread` : 'No new messages',
   },
   {
     href: '/hours',
     label: 'Hours',
     icon: Clock,
-    bgClass: 'bg-purple-50 dark:bg-purple-950',
-    iconClass: 'text-purple-600 dark:text-purple-400',
+    color: '#8B5CF6',
+    getBadge: (b) => b.hosStatus,
   },
   {
-    // TODO: Create /documents page; linking to /hours as placeholder until then
+    // /documents does not exist yet — linking to /hours as placeholder
     href: '/hours',
     label: 'Documents',
     icon: FileText,
-    bgClass: 'bg-orange-50 dark:bg-orange-950',
-    iconClass: 'text-orange-600 dark:text-orange-400',
+    color: '#F59E0B',
+    getBadge: (b) =>
+      b.expiringDocs > 0 ? `${b.expiringDocs} expiring` : 'All current',
   },
   {
     href: '/incidents',
-    label: 'Incidents',
+    label: 'Report Incident',
     icon: AlertTriangle,
-    bgClass: 'bg-red-50 dark:bg-red-950',
-    iconClass: 'text-red-600 dark:text-red-400',
+    color: '#EF4444',
+    getBadge: () => 'Tap to report',
   },
 ];
 
-export function DriverQuickActions() {
+interface DriverQuickActionsProps {
+  quickActionBadges: QuickActionBadges;
+}
+
+export function DriverQuickActions({ quickActionBadges }: DriverQuickActionsProps) {
+  const router = useRouter();
+
   return (
     <div>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
         Quick Actions
       </p>
-      <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-        {actions.map(({ href, label, icon: Icon, bgClass, iconClass }) => (
-          <Link
+      {/* CSS scroll-snap carousel — one tile centered, adjacent tiles peek 20px */}
+      <div
+        className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide gap-4"
+        style={{
+          paddingInline: 'calc(50% - 80px)',
+          scrollPaddingInline: 'calc(50% - 80px)',
+        }}
+      >
+        {actions.map(({ href, label, icon: Icon, color, getBadge }) => (
+          <div
             key={`${href}-${label}`}
-            href={href}
-            className={`min-w-[100px] flex-shrink-0 rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-center min-h-[80px] transition-transform active:scale-95 ${bgClass}`}
+            className="snap-center shrink-0 w-40 h-32 rounded-2xl flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition-transform select-none"
+            style={{ backgroundColor: color }}
+            onClick={() => router.push(href)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && router.push(href)}
+            aria-label={label}
           >
-            <Icon className={`h-6 w-6 ${iconClass}`} />
-            <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
-          </Link>
+            <Icon className="w-8 h-8 text-white" />
+            <span className="text-white font-semibold text-sm leading-tight text-center">
+              {label}
+            </span>
+            <span className="text-white/80 text-xs text-center px-2">
+              {getBadge(quickActionBadges)}
+            </span>
+          </div>
         ))}
       </div>
     </div>

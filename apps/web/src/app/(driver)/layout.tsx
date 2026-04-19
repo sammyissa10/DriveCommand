@@ -45,8 +45,6 @@ export default async function DriverLayout({
             <DriveCommandWordmark size="md" className="text-white" />
           </div>
           <div className="flex items-center gap-2">
-            {/* GPS ping + status dot — fires on all driver pages */}
-            <DriverGpsPing />
             {/* Notification bell — accessible from any driver page */}
             <DriverNotificationBell />
             <UserMenu compactOnMobile />
@@ -57,6 +55,9 @@ export default async function DriverLayout({
           <DriverNav />
         </div>
       </header>
+
+      {/* Silent GPS ping — fires on ALL driver pages, no visual output */}
+      <DriverGpsPing variant="silent" />
 
       <main className="p-4 pb-24 sm:p-6 lg:pb-6">{children}</main>
 

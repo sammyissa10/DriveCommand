@@ -5,6 +5,7 @@ import { DriverDispatchCard } from './driver-dispatch-card';
 import { DriverQuickActions } from './driver-quick-actions';
 import { DriverHosWidget } from './driver-hos-widget';
 import { DriverMessagesPreview } from './driver-messages-preview';
+import { DriverGpsPing } from './driver-gps-ping';
 import { startTrip } from '@/app/(driver)/actions/driver-routes';
 
 // Types derived from getMyActiveDispatch and getDriverHOS return shapes
@@ -53,14 +54,22 @@ interface MessagePreview {
   createdAt: string;
 }
 
+interface QuickActionBadges {
+  stopsRemaining: number;
+  unreadMessages: number;
+  hosStatus: string;
+  expiringDocs: number;
+}
+
 interface DriverDashboardProps {
   firstName?: string;
   dispatch: DispatchData | null;
   hos: HosData | null;
   recentMessages: MessagePreview[];
+  quickActionBadges: QuickActionBadges;
 }
 
-export function DriverDashboard({ firstName, dispatch, hos, recentMessages }: DriverDashboardProps) {
+export function DriverDashboard({ firstName, dispatch, hos, recentMessages, quickActionBadges }: DriverDashboardProps) {
   // Greeting is deferred to client to avoid hydration mismatch: server renders UTC hours,
   // client renders local hours — different values cause React error #418.
   const [greeting, setGreeting] = useState('Hello');
@@ -74,14 +83,17 @@ export function DriverDashboard({ firstName, dispatch, hos, recentMessages }: Dr
 
   return (
     <div className="max-w-lg mx-auto space-y-5 px-0">
-      {/* Header row: greeting */}
-      <h1 className="text-xl font-bold text-foreground leading-snug min-h-[1.75rem]">{greeting}</h1>
+      {/* Header row: greeting + GPS pill */}
+      <div>
+        <h1 className="text-xl font-bold text-foreground leading-snug min-h-[1.75rem]">{greeting}</h1>
+        <DriverGpsPing variant="pill" />
+      </div>
 
       {/* Active dispatch card */}
       <DriverDispatchCard dispatch={dispatch} startAction={startTrip} />
 
-      {/* Quick action tiles */}
-      <DriverQuickActions />
+      {/* Quick action tiles carousel */}
+      <DriverQuickActions quickActionBadges={quickActionBadges} />
 
       {/* HOS widget */}
       <DriverHosWidget hos={hos} />
