@@ -84,7 +84,11 @@ const OWNER_PATHS = [
   '/safety',
   '/tags',
   '/subscription',
+  '/carrier',
 ];
+
+// Owner-only pages — MANAGER is always blocked, redirect to /carrier/dashboard
+const OWNER_ONLY_PATHS = ['/settings/team-permissions', '/subscription'];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
@@ -157,15 +161,22 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // MANAGER permission guard: check granular permissions for gated paths
+  // MANAGER permission guard
   if (appMeta.role === 'MANAGER') {
+    // Owner-only pages — always blocked for MANAGER regardless of permissions
+    if (OWNER_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
+      return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
+    }
+
+    // Granular permission check for carrier ops and other gated routes
     const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
       pathname.startsWith(g.path)
     );
     if (gatedRoute) {
       const permissions = (appMeta.permissions ?? {}) as UserPermissions;
-      if (!permissions[gatedRoute.permission]) {
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
+      // Default-all-true: only block if explicitly set to false
+      if (permissions[gatedRoute.permission] === false) {
+        return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
       }
     }
   }
