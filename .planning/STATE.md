@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-18 - Completed quick task 254: Notification z-index above Leaflet, Full Access master toggle in team permissions, map auto-zoom ref guard
+Last activity: 2026-04-19 - Completed quick task 254: Fix notification z-index over map, Full Access toggle on Team Permissions, map marker auto-zoom
 Last session: 2026-04-18T00:00:00Z
 Stopped at: Completed quick-254-PLAN.md — 3 tasks, 5 files modified
 
@@ -1057,6 +1057,7 @@ None blocking immediate progress.
 | 251 | Comprehensive mobile responsive overhaul for owner portal | 2026-04-18 | c27408c | [251-comprehensive-mobile-responsive-overhaul](./quick/251-comprehensive-mobile-responsive-overhaul/) |
 | 252 | Driver portal quick actions carousel, GPS indicator fix, owner portal mobile header fix, and dashboard KPI replacement | 2026-04-19 | e6b567f | [252-driver-portal-quick-actions-carousel-gps](./quick/252-driver-portal-quick-actions-carousel-gps/) |
 | 253 | Rebuild Team Permissions to reflect current Carrier Ops pages and fix enforcement | 2026-04-19 | 771e3c3 | [253-rebuild-team-permissions-to-reflect-curr](./quick/253-rebuild-team-permissions-to-reflect-curr/) |
+| 254 | Fix notification z-index over map, Full Access toggle on Team Permissions, map marker auto-zoom | 2026-04-19 | c05c4ca | [254-fix-notification-z-index-over-map-full-a](./quick/254-fix-notification-z-index-over-map-full-a/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
