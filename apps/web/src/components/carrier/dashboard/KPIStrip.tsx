@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Package, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Package, DollarSign, CreditCard, FileText } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -34,13 +35,8 @@ function fmtCurrency(val: number): string {
 interface KPIData {
   loadsThisWeek: number | null;
   revenueThisWeek: number | null;
-  avgDwellMinutes: number | null;
-  onTimePct: number | null;
-}
-
-interface PerformanceRow {
-  on_time_pct: number | null;
-  avg_dwell_minutes: number | null;
+  pendingPayApprovals: number | null;
+  openInvoices: number | null;
 }
 
 interface RevenueSummary {
@@ -52,11 +48,12 @@ interface RevenueSummary {
 // ---------------------------------------------------------------------------
 
 export function KPIStrip() {
+  const router = useRouter();
   const [data, setData] = useState<KPIData>({
     loadsThisWeek: null,
     revenueThisWeek: null,
-    avgDwellMinutes: null,
-    onTimePct: null,
+    pendingPayApprovals: null,
+    openInvoices: null,
   });
   const [loading, setLoading] = useState(true);
 
@@ -65,45 +62,24 @@ export function KPIStrip() {
     const today = getTodayISO();
 
     Promise.all([
-      fetch(
-        `/api/v1/carrier/reports/performance?date_from=${weekStart}&date_to=${today}`
-      ).then((r) => (r.ok ? r.json() : null)),
+      fetch('/api/v1/carrier/dashboard/kpi').then((r) => (r.ok ? r.json() : null)),
       fetch(
         `/api/v1/carrier/reports/revenue?date_from=${weekStart}&date_to=${today}`
       ).then((r) => (r.ok ? r.json() : null)),
     ])
-      .then(([perfJson, revJson]) => {
-        const perfRows: PerformanceRow[] = perfJson?.data ?? [];
+      .then(([kpiJson, revJson]) => {
         const summary: RevenueSummary | undefined = revJson?.data?.summary;
-
-        // Loads this week = number of performance rows (1 row per dispatch)
-        const loadsThisWeek = perfRows.length;
-
-        // Revenue this week
         const revenueThisWeek = summary ? parseFloat(summary.total_invoiced) : 0;
 
-        // Avg dwell (minutes)
-        const dwellValues = perfRows
-          .map((r) => r.avg_dwell_minutes)
-          .filter((v): v is number => v != null);
-        const avgDwellMinutes =
-          dwellValues.length > 0
-            ? dwellValues.reduce((a, b) => a + b, 0) / dwellValues.length
-            : null;
-
-        // On-time %
-        const otValues = perfRows
-          .map((r) => r.on_time_pct)
-          .filter((v): v is number => v != null);
-        const onTimePct =
-          otValues.length > 0
-            ? otValues.reduce((a, b) => a + b, 0) / otValues.length
-            : null;
-
-        setData({ loadsThisWeek, revenueThisWeek, avgDwellMinutes, onTimePct });
+        setData({
+          loadsThisWeek: kpiJson?.loadsThisWeek ?? 0,
+          revenueThisWeek,
+          pendingPayApprovals: kpiJson?.pendingPayApprovals ?? 0,
+          openInvoices: kpiJson?.openInvoices ?? 0,
+        });
       })
       .catch(() => {
-        setData({ loadsThisWeek: 0, revenueThisWeek: 0, avgDwellMinutes: null, onTimePct: null });
+        setData({ loadsThisWeek: 0, revenueThisWeek: 0, pendingPayApprovals: 0, openInvoices: 0 });
       })
       .finally(() => setLoading(false));
   }, []);
@@ -114,33 +90,42 @@ export function KPIStrip() {
       label: 'Loads This Week',
       value: loading ? null : data.loadsThisWeek,
       format: (v: number) => String(v),
+      href: null,
     },
     {
       icon: DollarSign,
       label: 'Revenue This Week',
       value: loading ? null : data.revenueThisWeek,
       format: (v: number) => fmtCurrency(v),
+      href: null,
     },
     {
-      icon: Clock,
-      label: 'Avg Dwell (min)',
-      value: loading ? null : data.avgDwellMinutes,
-      format: (v: number) => v.toFixed(1),
+      icon: CreditCard,
+      label: 'Pending Pay',
+      value: loading ? null : data.pendingPayApprovals,
+      format: (v: number) => String(v),
+      href: '/carrier/reports/driver-pay',
     },
     {
-      icon: CheckCircle,
-      label: 'On-Time %',
-      value: loading ? null : data.onTimePct,
-      format: (v: number) => `${v.toFixed(1)}%`,
+      icon: FileText,
+      label: 'Open Invoices',
+      value: loading ? null : data.openInvoices,
+      format: (v: number) => String(v),
+      href: '/carrier/loads?status=invoiced',
     },
   ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map(({ icon: Icon, label, value, format }) => (
+      {cards.map(({ icon: Icon, label, value, format, href }) => (
         <div
           key={label}
-          className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2"
+          className={`rounded-lg border border-border bg-card p-4 flex flex-col gap-2 cursor-pointer active:scale-95 transition-transform${href ? '' : ''}`}
+          onClick={() => href && router.push(href)}
+          role={href ? 'button' : undefined}
+          tabIndex={href ? 0 : undefined}
+          onKeyDown={(e) => href && e.key === 'Enter' && router.push(href)}
+          aria-label={href ? `${label} — navigate to ${href}` : label}
         >
           <div className="flex items-center gap-2 text-muted-foreground">
             <Icon className="h-4 w-4" />

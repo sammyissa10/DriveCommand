@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { OwnerBottomNav } from "@/components/navigation/owner-bottom-nav"
 import { UserMenu } from "@/components/navigation/user-menu"
 import { NotificationBell } from "@/components/navigation/notification-bell"
+import { AppLogo } from "@/components/navigation/app-logo"
 
 interface OwnerShellProps {
   children: React.ReactNode;
@@ -19,6 +20,8 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
       <AppSidebar supportBadge={supportBadge} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-4 lg:px-6">
+          {/* DC logo — visible on all screen sizes */}
+          <AppLogo size={28} variant="dark" />
           <SidebarTrigger className="-ml-1 hidden lg:flex" />
           <Separator orientation="vertical" className="mr-2 h-4 hidden lg:block" />
           {tenantName && (
@@ -26,7 +29,8 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
           )}
           <div className="ml-auto flex items-center gap-2">
             <NotificationBell />
-            <UserMenu />
+            {/* compactOnMobile hides name/email text on mobile — shows avatar only */}
+            <UserMenu compactOnMobile />
           </div>
         </header>
         <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">
