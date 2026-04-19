@@ -1048,6 +1048,7 @@ None blocking immediate progress.
 | 250 | Add mobile bottom nav to owner portal | 2026-04-18 | e42c9e0 | [250-add-mobile-bottom-nav-to-owner-portal](./quick/250-add-mobile-bottom-nav-to-owner-portal/) |
 | 251 | Comprehensive mobile responsive overhaul for owner portal | 2026-04-18 | c27408c | [251-comprehensive-mobile-responsive-overhaul](./quick/251-comprehensive-mobile-responsive-overhaul/) |
 | 252 | Driver portal quick actions carousel, GPS indicator fix, owner portal mobile header fix, and dashboard KPI replacement | 2026-04-19 | e6b567f | [252-driver-portal-quick-actions-carousel-gps](./quick/252-driver-portal-quick-actions-carousel-gps/) |
+| 253 | Rebuild Team Permissions to reflect current Carrier Ops pages and fix enforcement | 2026-04-19 | 771e3c3 | [253-rebuild-team-permissions-to-reflect-curr](./quick/253-rebuild-team-permissions-to-reflect-curr/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
