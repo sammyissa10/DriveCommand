@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
 import { recalculateAndStore } from '@/lib/carrier/revenue-calculator';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
-import { sendLoadDeliveredNotification, sendClientPickupNotification } from '@/lib/carrier/notifications';
+import { sendLoadDeliveredNotification, sendClientPickupNotification, sendStopCompletedNotification } from '@/lib/carrier/notifications';
 import type { CarrierStop } from '@/generated/prisma';
 
 // ---------------------------------------------------------------------------
@@ -146,6 +146,9 @@ export async function completeStop(
   });
 
   logger.info('completeStop: completed', { orgId, stopId, dwellMinutes });
+
+  // Fire-and-forget: notify owner that a stop was completed
+  after(() => sendStopCompletedNotification(orgId, stopId));
 
   // -------------------------------------------------------------------------
   // Fire client pickup notification when first pickup stop is completed

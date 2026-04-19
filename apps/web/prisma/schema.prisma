@@ -109,6 +109,7 @@ enum InAppNotificationType {
   pay_record_ready
   invoice_generated
   compliance_alert
+  stop_completed
   needs_assignment
 }
 

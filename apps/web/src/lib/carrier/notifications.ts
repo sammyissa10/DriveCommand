@@ -30,6 +30,7 @@ import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { DispatchAssignedEmail } from '@/emails/carrier/dispatch-assigned';
 import { LoadDeliveredEmail } from '@/emails/carrier/load-delivered';
+import { StopCompletedEmail } from '@/emails/carrier/stop-completed';
 import { PayRecordReadyEmail } from '@/emails/carrier/pay-record-ready';
 import { InvoiceGeneratedEmail } from '@/emails/carrier/invoice-generated';
 import { ComplianceAlertEmail } from '@/emails/carrier/compliance-alert';
@@ -308,6 +309,138 @@ export async function sendLoadDeliveredNotification(
     logger.info('sendLoadDeliveredNotification: sent', { orgId, loadId });
   } catch (err) {
     logger.error('sendLoadDeliveredNotification: failed', { orgId, loadId, error: err });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// sendStopCompletedNotification
+// ---------------------------------------------------------------------------
+
+export async function sendStopCompletedNotification(
+  orgId: string,
+  stopId: string
+): Promise<void> {
+  try {
+    const idempotencyKey = `carrier-stop-completed-${stopId}`;
+
+    const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
+    if (alreadySent) return;
+
+    const owner = await getOwnerEmail(orgId);
+    if (!owner) {
+      logger.warn('sendStopCompletedNotification: no owner found for org', { orgId, stopId });
+      return;
+    }
+
+    const stop = await prisma.carrierStop.findFirst({
+      where: { id: stopId },
+      include: {
+        facility: { select: { name: true, city: true, state: true } },
+        dispatch: {
+          select: {
+            id: true,
+            notes: true,
+            primaryDriverId: true,
+            primaryDriver: { select: { firstName: true, lastName: true } },
+          },
+        },
+      },
+    });
+
+    if (!stop) {
+      logger.warn('sendStopCompletedNotification: stop not found', { orgId, stopId });
+      return;
+    }
+
+    const dispatchNumberMatch = stop.dispatch?.notes?.match(
+      /\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/
+    );
+    const dispatchNumber = dispatchNumberMatch
+      ? dispatchNumberMatch[1]
+      : (stop.dispatchId ?? stopId).slice(0, 8);
+
+    const driverName =
+      [stop.dispatch?.primaryDriver?.firstName, stop.dispatch?.primaryDriver?.lastName]
+        .filter(Boolean)
+        .join(' ') || 'Driver';
+
+    const facilityName = stop.facility
+      ? [stop.facility.name, stop.facility.city, stop.facility.state].filter(Boolean).join(', ')
+      : 'Unknown Facility';
+
+    const completionTime = new Date().toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+    const tenant = await prisma.tenant.findFirst({
+      where: { id: orgId },
+      select: { name: true },
+    });
+    const companyName = tenant?.name ?? 'Your Company';
+
+    const baseUrl = getAppBaseUrl();
+    const dispatchDetailUrl = `${baseUrl}/carrier/dispatches/${stop.dispatchId}`;
+
+    const stopTypeLabel = stop.stopType === 'pickup' ? 'pickup' : 'delivery';
+    const subject = `Stop Completed - ${facilityName}`;
+
+    const logId = await recordNotification(prisma, {
+      tenantId: orgId,
+      idempotencyKey,
+      notificationType: 'carrier-stop-completed',
+      entityType: 'dispatch',
+      entityId: stop.dispatchId,
+      recipientEmail: owner.email,
+      emailSubject: subject,
+    });
+
+    const result = await sendEmail({
+      to: owner.email,
+      subject,
+      react: React.createElement(StopCompletedEmail, {
+        driverName,
+        stopType: stopTypeLabel,
+        facilityName,
+        completionTime,
+        dispatchNumber,
+        companyName,
+        dispatchDetailUrl,
+      }),
+    });
+
+    await markNotificationSent(prisma, logId, result.id);
+
+    // In-app notification for the owner portal notification center
+    await createNotification({
+      orgId,
+      type: 'stop_completed',
+      title: 'Stop Completed',
+      message: `${driverName} completed ${stopTypeLabel} at ${facilityName}`,
+      entityType: 'dispatch',
+      entityId: stop.dispatchId,
+    });
+
+    // Send push notification to owner
+    const ownerUser = await prisma.user.findFirst({
+      where: { tenantId: orgId, role: 'OWNER', isActive: true },
+      select: { id: true },
+    });
+    if (ownerUser) {
+      await sendPushToUser(ownerUser.id, {
+        title: 'Stop Completed',
+        body: `${driverName} completed ${stopTypeLabel} at ${facilityName}`,
+        data: { type: 'stop_completed', dispatchId: stop.dispatchId, stopId },
+      });
+    }
+
+    logger.info('sendStopCompletedNotification: sent', { orgId, stopId });
+  } catch (err) {
+    logger.error('sendStopCompletedNotification: failed', { orgId, stopId, error: err });
   }
 }
 
