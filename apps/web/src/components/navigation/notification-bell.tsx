@@ -50,7 +50,7 @@ export function NotificationBell() {
   const displayCount = unreadCount > 9 ? '9+' : unreadCount > 0 ? String(unreadCount) : null;
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative z-[1001]">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
@@ -65,7 +65,7 @@ export function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 z-50">
+        <div className="absolute right-0 top-full mt-2 z-[1001]">
           <NotificationCenter
             onClose={() => setIsOpen(false)}
             onMarkedAllRead={handleMarkedAllRead}
