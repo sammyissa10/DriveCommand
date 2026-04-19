@@ -1064,6 +1064,7 @@ None blocking immediate progress.
 | 257 | Fix live map centering, driver dashboard dispatch card state, greeting punctuation, and owner stop completion notification | 2026-04-19 | 7fd216f | [257-fix-live-map-centering-driver-dashboard-](./quick/257-fix-live-map-centering-driver-dashboard-/) |
 | 258 | Add show/hide password toggle to login page | 2026-04-19 | 33faaa1 | [258-add-show-hide-password-toggle-to-login-p](./quick/258-add-show-hide-password-toggle-to-login-p/) |
 | 259 | Fix notification dropdown z-index on live map page | 2026-04-19 | 4e798f8 | [259-fix-notification-dropdown-z-index-on-liv](./quick/259-fix-notification-dropdown-z-index-on-liv/) |
+| 260 | Debug dispatch detail stop timeline not showing stops after load attachment | 2026-04-19 | b34c37c | [260-debug-dispatch-detail-stop-timeline-not-](./quick/260-debug-dispatch-detail-stop-timeline-not-/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
