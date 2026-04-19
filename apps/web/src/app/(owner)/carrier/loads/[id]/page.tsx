@@ -30,9 +30,29 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   if (!load) notFound();
 
+  // If no stops found via loadId but load is on a dispatch, check for stops
+  // that belong to the dispatch but weren't linked to this load via loadId yet.
+  // This handles stops originally created from dispatch templates.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let stopsForMapping = load.stops as any[];
+  if (stopsForMapping.length === 0 && load.dispatchId) {
+    const dispatchStops = await prisma.carrierStop.findMany({
+      where: {
+        dispatchId: load.dispatchId,
+        OR: [
+          { loadId: load.id },
+          { loadId: null },
+        ],
+      },
+      include: { facility: { select: { name: true, city: true, state: true } } },
+      orderBy: { sequenceOrder: 'asc' },
+    });
+    stopsForMapping = dispatchStops;
+  }
+
   // Map CarrierStop records to StopBuilderStop format for the stop builder
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mappedStops: StopBuilderStop[] = (load.stops as any[]).map((s) => ({
+  const mappedStops: StopBuilderStop[] = stopsForMapping.map((s: any) => ({
     id: s.id,
     facility_id: s.facilityId,
     facility_name: s.facility?.name ?? 'Unknown Facility',
