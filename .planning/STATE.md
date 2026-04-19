@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-19 - Completed quick task 257: Fix live map centering, driver dashboard dispatch card state, greeting punctuation, and owner stop completion notification
+Last activity: 2026-04-19 - Completed quick task 258: Add show/hide password toggle to login page
 Last session: 2026-04-18T00:00:00Z
 Stopped at: Completed quick-254-PLAN.md — 3 tasks, 5 files modified
 
@@ -1062,6 +1062,7 @@ None blocking immediate progress.
 | 255 | Fix dispatch detail page not showing stops from attached loads | 2026-04-19 | af79aee | [255-fix-dispatch-detail-page-not-showing-sto](./quick/255-fix-dispatch-detail-page-not-showing-sto/) |
 | 256 | Fix load edit form not pre-populating existing stops and persistStops deleting stops on save | 2026-04-19 | 99523b6 | [256-fix-load-edit-form-not-pre-populating-ex](./quick/256-fix-load-edit-form-not-pre-populating-ex/) |
 | 257 | Fix live map centering, driver dashboard dispatch card state, greeting punctuation, and owner stop completion notification | 2026-04-19 | 7fd216f | [257-fix-live-map-centering-driver-dashboard-](./quick/257-fix-live-map-centering-driver-dashboard-/) |
+| 258 | Add show/hide password toggle to login page | 2026-04-19 | 33faaa1 | [258-add-show-hide-password-toggle-to-login-p](./quick/258-add-show-hide-password-toggle-to-login-p/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
