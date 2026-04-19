@@ -810,6 +810,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-210]: Use tenantId as rate limit key for document routes; publicLimiter on track endpoint uses IP from x-forwarded-for
 - [Phase quick-241]: updateMany with status filter for in_transit cascade — idempotent, won't downgrade a load already past in_transit
 - [Phase quick-243]: Used getSession() instead of requireRole() to get userId and tenantId in a single call for HOS actions
+- [Phase quick]: Single-vehicle map centering uses setView(zoom 13) instead of fitBounds to avoid point-bbox over-zoom
 
 ### Pending Todos
 
