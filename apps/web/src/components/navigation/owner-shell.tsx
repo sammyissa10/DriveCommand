@@ -19,7 +19,7 @@ export function OwnerShell({ children, supportBadge, tenantName }: OwnerShellPro
     <SidebarProvider defaultOpen={true}>
       <AppSidebar supportBadge={supportBadge} />
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-4 lg:px-6">
+        <header className="relative z-[1001] flex h-14 shrink-0 items-center gap-2 border-b bg-card/80 backdrop-blur-sm px-4 lg:px-6">
           {/* DC logo — visible on all screen sizes */}
           <AppLogo size={28} variant="dark" />
           <SidebarTrigger className="-ml-1 hidden lg:flex" />
