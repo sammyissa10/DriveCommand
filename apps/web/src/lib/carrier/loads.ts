@@ -383,6 +383,42 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
     after(() => sendClientInvoiceReadyNotification(orgId, id));
   }
 
+  // When dispatchId changes, migrate existing stops for this load to the new dispatch
+  if (data.dispatchId !== undefined && data.dispatchId !== existing.dispatchId) {
+    if (data.dispatchId !== null) {
+      // Attaching to a dispatch: move all pending stops for this load to the new dispatch
+      await prisma.carrierStop.updateMany({
+        where: {
+          loadId: id,
+          status: 'pending',
+        },
+        data: {
+          dispatchId: data.dispatchId,
+        },
+      });
+      logger.info('updateLoad: migrated pending stops to new dispatch', {
+        orgId,
+        loadId: id,
+        newDispatchId: data.dispatchId,
+      });
+    } else {
+      // Detaching from a dispatch: delete pending stops for this load
+      // (completed/skipped stops are preserved as historical records)
+      await prisma.carrierStop.deleteMany({
+        where: {
+          loadId: id,
+          dispatchId: existing.dispatchId!,
+          status: 'pending',
+        },
+      });
+      logger.info('updateLoad: deleted pending stops on detach', {
+        orgId,
+        loadId: id,
+        oldDispatchId: existing.dispatchId,
+      });
+    }
+  }
+
   // Persist stops when load has a dispatchId (newly assigned or pre-existing)
   if (data.stops !== undefined && data.stops.length > 0) {
     const effectiveDispatchId =

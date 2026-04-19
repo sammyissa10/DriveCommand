@@ -79,6 +79,16 @@ export async function POST(
       data: { dispatchId: null, status: 'pending' },
     });
 
+    // Delete pending stops linked to this load on this dispatch.
+    // Completed/skipped stops are preserved as historical records.
+    await prisma.carrierStop.deleteMany({
+      where: {
+        dispatchId: id,
+        loadId,
+        status: 'pending',
+      },
+    });
+
     logger.info('remove-load: detached load from dispatch', { orgId, dispatchId: id, loadId });
 
     return NextResponse.json({ data: { success: true } });
