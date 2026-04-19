@@ -3,7 +3,7 @@
 // CRITICAL: Import Leaflet CSS first
 import 'leaflet/dist/leaflet.css';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { divIcon } from 'leaflet';
 import { MapContainer, TileLayer, useMap, Marker, Popup, Polyline } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
@@ -27,21 +27,24 @@ interface LiveMapProps {
 }
 
 /**
- * Helper component to fit map bounds on mount
- * Uses useMap hook to access Leaflet map instance
+ * Helper component to fit map bounds on initial load only.
+ * Uses a ref to ensure fitBounds fires exactly once — not on every 15s poll refresh.
+ * Handles the SSR edge case where vehicles may arrive after map mount.
  */
 function FitBoundsOnMount({ vehicles }: { vehicles: VehicleLocation[] }) {
   const map = useMap();
+  const hasFitted = useRef(false);
 
   useEffect(() => {
+    if (hasFitted.current) return;
     if (vehicles.length === 0) return;
 
     const bounds = calculateBounds(vehicles);
     if (bounds) {
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+      hasFitted.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map]);
+  }, [map, vehicles]);
 
   return null;
 }
