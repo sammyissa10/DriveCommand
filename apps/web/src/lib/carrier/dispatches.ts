@@ -45,6 +45,7 @@ export type DispatchUpdateInput = Partial<Omit<DispatchCreateInput, 'primaryDriv
   truckId?: string;
   coDriverId?: string | null;
   trailerId?: string;
+  routeTemplateId?: string;
   notes?: string;
   plannedMiles?: number;
   actualMiles?: number;
@@ -200,6 +201,24 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
     ? `${dispatchNumberTag} ${userNotes}`
     : dispatchNumberTag;
 
+  // If template provided, look up to auto-populate planned miles and append template tag to notes
+  let resolvedPlannedMiles = data.plannedMiles ?? null;
+  let resolvedNotes = notes;
+
+  if (data.routeTemplateId) {
+    const template = await prisma.routeTemplate.findFirst({
+      where: { id: data.routeTemplateId, orgId, active: true },
+      select: { estimatedMiles: true, templateName: true },
+    });
+    if (template) {
+      if (resolvedPlannedMiles == null && template.estimatedMiles != null) {
+        resolvedPlannedMiles = template.estimatedMiles;
+      }
+      // Append template tag to notes
+      resolvedNotes = `${resolvedNotes} [Template: ${template.templateName}]`.trim();
+    }
+  }
+
   const dispatch = await prisma.carrierDispatch.create({
     data: {
       orgId,
@@ -215,14 +234,74 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
       scheduledArrival: data.scheduledArrival
         ? new Date(data.scheduledArrival)
         : null,
-      plannedMiles: data.plannedMiles ?? null,
+      plannedMiles: resolvedPlannedMiles,
       hosCycle: data.hosCycle ?? 'us_70',
       status: 'planned',
-      notes,
+      notes: resolvedNotes,
     },
   });
 
   logger.info('createDispatch: created', { orgId, dispatchId: dispatch.id, dispatchNumber });
+
+  // If routeTemplateId is set, inherit stops from template
+  if (data.routeTemplateId) {
+    const templateStops = await prisma.routeTemplateStop.findMany({
+      where: { routeTemplateId: data.routeTemplateId },
+      orderBy: { sequenceOrder: 'asc' },
+      include: { facility: true },
+    });
+
+    for (const ts of templateStops) {
+      // Compute appointment times from scheduled departure + offset
+      let appointmentStart: Date | null = null;
+      let appointmentEnd: Date | null = null;
+      const depTime = dispatch.scheduledDeparture;
+
+      if (ts.apptWindowStartOffsetMin != null) {
+        appointmentStart = new Date(depTime.getTime() + ts.apptWindowStartOffsetMin * 60000);
+      }
+      if (ts.apptWindowEndOffsetMin != null) {
+        appointmentEnd = new Date(depTime.getTime() + ts.apptWindowEndOffsetMin * 60000);
+      }
+
+      // Address snapshot in notes — same pattern as dispatch-generator.ts
+      const stopNotes = JSON.stringify({
+        address_snapshot: {
+          address_line1: ts.facility.addressLine1,
+          city: ts.facility.city,
+          state: ts.facility.state,
+          zip: ts.facility.zip,
+          lat: ts.facility.latitude,
+          lng: ts.facility.longitude,
+        },
+      });
+
+      await prisma.carrierStop.create({
+        data: {
+          dispatchId: dispatch.id,
+          sequenceOrder: ts.sequenceOrder,
+          stopType: ts.stopType,
+          facilityId: ts.facilityId,
+          contactName: ts.contactName,
+          contactPhone: ts.contactPhone,
+          appointmentStart,
+          appointmentEnd,
+          commodityDescription: ts.commodityDescription,
+          specialInstructions: ts.specialInstructions,
+          bolRequired: ts.bolRequired,
+          podRequired: ts.podRequired,
+          notes: stopNotes,
+        },
+      });
+    }
+
+    logger.info('createDispatch: inherited stops from template', {
+      orgId,
+      dispatchId: dispatch.id,
+      routeTemplateId: data.routeTemplateId,
+      stopCount: templateStops.length,
+    });
+  }
 
   // Schedule notification to run after the HTTP response is sent.
   // after() guarantees the async work completes even in serverless environments
@@ -280,18 +359,107 @@ export async function updateDispatch(
     delete updateData.truckId;
   }
 
+  // Only allow template changes when status is planned
+  const routeTemplateId = existing.status === 'planned' ? updateData.routeTemplateId : undefined;
+  delete updateData.routeTemplateId;
+
+  // If template is being changed on a planned dispatch, look up estimatedMiles
+  let templatePlannedMiles: number | null = null;
+  let templateName: string | null = null;
+  if (routeTemplateId && existing.status === 'planned') {
+    const template = await prisma.routeTemplate.findFirst({
+      where: { id: routeTemplateId, orgId, active: true },
+      select: { estimatedMiles: true, templateName: true },
+    });
+    if (template) {
+      templatePlannedMiles = template.estimatedMiles ?? null;
+      templateName = template.templateName;
+    }
+  }
+
   const updated = await prisma.carrierDispatch.update({
     where: { id },
     data: {
       ...updateData,
+      ...(routeTemplateId !== undefined ? { routeTemplateId } : {}),
       scheduledDeparture: updateData.scheduledDeparture
         ? new Date(updateData.scheduledDeparture)
         : undefined,
       scheduledArrival: updateData.scheduledArrival
         ? new Date(updateData.scheduledArrival)
         : undefined,
+      // If template provides estimatedMiles and payload doesn't override plannedMiles, apply it
+      ...(routeTemplateId && templatePlannedMiles != null && updateData.plannedMiles == null
+        ? { plannedMiles: templatePlannedMiles }
+        : {}),
     },
   });
+
+  // If template changed on a planned dispatch, replace stops
+  if (routeTemplateId && existing.status === 'planned') {
+    // Delete existing stops
+    await prisma.carrierStop.deleteMany({ where: { dispatchId: id } });
+
+    // Re-create stops from new template
+    const templateStops = await prisma.routeTemplateStop.findMany({
+      where: { routeTemplateId },
+      orderBy: { sequenceOrder: 'asc' },
+      include: { facility: true },
+    });
+
+    const scheduledDeparture = updateData.scheduledDeparture
+      ? new Date(updateData.scheduledDeparture)
+      : existing.scheduledDeparture;
+
+    for (const ts of templateStops) {
+      let appointmentStart: Date | null = null;
+      let appointmentEnd: Date | null = null;
+
+      if (ts.apptWindowStartOffsetMin != null) {
+        appointmentStart = new Date(scheduledDeparture.getTime() + ts.apptWindowStartOffsetMin * 60000);
+      }
+      if (ts.apptWindowEndOffsetMin != null) {
+        appointmentEnd = new Date(scheduledDeparture.getTime() + ts.apptWindowEndOffsetMin * 60000);
+      }
+
+      const stopNotes = JSON.stringify({
+        address_snapshot: {
+          address_line1: ts.facility.addressLine1,
+          city: ts.facility.city,
+          state: ts.facility.state,
+          zip: ts.facility.zip,
+          lat: ts.facility.latitude,
+          lng: ts.facility.longitude,
+        },
+      });
+
+      await prisma.carrierStop.create({
+        data: {
+          dispatchId: id,
+          sequenceOrder: ts.sequenceOrder,
+          stopType: ts.stopType,
+          facilityId: ts.facilityId,
+          contactName: ts.contactName,
+          contactPhone: ts.contactPhone,
+          appointmentStart,
+          appointmentEnd,
+          commodityDescription: ts.commodityDescription,
+          specialInstructions: ts.specialInstructions,
+          bolRequired: ts.bolRequired,
+          podRequired: ts.podRequired,
+          notes: stopNotes,
+        },
+      });
+    }
+
+    logger.info('updateDispatch: replaced stops from new template', {
+      orgId,
+      dispatchId: id,
+      routeTemplateId,
+      templateName,
+      stopCount: templateStops.length,
+    });
+  }
 
   // Notify new driver if primaryDriverId changed
   if (data.primaryDriverId && data.primaryDriverId !== existing.primaryDriverId) {
