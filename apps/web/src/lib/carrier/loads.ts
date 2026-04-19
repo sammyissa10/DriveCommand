@@ -247,6 +247,16 @@ async function persistStops(
   dispatchId: string,
   stops: StopInput[]
 ) {
+  // Safety guard: if no stops submitted but load already has stops, skip entirely.
+  // An empty submission means "no changes to stops", not "delete all stops".
+  const existingStopCount = await prisma.carrierStop.count({
+    where: { loadId },
+  });
+  if (stops.length === 0 && existingStopCount > 0) {
+    logger.info('persistStops: skipping — empty submission with existing stops', { orgId, loadId, existingStopCount });
+    return;
+  }
+
   // Verify all facilities belong to this org (tenant isolation)
   const facilityIds = [...new Set(stops.map((s) => s.facility_id))];
   const validFacilities = await prisma.carrierFacility.findMany({
@@ -420,7 +430,7 @@ export async function updateLoad(orgId: string, id: string, data: LoadUpdateInpu
   }
 
   // Persist stops when load has a dispatchId (newly assigned or pre-existing)
-  if (data.stops !== undefined && data.stops.length > 0) {
+  if (data.stops !== undefined) {
     const effectiveDispatchId =
       data.dispatchId !== undefined ? data.dispatchId : existing.dispatchId;
     if (effectiveDispatchId) {
