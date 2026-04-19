@@ -78,7 +78,7 @@ export function DriverDashboard({ firstName, dispatch, hos, recentMessages, quic
     const hour = new Date().getHours();
     const salutation =
       hour >= 5 && hour < 12 ? 'Good morning' : hour >= 12 && hour < 17 ? 'Good afternoon' : 'Good evening';
-    setGreeting(firstName ? `${salutation}, ${firstName}.` : `${salutation}.`);
+    setGreeting(firstName ? `${salutation}, ${firstName}!` : `${salutation}!`);
   }, [firstName]);
 
   return (

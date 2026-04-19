@@ -39,6 +39,17 @@ function FitBoundsOnMount({ vehicles }: { vehicles: VehicleLocation[] }) {
     if (hasFitted.current) return;
     if (vehicles.length === 0) return;
 
+    // Single vehicle: use setView at zoom 13 to avoid fitBounds over-zoom on a point bbox
+    const locatedVehicles = vehicles.filter(
+      (v) => v.latitude !== null && v.longitude !== null
+    );
+
+    if (locatedVehicles.length === 1) {
+      map.setView([locatedVehicles[0].latitude!, locatedVehicles[0].longitude!], 13);
+      hasFitted.current = true;
+      return;
+    }
+
     const bounds = calculateBounds(vehicles);
     if (bounds) {
       map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
