@@ -73,6 +73,9 @@ interface PermissionEditorProps {
 }
 
 function PermissionEditor({ permissions, onChange, disabled, idPrefix }: PermissionEditorProps) {
+  // When fullAccess is on, all individual toggles are greyed out
+  const allDisabled = disabled || permissions.fullAccess === true;
+
   function handleToggle(key: keyof UserPermissions, value: boolean) {
     onChange({ ...permissions, [key]: value });
   }
@@ -106,14 +109,37 @@ function PermissionEditor({ permissions, onChange, disabled, idPrefix }: Permiss
 
   return (
     <div className="space-y-6">
+      {/* Full Access master toggle */}
+      <div className="flex items-center justify-between rounded-lg border-2 border-primary/20 bg-primary/5 p-4">
+        <div className="flex-1 min-w-0">
+          <Label htmlFor={`${idPrefix}-fullAccess`} className="cursor-pointer">
+            <span className="block text-sm font-semibold leading-none">Full Access</span>
+            <span className="block text-xs text-muted-foreground mt-1">Grant access to all pages</span>
+          </Label>
+        </div>
+        <Switch
+          id={`${idPrefix}-fullAccess`}
+          checked={permissions.fullAccess === true}
+          onCheckedChange={(value) => onChange({ ...permissions, fullAccess: value })}
+          disabled={disabled}
+          className="shrink-0 ml-4"
+        />
+      </div>
+
+      {permissions.fullAccess && (
+        <Badge variant="default" className="bg-green-600 hover:bg-green-600 text-white">
+          Full Access Granted
+        </Badge>
+      )}
+
       {/* Master controls */}
-      <div className="flex items-center gap-2">
+      <div className={`flex items-center gap-2 ${allDisabled && !disabled ? 'opacity-50 pointer-events-none' : ''}`}>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={handleEnableAll}
-          disabled={disabled}
+          disabled={allDisabled}
           className="text-xs h-7"
         >
           Enable All
@@ -123,7 +149,7 @@ function PermissionEditor({ permissions, onChange, disabled, idPrefix }: Permiss
           variant="outline"
           size="sm"
           onClick={handleDisableAll}
-          disabled={disabled}
+          disabled={allDisabled}
           className="text-xs h-7"
         >
           Disable All
@@ -131,57 +157,59 @@ function PermissionEditor({ permissions, onChange, disabled, idPrefix }: Permiss
       </div>
 
       {/* Grouped sections */}
-      {PERMISSION_SECTIONS.map((section) => (
-        <div key={section.id} className="space-y-2">
-          {/* Section header */}
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-              {section.label}
-            </span>
-            <div className="flex items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleSectionEnable(section.id)}
-                disabled={disabled}
-                className="text-xs h-6 px-2"
-              >
-                Enable All
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => handleSectionDisable(section.id)}
-                disabled={disabled}
-                className="text-xs h-6 px-2"
-              >
-                Disable All
-              </Button>
+      <div className={`space-y-6 ${allDisabled && !disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+        {PERMISSION_SECTIONS.map((section) => (
+          <div key={section.id} className="space-y-2">
+            {/* Section header */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                {section.label}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSectionEnable(section.id)}
+                  disabled={allDisabled}
+                  className="text-xs h-6 px-2"
+                >
+                  Enable All
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSectionDisable(section.id)}
+                  disabled={allDisabled}
+                  className="text-xs h-6 px-2"
+                >
+                  Disable All
+                </Button>
+              </div>
+            </div>
+
+            {/* Permission toggles */}
+            <div className="space-y-1.5">
+              {section.permissions.map((perm) => (
+                <div key={perm.key} className="flex items-center gap-3 rounded-lg border p-3">
+                  <Switch
+                    id={`${idPrefix}-${perm.key}`}
+                    checked={permissions[perm.key]}
+                    onCheckedChange={(value) => handleToggle(perm.key, value)}
+                    disabled={allDisabled}
+                    className="shrink-0"
+                  />
+                  <Label htmlFor={`${idPrefix}-${perm.key}`} className="cursor-pointer flex-1">
+                    <span className="block text-sm font-medium leading-none">{perm.label}</span>
+                    <span className="block text-xs text-muted-foreground mt-0.5">{perm.description}</span>
+                  </Label>
+                </div>
+              ))}
             </div>
           </div>
-
-          {/* Permission toggles */}
-          <div className="space-y-1.5">
-            {section.permissions.map((perm) => (
-              <div key={perm.key} className="flex items-center gap-3 rounded-lg border p-3">
-                <Switch
-                  id={`${idPrefix}-${perm.key}`}
-                  checked={permissions[perm.key]}
-                  onCheckedChange={(value) => handleToggle(perm.key, value)}
-                  disabled={disabled}
-                  className="shrink-0"
-                />
-                <Label htmlFor={`${idPrefix}-${perm.key}`} className="cursor-pointer flex-1">
-                  <span className="block text-sm font-medium leading-none">{perm.label}</span>
-                  <span className="block text-xs text-muted-foreground mt-0.5">{perm.description}</span>
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {/* Info card */}
       <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
@@ -367,8 +395,11 @@ export default function TeamPermissionsPage() {
                     <p className="text-xs text-muted-foreground truncate">{member.email}</p>
                   </div>
                   {/* Permission count badge */}
-                  <Badge variant="secondary" className="shrink-0">
-                    {count === TOTAL_PERMISSIONS ? 'Full access' : count === 0 ? 'No access' : `${count} of ${TOTAL_PERMISSIONS}`}
+                  <Badge
+                    variant="secondary"
+                    className={`shrink-0 ${member.permissions.fullAccess ? 'bg-green-600/10 text-green-700 dark:text-green-400' : ''}`}
+                  >
+                    {member.permissions.fullAccess ? 'Full access' : count === TOTAL_PERMISSIONS ? 'Full access' : count === 0 ? 'No access' : `${count} of ${TOTAL_PERMISSIONS}`}
                   </Badge>
                   <ChevronRight className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                 </button>

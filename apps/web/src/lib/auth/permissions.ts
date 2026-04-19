@@ -14,6 +14,9 @@
 // ============================================================
 
 export interface UserPermissions {
+  // Master toggle — when true, bypasses all granular permission checks for MANAGER
+  fullAccess?: boolean;
+
   // Carrier Ops
   carrierDashboard: boolean;  // /carrier/dashboard
   clients: boolean;           // /carrier/clients
@@ -213,6 +216,8 @@ export function hasPermission(
 ): boolean {
   if (role === 'OWNER') return true;
   if (role === 'MANAGER') {
+    // Full Access: bypass all granular permission checks
+    if (permissions?.fullAccess === true) return true;
     // Default-all-true: if no permissions set, or key not set, treat as true
     return permissions?.[key] !== false;
   }
@@ -238,11 +243,12 @@ export function getPermissions(user: {
     }
 
     // Merge stored permissions with defaults so any MISSING key defaults to true
+    // Also preserve fullAccess which is not in DEFAULT_MANAGER_PERMISSIONS
     return {
       ...DEFAULT_MANAGER_PERMISSIONS,
       ...Object.fromEntries(
         Object.entries(user.permissions).filter(
-          ([key]) => key in DEFAULT_MANAGER_PERMISSIONS
+          ([key]) => key in DEFAULT_MANAGER_PERMISSIONS || key === 'fullAccess'
         )
       ),
     } as UserPermissions;

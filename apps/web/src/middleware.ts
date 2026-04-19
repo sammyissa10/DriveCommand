@@ -168,15 +168,19 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
     }
 
-    // Granular permission check for carrier ops and other gated routes
-    const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
-      pathname.startsWith(g.path)
-    );
-    if (gatedRoute) {
-      const permissions = (appMeta.permissions ?? {}) as UserPermissions;
-      // Default-all-true: only block if explicitly set to false
-      if (permissions[gatedRoute.permission] === false) {
-        return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
+    const permissions = (appMeta.permissions ?? {}) as UserPermissions;
+
+    // Full Access: skip all granular permission checks for MANAGER
+    if (!permissions.fullAccess) {
+      // Granular permission check for carrier ops and other gated routes
+      const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
+        pathname.startsWith(g.path)
+      );
+      if (gatedRoute) {
+        // Default-all-true: only block if explicitly set to false
+        if (permissions[gatedRoute.permission] === false) {
+          return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
+        }
       }
     }
   }
