@@ -47,6 +47,8 @@ import { validateOrigin } from '@/lib/security/csrf';
 const PUBLIC_PATHS = [
   '/sign-in',
   '/sign-up',
+  '/forgot-password',
+  '/reset-password',
   '/accept-invitation',
   '/api/auth/login',
   '/api/auth/logout',
