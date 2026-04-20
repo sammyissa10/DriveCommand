@@ -26,6 +26,33 @@ export interface CreateNotificationParams {
   entityId: string;
 }
 
+export interface CreateMessageNotificationParams {
+  orgId: string;
+  recipientUserId: string;
+  senderName: string;
+  messagePreview: string;
+  dispatchId?: string | null;
+  messageId?: string;
+}
+
+/**
+ * Fire-and-forget in-app notification for a new fleet message.
+ * Call via after() — never blocks the message send response.
+ * Never throws.
+ */
+export async function createMessageNotification(params: CreateMessageNotificationParams): Promise<void> {
+  const { orgId, recipientUserId, senderName, messagePreview, dispatchId, messageId } = params;
+  await createNotification({
+    orgId,
+    userId: recipientUserId,
+    type: 'fleet_message',
+    title: `New message from ${senderName}`,
+    message: messagePreview.slice(0, 60),
+    entityType: dispatchId ? 'dispatch' : 'message',
+    entityId: dispatchId ?? messageId ?? recipientUserId,
+  });
+}
+
 /**
  * Persist an in-app notification row for the owner portal notification center.
  *

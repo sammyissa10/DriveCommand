@@ -2,6 +2,7 @@ import { NextRequest, NextResponse, after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
 
 /**
@@ -23,7 +24,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const { tenantId, userId, role } = session;
+  const { tenantId, userId, role, firstName, lastName } = session;
+  const senderName = [firstName, lastName].filter(Boolean).join(' ') || 'Dispatch';
 
   let body: unknown;
   try {
@@ -94,13 +96,23 @@ export async function POST(req: NextRequest) {
       });
     }, TX_OPTIONS);
 
-    // Send push notification via after() — survives serverless context freezing
+    // Send push + in-app notifications via after() — survives serverless context freezing
     const pushBody = messageBody.slice(0, 100);
     after(() =>
       sendPushToUser(recipientId, {
-        title: 'New Message from Dispatch',
+        title: `New Message from ${senderName}`,
         body: pushBody,
         data: { type: 'fleet_message', messageId: created.id },
+      })
+    );
+    after(() =>
+      createMessageNotification({
+        orgId: tenantId,
+        recipientUserId: recipientId,
+        senderName,
+        messagePreview: messageBody,
+        dispatchId: created.dispatchId,
+        messageId: created.id,
       })
     );
 

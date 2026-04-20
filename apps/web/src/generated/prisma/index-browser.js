@@ -655,11 +655,13 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   tenantId: 'tenantId',
   routeId: 'routeId',
   loadId: 'loadId',
+  dispatchId: 'dispatchId',
   senderId: 'senderId',
   senderRole: 'senderRole',
   body: 'body',
   recipientId: 'recipientId',
   isBroadcast: 'isBroadcast',
+  readAt: 'readAt',
   createdAt: 'createdAt'
 };
 
@@ -1306,7 +1308,8 @@ exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   invoice_generated: 'invoice_generated',
   compliance_alert: 'compliance_alert',
   stop_completed: 'stop_completed',
-  needs_assignment: 'needs_assignment'
+  needs_assignment: 'needs_assignment',
+  fleet_message: 'fleet_message'
 };
 
 exports.Prisma.ModelName = {

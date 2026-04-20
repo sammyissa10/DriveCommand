@@ -416,7 +416,8 @@ export const InAppNotificationType: {
   invoice_generated: 'invoice_generated',
   compliance_alert: 'compliance_alert',
   stop_completed: 'stop_completed',
-  needs_assignment: 'needs_assignment'
+  needs_assignment: 'needs_assignment',
+  fleet_message: 'fleet_message'
 };
 
 export type InAppNotificationType = (typeof InAppNotificationType)[keyof typeof InAppNotificationType]
@@ -7459,6 +7460,7 @@ export namespace Prisma {
     carrierLoads: number
     expenses: number
     driverPayRecords: number
+    messages: number
   }
 
   export type CarrierDispatchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7466,6 +7468,7 @@ export namespace Prisma {
     carrierLoads?: boolean | CarrierDispatchCountOutputTypeCountCarrierLoadsArgs
     expenses?: boolean | CarrierDispatchCountOutputTypeCountExpensesArgs
     driverPayRecords?: boolean | CarrierDispatchCountOutputTypeCountDriverPayRecordsArgs
+    messages?: boolean | CarrierDispatchCountOutputTypeCountMessagesArgs
   }
 
   // Custom InputTypes
@@ -7505,6 +7508,13 @@ export namespace Prisma {
    */
   export type CarrierDispatchCountOutputTypeCountDriverPayRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverPayRecordWhereInput
+  }
+
+  /**
+   * CarrierDispatchCountOutputType without action
+   */
+  export type CarrierDispatchCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FleetMessageWhereInput
   }
 
 
@@ -50676,11 +50686,13 @@ export namespace Prisma {
     tenantId: string | null
     routeId: string | null
     loadId: string | null
+    dispatchId: string | null
     senderId: string | null
     senderRole: string | null
     body: string | null
     recipientId: string | null
     isBroadcast: boolean | null
+    readAt: Date | null
     createdAt: Date | null
   }
 
@@ -50689,11 +50701,13 @@ export namespace Prisma {
     tenantId: string | null
     routeId: string | null
     loadId: string | null
+    dispatchId: string | null
     senderId: string | null
     senderRole: string | null
     body: string | null
     recipientId: string | null
     isBroadcast: boolean | null
+    readAt: Date | null
     createdAt: Date | null
   }
 
@@ -50702,11 +50716,13 @@ export namespace Prisma {
     tenantId: number
     routeId: number
     loadId: number
+    dispatchId: number
     senderId: number
     senderRole: number
     body: number
     recipientId: number
     isBroadcast: number
+    readAt: number
     createdAt: number
     _all: number
   }
@@ -50717,11 +50733,13 @@ export namespace Prisma {
     tenantId?: true
     routeId?: true
     loadId?: true
+    dispatchId?: true
     senderId?: true
     senderRole?: true
     body?: true
     recipientId?: true
     isBroadcast?: true
+    readAt?: true
     createdAt?: true
   }
 
@@ -50730,11 +50748,13 @@ export namespace Prisma {
     tenantId?: true
     routeId?: true
     loadId?: true
+    dispatchId?: true
     senderId?: true
     senderRole?: true
     body?: true
     recipientId?: true
     isBroadcast?: true
+    readAt?: true
     createdAt?: true
   }
 
@@ -50743,11 +50763,13 @@ export namespace Prisma {
     tenantId?: true
     routeId?: true
     loadId?: true
+    dispatchId?: true
     senderId?: true
     senderRole?: true
     body?: true
     recipientId?: true
     isBroadcast?: true
+    readAt?: true
     createdAt?: true
     _all?: true
   }
@@ -50829,11 +50851,13 @@ export namespace Prisma {
     tenantId: string
     routeId: string | null
     loadId: string | null
+    dispatchId: string | null
     senderId: string
     senderRole: string
     body: string
     recipientId: string | null
     isBroadcast: boolean
+    readAt: Date | null
     createdAt: Date
     _count: FleetMessageCountAggregateOutputType | null
     _min: FleetMessageMinAggregateOutputType | null
@@ -50859,12 +50883,15 @@ export namespace Prisma {
     tenantId?: boolean
     routeId?: boolean
     loadId?: boolean
+    dispatchId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
     recipientId?: boolean
     isBroadcast?: boolean
+    readAt?: boolean
     createdAt?: boolean
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -50872,12 +50899,15 @@ export namespace Prisma {
     tenantId?: boolean
     routeId?: boolean
     loadId?: boolean
+    dispatchId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
     recipientId?: boolean
     isBroadcast?: boolean
+    readAt?: boolean
     createdAt?: boolean
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -50885,12 +50915,15 @@ export namespace Prisma {
     tenantId?: boolean
     routeId?: boolean
     loadId?: boolean
+    dispatchId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
     recipientId?: boolean
     isBroadcast?: boolean
+    readAt?: boolean
     createdAt?: boolean
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectScalar = {
@@ -50898,29 +50931,44 @@ export namespace Prisma {
     tenantId?: boolean
     routeId?: boolean
     loadId?: boolean
+    dispatchId?: boolean
     senderId?: boolean
     senderRole?: boolean
     body?: boolean
     recipientId?: boolean
     isBroadcast?: boolean
+    readAt?: boolean
     createdAt?: boolean
   }
 
-  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "senderId" | "senderRole" | "body" | "recipientId" | "isBroadcast" | "createdAt", ExtArgs["result"]["fleetMessage"]>
+  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "dispatchId" | "senderId" | "senderRole" | "body" | "recipientId" | "isBroadcast" | "readAt" | "createdAt", ExtArgs["result"]["fleetMessage"]>
+  export type FleetMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+  }
+  export type FleetMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+  }
+  export type FleetMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+  }
 
   export type $FleetMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FleetMessage"
-    objects: {}
+    objects: {
+      dispatch: Prisma.$CarrierDispatchPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       tenantId: string
       routeId: string | null
       loadId: string | null
+      dispatchId: string | null
       senderId: string
       senderRole: string
       body: string
       recipientId: string | null
       isBroadcast: boolean
+      readAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["fleetMessage"]>
     composites: {}
@@ -51316,6 +51364,7 @@ export namespace Prisma {
    */
   export interface Prisma__FleetMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    dispatch<T extends FleetMessage$dispatchArgs<ExtArgs> = {}>(args?: Subset<T, FleetMessage$dispatchArgs<ExtArgs>>): Prisma__CarrierDispatchClient<$Result.GetResult<Prisma.$CarrierDispatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -51349,11 +51398,13 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"FleetMessage", 'String'>
     readonly routeId: FieldRef<"FleetMessage", 'String'>
     readonly loadId: FieldRef<"FleetMessage", 'String'>
+    readonly dispatchId: FieldRef<"FleetMessage", 'String'>
     readonly senderId: FieldRef<"FleetMessage", 'String'>
     readonly senderRole: FieldRef<"FleetMessage", 'String'>
     readonly body: FieldRef<"FleetMessage", 'String'>
     readonly recipientId: FieldRef<"FleetMessage", 'String'>
     readonly isBroadcast: FieldRef<"FleetMessage", 'Boolean'>
+    readonly readAt: FieldRef<"FleetMessage", 'DateTime'>
     readonly createdAt: FieldRef<"FleetMessage", 'DateTime'>
   }
     
@@ -51371,6 +51422,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
     /**
      * Filter, which FleetMessage to fetch.
      */
@@ -51390,6 +51445,10 @@ export namespace Prisma {
      */
     omit?: FleetMessageOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    /**
      * Filter, which FleetMessage to fetch.
      */
     where: FleetMessageWhereUniqueInput
@@ -51407,6 +51466,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
     /**
      * Filter, which FleetMessage to fetch.
      */
@@ -51456,6 +51519,10 @@ export namespace Prisma {
      */
     omit?: FleetMessageOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    /**
      * Filter, which FleetMessage to fetch.
      */
     where?: FleetMessageWhereInput
@@ -51503,6 +51570,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
     /**
      * Filter, which FleetMessages to fetch.
      */
@@ -51552,6 +51623,10 @@ export namespace Prisma {
      */
     omit?: FleetMessageOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    /**
      * The data needed to create a FleetMessage.
      */
     data: XOR<FleetMessageCreateInput, FleetMessageUncheckedCreateInput>
@@ -51585,6 +51660,10 @@ export namespace Prisma {
      */
     data: FleetMessageCreateManyInput | FleetMessageCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -51599,6 +51678,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
     /**
      * The data needed to update a FleetMessage.
      */
@@ -51651,6 +51734,10 @@ export namespace Prisma {
      * Limit how many FleetMessages to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -51665,6 +51752,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
     /**
      * The filter to search for the FleetMessage to update in case it exists.
      */
@@ -51692,6 +51783,10 @@ export namespace Prisma {
      */
     omit?: FleetMessageOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    /**
      * Filter which FleetMessage to delete.
      */
     where: FleetMessageWhereUniqueInput
@@ -51712,6 +51807,25 @@ export namespace Prisma {
   }
 
   /**
+   * FleetMessage.dispatch
+   */
+  export type FleetMessage$dispatchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDispatch
+     */
+    select?: CarrierDispatchSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDispatch
+     */
+    omit?: CarrierDispatchOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDispatchInclude<ExtArgs> | null
+    where?: CarrierDispatchWhereInput
+  }
+
+  /**
    * FleetMessage without action
    */
   export type FleetMessageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -51723,6 +51837,10 @@ export namespace Prisma {
      * Omit specific fields from the FleetMessage
      */
     omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
   }
 
 
@@ -65485,6 +65603,7 @@ export namespace Prisma {
     carrierLoads?: boolean | CarrierDispatch$carrierLoadsArgs<ExtArgs>
     expenses?: boolean | CarrierDispatch$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierDispatch$driverPayRecordsArgs<ExtArgs>
+    messages?: boolean | CarrierDispatch$messagesArgs<ExtArgs>
     _count?: boolean | CarrierDispatchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierDispatch"]>
 
@@ -65584,6 +65703,7 @@ export namespace Prisma {
     carrierLoads?: boolean | CarrierDispatch$carrierLoadsArgs<ExtArgs>
     expenses?: boolean | CarrierDispatch$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierDispatch$driverPayRecordsArgs<ExtArgs>
+    messages?: boolean | CarrierDispatch$messagesArgs<ExtArgs>
     _count?: boolean | CarrierDispatchCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierDispatchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -65619,6 +65739,7 @@ export namespace Prisma {
       carrierLoads: Prisma.$CarrierLoadPayload<ExtArgs>[]
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
+      messages: Prisma.$FleetMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -66046,6 +66167,7 @@ export namespace Prisma {
     carrierLoads<T extends CarrierDispatch$carrierLoadsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$carrierLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierLoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     expenses<T extends CarrierDispatch$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends CarrierDispatch$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messages<T extends CarrierDispatch$messagesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FleetMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -66665,6 +66787,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverPayRecordScalarFieldEnum | DriverPayRecordScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierDispatch.messages
+   */
+  export type CarrierDispatch$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FleetMessage
+     */
+    select?: FleetMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FleetMessage
+     */
+    omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    where?: FleetMessageWhereInput
+    orderBy?: FleetMessageOrderByWithRelationInput | FleetMessageOrderByWithRelationInput[]
+    cursor?: FleetMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FleetMessageScalarFieldEnum | FleetMessageScalarFieldEnum[]
   }
 
   /**
@@ -77036,11 +77182,13 @@ export namespace Prisma {
     tenantId: 'tenantId',
     routeId: 'routeId',
     loadId: 'loadId',
+    dispatchId: 'dispatchId',
     senderId: 'senderId',
     senderRole: 'senderRole',
     body: 'body',
     recipientId: 'recipientId',
     isBroadcast: 'isBroadcast',
+    readAt: 'readAt',
     createdAt: 'createdAt'
   };
 
@@ -81712,12 +81860,15 @@ export namespace Prisma {
     tenantId?: UuidFilter<"FleetMessage"> | string
     routeId?: UuidNullableFilter<"FleetMessage"> | string | null
     loadId?: UuidNullableFilter<"FleetMessage"> | string | null
+    dispatchId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
     recipientId?: UuidNullableFilter<"FleetMessage"> | string | null
     isBroadcast?: BoolFilter<"FleetMessage"> | boolean
+    readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+    dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
   }
 
   export type FleetMessageOrderByWithRelationInput = {
@@ -81725,12 +81876,15 @@ export namespace Prisma {
     tenantId?: SortOrder
     routeId?: SortOrderInput | SortOrder
     loadId?: SortOrderInput | SortOrder
+    dispatchId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
     recipientId?: SortOrderInput | SortOrder
     isBroadcast?: SortOrder
+    readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    dispatch?: CarrierDispatchOrderByWithRelationInput
   }
 
   export type FleetMessageWhereUniqueInput = Prisma.AtLeast<{
@@ -81741,12 +81895,15 @@ export namespace Prisma {
     tenantId?: UuidFilter<"FleetMessage"> | string
     routeId?: UuidNullableFilter<"FleetMessage"> | string | null
     loadId?: UuidNullableFilter<"FleetMessage"> | string | null
+    dispatchId?: UuidNullableFilter<"FleetMessage"> | string | null
     senderId?: UuidFilter<"FleetMessage"> | string
     senderRole?: StringFilter<"FleetMessage"> | string
     body?: StringFilter<"FleetMessage"> | string
     recipientId?: UuidNullableFilter<"FleetMessage"> | string | null
     isBroadcast?: BoolFilter<"FleetMessage"> | boolean
+    readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+    dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
   }, "id">
 
   export type FleetMessageOrderByWithAggregationInput = {
@@ -81754,11 +81911,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     routeId?: SortOrderInput | SortOrder
     loadId?: SortOrderInput | SortOrder
+    dispatchId?: SortOrderInput | SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
     recipientId?: SortOrderInput | SortOrder
     isBroadcast?: SortOrder
+    readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: FleetMessageCountOrderByAggregateInput
     _max?: FleetMessageMaxOrderByAggregateInput
@@ -81773,11 +81932,13 @@ export namespace Prisma {
     tenantId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     routeId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
     loadId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
+    dispatchId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
     senderId?: UuidWithAggregatesFilter<"FleetMessage"> | string
     senderRole?: StringWithAggregatesFilter<"FleetMessage"> | string
     body?: StringWithAggregatesFilter<"FleetMessage"> | string
     recipientId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
     isBroadcast?: BoolWithAggregatesFilter<"FleetMessage"> | boolean
+    readAt?: DateTimeNullableWithAggregatesFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FleetMessage"> | Date | string
   }
 
@@ -83108,6 +83269,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    messages?: FleetMessageListRelationFilter
   }
 
   export type CarrierDispatchOrderByWithRelationInput = {
@@ -83142,6 +83304,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadOrderByRelationAggregateInput
     expenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
+    messages?: FleetMessageOrderByRelationAggregateInput
   }
 
   export type CarrierDispatchWhereUniqueInput = Prisma.AtLeast<{
@@ -83179,6 +83342,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    messages?: FleetMessageListRelationFilter
   }, "id">
 
   export type CarrierDispatchOrderByWithAggregationInput = {
@@ -88262,7 +88426,9 @@ export namespace Prisma {
     body: string
     recipientId?: string | null
     isBroadcast?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
+    dispatch?: CarrierDispatchCreateNestedOneWithoutMessagesInput
   }
 
   export type FleetMessageUncheckedCreateInput = {
@@ -88270,11 +88436,13 @@ export namespace Prisma {
     tenantId: string
     routeId?: string | null
     loadId?: string | null
+    dispatchId?: string | null
     senderId: string
     senderRole: string
     body: string
     recipientId?: string | null
     isBroadcast?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -88288,7 +88456,9 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     recipientId?: NullableStringFieldUpdateOperationsInput | string | null
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatch?: CarrierDispatchUpdateOneWithoutMessagesNestedInput
   }
 
   export type FleetMessageUncheckedUpdateInput = {
@@ -88296,11 +88466,13 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
     loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     recipientId?: NullableStringFieldUpdateOperationsInput | string | null
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -88309,11 +88481,13 @@ export namespace Prisma {
     tenantId: string
     routeId?: string | null
     loadId?: string | null
+    dispatchId?: string | null
     senderId: string
     senderRole: string
     body: string
     recipientId?: string | null
     isBroadcast?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -88327,6 +88501,7 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     recipientId?: NullableStringFieldUpdateOperationsInput | string | null
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -88335,11 +88510,13 @@ export namespace Prisma {
     tenantId?: StringFieldUpdateOperationsInput | string
     routeId?: NullableStringFieldUpdateOperationsInput | string | null
     loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
     senderId?: StringFieldUpdateOperationsInput | string
     senderRole?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     recipientId?: NullableStringFieldUpdateOperationsInput | string | null
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -89875,6 +90052,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateInput = {
@@ -89902,6 +90080,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUpdateInput = {
@@ -89929,6 +90108,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateInput = {
@@ -89956,6 +90136,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchCreateManyInput = {
@@ -94398,16 +94579,23 @@ export namespace Prisma {
     _max?: NestedEnumDriverPaymentMethodFilter<$PrismaModel>
   }
 
+  export type CarrierDispatchNullableScalarRelationFilter = {
+    is?: CarrierDispatchWhereInput | null
+    isNot?: CarrierDispatchWhereInput | null
+  }
+
   export type FleetMessageCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
     routeId?: SortOrder
     loadId?: SortOrder
+    dispatchId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
     recipientId?: SortOrder
     isBroadcast?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -94416,11 +94604,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     routeId?: SortOrder
     loadId?: SortOrder
+    dispatchId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
     recipientId?: SortOrder
     isBroadcast?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -94429,11 +94619,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     routeId?: SortOrder
     loadId?: SortOrder
+    dispatchId?: SortOrder
     senderId?: SortOrder
     senderRole?: SortOrder
     body?: SortOrder
     recipientId?: SortOrder
     isBroadcast?: SortOrder
+    readAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -95320,6 +95512,16 @@ export namespace Prisma {
     isNot?: CarrierTruckWhereInput
   }
 
+  export type FleetMessageListRelationFilter = {
+    every?: FleetMessageWhereInput
+    some?: FleetMessageWhereInput
+    none?: FleetMessageWhereInput
+  }
+
+  export type FleetMessageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type CarrierDispatchCountOrderByAggregateInput = {
     id?: SortOrder
     orgId?: SortOrder
@@ -95397,11 +95599,6 @@ export namespace Prisma {
   export type CarrierDispatchSumOrderByAggregateInput = {
     plannedMiles?: SortOrder
     actualMiles?: SortOrder
-  }
-
-  export type CarrierDispatchNullableScalarRelationFilter = {
-    is?: CarrierDispatchWhereInput | null
-    isNot?: CarrierDispatchWhereInput | null
   }
 
   export type CarrierLoadCountOrderByAggregateInput = {
@@ -101527,6 +101724,22 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDriverRouteJoinsInput, UserUpdateWithoutDriverRouteJoinsInput>, UserUncheckedUpdateWithoutDriverRouteJoinsInput>
   }
 
+  export type CarrierDispatchCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CarrierDispatchCreateOrConnectWithoutMessagesInput
+    connect?: CarrierDispatchWhereUniqueInput
+  }
+
+  export type CarrierDispatchUpdateOneWithoutMessagesNestedInput = {
+    create?: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CarrierDispatchCreateOrConnectWithoutMessagesInput
+    upsert?: CarrierDispatchUpsertWithoutMessagesInput
+    disconnect?: CarrierDispatchWhereInput | boolean
+    delete?: CarrierDispatchWhereInput | boolean
+    connect?: CarrierDispatchWhereUniqueInput
+    update?: XOR<XOR<CarrierDispatchUpdateToOneWithWhereWithoutMessagesInput, CarrierDispatchUpdateWithoutMessagesInput>, CarrierDispatchUncheckedUpdateWithoutMessagesInput>
+  }
+
   export type UserCreateNestedOneWithoutPushTokensInput = {
     create?: XOR<UserCreateWithoutPushTokensInput, UserUncheckedCreateWithoutPushTokensInput>
     connectOrCreate?: UserCreateOrConnectWithoutPushTokensInput
@@ -102865,6 +103078,13 @@ export namespace Prisma {
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
   }
 
+  export type FleetMessageCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput> | FleetMessageCreateWithoutDispatchInput[] | FleetMessageUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutDispatchInput | FleetMessageCreateOrConnectWithoutDispatchInput[]
+    createMany?: FleetMessageCreateManyDispatchInputEnvelope
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+  }
+
   export type CarrierStopUncheckedCreateNestedManyWithoutDispatchInput = {
     create?: XOR<CarrierStopCreateWithoutDispatchInput, CarrierStopUncheckedCreateWithoutDispatchInput> | CarrierStopCreateWithoutDispatchInput[] | CarrierStopUncheckedCreateWithoutDispatchInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutDispatchInput | CarrierStopCreateOrConnectWithoutDispatchInput[]
@@ -102891,6 +103111,13 @@ export namespace Prisma {
     connectOrCreate?: DriverPayRecordCreateOrConnectWithoutDispatchInput | DriverPayRecordCreateOrConnectWithoutDispatchInput[]
     createMany?: DriverPayRecordCreateManyDispatchInputEnvelope
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
+  }
+
+  export type FleetMessageUncheckedCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput> | FleetMessageCreateWithoutDispatchInput[] | FleetMessageUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutDispatchInput | FleetMessageCreateOrConnectWithoutDispatchInput[]
+    createMany?: FleetMessageCreateManyDispatchInputEnvelope
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierDispatchesNestedInput = {
@@ -103013,6 +103240,20 @@ export namespace Prisma {
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
   }
 
+  export type FleetMessageUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput> | FleetMessageCreateWithoutDispatchInput[] | FleetMessageUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutDispatchInput | FleetMessageCreateOrConnectWithoutDispatchInput[]
+    upsert?: FleetMessageUpsertWithWhereUniqueWithoutDispatchInput | FleetMessageUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: FleetMessageCreateManyDispatchInputEnvelope
+    set?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    disconnect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    delete?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    update?: FleetMessageUpdateWithWhereUniqueWithoutDispatchInput | FleetMessageUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: FleetMessageUpdateManyWithWhereWithoutDispatchInput | FleetMessageUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
+  }
+
   export type CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput = {
     create?: XOR<CarrierStopCreateWithoutDispatchInput, CarrierStopUncheckedCreateWithoutDispatchInput> | CarrierStopCreateWithoutDispatchInput[] | CarrierStopUncheckedCreateWithoutDispatchInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutDispatchInput | CarrierStopCreateOrConnectWithoutDispatchInput[]
@@ -103067,6 +103308,20 @@ export namespace Prisma {
     update?: DriverPayRecordUpdateWithWhereUniqueWithoutDispatchInput | DriverPayRecordUpdateWithWhereUniqueWithoutDispatchInput[]
     updateMany?: DriverPayRecordUpdateManyWithWhereWithoutDispatchInput | DriverPayRecordUpdateManyWithWhereWithoutDispatchInput[]
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
+  }
+
+  export type FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput> | FleetMessageCreateWithoutDispatchInput[] | FleetMessageUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutDispatchInput | FleetMessageCreateOrConnectWithoutDispatchInput[]
+    upsert?: FleetMessageUpsertWithWhereUniqueWithoutDispatchInput | FleetMessageUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: FleetMessageCreateManyDispatchInputEnvelope
+    set?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    disconnect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    delete?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    update?: FleetMessageUpdateWithWhereUniqueWithoutDispatchInput | FleetMessageUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: FleetMessageUpdateManyWithWhereWithoutDispatchInput | FleetMessageUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutCarrierLoadsInput = {
@@ -106423,6 +106678,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTenantInput = {
@@ -106449,6 +106705,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTenantInput = {
@@ -109636,6 +109893,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutDispatcherInput = {
@@ -109662,6 +109920,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutDispatcherInput = {
@@ -125739,6 +125998,130 @@ export namespace Prisma {
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type CarrierDispatchCreateWithoutMessagesInput = {
+    id?: string
+    scheduledDeparture: Date | string
+    actualDeparture?: Date | string | null
+    scheduledArrival?: Date | string | null
+    actualArrival?: Date | string | null
+    status?: string
+    relayHandoffStopId?: string | null
+    plannedMiles?: Decimal | DecimalJsLike | number | string | null
+    actualMiles?: Decimal | DecimalJsLike | number | string | null
+    hosCycle?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierDispatchesInput
+    routeTemplate?: RouteTemplateCreateNestedOneWithoutDispatchesInput
+    primaryDriver: CarrierDriverCreateNestedOneWithoutPrimaryDispatchesInput
+    coDriver?: CarrierDriverCreateNestedOneWithoutCoDispatchesInput
+    truck: CarrierTruckCreateNestedOneWithoutPrimaryDispatchesInput
+    trailer?: CarrierTruckCreateNestedOneWithoutTrailerDispatchesInput
+    dispatcher?: UserCreateNestedOneWithoutDispatchedRunsInput
+    stops?: CarrierStopCreateNestedManyWithoutDispatchInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+  }
+
+  export type CarrierDispatchUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    orgId: string
+    routeTemplateId?: string | null
+    primaryDriverId: string
+    coDriverId?: string | null
+    truckId: string
+    trailerId?: string | null
+    dispatcherId?: string | null
+    scheduledDeparture: Date | string
+    actualDeparture?: Date | string | null
+    scheduledArrival?: Date | string | null
+    actualArrival?: Date | string | null
+    status?: string
+    relayHandoffStopId?: string | null
+    plannedMiles?: Decimal | DecimalJsLike | number | string | null
+    actualMiles?: Decimal | DecimalJsLike | number | string | null
+    hosCycle?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stops?: CarrierStopUncheckedCreateNestedManyWithoutDispatchInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+  }
+
+  export type CarrierDispatchCreateOrConnectWithoutMessagesInput = {
+    where: CarrierDispatchWhereUniqueInput
+    create: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
+  }
+
+  export type CarrierDispatchUpsertWithoutMessagesInput = {
+    update: XOR<CarrierDispatchUpdateWithoutMessagesInput, CarrierDispatchUncheckedUpdateWithoutMessagesInput>
+    create: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
+    where?: CarrierDispatchWhereInput
+  }
+
+  export type CarrierDispatchUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: CarrierDispatchWhereInput
+    data: XOR<CarrierDispatchUpdateWithoutMessagesInput, CarrierDispatchUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type CarrierDispatchUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
+    actualDeparture?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    relayHandoffStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    hosCycle?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierDispatchesNestedInput
+    routeTemplate?: RouteTemplateUpdateOneWithoutDispatchesNestedInput
+    primaryDriver?: CarrierDriverUpdateOneRequiredWithoutPrimaryDispatchesNestedInput
+    coDriver?: CarrierDriverUpdateOneWithoutCoDispatchesNestedInput
+    truck?: CarrierTruckUpdateOneRequiredWithoutPrimaryDispatchesNestedInput
+    trailer?: CarrierTruckUpdateOneWithoutTrailerDispatchesNestedInput
+    dispatcher?: UserUpdateOneWithoutDispatchedRunsNestedInput
+    stops?: CarrierStopUpdateManyWithoutDispatchNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+  }
+
+  export type CarrierDispatchUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    routeTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryDriverId?: StringFieldUpdateOperationsInput | string
+    coDriverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: StringFieldUpdateOperationsInput | string
+    trailerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatcherId?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
+    actualDeparture?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    relayHandoffStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    hosCycle?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stops?: CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+  }
+
   export type UserCreateWithoutPushTokensInput = {
     id?: string
     email: string
@@ -128862,6 +129245,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutPrimaryDriverInput = {
@@ -128888,6 +129272,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutPrimaryDriverInput = {
@@ -128924,6 +129309,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutCoDriverInput = {
@@ -128950,6 +129336,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutCoDriverInput = {
@@ -129632,6 +130019,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTruckInput = {
@@ -129658,6 +130046,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTruckInput = {
@@ -129694,6 +130083,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTrailerInput = {
@@ -129720,6 +130110,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTrailerInput = {
@@ -130434,6 +130825,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutRouteTemplateInput = {
@@ -130460,6 +130852,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutRouteTemplateInput = {
@@ -131904,6 +132297,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FleetMessageCreateWithoutDispatchInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type FleetMessageUncheckedCreateWithoutDispatchInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type FleetMessageCreateOrConnectWithoutDispatchInput = {
+    where: FleetMessageWhereUniqueInput
+    create: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type FleetMessageCreateManyDispatchInputEnvelope = {
+    data: FleetMessageCreateManyDispatchInput | FleetMessageCreateManyDispatchInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierDispatchesInput = {
     update: XOR<TenantUpdateWithoutCarrierDispatchesInput, TenantUncheckedUpdateWithoutCarrierDispatchesInput>
     create: XOR<TenantCreateWithoutCarrierDispatchesInput, TenantUncheckedCreateWithoutCarrierDispatchesInput>
@@ -132507,6 +132938,40 @@ export namespace Prisma {
     data: XOR<DriverPayRecordUpdateManyMutationInput, DriverPayRecordUncheckedUpdateManyWithoutDispatchInput>
   }
 
+  export type FleetMessageUpsertWithWhereUniqueWithoutDispatchInput = {
+    where: FleetMessageWhereUniqueInput
+    update: XOR<FleetMessageUpdateWithoutDispatchInput, FleetMessageUncheckedUpdateWithoutDispatchInput>
+    create: XOR<FleetMessageCreateWithoutDispatchInput, FleetMessageUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type FleetMessageUpdateWithWhereUniqueWithoutDispatchInput = {
+    where: FleetMessageWhereUniqueInput
+    data: XOR<FleetMessageUpdateWithoutDispatchInput, FleetMessageUncheckedUpdateWithoutDispatchInput>
+  }
+
+  export type FleetMessageUpdateManyWithWhereWithoutDispatchInput = {
+    where: FleetMessageScalarWhereInput
+    data: XOR<FleetMessageUpdateManyMutationInput, FleetMessageUncheckedUpdateManyWithoutDispatchInput>
+  }
+
+  export type FleetMessageScalarWhereInput = {
+    AND?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
+    OR?: FleetMessageScalarWhereInput[]
+    NOT?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
+    id?: UuidFilter<"FleetMessage"> | string
+    tenantId?: UuidFilter<"FleetMessage"> | string
+    routeId?: UuidNullableFilter<"FleetMessage"> | string | null
+    loadId?: UuidNullableFilter<"FleetMessage"> | string | null
+    dispatchId?: UuidNullableFilter<"FleetMessage"> | string | null
+    senderId?: UuidFilter<"FleetMessage"> | string
+    senderRole?: StringFilter<"FleetMessage"> | string
+    body?: StringFilter<"FleetMessage"> | string
+    recipientId?: UuidNullableFilter<"FleetMessage"> | string | null
+    isBroadcast?: BoolFilter<"FleetMessage"> | boolean
+    readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
+    createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+  }
+
   export type TenantCreateWithoutCarrierLoadsInput = {
     id?: string
     name: string
@@ -132638,6 +133103,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutCarrierLoadsInput = {
@@ -132664,6 +133130,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutCarrierLoadsInput = {
@@ -133143,6 +133610,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -133169,6 +133637,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierContractUpsertWithoutCarrierLoadsInput = {
@@ -133385,6 +133854,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutStopsInput = {
@@ -133411,6 +133881,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutStopsInput = {
@@ -133756,6 +134227,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutStopsInput = {
@@ -133782,6 +134254,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutStopsInput = {
@@ -134914,6 +135387,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutDispatchInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutExpensesInput = {
@@ -134940,6 +135414,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutDispatchInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutExpensesInput = {
@@ -135503,6 +135978,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutDispatchNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutExpensesInput = {
@@ -135529,6 +136005,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutExpensesInput = {
@@ -136163,6 +136640,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutDispatchInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -136189,6 +136667,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutDispatchInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -136650,6 +137129,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutDispatchNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -136676,6 +137156,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutDriverPayRecordsInput = {
@@ -140109,6 +140590,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTenantInput = {
@@ -140135,6 +140617,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTenantInput = {
@@ -142446,6 +142929,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutDispatcherInput = {
@@ -142472,6 +142956,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutDispatcherInput = {
@@ -146362,6 +146847,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutPrimaryDriverInput = {
@@ -146388,6 +146874,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutPrimaryDriverInput = {
@@ -146436,6 +146923,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutCoDriverInput = {
@@ -146462,6 +146950,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutCoDriverInput = {
@@ -146821,6 +147310,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTruckInput = {
@@ -146847,6 +147337,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTruckInput = {
@@ -146895,6 +147386,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTrailerInput = {
@@ -146921,6 +147413,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTrailerInput = {
@@ -147177,6 +147670,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutRouteTemplateInput = {
@@ -147203,6 +147697,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutRouteTemplateInput = {
@@ -147337,6 +147832,20 @@ export namespace Prisma {
     approvedAt?: Date | string | null
     notes?: string | null
     orgId: string
+    createdAt?: Date | string
+  }
+
+  export type FleetMessageCreateManyDispatchInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -147686,6 +148195,48 @@ export namespace Prisma {
     approvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     orgId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FleetMessageUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FleetMessageUncheckedUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FleetMessageUncheckedUpdateManyWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

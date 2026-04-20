@@ -6,6 +6,7 @@ import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';
+import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
 
 /**
@@ -110,16 +111,28 @@ export async function sendDriverMessage(prevState: ActionState | null, formData:
     },
   });
 
-  // Fire-and-forget: notify owner
+  const driverName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+  // Fire-and-forget: email + in-app notification to owner
   try {
     await sendDriverMessageNotification({
-      driverName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
+      driverName,
       messageBody: message.trim(),
       tenantId: user.tenantId,
       routeName: undefined,
     });
   } catch (emailError) {
     logger.error('[sendDriverMessage] owner notification email failed:', emailError);
+  }
+
+  if (owner?.id) {
+    createMessageNotification({
+      orgId: user.tenantId,
+      recipientUserId: owner.id,
+      senderName: driverName,
+      messagePreview: message.trim(),
+      dispatchId: activeDispatchId ?? null,
+    }).catch((err) => logger.error('[sendDriverMessage] in-app notification failed:', err));
   }
 
   return { success: true, message: 'Message sent.' };
