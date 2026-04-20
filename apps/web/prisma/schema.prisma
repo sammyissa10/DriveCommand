@@ -111,6 +111,7 @@ enum InAppNotificationType {
   compliance_alert
   stop_completed
   needs_assignment
+  dispatch_generated
   fleet_message
 }
 
