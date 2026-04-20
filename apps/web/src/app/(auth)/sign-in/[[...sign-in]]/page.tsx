@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import Link from "next/link";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 
 export default function SignInPage() {
@@ -97,6 +98,13 @@ export default function SignInPage() {
               </button>
             </div>
           </div>
+
+          <Link
+            href="/forgot-password"
+            className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors text-right block"
+          >
+            Forgot password?
+          </Link>
 
           {error && (
             <div className="rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2">
