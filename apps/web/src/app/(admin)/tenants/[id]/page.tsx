@@ -9,6 +9,7 @@ import { TenantEditForm } from './tenant-edit-form';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
 import { CopyTenantIdButton } from './copy-tenant-id-button';
+import { ResetPasswordButton } from './reset-password-button';
 import { logger } from '@/lib/logger';
 
 function getStatusBadgeClasses(status: string): string {
@@ -151,6 +152,11 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                   <OwnerEmailForm
                     userId={tenant.ownerUser.id}
                     currentEmail={tenant.ownerUser.email}
+                  />
+                  <ResetPasswordButton
+                    userId={tenant.ownerUser.id}
+                    email={tenant.ownerUser.email}
+                    userName={`${tenant.ownerUser.firstName} ${tenant.ownerUser.lastName}`}
                   />
                 </div>
               ) : tenant.pendingOwnerInvitation ? (
