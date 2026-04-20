@@ -9,6 +9,7 @@ import { StopTimeline } from '@/components/carrier/dispatches/StopTimeline';
 import { DispatchLoadsPanel } from '@/components/carrier/dispatches/DispatchLoadsPanel';
 import { DispatchExpensesPanel } from '@/components/carrier/dispatches/DispatchExpensesPanel';
 import { DispatchPayRecordsPanel } from '@/components/carrier/dispatches/DispatchPayRecordsPanel';
+import { DispatchMessages } from '@/components/carrier/dispatches/DispatchMessages';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -89,17 +90,24 @@ export default async function DispatchDetailPage({ params }: Props) {
     }
   }
 
-  // Fetch driver names
+  // Fetch driver names and userId for messaging
   const driverIds = [
     dispatch.primaryDriverId,
     ...(dispatch.coDriverId ? [dispatch.coDriverId] : []),
   ];
   const drivers = await prisma.carrierDriver.findMany({
     where: { id: { in: driverIds }, orgId },
-    select: { id: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true, userId: true },
   });
   const driverMap: Record<string, string> = {};
-  for (const d of drivers) driverMap[d.id] = `${d.firstName} ${d.lastName}`;
+  const driverUserIdMap: Record<string, string | null> = {};
+  for (const d of drivers) {
+    driverMap[d.id] = `${d.firstName} ${d.lastName}`;
+    driverUserIdMap[d.id] = d.userId ?? null;
+  }
+
+  // Resolve primary driver's User ID for messaging
+  const primaryDriverUserId = driverUserIdMap[dispatch.primaryDriverId] ?? null;
 
   // Fetch truck unit number and display name
   const truck = await prisma.carrierTruck.findFirst({
@@ -265,6 +273,12 @@ export default async function DispatchDetailPage({ params }: Props) {
           dispatchStatus={dispatch.status}
         />
       )}
+
+      {/* Messages */}
+      <DispatchMessages
+        dispatchId={dispatch.id}
+        driverUserId={primaryDriverUserId}
+      />
     </div>
   );
 }

@@ -20,6 +20,7 @@ import {
   CalendarDays,
   Boxes,
   BarChart3,
+  MessageSquare,
 } from "lucide-react"
 import {
   Sidebar,
@@ -40,6 +41,7 @@ import { UserRole } from "@/lib/auth/roles"
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo"
 import { PermissionGuard } from "@/lib/auth/guards"
 import { DispatchBadge } from "@/components/navigation/dispatch-badge"
+import { MessagesBadge } from "@/components/navigation/messages-badge"
 import type { UserPermissions } from "@/lib/auth/permissions"
 
 interface AppSidebarProps {
@@ -225,6 +227,22 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                       <Link href="/carrier/loads" onClick={handleNavClick}>
                         <Package />
                         <span>Carrier Loads</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </PermissionGuard>
+                {/* Messages */}
+                <PermissionGuard permission="carrierDrivers">
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith("/carrier/messages")}
+                      tooltip="Messages"
+                    >
+                      <Link href="/carrier/messages" onClick={handleNavClick}>
+                        <MessageSquare />
+                        <span>Messages</span>
+                        <MessagesBadge />
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

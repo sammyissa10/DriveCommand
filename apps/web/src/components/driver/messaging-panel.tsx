@@ -10,10 +10,12 @@ type FleetMessage = {
   tenantId: string;
   routeId?: string | null;
   loadId?: string | null;
+  dispatchId?: string | null;
   senderId: string;
   senderRole: string;
   body: string;
   createdAt: Date;
+  isOwn: boolean;
 };
 
 const inputClass =
@@ -49,9 +51,11 @@ export function MessagingPanel() {
     }
   };
 
-  // Load messages on mount
+  // Load messages on mount and poll every 5 seconds
   useEffect(() => {
     fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // Refetch after successful send and clear the form
@@ -86,7 +90,7 @@ export function MessagingPanel() {
         ) : (
           <>
             {messages.map((msg) => {
-              const isDriver = msg.senderRole === 'DRIVER';
+              const isDriver = msg.isOwn;
               return (
                 <div
                   key={msg.id}
