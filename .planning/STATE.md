@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-19 - Completed quick task 261: Add route template attachment to dispatch with stop inheritance, recurring badge, and auto-next dispatch
+Last activity: 2026-04-19 - Completed quick task 262: Forgot password flow + sysadmin password override for tenant owners
 Last session: 2026-04-19T00:00:00Z
 Stopped at: Completed quick-261-PLAN.md — 3 tasks, 5 files modified
 
@@ -182,6 +182,7 @@ Progress: [███████████████████████
 - Quick-248 (2026-04-18): Add VIN auto-fill from NHTSA API and auto-generated vehicle ID with editable display name to carrier trucks — vehicleId (VH-YYYY-NNNNN globally unique) + displayName columns, migration backfills existing trucks, VIN Lookup button calls vpic.nhtsa.dot.gov client-side, display_name shown across trucks list, live map sidebar, dispatch detail, driver route tab — 3 tasks, 16 files modified
 - Quick-253 (2026-04-18): Rebuild team permissions with 16 route-based keys, default-all-true, middleware/sidebar enforcement, grouped toggle UI — 3 tasks, 18 files modified
 - Quick-254 (2026-04-18): Notification z-index above Leaflet (z-[1001]), Full Access master RBAC toggle wired to Prisma + Supabase, map fitBounds ref-guarded to fire once on initial load — 3 tasks, 5 files modified
+- Quick-262 (2026-04-19): Forgot password flow + sysadmin password override — forgot-password page (anti-enumeration), reset-password page (PASSWORD_RECOVERY event, show/hide toggles, 5s timeout), "Forgot password?" link on sign-in, /api/auth/admin-reset-password (send_reset via generateLink + set_password via updateUserById, sysadmin-only), ResetPasswordButton modal on tenant detail — 2 tasks, 6 files
 
 ## Accumulated Context
 
