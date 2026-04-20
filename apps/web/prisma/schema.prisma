@@ -1155,20 +1155,26 @@ model DriverRouteJoin {
 // ─── Fleet Messaging Models ──────────────────────────────────
 
 model FleetMessage {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String   @db.Uuid
-  routeId     String?  @db.Uuid
-  loadId      String?  @db.Uuid
-  senderId    String   @db.Uuid
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @db.Uuid
+  routeId     String?   @db.Uuid
+  loadId      String?   @db.Uuid
+  dispatchId  String?   @db.Uuid
+  senderId    String    @db.Uuid
   senderRole  String
   body        String
-  recipientId String?  @db.Uuid
-  isBroadcast Boolean  @default(false)
-  createdAt   DateTime @default(now()) @db.Timestamptz
+  recipientId String?   @db.Uuid
+  isBroadcast Boolean   @default(false)
+  readAt      DateTime? @db.Timestamptz
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+
+  dispatch    CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([routeId])
   @@index([loadId])
+  @@index([dispatchId])
+  @@index([recipientId])
   @@index([createdAt])
   @@index([senderId])
   @@index([tenantId, createdAt])
@@ -1540,6 +1546,7 @@ model CarrierDispatch {
   carrierLoads  CarrierLoad[]
   expenses      CarrierExpense[]
   driverPayRecords DriverPayRecord[]
+  messages      FleetMessage[]
 
   @@index([primaryDriverId])
   @@index([truckId])
