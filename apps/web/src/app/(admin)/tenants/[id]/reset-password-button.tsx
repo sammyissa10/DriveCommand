@@ -4,14 +4,13 @@ import { useState } from 'react';
 import { Eye, EyeOff, X } from 'lucide-react';
 
 interface ResetPasswordButtonProps {
-  userId: string;
   email: string;
   userName: string;
 }
 
 type ModalState = 'idle' | 'loading' | 'success' | 'error';
 
-export function ResetPasswordButton({ userId, email, userName }: ResetPasswordButtonProps) {
+export function ResetPasswordButton({ email, userName }: ResetPasswordButtonProps) {
   const [open, setOpen] = useState(false);
   const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [password, setPassword] = useState('');
@@ -37,7 +36,7 @@ export function ResetPasswordButton({ userId, email, userName }: ResetPasswordBu
       const res = await fetch('/api/auth/admin-reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, email, action: 'send_reset' }),
+        body: JSON.stringify({ email, action: 'send_reset' }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -65,7 +64,7 @@ export function ResetPasswordButton({ userId, email, userName }: ResetPasswordBu
       const res = await fetch('/api/auth/admin-reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, email, action: 'set_password', password }),
+        body: JSON.stringify({ email, action: 'set_password', password }),
       });
       const data = await res.json();
       if (!res.ok) {

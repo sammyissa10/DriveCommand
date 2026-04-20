@@ -154,7 +154,6 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                     currentEmail={tenant.ownerUser.email}
                   />
                   <ResetPasswordButton
-                    userId={tenant.ownerUser.id}
                     email={tenant.ownerUser.email}
                     userName={`${tenant.ownerUser.firstName} ${tenant.ownerUser.lastName}`}
                   />
