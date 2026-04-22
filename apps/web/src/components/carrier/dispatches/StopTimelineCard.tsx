@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { StopDocumentList } from './StopDocumentList';
 import {
   CheckCircle2,
@@ -10,6 +11,7 @@ import {
   MapPin,
   SkipForward,
   Check,
+  ExternalLink,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -115,6 +117,8 @@ interface StopTimelineCardProps {
   dispatchId?: string;
   loadId?: string;
   onStopUpdated?: () => void;
+  messageCount?: number;
+  docCount?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -134,6 +138,8 @@ export function StopTimelineCard({
   dispatchId,
   loadId,
   onStopUpdated,
+  messageCount = 0,
+  docCount = 0,
 }: StopTimelineCardProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -333,12 +339,22 @@ export function StopTimelineCard({
           </div>
         </div>
 
-        {/* Facility + address */}
+        {/* Facility + address + count badges */}
         {facility && (
           <div>
             <div className="flex items-center gap-1.5 text-sm font-medium text-foreground">
               <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
               {facility.name}
+              {docCount > 0 && (
+                <span className="ml-1 inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                  {docCount} doc{docCount !== 1 ? 's' : ''}
+                </span>
+              )}
+              {messageCount > 0 && (
+                <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-xs font-medium bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+                  {messageCount} msg{messageCount !== 1 ? 's' : ''}
+                </span>
+              )}
             </div>
             {(facility.addressLine1 || facility.city) && (
               <p className="text-xs text-muted-foreground ml-5 mt-0.5">
@@ -453,6 +469,16 @@ export function StopTimelineCard({
             />
           </div>
         )}
+
+        {/* View Details link */}
+        <div className="flex justify-end pt-1">
+          <Link
+            href={`/carrier/stops/${stop.id}`}
+            className="text-xs text-primary hover:underline flex items-center gap-1"
+          >
+            View Details <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
       </div>
     </div>
   );

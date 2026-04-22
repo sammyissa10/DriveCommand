@@ -48,6 +48,7 @@ function LocalTime({ date, format = 'datetime' }: { date: string | Date; format?
 }
 import { Truck, Clock, Play, CheckCircle, Navigation } from 'lucide-react';
 import { StopDocumentUpload } from './stop-document-upload';
+import { StopMessages } from './stop-messages';
 
 // ---------------------------------------------------------------------------
 // Types — mirrors the Prisma include shape from getMyActiveDispatch()
@@ -485,6 +486,9 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
                       createdAt: typeof d.createdAt === 'string' ? d.createdAt : d.createdAt.toISOString(),
                     }))}
                   />
+
+                  {/* Stop-scoped messages */}
+                  <StopMessages stopId={stop.id} dispatchId={dispatch.id} />
 
                   {/* Action buttons (in_progress dispatches only) */}
                   {dispatch.status === 'in_progress' && (

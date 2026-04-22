@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { getSession } from '@/lib/auth/supabase';
 import { getDispatch } from '@/lib/carrier/dispatches';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { DispatchHeader } from '@/components/carrier/dispatches/DispatchHeader';
 import { StopTimeline } from '@/components/carrier/dispatches/StopTimeline';
 import { DispatchLoadsPanel } from '@/components/carrier/dispatches/DispatchLoadsPanel';
@@ -87,6 +87,22 @@ export default async function DispatchDetailPage({ params }: Props) {
         bolCount: bolEntry?._count.id ?? 0,
         podCount: podEntry?._count.id ?? 0,
       };
+    }
+  }
+
+  // Fetch message counts per stop
+  const messageCountMap: Record<string, number> = {};
+  if (stopIds.length) {
+    const msgCounts = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      return tx.fleetMessage.groupBy({
+        by: ['stopId'],
+        where: { stopId: { in: stopIds }, tenantId: orgId },
+        _count: { id: true },
+      });
+    }, TX_OPTIONS);
+    for (const m of msgCounts) {
+      if (m.stopId) messageCountMap[m.stopId] = m._count.id;
     }
   }
 
@@ -240,7 +256,15 @@ export default async function DispatchDetailPage({ params }: Props) {
 
       {/* Stop Timeline */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Stop Timeline</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-foreground">Stop Timeline</h2>
+          <Link
+            href={`/carrier/dispatches/${id}/stops`}
+            className="text-sm text-primary hover:underline flex items-center gap-1"
+          >
+            View All Stops <ExternalLink className="h-3.5 w-3.5" />
+          </Link>
+        </div>
         <StopTimeline
           stops={serializedDispatch.stops}
           routeTemplateStopMap={routeTemplateStopMap}
@@ -248,6 +272,7 @@ export default async function DispatchDetailPage({ params }: Props) {
           facilityMap={facilityMap}
           dispatchStatus={dispatch.status}
           userRole={session.role}
+          messageCountMap={messageCountMap}
         />
       </div>
 
