@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { StopDocumentList } from './StopDocumentList';
 import {
   CheckCircle2,
   AlertCircle,
@@ -138,6 +139,7 @@ export function StopTimelineCard({
   const [isPending, startTransition] = useTransition();
   const [skipReason, setSkipReason] = useState('');
   const [skipDialogOpen, setSkipDialogOpen] = useState(false);
+  const [docRefreshKey, setDocRefreshKey] = useState(0);
 
   const dotClass = STOP_STATUS_DOT[stop.status] ?? STOP_STATUS_DOT.pending;
   const statusBadgeClass = STOP_STATUS_BADGE[stop.status] ?? STOP_STATUS_BADGE.pending;
@@ -409,7 +411,7 @@ export function StopTimelineCard({
                   documentType="bol"
                   dispatchId={dispatchId}
                   loadId={loadId}
-                  onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
+                  onSuccess={() => { router.refresh(); onStopUpdated?.(); setDocRefreshKey(k => k + 1); }}
                 />
               </div>
             )}
@@ -439,10 +441,16 @@ export function StopTimelineCard({
                   documentType="pod"
                   dispatchId={dispatchId}
                   loadId={loadId}
-                  onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
+                  onSuccess={() => { router.refresh(); onStopUpdated?.(); setDocRefreshKey(k => k + 1); }}
                 />
               </div>
             )}
+            <StopDocumentList
+              stopId={stop.id}
+              userRole={userRole}
+              refreshKey={docRefreshKey}
+              onDeleted={() => { router.refresh(); onStopUpdated?.(); }}
+            />
           </div>
         )}
       </div>
