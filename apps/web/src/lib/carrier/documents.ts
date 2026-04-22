@@ -1,12 +1,11 @@
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-
-const BUCKET = process.env.S3_BUCKET || 'driver-documents';
 const ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'];
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
@@ -110,14 +109,20 @@ export async function uploadDocument(
   const uuid = crypto.randomUUID();
   const storagePath = `${orgId}/${parentType}/${parentId}/${documentType}/${uuid}.${ext}`;
 
-  // Upload to Supabase Storage
+  // Upload to R2
   const buffer = Buffer.from(await file.arrayBuffer());
-  const { error: uploadError } = await createAdminClient()
-    .storage.from(BUCKET)
-    .upload(storagePath, buffer, { contentType: file.type });
-
-  if (uploadError) {
-    logger.error('uploadDocument: storage upload failed', uploadError, { orgId, storagePath });
+  try {
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: getBucketName(),
+        Key: storagePath,
+        Body: buffer,
+        ContentType: file.type,
+        ContentLength: file.size,
+      })
+    );
+  } catch (uploadError) {
+    logger.error('uploadDocument: R2 upload failed', uploadError, { orgId, storagePath });
     return { error: 'Storage upload failed', status: 500 };
   }
 
@@ -255,13 +260,16 @@ export async function deleteDocument(
 
   if (!orgVerified) return { error: 'Unauthorized', status: 403 };
 
-  // Remove from Supabase Storage
-  const { error: storageError } = await createAdminClient()
-    .storage.from(BUCKET)
-    .remove([doc.fileUrl]);
-
-  if (storageError) {
-    logger.error('deleteDocument: storage delete failed', storageError, { orgId, docId });
+  // Remove from R2
+  try {
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: getBucketName(),
+        Key: doc.fileUrl,
+      })
+    );
+  } catch (storageError) {
+    logger.error('deleteDocument: R2 delete failed', storageError, { orgId, docId });
     // Continue — still delete the DB record even if storage fails
   }
 
