@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-22 - Completed quick task 272: Fix carrier document upload to use Supabase Storage bucket drivecommand-files
+Last activity: 2026-04-22 - Completed quick task 273: Add view/download button to uploaded documents on dispatch detail stop cards
 Last session: 2026-04-22T02:12:47Z
 Stopped at: Completed quick-269-PLAN.md — 4 tasks, 12 files created/modified, zero TypeScript errors
 
@@ -1087,6 +1087,7 @@ None blocking immediate progress.
 | 270 | Fix document upload error logging — logger.error signature mismatch was stringifying Supabase StorageError as [object Object]; now passes raw error as second arg + context as third | 2026-04-22 | f9d270a | [270-fix-document-upload-storage-failure-and-](./quick/270-fix-document-upload-storage-failure-and-/) |
 | 271 | Fix carrier document upload to use R2 — replaced Supabase Storage (non-existent bucket) with PutObjectCommand/DeleteObjectCommand via existing s3Client; storage path format unchanged | 2026-04-22 | b228caa | [271-fix-carrier-document-upload-to-use-r2-in](./quick/271-fix-carrier-document-upload-to-use-r2-in/) |
 | 272 | Fix carrier document upload to use Supabase Storage bucket drivecommand-files — replaced R2 with Supabase Storage admin client, createSignedUrl for viewing, bucket drivecommand-files | 2026-04-22 | f52edff | [272-fix-carrier-document-upload-to-use-supab](./quick/272-fix-carrier-document-upload-to-use-supab/) |
+| 273 | Add view/download button to uploaded documents on dispatch detail stop cards — StopDocumentList component, signed-url endpoint, View/Delete actions with refresh | 2026-04-22 | 0e63d3e | [273-add-view-download-button-to-uploaded-doc](./quick/273-add-view-download-button-to-uploaded-doc/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
