@@ -125,6 +125,8 @@ exports.Prisma.TenantScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   timezone: 'timezone',
+  contactEmail: 'contactEmail',
+  plan: 'plan',
   isActive: 'isActive',
   profitMarginThreshold: 'profitMarginThreshold',
   createdAt: 'createdAt',

@@ -495,7 +495,7 @@ export async function updateTenantSettings(
   const schema = z.object({
     contactEmail: z.string().email('Must be a valid email address').optional().or(z.literal('')),
     timezone: z.string().min(1, 'Timezone is required'),
-    plan: z.enum(['starter', 'pro', 'enterprise'], { errorMap: () => ({ message: 'Plan must be starter, pro, or enterprise' }) }),
+    plan: z.enum(['starter', 'pro', 'enterprise'] as const),
   });
 
   const validation = schema.safeParse(data);

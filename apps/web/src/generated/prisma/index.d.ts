@@ -7826,6 +7826,8 @@ export namespace Prisma {
     name: string | null
     slug: string | null
     timezone: string | null
+    contactEmail: string | null
+    plan: string | null
     isActive: boolean | null
     profitMarginThreshold: Decimal | null
     createdAt: Date | null
@@ -7837,6 +7839,8 @@ export namespace Prisma {
     name: string | null
     slug: string | null
     timezone: string | null
+    contactEmail: string | null
+    plan: string | null
     isActive: boolean | null
     profitMarginThreshold: Decimal | null
     createdAt: Date | null
@@ -7848,6 +7852,8 @@ export namespace Prisma {
     name: number
     slug: number
     timezone: number
+    contactEmail: number
+    plan: number
     isActive: number
     profitMarginThreshold: number
     createdAt: number
@@ -7869,6 +7875,8 @@ export namespace Prisma {
     name?: true
     slug?: true
     timezone?: true
+    contactEmail?: true
+    plan?: true
     isActive?: true
     profitMarginThreshold?: true
     createdAt?: true
@@ -7880,6 +7888,8 @@ export namespace Prisma {
     name?: true
     slug?: true
     timezone?: true
+    contactEmail?: true
+    plan?: true
     isActive?: true
     profitMarginThreshold?: true
     createdAt?: true
@@ -7891,6 +7901,8 @@ export namespace Prisma {
     name?: true
     slug?: true
     timezone?: true
+    contactEmail?: true
+    plan?: true
     isActive?: true
     profitMarginThreshold?: true
     createdAt?: true
@@ -7989,6 +8001,8 @@ export namespace Prisma {
     name: string
     slug: string | null
     timezone: string
+    contactEmail: string | null
+    plan: string
     isActive: boolean
     profitMarginThreshold: Decimal
     createdAt: Date
@@ -8019,6 +8033,8 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     timezone?: boolean
+    contactEmail?: boolean
+    plan?: boolean
     isActive?: boolean
     profitMarginThreshold?: boolean
     createdAt?: boolean
@@ -8073,6 +8089,8 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     timezone?: boolean
+    contactEmail?: boolean
+    plan?: boolean
     isActive?: boolean
     profitMarginThreshold?: boolean
     createdAt?: boolean
@@ -8084,6 +8102,8 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     timezone?: boolean
+    contactEmail?: boolean
+    plan?: boolean
     isActive?: boolean
     profitMarginThreshold?: boolean
     createdAt?: boolean
@@ -8095,13 +8115,15 @@ export namespace Prisma {
     name?: boolean
     slug?: boolean
     timezone?: boolean
+    contactEmail?: boolean
+    plan?: boolean
     isActive?: boolean
     profitMarginThreshold?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "timezone" | "isActive" | "profitMarginThreshold" | "createdAt" | "updatedAt", ExtArgs["result"]["tenant"]>
+  export type TenantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "timezone" | "contactEmail" | "plan" | "isActive" | "profitMarginThreshold" | "createdAt" | "updatedAt", ExtArgs["result"]["tenant"]>
   export type TenantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Tenant$usersArgs<ExtArgs>
     trucks?: boolean | Tenant$trucksArgs<ExtArgs>
@@ -8201,6 +8223,8 @@ export namespace Prisma {
       name: string
       slug: string | null
       timezone: string
+      contactEmail: string | null
+      plan: string
       isActive: boolean
       profitMarginThreshold: Prisma.Decimal
       createdAt: Date
@@ -8674,6 +8698,8 @@ export namespace Prisma {
     readonly name: FieldRef<"Tenant", 'String'>
     readonly slug: FieldRef<"Tenant", 'String'>
     readonly timezone: FieldRef<"Tenant", 'String'>
+    readonly contactEmail: FieldRef<"Tenant", 'String'>
+    readonly plan: FieldRef<"Tenant", 'String'>
     readonly isActive: FieldRef<"Tenant", 'Boolean'>
     readonly profitMarginThreshold: FieldRef<"Tenant", 'Decimal'>
     readonly createdAt: FieldRef<"Tenant", 'DateTime'>
@@ -78103,6 +78129,8 @@ export namespace Prisma {
     name: 'name',
     slug: 'slug',
     timezone: 'timezone',
+    contactEmail: 'contactEmail',
+    plan: 'plan',
     isActive: 'isActive',
     profitMarginThreshold: 'profitMarginThreshold',
     createdAt: 'createdAt',
@@ -79790,6 +79818,8 @@ export namespace Prisma {
     name?: StringFilter<"Tenant"> | string
     slug?: StringNullableFilter<"Tenant"> | string | null
     timezone?: StringFilter<"Tenant"> | string
+    contactEmail?: StringNullableFilter<"Tenant"> | string | null
+    plan?: StringFilter<"Tenant"> | string
     isActive?: BoolFilter<"Tenant"> | boolean
     profitMarginThreshold?: DecimalFilter<"Tenant"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
@@ -79843,6 +79873,8 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrderInput | SortOrder
     timezone?: SortOrder
+    contactEmail?: SortOrderInput | SortOrder
+    plan?: SortOrder
     isActive?: SortOrder
     profitMarginThreshold?: SortOrder
     createdAt?: SortOrder
@@ -79899,6 +79931,8 @@ export namespace Prisma {
     NOT?: TenantWhereInput | TenantWhereInput[]
     name?: StringFilter<"Tenant"> | string
     timezone?: StringFilter<"Tenant"> | string
+    contactEmail?: StringNullableFilter<"Tenant"> | string | null
+    plan?: StringFilter<"Tenant"> | string
     isActive?: BoolFilter<"Tenant"> | boolean
     profitMarginThreshold?: DecimalFilter<"Tenant"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Tenant"> | Date | string
@@ -79952,6 +79986,8 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrderInput | SortOrder
     timezone?: SortOrder
+    contactEmail?: SortOrderInput | SortOrder
+    plan?: SortOrder
     isActive?: SortOrder
     profitMarginThreshold?: SortOrder
     createdAt?: SortOrder
@@ -79971,6 +80007,8 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Tenant"> | string
     slug?: StringNullableWithAggregatesFilter<"Tenant"> | string | null
     timezone?: StringWithAggregatesFilter<"Tenant"> | string
+    contactEmail?: StringNullableWithAggregatesFilter<"Tenant"> | string | null
+    plan?: StringWithAggregatesFilter<"Tenant"> | string
     isActive?: BoolWithAggregatesFilter<"Tenant"> | boolean
     profitMarginThreshold?: DecimalWithAggregatesFilter<"Tenant"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Tenant"> | Date | string
@@ -86069,6 +86107,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -86122,6 +86162,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -86175,6 +86217,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86228,6 +86272,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86281,6 +86327,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -86292,6 +86340,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86303,6 +86353,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -93588,6 +93640,8 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     timezone?: SortOrder
+    contactEmail?: SortOrder
+    plan?: SortOrder
     isActive?: SortOrder
     profitMarginThreshold?: SortOrder
     createdAt?: SortOrder
@@ -93603,6 +93657,8 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     timezone?: SortOrder
+    contactEmail?: SortOrder
+    plan?: SortOrder
     isActive?: SortOrder
     profitMarginThreshold?: SortOrder
     createdAt?: SortOrder
@@ -93614,6 +93670,8 @@ export namespace Prisma {
     name?: SortOrder
     slug?: SortOrder
     timezone?: SortOrder
+    contactEmail?: SortOrder
+    plan?: SortOrder
     isActive?: SortOrder
     profitMarginThreshold?: SortOrder
     createdAt?: SortOrder
@@ -110720,6 +110778,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -110772,6 +110832,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -112425,6 +112487,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -112477,6 +112541,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113088,6 +113154,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -113140,6 +113208,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -113822,6 +113892,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -113874,6 +113946,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -114268,6 +114342,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -114320,6 +114396,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -114388,6 +114466,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -114440,6 +114520,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -114492,6 +114574,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -114544,6 +114628,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -115314,6 +115400,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115366,6 +115454,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116234,6 +116324,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -116286,6 +116378,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -116737,6 +116831,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116789,6 +116885,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117254,6 +117352,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -117306,6 +117406,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -117431,6 +117533,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117483,6 +117587,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117598,6 +117704,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -117650,6 +117758,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -117775,6 +117885,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117827,6 +117939,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117942,6 +118056,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -117994,6 +118110,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -118062,6 +118180,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118114,6 +118234,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118166,6 +118288,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -118218,6 +118342,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -118406,6 +118532,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118458,6 +118586,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118642,6 +118772,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -118694,6 +118826,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -118977,6 +119111,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119029,6 +119165,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119314,6 +119452,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -119366,6 +119506,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -119491,6 +119633,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119543,6 +119687,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119658,6 +119804,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -119710,6 +119858,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -119804,6 +119954,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119856,6 +120008,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119924,6 +120078,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -119976,6 +120132,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -120217,6 +120375,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120269,6 +120429,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120512,6 +120674,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -120564,6 +120728,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -120692,6 +120858,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120744,6 +120912,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120828,6 +120998,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -120880,6 +121052,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121038,6 +121212,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121090,6 +121266,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121244,6 +121422,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121296,6 +121476,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121390,6 +121572,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121442,6 +121626,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121556,6 +121742,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121608,6 +121796,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121734,6 +121924,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121786,6 +121978,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -121838,6 +122032,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -121890,6 +122086,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122023,6 +122221,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122075,6 +122275,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122198,6 +122400,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122250,6 +122454,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122430,6 +122636,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122482,6 +122690,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122566,6 +122776,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122618,6 +122830,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122737,6 +122951,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122789,6 +123005,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -122898,6 +123116,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -122950,6 +123170,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -123311,6 +123533,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -123363,6 +123587,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -123773,6 +123999,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -123825,6 +124053,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -123962,6 +124192,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124014,6 +124246,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124066,6 +124300,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -124118,6 +124354,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -124214,6 +124452,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124266,6 +124506,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124439,6 +124681,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -124491,6 +124735,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -124838,6 +125084,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -124890,6 +125138,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -125239,6 +125489,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -125291,6 +125543,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -126099,6 +126353,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -126151,6 +126407,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -126861,6 +127119,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -126913,6 +127173,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -126981,6 +127243,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127033,6 +127297,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127150,6 +127416,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -127202,6 +127470,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -127576,6 +127846,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127628,6 +127900,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127793,6 +128067,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -127845,6 +128121,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -128071,6 +128349,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -128123,6 +128403,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -128665,6 +128947,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -128717,6 +129001,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -128878,6 +129164,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -128930,6 +129218,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -129081,6 +129371,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -129133,6 +129425,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -129294,6 +129588,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -129346,6 +129642,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -129497,6 +129795,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -129549,6 +129849,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -130075,6 +130377,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130127,6 +130431,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130324,6 +130630,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -130376,6 +130684,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -130717,6 +131027,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130769,6 +131081,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -130948,6 +131262,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -131000,6 +131316,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -131246,6 +131564,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131298,6 +131618,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131419,6 +131741,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -131471,6 +131795,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -132005,6 +132331,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132057,6 +132385,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132351,6 +132681,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -132403,6 +132735,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -132703,6 +133037,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132755,6 +133091,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -132871,6 +133209,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -132923,6 +133263,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -133353,6 +133695,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -133405,6 +133749,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -134005,6 +134351,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -134057,6 +134405,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -134885,6 +135235,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -134937,6 +135289,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -135529,6 +135883,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -135581,6 +135937,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -136090,6 +136448,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -136142,6 +136502,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -138383,6 +138745,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -138435,6 +138799,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -138557,6 +138923,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -138609,6 +138977,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -138677,6 +139047,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -138729,6 +139101,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -139276,6 +139650,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139328,6 +139704,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139901,6 +140279,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -139953,6 +140333,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -140384,6 +140766,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -140436,6 +140820,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -140881,6 +141267,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -140933,6 +141321,8 @@ export namespace Prisma {
     name: string
     slug?: string | null
     timezone?: string
+    contactEmail?: string | null
+    plan?: string
     isActive?: boolean
     profitMarginThreshold?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -141094,6 +141484,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -141146,6 +141538,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     slug?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
     isActive?: BoolFieldUpdateOperationsInput | boolean
     profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
