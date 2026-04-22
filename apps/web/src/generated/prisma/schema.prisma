@@ -158,17 +158,18 @@ model Tenant {
   driverIncidents      DriverIncident[]
 
   // Carrier Operations reverse relations
-  carrierClients     CarrierClient[]
-  carrierContracts   CarrierContract[]
-  carrierFacilities  CarrierFacility[]
-  carrierDrivers     CarrierDriver[]
-  carrierTrucks      CarrierTruck[]
-  routeTemplates     RouteTemplate[]
-  carrierDispatches  CarrierDispatch[]
-  carrierLoads       CarrierLoad[]
-  carrierExpenses    CarrierExpense[]
-  driverPayRecords   DriverPayRecord[]
-  inAppNotifications InAppNotification[]
+  carrierClients       CarrierClient[]
+  carrierContracts     CarrierContract[]
+  carrierFacilities    CarrierFacility[]
+  carrierDrivers       CarrierDriver[]
+  carrierTrucks        CarrierTruck[]
+  routeTemplates       RouteTemplate[]
+  carrierDispatches    CarrierDispatch[]
+  carrierLoads         CarrierLoad[]
+  carrierExpenses      CarrierExpense[]
+  driverPayRecords     DriverPayRecord[]
+  inAppNotifications   InAppNotification[]
+  carrierDocumentTypes CarrierDocumentType[]
 }
 
 model User {
@@ -1335,10 +1336,11 @@ model CarrierContract {
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant         Tenant          @relation(fields: [orgId], references: [id])
-  client         CarrierClient   @relation(fields: [clientId], references: [id])
+  tenant         Tenant            @relation(fields: [orgId], references: [id])
+  client         CarrierClient     @relation(fields: [clientId], references: [id])
   routeTemplates RouteTemplate[]
   carrierLoads   CarrierLoad[]
+  documents      CarrierDocument[]
 
   @@index([clientId])
   @@index([status])
@@ -1549,6 +1551,7 @@ model CarrierDispatch {
   expenses         CarrierExpense[]
   driverPayRecords DriverPayRecord[]
   messages         FleetMessage[]
+  documents        CarrierDocument[]
 
   @@index([primaryDriverId])
   @@index([truckId])
@@ -1598,6 +1601,7 @@ model CarrierLoad {
   stops            CarrierStop[]
   expenses         CarrierExpense[]
   driverPayRecords DriverPayRecord[]
+  documents        CarrierDocument[]
 
   @@index([clientId])
   @@index([dispatchId])
@@ -1653,32 +1657,61 @@ model CarrierStop {
 }
 
 model CarrierDocument {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  parentType    String    @map("parent_type")
-  parentId      String    @map("parent_id") @db.Uuid
-  stopId        String?   @map("stop_id") @db.Uuid
-  clientId      String?   @map("client_id") @db.Uuid
-  documentType  String    @map("document_type")
-  fileUrl       String    @map("file_url")
-  filename      String
-  fileSizeBytes Int?      @map("file_size_bytes")
-  uploadedBy    String    @map("uploaded_by") @db.Uuid
-  verified      Boolean   @default(false)
-  verifiedBy    String?   @map("verified_by") @db.Uuid
-  verifiedAt    DateTime? @map("verified_at") @db.Timestamptz
-  notes         String?
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parentType     String    @map("parent_type")
+  parentId       String    @map("parent_id") @db.Uuid
+  stopId         String?   @map("stop_id") @db.Uuid
+  clientId       String?   @map("client_id") @db.Uuid
+  documentTypeId String?   @map("document_type_id") @db.Uuid
+  loadId         String?   @map("load_id") @db.Uuid
+  dispatchId     String?   @map("dispatch_id") @db.Uuid
+  contractId     String?   @map("contract_id") @db.Uuid
+  documentType   String    @map("document_type")
+  fileUrl        String    @map("file_url")
+  filename       String
+  fileSizeBytes  Int?      @map("file_size_bytes")
+  uploadedBy     String    @map("uploaded_by") @db.Uuid
+  verified       Boolean   @default(false)
+  verifiedBy     String?   @map("verified_by") @db.Uuid
+  verifiedAt     DateTime? @map("verified_at") @db.Timestamptz
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
-  uploader User             @relation(name: "CarrierDocUploader", fields: [uploadedBy], references: [id])
-  verifier User?            @relation(name: "CarrierDocVerifier", fields: [verifiedBy], references: [id])
-  stop     CarrierStop?     @relation(fields: [stopId], references: [id])
-  client   CarrierClient?   @relation(fields: [clientId], references: [id])
-  expenses CarrierExpense[]
+  uploader        User                 @relation(name: "CarrierDocUploader", fields: [uploadedBy], references: [id])
+  verifier        User?                @relation(name: "CarrierDocVerifier", fields: [verifiedBy], references: [id])
+  stop            CarrierStop?         @relation(fields: [stopId], references: [id])
+  client          CarrierClient?       @relation(fields: [clientId], references: [id])
+  documentTypeRef CarrierDocumentType? @relation(fields: [documentTypeId], references: [id])
+  load            CarrierLoad?         @relation(fields: [loadId], references: [id])
+  dispatch        CarrierDispatch?     @relation(fields: [dispatchId], references: [id])
+  contract        CarrierContract?     @relation(fields: [contractId], references: [id])
+  expenses        CarrierExpense[]
 
   @@index([parentType, parentId])
   @@index([stopId])
   @@index([clientId])
+  @@index([documentTypeId])
+  @@index([loadId])
+  @@index([dispatchId])
+  @@index([contractId])
   @@map("carrier_documents")
+}
+
+model CarrierDocumentType {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId     String   @map("org_id") @db.Uuid
+  name      String
+  slug      String
+  isDefault Boolean  @default(false) @map("is_default")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant            @relation(fields: [orgId], references: [id])
+  documents CarrierDocument[]
+
+  @@unique([orgId, slug])
+  @@index([orgId])
+  @@map("carrier_document_types")
 }
 
 model CarrierExpense {

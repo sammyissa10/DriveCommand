@@ -963,6 +963,10 @@ exports.Prisma.CarrierDocumentScalarFieldEnum = {
   parentId: 'parentId',
   stopId: 'stopId',
   clientId: 'clientId',
+  documentTypeId: 'documentTypeId',
+  loadId: 'loadId',
+  dispatchId: 'dispatchId',
+  contractId: 'contractId',
   documentType: 'documentType',
   fileUrl: 'fileUrl',
   filename: 'filename',
@@ -972,6 +976,16 @@ exports.Prisma.CarrierDocumentScalarFieldEnum = {
   verifiedBy: 'verifiedBy',
   verifiedAt: 'verifiedAt',
   notes: 'notes',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CarrierDocumentTypeScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  name: 'name',
+  slug: 'slug',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
   createdAt: 'createdAt'
 };
 
@@ -1362,6 +1376,7 @@ exports.Prisma.ModelName = {
   CarrierLoad: 'CarrierLoad',
   CarrierStop: 'CarrierStop',
   CarrierDocument: 'CarrierDocument',
+  CarrierDocumentType: 'CarrierDocumentType',
   CarrierExpense: 'CarrierExpense',
   DriverPayRecord: 'DriverPayRecord',
   CarrierCatalogMeta: 'CarrierCatalogMeta',

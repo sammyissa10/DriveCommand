@@ -254,6 +254,11 @@ export type CarrierStop = $Result.DefaultSelection<Prisma.$CarrierStopPayload>
  */
 export type CarrierDocument = $Result.DefaultSelection<Prisma.$CarrierDocumentPayload>
 /**
+ * Model CarrierDocumentType
+ * 
+ */
+export type CarrierDocumentType = $Result.DefaultSelection<Prisma.$CarrierDocumentTypePayload>
+/**
  * Model CarrierExpense
  * 
  */
@@ -1332,6 +1337,16 @@ export class PrismaClient<
   get carrierDocument(): Prisma.CarrierDocumentDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.carrierDocumentType`: Exposes CRUD operations for the **CarrierDocumentType** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CarrierDocumentTypes
+    * const carrierDocumentTypes = await prisma.carrierDocumentType.findMany()
+    * ```
+    */
+  get carrierDocumentType(): Prisma.CarrierDocumentTypeDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.carrierExpense`: Exposes CRUD operations for the **CarrierExpense** model.
     * Example usage:
     * ```ts
@@ -1852,6 +1867,7 @@ export namespace Prisma {
     CarrierLoad: 'CarrierLoad',
     CarrierStop: 'CarrierStop',
     CarrierDocument: 'CarrierDocument',
+    CarrierDocumentType: 'CarrierDocumentType',
     CarrierExpense: 'CarrierExpense',
     DriverPayRecord: 'DriverPayRecord',
     CarrierCatalogMeta: 'CarrierCatalogMeta',
@@ -1871,7 +1887,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5427,6 +5443,80 @@ export namespace Prisma {
           }
         }
       }
+      CarrierDocumentType: {
+        payload: Prisma.$CarrierDocumentTypePayload<ExtArgs>
+        fields: Prisma.CarrierDocumentTypeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CarrierDocumentTypeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CarrierDocumentTypeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          findFirst: {
+            args: Prisma.CarrierDocumentTypeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CarrierDocumentTypeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          findMany: {
+            args: Prisma.CarrierDocumentTypeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>[]
+          }
+          create: {
+            args: Prisma.CarrierDocumentTypeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          createMany: {
+            args: Prisma.CarrierDocumentTypeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CarrierDocumentTypeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>[]
+          }
+          delete: {
+            args: Prisma.CarrierDocumentTypeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          update: {
+            args: Prisma.CarrierDocumentTypeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          deleteMany: {
+            args: Prisma.CarrierDocumentTypeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CarrierDocumentTypeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CarrierDocumentTypeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>[]
+          }
+          upsert: {
+            args: Prisma.CarrierDocumentTypeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CarrierDocumentTypePayload>
+          }
+          aggregate: {
+            args: Prisma.CarrierDocumentTypeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCarrierDocumentType>
+          }
+          groupBy: {
+            args: Prisma.CarrierDocumentTypeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CarrierDocumentTypeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CarrierDocumentTypeCountArgs<ExtArgs>
+            result: $Utils.Optional<CarrierDocumentTypeCountAggregateOutputType> | number
+          }
+        }
+      }
       CarrierExpense: {
         payload: Prisma.$CarrierExpensePayload<ExtArgs>
         fields: Prisma.CarrierExpenseFieldRefs
@@ -5879,6 +5969,7 @@ export namespace Prisma {
     carrierLoad?: CarrierLoadOmit
     carrierStop?: CarrierStopOmit
     carrierDocument?: CarrierDocumentOmit
+    carrierDocumentType?: CarrierDocumentTypeOmit
     carrierExpense?: CarrierExpenseOmit
     driverPayRecord?: DriverPayRecordOmit
     carrierCatalogMeta?: CarrierCatalogMetaOmit
@@ -6004,6 +6095,7 @@ export namespace Prisma {
     carrierExpenses: number
     driverPayRecords: number
     inAppNotifications: number
+    carrierDocumentTypes: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6048,6 +6140,7 @@ export namespace Prisma {
     carrierExpenses?: boolean | TenantCountOutputTypeCountCarrierExpensesArgs
     driverPayRecords?: boolean | TenantCountOutputTypeCountDriverPayRecordsArgs
     inAppNotifications?: boolean | TenantCountOutputTypeCountInAppNotificationsArgs
+    carrierDocumentTypes?: boolean | TenantCountOutputTypeCountCarrierDocumentTypesArgs
   }
 
   // Custom InputTypes
@@ -6346,6 +6439,13 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountInAppNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: InAppNotificationWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountCarrierDocumentTypesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentTypeWhereInput
   }
 
 
@@ -7205,11 +7305,13 @@ export namespace Prisma {
   export type CarrierContractCountOutputType = {
     routeTemplates: number
     carrierLoads: number
+    documents: number
   }
 
   export type CarrierContractCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     routeTemplates?: boolean | CarrierContractCountOutputTypeCountRouteTemplatesArgs
     carrierLoads?: boolean | CarrierContractCountOutputTypeCountCarrierLoadsArgs
+    documents?: boolean | CarrierContractCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -7235,6 +7337,13 @@ export namespace Prisma {
    */
   export type CarrierContractCountOutputTypeCountCarrierLoadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierLoadWhereInput
+  }
+
+  /**
+   * CarrierContractCountOutputType without action
+   */
+  export type CarrierContractCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentWhereInput
   }
 
 
@@ -7462,6 +7571,7 @@ export namespace Prisma {
     expenses: number
     driverPayRecords: number
     messages: number
+    documents: number
   }
 
   export type CarrierDispatchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7470,6 +7580,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierDispatchCountOutputTypeCountExpensesArgs
     driverPayRecords?: boolean | CarrierDispatchCountOutputTypeCountDriverPayRecordsArgs
     messages?: boolean | CarrierDispatchCountOutputTypeCountMessagesArgs
+    documents?: boolean | CarrierDispatchCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -7518,6 +7629,13 @@ export namespace Prisma {
     where?: FleetMessageWhereInput
   }
 
+  /**
+   * CarrierDispatchCountOutputType without action
+   */
+  export type CarrierDispatchCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentWhereInput
+  }
+
 
   /**
    * Count Type CarrierLoadCountOutputType
@@ -7527,12 +7645,14 @@ export namespace Prisma {
     stops: number
     expenses: number
     driverPayRecords: number
+    documents: number
   }
 
   export type CarrierLoadCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     stops?: boolean | CarrierLoadCountOutputTypeCountStopsArgs
     expenses?: boolean | CarrierLoadCountOutputTypeCountExpensesArgs
     driverPayRecords?: boolean | CarrierLoadCountOutputTypeCountDriverPayRecordsArgs
+    documents?: boolean | CarrierLoadCountOutputTypeCountDocumentsArgs
   }
 
   // Custom InputTypes
@@ -7565,6 +7685,13 @@ export namespace Prisma {
    */
   export type CarrierLoadCountOutputTypeCountDriverPayRecordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DriverPayRecordWhereInput
+  }
+
+  /**
+   * CarrierLoadCountOutputType without action
+   */
+  export type CarrierLoadCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentWhereInput
   }
 
 
@@ -7636,6 +7763,37 @@ export namespace Prisma {
    */
   export type CarrierDocumentCountOutputTypeCountExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierExpenseWhereInput
+  }
+
+
+  /**
+   * Count Type CarrierDocumentTypeCountOutputType
+   */
+
+  export type CarrierDocumentTypeCountOutputType = {
+    documents: number
+  }
+
+  export type CarrierDocumentTypeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    documents?: boolean | CarrierDocumentTypeCountOutputTypeCountDocumentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CarrierDocumentTypeCountOutputType without action
+   */
+  export type CarrierDocumentTypeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentTypeCountOutputType
+     */
+    select?: CarrierDocumentTypeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CarrierDocumentTypeCountOutputType without action
+   */
+  export type CarrierDocumentTypeCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentWhereInput
   }
 
 
@@ -7906,6 +8064,7 @@ export namespace Prisma {
     carrierExpenses?: boolean | Tenant$carrierExpensesArgs<ExtArgs>
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
     inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
+    carrierDocumentTypes?: boolean | Tenant$carrierDocumentTypesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -7985,6 +8144,7 @@ export namespace Prisma {
     carrierExpenses?: boolean | Tenant$carrierExpensesArgs<ExtArgs>
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
     inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
+    carrierDocumentTypes?: boolean | Tenant$carrierDocumentTypesArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8034,6 +8194,7 @@ export namespace Prisma {
       carrierExpenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
       inAppNotifications: Prisma.$InAppNotificationPayload<ExtArgs>[]
+      carrierDocumentTypes: Prisma.$CarrierDocumentTypePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8479,6 +8640,7 @@ export namespace Prisma {
     carrierExpenses<T extends Tenant$carrierExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends Tenant$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     inAppNotifications<T extends Tenant$inAppNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$inAppNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    carrierDocumentTypes<T extends Tenant$carrierDocumentTypesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierDocumentTypesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9890,6 +10052,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: InAppNotificationScalarFieldEnum | InAppNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.carrierDocumentTypes
+   */
+  export type Tenant$carrierDocumentTypesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    where?: CarrierDocumentTypeWhereInput
+    orderBy?: CarrierDocumentTypeOrderByWithRelationInput | CarrierDocumentTypeOrderByWithRelationInput[]
+    cursor?: CarrierDocumentTypeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierDocumentTypeScalarFieldEnum | CarrierDocumentTypeScalarFieldEnum[]
   }
 
   /**
@@ -57174,6 +57360,7 @@ export namespace Prisma {
     client?: boolean | CarrierClientDefaultArgs<ExtArgs>
     routeTemplates?: boolean | CarrierContract$routeTemplatesArgs<ExtArgs>
     carrierLoads?: boolean | CarrierContract$carrierLoadsArgs<ExtArgs>
+    documents?: boolean | CarrierContract$documentsArgs<ExtArgs>
     _count?: boolean | CarrierContractCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierContract"]>
 
@@ -57262,6 +57449,7 @@ export namespace Prisma {
     client?: boolean | CarrierClientDefaultArgs<ExtArgs>
     routeTemplates?: boolean | CarrierContract$routeTemplatesArgs<ExtArgs>
     carrierLoads?: boolean | CarrierContract$carrierLoadsArgs<ExtArgs>
+    documents?: boolean | CarrierContract$documentsArgs<ExtArgs>
     _count?: boolean | CarrierContractCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierContractIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -57280,6 +57468,7 @@ export namespace Prisma {
       client: Prisma.$CarrierClientPayload<ExtArgs>
       routeTemplates: Prisma.$RouteTemplatePayload<ExtArgs>[]
       carrierLoads: Prisma.$CarrierLoadPayload<ExtArgs>[]
+      documents: Prisma.$CarrierDocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -57702,6 +57891,7 @@ export namespace Prisma {
     client<T extends CarrierClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CarrierClientDefaultArgs<ExtArgs>>): Prisma__CarrierClientClient<$Result.GetResult<Prisma.$CarrierClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     routeTemplates<T extends CarrierContract$routeTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierContract$routeTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RouteTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierLoads<T extends CarrierContract$carrierLoadsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierContract$carrierLoadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierLoadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documents<T extends CarrierContract$documentsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierContract$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -58199,6 +58389,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CarrierLoadScalarFieldEnum | CarrierLoadScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierContract.documents
+   */
+  export type CarrierContract$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocument
+     */
+    select?: CarrierDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocument
+     */
+    omit?: CarrierDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentInclude<ExtArgs> | null
+    where?: CarrierDocumentWhereInput
+    orderBy?: CarrierDocumentOrderByWithRelationInput | CarrierDocumentOrderByWithRelationInput[]
+    cursor?: CarrierDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierDocumentScalarFieldEnum | CarrierDocumentScalarFieldEnum[]
   }
 
   /**
@@ -65605,6 +65819,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierDispatch$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierDispatch$driverPayRecordsArgs<ExtArgs>
     messages?: boolean | CarrierDispatch$messagesArgs<ExtArgs>
+    documents?: boolean | CarrierDispatch$documentsArgs<ExtArgs>
     _count?: boolean | CarrierDispatchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierDispatch"]>
 
@@ -65705,6 +65920,7 @@ export namespace Prisma {
     expenses?: boolean | CarrierDispatch$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierDispatch$driverPayRecordsArgs<ExtArgs>
     messages?: boolean | CarrierDispatch$messagesArgs<ExtArgs>
+    documents?: boolean | CarrierDispatch$documentsArgs<ExtArgs>
     _count?: boolean | CarrierDispatchCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierDispatchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -65741,6 +65957,7 @@ export namespace Prisma {
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
       messages: Prisma.$FleetMessagePayload<ExtArgs>[]
+      documents: Prisma.$CarrierDocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -66169,6 +66386,7 @@ export namespace Prisma {
     expenses<T extends CarrierDispatch$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends CarrierDispatch$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends CarrierDispatch$messagesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FleetMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documents<T extends CarrierDispatch$documentsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDispatch$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -66815,6 +67033,30 @@ export namespace Prisma {
   }
 
   /**
+   * CarrierDispatch.documents
+   */
+  export type CarrierDispatch$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocument
+     */
+    select?: CarrierDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocument
+     */
+    omit?: CarrierDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentInclude<ExtArgs> | null
+    where?: CarrierDocumentWhereInput
+    orderBy?: CarrierDocumentOrderByWithRelationInput | CarrierDocumentOrderByWithRelationInput[]
+    cursor?: CarrierDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierDocumentScalarFieldEnum | CarrierDocumentScalarFieldEnum[]
+  }
+
+  /**
    * CarrierDispatch without action
    */
   export type CarrierDispatchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -67278,6 +67520,7 @@ export namespace Prisma {
     stops?: boolean | CarrierLoad$stopsArgs<ExtArgs>
     expenses?: boolean | CarrierLoad$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierLoad$driverPayRecordsArgs<ExtArgs>
+    documents?: boolean | CarrierLoad$documentsArgs<ExtArgs>
     _count?: boolean | CarrierLoadCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierLoad"]>
 
@@ -67400,6 +67643,7 @@ export namespace Prisma {
     stops?: boolean | CarrierLoad$stopsArgs<ExtArgs>
     expenses?: boolean | CarrierLoad$expensesArgs<ExtArgs>
     driverPayRecords?: boolean | CarrierLoad$driverPayRecordsArgs<ExtArgs>
+    documents?: boolean | CarrierLoad$documentsArgs<ExtArgs>
     _count?: boolean | CarrierLoadCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierLoadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -67425,6 +67669,7 @@ export namespace Prisma {
       stops: Prisma.$CarrierStopPayload<ExtArgs>[]
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
+      documents: Prisma.$CarrierDocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -67859,6 +68104,7 @@ export namespace Prisma {
     stops<T extends CarrierLoad$stopsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierLoad$stopsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierStopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     expenses<T extends CarrierLoad$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierLoad$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     driverPayRecords<T extends CarrierLoad$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierLoad$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documents<T extends CarrierLoad$documentsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierLoad$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -68427,6 +68673,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DriverPayRecordScalarFieldEnum | DriverPayRecordScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierLoad.documents
+   */
+  export type CarrierLoad$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocument
+     */
+    select?: CarrierDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocument
+     */
+    omit?: CarrierDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentInclude<ExtArgs> | null
+    where?: CarrierDocumentWhereInput
+    orderBy?: CarrierDocumentOrderByWithRelationInput | CarrierDocumentOrderByWithRelationInput[]
+    cursor?: CarrierDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierDocumentScalarFieldEnum | CarrierDocumentScalarFieldEnum[]
   }
 
   /**
@@ -69985,6 +70255,10 @@ export namespace Prisma {
     parentId: string | null
     stopId: string | null
     clientId: string | null
+    documentTypeId: string | null
+    loadId: string | null
+    dispatchId: string | null
+    contractId: string | null
     documentType: string | null
     fileUrl: string | null
     filename: string | null
@@ -70003,6 +70277,10 @@ export namespace Prisma {
     parentId: string | null
     stopId: string | null
     clientId: string | null
+    documentTypeId: string | null
+    loadId: string | null
+    dispatchId: string | null
+    contractId: string | null
     documentType: string | null
     fileUrl: string | null
     filename: string | null
@@ -70021,6 +70299,10 @@ export namespace Prisma {
     parentId: number
     stopId: number
     clientId: number
+    documentTypeId: number
+    loadId: number
+    dispatchId: number
+    contractId: number
     documentType: number
     fileUrl: number
     filename: number
@@ -70049,6 +70331,10 @@ export namespace Prisma {
     parentId?: true
     stopId?: true
     clientId?: true
+    documentTypeId?: true
+    loadId?: true
+    dispatchId?: true
+    contractId?: true
     documentType?: true
     fileUrl?: true
     filename?: true
@@ -70067,6 +70353,10 @@ export namespace Prisma {
     parentId?: true
     stopId?: true
     clientId?: true
+    documentTypeId?: true
+    loadId?: true
+    dispatchId?: true
+    contractId?: true
     documentType?: true
     fileUrl?: true
     filename?: true
@@ -70085,6 +70375,10 @@ export namespace Prisma {
     parentId?: true
     stopId?: true
     clientId?: true
+    documentTypeId?: true
+    loadId?: true
+    dispatchId?: true
+    contractId?: true
     documentType?: true
     fileUrl?: true
     filename?: true
@@ -70190,6 +70484,10 @@ export namespace Prisma {
     parentId: string
     stopId: string | null
     clientId: string | null
+    documentTypeId: string | null
+    loadId: string | null
+    dispatchId: string | null
+    contractId: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -70227,6 +70525,10 @@ export namespace Prisma {
     parentId?: boolean
     stopId?: boolean
     clientId?: boolean
+    documentTypeId?: boolean
+    loadId?: boolean
+    dispatchId?: boolean
+    contractId?: boolean
     documentType?: boolean
     fileUrl?: boolean
     filename?: boolean
@@ -70241,6 +70543,10 @@ export namespace Prisma {
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
     expenses?: boolean | CarrierDocument$expensesArgs<ExtArgs>
     _count?: boolean | CarrierDocumentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierDocument"]>
@@ -70251,6 +70557,10 @@ export namespace Prisma {
     parentId?: boolean
     stopId?: boolean
     clientId?: boolean
+    documentTypeId?: boolean
+    loadId?: boolean
+    dispatchId?: boolean
+    contractId?: boolean
     documentType?: boolean
     fileUrl?: boolean
     filename?: boolean
@@ -70265,6 +70575,10 @@ export namespace Prisma {
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
   }, ExtArgs["result"]["carrierDocument"]>
 
   export type CarrierDocumentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -70273,6 +70587,10 @@ export namespace Prisma {
     parentId?: boolean
     stopId?: boolean
     clientId?: boolean
+    documentTypeId?: boolean
+    loadId?: boolean
+    dispatchId?: boolean
+    contractId?: boolean
     documentType?: boolean
     fileUrl?: boolean
     filename?: boolean
@@ -70287,6 +70605,10 @@ export namespace Prisma {
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
   }, ExtArgs["result"]["carrierDocument"]>
 
   export type CarrierDocumentSelectScalar = {
@@ -70295,6 +70617,10 @@ export namespace Prisma {
     parentId?: boolean
     stopId?: boolean
     clientId?: boolean
+    documentTypeId?: boolean
+    loadId?: boolean
+    dispatchId?: boolean
+    contractId?: boolean
     documentType?: boolean
     fileUrl?: boolean
     filename?: boolean
@@ -70307,12 +70633,16 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type CarrierDocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentType" | "parentId" | "stopId" | "clientId" | "documentType" | "fileUrl" | "filename" | "fileSizeBytes" | "uploadedBy" | "verified" | "verifiedBy" | "verifiedAt" | "notes" | "createdAt", ExtArgs["result"]["carrierDocument"]>
+  export type CarrierDocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentType" | "parentId" | "stopId" | "clientId" | "documentTypeId" | "loadId" | "dispatchId" | "contractId" | "documentType" | "fileUrl" | "filename" | "fileSizeBytes" | "uploadedBy" | "verified" | "verifiedBy" | "verifiedAt" | "notes" | "createdAt", ExtArgs["result"]["carrierDocument"]>
   export type CarrierDocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     uploader?: boolean | UserDefaultArgs<ExtArgs>
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
     expenses?: boolean | CarrierDocument$expensesArgs<ExtArgs>
     _count?: boolean | CarrierDocumentCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -70321,12 +70651,20 @@ export namespace Prisma {
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
   }
   export type CarrierDocumentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     uploader?: boolean | UserDefaultArgs<ExtArgs>
     verifier?: boolean | CarrierDocument$verifierArgs<ExtArgs>
     stop?: boolean | CarrierDocument$stopArgs<ExtArgs>
     client?: boolean | CarrierDocument$clientArgs<ExtArgs>
+    documentTypeRef?: boolean | CarrierDocument$documentTypeRefArgs<ExtArgs>
+    load?: boolean | CarrierDocument$loadArgs<ExtArgs>
+    dispatch?: boolean | CarrierDocument$dispatchArgs<ExtArgs>
+    contract?: boolean | CarrierDocument$contractArgs<ExtArgs>
   }
 
   export type $CarrierDocumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -70336,6 +70674,10 @@ export namespace Prisma {
       verifier: Prisma.$UserPayload<ExtArgs> | null
       stop: Prisma.$CarrierStopPayload<ExtArgs> | null
       client: Prisma.$CarrierClientPayload<ExtArgs> | null
+      documentTypeRef: Prisma.$CarrierDocumentTypePayload<ExtArgs> | null
+      load: Prisma.$CarrierLoadPayload<ExtArgs> | null
+      dispatch: Prisma.$CarrierDispatchPayload<ExtArgs> | null
+      contract: Prisma.$CarrierContractPayload<ExtArgs> | null
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -70344,6 +70686,10 @@ export namespace Prisma {
       parentId: string
       stopId: string | null
       clientId: string | null
+      documentTypeId: string | null
+      loadId: string | null
+      dispatchId: string | null
+      contractId: string | null
       documentType: string
       fileUrl: string
       filename: string
@@ -70752,6 +71098,10 @@ export namespace Prisma {
     verifier<T extends CarrierDocument$verifierArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$verifierArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     stop<T extends CarrierDocument$stopArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$stopArgs<ExtArgs>>): Prisma__CarrierStopClient<$Result.GetResult<Prisma.$CarrierStopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     client<T extends CarrierDocument$clientArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$clientArgs<ExtArgs>>): Prisma__CarrierClientClient<$Result.GetResult<Prisma.$CarrierClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    documentTypeRef<T extends CarrierDocument$documentTypeRefArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$documentTypeRefArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    load<T extends CarrierDocument$loadArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$loadArgs<ExtArgs>>): Prisma__CarrierLoadClient<$Result.GetResult<Prisma.$CarrierLoadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    dispatch<T extends CarrierDocument$dispatchArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$dispatchArgs<ExtArgs>>): Prisma__CarrierDispatchClient<$Result.GetResult<Prisma.$CarrierDispatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    contract<T extends CarrierDocument$contractArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$contractArgs<ExtArgs>>): Prisma__CarrierContractClient<$Result.GetResult<Prisma.$CarrierContractPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     expenses<T extends CarrierDocument$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocument$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -70787,6 +71137,10 @@ export namespace Prisma {
     readonly parentId: FieldRef<"CarrierDocument", 'String'>
     readonly stopId: FieldRef<"CarrierDocument", 'String'>
     readonly clientId: FieldRef<"CarrierDocument", 'String'>
+    readonly documentTypeId: FieldRef<"CarrierDocument", 'String'>
+    readonly loadId: FieldRef<"CarrierDocument", 'String'>
+    readonly dispatchId: FieldRef<"CarrierDocument", 'String'>
+    readonly contractId: FieldRef<"CarrierDocument", 'String'>
     readonly documentType: FieldRef<"CarrierDocument", 'String'>
     readonly fileUrl: FieldRef<"CarrierDocument", 'String'>
     readonly filename: FieldRef<"CarrierDocument", 'String'>
@@ -71255,6 +71609,82 @@ export namespace Prisma {
   }
 
   /**
+   * CarrierDocument.documentTypeRef
+   */
+  export type CarrierDocument$documentTypeRefArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    where?: CarrierDocumentTypeWhereInput
+  }
+
+  /**
+   * CarrierDocument.load
+   */
+  export type CarrierDocument$loadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierLoad
+     */
+    select?: CarrierLoadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierLoad
+     */
+    omit?: CarrierLoadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierLoadInclude<ExtArgs> | null
+    where?: CarrierLoadWhereInput
+  }
+
+  /**
+   * CarrierDocument.dispatch
+   */
+  export type CarrierDocument$dispatchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDispatch
+     */
+    select?: CarrierDispatchSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDispatch
+     */
+    omit?: CarrierDispatchOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDispatchInclude<ExtArgs> | null
+    where?: CarrierDispatchWhereInput
+  }
+
+  /**
+   * CarrierDocument.contract
+   */
+  export type CarrierDocument$contractArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierContract
+     */
+    select?: CarrierContractSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierContract
+     */
+    omit?: CarrierContractOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierContractInclude<ExtArgs> | null
+    where?: CarrierContractWhereInput
+  }
+
+  /**
    * CarrierDocument.expenses
    */
   export type CarrierDocument$expensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -71294,6 +71724,1125 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CarrierDocumentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CarrierDocumentType
+   */
+
+  export type AggregateCarrierDocumentType = {
+    _count: CarrierDocumentTypeCountAggregateOutputType | null
+    _min: CarrierDocumentTypeMinAggregateOutputType | null
+    _max: CarrierDocumentTypeMaxAggregateOutputType | null
+  }
+
+  export type CarrierDocumentTypeMinAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    name: string | null
+    slug: string | null
+    isDefault: boolean | null
+    isActive: boolean | null
+    createdAt: Date | null
+  }
+
+  export type CarrierDocumentTypeMaxAggregateOutputType = {
+    id: string | null
+    orgId: string | null
+    name: string | null
+    slug: string | null
+    isDefault: boolean | null
+    isActive: boolean | null
+    createdAt: Date | null
+  }
+
+  export type CarrierDocumentTypeCountAggregateOutputType = {
+    id: number
+    orgId: number
+    name: number
+    slug: number
+    isDefault: number
+    isActive: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CarrierDocumentTypeMinAggregateInputType = {
+    id?: true
+    orgId?: true
+    name?: true
+    slug?: true
+    isDefault?: true
+    isActive?: true
+    createdAt?: true
+  }
+
+  export type CarrierDocumentTypeMaxAggregateInputType = {
+    id?: true
+    orgId?: true
+    name?: true
+    slug?: true
+    isDefault?: true
+    isActive?: true
+    createdAt?: true
+  }
+
+  export type CarrierDocumentTypeCountAggregateInputType = {
+    id?: true
+    orgId?: true
+    name?: true
+    slug?: true
+    isDefault?: true
+    isActive?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CarrierDocumentTypeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CarrierDocumentType to aggregate.
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierDocumentTypes to fetch.
+     */
+    orderBy?: CarrierDocumentTypeOrderByWithRelationInput | CarrierDocumentTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CarrierDocumentTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierDocumentTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierDocumentTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CarrierDocumentTypes
+    **/
+    _count?: true | CarrierDocumentTypeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CarrierDocumentTypeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CarrierDocumentTypeMaxAggregateInputType
+  }
+
+  export type GetCarrierDocumentTypeAggregateType<T extends CarrierDocumentTypeAggregateArgs> = {
+        [P in keyof T & keyof AggregateCarrierDocumentType]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCarrierDocumentType[P]>
+      : GetScalarType<T[P], AggregateCarrierDocumentType[P]>
+  }
+
+
+
+
+  export type CarrierDocumentTypeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CarrierDocumentTypeWhereInput
+    orderBy?: CarrierDocumentTypeOrderByWithAggregationInput | CarrierDocumentTypeOrderByWithAggregationInput[]
+    by: CarrierDocumentTypeScalarFieldEnum[] | CarrierDocumentTypeScalarFieldEnum
+    having?: CarrierDocumentTypeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CarrierDocumentTypeCountAggregateInputType | true
+    _min?: CarrierDocumentTypeMinAggregateInputType
+    _max?: CarrierDocumentTypeMaxAggregateInputType
+  }
+
+  export type CarrierDocumentTypeGroupByOutputType = {
+    id: string
+    orgId: string
+    name: string
+    slug: string
+    isDefault: boolean
+    isActive: boolean
+    createdAt: Date
+    _count: CarrierDocumentTypeCountAggregateOutputType | null
+    _min: CarrierDocumentTypeMinAggregateOutputType | null
+    _max: CarrierDocumentTypeMaxAggregateOutputType | null
+  }
+
+  type GetCarrierDocumentTypeGroupByPayload<T extends CarrierDocumentTypeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CarrierDocumentTypeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CarrierDocumentTypeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CarrierDocumentTypeGroupByOutputType[P]>
+            : GetScalarType<T[P], CarrierDocumentTypeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CarrierDocumentTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    name?: boolean
+    slug?: boolean
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    documents?: boolean | CarrierDocumentType$documentsArgs<ExtArgs>
+    _count?: boolean | CarrierDocumentTypeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierDocumentType"]>
+
+  export type CarrierDocumentTypeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    name?: boolean
+    slug?: boolean
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierDocumentType"]>
+
+  export type CarrierDocumentTypeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orgId?: boolean
+    name?: boolean
+    slug?: boolean
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["carrierDocumentType"]>
+
+  export type CarrierDocumentTypeSelectScalar = {
+    id?: boolean
+    orgId?: boolean
+    name?: boolean
+    slug?: boolean
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+  }
+
+  export type CarrierDocumentTypeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "slug" | "isDefault" | "isActive" | "createdAt", ExtArgs["result"]["carrierDocumentType"]>
+  export type CarrierDocumentTypeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    documents?: boolean | CarrierDocumentType$documentsArgs<ExtArgs>
+    _count?: boolean | CarrierDocumentTypeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CarrierDocumentTypeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type CarrierDocumentTypeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $CarrierDocumentTypePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CarrierDocumentType"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      documents: Prisma.$CarrierDocumentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orgId: string
+      name: string
+      slug: string
+      isDefault: boolean
+      isActive: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["carrierDocumentType"]>
+    composites: {}
+  }
+
+  type CarrierDocumentTypeGetPayload<S extends boolean | null | undefined | CarrierDocumentTypeDefaultArgs> = $Result.GetResult<Prisma.$CarrierDocumentTypePayload, S>
+
+  type CarrierDocumentTypeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CarrierDocumentTypeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CarrierDocumentTypeCountAggregateInputType | true
+    }
+
+  export interface CarrierDocumentTypeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CarrierDocumentType'], meta: { name: 'CarrierDocumentType' } }
+    /**
+     * Find zero or one CarrierDocumentType that matches the filter.
+     * @param {CarrierDocumentTypeFindUniqueArgs} args - Arguments to find a CarrierDocumentType
+     * @example
+     * // Get one CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CarrierDocumentTypeFindUniqueArgs>(args: SelectSubset<T, CarrierDocumentTypeFindUniqueArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CarrierDocumentType that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CarrierDocumentTypeFindUniqueOrThrowArgs} args - Arguments to find a CarrierDocumentType
+     * @example
+     * // Get one CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CarrierDocumentTypeFindUniqueOrThrowArgs>(args: SelectSubset<T, CarrierDocumentTypeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CarrierDocumentType that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeFindFirstArgs} args - Arguments to find a CarrierDocumentType
+     * @example
+     * // Get one CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CarrierDocumentTypeFindFirstArgs>(args?: SelectSubset<T, CarrierDocumentTypeFindFirstArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CarrierDocumentType that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeFindFirstOrThrowArgs} args - Arguments to find a CarrierDocumentType
+     * @example
+     * // Get one CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CarrierDocumentTypeFindFirstOrThrowArgs>(args?: SelectSubset<T, CarrierDocumentTypeFindFirstOrThrowArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CarrierDocumentTypes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CarrierDocumentTypes
+     * const carrierDocumentTypes = await prisma.carrierDocumentType.findMany()
+     * 
+     * // Get first 10 CarrierDocumentTypes
+     * const carrierDocumentTypes = await prisma.carrierDocumentType.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const carrierDocumentTypeWithIdOnly = await prisma.carrierDocumentType.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CarrierDocumentTypeFindManyArgs>(args?: SelectSubset<T, CarrierDocumentTypeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CarrierDocumentType.
+     * @param {CarrierDocumentTypeCreateArgs} args - Arguments to create a CarrierDocumentType.
+     * @example
+     * // Create one CarrierDocumentType
+     * const CarrierDocumentType = await prisma.carrierDocumentType.create({
+     *   data: {
+     *     // ... data to create a CarrierDocumentType
+     *   }
+     * })
+     * 
+     */
+    create<T extends CarrierDocumentTypeCreateArgs>(args: SelectSubset<T, CarrierDocumentTypeCreateArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CarrierDocumentTypes.
+     * @param {CarrierDocumentTypeCreateManyArgs} args - Arguments to create many CarrierDocumentTypes.
+     * @example
+     * // Create many CarrierDocumentTypes
+     * const carrierDocumentType = await prisma.carrierDocumentType.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CarrierDocumentTypeCreateManyArgs>(args?: SelectSubset<T, CarrierDocumentTypeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CarrierDocumentTypes and returns the data saved in the database.
+     * @param {CarrierDocumentTypeCreateManyAndReturnArgs} args - Arguments to create many CarrierDocumentTypes.
+     * @example
+     * // Create many CarrierDocumentTypes
+     * const carrierDocumentType = await prisma.carrierDocumentType.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CarrierDocumentTypes and only return the `id`
+     * const carrierDocumentTypeWithIdOnly = await prisma.carrierDocumentType.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CarrierDocumentTypeCreateManyAndReturnArgs>(args?: SelectSubset<T, CarrierDocumentTypeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CarrierDocumentType.
+     * @param {CarrierDocumentTypeDeleteArgs} args - Arguments to delete one CarrierDocumentType.
+     * @example
+     * // Delete one CarrierDocumentType
+     * const CarrierDocumentType = await prisma.carrierDocumentType.delete({
+     *   where: {
+     *     // ... filter to delete one CarrierDocumentType
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CarrierDocumentTypeDeleteArgs>(args: SelectSubset<T, CarrierDocumentTypeDeleteArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CarrierDocumentType.
+     * @param {CarrierDocumentTypeUpdateArgs} args - Arguments to update one CarrierDocumentType.
+     * @example
+     * // Update one CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CarrierDocumentTypeUpdateArgs>(args: SelectSubset<T, CarrierDocumentTypeUpdateArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CarrierDocumentTypes.
+     * @param {CarrierDocumentTypeDeleteManyArgs} args - Arguments to filter CarrierDocumentTypes to delete.
+     * @example
+     * // Delete a few CarrierDocumentTypes
+     * const { count } = await prisma.carrierDocumentType.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CarrierDocumentTypeDeleteManyArgs>(args?: SelectSubset<T, CarrierDocumentTypeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CarrierDocumentTypes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CarrierDocumentTypes
+     * const carrierDocumentType = await prisma.carrierDocumentType.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CarrierDocumentTypeUpdateManyArgs>(args: SelectSubset<T, CarrierDocumentTypeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CarrierDocumentTypes and returns the data updated in the database.
+     * @param {CarrierDocumentTypeUpdateManyAndReturnArgs} args - Arguments to update many CarrierDocumentTypes.
+     * @example
+     * // Update many CarrierDocumentTypes
+     * const carrierDocumentType = await prisma.carrierDocumentType.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CarrierDocumentTypes and only return the `id`
+     * const carrierDocumentTypeWithIdOnly = await prisma.carrierDocumentType.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CarrierDocumentTypeUpdateManyAndReturnArgs>(args: SelectSubset<T, CarrierDocumentTypeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CarrierDocumentType.
+     * @param {CarrierDocumentTypeUpsertArgs} args - Arguments to update or create a CarrierDocumentType.
+     * @example
+     * // Update or create a CarrierDocumentType
+     * const carrierDocumentType = await prisma.carrierDocumentType.upsert({
+     *   create: {
+     *     // ... data to create a CarrierDocumentType
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CarrierDocumentType we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CarrierDocumentTypeUpsertArgs>(args: SelectSubset<T, CarrierDocumentTypeUpsertArgs<ExtArgs>>): Prisma__CarrierDocumentTypeClient<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CarrierDocumentTypes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeCountArgs} args - Arguments to filter CarrierDocumentTypes to count.
+     * @example
+     * // Count the number of CarrierDocumentTypes
+     * const count = await prisma.carrierDocumentType.count({
+     *   where: {
+     *     // ... the filter for the CarrierDocumentTypes we want to count
+     *   }
+     * })
+    **/
+    count<T extends CarrierDocumentTypeCountArgs>(
+      args?: Subset<T, CarrierDocumentTypeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CarrierDocumentTypeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CarrierDocumentType.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CarrierDocumentTypeAggregateArgs>(args: Subset<T, CarrierDocumentTypeAggregateArgs>): Prisma.PrismaPromise<GetCarrierDocumentTypeAggregateType<T>>
+
+    /**
+     * Group by CarrierDocumentType.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CarrierDocumentTypeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CarrierDocumentTypeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CarrierDocumentTypeGroupByArgs['orderBy'] }
+        : { orderBy?: CarrierDocumentTypeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CarrierDocumentTypeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCarrierDocumentTypeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CarrierDocumentType model
+   */
+  readonly fields: CarrierDocumentTypeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CarrierDocumentType.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CarrierDocumentTypeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    documents<T extends CarrierDocumentType$documentsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierDocumentType$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CarrierDocumentType model
+   */
+  interface CarrierDocumentTypeFieldRefs {
+    readonly id: FieldRef<"CarrierDocumentType", 'String'>
+    readonly orgId: FieldRef<"CarrierDocumentType", 'String'>
+    readonly name: FieldRef<"CarrierDocumentType", 'String'>
+    readonly slug: FieldRef<"CarrierDocumentType", 'String'>
+    readonly isDefault: FieldRef<"CarrierDocumentType", 'Boolean'>
+    readonly isActive: FieldRef<"CarrierDocumentType", 'Boolean'>
+    readonly createdAt: FieldRef<"CarrierDocumentType", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CarrierDocumentType findUnique
+   */
+  export type CarrierDocumentTypeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierDocumentType to fetch.
+     */
+    where: CarrierDocumentTypeWhereUniqueInput
+  }
+
+  /**
+   * CarrierDocumentType findUniqueOrThrow
+   */
+  export type CarrierDocumentTypeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierDocumentType to fetch.
+     */
+    where: CarrierDocumentTypeWhereUniqueInput
+  }
+
+  /**
+   * CarrierDocumentType findFirst
+   */
+  export type CarrierDocumentTypeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierDocumentType to fetch.
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierDocumentTypes to fetch.
+     */
+    orderBy?: CarrierDocumentTypeOrderByWithRelationInput | CarrierDocumentTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CarrierDocumentTypes.
+     */
+    cursor?: CarrierDocumentTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierDocumentTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierDocumentTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierDocumentTypes.
+     */
+    distinct?: CarrierDocumentTypeScalarFieldEnum | CarrierDocumentTypeScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierDocumentType findFirstOrThrow
+   */
+  export type CarrierDocumentTypeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierDocumentType to fetch.
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierDocumentTypes to fetch.
+     */
+    orderBy?: CarrierDocumentTypeOrderByWithRelationInput | CarrierDocumentTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CarrierDocumentTypes.
+     */
+    cursor?: CarrierDocumentTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierDocumentTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierDocumentTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierDocumentTypes.
+     */
+    distinct?: CarrierDocumentTypeScalarFieldEnum | CarrierDocumentTypeScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierDocumentType findMany
+   */
+  export type CarrierDocumentTypeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter, which CarrierDocumentTypes to fetch.
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CarrierDocumentTypes to fetch.
+     */
+    orderBy?: CarrierDocumentTypeOrderByWithRelationInput | CarrierDocumentTypeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CarrierDocumentTypes.
+     */
+    cursor?: CarrierDocumentTypeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CarrierDocumentTypes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CarrierDocumentTypes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CarrierDocumentTypes.
+     */
+    distinct?: CarrierDocumentTypeScalarFieldEnum | CarrierDocumentTypeScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierDocumentType create
+   */
+  export type CarrierDocumentTypeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CarrierDocumentType.
+     */
+    data: XOR<CarrierDocumentTypeCreateInput, CarrierDocumentTypeUncheckedCreateInput>
+  }
+
+  /**
+   * CarrierDocumentType createMany
+   */
+  export type CarrierDocumentTypeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CarrierDocumentTypes.
+     */
+    data: CarrierDocumentTypeCreateManyInput | CarrierDocumentTypeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CarrierDocumentType createManyAndReturn
+   */
+  export type CarrierDocumentTypeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * The data used to create many CarrierDocumentTypes.
+     */
+    data: CarrierDocumentTypeCreateManyInput | CarrierDocumentTypeCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CarrierDocumentType update
+   */
+  export type CarrierDocumentTypeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CarrierDocumentType.
+     */
+    data: XOR<CarrierDocumentTypeUpdateInput, CarrierDocumentTypeUncheckedUpdateInput>
+    /**
+     * Choose, which CarrierDocumentType to update.
+     */
+    where: CarrierDocumentTypeWhereUniqueInput
+  }
+
+  /**
+   * CarrierDocumentType updateMany
+   */
+  export type CarrierDocumentTypeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CarrierDocumentTypes.
+     */
+    data: XOR<CarrierDocumentTypeUpdateManyMutationInput, CarrierDocumentTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which CarrierDocumentTypes to update
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * Limit how many CarrierDocumentTypes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CarrierDocumentType updateManyAndReturn
+   */
+  export type CarrierDocumentTypeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * The data used to update CarrierDocumentTypes.
+     */
+    data: XOR<CarrierDocumentTypeUpdateManyMutationInput, CarrierDocumentTypeUncheckedUpdateManyInput>
+    /**
+     * Filter which CarrierDocumentTypes to update
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * Limit how many CarrierDocumentTypes to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CarrierDocumentType upsert
+   */
+  export type CarrierDocumentTypeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CarrierDocumentType to update in case it exists.
+     */
+    where: CarrierDocumentTypeWhereUniqueInput
+    /**
+     * In case the CarrierDocumentType found by the `where` argument doesn't exist, create a new CarrierDocumentType with this data.
+     */
+    create: XOR<CarrierDocumentTypeCreateInput, CarrierDocumentTypeUncheckedCreateInput>
+    /**
+     * In case the CarrierDocumentType was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CarrierDocumentTypeUpdateInput, CarrierDocumentTypeUncheckedUpdateInput>
+  }
+
+  /**
+   * CarrierDocumentType delete
+   */
+  export type CarrierDocumentTypeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
+    /**
+     * Filter which CarrierDocumentType to delete.
+     */
+    where: CarrierDocumentTypeWhereUniqueInput
+  }
+
+  /**
+   * CarrierDocumentType deleteMany
+   */
+  export type CarrierDocumentTypeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CarrierDocumentTypes to delete
+     */
+    where?: CarrierDocumentTypeWhereInput
+    /**
+     * Limit how many CarrierDocumentTypes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CarrierDocumentType.documents
+   */
+  export type CarrierDocumentType$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocument
+     */
+    select?: CarrierDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocument
+     */
+    omit?: CarrierDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentInclude<ExtArgs> | null
+    where?: CarrierDocumentWhereInput
+    orderBy?: CarrierDocumentOrderByWithRelationInput | CarrierDocumentOrderByWithRelationInput[]
+    cursor?: CarrierDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CarrierDocumentScalarFieldEnum | CarrierDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierDocumentType without action
+   */
+  export type CarrierDocumentTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierDocumentType
+     */
+    select?: CarrierDocumentTypeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierDocumentType
+     */
+    omit?: CarrierDocumentTypeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierDocumentTypeInclude<ExtArgs> | null
   }
 
 
@@ -77533,6 +79082,10 @@ export namespace Prisma {
     parentId: 'parentId',
     stopId: 'stopId',
     clientId: 'clientId',
+    documentTypeId: 'documentTypeId',
+    loadId: 'loadId',
+    dispatchId: 'dispatchId',
+    contractId: 'contractId',
     documentType: 'documentType',
     fileUrl: 'fileUrl',
     filename: 'filename',
@@ -77546,6 +79099,19 @@ export namespace Prisma {
   };
 
   export type CarrierDocumentScalarFieldEnum = (typeof CarrierDocumentScalarFieldEnum)[keyof typeof CarrierDocumentScalarFieldEnum]
+
+
+  export const CarrierDocumentTypeScalarFieldEnum: {
+    id: 'id',
+    orgId: 'orgId',
+    name: 'name',
+    slug: 'slug',
+    isDefault: 'isDefault',
+    isActive: 'isActive',
+    createdAt: 'createdAt'
+  };
+
+  export type CarrierDocumentTypeScalarFieldEnum = (typeof CarrierDocumentTypeScalarFieldEnum)[keyof typeof CarrierDocumentTypeScalarFieldEnum]
 
 
   export const CarrierExpenseScalarFieldEnum: {
@@ -78269,6 +79835,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     inAppNotifications?: InAppNotificationListRelationFilter
+    carrierDocumentTypes?: CarrierDocumentTypeListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -78321,6 +79888,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
     inAppNotifications?: InAppNotificationOrderByRelationAggregateInput
+    carrierDocumentTypes?: CarrierDocumentTypeOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -78376,6 +79944,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     inAppNotifications?: InAppNotificationListRelationFilter
+    carrierDocumentTypes?: CarrierDocumentTypeListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -82390,6 +83959,7 @@ export namespace Prisma {
     client?: XOR<CarrierClientScalarRelationFilter, CarrierClientWhereInput>
     routeTemplates?: RouteTemplateListRelationFilter
     carrierLoads?: CarrierLoadListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }
 
   export type CarrierContractOrderByWithRelationInput = {
@@ -82419,6 +83989,7 @@ export namespace Prisma {
     client?: CarrierClientOrderByWithRelationInput
     routeTemplates?: RouteTemplateOrderByRelationAggregateInput
     carrierLoads?: CarrierLoadOrderByRelationAggregateInput
+    documents?: CarrierDocumentOrderByRelationAggregateInput
   }
 
   export type CarrierContractWhereUniqueInput = Prisma.AtLeast<{
@@ -82451,6 +84022,7 @@ export namespace Prisma {
     client?: XOR<CarrierClientScalarRelationFilter, CarrierClientWhereInput>
     routeTemplates?: RouteTemplateListRelationFilter
     carrierLoads?: CarrierLoadListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }, "id" | "contractNumber">
 
   export type CarrierContractOrderByWithAggregationInput = {
@@ -83271,6 +84843,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     messages?: FleetMessageListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }
 
   export type CarrierDispatchOrderByWithRelationInput = {
@@ -83306,6 +84879,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
     messages?: FleetMessageOrderByRelationAggregateInput
+    documents?: CarrierDocumentOrderByRelationAggregateInput
   }
 
   export type CarrierDispatchWhereUniqueInput = Prisma.AtLeast<{
@@ -83344,6 +84918,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
     messages?: FleetMessageListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }, "id">
 
   export type CarrierDispatchOrderByWithAggregationInput = {
@@ -83442,6 +85017,7 @@ export namespace Prisma {
     stops?: CarrierStopListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }
 
   export type CarrierLoadOrderByWithRelationInput = {
@@ -83483,6 +85059,7 @@ export namespace Prisma {
     stops?: CarrierStopOrderByRelationAggregateInput
     expenses?: CarrierExpenseOrderByRelationAggregateInput
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
+    documents?: CarrierDocumentOrderByRelationAggregateInput
   }
 
   export type CarrierLoadWhereUniqueInput = Prisma.AtLeast<{
@@ -83527,6 +85104,7 @@ export namespace Prisma {
     stops?: CarrierStopListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
     driverPayRecords?: DriverPayRecordListRelationFilter
+    documents?: CarrierDocumentListRelationFilter
   }, "id">
 
   export type CarrierLoadOrderByWithAggregationInput = {
@@ -83797,6 +85375,10 @@ export namespace Prisma {
     parentId?: UuidFilter<"CarrierDocument"> | string
     stopId?: UuidNullableFilter<"CarrierDocument"> | string | null
     clientId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    documentTypeId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    loadId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    dispatchId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    contractId?: UuidNullableFilter<"CarrierDocument"> | string | null
     documentType?: StringFilter<"CarrierDocument"> | string
     fileUrl?: StringFilter<"CarrierDocument"> | string
     filename?: StringFilter<"CarrierDocument"> | string
@@ -83811,6 +85393,10 @@ export namespace Prisma {
     verifier?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     stop?: XOR<CarrierStopNullableScalarRelationFilter, CarrierStopWhereInput> | null
     client?: XOR<CarrierClientNullableScalarRelationFilter, CarrierClientWhereInput> | null
+    documentTypeRef?: XOR<CarrierDocumentTypeNullableScalarRelationFilter, CarrierDocumentTypeWhereInput> | null
+    load?: XOR<CarrierLoadNullableScalarRelationFilter, CarrierLoadWhereInput> | null
+    dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
+    contract?: XOR<CarrierContractNullableScalarRelationFilter, CarrierContractWhereInput> | null
     expenses?: CarrierExpenseListRelationFilter
   }
 
@@ -83820,6 +85406,10 @@ export namespace Prisma {
     parentId?: SortOrder
     stopId?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
+    documentTypeId?: SortOrderInput | SortOrder
+    loadId?: SortOrderInput | SortOrder
+    dispatchId?: SortOrderInput | SortOrder
+    contractId?: SortOrderInput | SortOrder
     documentType?: SortOrder
     fileUrl?: SortOrder
     filename?: SortOrder
@@ -83834,6 +85424,10 @@ export namespace Prisma {
     verifier?: UserOrderByWithRelationInput
     stop?: CarrierStopOrderByWithRelationInput
     client?: CarrierClientOrderByWithRelationInput
+    documentTypeRef?: CarrierDocumentTypeOrderByWithRelationInput
+    load?: CarrierLoadOrderByWithRelationInput
+    dispatch?: CarrierDispatchOrderByWithRelationInput
+    contract?: CarrierContractOrderByWithRelationInput
     expenses?: CarrierExpenseOrderByRelationAggregateInput
   }
 
@@ -83846,6 +85440,10 @@ export namespace Prisma {
     parentId?: UuidFilter<"CarrierDocument"> | string
     stopId?: UuidNullableFilter<"CarrierDocument"> | string | null
     clientId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    documentTypeId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    loadId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    dispatchId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    contractId?: UuidNullableFilter<"CarrierDocument"> | string | null
     documentType?: StringFilter<"CarrierDocument"> | string
     fileUrl?: StringFilter<"CarrierDocument"> | string
     filename?: StringFilter<"CarrierDocument"> | string
@@ -83860,6 +85458,10 @@ export namespace Prisma {
     verifier?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     stop?: XOR<CarrierStopNullableScalarRelationFilter, CarrierStopWhereInput> | null
     client?: XOR<CarrierClientNullableScalarRelationFilter, CarrierClientWhereInput> | null
+    documentTypeRef?: XOR<CarrierDocumentTypeNullableScalarRelationFilter, CarrierDocumentTypeWhereInput> | null
+    load?: XOR<CarrierLoadNullableScalarRelationFilter, CarrierLoadWhereInput> | null
+    dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
+    contract?: XOR<CarrierContractNullableScalarRelationFilter, CarrierContractWhereInput> | null
     expenses?: CarrierExpenseListRelationFilter
   }, "id">
 
@@ -83869,6 +85471,10 @@ export namespace Prisma {
     parentId?: SortOrder
     stopId?: SortOrderInput | SortOrder
     clientId?: SortOrderInput | SortOrder
+    documentTypeId?: SortOrderInput | SortOrder
+    loadId?: SortOrderInput | SortOrder
+    dispatchId?: SortOrderInput | SortOrder
+    contractId?: SortOrderInput | SortOrder
     documentType?: SortOrder
     fileUrl?: SortOrder
     filename?: SortOrder
@@ -83895,6 +85501,10 @@ export namespace Prisma {
     parentId?: UuidWithAggregatesFilter<"CarrierDocument"> | string
     stopId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
     clientId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
+    documentTypeId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
+    loadId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
+    dispatchId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
+    contractId?: UuidNullableWithAggregatesFilter<"CarrierDocument"> | string | null
     documentType?: StringWithAggregatesFilter<"CarrierDocument"> | string
     fileUrl?: StringWithAggregatesFilter<"CarrierDocument"> | string
     filename?: StringWithAggregatesFilter<"CarrierDocument"> | string
@@ -83905,6 +85515,75 @@ export namespace Prisma {
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"CarrierDocument"> | Date | string | null
     notes?: StringNullableWithAggregatesFilter<"CarrierDocument"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierDocument"> | Date | string
+  }
+
+  export type CarrierDocumentTypeWhereInput = {
+    AND?: CarrierDocumentTypeWhereInput | CarrierDocumentTypeWhereInput[]
+    OR?: CarrierDocumentTypeWhereInput[]
+    NOT?: CarrierDocumentTypeWhereInput | CarrierDocumentTypeWhereInput[]
+    id?: UuidFilter<"CarrierDocumentType"> | string
+    orgId?: UuidFilter<"CarrierDocumentType"> | string
+    name?: StringFilter<"CarrierDocumentType"> | string
+    slug?: StringFilter<"CarrierDocumentType"> | string
+    isDefault?: BoolFilter<"CarrierDocumentType"> | boolean
+    isActive?: BoolFilter<"CarrierDocumentType"> | boolean
+    createdAt?: DateTimeFilter<"CarrierDocumentType"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    documents?: CarrierDocumentListRelationFilter
+  }
+
+  export type CarrierDocumentTypeOrderByWithRelationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    isDefault?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    documents?: CarrierDocumentOrderByRelationAggregateInput
+  }
+
+  export type CarrierDocumentTypeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orgId_slug?: CarrierDocumentTypeOrgIdSlugCompoundUniqueInput
+    AND?: CarrierDocumentTypeWhereInput | CarrierDocumentTypeWhereInput[]
+    OR?: CarrierDocumentTypeWhereInput[]
+    NOT?: CarrierDocumentTypeWhereInput | CarrierDocumentTypeWhereInput[]
+    orgId?: UuidFilter<"CarrierDocumentType"> | string
+    name?: StringFilter<"CarrierDocumentType"> | string
+    slug?: StringFilter<"CarrierDocumentType"> | string
+    isDefault?: BoolFilter<"CarrierDocumentType"> | boolean
+    isActive?: BoolFilter<"CarrierDocumentType"> | boolean
+    createdAt?: DateTimeFilter<"CarrierDocumentType"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    documents?: CarrierDocumentListRelationFilter
+  }, "id" | "orgId_slug">
+
+  export type CarrierDocumentTypeOrderByWithAggregationInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    isDefault?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    _count?: CarrierDocumentTypeCountOrderByAggregateInput
+    _max?: CarrierDocumentTypeMaxOrderByAggregateInput
+    _min?: CarrierDocumentTypeMinOrderByAggregateInput
+  }
+
+  export type CarrierDocumentTypeScalarWhereWithAggregatesInput = {
+    AND?: CarrierDocumentTypeScalarWhereWithAggregatesInput | CarrierDocumentTypeScalarWhereWithAggregatesInput[]
+    OR?: CarrierDocumentTypeScalarWhereWithAggregatesInput[]
+    NOT?: CarrierDocumentTypeScalarWhereWithAggregatesInput | CarrierDocumentTypeScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"CarrierDocumentType"> | string
+    orgId?: UuidWithAggregatesFilter<"CarrierDocumentType"> | string
+    name?: StringWithAggregatesFilter<"CarrierDocumentType"> | string
+    slug?: StringWithAggregatesFilter<"CarrierDocumentType"> | string
+    isDefault?: BoolWithAggregatesFilter<"CarrierDocumentType"> | boolean
+    isActive?: BoolWithAggregatesFilter<"CarrierDocumentType"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"CarrierDocumentType"> | Date | string
   }
 
   export type CarrierExpenseWhereInput = {
@@ -84435,6 +86114,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -84487,6 +86167,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -84539,6 +86220,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -84591,6 +86273,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -89023,6 +90706,7 @@ export namespace Prisma {
     client: CarrierClientCreateNestedOneWithoutContractsInput
     routeTemplates?: RouteTemplateCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUncheckedCreateInput = {
@@ -89050,6 +90734,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUpdateInput = {
@@ -89077,6 +90762,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneRequiredWithoutContractsNestedInput
     routeTemplates?: RouteTemplateUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateInput = {
@@ -89104,6 +90790,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractCreateManyInput = {
@@ -90054,6 +91741,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateInput = {
@@ -90082,6 +91770,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUpdateInput = {
@@ -90110,6 +91799,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateInput = {
@@ -90138,6 +91828,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchCreateManyInput = {
@@ -90237,6 +91928,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateInput = {
@@ -90274,6 +91966,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUpdateInput = {
@@ -90311,6 +92004,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateInput = {
@@ -90348,6 +92042,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadCreateManyInput = {
@@ -90678,6 +92373,10 @@ export namespace Prisma {
     verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
     stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
     client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
   }
 
@@ -90687,6 +92386,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -90716,6 +92419,10 @@ export namespace Prisma {
     verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
     stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
     client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
   }
 
@@ -90725,6 +92432,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -90744,6 +92455,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -90776,6 +92491,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -90785,6 +92504,79 @@ export namespace Prisma {
     verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierDocumentTypeCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierDocumentTypesInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDocumentTypeRefInput
+  }
+
+  export type CarrierDocumentTypeUncheckedCreateInput = {
+    id?: string
+    orgId: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDocumentTypeRefInput
+  }
+
+  export type CarrierDocumentTypeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierDocumentTypesNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDocumentTypeRefNestedInput
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDocumentTypeRefNestedInput
+  }
+
+  export type CarrierDocumentTypeCreateManyInput = {
+    id?: string
+    orgId: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+  }
+
+  export type CarrierDocumentTypeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -91612,6 +93404,12 @@ export namespace Prisma {
     none?: InAppNotificationWhereInput
   }
 
+  export type CarrierDocumentTypeListRelationFilter = {
+    every?: CarrierDocumentTypeWhereInput
+    some?: CarrierDocumentTypeWhereInput
+    none?: CarrierDocumentTypeWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -91778,6 +93576,10 @@ export namespace Prisma {
   }
 
   export type InAppNotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CarrierDocumentTypeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -95855,12 +97657,21 @@ export namespace Prisma {
     isNot?: CarrierStopWhereInput | null
   }
 
+  export type CarrierDocumentTypeNullableScalarRelationFilter = {
+    is?: CarrierDocumentTypeWhereInput | null
+    isNot?: CarrierDocumentTypeWhereInput | null
+  }
+
   export type CarrierDocumentCountOrderByAggregateInput = {
     id?: SortOrder
     parentType?: SortOrder
     parentId?: SortOrder
     stopId?: SortOrder
     clientId?: SortOrder
+    documentTypeId?: SortOrder
+    loadId?: SortOrder
+    dispatchId?: SortOrder
+    contractId?: SortOrder
     documentType?: SortOrder
     fileUrl?: SortOrder
     filename?: SortOrder
@@ -95883,6 +97694,10 @@ export namespace Prisma {
     parentId?: SortOrder
     stopId?: SortOrder
     clientId?: SortOrder
+    documentTypeId?: SortOrder
+    loadId?: SortOrder
+    dispatchId?: SortOrder
+    contractId?: SortOrder
     documentType?: SortOrder
     fileUrl?: SortOrder
     filename?: SortOrder
@@ -95901,6 +97716,10 @@ export namespace Prisma {
     parentId?: SortOrder
     stopId?: SortOrder
     clientId?: SortOrder
+    documentTypeId?: SortOrder
+    loadId?: SortOrder
+    dispatchId?: SortOrder
+    contractId?: SortOrder
     documentType?: SortOrder
     fileUrl?: SortOrder
     filename?: SortOrder
@@ -95915,6 +97734,41 @@ export namespace Prisma {
 
   export type CarrierDocumentSumOrderByAggregateInput = {
     fileSizeBytes?: SortOrder
+  }
+
+  export type CarrierDocumentTypeOrgIdSlugCompoundUniqueInput = {
+    orgId: string
+    slug: string
+  }
+
+  export type CarrierDocumentTypeCountOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    isDefault?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CarrierDocumentTypeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    isDefault?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CarrierDocumentTypeMinOrderByAggregateInput = {
+    id?: SortOrder
+    orgId?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    isDefault?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type CarrierDocumentNullableScalarRelationFilter = {
@@ -96508,6 +98362,13 @@ export namespace Prisma {
     connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
   }
 
+  export type CarrierDocumentTypeCreateNestedManyWithoutTenantInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput> | CarrierDocumentTypeCreateWithoutTenantInput[] | CarrierDocumentTypeUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutTenantInput | CarrierDocumentTypeCreateOrConnectWithoutTenantInput[]
+    createMany?: CarrierDocumentTypeCreateManyTenantInputEnvelope
+    connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -96793,6 +98654,13 @@ export namespace Prisma {
     connectOrCreate?: InAppNotificationCreateOrConnectWithoutTenantInput | InAppNotificationCreateOrConnectWithoutTenantInput[]
     createMany?: InAppNotificationCreateManyTenantInputEnvelope
     connect?: InAppNotificationWhereUniqueInput | InAppNotificationWhereUniqueInput[]
+  }
+
+  export type CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput> | CarrierDocumentTypeCreateWithoutTenantInput[] | CarrierDocumentTypeUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutTenantInput | CarrierDocumentTypeCreateOrConnectWithoutTenantInput[]
+    createMany?: CarrierDocumentTypeCreateManyTenantInputEnvelope
+    connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -97393,6 +99261,20 @@ export namespace Prisma {
     deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
   }
 
+  export type CarrierDocumentTypeUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput> | CarrierDocumentTypeCreateWithoutTenantInput[] | CarrierDocumentTypeUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutTenantInput | CarrierDocumentTypeCreateOrConnectWithoutTenantInput[]
+    upsert?: CarrierDocumentTypeUpsertWithWhereUniqueWithoutTenantInput | CarrierDocumentTypeUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: CarrierDocumentTypeCreateManyTenantInputEnvelope
+    set?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    disconnect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    delete?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    update?: CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput | CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput | CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -97965,6 +99847,20 @@ export namespace Prisma {
     update?: InAppNotificationUpdateWithWhereUniqueWithoutTenantInput | InAppNotificationUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: InAppNotificationUpdateManyWithWhereWithoutTenantInput | InAppNotificationUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: InAppNotificationScalarWhereInput | InAppNotificationScalarWhereInput[]
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput> | CarrierDocumentTypeCreateWithoutTenantInput[] | CarrierDocumentTypeUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutTenantInput | CarrierDocumentTypeCreateOrConnectWithoutTenantInput[]
+    upsert?: CarrierDocumentTypeUpsertWithWhereUniqueWithoutTenantInput | CarrierDocumentTypeUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: CarrierDocumentTypeCreateManyTenantInputEnvelope
+    set?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    disconnect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    delete?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+    update?: CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput | CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput | CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutUsersInput = {
@@ -102157,6 +104053,13 @@ export namespace Prisma {
     connect?: CarrierLoadWhereUniqueInput | CarrierLoadWhereUniqueInput[]
   }
 
+  export type CarrierDocumentCreateNestedManyWithoutContractInput = {
+    create?: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput> | CarrierDocumentCreateWithoutContractInput[] | CarrierDocumentUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutContractInput | CarrierDocumentCreateOrConnectWithoutContractInput[]
+    createMany?: CarrierDocumentCreateManyContractInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+  }
+
   export type RouteTemplateUncheckedCreateNestedManyWithoutContractInput = {
     create?: XOR<RouteTemplateCreateWithoutContractInput, RouteTemplateUncheckedCreateWithoutContractInput> | RouteTemplateCreateWithoutContractInput[] | RouteTemplateUncheckedCreateWithoutContractInput[]
     connectOrCreate?: RouteTemplateCreateOrConnectWithoutContractInput | RouteTemplateCreateOrConnectWithoutContractInput[]
@@ -102169,6 +104072,13 @@ export namespace Prisma {
     connectOrCreate?: CarrierLoadCreateOrConnectWithoutContractInput | CarrierLoadCreateOrConnectWithoutContractInput[]
     createMany?: CarrierLoadCreateManyContractInputEnvelope
     connect?: CarrierLoadWhereUniqueInput | CarrierLoadWhereUniqueInput[]
+  }
+
+  export type CarrierDocumentUncheckedCreateNestedManyWithoutContractInput = {
+    create?: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput> | CarrierDocumentCreateWithoutContractInput[] | CarrierDocumentUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutContractInput | CarrierDocumentCreateOrConnectWithoutContractInput[]
+    createMany?: CarrierDocumentCreateManyContractInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierContractsNestedInput = {
@@ -102215,6 +104125,20 @@ export namespace Prisma {
     deleteMany?: CarrierLoadScalarWhereInput | CarrierLoadScalarWhereInput[]
   }
 
+  export type CarrierDocumentUpdateManyWithoutContractNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput> | CarrierDocumentCreateWithoutContractInput[] | CarrierDocumentUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutContractInput | CarrierDocumentCreateOrConnectWithoutContractInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutContractInput | CarrierDocumentUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: CarrierDocumentCreateManyContractInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutContractInput | CarrierDocumentUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutContractInput | CarrierDocumentUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
+  }
+
   export type RouteTemplateUncheckedUpdateManyWithoutContractNestedInput = {
     create?: XOR<RouteTemplateCreateWithoutContractInput, RouteTemplateUncheckedCreateWithoutContractInput> | RouteTemplateCreateWithoutContractInput[] | RouteTemplateUncheckedCreateWithoutContractInput[]
     connectOrCreate?: RouteTemplateCreateOrConnectWithoutContractInput | RouteTemplateCreateOrConnectWithoutContractInput[]
@@ -102241,6 +104165,20 @@ export namespace Prisma {
     update?: CarrierLoadUpdateWithWhereUniqueWithoutContractInput | CarrierLoadUpdateWithWhereUniqueWithoutContractInput[]
     updateMany?: CarrierLoadUpdateManyWithWhereWithoutContractInput | CarrierLoadUpdateManyWithWhereWithoutContractInput[]
     deleteMany?: CarrierLoadScalarWhereInput | CarrierLoadScalarWhereInput[]
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput> | CarrierDocumentCreateWithoutContractInput[] | CarrierDocumentUncheckedCreateWithoutContractInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutContractInput | CarrierDocumentCreateOrConnectWithoutContractInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutContractInput | CarrierDocumentUpsertWithWhereUniqueWithoutContractInput[]
+    createMany?: CarrierDocumentCreateManyContractInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutContractInput | CarrierDocumentUpdateWithWhereUniqueWithoutContractInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutContractInput | CarrierDocumentUpdateManyWithWhereWithoutContractInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutCarrierFacilitiesInput = {
@@ -103086,6 +105024,13 @@ export namespace Prisma {
     connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
   }
 
+  export type CarrierDocumentCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput> | CarrierDocumentCreateWithoutDispatchInput[] | CarrierDocumentUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDispatchInput | CarrierDocumentCreateOrConnectWithoutDispatchInput[]
+    createMany?: CarrierDocumentCreateManyDispatchInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+  }
+
   export type CarrierStopUncheckedCreateNestedManyWithoutDispatchInput = {
     create?: XOR<CarrierStopCreateWithoutDispatchInput, CarrierStopUncheckedCreateWithoutDispatchInput> | CarrierStopCreateWithoutDispatchInput[] | CarrierStopUncheckedCreateWithoutDispatchInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutDispatchInput | CarrierStopCreateOrConnectWithoutDispatchInput[]
@@ -103119,6 +105064,13 @@ export namespace Prisma {
     connectOrCreate?: FleetMessageCreateOrConnectWithoutDispatchInput | FleetMessageCreateOrConnectWithoutDispatchInput[]
     createMany?: FleetMessageCreateManyDispatchInputEnvelope
     connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+  }
+
+  export type CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput> | CarrierDocumentCreateWithoutDispatchInput[] | CarrierDocumentUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDispatchInput | CarrierDocumentCreateOrConnectWithoutDispatchInput[]
+    createMany?: CarrierDocumentCreateManyDispatchInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierDispatchesNestedInput = {
@@ -103255,6 +105207,20 @@ export namespace Prisma {
     deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
   }
 
+  export type CarrierDocumentUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput> | CarrierDocumentCreateWithoutDispatchInput[] | CarrierDocumentUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDispatchInput | CarrierDocumentCreateOrConnectWithoutDispatchInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput | CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: CarrierDocumentCreateManyDispatchInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutDispatchInput | CarrierDocumentUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutDispatchInput | CarrierDocumentUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
+  }
+
   export type CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput = {
     create?: XOR<CarrierStopCreateWithoutDispatchInput, CarrierStopUncheckedCreateWithoutDispatchInput> | CarrierStopCreateWithoutDispatchInput[] | CarrierStopUncheckedCreateWithoutDispatchInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutDispatchInput | CarrierStopCreateOrConnectWithoutDispatchInput[]
@@ -103325,6 +105291,20 @@ export namespace Prisma {
     deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
   }
 
+  export type CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput> | CarrierDocumentCreateWithoutDispatchInput[] | CarrierDocumentUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDispatchInput | CarrierDocumentCreateOrConnectWithoutDispatchInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput | CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: CarrierDocumentCreateManyDispatchInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutDispatchInput | CarrierDocumentUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutDispatchInput | CarrierDocumentUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
+  }
+
   export type TenantCreateNestedOneWithoutCarrierLoadsInput = {
     create?: XOR<TenantCreateWithoutCarrierLoadsInput, TenantUncheckedCreateWithoutCarrierLoadsInput>
     connectOrCreate?: TenantCreateOrConnectWithoutCarrierLoadsInput
@@ -103370,6 +105350,13 @@ export namespace Prisma {
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
   }
 
+  export type CarrierDocumentCreateNestedManyWithoutLoadInput = {
+    create?: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput> | CarrierDocumentCreateWithoutLoadInput[] | CarrierDocumentUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutLoadInput | CarrierDocumentCreateOrConnectWithoutLoadInput[]
+    createMany?: CarrierDocumentCreateManyLoadInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+  }
+
   export type CarrierStopUncheckedCreateNestedManyWithoutLoadInput = {
     create?: XOR<CarrierStopCreateWithoutLoadInput, CarrierStopUncheckedCreateWithoutLoadInput> | CarrierStopCreateWithoutLoadInput[] | CarrierStopUncheckedCreateWithoutLoadInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutLoadInput | CarrierStopCreateOrConnectWithoutLoadInput[]
@@ -103389,6 +105376,13 @@ export namespace Prisma {
     connectOrCreate?: DriverPayRecordCreateOrConnectWithoutLoadInput | DriverPayRecordCreateOrConnectWithoutLoadInput[]
     createMany?: DriverPayRecordCreateManyLoadInputEnvelope
     connect?: DriverPayRecordWhereUniqueInput | DriverPayRecordWhereUniqueInput[]
+  }
+
+  export type CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput = {
+    create?: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput> | CarrierDocumentCreateWithoutLoadInput[] | CarrierDocumentUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutLoadInput | CarrierDocumentCreateOrConnectWithoutLoadInput[]
+    createMany?: CarrierDocumentCreateManyLoadInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
   }
 
   export type TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput = {
@@ -103469,6 +105463,20 @@ export namespace Prisma {
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
   }
 
+  export type CarrierDocumentUpdateManyWithoutLoadNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput> | CarrierDocumentCreateWithoutLoadInput[] | CarrierDocumentUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutLoadInput | CarrierDocumentCreateOrConnectWithoutLoadInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutLoadInput | CarrierDocumentUpsertWithWhereUniqueWithoutLoadInput[]
+    createMany?: CarrierDocumentCreateManyLoadInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutLoadInput | CarrierDocumentUpdateWithWhereUniqueWithoutLoadInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutLoadInput | CarrierDocumentUpdateManyWithWhereWithoutLoadInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
+  }
+
   export type CarrierStopUncheckedUpdateManyWithoutLoadNestedInput = {
     create?: XOR<CarrierStopCreateWithoutLoadInput, CarrierStopUncheckedCreateWithoutLoadInput> | CarrierStopCreateWithoutLoadInput[] | CarrierStopUncheckedCreateWithoutLoadInput[]
     connectOrCreate?: CarrierStopCreateOrConnectWithoutLoadInput | CarrierStopCreateOrConnectWithoutLoadInput[]
@@ -103509,6 +105517,20 @@ export namespace Prisma {
     update?: DriverPayRecordUpdateWithWhereUniqueWithoutLoadInput | DriverPayRecordUpdateWithWhereUniqueWithoutLoadInput[]
     updateMany?: DriverPayRecordUpdateManyWithWhereWithoutLoadInput | DriverPayRecordUpdateManyWithWhereWithoutLoadInput[]
     deleteMany?: DriverPayRecordScalarWhereInput | DriverPayRecordScalarWhereInput[]
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput> | CarrierDocumentCreateWithoutLoadInput[] | CarrierDocumentUncheckedCreateWithoutLoadInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutLoadInput | CarrierDocumentCreateOrConnectWithoutLoadInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutLoadInput | CarrierDocumentUpsertWithWhereUniqueWithoutLoadInput[]
+    createMany?: CarrierDocumentCreateManyLoadInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutLoadInput | CarrierDocumentUpdateWithWhereUniqueWithoutLoadInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutLoadInput | CarrierDocumentUpdateManyWithWhereWithoutLoadInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
   }
 
   export type CarrierDispatchCreateNestedOneWithoutStopsInput = {
@@ -103679,6 +105701,30 @@ export namespace Prisma {
     connect?: CarrierClientWhereUniqueInput
   }
 
+  export type CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutDocumentsInput, CarrierDocumentTypeUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutDocumentsInput
+    connect?: CarrierDocumentTypeWhereUniqueInput
+  }
+
+  export type CarrierLoadCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<CarrierLoadCreateWithoutDocumentsInput, CarrierLoadUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierLoadCreateOrConnectWithoutDocumentsInput
+    connect?: CarrierLoadWhereUniqueInput
+  }
+
+  export type CarrierDispatchCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<CarrierDispatchCreateWithoutDocumentsInput, CarrierDispatchUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierDispatchCreateOrConnectWithoutDocumentsInput
+    connect?: CarrierDispatchWhereUniqueInput
+  }
+
+  export type CarrierContractCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<CarrierContractCreateWithoutDocumentsInput, CarrierContractUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierContractCreateOrConnectWithoutDocumentsInput
+    connect?: CarrierContractWhereUniqueInput
+  }
+
   export type CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput = {
     create?: XOR<CarrierExpenseCreateWithoutReceiptDocumentInput, CarrierExpenseUncheckedCreateWithoutReceiptDocumentInput> | CarrierExpenseCreateWithoutReceiptDocumentInput[] | CarrierExpenseUncheckedCreateWithoutReceiptDocumentInput[]
     connectOrCreate?: CarrierExpenseCreateOrConnectWithoutReceiptDocumentInput | CarrierExpenseCreateOrConnectWithoutReceiptDocumentInput[]
@@ -103731,6 +105777,46 @@ export namespace Prisma {
     update?: XOR<XOR<CarrierClientUpdateToOneWithWhereWithoutCarrierDocumentsInput, CarrierClientUpdateWithoutCarrierDocumentsInput>, CarrierClientUncheckedUpdateWithoutCarrierDocumentsInput>
   }
 
+  export type CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<CarrierDocumentTypeCreateWithoutDocumentsInput, CarrierDocumentTypeUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutDocumentsInput
+    upsert?: CarrierDocumentTypeUpsertWithoutDocumentsInput
+    disconnect?: CarrierDocumentTypeWhereInput | boolean
+    delete?: CarrierDocumentTypeWhereInput | boolean
+    connect?: CarrierDocumentTypeWhereUniqueInput
+    update?: XOR<XOR<CarrierDocumentTypeUpdateToOneWithWhereWithoutDocumentsInput, CarrierDocumentTypeUpdateWithoutDocumentsInput>, CarrierDocumentTypeUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierLoadUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<CarrierLoadCreateWithoutDocumentsInput, CarrierLoadUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierLoadCreateOrConnectWithoutDocumentsInput
+    upsert?: CarrierLoadUpsertWithoutDocumentsInput
+    disconnect?: CarrierLoadWhereInput | boolean
+    delete?: CarrierLoadWhereInput | boolean
+    connect?: CarrierLoadWhereUniqueInput
+    update?: XOR<XOR<CarrierLoadUpdateToOneWithWhereWithoutDocumentsInput, CarrierLoadUpdateWithoutDocumentsInput>, CarrierLoadUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierDispatchUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<CarrierDispatchCreateWithoutDocumentsInput, CarrierDispatchUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierDispatchCreateOrConnectWithoutDocumentsInput
+    upsert?: CarrierDispatchUpsertWithoutDocumentsInput
+    disconnect?: CarrierDispatchWhereInput | boolean
+    delete?: CarrierDispatchWhereInput | boolean
+    connect?: CarrierDispatchWhereUniqueInput
+    update?: XOR<XOR<CarrierDispatchUpdateToOneWithWhereWithoutDocumentsInput, CarrierDispatchUpdateWithoutDocumentsInput>, CarrierDispatchUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierContractUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<CarrierContractCreateWithoutDocumentsInput, CarrierContractUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: CarrierContractCreateOrConnectWithoutDocumentsInput
+    upsert?: CarrierContractUpsertWithoutDocumentsInput
+    disconnect?: CarrierContractWhereInput | boolean
+    delete?: CarrierContractWhereInput | boolean
+    connect?: CarrierContractWhereUniqueInput
+    update?: XOR<XOR<CarrierContractUpdateToOneWithWhereWithoutDocumentsInput, CarrierContractUpdateWithoutDocumentsInput>, CarrierContractUncheckedUpdateWithoutDocumentsInput>
+  }
+
   export type CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput = {
     create?: XOR<CarrierExpenseCreateWithoutReceiptDocumentInput, CarrierExpenseUncheckedCreateWithoutReceiptDocumentInput> | CarrierExpenseCreateWithoutReceiptDocumentInput[] | CarrierExpenseUncheckedCreateWithoutReceiptDocumentInput[]
     connectOrCreate?: CarrierExpenseCreateOrConnectWithoutReceiptDocumentInput | CarrierExpenseCreateOrConnectWithoutReceiptDocumentInput[]
@@ -103757,6 +105843,62 @@ export namespace Prisma {
     update?: CarrierExpenseUpdateWithWhereUniqueWithoutReceiptDocumentInput | CarrierExpenseUpdateWithWhereUniqueWithoutReceiptDocumentInput[]
     updateMany?: CarrierExpenseUpdateManyWithWhereWithoutReceiptDocumentInput | CarrierExpenseUpdateManyWithWhereWithoutReceiptDocumentInput[]
     deleteMany?: CarrierExpenseScalarWhereInput | CarrierExpenseScalarWhereInput[]
+  }
+
+  export type TenantCreateNestedOneWithoutCarrierDocumentTypesInput = {
+    create?: XOR<TenantCreateWithoutCarrierDocumentTypesInput, TenantUncheckedCreateWithoutCarrierDocumentTypesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutCarrierDocumentTypesInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type CarrierDocumentCreateNestedManyWithoutDocumentTypeRefInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput> | CarrierDocumentCreateWithoutDocumentTypeRefInput[] | CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput | CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput[]
+    createMany?: CarrierDocumentCreateManyDocumentTypeRefInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+  }
+
+  export type CarrierDocumentUncheckedCreateNestedManyWithoutDocumentTypeRefInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput> | CarrierDocumentCreateWithoutDocumentTypeRefInput[] | CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput | CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput[]
+    createMany?: CarrierDocumentCreateManyDocumentTypeRefInputEnvelope
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+  }
+
+  export type TenantUpdateOneRequiredWithoutCarrierDocumentTypesNestedInput = {
+    create?: XOR<TenantCreateWithoutCarrierDocumentTypesInput, TenantUncheckedCreateWithoutCarrierDocumentTypesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutCarrierDocumentTypesInput
+    upsert?: TenantUpsertWithoutCarrierDocumentTypesInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutCarrierDocumentTypesInput, TenantUpdateWithoutCarrierDocumentTypesInput>, TenantUncheckedUpdateWithoutCarrierDocumentTypesInput>
+  }
+
+  export type CarrierDocumentUpdateManyWithoutDocumentTypeRefNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput> | CarrierDocumentCreateWithoutDocumentTypeRefInput[] | CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput | CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput | CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput[]
+    createMany?: CarrierDocumentCreateManyDocumentTypeRefInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutDocumentTypeRefInput | CarrierDocumentUpdateWithWhereUniqueWithoutDocumentTypeRefInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutDocumentTypeRefInput | CarrierDocumentUpdateManyWithWhereWithoutDocumentTypeRefInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutDocumentTypeRefNestedInput = {
+    create?: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput> | CarrierDocumentCreateWithoutDocumentTypeRefInput[] | CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput[]
+    connectOrCreate?: CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput | CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput[]
+    upsert?: CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput | CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput[]
+    createMany?: CarrierDocumentCreateManyDocumentTypeRefInputEnvelope
+    set?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    disconnect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    delete?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    connect?: CarrierDocumentWhereUniqueInput | CarrierDocumentWhereUniqueInput[]
+    update?: CarrierDocumentUpdateWithWhereUniqueWithoutDocumentTypeRefInput | CarrierDocumentUpdateWithWhereUniqueWithoutDocumentTypeRefInput[]
+    updateMany?: CarrierDocumentUpdateManyWithWhereWithoutDocumentTypeRefInput | CarrierDocumentUpdateManyWithWhereWithoutDocumentTypeRefInput[]
+    deleteMany?: CarrierDocumentScalarWhereInput | CarrierDocumentScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutCarrierExpensesInput = {
@@ -106363,6 +108505,7 @@ export namespace Prisma {
     client: CarrierClientCreateNestedOneWithoutContractsInput
     routeTemplates?: RouteTemplateCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUncheckedCreateWithoutTenantInput = {
@@ -106389,6 +108532,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractCreateOrConnectWithoutTenantInput = {
@@ -106680,6 +108824,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTenantInput = {
@@ -106707,6 +108852,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTenantInput = {
@@ -106753,6 +108899,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutTenantInput = {
@@ -106789,6 +108936,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutTenantInput = {
@@ -106954,6 +109102,36 @@ export namespace Prisma {
 
   export type InAppNotificationCreateManyTenantInputEnvelope = {
     data: InAppNotificationCreateManyTenantInput | InAppNotificationCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CarrierDocumentTypeCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    documents?: CarrierDocumentCreateNestedManyWithoutDocumentTypeRefInput
+  }
+
+  export type CarrierDocumentTypeUncheckedCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDocumentTypeRefInput
+  }
+
+  export type CarrierDocumentTypeCreateOrConnectWithoutTenantInput = {
+    where: CarrierDocumentTypeWhereUniqueInput
+    create: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput>
+  }
+
+  export type CarrierDocumentTypeCreateManyTenantInputEnvelope = {
+    data: CarrierDocumentTypeCreateManyTenantInput | CarrierDocumentTypeCreateManyTenantInput[]
     skipDuplicates?: boolean
   }
 
@@ -108508,6 +110686,35 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"InAppNotification"> | Date | string
   }
 
+  export type CarrierDocumentTypeUpsertWithWhereUniqueWithoutTenantInput = {
+    where: CarrierDocumentTypeWhereUniqueInput
+    update: XOR<CarrierDocumentTypeUpdateWithoutTenantInput, CarrierDocumentTypeUncheckedUpdateWithoutTenantInput>
+    create: XOR<CarrierDocumentTypeCreateWithoutTenantInput, CarrierDocumentTypeUncheckedCreateWithoutTenantInput>
+  }
+
+  export type CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput = {
+    where: CarrierDocumentTypeWhereUniqueInput
+    data: XOR<CarrierDocumentTypeUpdateWithoutTenantInput, CarrierDocumentTypeUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput = {
+    where: CarrierDocumentTypeScalarWhereInput
+    data: XOR<CarrierDocumentTypeUpdateManyMutationInput, CarrierDocumentTypeUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type CarrierDocumentTypeScalarWhereInput = {
+    AND?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
+    OR?: CarrierDocumentTypeScalarWhereInput[]
+    NOT?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
+    id?: UuidFilter<"CarrierDocumentType"> | string
+    orgId?: UuidFilter<"CarrierDocumentType"> | string
+    name?: StringFilter<"CarrierDocumentType"> | string
+    slug?: StringFilter<"CarrierDocumentType"> | string
+    isDefault?: BoolFilter<"CarrierDocumentType"> | boolean
+    isActive?: BoolFilter<"CarrierDocumentType"> | boolean
+    createdAt?: DateTimeFilter<"CarrierDocumentType"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -108557,6 +110764,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -108608,6 +110816,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -109895,6 +112104,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutDispatcherInput = {
@@ -109922,6 +112132,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutDispatcherInput = {
@@ -109949,6 +112160,10 @@ export namespace Prisma {
     verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
     stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
     client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
   }
 
@@ -109958,6 +112173,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -109995,6 +112214,10 @@ export namespace Prisma {
     uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
     stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
     client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
   }
 
@@ -110004,6 +112227,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -110242,6 +112469,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -110293,6 +112521,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -110774,6 +113003,10 @@ export namespace Prisma {
     parentId?: UuidFilter<"CarrierDocument"> | string
     stopId?: UuidNullableFilter<"CarrierDocument"> | string | null
     clientId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    documentTypeId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    loadId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    dispatchId?: UuidNullableFilter<"CarrierDocument"> | string | null
+    contractId?: UuidNullableFilter<"CarrierDocument"> | string | null
     documentType?: StringFilter<"CarrierDocument"> | string
     fileUrl?: StringFilter<"CarrierDocument"> | string
     filename?: StringFilter<"CarrierDocument"> | string
@@ -110899,6 +113132,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -110950,6 +113184,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -111631,6 +113866,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -111682,6 +113918,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -112075,6 +114312,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -112126,6 +114364,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -112193,6 +114432,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -112244,6 +114484,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -112295,6 +114536,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -112346,6 +114588,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -113115,6 +115358,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -113166,6 +115410,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -114033,6 +116278,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -114084,6 +116330,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -114534,6 +116781,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -114585,6 +116833,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -115049,6 +117298,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -115100,6 +117350,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -115224,6 +117475,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -115275,6 +117527,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -115389,6 +117642,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -115440,6 +117694,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -115564,6 +117819,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -115615,6 +117871,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -115729,6 +117986,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -115780,6 +118038,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -115847,6 +118106,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -115898,6 +118158,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -115949,6 +118210,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -116000,6 +118262,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -116187,6 +118450,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -116238,6 +118502,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -116421,6 +118686,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -116472,6 +118738,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -116754,6 +119021,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -116805,6 +119073,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -117089,6 +119358,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -117140,6 +119410,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -117264,6 +119535,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -117315,6 +119587,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -117429,6 +119702,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -117480,6 +119754,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -117573,6 +119848,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -117624,6 +119900,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -117691,6 +119968,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -117742,6 +120020,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -117982,6 +120261,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -118033,6 +120313,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -118275,6 +120556,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -118326,6 +120608,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -118453,6 +120736,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -118504,6 +120788,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -118587,6 +120872,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -118638,6 +120924,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -118795,6 +121082,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -118846,6 +121134,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -118999,6 +121288,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -119050,6 +121340,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -119143,6 +121434,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -119194,6 +121486,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -119307,6 +121600,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -119358,6 +121652,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -119483,6 +121778,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -119534,6 +121830,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -119585,6 +121882,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -119636,6 +121934,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -119768,6 +122067,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -119819,6 +122119,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -119941,6 +122242,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -119992,6 +122294,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -120171,6 +122474,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -120222,6 +122526,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -120305,6 +122610,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -120356,6 +122662,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -120474,6 +122781,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -120525,6 +122833,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -120633,6 +122942,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -120684,6 +122994,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -121044,6 +123355,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -121095,6 +123407,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -121504,6 +123817,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -121555,6 +123869,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -121691,6 +124006,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -121742,6 +124058,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -121793,6 +124110,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -121844,6 +124162,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -121939,6 +124258,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -121990,6 +124310,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -122162,6 +124483,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -122213,6 +124535,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -122559,6 +124882,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -122610,6 +124934,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -122958,6 +125283,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -123009,6 +125335,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -123816,6 +126143,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -123867,6 +126195,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -124576,6 +126905,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -124627,6 +126957,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -124694,6 +127025,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -124745,6 +127077,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -124861,6 +127194,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -124912,6 +127246,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -125285,6 +127620,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -125336,6 +127672,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadUpsertWithoutRouteStopsInput = {
@@ -125500,6 +127837,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -125551,6 +127889,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -125776,6 +128115,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -125827,6 +128167,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -126024,6 +128365,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutMessagesInput = {
@@ -126051,6 +128393,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutMessagesInput = {
@@ -126094,6 +128437,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutMessagesInput = {
@@ -126121,6 +128465,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type UserCreateWithoutPushTokensInput = {
@@ -126364,6 +128709,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
@@ -126415,6 +128761,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
@@ -126575,6 +128922,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
@@ -126626,6 +128974,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHosEntriesInput = {
@@ -126776,6 +129125,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
@@ -126827,6 +129177,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
@@ -126987,6 +129338,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
@@ -127038,6 +129390,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutIncidentsInput = {
@@ -127188,6 +129541,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierClientsInput = {
@@ -127239,6 +129593,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierClientsInput = {
@@ -127270,6 +129625,7 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierContractsInput
     routeTemplates?: RouteTemplateCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUncheckedCreateWithoutClientInput = {
@@ -127296,6 +129652,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutContractInput
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractCreateOrConnectWithoutClientInput = {
@@ -127457,6 +129814,10 @@ export namespace Prisma {
     uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
     verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
     stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
   }
 
@@ -127465,6 +129826,10 @@ export namespace Prisma {
     parentType: string
     parentId: string
     stopId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -127644,6 +130009,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutClientInput = {
@@ -127680,6 +130046,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutClientInput = {
@@ -127752,6 +130119,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierClientsInput = {
@@ -127803,6 +130171,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierContractUpsertWithWhereUniqueWithoutClientInput = {
@@ -127999,6 +130368,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierContractsInput = {
@@ -128050,6 +130420,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierContractsInput = {
@@ -128226,6 +130597,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutContractInput = {
@@ -128262,6 +130634,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutContractInput = {
@@ -128271,6 +130644,60 @@ export namespace Prisma {
 
   export type CarrierLoadCreateManyContractInputEnvelope = {
     data: CarrierLoadCreateManyContractInput | CarrierLoadCreateManyContractInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CarrierDocumentCreateWithoutContractInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    verified?: boolean
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
+    verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
+    stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
+    client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentUncheckedCreateWithoutContractInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentCreateOrConnectWithoutContractInput = {
+    where: CarrierDocumentWhereUniqueInput
+    create: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput>
+  }
+
+  export type CarrierDocumentCreateManyContractInputEnvelope = {
+    data: CarrierDocumentCreateManyContractInput | CarrierDocumentCreateManyContractInput[]
     skipDuplicates?: boolean
   }
 
@@ -128334,6 +130761,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierContractsInput = {
@@ -128385,6 +130813,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutContractsInput = {
@@ -128498,6 +130927,22 @@ export namespace Prisma {
     data: XOR<CarrierLoadUpdateManyMutationInput, CarrierLoadUncheckedUpdateManyWithoutContractInput>
   }
 
+  export type CarrierDocumentUpsertWithWhereUniqueWithoutContractInput = {
+    where: CarrierDocumentWhereUniqueInput
+    update: XOR<CarrierDocumentUpdateWithoutContractInput, CarrierDocumentUncheckedUpdateWithoutContractInput>
+    create: XOR<CarrierDocumentCreateWithoutContractInput, CarrierDocumentUncheckedCreateWithoutContractInput>
+  }
+
+  export type CarrierDocumentUpdateWithWhereUniqueWithoutContractInput = {
+    where: CarrierDocumentWhereUniqueInput
+    data: XOR<CarrierDocumentUpdateWithoutContractInput, CarrierDocumentUncheckedUpdateWithoutContractInput>
+  }
+
+  export type CarrierDocumentUpdateManyWithWhereWithoutContractInput = {
+    where: CarrierDocumentScalarWhereInput
+    data: XOR<CarrierDocumentUpdateManyMutationInput, CarrierDocumentUncheckedUpdateManyWithoutContractInput>
+  }
+
   export type TenantCreateWithoutCarrierFacilitiesInput = {
     id?: string
     name: string
@@ -128547,6 +130992,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierFacilitiesInput = {
@@ -128598,6 +131044,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierFacilitiesInput = {
@@ -128843,6 +131290,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierFacilitiesInput = {
@@ -128894,6 +131342,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithWhereUniqueWithoutHomeTerminalInput = {
@@ -129014,6 +131463,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDriversInput = {
@@ -129065,6 +131515,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDriversInput = {
@@ -129247,6 +131698,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutPrimaryDriverInput = {
@@ -129274,6 +131726,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutPrimaryDriverInput = {
@@ -129311,6 +131764,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutCoDriverInput = {
@@ -129338,6 +131792,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutCoDriverInput = {
@@ -129594,6 +132049,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDriversInput = {
@@ -129645,6 +132101,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCarrierDriverProfileInput = {
@@ -129938,6 +132395,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierTrucksInput = {
@@ -129989,6 +132447,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierTrucksInput = {
@@ -130021,6 +132480,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTruckInput = {
@@ -130048,6 +132508,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTruckInput = {
@@ -130085,6 +132546,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutTrailerInput = {
@@ -130112,6 +132574,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutTrailerInput = {
@@ -130284,6 +132747,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierTrucksInput = {
@@ -130335,6 +132799,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithWhereUniqueWithoutTruckInput = {
@@ -130450,6 +132915,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteTemplatesInput = {
@@ -130501,6 +132967,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteTemplatesInput = {
@@ -130605,6 +133072,7 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierContractsInput
     client: CarrierClientCreateNestedOneWithoutContractsInput
     carrierLoads?: CarrierLoadCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUncheckedCreateWithoutRouteTemplatesInput = {
@@ -130631,6 +133099,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractCreateOrConnectWithoutRouteTemplatesInput = {
@@ -130827,6 +133296,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutRouteTemplateInput = {
@@ -130854,6 +133324,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutRouteTemplateInput = {
@@ -130926,6 +133397,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -130977,6 +133449,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutRouteTemplatesInput = {
@@ -131093,6 +133566,7 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierContractsNestedInput
     client?: CarrierClientUpdateOneRequiredWithoutContractsNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -131119,6 +133593,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDefaultRouteTemplatesInput = {
@@ -131574,6 +134049,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDispatchesInput = {
@@ -131625,6 +134101,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDispatchesInput = {
@@ -132128,6 +134605,7 @@ export namespace Prisma {
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutDispatchInput = {
@@ -132164,6 +134642,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutDispatchInput = {
@@ -132336,6 +134815,60 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CarrierDocumentCreateWithoutDispatchInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    verified?: boolean
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
+    verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
+    stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
+    client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentUncheckedCreateWithoutDispatchInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentCreateOrConnectWithoutDispatchInput = {
+    where: CarrierDocumentWhereUniqueInput
+    create: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type CarrierDocumentCreateManyDispatchInputEnvelope = {
+    data: CarrierDocumentCreateManyDispatchInput | CarrierDocumentCreateManyDispatchInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierDispatchesInput = {
     update: XOR<TenantUpdateWithoutCarrierDispatchesInput, TenantUncheckedUpdateWithoutCarrierDispatchesInput>
     create: XOR<TenantCreateWithoutCarrierDispatchesInput, TenantUncheckedCreateWithoutCarrierDispatchesInput>
@@ -132396,6 +134929,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDispatchesInput = {
@@ -132447,6 +134981,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteTemplateUpsertWithoutDispatchesInput = {
@@ -132973,6 +135508,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
   }
 
+  export type CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput = {
+    where: CarrierDocumentWhereUniqueInput
+    update: XOR<CarrierDocumentUpdateWithoutDispatchInput, CarrierDocumentUncheckedUpdateWithoutDispatchInput>
+    create: XOR<CarrierDocumentCreateWithoutDispatchInput, CarrierDocumentUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type CarrierDocumentUpdateWithWhereUniqueWithoutDispatchInput = {
+    where: CarrierDocumentWhereUniqueInput
+    data: XOR<CarrierDocumentUpdateWithoutDispatchInput, CarrierDocumentUncheckedUpdateWithoutDispatchInput>
+  }
+
+  export type CarrierDocumentUpdateManyWithWhereWithoutDispatchInput = {
+    where: CarrierDocumentScalarWhereInput
+    data: XOR<CarrierDocumentUpdateManyMutationInput, CarrierDocumentUncheckedUpdateManyWithoutDispatchInput>
+  }
+
   export type TenantCreateWithoutCarrierLoadsInput = {
     id?: string
     name: string
@@ -133022,6 +135573,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierLoadsInput = {
@@ -133073,6 +135625,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierLoadsInput = {
@@ -133105,6 +135658,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutCarrierLoadsInput = {
@@ -133132,6 +135686,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutCarrierLoadsInput = {
@@ -133163,6 +135718,7 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutCarrierContractsInput
     client: CarrierClientCreateNestedOneWithoutContractsInput
     routeTemplates?: RouteTemplateCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractUncheckedCreateWithoutCarrierLoadsInput = {
@@ -133189,6 +135745,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutContractInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutContractInput
   }
 
   export type CarrierContractCreateOrConnectWithoutCarrierLoadsInput = {
@@ -133463,6 +136020,60 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CarrierDocumentCreateWithoutLoadInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    verified?: boolean
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
+    verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
+    stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
+    client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentUncheckedCreateWithoutLoadInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentCreateOrConnectWithoutLoadInput = {
+    where: CarrierDocumentWhereUniqueInput
+    create: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput>
+  }
+
+  export type CarrierDocumentCreateManyLoadInputEnvelope = {
+    data: CarrierDocumentCreateManyLoadInput | CarrierDocumentCreateManyLoadInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutCarrierLoadsInput = {
     update: XOR<TenantUpdateWithoutCarrierLoadsInput, TenantUncheckedUpdateWithoutCarrierLoadsInput>
     create: XOR<TenantCreateWithoutCarrierLoadsInput, TenantUncheckedCreateWithoutCarrierLoadsInput>
@@ -133523,6 +136134,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -133574,6 +136186,7 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutCarrierLoadsInput = {
@@ -133612,6 +136225,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -133639,6 +136253,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierContractUpsertWithoutCarrierLoadsInput = {
@@ -133676,6 +136291,7 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierContractsNestedInput
     client?: CarrierClientUpdateOneRequiredWithoutContractsNestedInput
     routeTemplates?: RouteTemplateUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -133702,6 +136318,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierClientUpsertWithoutCarrierLoadsInput = {
@@ -133831,6 +136448,22 @@ export namespace Prisma {
     data: XOR<DriverPayRecordUpdateManyMutationInput, DriverPayRecordUncheckedUpdateManyWithoutLoadInput>
   }
 
+  export type CarrierDocumentUpsertWithWhereUniqueWithoutLoadInput = {
+    where: CarrierDocumentWhereUniqueInput
+    update: XOR<CarrierDocumentUpdateWithoutLoadInput, CarrierDocumentUncheckedUpdateWithoutLoadInput>
+    create: XOR<CarrierDocumentCreateWithoutLoadInput, CarrierDocumentUncheckedCreateWithoutLoadInput>
+  }
+
+  export type CarrierDocumentUpdateWithWhereUniqueWithoutLoadInput = {
+    where: CarrierDocumentWhereUniqueInput
+    data: XOR<CarrierDocumentUpdateWithoutLoadInput, CarrierDocumentUncheckedUpdateWithoutLoadInput>
+  }
+
+  export type CarrierDocumentUpdateManyWithWhereWithoutLoadInput = {
+    where: CarrierDocumentScalarWhereInput
+    data: XOR<CarrierDocumentUpdateManyMutationInput, CarrierDocumentUncheckedUpdateManyWithoutLoadInput>
+  }
+
   export type CarrierDispatchCreateWithoutStopsInput = {
     id?: string
     scheduledDeparture: Date | string
@@ -133856,6 +136489,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutStopsInput = {
@@ -133883,6 +136517,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutStopsInput = {
@@ -133924,6 +136559,7 @@ export namespace Prisma {
     client: CarrierClientCreateNestedOneWithoutCarrierLoadsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutStopsInput = {
@@ -133960,6 +136596,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutStopsInput = {
@@ -134112,6 +136749,10 @@ export namespace Prisma {
     uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
     verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
     client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
   }
 
@@ -134120,6 +136761,10 @@ export namespace Prisma {
     parentType: string
     parentId: string
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -134229,6 +136874,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutStopsInput = {
@@ -134256,6 +136902,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutStopsInput = {
@@ -134303,6 +136950,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneRequiredWithoutCarrierLoadsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutStopsInput = {
@@ -134339,6 +136987,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierFacilityUpsertWithoutStopsInput = {
@@ -134841,6 +137490,230 @@ export namespace Prisma {
     create: XOR<CarrierClientCreateWithoutCarrierDocumentsInput, CarrierClientUncheckedCreateWithoutCarrierDocumentsInput>
   }
 
+  export type CarrierDocumentTypeCreateWithoutDocumentsInput = {
+    id?: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierDocumentTypesInput
+  }
+
+  export type CarrierDocumentTypeUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    orgId: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
+    createdAt?: Date | string
+  }
+
+  export type CarrierDocumentTypeCreateOrConnectWithoutDocumentsInput = {
+    where: CarrierDocumentTypeWhereUniqueInput
+    create: XOR<CarrierDocumentTypeCreateWithoutDocumentsInput, CarrierDocumentTypeUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type CarrierLoadCreateWithoutDocumentsInput = {
+    id?: string
+    loadType?: string
+    referenceNumber?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodityDescription?: string | null
+    commodityWeightLbs?: Decimal | DecimalJsLike | number | string | null
+    commodityPieces?: number | null
+    commodityPallets?: number | null
+    hazmat?: boolean
+    hazmatClass?: string | null
+    rateType?: string
+    rateAmount?: Decimal | DecimalJsLike | number | string | null
+    currency?: string
+    brokerFlag?: boolean
+    carrierCost?: Decimal | DecimalJsLike | number | string | null
+    fuelSurcharge?: Decimal | DecimalJsLike | number | string | null
+    detentionAmount?: Decimal | DecimalJsLike | number | string | null
+    otherCharges?: Decimal | DecimalJsLike | number | string | null
+    totalRevenue?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    specialInstructions?: string | null
+    notes?: string | null
+    pendingStopsJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierLoadsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutCarrierLoadsInput
+    contract?: CarrierContractCreateNestedOneWithoutCarrierLoadsInput
+    client: CarrierClientCreateNestedOneWithoutCarrierLoadsInput
+    stops?: CarrierStopCreateNestedManyWithoutLoadInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+  }
+
+  export type CarrierLoadUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    orgId: string
+    dispatchId?: string | null
+    contractId?: string | null
+    clientId: string
+    loadType?: string
+    referenceNumber?: string | null
+    bolNumber?: string | null
+    proNumber?: string | null
+    poNumber?: string | null
+    commodityDescription?: string | null
+    commodityWeightLbs?: Decimal | DecimalJsLike | number | string | null
+    commodityPieces?: number | null
+    commodityPallets?: number | null
+    hazmat?: boolean
+    hazmatClass?: string | null
+    rateType?: string
+    rateAmount?: Decimal | DecimalJsLike | number | string | null
+    currency?: string
+    brokerFlag?: boolean
+    carrierCost?: Decimal | DecimalJsLike | number | string | null
+    fuelSurcharge?: Decimal | DecimalJsLike | number | string | null
+    detentionAmount?: Decimal | DecimalJsLike | number | string | null
+    otherCharges?: Decimal | DecimalJsLike | number | string | null
+    totalRevenue?: Decimal | DecimalJsLike | number | string | null
+    status?: string
+    specialInstructions?: string | null
+    notes?: string | null
+    pendingStopsJson?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+  }
+
+  export type CarrierLoadCreateOrConnectWithoutDocumentsInput = {
+    where: CarrierLoadWhereUniqueInput
+    create: XOR<CarrierLoadCreateWithoutDocumentsInput, CarrierLoadUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type CarrierDispatchCreateWithoutDocumentsInput = {
+    id?: string
+    scheduledDeparture: Date | string
+    actualDeparture?: Date | string | null
+    scheduledArrival?: Date | string | null
+    actualArrival?: Date | string | null
+    status?: string
+    relayHandoffStopId?: string | null
+    plannedMiles?: Decimal | DecimalJsLike | number | string | null
+    actualMiles?: Decimal | DecimalJsLike | number | string | null
+    hosCycle?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierDispatchesInput
+    routeTemplate?: RouteTemplateCreateNestedOneWithoutDispatchesInput
+    primaryDriver: CarrierDriverCreateNestedOneWithoutPrimaryDispatchesInput
+    coDriver?: CarrierDriverCreateNestedOneWithoutCoDispatchesInput
+    truck: CarrierTruckCreateNestedOneWithoutPrimaryDispatchesInput
+    trailer?: CarrierTruckCreateNestedOneWithoutTrailerDispatchesInput
+    dispatcher?: UserCreateNestedOneWithoutDispatchedRunsInput
+    stops?: CarrierStopCreateNestedManyWithoutDispatchInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+  }
+
+  export type CarrierDispatchUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    orgId: string
+    routeTemplateId?: string | null
+    primaryDriverId: string
+    coDriverId?: string | null
+    truckId: string
+    trailerId?: string | null
+    dispatcherId?: string | null
+    scheduledDeparture: Date | string
+    actualDeparture?: Date | string | null
+    scheduledArrival?: Date | string | null
+    actualArrival?: Date | string | null
+    status?: string
+    relayHandoffStopId?: string | null
+    plannedMiles?: Decimal | DecimalJsLike | number | string | null
+    actualMiles?: Decimal | DecimalJsLike | number | string | null
+    hosCycle?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stops?: CarrierStopUncheckedCreateNestedManyWithoutDispatchInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+  }
+
+  export type CarrierDispatchCreateOrConnectWithoutDocumentsInput = {
+    where: CarrierDispatchWhereUniqueInput
+    create: XOR<CarrierDispatchCreateWithoutDocumentsInput, CarrierDispatchUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type CarrierContractCreateWithoutDocumentsInput = {
+    id?: string
+    contractNumber: string
+    contractName?: string | null
+    contractType?: string
+    effectiveDate?: Date | string | null
+    expirationDate?: Date | string | null
+    rateType?: string
+    baseRate?: Decimal | DecimalJsLike | number | string | null
+    fuelSurchargeMethod?: string
+    fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutCarrierContractsInput
+    client: CarrierClientCreateNestedOneWithoutContractsInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutContractInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutContractInput
+  }
+
+  export type CarrierContractUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    orgId: string
+    clientId: string
+    contractNumber: string
+    contractName?: string | null
+    contractType?: string
+    effectiveDate?: Date | string | null
+    expirationDate?: Date | string | null
+    rateType?: string
+    baseRate?: Decimal | DecimalJsLike | number | string | null
+    fuelSurchargeMethod?: string
+    fuelSurchargeRate?: Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: number
+    detentionRatePerHour?: Decimal | DecimalJsLike | number | string | null
+    tonuRate?: Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: string | null
+    autoRenew?: boolean
+    status?: string
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutContractInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutContractInput
+  }
+
+  export type CarrierContractCreateOrConnectWithoutDocumentsInput = {
+    where: CarrierContractWhereUniqueInput
+    create: XOR<CarrierContractCreateWithoutDocumentsInput, CarrierContractUncheckedCreateWithoutDocumentsInput>
+  }
+
   export type CarrierExpenseCreateWithoutReceiptDocumentInput = {
     id?: string
     expenseType: string
@@ -135241,6 +138114,254 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutClientNestedInput
   }
 
+  export type CarrierDocumentTypeUpsertWithoutDocumentsInput = {
+    update: XOR<CarrierDocumentTypeUpdateWithoutDocumentsInput, CarrierDocumentTypeUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<CarrierDocumentTypeCreateWithoutDocumentsInput, CarrierDocumentTypeUncheckedCreateWithoutDocumentsInput>
+    where?: CarrierDocumentTypeWhereInput
+  }
+
+  export type CarrierDocumentTypeUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: CarrierDocumentTypeWhereInput
+    data: XOR<CarrierDocumentTypeUpdateWithoutDocumentsInput, CarrierDocumentTypeUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierDocumentTypeUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierDocumentTypesNestedInput
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierLoadUpsertWithoutDocumentsInput = {
+    update: XOR<CarrierLoadUpdateWithoutDocumentsInput, CarrierLoadUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<CarrierLoadCreateWithoutDocumentsInput, CarrierLoadUncheckedCreateWithoutDocumentsInput>
+    where?: CarrierLoadWhereInput
+  }
+
+  export type CarrierLoadUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: CarrierLoadWhereInput
+    data: XOR<CarrierLoadUpdateWithoutDocumentsInput, CarrierLoadUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierLoadUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    loadType?: StringFieldUpdateOperationsInput | string
+    referenceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityWeightLbs?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commodityPieces?: NullableIntFieldUpdateOperationsInput | number | null
+    commodityPallets?: NullableIntFieldUpdateOperationsInput | number | null
+    hazmat?: BoolFieldUpdateOperationsInput | boolean
+    hazmatClass?: NullableStringFieldUpdateOperationsInput | string | null
+    rateType?: StringFieldUpdateOperationsInput | string
+    rateAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    brokerFlag?: BoolFieldUpdateOperationsInput | boolean
+    carrierCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fuelSurcharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierLoadsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutCarrierLoadsNestedInput
+    contract?: CarrierContractUpdateOneWithoutCarrierLoadsNestedInput
+    client?: CarrierClientUpdateOneRequiredWithoutCarrierLoadsNestedInput
+    stops?: CarrierStopUpdateManyWithoutLoadNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+  }
+
+  export type CarrierLoadUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    loadType?: StringFieldUpdateOperationsInput | string
+    referenceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    proNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityWeightLbs?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    commodityPieces?: NullableIntFieldUpdateOperationsInput | number | null
+    commodityPallets?: NullableIntFieldUpdateOperationsInput | number | null
+    hazmat?: BoolFieldUpdateOperationsInput | boolean
+    hazmatClass?: NullableStringFieldUpdateOperationsInput | string | null
+    rateType?: StringFieldUpdateOperationsInput | string
+    rateAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    brokerFlag?: BoolFieldUpdateOperationsInput | boolean
+    carrierCost?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fuelSurcharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+  }
+
+  export type CarrierDispatchUpsertWithoutDocumentsInput = {
+    update: XOR<CarrierDispatchUpdateWithoutDocumentsInput, CarrierDispatchUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<CarrierDispatchCreateWithoutDocumentsInput, CarrierDispatchUncheckedCreateWithoutDocumentsInput>
+    where?: CarrierDispatchWhereInput
+  }
+
+  export type CarrierDispatchUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: CarrierDispatchWhereInput
+    data: XOR<CarrierDispatchUpdateWithoutDocumentsInput, CarrierDispatchUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierDispatchUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
+    actualDeparture?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    relayHandoffStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    hosCycle?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierDispatchesNestedInput
+    routeTemplate?: RouteTemplateUpdateOneWithoutDispatchesNestedInput
+    primaryDriver?: CarrierDriverUpdateOneRequiredWithoutPrimaryDispatchesNestedInput
+    coDriver?: CarrierDriverUpdateOneWithoutCoDispatchesNestedInput
+    truck?: CarrierTruckUpdateOneRequiredWithoutPrimaryDispatchesNestedInput
+    trailer?: CarrierTruckUpdateOneWithoutTrailerDispatchesNestedInput
+    dispatcher?: UserUpdateOneWithoutDispatchedRunsNestedInput
+    stops?: CarrierStopUpdateManyWithoutDispatchNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+  }
+
+  export type CarrierDispatchUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    routeTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryDriverId?: StringFieldUpdateOperationsInput | string
+    coDriverId?: NullableStringFieldUpdateOperationsInput | string | null
+    truckId?: StringFieldUpdateOperationsInput | string
+    trailerId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatcherId?: NullableStringFieldUpdateOperationsInput | string | null
+    scheduledDeparture?: DateTimeFieldUpdateOperationsInput | Date | string
+    actualDeparture?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduledArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    actualArrival?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    relayHandoffStopId?: NullableStringFieldUpdateOperationsInput | string | null
+    plannedMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    actualMiles?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    hosCycle?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stops?: CarrierStopUncheckedUpdateManyWithoutDispatchNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+  }
+
+  export type CarrierContractUpsertWithoutDocumentsInput = {
+    update: XOR<CarrierContractUpdateWithoutDocumentsInput, CarrierContractUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<CarrierContractCreateWithoutDocumentsInput, CarrierContractUncheckedCreateWithoutDocumentsInput>
+    where?: CarrierContractWhereInput
+  }
+
+  export type CarrierContractUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: CarrierContractWhereInput
+    data: XOR<CarrierContractUpdateWithoutDocumentsInput, CarrierContractUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type CarrierContractUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
+    contractType?: StringFieldUpdateOperationsInput | string
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rateType?: StringFieldUpdateOperationsInput | string
+    baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
+    fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutCarrierContractsNestedInput
+    client?: CarrierClientUpdateOneRequiredWithoutContractsNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutContractNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutContractNestedInput
+  }
+
+  export type CarrierContractUncheckedUpdateWithoutDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orgId?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    contractNumber?: StringFieldUpdateOperationsInput | string
+    contractName?: NullableStringFieldUpdateOperationsInput | string | null
+    contractType?: StringFieldUpdateOperationsInput | string
+    effectiveDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expirationDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rateType?: StringFieldUpdateOperationsInput | string
+    baseRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    fuelSurchargeMethod?: StringFieldUpdateOperationsInput | string
+    fuelSurchargeRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    detentionFreeMinutes?: IntFieldUpdateOperationsInput | number
+    detentionRatePerHour?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    tonuRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    layoverRatePerDay?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    paymentTermsOverride?: NullableStringFieldUpdateOperationsInput | string | null
+    autoRenew?: BoolFieldUpdateOperationsInput | boolean
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutContractNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutContractNestedInput
+  }
+
   export type CarrierExpenseUpsertWithWhereUniqueWithoutReceiptDocumentInput = {
     where: CarrierExpenseWhereUniqueInput
     update: XOR<CarrierExpenseUpdateWithoutReceiptDocumentInput, CarrierExpenseUncheckedUpdateWithoutReceiptDocumentInput>
@@ -135255,6 +138376,300 @@ export namespace Prisma {
   export type CarrierExpenseUpdateManyWithWhereWithoutReceiptDocumentInput = {
     where: CarrierExpenseScalarWhereInput
     data: XOR<CarrierExpenseUpdateManyMutationInput, CarrierExpenseUncheckedUpdateManyWithoutReceiptDocumentInput>
+  }
+
+  export type TenantCreateWithoutCarrierDocumentTypesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutCarrierDocumentTypesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutCarrierDocumentTypesInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutCarrierDocumentTypesInput, TenantUncheckedCreateWithoutCarrierDocumentTypesInput>
+  }
+
+  export type CarrierDocumentCreateWithoutDocumentTypeRefInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    verified?: boolean
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    uploader: UserCreateNestedOneWithoutUploadedCarrierDocsInput
+    verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
+    stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
+    client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutReceiptDocumentInput
+  }
+
+  export type CarrierDocumentCreateOrConnectWithoutDocumentTypeRefInput = {
+    where: CarrierDocumentWhereUniqueInput
+    create: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput>
+  }
+
+  export type CarrierDocumentCreateManyDocumentTypeRefInputEnvelope = {
+    data: CarrierDocumentCreateManyDocumentTypeRefInput | CarrierDocumentCreateManyDocumentTypeRefInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantUpsertWithoutCarrierDocumentTypesInput = {
+    update: XOR<TenantUpdateWithoutCarrierDocumentTypesInput, TenantUncheckedUpdateWithoutCarrierDocumentTypesInput>
+    create: XOR<TenantCreateWithoutCarrierDocumentTypesInput, TenantUncheckedCreateWithoutCarrierDocumentTypesInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutCarrierDocumentTypesInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutCarrierDocumentTypesInput, TenantUncheckedUpdateWithoutCarrierDocumentTypesInput>
+  }
+
+  export type TenantUpdateWithoutCarrierDocumentTypesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutCarrierDocumentTypesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput = {
+    where: CarrierDocumentWhereUniqueInput
+    update: XOR<CarrierDocumentUpdateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedUpdateWithoutDocumentTypeRefInput>
+    create: XOR<CarrierDocumentCreateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedCreateWithoutDocumentTypeRefInput>
+  }
+
+  export type CarrierDocumentUpdateWithWhereUniqueWithoutDocumentTypeRefInput = {
+    where: CarrierDocumentWhereUniqueInput
+    data: XOR<CarrierDocumentUpdateWithoutDocumentTypeRefInput, CarrierDocumentUncheckedUpdateWithoutDocumentTypeRefInput>
+  }
+
+  export type CarrierDocumentUpdateManyWithWhereWithoutDocumentTypeRefInput = {
+    where: CarrierDocumentScalarWhereInput
+    data: XOR<CarrierDocumentUpdateManyMutationInput, CarrierDocumentUncheckedUpdateManyWithoutDocumentTypeRefInput>
   }
 
   export type TenantCreateWithoutCarrierExpensesInput = {
@@ -135306,6 +138721,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierExpensesInput = {
@@ -135357,6 +138773,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierExpensesInput = {
@@ -135389,6 +138806,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutExpensesInput = {
@@ -135416,6 +138834,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutExpensesInput = {
@@ -135457,6 +138876,7 @@ export namespace Prisma {
     client: CarrierClientCreateNestedOneWithoutCarrierLoadsInput
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutExpensesInput = {
@@ -135493,6 +138913,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutExpensesInput = {
@@ -135713,6 +139134,10 @@ export namespace Prisma {
     verifier?: UserCreateNestedOneWithoutVerifiedCarrierDocsInput
     stop?: CarrierStopCreateNestedOneWithoutDocumentsInput
     client?: CarrierClientCreateNestedOneWithoutCarrierDocumentsInput
+    documentTypeRef?: CarrierDocumentTypeCreateNestedOneWithoutDocumentsInput
+    load?: CarrierLoadCreateNestedOneWithoutDocumentsInput
+    dispatch?: CarrierDispatchCreateNestedOneWithoutDocumentsInput
+    contract?: CarrierContractCreateNestedOneWithoutDocumentsInput
   }
 
   export type CarrierDocumentUncheckedCreateWithoutExpensesInput = {
@@ -135721,6 +139146,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -135891,6 +139320,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierExpensesInput = {
@@ -135942,6 +139372,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutExpensesInput = {
@@ -135980,6 +139411,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutExpensesInput = {
@@ -136007,6 +139439,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutExpensesInput = {
@@ -136054,6 +139487,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneRequiredWithoutCarrierLoadsNestedInput
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutExpensesInput = {
@@ -136090,6 +139524,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierStopUpsertWithoutExpensesInput = {
@@ -136334,6 +139769,10 @@ export namespace Prisma {
     verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
     stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
     client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
   }
 
   export type CarrierDocumentUncheckedUpdateWithoutExpensesInput = {
@@ -136342,6 +139781,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -136502,6 +139945,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -136553,6 +139997,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -136642,6 +140087,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -136669,6 +140115,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutDispatchInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutDispatchInput
     messages?: FleetMessageUncheckedCreateNestedManyWithoutDispatchInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type CarrierDispatchCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -136710,6 +140157,7 @@ export namespace Prisma {
     client: CarrierClientCreateNestedOneWithoutCarrierLoadsInput
     stops?: CarrierStopCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -136746,6 +140194,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     stops?: CarrierStopUncheckedCreateNestedManyWithoutLoadInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutLoadInput
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutLoadInput
   }
 
   export type CarrierLoadCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -136979,6 +140428,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -137030,6 +140480,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverPayRecordsInput = {
@@ -137131,6 +140582,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -137158,6 +140610,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutDispatchNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierLoadUpsertWithoutDriverPayRecordsInput = {
@@ -137205,6 +140658,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneRequiredWithoutCarrierLoadsNestedInput
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -137241,6 +140695,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierClientUpsertWithoutDriverPayRecordsInput = {
@@ -137470,6 +140925,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInAppNotificationsInput = {
@@ -137521,6 +140977,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInAppNotificationsInput = {
@@ -137681,6 +141138,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -137732,6 +141190,7 @@ export namespace Prisma {
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInAppNotificationsInput = {
@@ -138561,6 +142020,15 @@ export namespace Prisma {
     entityType: string
     entityId: string
     read?: boolean
+    createdAt?: Date | string
+  }
+
+  export type CarrierDocumentTypeCreateManyTenantInput = {
+    id?: string
+    name: string
+    slug: string
+    isDefault?: boolean
+    isActive?: boolean
     createdAt?: Date | string
   }
 
@@ -140208,6 +143676,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneRequiredWithoutContractsNestedInput
     routeTemplates?: RouteTemplateUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateWithoutTenantInput = {
@@ -140234,6 +143703,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateManyWithoutTenantInput = {
@@ -140592,6 +144062,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTenantInput = {
@@ -140619,6 +144090,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTenantInput = {
@@ -140677,6 +144149,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutTenantInput = {
@@ -140713,6 +144186,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateManyWithoutTenantInput = {
@@ -140934,6 +144408,35 @@ export namespace Prisma {
     entityType?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
     read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierDocumentTypeUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: CarrierDocumentUpdateManyWithoutDocumentTypeRefNestedInput
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDocumentTypeRefNestedInput
+  }
+
+  export type CarrierDocumentTypeUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    isDefault?: BoolFieldUpdateOperationsInput | boolean
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -141401,6 +144904,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -141418,6 +144925,10 @@ export namespace Prisma {
     parentId: string
     stopId?: string | null
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -142931,6 +146442,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutDispatcherInput = {
@@ -142958,6 +146470,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutDispatcherInput = {
@@ -142997,6 +146510,10 @@ export namespace Prisma {
     verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
     stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
     client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
   }
 
@@ -143006,6 +146523,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -143024,6 +146545,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -143050,6 +146575,10 @@ export namespace Prisma {
     uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
     stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
     client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
   }
 
@@ -143059,6 +146588,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -143077,6 +146610,10 @@ export namespace Prisma {
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -145535,6 +149072,10 @@ export namespace Prisma {
     parentType: string
     parentId: string
     stopId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -145655,6 +149196,7 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutCarrierContractsNestedInput
     routeTemplates?: RouteTemplateUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateWithoutClientInput = {
@@ -145681,6 +149223,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutContractNestedInput
     carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutContractNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type CarrierContractUncheckedUpdateManyWithoutClientInput = {
@@ -145889,6 +149432,10 @@ export namespace Prisma {
     uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
     verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
     stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
   }
 
@@ -145897,6 +149444,10 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -145915,6 +149466,10 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentId?: StringFieldUpdateOperationsInput | string
     stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -146114,6 +149669,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutClientInput = {
@@ -146150,6 +149706,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateManyWithoutClientInput = {
@@ -146240,6 +149797,27 @@ export namespace Prisma {
     pendingStopsJson?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type CarrierDocumentCreateManyContractInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
   }
 
   export type RouteTemplateUpdateWithoutContractInput = {
@@ -146352,6 +149930,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutContractInput = {
@@ -146388,6 +149967,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateManyWithoutContractInput = {
@@ -146421,6 +150001,71 @@ export namespace Prisma {
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierDocumentUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
+    verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
+    stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
+    client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CarrierDriverCreateManyHomeTerminalInput = {
@@ -146849,6 +150494,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutPrimaryDriverInput = {
@@ -146876,6 +150522,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutPrimaryDriverInput = {
@@ -146925,6 +150572,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutCoDriverInput = {
@@ -146952,6 +150600,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutCoDriverInput = {
@@ -147312,6 +150961,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTruckInput = {
@@ -147339,6 +150989,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTruckInput = {
@@ -147388,6 +151039,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutTrailerInput = {
@@ -147415,6 +151067,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutTrailerInput = {
@@ -147672,6 +151325,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateWithoutRouteTemplateInput = {
@@ -147699,6 +151353,7 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     messages?: FleetMessageUncheckedUpdateManyWithoutDispatchNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type CarrierDispatchUncheckedUpdateManyWithoutRouteTemplateInput = {
@@ -147850,6 +151505,27 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type CarrierDocumentCreateManyDispatchInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
   export type CarrierStopUpdateWithoutDispatchInput = {
     id?: StringFieldUpdateOperationsInput | string
     sequenceOrder?: IntFieldUpdateOperationsInput | number
@@ -147975,6 +151651,7 @@ export namespace Prisma {
     stops?: CarrierStopUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateWithoutDispatchInput = {
@@ -148011,6 +151688,7 @@ export namespace Prisma {
     stops?: CarrierStopUncheckedUpdateManyWithoutLoadNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutLoadNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutLoadNestedInput
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutLoadNestedInput
   }
 
   export type CarrierLoadUncheckedUpdateManyWithoutDispatchInput = {
@@ -148241,6 +151919,71 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CarrierDocumentUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
+    verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
+    stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
+    client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CarrierStopCreateManyLoadInput = {
     id?: string
     dispatchId: string
@@ -148318,6 +152061,27 @@ export namespace Prisma {
     approvedAt?: Date | string | null
     notes?: string | null
     orgId: string
+    createdAt?: Date | string
+  }
+
+  export type CarrierDocumentCreateManyLoadInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    documentTypeId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
     createdAt?: Date | string
   }
 
@@ -148565,11 +152329,80 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CarrierDocumentUpdateWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
+    verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
+    stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
+    client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutLoadInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CarrierDocumentCreateManyStopInput = {
     id?: string
     parentType: string
     parentId: string
     clientId?: string | null
+    documentTypeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
     documentType: string
     fileUrl: string
     filename: string
@@ -148617,6 +152450,10 @@ export namespace Prisma {
     uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
     verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
     client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    documentTypeRef?: CarrierDocumentTypeUpdateOneWithoutDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
   }
 
@@ -148625,6 +152462,10 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentId?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -148643,6 +152484,10 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentId?: StringFieldUpdateOperationsInput | string
     clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
     documentType?: StringFieldUpdateOperationsInput | string
     fileUrl?: StringFieldUpdateOperationsInput | string
     filename?: StringFieldUpdateOperationsInput | string
@@ -148792,6 +152637,92 @@ export namespace Prisma {
     reimbursable?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     orgId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CarrierDocumentCreateManyDocumentTypeRefInput = {
+    id?: string
+    parentType: string
+    parentId: string
+    stopId?: string | null
+    clientId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    contractId?: string | null
+    documentType: string
+    fileUrl: string
+    filename: string
+    fileSizeBytes?: number | null
+    uploadedBy: string
+    verified?: boolean
+    verifiedBy?: string | null
+    verifiedAt?: Date | string | null
+    notes?: string | null
+    createdAt?: Date | string
+  }
+
+  export type CarrierDocumentUpdateWithoutDocumentTypeRefInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: UserUpdateOneRequiredWithoutUploadedCarrierDocsNestedInput
+    verifier?: UserUpdateOneWithoutVerifiedCarrierDocsNestedInput
+    stop?: CarrierStopUpdateOneWithoutDocumentsNestedInput
+    client?: CarrierClientUpdateOneWithoutCarrierDocumentsNestedInput
+    load?: CarrierLoadUpdateOneWithoutDocumentsNestedInput
+    dispatch?: CarrierDispatchUpdateOneWithoutDocumentsNestedInput
+    contract?: CarrierContractUpdateOneWithoutDocumentsNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateWithoutDocumentTypeRefInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutReceiptDocumentNestedInput
+  }
+
+  export type CarrierDocumentUncheckedUpdateManyWithoutDocumentTypeRefInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentId?: StringFieldUpdateOperationsInput | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    documentType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    filename?: StringFieldUpdateOperationsInput | string
+    fileSizeBytes?: NullableIntFieldUpdateOperationsInput | number | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
