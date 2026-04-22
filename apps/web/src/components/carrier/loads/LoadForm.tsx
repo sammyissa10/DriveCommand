@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { RefreshCw } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { LoadFinancials } from './LoadFinancials';
 import { StopBuilder } from '@/components/carrier/stops/StopBuilder';
@@ -32,6 +33,29 @@ interface ExistingDocument {
   fileName: string;
   fileUrl?: string;
   documentType: string;
+}
+
+interface DriverOption {
+  id: string;
+  name: string;
+  status: string;
+}
+
+interface TruckOption {
+  id: string;
+  unitNumber: string;
+  make: string | null;
+  model: string | null;
+}
+
+interface RouteTemplate {
+  id: string;
+  templateName: string;
+  recurrenceRule: string | null;
+  estimatedMiles: number | null;
+  defaultDriverId: string | null;
+  defaultTruckId: string | null;
+  client: { name: string } | null;
 }
 
 export interface LoadData {
@@ -64,11 +88,22 @@ interface LoadFormProps {
   initialData?: LoadData;
   clients: Client[];
   loadId?: string;
+  drivers?: DriverOption[];
+  trucks?: TruckOption[];
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function getDefaultDeparture(): string {
+  const d = new Date();
+  // Tomorrow at 08:00 local time
+  d.setDate(d.getDate() + 1);
+  d.setHours(8, 0, 0, 0);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 const RATE_TYPE_LABELS: Record<string, string> = {
   per_mile: 'Rate per Mile ($)',
@@ -85,7 +120,7 @@ const RATE_TYPE_LABELS: Record<string, string> = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) {
+export function LoadForm({ mode, initialData, clients, loadId, drivers, trucks }: LoadFormProps) {
   const router = useRouter();
 
   // Form state
@@ -143,6 +178,19 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
   const [existingDocs, setExistingDocs] = useState<ExistingDocument[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Dispatch immediately state (create mode only)
+  const [dispatchImmediately, setDispatchImmediately] = useState(false);
+  const [primaryDriverId, setPrimaryDriverId] = useState('');
+  const [dispatchTruckId, setDispatchTruckId] = useState('');
+  const [coDriverId, setCoDriverId] = useState('');
+  const [scheduledDeparture, setScheduledDeparture] = useState(getDefaultDeparture());
+  const [dispatchPlannedMiles, setDispatchPlannedMiles] = useState('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const [templates, setTemplates] = useState<RouteTemplate[]>([]);
+  const [templatesFetched, setTemplatesFetched] = useState(false);
+  const [coDriverError, setCoDriverError] = useState<string | null>(null);
+  const [dispatchError, setDispatchError] = useState<string | null>(null);
 
   // ---------------------------------------------------------------------------
   // Fetch existing rate confirmation docs (edit mode)
@@ -219,6 +267,61 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
   }
 
   // ---------------------------------------------------------------------------
+  // Fetch route templates when dispatch toggle is turned on
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    if (!dispatchImmediately || templatesFetched) return;
+    fetch('/api/v1/carrier/route-templates/active')
+      .then((r) => r.json())
+      .then((body) => {
+        if (body.data) setTemplates(body.data as RouteTemplate[]);
+        setTemplatesFetched(true);
+      })
+      .catch(() => {
+        setTemplatesFetched(true); // non-critical — show empty dropdown
+      });
+  }, [dispatchImmediately, templatesFetched]);
+
+  // ---------------------------------------------------------------------------
+  // Dispatch field handlers
+  // ---------------------------------------------------------------------------
+  function handleTemplateChange(newTemplateId: string) {
+    setSelectedTemplateId(newTemplateId);
+    if (!newTemplateId) return;
+    const template = templates.find((t) => t.id === newTemplateId);
+    if (!template) return;
+    if (dispatchPlannedMiles === '' && template.estimatedMiles != null) {
+      setDispatchPlannedMiles(String(template.estimatedMiles));
+    }
+    if (!primaryDriverId && template.defaultDriverId) {
+      const driverExists = (drivers ?? []).some((d) => d.id === template.defaultDriverId);
+      if (driverExists) setPrimaryDriverId(template.defaultDriverId);
+    }
+    if (!dispatchTruckId && template.defaultTruckId) {
+      const truckExists = (trucks ?? []).some((t) => t.id === template.defaultTruckId);
+      if (truckExists) setDispatchTruckId(template.defaultTruckId);
+    }
+  }
+
+  function handleCoDriverChange(value: string) {
+    setCoDriverId(value);
+    if (value && value === primaryDriverId) {
+      setCoDriverError('Co-driver cannot be the same as the primary driver.');
+    } else {
+      setCoDriverError(null);
+    }
+  }
+
+  function handlePrimaryDriverChange(value: string) {
+    setPrimaryDriverId(value);
+    if (coDriverId && value === coDriverId) {
+      setCoDriverError('Co-driver cannot be the same as the primary driver.');
+    } else {
+      setCoDriverError(null);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Upload rate confirmation file
   // ---------------------------------------------------------------------------
   async function uploadRateConfirmation(currentLoadId: string, file: File): Promise<boolean> {
@@ -278,6 +381,25 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       }
     }
     setStopErrors(newStopErrors);
+
+    // Validate dispatch fields when toggle is ON (create mode only)
+    if (mode === 'create' && dispatchImmediately) {
+      if (!primaryDriverId) {
+        setDispatchError('Primary driver is required to dispatch.');
+        valid = false;
+      } else if (!dispatchTruckId) {
+        setDispatchError('Truck is required to dispatch.');
+        valid = false;
+      } else if (!scheduledDeparture) {
+        setDispatchError('Scheduled departure is required to dispatch.');
+        valid = false;
+      } else if (coDriverId && coDriverId === primaryDriverId) {
+        setCoDriverError('Co-driver cannot be the same as the primary driver.');
+        valid = false;
+      } else {
+        setDispatchError(null);
+      }
+    }
 
     if (!valid) return;
 
@@ -344,6 +466,62 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
       // Upload rate confirmation if a file was selected
       if (rateConfFile && savedId) {
         await uploadRateConfirmation(savedId, rateConfFile);
+      }
+
+      // Dispatch immediately path (create mode only)
+      if (mode === 'create' && dispatchImmediately && savedId) {
+        const dispatchBody: Record<string, unknown> = {
+          primaryDriverId,
+          truckId: dispatchTruckId,
+          scheduledDeparture: new Date(scheduledDeparture).toISOString(),
+        };
+        if (coDriverId) dispatchBody.coDriverId = coDriverId;
+        if (dispatchPlannedMiles) dispatchBody.plannedMiles = parseFloat(dispatchPlannedMiles);
+        if (selectedTemplateId) dispatchBody.routeTemplateId = selectedTemplateId;
+
+        const dispatchRes = await fetch('/api/v1/carrier/dispatches', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dispatchBody),
+        });
+
+        if (!dispatchRes.ok) {
+          const dispatchJson = await dispatchRes.json().catch(() => ({}));
+          toast.error(dispatchJson.error ?? 'Load created but dispatch failed');
+          router.push('/carrier/loads');
+          return;
+        }
+
+        const dispatchData = await dispatchRes.json();
+        const newDispatchId: string = dispatchData.data?.id;
+        if (!newDispatchId) {
+          toast.error('Load created but could not get dispatch ID');
+          router.push('/carrier/loads');
+          return;
+        }
+
+        // Extract dispatch number from notes tag
+        const dispatchNotes: string = dispatchData.data?.notes ?? '';
+        const match = dispatchNotes.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+        const dispatchNumber = match ? match[1] : `DC-${newDispatchId.slice(0, 8)}`;
+
+        // Attach load to dispatch
+        const attachRes = await fetch(`/api/v1/carrier/loads/${savedId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dispatchId: newDispatchId }),
+        });
+
+        if (!attachRes.ok) {
+          const attachJson = await attachRes.json().catch(() => ({}));
+          toast.error(attachJson.error ?? 'Load and dispatch created but could not link them');
+          router.push(`/carrier/dispatches/${newDispatchId}`);
+          return;
+        }
+
+        toast.success(`Load created and dispatched as ${dispatchNumber}`);
+        router.push(`/carrier/dispatches/${newDispatchId}`);
+        return;
       }
 
       toast.success(mode === 'create' ? 'Load created' : 'Load saved');
@@ -538,6 +716,152 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
         )}
         <StopBuilder stops={stops} onChange={setStops} mode="load" stopErrors={stopErrors} />
       </div>
+
+      {/* Section 3b — Dispatch (create mode only) */}
+      {mode === 'create' && drivers && (
+        <div className={sectionClass}>
+          <div className="flex items-center justify-between">
+            <h3 className={`${sectionTitleClass} mb-0`}>Dispatch</h3>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={dispatchImmediately}
+                onCheckedChange={setDispatchImmediately}
+                id="dispatch-toggle"
+              />
+              <label htmlFor="dispatch-toggle" className="text-sm font-medium cursor-pointer select-none">
+                Dispatch immediately
+              </label>
+            </div>
+          </div>
+
+          {dispatchImmediately && (
+            <div className="mt-4 space-y-4">
+              {/* Route Template */}
+              <div>
+                <label className={labelClass}>Route Template (optional)</label>
+                <select
+                  value={selectedTemplateId}
+                  onChange={(e) => handleTemplateChange(e.target.value)}
+                  className={selectClass}
+                  disabled={submitting}
+                >
+                  <option value="">No template</option>
+                  {templates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.templateName}{t.client ? ` — ${t.client.name}` : ''}
+                    </option>
+                  ))}
+                </select>
+                {selectedTemplateId && (
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <RefreshCw className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300">
+                      Template stops will be added to the dispatch.
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Primary Driver */}
+                <div>
+                  <label className={labelClass}>
+                    Primary Driver <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={primaryDriverId}
+                    onChange={(e) => handlePrimaryDriverChange(e.target.value)}
+                    className={selectClass}
+                    disabled={submitting}
+                  >
+                    <option value="">Select driver…</option>
+                    {drivers.map((d) => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Truck */}
+                <div>
+                  <label className={labelClass}>
+                    Truck <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={dispatchTruckId}
+                    onChange={(e) => setDispatchTruckId(e.target.value)}
+                    className={selectClass}
+                    disabled={submitting}
+                  >
+                    <option value="">Select truck…</option>
+                    {(trucks ?? []).map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.unitNumber}
+                        {(t.make || t.model) && ` — ${[t.make, t.model].filter(Boolean).join(' ')}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Scheduled Departure */}
+                <div>
+                  <label className={labelClass}>
+                    Scheduled Departure <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={scheduledDeparture}
+                    onChange={(e) => setScheduledDeparture(e.target.value)}
+                    className={inputClass}
+                    disabled={submitting}
+                  />
+                </div>
+
+                {/* Co-Driver */}
+                <div>
+                  <label className={labelClass}>Co-Driver (optional)</label>
+                  <select
+                    value={coDriverId}
+                    onChange={(e) => handleCoDriverChange(e.target.value)}
+                    className={selectClass}
+                    disabled={submitting}
+                  >
+                    <option value="">None</option>
+                    {drivers
+                      .filter((d) => d.id !== primaryDriverId)
+                      .map((d) => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                  </select>
+                  {coDriverError && (
+                    <p className="mt-1 text-xs text-destructive">{coDriverError}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Planned Miles */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>Planned Miles (optional)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={dispatchPlannedMiles}
+                    onChange={(e) => setDispatchPlannedMiles(e.target.value)}
+                    placeholder="e.g. 350"
+                    className={inputClass}
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+
+              {dispatchError && (
+                <p className="text-sm text-destructive">{dispatchError}</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Section 4 — Rate and Financials */}
       <div className={sectionClass}>
@@ -744,7 +1068,13 @@ export function LoadForm({ mode, initialData, clients, loadId }: LoadFormProps) 
           disabled={submitting}
           className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
-          {submitting ? 'Saving…' : mode === 'create' ? 'Create Load' : 'Save Changes'}
+          {submitting
+            ? 'Saving…'
+            : mode === 'create' && dispatchImmediately
+              ? 'Create & Dispatch'
+              : mode === 'create'
+                ? 'Create Load'
+                : 'Save Changes'}
         </button>
       </div>
     </form>
