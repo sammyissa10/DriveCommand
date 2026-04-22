@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-22 - Completed quick task 275: Add documents tab to client detail page and documents section to contract detail page
+Last activity: 2026-04-21 - Completed quick task 276: Add document upload capability to client and contract detail pages
 Last session: 2026-04-22T02:12:47Z
 Stopped at: Completed quick-269-PLAN.md — 4 tasks, 12 files created/modified, zero TypeScript errors
 
@@ -1091,6 +1091,7 @@ None blocking immediate progress.
 | 273 | Add view/download button to uploaded documents on dispatch detail stop cards — StopDocumentList component, signed-url endpoint, View/Delete actions with refresh | 2026-04-22 | 0e63d3e | [273-add-view-download-button-to-uploaded-doc](./quick/273-add-view-download-button-to-uploaded-doc/) |
 | 274 | Propagate client_id and contract_id to CarrierDocument on upload — universal resolution for all parent types (stop/load/dispatch/contract), fail-safe try/catch | 2026-04-22 | 3f4daba | [274-propagate-client-id-and-contract-id-to-c](./quick/274-propagate-client-id-and-contract-id-to-c/) |
 | 275 | Add documents tab to client detail page and documents section to contract detail page — 2 new API endpoints, ClientDetail Documents tab, ContractDetail Documents section, View/Download | 2026-04-22 | 403f7e2 | [275-add-documents-tab-to-client-detail-page-](./quick/275-add-documents-tab-to-client-detail-page-/) |
+| 276 | Add document upload capability to client and contract detail pages — client parentType in upload pipeline, DocumentUploadModal on ClientDetail Documents tab and ContractDetail Documents section, immediate list refresh | 2026-04-21 | a590952 | [276-add-document-upload-capability-to-client](./quick/276-add-document-upload-capability-to-client/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
