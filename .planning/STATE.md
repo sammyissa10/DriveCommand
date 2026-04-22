@@ -1085,6 +1085,7 @@ None blocking immediate progress.
 | 268 | Fix 500 when attaching second load to dispatch — sequenceOrder offset by existingStopCount to avoid @@unique([dispatchId, sequenceOrder]) collision; improved PATCH error serialization | 2026-04-22 | 9c7080b | [268-fix-attach-second-load-to-dispatch-retur](./quick/268-fix-attach-second-load-to-dispatch-retur/) |
 | 269 | Document upload enhancements — CarrierDocumentType catalog (per-tenant, auto-seed 10 defaults), CRUD API + settings page, required type selection on upload, context FKs (load/dispatch/contract), uploader name + timestamp in document lists | 2026-04-22 | 718b4f8 | [269-document-upload-and-storage-enhancements](./quick/269-document-upload-and-storage-enhancements/) |
 | 270 | Fix document upload error logging — logger.error signature mismatch was stringifying Supabase StorageError as [object Object]; now passes raw error as second arg + context as third | 2026-04-22 | f9d270a | [270-fix-document-upload-storage-failure-and-](./quick/270-fix-document-upload-storage-failure-and-/) |
+| 271 | Fix carrier document upload to use R2 — replaced Supabase Storage (non-existent bucket) with PutObjectCommand/DeleteObjectCommand via existing s3Client; storage path format unchanged | 2026-04-22 | b228caa | [271-fix-carrier-document-upload-to-use-r2-in](./quick/271-fix-carrier-document-upload-to-use-r2-in/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
