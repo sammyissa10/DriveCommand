@@ -825,6 +825,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-243]: Used getSession() instead of requireRole() to get userId and tenantId in a single call for HOS actions
 - [Phase quick]: Single-vehicle map centering uses setView(zoom 13) instead of fitBounds to avoid point-bbox over-zoom
 - [Phase quick-275]: Stop display uses stopType+sequenceOrder (CarrierStop has no name field); Dispatch display uses UUID prefix (no dispatchNumber field)
+- [Phase quick-282]: Stop-scoped messaging uses FleetMessage.stopId FK with dispatch-level tenant isolation and auto-resolved driver recipient from primaryDriver
 
 ### Pending Todos
 
