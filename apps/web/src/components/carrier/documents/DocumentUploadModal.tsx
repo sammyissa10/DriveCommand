@@ -235,9 +235,10 @@ export function DocumentUploadModal({
     <Dialog open={open} onOpenChange={handleDialogOpen}>
       <DialogTrigger asChild>
         <button
-          className="text-xs text-primary underline hover:text-primary/80 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
           type="button"
         >
+          <Upload className="h-4 w-4" />
           {triggerLabel}
         </button>
       </DialogTrigger>
