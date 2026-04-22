@@ -47,6 +47,7 @@ function LocalTime({ date, format = 'datetime' }: { date: string | Date; format?
   return <span>{formatLocalTime(date)}</span>;
 }
 import { Truck, Clock, Play, CheckCircle, Navigation } from 'lucide-react';
+import { StopDocumentUpload } from './stop-document-upload';
 
 // ---------------------------------------------------------------------------
 // Types — mirrors the Prisma include shape from getMyActiveDispatch()
@@ -75,6 +76,7 @@ interface CarrierStopShape {
   bolNumber?: string | null;
   specialInstructions?: string | null;
   facility: Facility;
+  documents?: Array<{ id: string; documentType: string; filename: string; createdAt: Date }>;
 }
 
 interface CarrierTruckShape {
@@ -474,6 +476,15 @@ export function DispatchDetail({ dispatch, startAction, arriveAction, completeAc
                       {stop.specialInstructions}
                     </p>
                   )}
+
+                  {/* Documents — upload and view per stop */}
+                  <StopDocumentUpload
+                    stopId={stop.id}
+                    existingDocs={(stop.documents ?? []).map((d) => ({
+                      ...d,
+                      createdAt: typeof d.createdAt === 'string' ? d.createdAt : d.createdAt.toISOString(),
+                    }))}
+                  />
 
                   {/* Action buttons (in_progress dispatches only) */}
                   {dispatch.status === 'in_progress' && (

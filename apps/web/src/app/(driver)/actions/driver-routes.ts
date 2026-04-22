@@ -60,6 +60,10 @@ export async function getMyActiveDispatch() {
           facility: {
             select: { id: true, name: true, city: true, state: true, latitude: true, longitude: true, addressLine1: true },
           },
+          documents: {
+            select: { id: true, documentType: true, filename: true, createdAt: true },
+            orderBy: { createdAt: 'desc' as const },
+          },
         },
       },
       carrierLoads: {
