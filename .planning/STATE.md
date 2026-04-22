@@ -1071,6 +1071,7 @@ None blocking immediate progress.
 | 263 | Build complete owner-driver messaging system with conversations inbox, threaded messages, dispatch context, broadcast, and sidebar unread badge | 2026-04-20 | f20b9f3 | [263-build-complete-owner-driver-messaging-sy](./quick/263-build-complete-owner-driver-messaging-sy/) |
 | 264 | Fix nightly dispatch generator to auto-create loads and stops from route templates — transactional dispatch+load+stops, contract rate copy, appointment offsets, needs_assignment flag, manual generate endpoint, after() notifications | 2026-04-20 | 29ee753 | [264-fix-nightly-dispatch-generator-to-auto-c](./quick/264-fix-nightly-dispatch-generator-to-auto-c/) |
 | 265 | Driver portal enhancements — loading skeletons, force-dynamic, dispatch history tab, hide rate fields, per-stop document upload (active + completed stops) | 2026-04-22 | 54d8597 | [265-driver-portal-enhancements-nav-performan](./quick/265-driver-portal-enhancements-nav-performan/) |
+| 266 | Fix pendingStopsJson column name mismatch — verified @map("pending_stops_json") present, regenerated Prisma client, fixed 3 Playwright E2E Locator.not() type errors, tsc clean | 2026-04-22 | 3633b7b | [266-fix-pendingstopsjson-column-name-mismatc](./quick/266-fix-pendingstopsjson-column-name-mismatc/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
