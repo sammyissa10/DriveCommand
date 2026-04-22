@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Pencil, X } from 'lucide-react';
+import { ArrowLeft, Pencil, X, FileText, Download, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ClientForm, ClientData } from '@/components/carrier/clients/ClientForm';
@@ -26,6 +26,24 @@ interface LoadRow {
   status: string;
   totalRevenue: string | null;
   createdAt: string;
+}
+
+interface DocumentRow {
+  id: string;
+  documentType: string;
+  documentTypeName: string | null;
+  filename: string;
+  fileSizeBytes: number | null;
+  uploadedByName: string | null;
+  uploadedAt: string;
+  verified: boolean;
+  notes: string | null;
+  stopId: string | null;
+  stopName: string | null;
+  loadId: string | null;
+  loadReferenceNumber: string | null;
+  dispatchId: string | null;
+  dispatchShortId: string | null;
 }
 
 interface ClientSerialized {
@@ -55,7 +73,7 @@ interface ClientSerialized {
   outstandingAR: string | null;
 }
 
-type Tab = 'overview' | 'contracts' | 'loads' | 'financials';
+type Tab = 'overview' | 'contracts' | 'loads' | 'financials' | 'documents';
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
   active: 'border-green-500 text-green-600 dark:text-green-400',
@@ -100,6 +118,27 @@ function formatRateDisplay(rateType: string | null, baseRate: string | null): st
   }
 }
 
+function formatRelativeDate(isoString: string): string {
+  const now = Date.now();
+  const then = new Date(isoString).getTime();
+  const diffMs = now - then;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+  const diffDay = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 60) return `${diffMin} min ago`;
+  if (diffHr < 24) return `${diffHr} hour${diffHr !== 1 ? 's' : ''} ago`;
+  if (diffDay < 7) return `${diffDay} day${diffDay !== 1 ? 's' : ''} ago`;
+  return new Date(isoString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function getLinkedTo(doc: DocumentRow): string {
+  if (doc.stopName) return `Stop: ${doc.stopName}`;
+  if (doc.loadReferenceNumber) return `Load: #${doc.loadReferenceNumber}`;
+  if (doc.dispatchShortId) return `Dispatch: ${doc.dispatchShortId}`;
+  return '—';
+}
+
 export function ClientDetail({
   client,
   initialEdit,
@@ -116,6 +155,9 @@ export function ClientDetail({
   const [loads, setLoads] = useState<LoadRow[]>([]);
   const [loadsLoading, setLoadsLoading] = useState(false);
   const [loadsError, setLoadsError] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<DocumentRow[]>([]);
+  const [documentsLoading, setDocumentsLoading] = useState(false);
+  const [documentsError, setDocumentsError] = useState<string | null>(null);
   const [portalAccess, setPortalAccess] = useState(client.portalAccess);
   const [portalUpdating, setPortalUpdating] = useState(false);
 
@@ -151,6 +193,21 @@ export function ClientDetail({
       .finally(() => setLoadsLoading(false));
   }, [activeTab, client.id]);
 
+  // Fetch documents when tab is selected
+  useEffect(() => {
+    if (activeTab !== 'documents') return;
+    setDocumentsLoading(true);
+    setDocumentsError(null);
+    fetch(`/api/v1/carrier/clients/${client.id}/documents`)
+      .then((r) => {
+        if (!r.ok) throw new Error('fetch_failed');
+        return r.json();
+      })
+      .then((json) => setDocuments(json.data ?? []))
+      .catch(() => setDocumentsError('Failed to load documents.'))
+      .finally(() => setDocumentsLoading(false));
+  }, [activeTab, client.id]);
+
   async function handlePortalToggle(val: boolean) {
     setPortalUpdating(true);
     try {
@@ -166,6 +223,34 @@ export function ClientDetail({
       toast.error('Failed to update portal access');
     } finally {
       setPortalUpdating(false);
+    }
+  }
+
+  async function handleViewDocument(docId: string) {
+    try {
+      const res = await fetch(`/api/v1/carrier/documents/${docId}/signed-url`);
+      if (!res.ok) throw new Error('Failed to get signed URL');
+      const json = await res.json();
+      window.open(json.signedUrl, '_blank');
+    } catch {
+      toast.error('Failed to open document');
+    }
+  }
+
+  async function handleDownloadDocument(docId: string, filename: string) {
+    try {
+      const res = await fetch(`/api/v1/carrier/documents/${docId}/signed-url`);
+      if (!res.ok) throw new Error('Failed to get signed URL');
+      const json = await res.json();
+      const a = document.createElement('a');
+      a.href = json.signedUrl;
+      a.download = filename;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch {
+      toast.error('Failed to download document');
     }
   }
 
@@ -198,6 +283,7 @@ export function ClientDetail({
     { key: 'contracts', label: 'Contracts' },
     { key: 'loads', label: 'Loads' },
     { key: 'financials', label: 'Financials' },
+    { key: 'documents', label: 'Documents' },
   ];
 
   return (
@@ -547,6 +633,88 @@ export function ClientDetail({
           {/* Tab: Financials */}
           {activeTab === 'financials' && (
             <ClientFinancials clientId={client.id} outstandingAR={client.outstandingAR} />
+          )}
+
+          {/* Tab: Documents */}
+          {activeTab === 'documents' && (
+            <div className="space-y-4">
+              {documentsLoading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-12 rounded-lg bg-muted/40 animate-pulse" />
+                  ))}
+                </div>
+              ) : documentsError ? (
+                <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+                  {documentsError}
+                </div>
+              ) : documents.length === 0 ? (
+                <div className="rounded-xl border border-border bg-card p-12 text-center">
+                  <FileText className="mx-auto h-8 w-8 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    No documents uploaded for this client yet. Documents will appear here automatically when uploaded on loads and dispatches linked to this client.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-border overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50 border-b border-border">
+                        <tr>
+                          <th className="text-left px-4 py-3 font-medium text-muted-foreground">Type</th>
+                          <th className="text-left px-4 py-3 font-medium text-muted-foreground">Filename</th>
+                          <th className="text-left px-4 py-3 font-medium text-muted-foreground">Linked To</th>
+                          <th className="text-left px-4 py-3 font-medium text-muted-foreground">Uploaded By</th>
+                          <th className="text-left px-4 py-3 font-medium text-muted-foreground">Date</th>
+                          <th className="text-right px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {documents.map((doc) => (
+                          <tr key={doc.id} className="hover:bg-muted/30 transition-colors">
+                            <td className="px-4 py-3">
+                              <Badge variant="outline" className="border-border text-muted-foreground capitalize">
+                                {doc.documentTypeName ?? doc.documentType.replace(/_/g, ' ')}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-3 text-foreground max-w-[200px] truncate" title={doc.filename}>
+                              {doc.filename}
+                            </td>
+                            <td className="px-4 py-3 text-muted-foreground">
+                              {getLinkedTo(doc)}
+                            </td>
+                            <td className="px-4 py-3 text-muted-foreground">
+                              {doc.uploadedByName || '—'}
+                            </td>
+                            <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                              {formatRelativeDate(doc.uploadedAt)}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleViewDocument(doc.id)}
+                                  title="View document"
+                                  className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDownloadDocument(doc.id, doc.filename)}
+                                  title="Download document"
+                                  className="p-1.5 rounded hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                                >
+                                  <Download className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </>
       )}
