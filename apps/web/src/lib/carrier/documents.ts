@@ -1,12 +1,12 @@
-import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
-import { s3Client, getBucketName } from '@/lib/storage/s3-client';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 const ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'heic', 'webp'];
+const BUCKET = 'drivecommand-files';
 const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
 // ---------------------------------------------------------------------------
@@ -109,20 +109,14 @@ export async function uploadDocument(
   const uuid = crypto.randomUUID();
   const storagePath = `${orgId}/${parentType}/${parentId}/${documentType}/${uuid}.${ext}`;
 
-  // Upload to R2
+  // Upload to Supabase Storage
   const buffer = Buffer.from(await file.arrayBuffer());
-  try {
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: getBucketName(),
-        Key: storagePath,
-        Body: buffer,
-        ContentType: file.type,
-        ContentLength: file.size,
-      })
-    );
-  } catch (uploadError) {
-    logger.error('uploadDocument: R2 upload failed', uploadError, { orgId, storagePath });
+  const supabaseAdmin = createAdminClient();
+  const { error: uploadError } = await supabaseAdmin.storage
+    .from(BUCKET)
+    .upload(storagePath, buffer, { contentType: file.type, upsert: false });
+  if (uploadError) {
+    logger.error('uploadDocument: Supabase Storage upload failed', uploadError, { orgId, storagePath });
     return { error: 'Storage upload failed', status: 500 };
   }
 
@@ -204,12 +198,19 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
     },
   });
 
-  return {
-    data: documents.map((doc) => {
+  const supabaseAdmin = createAdminClient();
+  const docsWithUrls = await Promise.all(
+    documents.map(async (doc) => {
       const uploaderName = doc.uploader
         ? [doc.uploader.firstName, doc.uploader.lastName].filter(Boolean).join(' ') || null
         : null;
-
+      let url: string | null = null;
+      if (doc.fileUrl) {
+        const { data: signedData } = await supabaseAdmin.storage
+          .from(BUCKET)
+          .createSignedUrl(doc.fileUrl, 3600);
+        url = signedData?.signedUrl ?? null;
+      }
       return {
         id: doc.id,
         documentType: doc.documentType,
@@ -219,17 +220,16 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
         uploadedByName: uploaderName,
         uploadedAt: doc.createdAt.toISOString(),
         verified: doc.verified,
-        // URL is not pre-signed here — clients use a separate presign endpoint or pass fileUrl raw
-        url: doc.fileUrl,
-        // Additional fields for reference
+        url,
         notes: doc.notes,
         documentTypeId: doc.documentTypeId,
         loadId: doc.loadId,
         dispatchId: doc.dispatchId,
         contractId: doc.contractId,
       };
-    }),
-  };
+    })
+  );
+  return { data: docsWithUrls };
 }
 
 // ---------------------------------------------------------------------------
@@ -260,16 +260,15 @@ export async function deleteDocument(
 
   if (!orgVerified) return { error: 'Unauthorized', status: 403 };
 
-  // Remove from R2
+  // Remove from Supabase Storage
   try {
-    await s3Client.send(
-      new DeleteObjectCommand({
-        Bucket: getBucketName(),
-        Key: doc.fileUrl,
-      })
-    );
+    const supabaseAdmin = createAdminClient();
+    const { error: storageError } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .remove([doc.fileUrl]);
+    if (storageError) throw storageError;
   } catch (storageError) {
-    logger.error('deleteDocument: R2 delete failed', storageError, { orgId, docId });
+    logger.error('deleteDocument: Supabase Storage delete failed', storageError, { orgId, docId });
     // Continue — still delete the DB record even if storage fails
   }
 
