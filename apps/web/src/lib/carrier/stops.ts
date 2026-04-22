@@ -43,6 +43,8 @@ export interface StopUpdateInput {
   appointmentStart?: string;
   appointmentEnd?: string;
   specialInstructions?: string;
+  arrivedAt?: string;
+  departedAt?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -179,6 +181,8 @@ export async function updateStop(orgId: string, id: string, data: StopUpdateInpu
       appointmentStart: data.appointmentStart ? new Date(data.appointmentStart) : undefined,
       appointmentEnd: data.appointmentEnd ? new Date(data.appointmentEnd) : undefined,
       specialInstructions: data.specialInstructions,
+      arrivedAt: data.arrivedAt ? new Date(data.arrivedAt) : undefined,
+      departedAt: data.departedAt ? new Date(data.departedAt) : undefined,
     },
   });
 }

@@ -10,6 +10,8 @@ const StopUpdateSchema = z.object({
   appointmentStart: z.string().datetime().optional(),
   appointmentEnd: z.string().datetime().optional(),
   specialInstructions: z.string().optional(),
+  arrivedAt: z.string().datetime().optional(),
+  departedAt: z.string().datetime().optional(),
 });
 
 export async function GET(
