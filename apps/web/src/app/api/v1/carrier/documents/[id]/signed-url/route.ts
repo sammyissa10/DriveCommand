@@ -35,6 +35,15 @@ export async function GET(
     } else if (doc.parentType === 'dispatch') {
       const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
       orgVerified = !!dispatch;
+    } else if (doc.parentType === 'contract') {
+      const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+      orgVerified = !!contract;
+    } else if (doc.parentType === 'client') {
+      const client = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+      orgVerified = !!client;
+    } else if (doc.parentType === 'expense') {
+      const expense = await prisma.carrierExpense.findFirst({ where: { id: doc.parentId, orgId } });
+      orgVerified = !!expense;
     }
 
     if (!orgVerified) {
