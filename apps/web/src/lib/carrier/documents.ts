@@ -117,7 +117,7 @@ export async function uploadDocument(
     .upload(storagePath, buffer, { contentType: file.type });
 
   if (uploadError) {
-    logger.error('uploadDocument: storage upload failed', { orgId, storagePath, err: uploadError });
+    logger.error('uploadDocument: storage upload failed', uploadError, { orgId, storagePath });
     return { error: 'Storage upload failed', status: 500 };
   }
 
@@ -261,7 +261,7 @@ export async function deleteDocument(
     .remove([doc.fileUrl]);
 
   if (storageError) {
-    logger.error('deleteDocument: storage delete failed', { orgId, docId, err: storageError });
+    logger.error('deleteDocument: storage delete failed', storageError, { orgId, docId });
     // Continue — still delete the DB record even if storage fails
   }
 

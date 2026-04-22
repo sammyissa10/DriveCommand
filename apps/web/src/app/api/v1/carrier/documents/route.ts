@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data: result.data }, { status: 201 });
   } catch (err) {
-    logger.error('POST /api/v1/carrier/documents failed', err);
+    logger.error('POST /api/v1/carrier/documents failed', err, { userId: session?.userId });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     const result = await listDocuments(orgId, parentType, parentId);
     return NextResponse.json({ data: result.data });
   } catch (err) {
-    logger.error('GET /api/v1/carrier/documents failed', err);
+    logger.error('GET /api/v1/carrier/documents failed', err, { userId: session?.userId });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
