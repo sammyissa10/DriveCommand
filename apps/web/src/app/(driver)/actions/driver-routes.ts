@@ -128,8 +128,8 @@ export async function getMyDispatchHistory() {
         orgId: session.tenantId,
         status: 'completed',
       },
-      orderBy: { actualArrival: 'desc' },
-      take: 10,
+      orderBy: { actualDeparture: 'desc' },
+      take: 20,
       include: {
         truck: {
           select: { id: true, unitNumber: true, displayName: true },
@@ -140,7 +140,14 @@ export async function getMyDispatchHistory() {
             facility: {
               select: { id: true, name: true, city: true, state: true },
             },
+            documents: {
+              select: { id: true, documentType: true, filename: true, createdAt: true },
+              orderBy: { createdAt: 'desc' as const },
+            },
           },
+        },
+        carrierLoads: {
+          include: { client: { select: { id: true, name: true } } },
         },
       },
     });
