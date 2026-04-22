@@ -6,6 +6,7 @@ import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
+import { TenantSettingsForm } from './tenant-settings-form';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
 import { CopyTenantIdButton } from './copy-tenant-id-button';
@@ -222,6 +223,21 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           </CardContent>
         </Card>
       </div>
+
+      {/* Tenant Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold">Tenant Settings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TenantSettingsForm
+            tenantId={tenant.id}
+            initialContactEmail={tenant.contactEmail ?? null}
+            initialTimezone={tenant.timezone}
+            initialPlan={tenant.plan}
+          />
+        </CardContent>
+      </Card>
 
       {/* Billing History */}
       <Card>

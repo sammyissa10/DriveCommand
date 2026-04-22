@@ -121,6 +121,8 @@ model Tenant {
   name                  String
   slug                  String?  @unique
   timezone              String   @default("UTC")
+  contactEmail          String?
+  plan                  String   @default("starter")
   isActive              Boolean  @default(true)
   profitMarginThreshold Decimal  @default(10) @db.Decimal(5, 2)
   createdAt             DateTime @default(now()) @db.Timestamptz

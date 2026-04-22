@@ -281,6 +281,9 @@ export async function getTenantById(tenantId: string) {
       id: true,
       name: true,
       slug: true,
+      timezone: true,
+      contactEmail: true,
+      plan: true,
       isActive: true,
       createdAt: true,
       updatedAt: true,
@@ -477,6 +480,44 @@ export async function updateOwnerEmail(
       return { success: false, error: 'This email is already in use by another account' };
     }
     return { success: false, error: 'Failed to update email. Please try again.' };
+  }
+}
+
+/**
+ * Update tenant settings: contactEmail, timezone, plan.
+ */
+export async function updateTenantSettings(
+  tenantId: string,
+  data: { contactEmail?: string; timezone: string; plan: string }
+): Promise<{ success: boolean; error?: string }> {
+  await requireAdminAccess();
+
+  const schema = z.object({
+    contactEmail: z.string().email('Must be a valid email address').optional().or(z.literal('')),
+    timezone: z.string().min(1, 'Timezone is required'),
+    plan: z.enum(['starter', 'pro', 'enterprise'], { errorMap: () => ({ message: 'Plan must be starter, pro, or enterprise' }) }),
+  });
+
+  const validation = schema.safeParse(data);
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message };
+  }
+
+  try {
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        contactEmail: validation.data.contactEmail || null,
+        timezone: validation.data.timezone,
+        plan: validation.data.plan,
+      },
+    });
+
+    revalidatePath(`/tenants/${tenantId}`);
+
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Failed to update settings. Please try again.' };
   }
 }
 
