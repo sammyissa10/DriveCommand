@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ClientForm, ClientData } from '@/components/carrier/clients/ClientForm';
 import { ClientFinancials } from '@/components/carrier/clients/ClientFinancials';
+import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
 
 interface ContractRow {
@@ -193,9 +194,7 @@ export function ClientDetail({
       .finally(() => setLoadsLoading(false));
   }, [activeTab, client.id]);
 
-  // Fetch documents when tab is selected
-  useEffect(() => {
-    if (activeTab !== 'documents') return;
+  function fetchDocuments() {
     setDocumentsLoading(true);
     setDocumentsError(null);
     fetch(`/api/v1/carrier/clients/${client.id}/documents`)
@@ -206,6 +205,13 @@ export function ClientDetail({
       .then((json) => setDocuments(json.data ?? []))
       .catch(() => setDocumentsError('Failed to load documents.'))
       .finally(() => setDocumentsLoading(false));
+  }
+
+  // Fetch documents when tab is selected
+  useEffect(() => {
+    if (activeTab !== 'documents') return;
+    fetchDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, client.id]);
 
   async function handlePortalToggle(val: boolean) {
@@ -638,6 +644,14 @@ export function ClientDetail({
           {/* Tab: Documents */}
           {activeTab === 'documents' && (
             <div className="space-y-4">
+              <div className="flex justify-end">
+                <DocumentUploadModal
+                  parentType="client"
+                  parentId={client.id}
+                  onSuccess={fetchDocuments}
+                  triggerLabel="+ Upload Document"
+                />
+              </div>
               {documentsLoading ? (
                 <div className="space-y-2">
                   {[1, 2, 3].map((i) => (

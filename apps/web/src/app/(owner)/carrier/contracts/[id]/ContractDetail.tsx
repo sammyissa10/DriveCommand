@@ -6,6 +6,7 @@ import { ArrowLeft, Pencil, X, FileText, Download, ExternalLink } from 'lucide-r
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ContractForm, ContractData } from '@/components/carrier/contracts/ContractForm';
+import { DocumentUploadModal } from '@/components/carrier/documents/DocumentUploadModal';
 import { toast } from 'sonner';
 
 interface ContractSerialized {
@@ -132,14 +133,19 @@ export function ContractDetail({
   const [documents, setDocuments] = useState<DocumentRow[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
 
-  useEffect(() => {
-    if (isEditing) return;
+  function fetchDocuments() {
     setDocumentsLoading(true);
     fetch(`/api/v1/carrier/contracts/${contract.id}/documents`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((json) => setDocuments(json.data ?? []))
       .catch(() => setDocuments([]))
       .finally(() => setDocumentsLoading(false));
+  }
+
+  useEffect(() => {
+    if (isEditing) return;
+    fetchDocuments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract.id, isEditing]);
 
   async function handleViewDocument(docId: string) {
@@ -407,9 +413,18 @@ export function ContractDetail({
 
           {/* Documents */}
           <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Documents
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Documents
+              </h3>
+              <DocumentUploadModal
+                parentType="contract"
+                parentId={contract.id}
+                contractId={contract.id}
+                onSuccess={fetchDocuments}
+                triggerLabel="+ Upload Document"
+              />
+            </div>
             {documentsLoading ? (
               <div className="space-y-2">
                 {[1, 2, 3].map((i) => (
