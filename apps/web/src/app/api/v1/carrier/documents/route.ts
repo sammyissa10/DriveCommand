@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const validParentTypes = ['stop', 'load', 'dispatch', 'contract', 'expense'] as const;
+    const validParentTypes = ['stop', 'load', 'dispatch', 'contract', 'client', 'expense'] as const;
     if (!validParentTypes.includes(parentType as (typeof validParentTypes)[number])) {
       return NextResponse.json(
         { error: `parent_type must be one of: ${validParentTypes.join(', ')}` },

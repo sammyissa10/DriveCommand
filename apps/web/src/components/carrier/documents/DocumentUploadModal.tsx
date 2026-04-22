@@ -23,7 +23,7 @@ interface DocumentType {
 }
 
 interface DocumentUploadModalProps {
-  parentType: 'stop' | 'load' | 'dispatch' | 'contract';
+  parentType: 'stop' | 'load' | 'dispatch' | 'contract' | 'client';
   parentId: string;
   stopId?: string;
   /** Slug hint — used to pre-select a matching type from the fetched catalog (e.g. "bol", "pod"). */

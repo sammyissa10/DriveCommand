@@ -124,6 +124,12 @@ export async function uploadDocument(
         logger.warn('uploadDocument: failed to resolve clientId from contract', { parentId, err });
       }
     }
+  } else if (parentType === 'client') {
+    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!clientRecord;
+    if (clientRecord) {
+      clientId = parentId;
+    }
   } else if (parentType === 'expense') {
     const expense = await prisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!expense;
@@ -203,6 +209,12 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
   } else if (parentType === 'dispatch') {
     const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
+  } else if (parentType === 'contract') {
+    const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!contract;
+  } else if (parentType === 'client') {
+    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: parentId, orgId } });
+    orgVerified = !!clientRecord;
   } else {
     // Unknown parent type — deny for safety
     orgVerified = false;
@@ -279,6 +291,12 @@ export async function deleteDocument(
   } else if (doc.parentType === 'dispatch') {
     const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
+  } else if (doc.parentType === 'contract') {
+    const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+    orgVerified = !!contract;
+  } else if (doc.parentType === 'client') {
+    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+    orgVerified = !!clientRecord;
   }
 
   if (!orgVerified) return { error: 'Unauthorized', status: 403 };
@@ -326,6 +344,12 @@ export async function verifyDocument(
   } else if (doc.parentType === 'dispatch') {
     const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: doc.parentId, orgId } });
     orgVerified = !!dispatch;
+  } else if (doc.parentType === 'contract') {
+    const contract = await prisma.carrierContract.findFirst({ where: { id: doc.parentId, orgId } });
+    orgVerified = !!contract;
+  } else if (doc.parentType === 'client') {
+    const clientRecord = await prisma.carrierClient.findFirst({ where: { id: doc.parentId, orgId } });
+    orgVerified = !!clientRecord;
   }
 
   if (!orgVerified) return { error: 'Unauthorized', status: 403 };
