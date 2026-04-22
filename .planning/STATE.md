@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-22 - Completed quick task 280: Add dispatch option to load create form
-Last session: 2026-04-22T18:17:49Z
-Stopped at: Completed quick-280-PLAN.md — 2 tasks, 2 files modified, zero TypeScript errors
+Last activity: 2026-04-22 - Completed quick task 281: Tenant settings, user list, password reset, role change for sysadmin
+Last session: 2026-04-22T18:50:00Z
+Stopped at: Completed quick-281-PLAN.md — 3 tasks, 9 files modified, zero TypeScript errors
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -186,6 +186,7 @@ Progress: [███████████████████████
 - Quick-269 (2026-04-22): Document upload and storage enhancements — CarrierDocumentType model + migration, auto-seed 10 defaults per tenant on first GET, CRUD API + settings page at /owner/carrier/templates/document-types, DocumentUploadModal lazy-fetches active types (requires selection), context FKs auto-derived in uploadDocument(), DocumentList shows type name + uploader + date — 4 tasks, 12 files
 - Quick-278 (2026-04-22): Comprehensive carrier dashboard overhaul — revenue KPI fix (totalRevenue + rate-field fallback), actionable alerts API (7 parallel counts: expired/expiring CDLs, registrations, contracts, pending pay, unstarted dispatches), activity feed API (15 items merged from 6 sources), drivers-status API (HOS via DISTINCT ON raw query), messages API (GET last 5 + POST broadcast); 3 new UI components (DriverStatusStrip, RecentActivity, QuickMessageBoard); updated KPIStrip + AlertBar; new 5-col two-column dashboard layout — 2 tasks, 11 files
 - Quick-280 (2026-04-22): Add dispatch option to load create form — "Dispatch immediately" toggle in LoadForm (create mode only), collapsible dispatch section (driver, truck, departure, co-driver, planned miles, route template with auto-populate), dual-path submit (toggle OFF = existing flow unchanged; toggle ON = create load → create dispatch → PATCH load with dispatchId → redirect to dispatch detail with DC-XXXX toast), NewLoadPage fetches active drivers + trucks in parallel — 2 tasks, 2 files
+- Quick-281 (2026-04-22): Add tenant settings, user list, password reset, and role change to sysadmin tenant detail — contactEmail+plan schema fields, TenantSettingsForm (contactEmail/timezone/plan), GET /api/admin/tenants/[id]/users, TenantUsersSection (role badges, status dots, actions dropdown), ChangeRoleModal, PATCH /api/admin/users/[id]/role (blocks OWNER + updates Supabase Auth app_metadata), Prisma client regenerated — 3 tasks, 9 files
 
 ## Accumulated Context
 
