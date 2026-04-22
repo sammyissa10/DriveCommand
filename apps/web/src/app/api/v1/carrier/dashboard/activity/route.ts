@@ -112,7 +112,7 @@ export async function GET() {
       const statusLabel = d.status.replace(/_/g, ' ');
       items.push({
         type: 'dispatch_update',
-        description: `DC-${num} moved to ${statusLabel}`,
+        description: `${num} moved to ${statusLabel}`,
         timestamp: d.updatedAt.toISOString(),
         href: `/carrier/dispatches/${d.id}`,
       });
@@ -175,7 +175,7 @@ export async function GET() {
       });
       items.push({
         type: 'new_dispatch',
-        description: `DC-${num} scheduled for ${depDate}`,
+        description: `${num} scheduled for ${depDate}`,
         timestamp: d.createdAt.toISOString(),
         href: `/carrier/dispatches/${d.id}`,
       });
