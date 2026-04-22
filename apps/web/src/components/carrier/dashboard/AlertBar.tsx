@@ -2,19 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, ChevronRight } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-interface ComplianceAlert {
-  type: string;
-  severity: 'critical' | 'warning';
-  message: string;
-  entityId: string;
-  entityType: string;
-  link: string;
+interface AlertItem {
+  id: string;
+  label: string;
+  count: number;
+  href: string;
+  severity: 'warning' | 'critical';
 }
 
 // ---------------------------------------------------------------------------
@@ -22,13 +21,13 @@ interface ComplianceAlert {
 // ---------------------------------------------------------------------------
 
 export function AlertBar() {
-  const [alerts, setAlerts] = useState<ComplianceAlert[]>([]);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/v1/carrier/compliance-alerts')
+    fetch('/api/v1/carrier/dashboard/alerts')
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
-      .then((json) => setAlerts(json.data ?? []))
+      .then((json) => setAlerts(Array.isArray(json) ? json : []))
       .catch(() => setAlerts([]))
       .finally(() => setLoading(false));
   }, []);
@@ -39,7 +38,7 @@ export function AlertBar() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-7 w-48 flex-shrink-0 rounded-full bg-muted animate-pulse"
+            className="h-9 w-52 flex-shrink-0 rounded-lg bg-muted animate-pulse"
           />
         ))}
       </div>
@@ -57,20 +56,21 @@ export function AlertBar() {
 
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">
-      {alerts.map((alert, idx) => {
+      {alerts.map((alert) => {
         const isCritical = alert.severity === 'critical';
-        const chipClass = isCritical
-          ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+        const cardClass = isCritical
+          ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800'
+          : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800';
 
         return (
           <Link
-            key={`${alert.entityId}-${alert.type}-${idx}`}
-            href={alert.link}
-            className={`inline-flex flex-shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-80 ${chipClass}`}
+            key={alert.id}
+            href={alert.href}
+            className={`inline-flex flex-shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-opacity hover:opacity-80 ${cardClass}`}
           >
-            <AlertTriangle className="h-3.5 w-3.5" />
-            {alert.message}
+            <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+            <span>{alert.label}</span>
+            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
           </Link>
         );
       })}

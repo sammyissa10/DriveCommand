@@ -8,20 +8,6 @@ import { Package, DollarSign, CreditCard, FileText } from 'lucide-react';
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getWeekStartISO(): string {
-  const d = new Date();
-  // Monday = day 1; Sunday = day 0 → offset back to Monday
-  const day = d.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString().split('T')[0];
-}
-
-function getTodayISO(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
 function fmtCurrency(val: number): string {
   if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(1)}M`;
   if (val >= 1_000) return `$${(val / 1_000).toFixed(1)}K`;
@@ -39,10 +25,6 @@ interface KPIData {
   openInvoices: number | null;
 }
 
-interface RevenueSummary {
-  total_invoiced: string;
-}
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -58,22 +40,12 @@ export function KPIStrip() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const weekStart = getWeekStartISO();
-    const today = getTodayISO();
-
-    Promise.all([
-      fetch('/api/v1/carrier/dashboard/kpi').then((r) => (r.ok ? r.json() : null)),
-      fetch(
-        `/api/v1/carrier/reports/revenue?date_from=${weekStart}&date_to=${today}`
-      ).then((r) => (r.ok ? r.json() : null)),
-    ])
-      .then(([kpiJson, revJson]) => {
-        const summary: RevenueSummary | undefined = revJson?.data?.summary;
-        const revenueThisWeek = summary ? parseFloat(summary.total_invoiced) : 0;
-
+    fetch('/api/v1/carrier/dashboard/kpi')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((kpiJson) => {
         setData({
           loadsThisWeek: kpiJson?.loadsThisWeek ?? 0,
-          revenueThisWeek,
+          revenueThisWeek: kpiJson?.revenueThisWeek ?? 0,
           pendingPayApprovals: kpiJson?.pendingPayApprovals ?? 0,
           openInvoices: kpiJson?.openInvoices ?? 0,
         });
@@ -120,7 +92,7 @@ export function KPIStrip() {
       {cards.map(({ icon: Icon, label, value, format, href }) => (
         <div
           key={label}
-          className={`rounded-lg border border-border bg-card p-4 flex flex-col gap-2 cursor-pointer active:scale-95 transition-transform${href ? '' : ''}`}
+          className={`rounded-lg border border-border bg-card p-4 flex flex-col gap-2${href ? ' cursor-pointer active:scale-95 transition-transform' : ''}`}
           onClick={() => href && router.push(href)}
           role={href ? 'button' : undefined}
           tabIndex={href ? 0 : undefined}
