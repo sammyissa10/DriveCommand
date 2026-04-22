@@ -41,9 +41,7 @@ test.describe('Carrier Clients', () => {
     await page.goto('/carrier/clients');
     await page.waitForLoadState('domcontentloaded');
 
-    const firstEditLink = page.locator('a[href*="/carrier/clients/"]').not(
-      page.locator('a[href="/carrier/clients/new"]')
-    ).first();
+    const firstEditLink = page.locator('a[href*="/carrier/clients/"]:not([href="/carrier/clients/new"])').first();
     const hasLink = await firstEditLink.isVisible().catch(() => false);
     if (!hasLink) {
       test.skip(true, 'No clients in list — skipping edit test');
@@ -102,9 +100,7 @@ test.describe('Carrier Contracts', () => {
     await page.goto('/carrier/contracts');
     await page.waitForLoadState('domcontentloaded');
 
-    const firstEditLink = page.locator('a[href*="/carrier/contracts/"]').not(
-      page.locator('a[href="/carrier/contracts/new"]')
-    ).first();
+    const firstEditLink = page.locator('a[href*="/carrier/contracts/"]:not([href="/carrier/contracts/new"])').first();
     const hasLink = await firstEditLink.isVisible().catch(() => false);
     if (!hasLink) {
       test.skip(true, 'No contracts in list — skipping edit test');

@@ -82,9 +82,7 @@ test.describe('Carrier Loads', () => {
     // Wait briefly for client-side load list to fetch data
     await page.waitForTimeout(1500);
 
-    const firstEditLink = page.locator('a[href*="/carrier/loads/"]').not(
-      page.locator('a[href="/carrier/loads/new"]')
-    ).first();
+    const firstEditLink = page.locator('a[href*="/carrier/loads/"]:not([href="/carrier/loads/new"])').first();
     const hasLink = await firstEditLink.isVisible().catch(() => false);
     if (!hasLink) {
       test.skip(true, 'No loads in list — skipping edit test');
