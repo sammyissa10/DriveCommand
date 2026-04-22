@@ -1309,6 +1309,7 @@ exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   compliance_alert: 'compliance_alert',
   stop_completed: 'stop_completed',
   needs_assignment: 'needs_assignment',
+  dispatch_generated: 'dispatch_generated',
   fleet_message: 'fleet_message'
 };
 
