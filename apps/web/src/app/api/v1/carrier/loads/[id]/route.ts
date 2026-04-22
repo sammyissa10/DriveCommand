@@ -95,7 +95,7 @@ export async function PATCH(
     return NextResponse.json({ data: load });
   } catch (err) {
     logger.error('PATCH /api/v1/carrier/loads/[id] failed', {
-      message: err instanceof Error ? err.message : String(err),
+      error: err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err as object)),
       stack: err instanceof Error ? err.stack : undefined,
     });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -329,15 +329,20 @@ async function persistStops(
       });
     }
 
-    // Create new stops
+    // Create new stops — offset sequenceOrder by the number of stops already on
+    // this dispatch so new stops from a second load do not collide with the unique
+    // constraint on (dispatchId, sequenceOrder).
     if (incomingNewStops.length > 0) {
+      const existingDispatchStopCount = await tx.carrierStop.count({
+        where: { dispatchId },
+      });
       await tx.carrierStop.createMany({
         data: incomingNewStops.map((s) => ({
           dispatchId,
           loadId,
           facilityId: s.facility_id,
           stopType: s.stop_type,
-          sequenceOrder: s.sequence_order,
+          sequenceOrder: s.sequence_order + existingDispatchStopCount,
           contactName: s.contact_name ?? null,
           contactPhone: s.contact_phone ?? null,
           commodityDescription: s.commodity_description ?? null,
