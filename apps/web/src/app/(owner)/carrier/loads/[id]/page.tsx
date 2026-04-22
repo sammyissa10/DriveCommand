@@ -6,6 +6,7 @@ import type { StopInput } from '@/lib/carrier/loads';
 import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import type { LoadData } from '@/components/carrier/loads/LoadForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
+import { LoadDetailActions } from '@/components/carrier/loads/LoadDetailActions';
 
 interface LoadDetailPageProps {
   params: Promise<{ id: string }>;
@@ -20,12 +21,22 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   const { id } = await params;
 
-  const [load, clients] = await Promise.all([
+  const [load, clients, rawDrivers, rawTrucks] = await Promise.all([
     getLoad(orgId, id),
     prisma.carrierClient.findMany({
       where: { orgId },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
+    }),
+    prisma.carrierDriver.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, firstName: true, lastName: true, status: true },
+      orderBy: { lastName: 'asc' },
+    }),
+    prisma.carrierTruck.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, unitNumber: true, make: true, model: true },
+      orderBy: { unitNumber: 'asc' },
     }),
   ]);
 
@@ -110,6 +121,26 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     }));
   }
 
+  // Map driver and truck data for the dispatch modal
+  const driverOptions = rawDrivers.map((d) => ({
+    id: d.id,
+    name: `${d.firstName} ${d.lastName}`,
+    status: d.status,
+  }));
+  const truckOptions = rawTrucks.map((t) => ({
+    id: t.id,
+    unitNumber: t.unitNumber,
+    make: t.make,
+    model: t.model,
+  }));
+
+  // Parse dispatch number from dispatch notes tag if load has a dispatch
+  let parsedDispatchNumber: string | null = null;
+  if (load.dispatch?.notes) {
+    const match = load.dispatch.notes.match(/\[DISPATCH_NUMBER=(DC-\d{4}-\d{5})\]/);
+    if (match) parsedDispatchNumber = match[1];
+  }
+
   // Transform load data — convert Decimal fields to numbers for LoadForm
   const initialData: LoadData = {
     id: load.id,
@@ -141,13 +172,23 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
 
   return (
     <div className="space-y-6">
-      <div className="min-w-0">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-          Load {load.referenceNumber}
-        </h1>
-        <p className="mt-1 text-muted-foreground text-sm">
-          Edit load details, rate, and freight information.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Load {load.referenceNumber}
+          </h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            Edit load details, rate, and freight information.
+          </p>
+        </div>
+        <LoadDetailActions
+          loadId={id}
+          loadStatus={load.status}
+          dispatchId={load.dispatchId}
+          dispatchNumber={parsedDispatchNumber}
+          drivers={driverOptions}
+          trucks={truckOptions}
+        />
       </div>
 
       <LoadForm
