@@ -10,11 +10,29 @@ export default async function NewLoadPage() {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
-  const clients = await prisma.carrierClient.findMany({
-    where: { orgId },
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-  });
+  const [clients, drivers, trucks] = await Promise.all([
+    prisma.carrierClient.findMany({
+      where: { orgId },
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+    prisma.carrierDriver.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, firstName: true, lastName: true },
+      orderBy: { firstName: 'asc' },
+    }),
+    prisma.carrierTruck.findMany({
+      where: { orgId, status: 'active' },
+      select: { id: true, unitNumber: true, make: true, model: true },
+      orderBy: { unitNumber: 'asc' },
+    }),
+  ]);
+
+  const driverOptions = drivers.map((d) => ({
+    id: d.id,
+    name: `${d.firstName} ${d.lastName}`,
+    status: 'active',
+  }));
 
   return (
     <div className="space-y-6">
@@ -27,7 +45,7 @@ export default async function NewLoadPage() {
         </p>
       </div>
 
-      <LoadForm mode="create" clients={clients} />
+      <LoadForm mode="create" clients={clients} drivers={driverOptions} trucks={trucks} />
     </div>
   );
 }
