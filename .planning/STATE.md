@@ -1092,6 +1092,7 @@ None blocking immediate progress.
 | 274 | Propagate client_id and contract_id to CarrierDocument on upload — universal resolution for all parent types (stop/load/dispatch/contract), fail-safe try/catch | 2026-04-22 | 3f4daba | [274-propagate-client-id-and-contract-id-to-c](./quick/274-propagate-client-id-and-contract-id-to-c/) |
 | 275 | Add documents tab to client detail page and documents section to contract detail page — 2 new API endpoints, ClientDetail Documents tab, ContractDetail Documents section, View/Download | 2026-04-22 | 403f7e2 | [275-add-documents-tab-to-client-detail-page-](./quick/275-add-documents-tab-to-client-detail-page-/) |
 | 276 | Add document upload capability to client and contract detail pages — client parentType in upload pipeline, DocumentUploadModal on ClientDetail Documents tab and ContractDetail Documents section, immediate list refresh | 2026-04-21 | a590952 | [276-add-document-upload-capability-to-client](./quick/276-add-document-upload-capability-to-client/) |
+| 277 | Drop carrier_documents_document_type_check constraint (catalog-managed types), restyle upload trigger to primary button with Upload icon, add 5-minute session cache to /api/auth/me to prevent Supabase Auth 429 | 2026-04-22 | 3ab0735 | [277-fix-carrier-documents-check-constraint-i](./quick/277-fix-carrier-documents-check-constraint-i/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
