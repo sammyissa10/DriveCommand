@@ -1083,6 +1083,7 @@ None blocking immediate progress.
 | 266 | Fix pendingStopsJson column name mismatch — verified @map("pending_stops_json") present, regenerated Prisma client, fixed 3 Playwright E2E Locator.not() type errors, tsc clean | 2026-04-22 | 3633b7b | [266-fix-pendingstopsjson-column-name-mismatc](./quick/266-fix-pendingstopsjson-column-name-mismatc/) |
 | 267 | Fix load edit page not reading stops from pendingStopsJson when no dispatch attached — Branch C fallback parses JSON, batch-fetches facilities with org_id isolation, maps to StopBuilderStop[] | 2026-04-22 | 9a03d56 | [267-fix-load-edit-page-not-reading-stops-fro](./quick/267-fix-load-edit-page-not-reading-stops-fro/) |
 | 268 | Fix 500 when attaching second load to dispatch — sequenceOrder offset by existingStopCount to avoid @@unique([dispatchId, sequenceOrder]) collision; improved PATCH error serialization | 2026-04-22 | 9c7080b | [268-fix-attach-second-load-to-dispatch-retur](./quick/268-fix-attach-second-load-to-dispatch-retur/) |
+| 269 | Document upload enhancements — CarrierDocumentType catalog (per-tenant, auto-seed 10 defaults), CRUD API + settings page, required type selection on upload, context FKs (load/dispatch/contract), uploader name + timestamp in document lists | 2026-04-22 | 718b4f8 | [269-document-upload-and-storage-enhancements](./quick/269-document-upload-and-storage-enhancements/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
