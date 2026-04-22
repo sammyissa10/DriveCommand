@@ -1,5 +1,7 @@
 import { MessagingPanel } from '@/components/driver/messaging-panel';
 
+export const dynamic = 'force-dynamic';
+
 export default function DriverMessagesPage() {
   return (
     <div className="space-y-4 lg:space-y-6">

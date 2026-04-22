@@ -3,6 +3,8 @@ import { CompletedLoadHistory } from '@/components/driver/completed-load-history
 import { Package } from 'lucide-react';
 import { logger } from '@/lib/logger';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Driver Load tab — Carrier Ops edition.
  * Shows CarrierLoads from the driver's active dispatches.

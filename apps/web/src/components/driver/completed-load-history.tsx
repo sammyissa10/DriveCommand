@@ -123,20 +123,6 @@ export function CompletedLoadHistory({ loads }: CompletedLoadHistoryProps) {
                     </div>
                   )}
 
-                  {/* Rate */}
-                  {load.rateAmount && (
-                    <div>
-                      <dt className="text-xs text-muted-foreground mb-1">Rate</dt>
-                      <dd className="font-bold text-green-600">
-                        ${Number(load.rateAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        {' '}
-                        <span className="font-normal text-muted-foreground text-xs">
-                          ({load.rateType.replace(/_/g, ' ')})
-                        </span>
-                      </dd>
-                    </div>
-                  )}
-
                   {/* BOL / PRO / PO */}
                   {load.bolNumber && (
                     <div>
