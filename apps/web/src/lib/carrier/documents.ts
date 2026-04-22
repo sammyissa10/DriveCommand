@@ -195,17 +195,35 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
     orderBy: { createdAt: 'desc' },
     include: {
       documentTypeRef: { select: { name: true } },
-      uploader: { select: { name: true } },
+      uploader: { select: { firstName: true, lastName: true } },
     },
   });
 
   return {
-    data: documents.map((doc) => ({
-      ...doc,
-      documentTypeName: doc.documentTypeRef?.name ?? null,
-      uploadedByName: doc.uploader?.name ?? null,
-      uploadedAt: doc.createdAt.toISOString(),
-    })),
+    data: documents.map((doc) => {
+      const uploaderName = doc.uploader
+        ? [doc.uploader.firstName, doc.uploader.lastName].filter(Boolean).join(' ') || null
+        : null;
+
+      return {
+        id: doc.id,
+        documentType: doc.documentType,
+        documentTypeName: doc.documentTypeRef?.name ?? null,
+        fileName: doc.filename,
+        fileSize: doc.fileSizeBytes ?? 0,
+        uploadedByName: uploaderName,
+        uploadedAt: doc.createdAt.toISOString(),
+        verified: doc.verified,
+        // URL is not pre-signed here — clients use a separate presign endpoint or pass fileUrl raw
+        url: doc.fileUrl,
+        // Additional fields for reference
+        notes: doc.notes,
+        documentTypeId: doc.documentTypeId,
+        loadId: doc.loadId,
+        dispatchId: doc.dispatchId,
+        contractId: doc.contractId,
+      };
+    }),
   };
 }
 

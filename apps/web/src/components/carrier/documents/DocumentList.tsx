@@ -23,9 +23,11 @@ import { Button } from '@/components/ui/button';
 interface DocumentItem {
   id: string;
   documentType: string;
+  documentTypeName: string | null;
   fileName: string;
   fileSize: number;
   uploadedByName: string | null;
+  uploadedAt: string | null;
   verified: boolean;
   url: string | null;
 }
@@ -40,25 +42,52 @@ interface DocumentListProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const DOC_TYPE_BADGE: Record<string, string> = {
+/** Fallback badge colors for legacy document types (before catalog was introduced). */
+const LEGACY_TYPE_BADGE: Record<string, string> = {
   bol: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300',
   pod: 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300',
   rate_confirmation: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   other: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
 };
 
-const DOC_TYPE_LABELS: Record<string, string> = {
+const LEGACY_TYPE_LABELS: Record<string, string> = {
   bol: 'BOL',
   pod: 'POD',
   rate_confirmation: 'Rate Conf.',
   other: 'Other',
 };
 
+/** Generic badge for catalog-managed types. */
+const CATALOG_BADGE = 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+
+function getBadgeClass(doc: DocumentItem): string {
+  if (doc.documentTypeName) return CATALOG_BADGE;
+  return LEGACY_TYPE_BADGE[doc.documentType] ?? LEGACY_TYPE_BADGE.other;
+}
+
+function getTypeLabel(doc: DocumentItem): string {
+  if (doc.documentTypeName) return doc.documentTypeName;
+  return LEGACY_TYPE_LABELS[doc.documentType] ?? doc.documentType;
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) {
     return `${(bytes / 1024).toFixed(1)} KB`;
   }
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatUploadDate(iso: string | null): string | null {
+  if (!iso) return null;
+  try {
+    return new Date(iso).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -102,8 +131,8 @@ export function DocumentList({ parentType, parentId, userRole }: DocumentListPro
         const err = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(err.error ?? 'Failed to load documents');
       }
-      const data = await res.json() as { documents: DocumentItem[] };
-      setDocuments(data.documents ?? []);
+      const data = await res.json() as { data: DocumentItem[] };
+      setDocuments(data.data ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load documents');
     } finally {
@@ -166,8 +195,9 @@ export function DocumentList({ parentType, parentId, userRole }: DocumentListPro
   return (
     <div className="space-y-2">
       {documents.map((doc) => {
-        const badgeClass = DOC_TYPE_BADGE[doc.documentType] ?? DOC_TYPE_BADGE.other;
-        const typeLabel = DOC_TYPE_LABELS[doc.documentType] ?? doc.documentType;
+        const badgeClass = getBadgeClass(doc);
+        const typeLabel = getTypeLabel(doc);
+        const uploadedDate = formatUploadDate(doc.uploadedAt);
         const isDeleting = deletingId === doc.id;
         const isVerifying = verifyingId === doc.id;
 
@@ -183,7 +213,7 @@ export function DocumentList({ parentType, parentId, userRole }: DocumentListPro
               {typeLabel}
             </span>
 
-            {/* Filename + size + uploader */}
+            {/* Filename + size + uploader + date */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-sm font-medium truncate">{doc.fileName}</span>
@@ -194,12 +224,18 @@ export function DocumentList({ parentType, parentId, userRole }: DocumentListPro
                   />
                 )}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
                 <span>{formatFileSize(doc.fileSize)}</span>
                 {doc.uploadedByName && (
                   <>
                     <span>·</span>
                     <span>{doc.uploadedByName}</span>
+                  </>
+                )}
+                {uploadedDate && (
+                  <>
+                    <span>·</span>
+                    <span>{uploadedDate}</span>
                   </>
                 )}
               </div>
