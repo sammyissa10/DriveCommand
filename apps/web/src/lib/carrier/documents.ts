@@ -37,6 +37,7 @@ export async function uploadDocument(
 ): DocumentResult<import('@/generated/prisma').CarrierDocument> {
   const { parentType, parentId, documentType, documentTypeId, file } = data;
   let { loadId, dispatchId, contractId } = data;
+  let clientId: string | null = null;
 
   // Validate file type
   const originalName = file.name ?? 'upload';
@@ -59,33 +60,70 @@ export async function uploadDocument(
   if (parentType === 'stop') {
     const stop = await prisma.carrierStop.findFirst({
       where: { id: parentId, dispatch: { orgId } },
-      select: { dispatchId: true, loadId: true },
+      select: { dispatchId: true, loadId: true, load: { select: { clientId: true, contractId: true } } },
     });
     orgVerified = !!stop;
     // Auto-derive context FKs from stop
     if (stop) {
       if (!dispatchId) dispatchId = stop.dispatchId;
       if (!loadId && stop.loadId) loadId = stop.loadId;
+      // Resolve clientId and contractId from linked load
+      try {
+        if (!clientId) clientId = stop.load?.clientId ?? null;
+        if (!contractId) contractId = stop.load?.contractId ?? undefined;
+      } catch (err) {
+        logger.warn('uploadDocument: failed to resolve clientId/contractId from stop load', { parentId, err });
+      }
     }
   } else if (parentType === 'load') {
     const load = await prisma.carrierLoad.findFirst({
       where: { id: parentId, orgId },
-      select: { dispatchId: true, contractId: true },
+      select: { dispatchId: true, contractId: true, clientId: true },
     });
     orgVerified = !!load;
     if (load) {
       if (!loadId) loadId = parentId;
       if (!dispatchId && load.dispatchId) dispatchId = load.dispatchId;
       if (!contractId && load.contractId) contractId = load.contractId;
+      // Resolve clientId from the load
+      try {
+        if (!clientId) clientId = load.clientId ?? null;
+      } catch (err) {
+        logger.warn('uploadDocument: failed to resolve clientId from load', { parentId, err });
+      }
     }
   } else if (parentType === 'dispatch') {
     const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
     if (dispatch && !dispatchId) dispatchId = parentId;
+    // Resolve clientId and contractId from the single linked load (ambiguous if 0 or 2+)
+    try {
+      const dispatchLoads = await prisma.carrierLoad.findMany({
+        where: { dispatchId: parentId, orgId },
+        select: { clientId: true, contractId: true },
+      });
+      if (dispatchLoads.length === 1) {
+        if (!clientId) clientId = dispatchLoads[0].clientId ?? null;
+        if (!contractId) contractId = dispatchLoads[0].contractId ?? undefined;
+      }
+    } catch (err) {
+      logger.warn('uploadDocument: failed to resolve clientId/contractId from dispatch loads', { parentId, err });
+    }
   } else if (parentType === 'contract') {
-    const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
+    const contract = await prisma.carrierContract.findFirst({
+      where: { id: parentId, orgId },
+      select: { clientId: true },
+    });
     orgVerified = !!contract;
-    if (contract && !contractId) contractId = parentId;
+    if (contract) {
+      if (!contractId) contractId = parentId;
+      // Resolve clientId from the contract
+      try {
+        if (!clientId) clientId = contract.clientId ?? null;
+      } catch (err) {
+        logger.warn('uploadDocument: failed to resolve clientId from contract', { parentId, err });
+      }
+    }
   } else if (parentType === 'expense') {
     const expense = await prisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!expense;
@@ -120,23 +158,8 @@ export async function uploadDocument(
     return { error: 'Storage upload failed', status: 500 };
   }
 
-  // Determine stopId and clientId linkage
-  let stopId: string | null = null;
-  let clientId: string | null = null;
-
-  if (parentType === 'stop') {
-    stopId = parentId;
-    // If BOL or POD, look up stop to get clientId via load
-    if (documentType === 'bol' || documentType === 'pod') {
-      const stop = await prisma.carrierStop.findFirst({
-        where: { id: parentId },
-        select: { clientId: true, load: { select: { clientId: true } } },
-      });
-      if (stop) {
-        clientId = stop.clientId ?? stop.load?.clientId ?? null;
-      }
-    }
-  }
+  // Derive stopId for document linkage
+  const stopId: string | null = parentType === 'stop' ? parentId : null;
 
   const document = await prisma.carrierDocument.create({
     data: {
