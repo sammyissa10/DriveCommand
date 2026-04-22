@@ -821,6 +821,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-241]: updateMany with status filter for in_transit cascade — idempotent, won't downgrade a load already past in_transit
 - [Phase quick-243]: Used getSession() instead of requireRole() to get userId and tenantId in a single call for HOS actions
 - [Phase quick]: Single-vehicle map centering uses setView(zoom 13) instead of fitBounds to avoid point-bbox over-zoom
+- [Phase quick-275]: Stop display uses stopType+sequenceOrder (CarrierStop has no name field); Dispatch display uses UUID prefix (no dispatchNumber field)
 
 ### Pending Todos
 
