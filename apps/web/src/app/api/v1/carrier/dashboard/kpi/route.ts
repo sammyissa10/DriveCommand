@@ -10,6 +10,7 @@ import { logger } from '@/lib/logger';
  * - loadsThisWeek: CarrierLoads created since Monday of this week
  * - pendingPayApprovals: DriverPayRecords with status = 'pending'
  * - openInvoices: CarrierLoads with status = 'invoiced'
+ * - revenueThisWeek: Sum of totalRevenue (or fallback to rate fields) for loads this week
  */
 export async function GET() {
   const session = await getSession();
@@ -27,7 +28,7 @@ export async function GET() {
     monday.setUTCDate(now.getUTCDate() + daysToMonday);
     monday.setUTCHours(0, 0, 0, 0);
 
-    const [loadsThisWeek, pendingPayApprovals, openInvoices] = await Promise.all([
+    const [loadsThisWeek, pendingPayApprovals, openInvoices, revenueRows] = await Promise.all([
       prisma.carrierLoad.count({
         where: {
           orgId,
@@ -46,9 +47,39 @@ export async function GET() {
           status: 'invoiced',
         },
       }),
+      // Fetch revenue fields for this week's non-cancelled loads
+      prisma.carrierLoad.findMany({
+        where: {
+          orgId,
+          createdAt: { gte: monday },
+          status: { not: 'cancelled' },
+        },
+        select: {
+          totalRevenue: true,
+          rateAmount: true,
+          fuelSurcharge: true,
+          detentionAmount: true,
+          otherCharges: true,
+        },
+      }),
     ]);
 
-    return NextResponse.json({ loadsThisWeek, pendingPayApprovals, openInvoices });
+    // Compute revenue: prefer totalRevenue, fall back to summing rate fields
+    let revenueThisWeek = 0;
+    for (const row of revenueRows) {
+      if (row.totalRevenue !== null && Number(row.totalRevenue) > 0) {
+        revenueThisWeek += Number(row.totalRevenue);
+      } else {
+        const fallback =
+          Number(row.rateAmount ?? 0) +
+          Number(row.fuelSurcharge ?? 0) +
+          Number(row.detentionAmount ?? 0) +
+          Number(row.otherCharges ?? 0);
+        revenueThisWeek += fallback;
+      }
+    }
+
+    return NextResponse.json({ loadsThisWeek, pendingPayApprovals, openInvoices, revenueThisWeek });
   } catch (err) {
     logger.error('[/api/v1/carrier/dashboard/kpi] Failed to fetch KPIs:', err);
     return NextResponse.json({ error: 'Failed to fetch KPIs' }, { status: 500 });
