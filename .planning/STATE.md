@@ -1097,6 +1097,7 @@ None blocking immediate progress.
 | 277 | Drop carrier_documents_document_type_check constraint (catalog-managed types), restyle upload trigger to primary button with Upload icon, add 5-minute session cache to /api/auth/me to prevent Supabase Auth 429 | 2026-04-22 | 3ab0735 | [277-fix-carrier-documents-check-constraint-i](./quick/277-fix-carrier-documents-check-constraint-i/) |
 | 278 | Comprehensive Carrier Dashboard overhaul — alerts, activity feed, message board, driver status, and revenue fix | 2026-04-22 | e647c24 | [278-comprehensive-carrier-dashboard-overhaul](./quick/278-comprehensive-carrier-dashboard-overhaul/) |
 | 279 | Add "Dispatch This Load" button to load detail page — DispatchLoadModal with 7 fields, dispatch badge link after dispatching | 2026-04-22 | c54223c | [279-add-dispatch-this-load-button-to-load-de](./quick/279-add-dispatch-this-load-button-to-load-de/) |
+| 280 | Add "Dispatch immediately" toggle to load create form — 6 dispatch fields, lazy template fetch, dual-path submit, redirects to dispatch detail on success | 2026-04-22 | 0e33b09 | [280-add-dispatch-option-to-load-create-form](./quick/280-add-dispatch-option-to-load-create-form/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
