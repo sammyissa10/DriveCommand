@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
 import { TenantSettingsForm } from './tenant-settings-form';
+import { TenantUsersSection } from './tenant-users-section';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
 import { CopyTenantIdButton } from './copy-tenant-id-button';
@@ -236,6 +237,16 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
             initialTimezone={tenant.timezone}
             initialPlan={tenant.plan}
           />
+        </CardContent>
+      </Card>
+
+      {/* Users */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold">Users</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TenantUsersSection tenantId={tenant.id} />
         </CardContent>
       </Card>
 
