@@ -1101,6 +1101,7 @@ None blocking immediate progress.
 | 279 | Add "Dispatch This Load" button to load detail page — DispatchLoadModal with 7 fields, dispatch badge link after dispatching | 2026-04-22 | c54223c | [279-add-dispatch-this-load-button-to-load-de](./quick/279-add-dispatch-this-load-button-to-load-de/) |
 | 280 | Add "Dispatch immediately" toggle to load create form — 6 dispatch fields, lazy template fetch, dual-path submit, redirects to dispatch detail on success | 2026-04-22 | 0e33b09 | [280-add-dispatch-option-to-load-create-form](./quick/280-add-dispatch-option-to-load-create-form/) |
 | 281 | Add tenant settings, user list, password reset, and role management to sysadmin tenant detail page | 2026-04-22 | 9fe7743 | [281-add-tenant-settings-user-list-password-r](./quick/281-add-tenant-settings-user-list-password-r/) |
+| 282 | Stop overview, detail page, document upload, and stop-specific messaging | 2026-04-22 | 1d849a5 | [282-stop-overview-detail-page-document-uploa](./quick/282-stop-overview-detail-page-document-uploa/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
