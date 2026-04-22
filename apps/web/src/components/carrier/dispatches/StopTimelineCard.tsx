@@ -111,6 +111,8 @@ interface StopTimelineCardProps {
   facility: { name: string; addressLine1: string | null; city: string | null; state: string | null } | null;
   dispatchStatus: string;
   userRole: string;
+  dispatchId?: string;
+  loadId?: string;
   onStopUpdated?: () => void;
 }
 
@@ -128,6 +130,8 @@ export function StopTimelineCard({
   facility,
   dispatchStatus,
   userRole,
+  dispatchId,
+  loadId,
   onStopUpdated,
 }: StopTimelineCardProps) {
   const router = useRouter();
@@ -403,6 +407,8 @@ export function StopTimelineCard({
                   parentType="stop"
                   parentId={stop.id}
                   documentType="bol"
+                  dispatchId={dispatchId}
+                  loadId={loadId}
                   onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
                 />
               </div>
@@ -431,6 +437,8 @@ export function StopTimelineCard({
                   parentType="stop"
                   parentId={stop.id}
                   documentType="pod"
+                  dispatchId={dispatchId}
+                  loadId={loadId}
                   onSuccess={() => { router.refresh(); onStopUpdated?.(); }}
                 />
               </div>

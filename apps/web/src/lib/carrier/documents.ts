@@ -18,6 +18,10 @@ export interface DocumentUploadInput {
   parentType: string;
   parentId: string;
   documentType: string;
+  documentTypeId?: string;
+  loadId?: string;
+  dispatchId?: string;
+  contractId?: string;
   file: File;
 }
 
@@ -32,7 +36,8 @@ export async function uploadDocument(
   userId: string,
   data: DocumentUploadInput
 ): DocumentResult<import('@/generated/prisma').CarrierDocument> {
-  const { parentType, parentId, documentType, file } = data;
+  const { parentType, parentId, documentType, documentTypeId, file } = data;
+  let { loadId, dispatchId, contractId } = data;
 
   // Validate file type
   const originalName = file.name ?? 'upload';
@@ -55,17 +60,33 @@ export async function uploadDocument(
   if (parentType === 'stop') {
     const stop = await prisma.carrierStop.findFirst({
       where: { id: parentId, dispatch: { orgId } },
+      select: { dispatchId: true, loadId: true },
     });
     orgVerified = !!stop;
+    // Auto-derive context FKs from stop
+    if (stop) {
+      if (!dispatchId) dispatchId = stop.dispatchId;
+      if (!loadId && stop.loadId) loadId = stop.loadId;
+    }
   } else if (parentType === 'load') {
-    const load = await prisma.carrierLoad.findFirst({ where: { id: parentId, orgId } });
+    const load = await prisma.carrierLoad.findFirst({
+      where: { id: parentId, orgId },
+      select: { dispatchId: true, contractId: true },
+    });
     orgVerified = !!load;
+    if (load) {
+      if (!loadId) loadId = parentId;
+      if (!dispatchId && load.dispatchId) dispatchId = load.dispatchId;
+      if (!contractId && load.contractId) contractId = load.contractId;
+    }
   } else if (parentType === 'dispatch') {
     const dispatch = await prisma.carrierDispatch.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!dispatch;
+    if (dispatch && !dispatchId) dispatchId = parentId;
   } else if (parentType === 'contract') {
     const contract = await prisma.carrierContract.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!contract;
+    if (contract && !contractId) contractId = parentId;
   } else if (parentType === 'expense') {
     const expense = await prisma.carrierExpense.findFirst({ where: { id: parentId, orgId } });
     orgVerified = !!expense;
@@ -73,6 +94,16 @@ export async function uploadDocument(
 
   if (!orgVerified) {
     return { error: 'Invalid parent', status: 400 };
+  }
+
+  // Validate documentTypeId ownership if provided
+  if (documentTypeId) {
+    const typeRecord = await prisma.carrierDocumentType.findFirst({
+      where: { id: documentTypeId, orgId, isActive: true },
+    });
+    if (!typeRecord) {
+      return { error: 'Invalid document type', status: 400 };
+    }
   }
 
   // Build storage path: {orgId}/{parentType}/{parentId}/{documentType}/{uuid}.{ext}
@@ -113,12 +144,16 @@ export async function uploadDocument(
       parentType,
       parentId,
       documentType,
+      documentTypeId: documentTypeId ?? null,
       fileUrl: storagePath,
       filename: originalName,
       fileSizeBytes: file.size,
       uploadedBy: userId,
       stopId,
       clientId,
+      loadId: loadId ?? null,
+      dispatchId: dispatchId ?? null,
+      contractId: contractId ?? null,
     },
   });
 
@@ -158,9 +193,20 @@ export async function listDocuments(orgId: string, parentType: string, parentId:
   const documents = await prisma.carrierDocument.findMany({
     where: { parentType, parentId },
     orderBy: { createdAt: 'desc' },
+    include: {
+      documentTypeRef: { select: { name: true } },
+      uploader: { select: { name: true } },
+    },
   });
 
-  return { data: documents };
+  return {
+    data: documents.map((doc) => ({
+      ...doc,
+      documentTypeName: doc.documentTypeRef?.name ?? null,
+      uploadedByName: doc.uploader?.name ?? null,
+      uploadedAt: doc.createdAt.toISOString(),
+    })),
+  };
 }
 
 // ---------------------------------------------------------------------------

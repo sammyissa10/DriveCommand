@@ -13,12 +13,16 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const parentType = formData.get('parent_type')?.toString() ?? null;
     const parentId = formData.get('parent_id')?.toString() ?? null;
-    const documentType = formData.get('document_type')?.toString() ?? null;
+    const documentType = formData.get('document_type')?.toString() ?? 'other';
+    const documentTypeId = formData.get('document_type_id')?.toString() ?? undefined;
+    const loadId = formData.get('load_id')?.toString() ?? undefined;
+    const dispatchId = formData.get('dispatch_id')?.toString() ?? undefined;
+    const contractId = formData.get('contract_id')?.toString() ?? undefined;
     const file = formData.get('file') as File | null;
 
-    if (!parentType || !parentId || !documentType) {
+    if (!parentType || !parentId) {
       return NextResponse.json(
-        { error: 'parent_type, parent_id, and document_type are required' },
+        { error: 'parent_type and parent_id are required' },
         { status: 400 }
       );
     }
@@ -39,6 +43,10 @@ export async function POST(req: NextRequest) {
       parentType,
       parentId,
       documentType,
+      documentTypeId,
+      loadId,
+      dispatchId,
+      contractId,
       file,
     });
 

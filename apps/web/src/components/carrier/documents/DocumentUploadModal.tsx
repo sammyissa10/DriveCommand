@@ -16,21 +16,29 @@ import { Button } from '@/components/ui/button';
 // Types
 // ---------------------------------------------------------------------------
 
+interface DocumentType {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface DocumentUploadModalProps {
   parentType: 'stop' | 'load' | 'dispatch' | 'contract';
   parentId: string;
   stopId?: string;
-  documentType: 'bol' | 'pod' | 'rate_confirmation' | 'other';
+  /** Slug hint — used to pre-select a matching type from the fetched catalog (e.g. "bol", "pod"). */
+  documentType?: string;
+  /** Explicit document type UUID — overrides slug-based pre-selection. */
+  documentTypeId?: string;
+  /** Context FK — passed to API when uploading from a load context. */
+  loadId?: string;
+  /** Context FK — passed to API when uploading from a dispatch context. */
+  dispatchId?: string;
+  /** Context FK — passed to API when uploading from a contract context. */
+  contractId?: string;
   onSuccess: () => void;
   triggerLabel?: string;
 }
-
-const DOCUMENT_TYPE_OPTIONS = [
-  { value: 'bol', label: 'Bill of Lading (BOL)' },
-  { value: 'pod', label: 'Proof of Delivery (POD)' },
-  { value: 'rate_confirmation', label: 'Rate Confirmation' },
-  { value: 'other', label: 'Other' },
-];
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 
@@ -50,6 +58,10 @@ export function DocumentUploadModal({
   parentId,
   stopId,
   documentType,
+  documentTypeId: documentTypeIdProp,
+  loadId,
+  dispatchId,
+  contractId,
   onSuccess,
   triggerLabel = 'Upload',
 }: DocumentUploadModalProps) {
@@ -57,14 +69,64 @@ export function DocumentUploadModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileSizeError, setFileSizeError] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [docType, setDocType] = useState(documentType);
   const [notes, setNotes] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Document types from catalog
+  const [docTypes, setDocTypes] = useState<DocumentType[]>([]);
+  const [docTypesLoading, setDocTypesLoading] = useState(false);
+  const [selectedTypeId, setSelectedTypeId] = useState<string>(documentTypeIdProp ?? '');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const xhrRef = useRef<XMLHttpRequest | null>(null);
 
   const isUploading = uploadProgress !== null;
+
+  // ---------------------------------------------------------------------------
+  // Fetch types on dialog open (lazy)
+  // ---------------------------------------------------------------------------
+
+  async function fetchDocTypes() {
+    setDocTypesLoading(true);
+    try {
+      const res = await fetch('/api/v1/carrier/document-types?active_only=true');
+      if (!res.ok) return;
+      const data = await res.json() as { data: DocumentType[] };
+      const types = data.data ?? [];
+      setDocTypes(types);
+
+      // Pre-select: explicit ID first, then slug hint match
+      if (documentTypeIdProp) {
+        setSelectedTypeId(documentTypeIdProp);
+      } else if (documentType) {
+        const match = types.find((t) => t.slug === documentType);
+        if (match) setSelectedTypeId(match.id);
+      }
+    } catch {
+      // Non-fatal — user can still manually select
+    } finally {
+      setDocTypesLoading(false);
+    }
+  }
+
+  function handleDialogOpen(nextOpen: boolean) {
+    if (nextOpen) {
+      setOpen(true);
+      void fetchDocTypes();
+    } else if (!isUploading) {
+      setOpen(false);
+      clearFile();
+      setNotes('');
+      setSelectedTypeId(documentTypeIdProp ?? '');
+      setUploadProgress(null);
+      setUploadError(null);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // File handling
+  // ---------------------------------------------------------------------------
 
   function handleFileSelect(file: File) {
     setFileSizeError(null);
@@ -105,21 +167,12 @@ export function DocumentUploadModal({
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function handleDialogClose(nextOpen: boolean) {
-    if (!nextOpen && !isUploading) {
-      setOpen(false);
-      clearFile();
-      setNotes('');
-      setDocType(documentType);
-      setUploadProgress(null);
-      setUploadError(null);
-    } else if (nextOpen) {
-      setOpen(true);
-    }
-  }
+  // ---------------------------------------------------------------------------
+  // Upload
+  // ---------------------------------------------------------------------------
 
   function doUpload() {
-    if (!selectedFile) return;
+    if (!selectedFile || !selectedTypeId) return;
     setUploadError(null);
 
     const formData = new FormData();
@@ -127,8 +180,14 @@ export function DocumentUploadModal({
     formData.append('parent_type', parentType);
     formData.append('parent_id', parentId);
     if (stopId) formData.append('stop_id', stopId);
-    formData.append('document_type', docType);
+    formData.append('document_type_id', selectedTypeId);
+    // Keep slug for backward compat
+    const selectedSlug = docTypes.find((t) => t.id === selectedTypeId)?.slug ?? documentType ?? 'other';
+    formData.append('document_type', selectedSlug);
     if (notes.trim()) formData.append('notes', notes.trim());
+    if (loadId) formData.append('load_id', loadId);
+    if (dispatchId) formData.append('dispatch_id', dispatchId);
+    if (contractId) formData.append('contract_id', contractId);
 
     const xhr = new XMLHttpRequest();
     xhrRef.current = xhr;
@@ -146,7 +205,7 @@ export function DocumentUploadModal({
         setOpen(false);
         clearFile();
         setNotes('');
-        setDocType(documentType);
+        setSelectedTypeId(documentTypeIdProp ?? '');
         onSuccess();
       } else {
         let errorMsg = 'Upload failed';
@@ -170,8 +229,10 @@ export function DocumentUploadModal({
     setUploadProgress(0);
   }
 
+  const canUpload = !!selectedFile && !fileSizeError && !!selectedTypeId && !isUploading;
+
   return (
-    <Dialog open={open} onOpenChange={handleDialogClose}>
+    <Dialog open={open} onOpenChange={handleDialogOpen}>
       <DialogTrigger asChild>
         <button
           className="text-xs text-primary underline hover:text-primary/80 transition-colors"
@@ -245,17 +306,24 @@ export function DocumentUploadModal({
 
           {/* Document type */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-foreground">Document Type</label>
-            <select
-              value={docType}
-              onChange={(e) => setDocType(e.target.value as typeof docType)}
-              disabled={isUploading}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-            >
-              {DOCUMENT_TYPE_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+            <label className="text-sm font-medium text-foreground">
+              Document Type <span className="text-red-500">*</span>
+            </label>
+            {docTypesLoading ? (
+              <div className="h-9 w-full bg-muted animate-pulse rounded-md" />
+            ) : (
+              <select
+                value={selectedTypeId}
+                onChange={(e) => setSelectedTypeId(e.target.value)}
+                disabled={isUploading}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+              >
+                <option value="">Select document type…</option>
+                {docTypes.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Notes */}
@@ -287,7 +355,7 @@ export function DocumentUploadModal({
               variant="outline"
               size="sm"
               disabled={isUploading}
-              onClick={() => handleDialogClose(false)}
+              onClick={() => handleDialogOpen(false)}
             >
               Cancel
             </Button>
@@ -295,7 +363,7 @@ export function DocumentUploadModal({
               <Button
                 type="button"
                 size="sm"
-                disabled={!selectedFile}
+                disabled={!canUpload}
                 onClick={doUpload}
               >
                 Retry
@@ -304,7 +372,7 @@ export function DocumentUploadModal({
               <Button
                 type="button"
                 size="sm"
-                disabled={!selectedFile || !!fileSizeError || isUploading}
+                disabled={!canUpload}
                 onClick={doUpload}
               >
                 {isUploading ? `Uploading… ${uploadProgress}%` : 'Upload'}
