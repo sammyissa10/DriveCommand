@@ -97,7 +97,7 @@ export function DriverStatusStrip() {
                 </p>
                 {driver.dispatchNumber && (
                   <p className="text-[10px] text-muted-foreground whitespace-nowrap">
-                    DC-{driver.dispatchNumber}
+                    {driver.dispatchNumber}
                   </p>
                 )}
               </div>
