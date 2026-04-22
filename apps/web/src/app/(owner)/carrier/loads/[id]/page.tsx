@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { getLoad } from '@/lib/carrier/loads';
+import type { StopInput } from '@/lib/carrier/loads';
 import { LoadForm } from '@/components/carrier/loads/LoadForm';
 import type { LoadData } from '@/components/carrier/loads/LoadForm';
 import type { StopBuilderStop } from '@/components/carrier/stops/StopBuilder';
@@ -50,28 +51,64 @@ export default async function LoadDetailPage({ params }: LoadDetailPageProps) {
     stopsForMapping = dispatchStops;
   }
 
-  // Map CarrierStop records to StopBuilderStop format for the stop builder
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mappedStops: StopBuilderStop[] = stopsForMapping.map((s: any) => ({
-    id: s.id,
-    facility_id: s.facilityId,
-    facility_name: s.facility?.name ?? 'Unknown Facility',
-    facility_city: s.facility?.city ?? null,
-    facility_state: s.facility?.state ?? null,
-    sequence_order: s.sequenceOrder,
-    stop_type: s.stopType as StopBuilderStop['stop_type'],
-    contact_name: s.contactName ?? null,
-    contact_phone: s.contactPhone ?? null,
-    expected_dwell_minutes: null,
-    commodity_description: s.commodityDescription ?? null,
-    bol_required: s.bolRequired,
-    pod_required: s.podRequired,
-    special_instructions: s.specialInstructions ?? null,
-    appt_window_start_offset_min: null,
-    appt_window_end_offset_min: null,
-    appointment_start: s.appointmentStart ? (s.appointmentStart as Date).toISOString() : null,
-    appointment_end: s.appointmentEnd ? (s.appointmentEnd as Date).toISOString() : null,
-  }));
+  // Branch C: no dispatch, but pendingStopsJson was saved at creation time
+  // Parse the JSON and resolve facility names for the stop builder.
+  let mappedStops: StopBuilderStop[];
+  if (stopsForMapping.length === 0 && !load.dispatchId && load.pendingStopsJson) {
+    const parsedStops = JSON.parse(load.pendingStopsJson as string) as StopInput[];
+    const facilityIds = [...new Set(parsedStops.map((s) => s.facility_id).filter(Boolean))];
+    const facilities = await prisma.carrierFacility.findMany({
+      where: { id: { in: facilityIds }, orgId },
+      select: { id: true, name: true, city: true, state: true },
+    });
+    const facilityMap = new Map(facilities.map((f) => [f.id, f]));
+    mappedStops = parsedStops.map((s, i) => {
+      const fac = facilityMap.get(s.facility_id);
+      return {
+        id: s.id ?? `pending-${i}`,
+        facility_id: s.facility_id,
+        facility_name: fac?.name ?? 'Unknown Facility',
+        facility_city: fac?.city ?? null,
+        facility_state: fac?.state ?? null,
+        sequence_order: s.sequence_order,
+        stop_type: s.stop_type,
+        contact_name: s.contact_name ?? null,
+        contact_phone: s.contact_phone ?? null,
+        expected_dwell_minutes: null,
+        commodity_description: s.commodity_description ?? null,
+        bol_required: s.bol_required ?? false,
+        pod_required: s.pod_required ?? false,
+        special_instructions: s.special_instructions ?? null,
+        appt_window_start_offset_min: null,
+        appt_window_end_offset_min: null,
+        appointment_start: s.appointment_start ?? null,
+        appointment_end: s.appointment_end ?? null,
+      };
+    });
+  } else {
+    // Branch A/B: map CarrierStop records to StopBuilderStop format
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mappedStops = stopsForMapping.map((s: any) => ({
+      id: s.id,
+      facility_id: s.facilityId,
+      facility_name: s.facility?.name ?? 'Unknown Facility',
+      facility_city: s.facility?.city ?? null,
+      facility_state: s.facility?.state ?? null,
+      sequence_order: s.sequenceOrder,
+      stop_type: s.stopType as StopBuilderStop['stop_type'],
+      contact_name: s.contactName ?? null,
+      contact_phone: s.contactPhone ?? null,
+      expected_dwell_minutes: null,
+      commodity_description: s.commodityDescription ?? null,
+      bol_required: s.bolRequired,
+      pod_required: s.podRequired,
+      special_instructions: s.specialInstructions ?? null,
+      appt_window_start_offset_min: null,
+      appt_window_end_offset_min: null,
+      appointment_start: s.appointmentStart ? (s.appointmentStart as Date).toISOString() : null,
+      appointment_end: s.appointmentEnd ? (s.appointmentEnd as Date).toISOString() : null,
+    }));
+  }
 
   // Transform load data — convert Decimal fields to numbers for LoadForm
   const initialData: LoadData = {
