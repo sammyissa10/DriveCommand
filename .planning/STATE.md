@@ -1095,6 +1095,7 @@ None blocking immediate progress.
 | 276 | Add document upload capability to client and contract detail pages — client parentType in upload pipeline, DocumentUploadModal on ClientDetail Documents tab and ContractDetail Documents section, immediate list refresh | 2026-04-21 | a590952 | [276-add-document-upload-capability-to-client](./quick/276-add-document-upload-capability-to-client/) |
 | 277 | Drop carrier_documents_document_type_check constraint (catalog-managed types), restyle upload trigger to primary button with Upload icon, add 5-minute session cache to /api/auth/me to prevent Supabase Auth 429 | 2026-04-22 | 3ab0735 | [277-fix-carrier-documents-check-constraint-i](./quick/277-fix-carrier-documents-check-constraint-i/) |
 | 278 | Comprehensive Carrier Dashboard overhaul — alerts, activity feed, message board, driver status, and revenue fix | 2026-04-22 | e647c24 | [278-comprehensive-carrier-dashboard-overhaul](./quick/278-comprehensive-carrier-dashboard-overhaul/) |
+| 279 | Add "Dispatch This Load" button to load detail page — DispatchLoadModal with 7 fields, dispatch badge link after dispatching | 2026-04-22 | c54223c | [279-add-dispatch-this-load-button-to-load-de](./quick/279-add-dispatch-this-load-button-to-load-de/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
