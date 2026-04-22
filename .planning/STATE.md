@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-21 - Completed quick task 265: Driver portal enhancements — loading skeletons, dispatch history, hidden rate fields, per-stop doc upload
-Last session: 2026-04-21T00:00:00Z
-Stopped at: Completed quick-265-PLAN.md — 3 tasks, 17 files created/modified, zero TypeScript errors
+Last activity: 2026-04-22 - Completed quick task 269: Document upload and storage enhancements — CarrierDocumentType catalog, auto-seed 10 defaults, type-picker in upload modal, context FKs, enriched document list
+Last session: 2026-04-22T02:12:47Z
+Stopped at: Completed quick-269-PLAN.md — 4 tasks, 12 files created/modified, zero TypeScript errors
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -183,6 +183,7 @@ Progress: [███████████████████████
 - Quick-253 (2026-04-18): Rebuild team permissions with 16 route-based keys, default-all-true, middleware/sidebar enforcement, grouped toggle UI — 3 tasks, 18 files modified
 - Quick-254 (2026-04-18): Notification z-index above Leaflet (z-[1001]), Full Access master RBAC toggle wired to Prisma + Supabase, map fitBounds ref-guarded to fire once on initial load — 3 tasks, 5 files modified
 - Quick-262 (2026-04-19): Forgot password flow + sysadmin password override — forgot-password page (anti-enumeration), reset-password page (PASSWORD_RECOVERY event, show/hide toggles, 5s timeout), "Forgot password?" link on sign-in, /api/auth/admin-reset-password (send_reset via generateLink + set_password via updateUserById, sysadmin-only), ResetPasswordButton modal on tenant detail — 2 tasks, 6 files
+- Quick-269 (2026-04-22): Document upload and storage enhancements — CarrierDocumentType model + migration, auto-seed 10 defaults per tenant on first GET, CRUD API + settings page at /owner/carrier/templates/document-types, DocumentUploadModal lazy-fetches active types (requires selection), context FKs auto-derived in uploadDocument(), DocumentList shows type name + uploader + date — 4 tasks, 12 files
 
 ## Accumulated Context
 
@@ -269,6 +270,14 @@ Progress: [███████████████████████
 - Settings pages (expense categories, templates, integrations) always accessible to managers — no permission gate
 - Subscription and Team Permissions: owner-only enforced in both middleware OWNER_ONLY_PATHS and sidebar role check
 - Supabase app_metadata sync: use admin.auth.admin.listUsers() email lookup to find Supabase auth UID — DB User.id is not the same as Supabase auth UID
+
+**Quick-269 decisions (Document upload and storage enhancements):**
+- documentTypeId is nullable on CarrierDocument — existing documents remain valid without backfill; no sentinel "Unclassified" row in migration (each tenant needs org-scoped row)
+- Auto-seed 10 default types on first GET per tenant (not on tenant creation) — simpler, no onboarding hook needed
+- Default types blocked from deletion and rename; isActive can be toggled — prevents catalog corruption
+- Context FKs auto-derived from parent chain in uploadDocument() — callers don't need to pass them explicitly
+- document_type (slug) still sent in upload formData for backward compat during transition period
+- listDocuments() maps Prisma fields to UI-friendly names (filename→fileName, fileSizeBytes→fileSize) — fixes pre-existing silent bug where field names didn't match component interface
 
 **Quick-254 decisions (Notification z-index, Full Access toggle, map auto-zoom):**
 - fullAccess not in DEFAULT_MANAGER_PERMISSIONS — optional boolean defaults to undefined/false for backward compat with all existing managers
