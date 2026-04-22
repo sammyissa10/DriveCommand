@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { logger } from '@/lib/logger';
+
+// Cache getUser() results for 5 minutes to avoid Supabase Auth 429 rate limits.
+// Key: cookie header string, Value: { user, expiry }
+const sessionCache = new Map<string, { user: User | null; expiry: number }>();
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
  * GET /api/auth/me
@@ -53,9 +59,24 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Web: cookie-based session
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    // Web: cookie-based session (with cache to prevent Supabase Auth 429 rate limits)
+    const cacheKey = req.headers.get('cookie') || '';
+    const cachedSession = sessionCache.get(cacheKey);
+    let user: User | null | undefined;
+    if (cachedSession && Date.now() < cachedSession.expiry) {
+      user = cachedSession.user;
+    } else {
+      const supabase = await createSupabaseServerClient();
+      const { data: { user: fetchedUser } } = await supabase.auth.getUser();
+      user = fetchedUser ?? null;
+      sessionCache.set(cacheKey, { user, expiry: Date.now() + SESSION_CACHE_TTL });
+      // Prune expired entries when cache grows large
+      if (sessionCache.size > 100) {
+        for (const [k, v] of sessionCache) {
+          if (Date.now() >= v.expiry) sessionCache.delete(k);
+        }
+      }
+    }
     if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
