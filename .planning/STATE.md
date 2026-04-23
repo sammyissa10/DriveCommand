@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-22 - Completed quick task 281: Tenant settings, user list, password reset, role change for sysadmin
-Last session: 2026-04-22T18:50:00Z
-Stopped at: Completed quick-281-PLAN.md — 3 tasks, 9 files modified, zero TypeScript errors
+Last activity: 2026-04-23 - Completed quick task 283: Voice message recording and playback in all 4 message threads
+Last session: 2026-04-23T20:24:36Z
+Stopped at: Completed quick-283-PLAN.md — 3 tasks, 15 files created/modified, zero TypeScript errors
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -187,6 +187,7 @@ Progress: [███████████████████████
 - Quick-278 (2026-04-22): Comprehensive carrier dashboard overhaul — revenue KPI fix (totalRevenue + rate-field fallback), actionable alerts API (7 parallel counts: expired/expiring CDLs, registrations, contracts, pending pay, unstarted dispatches), activity feed API (15 items merged from 6 sources), drivers-status API (HOS via DISTINCT ON raw query), messages API (GET last 5 + POST broadcast); 3 new UI components (DriverStatusStrip, RecentActivity, QuickMessageBoard); updated KPIStrip + AlertBar; new 5-col two-column dashboard layout — 2 tasks, 11 files
 - Quick-280 (2026-04-22): Add dispatch option to load create form — "Dispatch immediately" toggle in LoadForm (create mode only), collapsible dispatch section (driver, truck, departure, co-driver, planned miles, route template with auto-populate), dual-path submit (toggle OFF = existing flow unchanged; toggle ON = create load → create dispatch → PATCH load with dispatchId → redirect to dispatch detail with DC-XXXX toast), NewLoadPage fetches active drivers + trucks in parallel — 2 tasks, 2 files
 - Quick-281 (2026-04-22): Add tenant settings, user list, password reset, and role change to sysadmin tenant detail — contactEmail+plan schema fields, TenantSettingsForm (contactEmail/timezone/plan), GET /api/admin/tenants/[id]/users, TenantUsersSection (role badges, status dots, actions dropdown), ChangeRoleModal, PATCH /api/admin/users/[id]/role (blocks OWNER + updates Supabase Auth app_metadata), Prisma client regenerated — 3 tasks, 9 files
+- Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
 
 ## Accumulated Context
 
@@ -273,6 +274,12 @@ Progress: [███████████████████████
 - Settings pages (expense categories, templates, integrations) always accessible to managers — no permission gate
 - Subscription and Team Permissions: owner-only enforced in both middleware OWNER_ONLY_PATHS and sidebar role check
 - Supabase app_metadata sync: use admin.auth.admin.listUsers() email lookup to find Supabase auth UID — DB User.id is not the same as Supabase auth UID
+
+**Quick-283 decisions (Voice message recording):**
+- Audio stored as R2 key (not signed URL) in FleetMessage.audioUrl — fresh signed URLs generated per render to avoid expiry issues
+- Driver voice messages use sendDriverVoiceMessage server action + client-side upload, not useActionState form — cleaner separation of concerns
+- PutObjectCommand direct upload (server holds blob from FormData) instead of presigned upload URL pattern — upload route is already server-side, no reason to do a double-hop
+- VoiceMessageRecorder placed between textarea and send button — recording controls expand in-place without layout shift affecting other elements
 
 **Quick-269 decisions (Document upload and storage enhancements):**
 - documentTypeId is nullable on CarrierDocument — existing documents remain valid without backfill; no sentinel "Unclassified" row in migration (each tenant needs org-scoped row)
