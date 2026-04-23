@@ -1174,6 +1174,7 @@ model FleetMessage {
   createdAt   DateTime  @default(now()) @db.Timestamptz
 
   stopId      String?   @map("stop_id") @db.Uuid
+  audioUrl    String?   @map("audio_url")
 
   dispatch    CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
   stop        CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)

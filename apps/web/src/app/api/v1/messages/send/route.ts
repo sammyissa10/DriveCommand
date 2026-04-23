@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
   }
 
   const dispatchId = typeof payload.dispatchId === 'string' ? payload.dispatchId : null;
+  const audioUrl = typeof payload.audioUrl === 'string' && payload.audioUrl.trim() ? payload.audioUrl.trim() : null;
   const messageBody = payload.body.toString().trim();
 
   try {
@@ -82,6 +83,7 @@ export async function POST(req: NextRequest) {
           recipientId,
           dispatchId: dispatchId ?? undefined,
           isBroadcast: false,
+          ...(audioUrl ? { audioUrl } : {}),
         },
         select: {
           id: true,
@@ -91,6 +93,7 @@ export async function POST(req: NextRequest) {
           body: true,
           dispatchId: true,
           isBroadcast: true,
+          audioUrl: true,
           createdAt: true,
         },
       });

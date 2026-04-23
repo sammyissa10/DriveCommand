@@ -664,7 +664,9 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   recipientId: 'recipientId',
   isBroadcast: 'isBroadcast',
   readAt: 'readAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  stopId: 'stopId',
+  audioUrl: 'audioUrl'
 };
 
 exports.Prisma.PushTokenScalarFieldEnum = {

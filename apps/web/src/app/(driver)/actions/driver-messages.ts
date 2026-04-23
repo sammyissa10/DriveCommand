@@ -100,6 +100,8 @@ export async function sendDriverMessage(prevState: ActionState | null, formData:
     activeDispatchId = activeDispatch?.id;
   }
 
+  const audioUrlField = formData.get('audioUrl') as string | null;
+
   await prisma.fleetMessage.create({
     data: {
       tenantId: user.tenantId,
@@ -108,6 +110,7 @@ export async function sendDriverMessage(prevState: ActionState | null, formData:
       body: message.trim(),
       recipientId: owner?.id ?? null,
       dispatchId: activeDispatchId ?? null,
+      ...(audioUrlField ? { audioUrl: audioUrlField } : {}),
     },
   });
 
@@ -136,4 +139,88 @@ export async function sendDriverMessage(prevState: ActionState | null, formData:
   }
 
   return { success: true, message: 'Message sent.' };
+}
+
+/**
+ * Send a voice message from the driver.
+ * Creates a FleetMessage with body "Voice message" and the given audioUrl (R2 key).
+ */
+export async function sendDriverVoiceMessage(audioUrl: string): Promise<ActionState> {
+  await requireRole([UserRole.DRIVER]);
+
+  if (!audioUrl || !audioUrl.trim()) {
+    return { error: 'audioUrl is required.' };
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: 'Authentication required.' };
+  }
+
+  const prisma = await getTenantPrisma();
+
+  // Find the tenant owner to set as recipient
+  const owner = await prisma.user.findFirst({
+    where: { tenantId: user.tenantId, role: 'OWNER' },
+    select: { id: true },
+  });
+
+  // Find this driver's CarrierDriver record
+  const carrierDriver = await prisma.carrierDriver.findFirst({
+    where: { userId: user.id, orgId: user.tenantId },
+    select: { id: true },
+  });
+
+  // Find the active dispatch for this driver
+  let activeDispatchId: string | undefined = undefined;
+  if (carrierDriver) {
+    const activeDispatch = await prisma.carrierDispatch.findFirst({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: user.tenantId,
+        status: { in: ['planned', 'in_progress'] },
+      },
+      orderBy: { scheduledDeparture: 'desc' },
+      select: { id: true },
+    });
+    activeDispatchId = activeDispatch?.id;
+  }
+
+  await prisma.fleetMessage.create({
+    data: {
+      tenantId: user.tenantId,
+      senderId: user.id,
+      senderRole: 'DRIVER',
+      body: 'Voice message',
+      recipientId: owner?.id ?? null,
+      dispatchId: activeDispatchId ?? null,
+      audioUrl: audioUrl.trim(),
+    },
+  });
+
+  const driverName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+  // Fire-and-forget: email + in-app notification to owner
+  try {
+    await sendDriverMessageNotification({
+      driverName,
+      messageBody: 'Voice message',
+      tenantId: user.tenantId,
+      routeName: undefined,
+    });
+  } catch (emailError) {
+    logger.error('[sendDriverVoiceMessage] owner notification email failed:', emailError);
+  }
+
+  if (owner?.id) {
+    createMessageNotification({
+      orgId: user.tenantId,
+      recipientUserId: owner.id,
+      senderName: driverName,
+      messagePreview: 'Voice message',
+      dispatchId: activeDispatchId ?? null,
+    }).catch((err) => logger.error('[sendDriverVoiceMessage] in-app notification failed:', err));
+  }
+
+  return { success: true, message: 'Voice message sent.' };
 }

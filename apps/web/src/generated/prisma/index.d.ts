@@ -7702,11 +7702,13 @@ export namespace Prisma {
   export type CarrierStopCountOutputType = {
     documents: number
     expenses: number
+    messages: number
   }
 
   export type CarrierStopCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     documents?: boolean | CarrierStopCountOutputTypeCountDocumentsArgs
     expenses?: boolean | CarrierStopCountOutputTypeCountExpensesArgs
+    messages?: boolean | CarrierStopCountOutputTypeCountMessagesArgs
   }
 
   // Custom InputTypes
@@ -7732,6 +7734,13 @@ export namespace Prisma {
    */
   export type CarrierStopCountOutputTypeCountExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierExpenseWhereInput
+  }
+
+  /**
+   * CarrierStopCountOutputType without action
+   */
+  export type CarrierStopCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: FleetMessageWhereInput
   }
 
 
@@ -50907,6 +50916,8 @@ export namespace Prisma {
     isBroadcast: boolean | null
     readAt: Date | null
     createdAt: Date | null
+    stopId: string | null
+    audioUrl: string | null
   }
 
   export type FleetMessageMaxAggregateOutputType = {
@@ -50922,6 +50933,8 @@ export namespace Prisma {
     isBroadcast: boolean | null
     readAt: Date | null
     createdAt: Date | null
+    stopId: string | null
+    audioUrl: string | null
   }
 
   export type FleetMessageCountAggregateOutputType = {
@@ -50937,6 +50950,8 @@ export namespace Prisma {
     isBroadcast: number
     readAt: number
     createdAt: number
+    stopId: number
+    audioUrl: number
     _all: number
   }
 
@@ -50954,6 +50969,8 @@ export namespace Prisma {
     isBroadcast?: true
     readAt?: true
     createdAt?: true
+    stopId?: true
+    audioUrl?: true
   }
 
   export type FleetMessageMaxAggregateInputType = {
@@ -50969,6 +50986,8 @@ export namespace Prisma {
     isBroadcast?: true
     readAt?: true
     createdAt?: true
+    stopId?: true
+    audioUrl?: true
   }
 
   export type FleetMessageCountAggregateInputType = {
@@ -50984,6 +51003,8 @@ export namespace Prisma {
     isBroadcast?: true
     readAt?: true
     createdAt?: true
+    stopId?: true
+    audioUrl?: true
     _all?: true
   }
 
@@ -51072,6 +51093,8 @@ export namespace Prisma {
     isBroadcast: boolean
     readAt: Date | null
     createdAt: Date
+    stopId: string | null
+    audioUrl: string | null
     _count: FleetMessageCountAggregateOutputType | null
     _min: FleetMessageMinAggregateOutputType | null
     _max: FleetMessageMaxAggregateOutputType | null
@@ -51104,7 +51127,10 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: boolean
     createdAt?: boolean
+    stopId?: boolean
+    audioUrl?: boolean
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -51120,7 +51146,10 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: boolean
     createdAt?: boolean
+    stopId?: boolean
+    audioUrl?: boolean
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -51136,7 +51165,10 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: boolean
     createdAt?: boolean
+    stopId?: boolean
+    audioUrl?: boolean
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }, ExtArgs["result"]["fleetMessage"]>
 
   export type FleetMessageSelectScalar = {
@@ -51152,23 +51184,29 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: boolean
     createdAt?: boolean
+    stopId?: boolean
+    audioUrl?: boolean
   }
 
-  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "dispatchId" | "senderId" | "senderRole" | "body" | "recipientId" | "isBroadcast" | "readAt" | "createdAt", ExtArgs["result"]["fleetMessage"]>
+  export type FleetMessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "routeId" | "loadId" | "dispatchId" | "senderId" | "senderRole" | "body" | "recipientId" | "isBroadcast" | "readAt" | "createdAt" | "stopId" | "audioUrl", ExtArgs["result"]["fleetMessage"]>
   export type FleetMessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }
   export type FleetMessageIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }
   export type FleetMessageIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dispatch?: boolean | FleetMessage$dispatchArgs<ExtArgs>
+    stop?: boolean | FleetMessage$stopArgs<ExtArgs>
   }
 
   export type $FleetMessagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "FleetMessage"
     objects: {
       dispatch: Prisma.$CarrierDispatchPayload<ExtArgs> | null
+      stop: Prisma.$CarrierStopPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -51183,6 +51221,8 @@ export namespace Prisma {
       isBroadcast: boolean
       readAt: Date | null
       createdAt: Date
+      stopId: string | null
+      audioUrl: string | null
     }, ExtArgs["result"]["fleetMessage"]>
     composites: {}
   }
@@ -51578,6 +51618,7 @@ export namespace Prisma {
   export interface Prisma__FleetMessageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dispatch<T extends FleetMessage$dispatchArgs<ExtArgs> = {}>(args?: Subset<T, FleetMessage$dispatchArgs<ExtArgs>>): Prisma__CarrierDispatchClient<$Result.GetResult<Prisma.$CarrierDispatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    stop<T extends FleetMessage$stopArgs<ExtArgs> = {}>(args?: Subset<T, FleetMessage$stopArgs<ExtArgs>>): Prisma__CarrierStopClient<$Result.GetResult<Prisma.$CarrierStopPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -51619,6 +51660,8 @@ export namespace Prisma {
     readonly isBroadcast: FieldRef<"FleetMessage", 'Boolean'>
     readonly readAt: FieldRef<"FleetMessage", 'DateTime'>
     readonly createdAt: FieldRef<"FleetMessage", 'DateTime'>
+    readonly stopId: FieldRef<"FleetMessage", 'String'>
+    readonly audioUrl: FieldRef<"FleetMessage", 'String'>
   }
     
 
@@ -52036,6 +52079,25 @@ export namespace Prisma {
      */
     include?: CarrierDispatchInclude<ExtArgs> | null
     where?: CarrierDispatchWhereInput
+  }
+
+  /**
+   * FleetMessage.stop
+   */
+  export type FleetMessage$stopArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CarrierStop
+     */
+    select?: CarrierStopSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CarrierStop
+     */
+    omit?: CarrierStopOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CarrierStopInclude<ExtArgs> | null
+    where?: CarrierStopWhereInput
   }
 
   /**
@@ -69132,6 +69194,7 @@ export namespace Prisma {
     client?: boolean | CarrierStop$clientArgs<ExtArgs>
     documents?: boolean | CarrierStop$documentsArgs<ExtArgs>
     expenses?: boolean | CarrierStop$expensesArgs<ExtArgs>
+    messages?: boolean | CarrierStop$messagesArgs<ExtArgs>
     _count?: boolean | CarrierStopCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["carrierStop"]>
 
@@ -69241,6 +69304,7 @@ export namespace Prisma {
     client?: boolean | CarrierStop$clientArgs<ExtArgs>
     documents?: boolean | CarrierStop$documentsArgs<ExtArgs>
     expenses?: boolean | CarrierStop$expensesArgs<ExtArgs>
+    messages?: boolean | CarrierStop$messagesArgs<ExtArgs>
     _count?: boolean | CarrierStopCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CarrierStopIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -69265,6 +69329,7 @@ export namespace Prisma {
       client: Prisma.$CarrierClientPayload<ExtArgs> | null
       documents: Prisma.$CarrierDocumentPayload<ExtArgs>[]
       expenses: Prisma.$CarrierExpensePayload<ExtArgs>[]
+      messages: Prisma.$FleetMessagePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -69694,6 +69759,7 @@ export namespace Prisma {
     client<T extends CarrierStop$clientArgs<ExtArgs> = {}>(args?: Subset<T, CarrierStop$clientArgs<ExtArgs>>): Prisma__CarrierClientClient<$Result.GetResult<Prisma.$CarrierClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     documents<T extends CarrierStop$documentsArgs<ExtArgs> = {}>(args?: Subset<T, CarrierStop$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     expenses<T extends CarrierStop$expensesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierStop$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    messages<T extends CarrierStop$messagesArgs<ExtArgs> = {}>(args?: Subset<T, CarrierStop$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FleetMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -70234,6 +70300,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: CarrierExpenseScalarFieldEnum | CarrierExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * CarrierStop.messages
+   */
+  export type CarrierStop$messagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the FleetMessage
+     */
+    select?: FleetMessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the FleetMessage
+     */
+    omit?: FleetMessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: FleetMessageInclude<ExtArgs> | null
+    where?: FleetMessageWhereInput
+    orderBy?: FleetMessageOrderByWithRelationInput | FleetMessageOrderByWithRelationInput[]
+    cursor?: FleetMessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: FleetMessageScalarFieldEnum | FleetMessageScalarFieldEnum[]
   }
 
   /**
@@ -78767,7 +78857,9 @@ export namespace Prisma {
     recipientId: 'recipientId',
     isBroadcast: 'isBroadcast',
     readAt: 'readAt',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    stopId: 'stopId',
+    audioUrl: 'audioUrl'
   };
 
   export type FleetMessageScalarFieldEnum = (typeof FleetMessageScalarFieldEnum)[keyof typeof FleetMessageScalarFieldEnum]
@@ -83476,7 +83568,10 @@ export namespace Prisma {
     isBroadcast?: BoolFilter<"FleetMessage"> | boolean
     readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+    stopId?: UuidNullableFilter<"FleetMessage"> | string | null
+    audioUrl?: StringNullableFilter<"FleetMessage"> | string | null
     dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
+    stop?: XOR<CarrierStopNullableScalarRelationFilter, CarrierStopWhereInput> | null
   }
 
   export type FleetMessageOrderByWithRelationInput = {
@@ -83492,7 +83587,10 @@ export namespace Prisma {
     isBroadcast?: SortOrder
     readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    stopId?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     dispatch?: CarrierDispatchOrderByWithRelationInput
+    stop?: CarrierStopOrderByWithRelationInput
   }
 
   export type FleetMessageWhereUniqueInput = Prisma.AtLeast<{
@@ -83511,7 +83609,10 @@ export namespace Prisma {
     isBroadcast?: BoolFilter<"FleetMessage"> | boolean
     readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+    stopId?: UuidNullableFilter<"FleetMessage"> | string | null
+    audioUrl?: StringNullableFilter<"FleetMessage"> | string | null
     dispatch?: XOR<CarrierDispatchNullableScalarRelationFilter, CarrierDispatchWhereInput> | null
+    stop?: XOR<CarrierStopNullableScalarRelationFilter, CarrierStopWhereInput> | null
   }, "id">
 
   export type FleetMessageOrderByWithAggregationInput = {
@@ -83527,6 +83628,8 @@ export namespace Prisma {
     isBroadcast?: SortOrder
     readAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    stopId?: SortOrderInput | SortOrder
+    audioUrl?: SortOrderInput | SortOrder
     _count?: FleetMessageCountOrderByAggregateInput
     _max?: FleetMessageMaxOrderByAggregateInput
     _min?: FleetMessageMinOrderByAggregateInput
@@ -83548,6 +83651,8 @@ export namespace Prisma {
     isBroadcast?: BoolWithAggregatesFilter<"FleetMessage"> | boolean
     readAt?: DateTimeNullableWithAggregatesFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"FleetMessage"> | Date | string
+    stopId?: UuidNullableWithAggregatesFilter<"FleetMessage"> | string | null
+    audioUrl?: StringNullableWithAggregatesFilter<"FleetMessage"> | string | null
   }
 
   export type PushTokenWhereInput = {
@@ -85258,6 +85363,7 @@ export namespace Prisma {
     client?: XOR<CarrierClientNullableScalarRelationFilter, CarrierClientWhereInput> | null
     documents?: CarrierDocumentListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
+    messages?: FleetMessageListRelationFilter
   }
 
   export type CarrierStopOrderByWithRelationInput = {
@@ -85294,6 +85400,7 @@ export namespace Prisma {
     client?: CarrierClientOrderByWithRelationInput
     documents?: CarrierDocumentOrderByRelationAggregateInput
     expenses?: CarrierExpenseOrderByRelationAggregateInput
+    messages?: FleetMessageOrderByRelationAggregateInput
   }
 
   export type CarrierStopWhereUniqueInput = Prisma.AtLeast<{
@@ -85334,6 +85441,7 @@ export namespace Prisma {
     client?: XOR<CarrierClientNullableScalarRelationFilter, CarrierClientWhereInput> | null
     documents?: CarrierDocumentListRelationFilter
     expenses?: CarrierExpenseListRelationFilter
+    messages?: FleetMessageListRelationFilter
   }, "id" | "dispatchId_sequenceOrder">
 
   export type CarrierStopOrderByWithAggregationInput = {
@@ -90164,7 +90272,9 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    audioUrl?: string | null
     dispatch?: CarrierDispatchCreateNestedOneWithoutMessagesInput
+    stop?: CarrierStopCreateNestedOneWithoutMessagesInput
   }
 
   export type FleetMessageUncheckedCreateInput = {
@@ -90180,6 +90290,8 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    stopId?: string | null
+    audioUrl?: string | null
   }
 
   export type FleetMessageUpdateInput = {
@@ -90194,7 +90306,9 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
     dispatch?: CarrierDispatchUpdateOneWithoutMessagesNestedInput
+    stop?: CarrierStopUpdateOneWithoutMessagesNestedInput
   }
 
   export type FleetMessageUncheckedUpdateInput = {
@@ -90210,6 +90324,8 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FleetMessageCreateManyInput = {
@@ -90225,6 +90341,8 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    stopId?: string | null
+    audioUrl?: string | null
   }
 
   export type FleetMessageUpdateManyMutationInput = {
@@ -90239,6 +90357,7 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FleetMessageUncheckedUpdateManyInput = {
@@ -90254,6 +90373,8 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PushTokenCreateInput = {
@@ -92225,6 +92346,7 @@ export namespace Prisma {
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateInput = {
@@ -92257,6 +92379,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUpdateInput = {
@@ -92289,6 +92412,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateInput = {
@@ -92321,6 +92445,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopCreateManyInput = {
@@ -96445,6 +96570,11 @@ export namespace Prisma {
     isNot?: CarrierDispatchWhereInput | null
   }
 
+  export type CarrierStopNullableScalarRelationFilter = {
+    is?: CarrierStopWhereInput | null
+    isNot?: CarrierStopWhereInput | null
+  }
+
   export type FleetMessageCountOrderByAggregateInput = {
     id?: SortOrder
     tenantId?: SortOrder
@@ -96458,6 +96588,8 @@ export namespace Prisma {
     isBroadcast?: SortOrder
     readAt?: SortOrder
     createdAt?: SortOrder
+    stopId?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type FleetMessageMaxOrderByAggregateInput = {
@@ -96473,6 +96605,8 @@ export namespace Prisma {
     isBroadcast?: SortOrder
     readAt?: SortOrder
     createdAt?: SortOrder
+    stopId?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type FleetMessageMinOrderByAggregateInput = {
@@ -96488,6 +96622,8 @@ export namespace Prisma {
     isBroadcast?: SortOrder
     readAt?: SortOrder
     createdAt?: SortOrder
+    stopId?: SortOrder
+    audioUrl?: SortOrder
   }
 
   export type PushTokenUserIdPlatformCompoundUniqueInput = {
@@ -97708,11 +97844,6 @@ export namespace Prisma {
     sequenceOrder?: SortOrder
     pieces?: SortOrder
     weightLbs?: SortOrder
-  }
-
-  export type CarrierStopNullableScalarRelationFilter = {
-    is?: CarrierStopWhereInput | null
-    isNot?: CarrierStopWhereInput | null
   }
 
   export type CarrierDocumentTypeNullableScalarRelationFilter = {
@@ -103685,6 +103816,12 @@ export namespace Prisma {
     connect?: CarrierDispatchWhereUniqueInput
   }
 
+  export type CarrierStopCreateNestedOneWithoutMessagesInput = {
+    create?: XOR<CarrierStopCreateWithoutMessagesInput, CarrierStopUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CarrierStopCreateOrConnectWithoutMessagesInput
+    connect?: CarrierStopWhereUniqueInput
+  }
+
   export type CarrierDispatchUpdateOneWithoutMessagesNestedInput = {
     create?: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
     connectOrCreate?: CarrierDispatchCreateOrConnectWithoutMessagesInput
@@ -103693,6 +103830,16 @@ export namespace Prisma {
     delete?: CarrierDispatchWhereInput | boolean
     connect?: CarrierDispatchWhereUniqueInput
     update?: XOR<XOR<CarrierDispatchUpdateToOneWithWhereWithoutMessagesInput, CarrierDispatchUpdateWithoutMessagesInput>, CarrierDispatchUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type CarrierStopUpdateOneWithoutMessagesNestedInput = {
+    create?: XOR<CarrierStopCreateWithoutMessagesInput, CarrierStopUncheckedCreateWithoutMessagesInput>
+    connectOrCreate?: CarrierStopCreateOrConnectWithoutMessagesInput
+    upsert?: CarrierStopUpsertWithoutMessagesInput
+    disconnect?: CarrierStopWhereInput | boolean
+    delete?: CarrierStopWhereInput | boolean
+    connect?: CarrierStopWhereUniqueInput
+    update?: XOR<XOR<CarrierStopUpdateToOneWithWhereWithoutMessagesInput, CarrierStopUpdateWithoutMessagesInput>, CarrierStopUncheckedUpdateWithoutMessagesInput>
   }
 
   export type UserCreateNestedOneWithoutPushTokensInput = {
@@ -105629,6 +105776,13 @@ export namespace Prisma {
     connect?: CarrierExpenseWhereUniqueInput | CarrierExpenseWhereUniqueInput[]
   }
 
+  export type FleetMessageCreateNestedManyWithoutStopInput = {
+    create?: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput> | FleetMessageCreateWithoutStopInput[] | FleetMessageUncheckedCreateWithoutStopInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutStopInput | FleetMessageCreateOrConnectWithoutStopInput[]
+    createMany?: FleetMessageCreateManyStopInputEnvelope
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+  }
+
   export type CarrierDocumentUncheckedCreateNestedManyWithoutStopInput = {
     create?: XOR<CarrierDocumentCreateWithoutStopInput, CarrierDocumentUncheckedCreateWithoutStopInput> | CarrierDocumentCreateWithoutStopInput[] | CarrierDocumentUncheckedCreateWithoutStopInput[]
     connectOrCreate?: CarrierDocumentCreateOrConnectWithoutStopInput | CarrierDocumentCreateOrConnectWithoutStopInput[]
@@ -105641,6 +105795,13 @@ export namespace Prisma {
     connectOrCreate?: CarrierExpenseCreateOrConnectWithoutStopInput | CarrierExpenseCreateOrConnectWithoutStopInput[]
     createMany?: CarrierExpenseCreateManyStopInputEnvelope
     connect?: CarrierExpenseWhereUniqueInput | CarrierExpenseWhereUniqueInput[]
+  }
+
+  export type FleetMessageUncheckedCreateNestedManyWithoutStopInput = {
+    create?: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput> | FleetMessageCreateWithoutStopInput[] | FleetMessageUncheckedCreateWithoutStopInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutStopInput | FleetMessageCreateOrConnectWithoutStopInput[]
+    createMany?: FleetMessageCreateManyStopInputEnvelope
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
   }
 
   export type CarrierDispatchUpdateOneRequiredWithoutStopsNestedInput = {
@@ -105707,6 +105868,20 @@ export namespace Prisma {
     deleteMany?: CarrierExpenseScalarWhereInput | CarrierExpenseScalarWhereInput[]
   }
 
+  export type FleetMessageUpdateManyWithoutStopNestedInput = {
+    create?: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput> | FleetMessageCreateWithoutStopInput[] | FleetMessageUncheckedCreateWithoutStopInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutStopInput | FleetMessageCreateOrConnectWithoutStopInput[]
+    upsert?: FleetMessageUpsertWithWhereUniqueWithoutStopInput | FleetMessageUpsertWithWhereUniqueWithoutStopInput[]
+    createMany?: FleetMessageCreateManyStopInputEnvelope
+    set?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    disconnect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    delete?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    update?: FleetMessageUpdateWithWhereUniqueWithoutStopInput | FleetMessageUpdateWithWhereUniqueWithoutStopInput[]
+    updateMany?: FleetMessageUpdateManyWithWhereWithoutStopInput | FleetMessageUpdateManyWithWhereWithoutStopInput[]
+    deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
+  }
+
   export type CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput = {
     create?: XOR<CarrierDocumentCreateWithoutStopInput, CarrierDocumentUncheckedCreateWithoutStopInput> | CarrierDocumentCreateWithoutStopInput[] | CarrierDocumentUncheckedCreateWithoutStopInput[]
     connectOrCreate?: CarrierDocumentCreateOrConnectWithoutStopInput | CarrierDocumentCreateOrConnectWithoutStopInput[]
@@ -105733,6 +105908,20 @@ export namespace Prisma {
     update?: CarrierExpenseUpdateWithWhereUniqueWithoutStopInput | CarrierExpenseUpdateWithWhereUniqueWithoutStopInput[]
     updateMany?: CarrierExpenseUpdateManyWithWhereWithoutStopInput | CarrierExpenseUpdateManyWithWhereWithoutStopInput[]
     deleteMany?: CarrierExpenseScalarWhereInput | CarrierExpenseScalarWhereInput[]
+  }
+
+  export type FleetMessageUncheckedUpdateManyWithoutStopNestedInput = {
+    create?: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput> | FleetMessageCreateWithoutStopInput[] | FleetMessageUncheckedCreateWithoutStopInput[]
+    connectOrCreate?: FleetMessageCreateOrConnectWithoutStopInput | FleetMessageCreateOrConnectWithoutStopInput[]
+    upsert?: FleetMessageUpsertWithWhereUniqueWithoutStopInput | FleetMessageUpsertWithWhereUniqueWithoutStopInput[]
+    createMany?: FleetMessageCreateManyStopInputEnvelope
+    set?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    disconnect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    delete?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    connect?: FleetMessageWhereUniqueInput | FleetMessageWhereUniqueInput[]
+    update?: FleetMessageUpdateWithWhereUniqueWithoutStopInput | FleetMessageUpdateWithWhereUniqueWithoutStopInput[]
+    updateMany?: FleetMessageUpdateManyWithWhereWithoutStopInput | FleetMessageUpdateManyWithWhereWithoutStopInput[]
+    deleteMany?: FleetMessageScalarWhereInput | FleetMessageScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutUploadedCarrierDocsInput = {
@@ -128683,6 +128872,75 @@ export namespace Prisma {
     create: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
   }
 
+  export type CarrierStopCreateWithoutMessagesInput = {
+    id?: string
+    sequenceOrder: number
+    stopType: string
+    appointmentStart?: Date | string | null
+    appointmentEnd?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    status?: string
+    skipReason?: string | null
+    commodityDescription?: string | null
+    pieces?: number | null
+    weightLbs?: Decimal | DecimalJsLike | number | string | null
+    bolNumber?: string | null
+    podNumber?: string | null
+    sealNumber?: string | null
+    bolRequired?: boolean
+    podRequired?: boolean
+    contactName?: string | null
+    contactPhone?: string | null
+    specialInstructions?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatch: CarrierDispatchCreateNestedOneWithoutStopsInput
+    load?: CarrierLoadCreateNestedOneWithoutStopsInput
+    facility: CarrierFacilityCreateNestedOneWithoutStopsInput
+    client?: CarrierClientCreateNestedOneWithoutStopsInput
+    documents?: CarrierDocumentCreateNestedManyWithoutStopInput
+    expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+  }
+
+  export type CarrierStopUncheckedCreateWithoutMessagesInput = {
+    id?: string
+    dispatchId: string
+    loadId?: string | null
+    sequenceOrder: number
+    stopType: string
+    facilityId: string
+    clientId?: string | null
+    appointmentStart?: Date | string | null
+    appointmentEnd?: Date | string | null
+    arrivedAt?: Date | string | null
+    departedAt?: Date | string | null
+    status?: string
+    skipReason?: string | null
+    commodityDescription?: string | null
+    pieces?: number | null
+    weightLbs?: Decimal | DecimalJsLike | number | string | null
+    bolNumber?: string | null
+    podNumber?: string | null
+    sealNumber?: string | null
+    bolRequired?: boolean
+    podRequired?: boolean
+    contactName?: string | null
+    contactPhone?: string | null
+    specialInstructions?: string | null
+    notes?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
+    expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+  }
+
+  export type CarrierStopCreateOrConnectWithoutMessagesInput = {
+    where: CarrierStopWhereUniqueInput
+    create: XOR<CarrierStopCreateWithoutMessagesInput, CarrierStopUncheckedCreateWithoutMessagesInput>
+  }
+
   export type CarrierDispatchUpsertWithoutMessagesInput = {
     update: XOR<CarrierDispatchUpdateWithoutMessagesInput, CarrierDispatchUncheckedUpdateWithoutMessagesInput>
     create: XOR<CarrierDispatchCreateWithoutMessagesInput, CarrierDispatchUncheckedCreateWithoutMessagesInput>
@@ -128748,6 +129006,81 @@ export namespace Prisma {
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutDispatchNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutDispatchNestedInput
     documents?: CarrierDocumentUncheckedUpdateManyWithoutDispatchNestedInput
+  }
+
+  export type CarrierStopUpsertWithoutMessagesInput = {
+    update: XOR<CarrierStopUpdateWithoutMessagesInput, CarrierStopUncheckedUpdateWithoutMessagesInput>
+    create: XOR<CarrierStopCreateWithoutMessagesInput, CarrierStopUncheckedCreateWithoutMessagesInput>
+    where?: CarrierStopWhereInput
+  }
+
+  export type CarrierStopUpdateToOneWithWhereWithoutMessagesInput = {
+    where?: CarrierStopWhereInput
+    data: XOR<CarrierStopUpdateWithoutMessagesInput, CarrierStopUncheckedUpdateWithoutMessagesInput>
+  }
+
+  export type CarrierStopUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequenceOrder?: IntFieldUpdateOperationsInput | number
+    stopType?: StringFieldUpdateOperationsInput | string
+    appointmentStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    appointmentEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    weightLbs?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    podNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    sealNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bolRequired?: BoolFieldUpdateOperationsInput | boolean
+    podRequired?: BoolFieldUpdateOperationsInput | boolean
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatch?: CarrierDispatchUpdateOneRequiredWithoutStopsNestedInput
+    load?: CarrierLoadUpdateOneWithoutStopsNestedInput
+    facility?: CarrierFacilityUpdateOneRequiredWithoutStopsNestedInput
+    client?: CarrierClientUpdateOneWithoutStopsNestedInput
+    documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
+    expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+  }
+
+  export type CarrierStopUncheckedUpdateWithoutMessagesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    sequenceOrder?: IntFieldUpdateOperationsInput | number
+    stopType?: StringFieldUpdateOperationsInput | string
+    facilityId?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    appointmentStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    appointmentEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    arrivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    departedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    commodityDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    pieces?: NullableIntFieldUpdateOperationsInput | number | null
+    weightLbs?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    bolNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    podNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    sealNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    bolRequired?: BoolFieldUpdateOperationsInput | boolean
+    podRequired?: BoolFieldUpdateOperationsInput | boolean
+    contactName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
+    expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type UserCreateWithoutPushTokensInput = {
@@ -130058,6 +130391,7 @@ export namespace Prisma {
     facility: CarrierFacilityCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutClientInput = {
@@ -130089,6 +130423,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutClientInput = {
@@ -131505,6 +131840,7 @@ export namespace Prisma {
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutFacilityInput = {
@@ -131536,6 +131872,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutFacilityInput = {
@@ -134878,6 +135215,7 @@ export namespace Prisma {
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutDispatchInput = {
@@ -134909,6 +135247,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutDispatchInput = {
@@ -135139,6 +135478,8 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    audioUrl?: string | null
+    stop?: CarrierStopCreateNestedOneWithoutMessagesInput
   }
 
   export type FleetMessageUncheckedCreateWithoutDispatchInput = {
@@ -135153,6 +135494,8 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    stopId?: string | null
+    audioUrl?: string | null
   }
 
   export type FleetMessageCreateOrConnectWithoutDispatchInput = {
@@ -135860,6 +136203,8 @@ export namespace Prisma {
     isBroadcast?: BoolFilter<"FleetMessage"> | boolean
     readAt?: DateTimeNullableFilter<"FleetMessage"> | Date | string | null
     createdAt?: DateTimeFilter<"FleetMessage"> | Date | string
+    stopId?: UuidNullableFilter<"FleetMessage"> | string | null
+    audioUrl?: StringNullableFilter<"FleetMessage"> | string | null
   }
 
   export type CarrierDocumentUpsertWithWhereUniqueWithoutDispatchInput = {
@@ -136213,6 +136558,7 @@ export namespace Prisma {
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutLoadInput = {
@@ -136244,6 +136590,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutLoadInput = {
@@ -137200,6 +137547,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type FleetMessageCreateWithoutStopInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    audioUrl?: string | null
+    dispatch?: CarrierDispatchCreateNestedOneWithoutMessagesInput
+  }
+
+  export type FleetMessageUncheckedCreateWithoutStopInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    audioUrl?: string | null
+  }
+
+  export type FleetMessageCreateOrConnectWithoutStopInput = {
+    where: FleetMessageWhereUniqueInput
+    create: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput>
+  }
+
+  export type FleetMessageCreateManyStopInputEnvelope = {
+    data: FleetMessageCreateManyStopInput | FleetMessageCreateManyStopInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CarrierDispatchUpsertWithoutStopsInput = {
     update: XOR<CarrierDispatchUpdateWithoutStopsInput, CarrierDispatchUncheckedUpdateWithoutStopsInput>
     create: XOR<CarrierDispatchCreateWithoutStopsInput, CarrierDispatchUncheckedCreateWithoutStopsInput>
@@ -137526,6 +137915,22 @@ export namespace Prisma {
     data: XOR<CarrierExpenseUpdateManyMutationInput, CarrierExpenseUncheckedUpdateManyWithoutStopInput>
   }
 
+  export type FleetMessageUpsertWithWhereUniqueWithoutStopInput = {
+    where: FleetMessageWhereUniqueInput
+    update: XOR<FleetMessageUpdateWithoutStopInput, FleetMessageUncheckedUpdateWithoutStopInput>
+    create: XOR<FleetMessageCreateWithoutStopInput, FleetMessageUncheckedCreateWithoutStopInput>
+  }
+
+  export type FleetMessageUpdateWithWhereUniqueWithoutStopInput = {
+    where: FleetMessageWhereUniqueInput
+    data: XOR<FleetMessageUpdateWithoutStopInput, FleetMessageUncheckedUpdateWithoutStopInput>
+  }
+
+  export type FleetMessageUpdateManyWithWhereWithoutStopInput = {
+    where: FleetMessageScalarWhereInput
+    data: XOR<FleetMessageUpdateManyMutationInput, FleetMessageUncheckedUpdateManyWithoutStopInput>
+  }
+
   export type UserCreateWithoutUploadedCarrierDocsInput = {
     id?: string
     email: string
@@ -137741,6 +138146,7 @@ export namespace Prisma {
     facility: CarrierFacilityCreateNestedOneWithoutStopsInput
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     expenses?: CarrierExpenseCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutDocumentsInput = {
@@ -137772,6 +138178,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     expenses?: CarrierExpenseUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutDocumentsInput = {
@@ -138364,6 +138771,7 @@ export namespace Prisma {
     facility?: CarrierFacilityUpdateOneRequiredWithoutStopsNestedInput
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutDocumentsInput = {
@@ -138395,6 +138803,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierClientUpsertWithoutCarrierDocumentsInput = {
@@ -139324,6 +139733,7 @@ export namespace Prisma {
     facility: CarrierFacilityCreateNestedOneWithoutStopsInput
     client?: CarrierClientCreateNestedOneWithoutStopsInput
     documents?: CarrierDocumentCreateNestedManyWithoutStopInput
+    messages?: FleetMessageCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopUncheckedCreateWithoutExpensesInput = {
@@ -139355,6 +139765,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     documents?: CarrierDocumentUncheckedCreateNestedManyWithoutStopInput
+    messages?: FleetMessageUncheckedCreateNestedManyWithoutStopInput
   }
 
   export type CarrierStopCreateOrConnectWithoutExpensesInput = {
@@ -139945,6 +140356,7 @@ export namespace Prisma {
     facility?: CarrierFacilityUpdateOneRequiredWithoutStopsNestedInput
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutExpensesInput = {
@@ -139976,6 +140388,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierClientUpsertWithoutExpensesInput = {
@@ -149749,6 +150162,7 @@ export namespace Prisma {
     facility?: CarrierFacilityUpdateOneRequiredWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutClientInput = {
@@ -149780,6 +150194,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateManyWithoutClientInput = {
@@ -150682,6 +151097,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutFacilityInput = {
@@ -150713,6 +151129,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateManyWithoutFacilityInput = {
@@ -151897,6 +152314,8 @@ export namespace Prisma {
     isBroadcast?: boolean
     readAt?: Date | string | null
     createdAt?: Date | string
+    stopId?: string | null
+    audioUrl?: string | null
   }
 
   export type CarrierDocumentCreateManyDispatchInput = {
@@ -151949,6 +152368,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutDispatchInput = {
@@ -151980,6 +152400,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateManyWithoutDispatchInput = {
@@ -152283,6 +152704,8 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    stop?: CarrierStopUpdateOneWithoutMessagesNestedInput
   }
 
   export type FleetMessageUncheckedUpdateWithoutDispatchInput = {
@@ -152297,6 +152720,8 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type FleetMessageUncheckedUpdateManyWithoutDispatchInput = {
@@ -152311,6 +152736,8 @@ export namespace Prisma {
     isBroadcast?: BoolFieldUpdateOperationsInput | boolean
     readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopId?: NullableStringFieldUpdateOperationsInput | string | null
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CarrierDocumentUpdateWithoutDispatchInput = {
@@ -152508,6 +152935,7 @@ export namespace Prisma {
     client?: CarrierClientUpdateOneWithoutStopsNestedInput
     documents?: CarrierDocumentUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateWithoutLoadInput = {
@@ -152539,6 +152967,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     documents?: CarrierDocumentUncheckedUpdateManyWithoutStopNestedInput
     expenses?: CarrierExpenseUncheckedUpdateManyWithoutStopNestedInput
+    messages?: FleetMessageUncheckedUpdateManyWithoutStopNestedInput
   }
 
   export type CarrierStopUncheckedUpdateManyWithoutLoadInput = {
@@ -152829,6 +153258,22 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type FleetMessageCreateManyStopInput = {
+    id?: string
+    tenantId: string
+    routeId?: string | null
+    loadId?: string | null
+    dispatchId?: string | null
+    senderId: string
+    senderRole: string
+    body: string
+    recipientId?: string | null
+    isBroadcast?: boolean
+    readAt?: Date | string | null
+    createdAt?: Date | string
+    audioUrl?: string | null
+  }
+
   export type CarrierDocumentUpdateWithoutStopInput = {
     id?: StringFieldUpdateOperationsInput | string
     parentType?: StringFieldUpdateOperationsInput | string
@@ -152952,6 +153397,54 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     orgId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type FleetMessageUpdateWithoutStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatch?: CarrierDispatchUpdateOneWithoutMessagesNestedInput
+  }
+
+  export type FleetMessageUncheckedUpdateWithoutStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type FleetMessageUncheckedUpdateManyWithoutStopInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    routeId?: NullableStringFieldUpdateOperationsInput | string | null
+    loadId?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchId?: NullableStringFieldUpdateOperationsInput | string | null
+    senderId?: StringFieldUpdateOperationsInput | string
+    senderRole?: StringFieldUpdateOperationsInput | string
+    body?: StringFieldUpdateOperationsInput | string
+    recipientId?: NullableStringFieldUpdateOperationsInput | string | null
+    isBroadcast?: BoolFieldUpdateOperationsInput | boolean
+    readAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    audioUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CarrierExpenseCreateManyReceiptDocumentInput = {

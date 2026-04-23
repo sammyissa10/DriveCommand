@@ -1173,12 +1173,17 @@ model FleetMessage {
   readAt      DateTime? @db.Timestamptz
   createdAt   DateTime  @default(now()) @db.Timestamptz
 
+  stopId   String? @map("stop_id") @db.Uuid
+  audioUrl String? @map("audio_url")
+
   dispatch CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  stop     CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([routeId])
   @@index([loadId])
   @@index([dispatchId])
+  @@index([stopId])
   @@index([recipientId])
   @@index([createdAt])
   @@index([senderId])
@@ -1648,6 +1653,7 @@ model CarrierStop {
   client    CarrierClient?    @relation(fields: [clientId], references: [id])
   documents CarrierDocument[]
   expenses  CarrierExpense[]
+  messages  FleetMessage[]
 
   @@unique([dispatchId, sequenceOrder])
   @@index([dispatchId])

@@ -56,6 +56,7 @@ export async function GET(
           isBroadcast: true,
           dispatchId: true,
           stopId: true,
+          audioUrl: true,
           readAt: true,
           createdAt: true,
         },
@@ -103,6 +104,7 @@ export async function GET(
       isBroadcast: m.isBroadcast,
       dispatchId: m.dispatchId,
       stopId: m.stopId,
+      audioUrl: m.audioUrl ?? null,
       readAt: m.readAt?.toISOString() ?? null,
       createdAt: m.createdAt.toISOString(),
       isOwn: m.senderId === userId,
@@ -151,6 +153,7 @@ export async function POST(
   }
 
   const messageBody = payload.body.toString().trim();
+  const audioUrl = typeof payload.audioUrl === 'string' && payload.audioUrl.trim() ? payload.audioUrl.trim() : null;
 
   try {
     /**
@@ -201,6 +204,7 @@ export async function POST(
           stopId,
           dispatchId: stopData.dispatchId,
           isBroadcast: false,
+          ...(audioUrl ? { audioUrl } : {}),
         },
         select: {
           id: true,
@@ -210,6 +214,7 @@ export async function POST(
           body: true,
           dispatchId: true,
           stopId: true,
+          audioUrl: true,
           isBroadcast: true,
           createdAt: true,
         },
