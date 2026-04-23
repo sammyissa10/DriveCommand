@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { VoiceMessageRecorder } from '@/components/carrier/messages/VoiceMessageRecorder';
+import { AudioMessageBubble } from '@/components/carrier/messages/AudioMessageBubble';
 
 type Message = {
   id: string;
@@ -15,6 +17,7 @@ type Message = {
   body: string;
   isBroadcast: boolean;
   dispatchId: string | null;
+  audioUrl?: string | null;
   readAt: string | null;
   createdAt: string;
   isOwn: boolean;
@@ -96,6 +99,28 @@ export function DispatchMessages({ dispatchId, driverUserId }: DispatchMessagesP
     }
   };
 
+  const handleVoiceSend = async (audioBlob: Blob) => {
+    if (!driverUserId) return;
+
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    const uploadRes = await fetch('/api/v1/messages/upload-audio', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    const { audioUrl } = await uploadRes.json() as { audioUrl: string };
+
+    const sendRes = await fetch('/api/v1/messages/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipientId: driverUserId, body: 'Voice message', dispatchId, audioUrl }),
+    });
+    if (!sendRes.ok) throw new Error('Send failed');
+
+    await fetchMessages();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -141,16 +166,20 @@ export function DispatchMessages({ dispatchId, driverUserId }: DispatchMessagesP
                   msg.isOwn ? 'ml-auto items-end' : 'mr-auto items-start'
                 )}
               >
-                <div
-                  className={cn(
-                    'px-3 py-2 text-sm',
-                    msg.isOwn
-                      ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
-                      : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
-                  )}
-                >
-                  {msg.body}
-                </div>
+                {msg.audioUrl ? (
+                  <AudioMessageBubble messageId={msg.id} isOwn={msg.isOwn} />
+                ) : (
+                  <div
+                    className={cn(
+                      'px-3 py-2 text-sm',
+                      msg.isOwn
+                        ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
+                        : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
+                    )}
+                  >
+                    {msg.body}
+                  </div>
+                )}
                 <span className="mt-1 text-xs text-muted-foreground">
                   {msg.isOwn ? 'You' : msg.senderName} &middot; {formatRelativeTime(msg.createdAt)}
                 </span>
@@ -173,6 +202,7 @@ export function DispatchMessages({ dispatchId, driverUserId }: DispatchMessagesP
             disabled={isSending}
             className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
           />
+          <VoiceMessageRecorder onSend={handleVoiceSend} disabled={isSending} />
           <Button
             onClick={handleSend}
             disabled={!body.trim() || isSending}

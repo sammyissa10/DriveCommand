@@ -2,7 +2,10 @@
 
 import { useActionState, useState, useEffect, useRef } from 'react';
 import { Send, MessageSquare } from 'lucide-react';
-import { sendDriverMessage, getDriverMessages } from '@/app/(driver)/actions/driver-messages';
+import { sendDriverMessage, getDriverMessages, sendDriverVoiceMessage } from '@/app/(driver)/actions/driver-messages';
+import { VoiceMessageRecorder } from '@/components/carrier/messages/VoiceMessageRecorder';
+import { AudioMessageBubble } from '@/components/carrier/messages/AudioMessageBubble';
+import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 
 type FleetMessage = {
@@ -14,6 +17,7 @@ type FleetMessage = {
   senderId: string;
   senderRole: string;
   body: string;
+  audioUrl?: string | null;
   createdAt: Date;
   isOwn: boolean;
 };
@@ -49,6 +53,27 @@ export function MessagingPanel() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleVoiceSend = async (audioBlob: Blob) => {
+    // Upload audio file to R2
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.webm');
+    const uploadRes = await fetch('/api/v1/messages/upload-audio', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    const { audioUrl } = await uploadRes.json() as { audioUrl: string };
+
+    // Send voice message via server action
+    const result = await sendDriverVoiceMessage(audioUrl);
+    if (result?.error) {
+      toast.error(typeof result.error === 'string' ? result.error : 'Failed to send voice message.');
+      throw new Error('Send failed');
+    }
+
+    await fetchMessages();
   };
 
   // Load messages on mount and poll every 5 seconds
@@ -96,15 +121,19 @@ export function MessagingPanel() {
                   key={msg.id}
                   className={`flex flex-col max-w-[80%] ${isDriver ? 'ml-auto items-end' : 'mr-auto items-start'}`}
                 >
-                  <div
-                    className={`rounded-lg px-3 py-2 text-sm ${
-                      isDriver
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-foreground'
-                    }`}
-                  >
-                    {msg.body}
-                  </div>
+                  {msg.audioUrl ? (
+                    <AudioMessageBubble messageId={msg.id} isOwn={isDriver} />
+                  ) : (
+                    <div
+                      className={`rounded-lg px-3 py-2 text-sm ${
+                        isDriver
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground'
+                      }`}
+                    >
+                      {msg.body}
+                    </div>
+                  )}
                   <span className="mt-1 text-xs text-muted-foreground">
                     {isDriver ? 'You' : 'Dispatch'} &middot; {formatRelativeTime(msg.createdAt)}
                   </span>
@@ -126,6 +155,7 @@ export function MessagingPanel() {
           className={inputClass}
           autoComplete="off"
         />
+        <VoiceMessageRecorder onSend={handleVoiceSend} disabled={isPending} />
         <button
           type="submit"
           disabled={isPending}
