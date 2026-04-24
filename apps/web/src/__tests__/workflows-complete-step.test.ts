@@ -123,18 +123,19 @@ describe('completeStep — type-specific validation', () => {
     ).rejects.toThrowError(expect.objectContaining({ message: 'INVALID_FORM' }));
   });
 
-  it('INSPECTION_ITEM: rejects with USE_FAIL_ENDPOINT', async () => {
+  it('INSPECTION_ITEM: rejects with USE_FAIL_ENDPOINT when passOrFail is fail or missing', async () => {
     const { completeStep } = await import('@/server/services/workflows/completeStep');
     const { prisma } = await import('@/lib/db/prisma');
     vi.mocked(prisma.stepInstance.findFirst).mockResolvedValue(
       mockStepInstance('INSPECTION_ITEM') as any
     );
 
+    // passOrFail='fail' must redirect to failInspectionItem endpoint
     await expect(
       completeStep({
         ...baseArgs,
         stepInstanceId: 'step-1',
-        result: { passOrFail: 'pass' },
+        result: { passOrFail: 'fail' },
       })
     ).rejects.toThrowError(expect.objectContaining({ message: 'USE_FAIL_ENDPOINT' }));
   });
