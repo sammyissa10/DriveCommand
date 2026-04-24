@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 45 Workflow Engine 4 Automation — IN PROGRESS
-Current Plan: 4 of 6 plans complete
-Status: 45-04 complete — tRPC trigger router (listRecipes/enableRecipe/disableRecipe), 8 lifecycle hook attachment points wired (3 owner actions + 2 carrier fleet routes + 3 dispatch transitions)
-Last activity: 2026-04-24 - Completed 45-04: Trigger router + lifecycle hooks (3 tasks, 11 files, ~11min)
-Last session: 2026-04-24T20:02:09Z
-Stopped at: Completed 45-04-PLAN.md
+Current Plan: 5 of 6 plans — Tasks 1-2 complete, paused at Task 3 (human checkpoint)
+Status: 45-05 Tasks 1-2 done — Auto-Start Rules page + 3 custom rule tRPC procedures + dispatch enforcement modal + override audit
+Last activity: 2026-04-24 - Completed 45-05 Tasks 1-2: Automation UI + dispatch enforcement (~18min, 13 files)
+Last session: 2026-04-24T20:24:40Z
+Stopped at: 45-05 Task 3 — human verification checkpoint (awaiting user to test /checklists/automation + dispatch enforcement modal)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -925,6 +925,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 44-workflow-engine-3-inspection-mode]: PASS is fire-and-forget (animation-first, API in background); FAIL awaits API before advancing to ensure photo/note data persists
 - [Phase 45]: generatePlaybookInstance already accepts triggeredBy: 'trigger' — no adapter needed in fireEvent
 - [Phase 45]: fireEvent uses after() from next/server — runs outside mutation transactions for best-effort semantics
+- [Phase 45-05]: conditions in createCustomRuleSchema stored as JSON string to avoid Zod v4 deep type inference TS2589 limit in tRPC router chains
 
 ### Pending Todos
 
