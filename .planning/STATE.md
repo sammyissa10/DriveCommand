@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 3 of 7 complete — 43-03 DONE
-Status: Phase 43 active — 4 service functions (generatePlaybookInstance, computeDispatchReadiness, completeStep, skipStep) + 2 tRPC routers (instanceRouter, stepInstanceRouter) added; snapshot immutability and dispatch readiness fully wired
-Last activity: 2026-04-24 - Completed 43-03: Service Layer + tRPC Routers (6 files created, 1 modified)
-Last session: 2026-04-24T05:17:23Z
-Stopped at: Completed 43-03-PLAN.md — 2 tasks auto, 6 files created, 1 file modified, 408s
+Current Plan: Plan 4 of 7 complete — 43-04 DONE
+Status: Phase 43 active — Active Work Board swimlanes + Start Checklist dialog added to /checklists dashboard; Active Checklist Detail page live at /checklists/instances/[id] with phase-grouped step rows, dispatch readiness banner, skip-with-reason, and view-result sheet
+Last activity: 2026-04-24 - Completed 43-04: Active Work Board + Checklist Detail page (4 files created, 1 modified, 2 shadcn components installed)
+Last session: 2026-04-24T11:07:00Z
+Stopped at: Completed 43-04-PLAN.md — 2 tasks auto, 4 files created, 1 modified, naming lint passes, TypeScript clean
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -109,6 +109,7 @@ Progress: [███████████████████████
 - Phase 42-07 (2026-04-23): Naming lint Vitest test + phase UAT — workflows-naming-lint.test.ts (recursive walk of /checklists route, strips import/type/JSDoc lines, asserts PlaybookInstance/StepInstance/PlaybookTrigger absent from JSX text + string attributes), user UAT approved (Pre-Trip Inspection built end-to-end in under 10 minutes), Phase 42 COMPLETE — 1 auto task + 1 human-verify, 1 file, ~5min
 - Phase 43-01 (2026-04-24): Phase 43 schema foundation — InstanceStatus/StepStatus/NotifType/NotifChannel enums, PlaybookInstance+StepInstance+PlaybookNotification models, isDispatchReady on User+Truck, 4 dispatch-blocker columns on PlaybookStep, migration applied to Supabase with RLS policies, Prisma client regenerated — 2 tasks, 8 files, ~5min
 - Phase 43-03 (2026-04-24): Service layer + tRPC routers — generatePlaybookInstance/computeDispatchReadiness/completeStep/skipStep services, instanceRouter + stepInstanceRouter tRPC routers, workflowsRouter updated — 2 tasks, 6 files created, 1 file modified, 408s
+- Phase 43-04 (2026-04-24): Active Work Board + Checklist Detail UI — WorkBoardSection (3 swimlane columns: Needs Attention/In Progress/Completed Today), StartChecklistDialog (playbook+entity picker → instance.generate), ChecklistDetailClient (phase-grouped collapsible step rows, dispatch readiness banner, SkipDialog, ResultSheet), installed collapsible+dropdown-menu shadcn components — 2 tasks, 4 files created, 1 modified
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
