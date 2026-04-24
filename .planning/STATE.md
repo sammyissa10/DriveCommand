@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
-Current Plan: Plan 6 of 6 complete — 42-06 DONE
-Status: Plan 06 complete — Playbook Builder UI: 3-column DnD builder (library + canvas + detail editor), 5 phase sections, all 8 step-type editors, drag-to-add from library, drag-to-reorder within and across phases, overrideConfig persistence via updateStep
-Last activity: 2026-04-24 - Completed 42-06: Playbook Builder UI
-Last session: 2026-04-24T03:36:09Z
-Stopped at: Completed 42-06-PLAN.md — 2 tasks, 11 files created, branch feat/workflow-engine-spec
+Phase: Phase 42 Workflow Engine Foundation — COMPLETE
+Current Plan: Plan 7 of 7 complete — 42-07 DONE
+Status: Phase 42 fully closed — naming lint Vitest test (spec Section 3 enforcement) committed, user UAT approved (Pre-Trip Inspection built in under 10 minutes, all pass criteria confirmed)
+Last activity: 2026-04-23 - Completed 42-07: Naming Lint Test + Phase UAT (phase close)
+Last session: 2026-04-23T00:00:00Z
+Stopped at: Completed 42-07-PLAN.md — 1 task auto + 1 human-verify, 1 file created, Phase 42 COMPLETE
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -106,6 +106,7 @@ Progress: [███████████████████████
 - Phase 42-04 (2026-04-24): tRPC workflow engine routers — stepTemplateRouter (5 procedures), playbookRouter (9 procedures incl. updateStep + reorderSteps), reorderPlaybookSteps transactional service, workflowsRouter, mounted on appRouter end-to-end — 2 tasks, 5 files, ~600s
 - Phase 42-05 (2026-04-24): Checklists dashboard UI — Workflows SidebarGroup + ListChecks nav link, /checklists page with entity-type filter tabs, PlaybookCard grid (color-coded category icons, step count, entity badge), CreatePlaybookCard (dashed-border), CreatePlaybookDialog (controlled form calling workflows.playbook.create tRPC mutation) — 2 tasks, 7 files, ~600s
 - Phase 42-06 (2026-04-24): Playbook Builder UI — 3-column DnD builder (/checklists/playbooks/[id]/edit), BuilderClient + BuilderCanvas + 5 PhaseSection columns with SortableContext, BuilderStepRow, StepLibraryPanel (filterable, draggable templates), NewStepTemplateButton dialog, StepDetailEditor with all 8 step-type editors (FormFillEditor/InspectionItemEditor/6 SimpleEditors), overrideConfig persistence via updateStep — 2 tasks, 11 files, ~900s
+- Phase 42-07 (2026-04-23): Naming lint Vitest test + phase UAT — workflows-naming-lint.test.ts (recursive walk of /checklists route, strips import/type/JSDoc lines, asserts PlaybookInstance/StepInstance/PlaybookTrigger absent from JSX text + string attributes), user UAT approved (Pre-Trip Inspection built end-to-end in under 10 minutes), Phase 42 COMPLETE — 1 auto task + 1 human-verify, 1 file, ~5min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -233,6 +234,12 @@ Progress: [███████████████████████
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
 - Rate limit key prefix dir: (not dist:) to isolate directions quota from distance quota on shared geocodingLimiter
 - Coordinate order [lng, lat] preserved end-to-end — GeoJSON standard, matches Mapbox ShapeSource natively, no swap needed on mobile
+
+**Phase 42-07 decisions (Naming lint + Phase UAT):**
+- Naming lint scoped to /checklists route only (not entire owner portal) — enforces naming discipline exactly where internal names are most likely to leak without generating noise from unrelated code
+- Banned names: PlaybookInstance, StepInstance, PlaybookTrigger — StepTemplate and Playbook are user-facing per spec Section 3 and intentionally not banned
+- stripImportsAndTypes() heuristic (line-level regex, not AST) sufficient for a lint test — avoids extra tooling dependency while eliminating all realistic false positives
+- Phase 42 closed on explicit user UAT approval: user built Pre-Trip Inspection v2, tested DnD persistence after reload, verified driver sidebar access blocked, confirmed under-10-minute goal met
 
 **Phase 37.7-05 decisions (Start Route navigation deep link):**
 - router.navigate cast as 'never' to avoid expo-router strict typing on dynamic string route
