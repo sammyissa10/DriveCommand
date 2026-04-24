@@ -111,6 +111,7 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
         updatedById: userId,
       },
     });
+    // TODO(phase-44): fireEvent('ON_VEHICLE_CREATE', truck, tenantId)
     truckId = truck.id;
   } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN

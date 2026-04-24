@@ -7,19 +7,50 @@ import { listDriverRouteJoinsByDriver, listDriverPrimaryRoutes } from '@/app/(ow
 import { DriverDocumentsSection } from './driver-documents-section';
 import { DriverStatusButton } from './driver-status-button';
 import { DriverRouteAssignmentsSection } from './driver-route-assignments-section';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 
 interface DriverDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
+function StatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    NOT_STARTED: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    IN_PROGRESS: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    BLOCKED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  }
+  const labels: Record<string, string> = {
+    NOT_STARTED: 'Not Started',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+    BLOCKED: 'Blocked',
+  }
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] ?? 'bg-gray-100 text-gray-700'}`}>
+      {labels[status] ?? status}
+    </span>
+  )
+}
+
 export default async function DriverDetailPage({ params }: DriverDetailPageProps) {
   const { id } = await params;
 
-  const [driver, documents, routeAssignments, primaryRoutes] = await Promise.all([
+  const tenantId = await requireTenantId().catch(() => null);
+  const prisma = tenantId ? await getTenantPrisma() : null;
+
+  const [driver, documents, routeAssignments, primaryRoutes, instances] = await Promise.all([
     getDriver(id).catch(() => null),
     listDriverDocuments(id).catch(() => [] as any[]),
     listDriverRouteJoinsByDriver(id).catch(() => [] as any[]),
     listDriverPrimaryRoutes(id).catch(() => [] as any[]),
+    prisma
+      ? prisma.playbookInstance.findMany({
+          where: { entityType: 'DRIVER', entityId: id, tenantId: tenantId! },
+          orderBy: { createdAt: 'desc' },
+          include: { stepInstances: { select: { id: true, status: true } } },
+        }).catch(() => [] as any[])
+      : Promise.resolve([] as any[]),
   ]);
 
   if (!driver) {
@@ -37,9 +68,22 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
           Back to Drivers
         </Link>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground min-w-0">
-            {driver.firstName} {driver.lastName}
-          </h1>
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground min-w-0">
+              {driver.firstName} {driver.lastName}
+            </h1>
+            {instances.length > 0 && (
+              driver.isDispatchReady ? (
+                <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Dispatch Ready
+                </span>
+              ) : (
+                <span className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Not Dispatch Ready
+                </span>
+              )
+            )}
+          </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <DriverStatusButton
               driverId={id}
@@ -126,6 +170,40 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
 
       {/* Driver Documents */}
       <DriverDocumentsSection driverId={id} initialDocuments={documents} />
+
+      {/* Checklists */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Checklists</h2>
+        {instances.length === 0 ? (
+          <p className="text-muted-foreground text-sm">No checklists started for this driver yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {instances.map((instance: any) => {
+              const snap = instance.playbookSnapshot as { name?: string }
+              const completed = instance.stepInstances.filter(
+                (s: any) => s.status === 'COMPLETE' || s.status === 'SKIPPED'
+              ).length
+              const total = instance.stepInstances.length
+              return (
+                <a
+                  key={instance.id}
+                  href={`/checklists/instances/${instance.id}`}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-sm">{snap.name ?? 'Checklist'}</p>
+                    <p className="text-xs text-muted-foreground">{completed}/{total} tasks complete</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={instance.status} />
+                    <span className="text-xs text-muted-foreground">{Math.round(instance.completionPercent)}%</span>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Audit Trail */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">

@@ -104,6 +104,7 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
         status: 'PENDING',
       },
     });
+    // TODO(phase-44): fireEvent('ON_DRIVER_CREATE', invitation, tenantId)
 
     // Fetch tenant name for the invitation email
     let organizationName = 'your fleet';

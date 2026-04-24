@@ -56,6 +56,7 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
         tenantId,
       },
     });
+    // TODO(phase-44): fireEvent('ON_PARTNER_CREATE', customer, tenantId)
     createdId = customer.id;
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

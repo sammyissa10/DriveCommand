@@ -1,18 +1,40 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Pencil, Trash2, ArrowLeft } from 'lucide-react';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { deleteCustomer } from '@/app/(owner)/actions/customers';
 import { InteractionTimeline } from '@/components/crm/interaction-timeline';
 import { AddInteractionForm } from '@/components/crm/add-interaction-form';
 import { DeleteCustomerButton } from '@/components/crm/delete-customer-button';
 
+function StatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    NOT_STARTED: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    IN_PROGRESS: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    BLOCKED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  }
+  const labels: Record<string, string> = {
+    NOT_STARTED: 'Not Started',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+    BLOCKED: 'Blocked',
+  }
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] ?? 'bg-gray-100 text-gray-700'}`}>
+      {labels[status] ?? status}
+    </span>
+  )
+}
+
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const tenantId = await requireTenantId().catch(() => null);
   const prisma = await getTenantPrisma();
 
   let customer;
   let loadStats;
+  let customerInstances: any[] = [];
   try {
     [customer, loadStats] = await Promise.all([
       prisma.customer.findUnique({
@@ -33,6 +55,18 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     ]);
   } catch {
     notFound();
+  }
+
+  if (tenantId) {
+    try {
+      customerInstances = await prisma.playbookInstance.findMany({
+        where: { entityType: 'PARTNER', entityId: id, tenantId },
+        orderBy: { createdAt: 'desc' },
+        include: { stepInstances: { select: { id: true, status: true } } },
+      });
+    } catch {
+      // Non-blocking — page renders without checklists if this fails
+    }
   }
 
   if (!customer) {
@@ -174,6 +208,40 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           <AddInteractionForm customerId={id} />
           <InteractionTimeline interactions={customer.interactions} />
         </div>
+      </div>
+
+      {/* Checklists */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Checklists</h2>
+        {customerInstances.length === 0 ? (
+          <p className="text-muted-foreground text-sm">No checklists started for this customer yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {customerInstances.map((instance: any) => {
+              const snap = instance.playbookSnapshot as { name?: string }
+              const completed = instance.stepInstances.filter(
+                (s: any) => s.status === 'COMPLETE' || s.status === 'SKIPPED'
+              ).length
+              const total = instance.stepInstances.length
+              return (
+                <a
+                  key={instance.id}
+                  href={`/checklists/instances/${instance.id}`}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-sm">{snap.name ?? 'Checklist'}</p>
+                    <p className="text-xs text-muted-foreground">{completed}/{total} tasks complete</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={instance.status} />
+                    <span className="text-xs text-muted-foreground">{Math.round(instance.completionPercent)}%</span>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
