@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodError } from 'zod';
+import { after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierTrucks, createCarrierTruck } from '@/lib/carrier/fleet-trucks';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 const nullableString = z.preprocess(
   (v) => (v === null || v === '' ? undefined : v),
@@ -86,8 +88,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const truck = await createCarrierTruck(orgId, parsed.data);
-    return NextResponse.json({ data: truck }, { status: 201 });
+    const carrierTruck = await createCarrierTruck(orgId, parsed.data);
+
+    // After response: spawn any ON_VEHICLE_CREATE playbooks for this tenant
+    after(async () => {
+      try {
+        await fireEvent({
+          event: 'ON_VEHICLE_CREATE',
+          entityData: { ...carrierTruck, id: carrierTruck.id },
+          tenantId: orgId, // carrier module uses orgId for tenant scoping
+        });
+      } catch (err) {
+        logger.error('[carrier/fleet/trucks] fireEvent failed', { truckId: carrierTruck.id, err });
+      }
+    });
+
+    return NextResponse.json({ data: carrierTruck }, { status: 201 });
   } catch (err) {
     if (err instanceof ZodError) {
       return NextResponse.json(

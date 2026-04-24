@@ -6,6 +6,7 @@ import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
 import { createNotification } from '@/lib/carrier/in-app-notifications';
 import { computeNextOccurrence } from '@/lib/carrier/route-templates';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 // Helper: convert Prisma Decimal | null to string | null
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -311,6 +312,15 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
     sendDispatchAssignedNotification(orgId, dispatch.id, data.primaryDriverId)
   );
 
+  // Spawn any ON_DISPATCH_CREATE playbooks (e.g. pre-trip inspection) per spec Section 6.5
+  after(() =>
+    fireEvent({
+      event: 'ON_DISPATCH_CREATE',
+      entityData: { ...dispatch, id: dispatch.id },
+      tenantId: orgId,
+    }).catch((err) => logger.error('[createDispatch] fireEvent ON_DISPATCH_CREATE failed', err))
+  );
+
   return dispatch;
 }
 
@@ -539,6 +549,15 @@ export async function transitionDispatchStatus(
       );
     }
 
+    // Spawn any ON_DISPATCH_DEPART playbooks per spec Section 6.5
+    after(() =>
+      fireEvent({
+        event: 'ON_DISPATCH_DEPART',
+        entityData: { ...updated, id: updated.id },
+        tenantId: orgId,
+      }).catch((err) => logger.error('[transitionDispatchStatus] fireEvent ON_DISPATCH_DEPART failed', err))
+    );
+
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }
 
@@ -729,6 +748,15 @@ export async function transitionDispatchStatus(
         }
       });
     }
+
+    // Spawn any ON_DISPATCH_DELIVER playbooks (e.g. post-trip inspection) per spec Section 6.5
+    after(() =>
+      fireEvent({
+        event: 'ON_DISPATCH_DELIVER',
+        entityData: { ...updated, id: updated.id },
+        tenantId: orgId,
+      }).catch((err) => logger.error('[transitionDispatchStatus] fireEvent ON_DISPATCH_DELIVER failed', err))
+    );
 
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }

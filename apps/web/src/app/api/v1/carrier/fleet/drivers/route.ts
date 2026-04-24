@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { after } from 'next/server';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 const CarrierDriverCreateSchema = z.object({
   firstName: z.string().min(1),
@@ -59,8 +61,27 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await createCarrierDriver(orgId, parsed.data);
+    const carrierDriver = result.driver;
+
+    // After response: spawn any ON_DRIVER_CREATE playbooks for this tenant
+    // Prefer userId (linked User FK) over CarrierDriver.id as entity identifier per research Pitfall 2
+    after(async () => {
+      try {
+        await fireEvent({
+          event: 'ON_DRIVER_CREATE',
+          entityData: {
+            id: carrierDriver.userId ?? carrierDriver.id,
+            email: carrierDriver.email,
+          },
+          tenantId: orgId, // carrier module uses orgId for tenant scoping
+        });
+      } catch (err) {
+        logger.error('[carrier/fleet/drivers] fireEvent failed', { driverId: carrierDriver.id, err });
+      }
+    });
+
     return NextResponse.json(
-      { data: result.driver, ...(result.emailWarning ? { warning: result.emailWarning } : {}) },
+      { data: carrierDriver, ...(result.emailWarning ? { warning: result.emailWarning } : {}) },
       { status: 201 }
     );
   } catch (err) {
