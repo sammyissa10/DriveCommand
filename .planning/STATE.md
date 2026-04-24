@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
-Current Plan: Plan 2 of 3 complete — 42-02 DONE
-Status: Plan 02 complete — Zod validation schemas for all Workflow Engine inputs: 5 enum schemas (StepType/AssigneeRole/PlaybookEntityType/PlaybookCategory/PhaseType), createStepTemplateSchema + updateStepTemplateSchema, createPlaybookSchema + updatePlaybookSchema + addStepSchema + removeStepSchema + updatePlaybookStepSchema + reorderStepsSchema — all exported from @drivecommand/validation
-Last activity: 2026-04-24 - Completed 42-02: Workflow Engine Validation Schemas
-Last session: 2026-04-24T02:32:22Z
-Stopped at: Completed 42-02-PLAN.md — 2 tasks, 4 files created, 1 file modified, branch feat/workflow-engine-spec
+Current Plan: Plan 3 of 3 complete — 42-03 DONE
+Status: Plan 03 complete — tRPC v11 installed with Supabase session context, tenantMemberProcedure/adminProcedure middleware, /api/trpc route handler, and TRPCReactProvider scoped to owner portal layout
+Last activity: 2026-04-23 - Completed 42-03: tRPC Foundation
+Last session: 2026-04-23T22:47:07Z
+Stopped at: Completed 42-03-PLAN.md — 2 tasks, 7 files created, 1 file modified, branch feat/workflow-engine-spec
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -102,6 +102,7 @@ Progress: [███████████████████████
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
 - Phase 42-01 (2026-04-24): Workflow Engine DB foundation — StepTemplate/Playbook/PlaybookStep models + 5 enums, migration SQL with RLS (current_tenant_id pattern + bypass_rls_policy), seedStarterPlaybooks idempotent seeder, all 7 existing tenants seeded, createTenant auto-seeds new tenants — 4 tasks, 6 files, 350s
 - Phase 42-02 (2026-04-24): Workflow Engine validation schemas — 5 Zod enum schemas (StepType/AssigneeRole/PlaybookEntityType/PlaybookCategory/PhaseType), createStepTemplateSchema + updateStepTemplateSchema, createPlaybookSchema + updatePlaybookSchema + addStepSchema + removeStepSchema + updatePlaybookStepSchema + reorderStepsSchema, barrel exported from @drivecommand/validation — 2 tasks, 5 files, ~4min
+- Phase 42-03 (2026-04-23): tRPC foundation — tRPC v11 installed (6 packages), createTRPCContext (Supabase session), tenantMemberProcedure + adminProcedure, /api/trpc route handler, TRPCReactProvider + useTRPC hook, server-side caller, wired into (owner)/layout.tsx — 2 tasks, 8 files, 717s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -1188,6 +1189,7 @@ None blocking immediate progress.
 | Phase quick-243 P01 | 10 | 2 tasks | 2 files |
 | Phase 42-01 | 350s | 4 tasks | 6 files |
 | Phase 42-02 | ~240s | 2 tasks | 5 files |
+| Phase 42-03 | 717s | 2 tasks | 8 files |
 
 **Phase 42-01 decisions (Workflow Engine DB foundation):**
 - Idempotency sentinel: 'CDL Driver Onboarding' playbook name used as existence check — simple, no extra schema column needed
@@ -1201,9 +1203,14 @@ None blocking immediate progress.
 - playbookPhase is optional in updatePlaybookStepSchema — only sent when the step's phase changes via the editor
 - reorderStepsSchema requires min(1) steps and expects complete final ordered list from client (not deltas)
 
+**Phase 42-03 decisions (tRPC foundation):**
+- TRPCReactProvider scoped to (owner)/layout.tsx only — driver and sysadmin portals are unaffected; not placed in root layout
+- SessionData.role is a string type (not UserRole enum); adminProcedure casts it with `as UserRole` for comparison — no runtime risk since the string values match enum values exactly
+- createCallerFactory used for server-side api caller in server.ts — enables server components to call tRPC procedures directly without HTTP round-trip in future plans
+
 ## Session Continuity
 
-Last session: 2026-04-24T02:32:22Z
-Stopped at: Completed 42-02-PLAN.md — 2 tasks, Workflow Engine validation schemas, branch feat/workflow-engine-spec
+Last session: 2026-04-23T22:47:07Z
+Stopped at: Completed 42-03-PLAN.md — 2 tasks, tRPC foundation (packages, server context, route handler, client provider, owner layout), branch feat/workflow-engine-spec
 Resume file: None
-Next action: Execute 42-03 (tRPC router registration).
+Next action: Phase 42 complete — all 3 plans done.
