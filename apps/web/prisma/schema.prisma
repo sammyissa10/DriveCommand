@@ -172,6 +172,10 @@ model Tenant {
   driverPayRecords      DriverPayRecord[]
   inAppNotifications    InAppNotification[]
   carrierDocumentTypes  CarrierDocumentType[]
+
+  // Workflow Engine reverse relations
+  stepTemplates  StepTemplate[]
+  playbooks      Playbook[]
 }
 
 model User {
@@ -1228,6 +1232,51 @@ enum IncidentSeverity {
   HIGH
 }
 
+// Workflow Engine Enums
+enum PlaybookEntityType {
+  DRIVER
+  VEHICLE
+  PARTNER
+  DISPATCH
+  OTHER
+}
+
+enum PlaybookCategory {
+  ONBOARDING
+  SAFETY
+  OPERATIONS
+  COMPLIANCE
+  PARTNER
+  CUSTOM
+}
+
+enum PhaseType {
+  PRE_START
+  DAY_1
+  WEEK_1
+  ONGOING
+  NONE
+}
+
+enum StepType {
+  DOCUMENT_UPLOAD
+  FORM_FILL
+  INSPECTION_ITEM
+  SIGNATURE
+  TRAINING_ACK
+  APPROVAL
+  THIRD_PARTY
+  CUSTOM_NOTE
+}
+
+enum AssigneeRole {
+  DRIVER
+  DISPATCHER
+  MECHANIC
+  SAFETY_MANAGER
+  THIRD_PARTY
+}
+
 model DriverHOSEntry {
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId  String        @db.Uuid
@@ -1834,4 +1883,64 @@ model InAppNotification {
   @@index([orgId, read, createdAt(sort: Desc)])
   @@index([orgId, createdAt(sort: Desc)])
   @@map("in_app_notifications")
+}
+
+// Workflow Engine Models
+
+model StepTemplate {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String       @db.Uuid
+  name          String       @db.VarChar(200)
+  description   String?
+  stepType      StepType
+  assigneeRole  AssigneeRole
+  defaultConfig Json         @default("{}")
+  isActive      Boolean      @default(true)
+  deletedAt     DateTime?    @db.Timestamptz
+  createdAt     DateTime     @default(now()) @db.Timestamptz
+  updatedAt     DateTime     @updatedAt @db.Timestamptz
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbookSteps PlaybookStep[]
+
+  @@index([tenantId, isActive])
+  @@index([tenantId, stepType])
+}
+
+model Playbook {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String             @db.Uuid
+  name          String             @db.VarChar(200)
+  description   String?
+  entityType    PlaybookEntityType
+  category      PlaybookCategory
+  playbookPhase PhaseType          @default(NONE)
+  isActive      Boolean            @default(true)
+  deletedAt     DateTime?          @db.Timestamptz
+  createdAt     DateTime           @default(now()) @db.Timestamptz
+  updatedAt     DateTime           @updatedAt @db.Timestamptz
+
+  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  steps  PlaybookStep[]
+
+  @@index([tenantId, isActive])
+  @@index([tenantId, entityType])
+}
+
+model PlaybookStep {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookId     String     @db.Uuid
+  stepTemplateId String     @db.Uuid
+  sequence       Int
+  playbookPhase  PhaseType  @default(NONE)
+  overrideConfig Json       @default("{}")
+  createdAt      DateTime   @default(now()) @db.Timestamptz
+  updatedAt      DateTime   @updatedAt @db.Timestamptz
+
+  playbook     Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  stepTemplate StepTemplate @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
+
+  @@unique([playbookId, sequence])
+  @@index([playbookId])
+  @@index([stepTemplateId])
 }
