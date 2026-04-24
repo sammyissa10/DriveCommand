@@ -1163,6 +1163,29 @@ exports.Prisma.PlaybookNotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PlaybookTriggerScalarFieldEnum = {
+  id: 'id',
+  playbookId: 'playbookId',
+  tenantId: 'tenantId',
+  triggerEvent: 'triggerEvent',
+  conditions: 'conditions',
+  recurringConfig: 'recurringConfig',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DispatchOverrideAuditScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  dispatchId: 'dispatchId',
+  userId: 'userId',
+  reason: 'reason',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1502,6 +1525,17 @@ exports.NotifChannel = exports.$Enums.NotifChannel = {
   EMAIL: 'EMAIL'
 };
 
+exports.TriggerEvent = exports.$Enums.TriggerEvent = {
+  ON_DRIVER_CREATE: 'ON_DRIVER_CREATE',
+  ON_VEHICLE_CREATE: 'ON_VEHICLE_CREATE',
+  ON_DISPATCH_CREATE: 'ON_DISPATCH_CREATE',
+  ON_DISPATCH_DEPART: 'ON_DISPATCH_DEPART',
+  ON_DISPATCH_DELIVER: 'ON_DISPATCH_DELIVER',
+  ON_PARTNER_CREATE: 'ON_PARTNER_CREATE',
+  MANUAL_ONLY: 'MANUAL_ONLY',
+  RECURRING: 'RECURRING'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -1561,7 +1595,9 @@ exports.Prisma.ModelName = {
   PlaybookStep: 'PlaybookStep',
   PlaybookInstance: 'PlaybookInstance',
   StepInstance: 'StepInstance',
-  PlaybookNotification: 'PlaybookNotification'
+  PlaybookNotification: 'PlaybookNotification',
+  PlaybookTrigger: 'PlaybookTrigger',
+  DispatchOverrideAudit: 'DispatchOverrideAudit'
 };
 
 /**

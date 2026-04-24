@@ -308,6 +308,16 @@ export type StepInstance = $Result.DefaultSelection<Prisma.$StepInstancePayload>
  * 
  */
 export type PlaybookNotification = $Result.DefaultSelection<Prisma.$PlaybookNotificationPayload>
+/**
+ * Model PlaybookTrigger
+ * 
+ */
+export type PlaybookTrigger = $Result.DefaultSelection<Prisma.$PlaybookTriggerPayload>
+/**
+ * Model DispatchOverrideAudit
+ * 
+ */
+export type DispatchOverrideAudit = $Result.DefaultSelection<Prisma.$DispatchOverrideAuditPayload>
 
 /**
  * Enums
@@ -742,6 +752,20 @@ export const AssigneeRole: {
 
 export type AssigneeRole = (typeof AssigneeRole)[keyof typeof AssigneeRole]
 
+
+export const TriggerEvent: {
+  ON_DRIVER_CREATE: 'ON_DRIVER_CREATE',
+  ON_VEHICLE_CREATE: 'ON_VEHICLE_CREATE',
+  ON_DISPATCH_CREATE: 'ON_DISPATCH_CREATE',
+  ON_DISPATCH_DEPART: 'ON_DISPATCH_DEPART',
+  ON_DISPATCH_DELIVER: 'ON_DISPATCH_DELIVER',
+  ON_PARTNER_CREATE: 'ON_PARTNER_CREATE',
+  MANUAL_ONLY: 'MANUAL_ONLY',
+  RECURRING: 'RECURRING'
+};
+
+export type TriggerEvent = (typeof TriggerEvent)[keyof typeof TriggerEvent]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -903,6 +927,10 @@ export const StepType: typeof $Enums.StepType
 export type AssigneeRole = $Enums.AssigneeRole
 
 export const AssigneeRole: typeof $Enums.AssigneeRole
+
+export type TriggerEvent = $Enums.TriggerEvent
+
+export const TriggerEvent: typeof $Enums.TriggerEvent
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1614,6 +1642,26 @@ export class PrismaClient<
     * ```
     */
   get playbookNotification(): Prisma.PlaybookNotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playbookTrigger`: Exposes CRUD operations for the **PlaybookTrigger** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaybookTriggers
+    * const playbookTriggers = await prisma.playbookTrigger.findMany()
+    * ```
+    */
+  get playbookTrigger(): Prisma.PlaybookTriggerDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dispatchOverrideAudit`: Exposes CRUD operations for the **DispatchOverrideAudit** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DispatchOverrideAudits
+    * const dispatchOverrideAudits = await prisma.dispatchOverrideAudit.findMany()
+    * ```
+    */
+  get dispatchOverrideAudit(): Prisma.DispatchOverrideAuditDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -2106,7 +2154,9 @@ export namespace Prisma {
     PlaybookStep: 'PlaybookStep',
     PlaybookInstance: 'PlaybookInstance',
     StepInstance: 'StepInstance',
-    PlaybookNotification: 'PlaybookNotification'
+    PlaybookNotification: 'PlaybookNotification',
+    PlaybookTrigger: 'PlaybookTrigger',
+    DispatchOverrideAudit: 'DispatchOverrideAudit'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2122,7 +2172,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification" | "playbookTrigger" | "dispatchOverrideAudit"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -6492,6 +6542,154 @@ export namespace Prisma {
           }
         }
       }
+      PlaybookTrigger: {
+        payload: Prisma.$PlaybookTriggerPayload<ExtArgs>
+        fields: Prisma.PlaybookTriggerFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaybookTriggerFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaybookTriggerFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaybookTriggerFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaybookTriggerFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          findMany: {
+            args: Prisma.PlaybookTriggerFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>[]
+          }
+          create: {
+            args: Prisma.PlaybookTriggerCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          createMany: {
+            args: Prisma.PlaybookTriggerCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaybookTriggerCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaybookTriggerDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          update: {
+            args: Prisma.PlaybookTriggerUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaybookTriggerDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaybookTriggerUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaybookTriggerUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaybookTriggerUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookTriggerPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaybookTriggerAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaybookTrigger>
+          }
+          groupBy: {
+            args: Prisma.PlaybookTriggerGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookTriggerGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaybookTriggerCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookTriggerCountAggregateOutputType> | number
+          }
+        }
+      }
+      DispatchOverrideAudit: {
+        payload: Prisma.$DispatchOverrideAuditPayload<ExtArgs>
+        fields: Prisma.DispatchOverrideAuditFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DispatchOverrideAuditFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DispatchOverrideAuditFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          findFirst: {
+            args: Prisma.DispatchOverrideAuditFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DispatchOverrideAuditFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          findMany: {
+            args: Prisma.DispatchOverrideAuditFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>[]
+          }
+          create: {
+            args: Prisma.DispatchOverrideAuditCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          createMany: {
+            args: Prisma.DispatchOverrideAuditCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DispatchOverrideAuditCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>[]
+          }
+          delete: {
+            args: Prisma.DispatchOverrideAuditDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          update: {
+            args: Prisma.DispatchOverrideAuditUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          deleteMany: {
+            args: Prisma.DispatchOverrideAuditDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DispatchOverrideAuditUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DispatchOverrideAuditUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>[]
+          }
+          upsert: {
+            args: Prisma.DispatchOverrideAuditUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchOverrideAuditPayload>
+          }
+          aggregate: {
+            args: Prisma.DispatchOverrideAuditAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDispatchOverrideAudit>
+          }
+          groupBy: {
+            args: Prisma.DispatchOverrideAuditGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DispatchOverrideAuditGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DispatchOverrideAuditCountArgs<ExtArgs>
+            result: $Utils.Optional<DispatchOverrideAuditCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -6659,6 +6857,8 @@ export namespace Prisma {
     playbookInstance?: PlaybookInstanceOmit
     stepInstance?: StepInstanceOmit
     playbookNotification?: PlaybookNotificationOmit
+    playbookTrigger?: PlaybookTriggerOmit
+    dispatchOverrideAudit?: DispatchOverrideAuditOmit
   }
 
   /* Types for Logging */
@@ -6785,6 +6985,8 @@ export namespace Prisma {
     playbooks: number
     playbookInstances: number
     playbookNotifications: number
+    playbookTriggers: number
+    dispatchOverrideAudits: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6834,6 +7036,8 @@ export namespace Prisma {
     playbooks?: boolean | TenantCountOutputTypeCountPlaybooksArgs
     playbookInstances?: boolean | TenantCountOutputTypeCountPlaybookInstancesArgs
     playbookNotifications?: boolean | TenantCountOutputTypeCountPlaybookNotificationsArgs
+    playbookTriggers?: boolean | TenantCountOutputTypeCountPlaybookTriggersArgs
+    dispatchOverrideAudits?: boolean | TenantCountOutputTypeCountDispatchOverrideAuditsArgs
   }
 
   // Custom InputTypes
@@ -7167,6 +7371,20 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountPlaybookNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlaybookNotificationWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountPlaybookTriggersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookTriggerWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountDispatchOverrideAuditsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchOverrideAuditWhereInput
   }
 
 
@@ -8574,11 +8792,13 @@ export namespace Prisma {
   export type PlaybookCountOutputType = {
     steps: number
     instances: number
+    triggers: number
   }
 
   export type PlaybookCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     steps?: boolean | PlaybookCountOutputTypeCountStepsArgs
     instances?: boolean | PlaybookCountOutputTypeCountInstancesArgs
+    triggers?: boolean | PlaybookCountOutputTypeCountTriggersArgs
   }
 
   // Custom InputTypes
@@ -8604,6 +8824,13 @@ export namespace Prisma {
    */
   export type PlaybookCountOutputTypeCountInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PlaybookInstanceWhereInput
+  }
+
+  /**
+   * PlaybookCountOutputType without action
+   */
+  export type PlaybookCountOutputTypeCountTriggersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookTriggerWhereInput
   }
 
 
@@ -8935,6 +9162,8 @@ export namespace Prisma {
     playbooks?: boolean | Tenant$playbooksArgs<ExtArgs>
     playbookInstances?: boolean | Tenant$playbookInstancesArgs<ExtArgs>
     playbookNotifications?: boolean | Tenant$playbookNotificationsArgs<ExtArgs>
+    playbookTriggers?: boolean | Tenant$playbookTriggersArgs<ExtArgs>
+    dispatchOverrideAudits?: boolean | Tenant$dispatchOverrideAuditsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -9025,6 +9254,8 @@ export namespace Prisma {
     playbooks?: boolean | Tenant$playbooksArgs<ExtArgs>
     playbookInstances?: boolean | Tenant$playbookInstancesArgs<ExtArgs>
     playbookNotifications?: boolean | Tenant$playbookNotificationsArgs<ExtArgs>
+    playbookTriggers?: boolean | Tenant$playbookTriggersArgs<ExtArgs>
+    dispatchOverrideAudits?: boolean | Tenant$dispatchOverrideAuditsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -9079,6 +9310,8 @@ export namespace Prisma {
       playbooks: Prisma.$PlaybookPayload<ExtArgs>[]
       playbookInstances: Prisma.$PlaybookInstancePayload<ExtArgs>[]
       playbookNotifications: Prisma.$PlaybookNotificationPayload<ExtArgs>[]
+      playbookTriggers: Prisma.$PlaybookTriggerPayload<ExtArgs>[]
+      dispatchOverrideAudits: Prisma.$DispatchOverrideAuditPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9531,6 +9764,8 @@ export namespace Prisma {
     playbooks<T extends Tenant$playbooksArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbooksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     playbookInstances<T extends Tenant$playbookInstancesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbookInstancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     playbookNotifications<T extends Tenant$playbookNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbookNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    playbookTriggers<T extends Tenant$playbookTriggersArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbookTriggersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    dispatchOverrideAudits<T extends Tenant$dispatchOverrideAuditsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$dispatchOverrideAuditsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11064,6 +11299,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.playbookTriggers
+   */
+  export type Tenant$playbookTriggersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    where?: PlaybookTriggerWhereInput
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    cursor?: PlaybookTriggerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookTriggerScalarFieldEnum | PlaybookTriggerScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.dispatchOverrideAudits
+   */
+  export type Tenant$dispatchOverrideAuditsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    where?: DispatchOverrideAuditWhereInput
+    orderBy?: DispatchOverrideAuditOrderByWithRelationInput | DispatchOverrideAuditOrderByWithRelationInput[]
+    cursor?: DispatchOverrideAuditWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DispatchOverrideAuditScalarFieldEnum | DispatchOverrideAuditScalarFieldEnum[]
   }
 
   /**
@@ -80589,6 +80872,7 @@ export namespace Prisma {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     steps?: boolean | Playbook$stepsArgs<ExtArgs>
     instances?: boolean | Playbook$instancesArgs<ExtArgs>
+    triggers?: boolean | Playbook$triggersArgs<ExtArgs>
     _count?: boolean | PlaybookCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["playbook"]>
 
@@ -80641,6 +80925,7 @@ export namespace Prisma {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     steps?: boolean | Playbook$stepsArgs<ExtArgs>
     instances?: boolean | Playbook$instancesArgs<ExtArgs>
+    triggers?: boolean | Playbook$triggersArgs<ExtArgs>
     _count?: boolean | PlaybookCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PlaybookIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -80656,6 +80941,7 @@ export namespace Prisma {
       tenant: Prisma.$TenantPayload<ExtArgs>
       steps: Prisma.$PlaybookStepPayload<ExtArgs>[]
       instances: Prisma.$PlaybookInstancePayload<ExtArgs>[]
+      triggers: Prisma.$PlaybookTriggerPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -81066,6 +81352,7 @@ export namespace Prisma {
     tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     steps<T extends Playbook$stepsArgs<ExtArgs> = {}>(args?: Subset<T, Playbook$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     instances<T extends Playbook$instancesArgs<ExtArgs> = {}>(args?: Subset<T, Playbook$instancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    triggers<T extends Playbook$triggersArgs<ExtArgs> = {}>(args?: Subset<T, Playbook$triggersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -81552,6 +81839,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook.triggers
+   */
+  export type Playbook$triggersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    where?: PlaybookTriggerWhereInput
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    cursor?: PlaybookTriggerWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookTriggerScalarFieldEnum | PlaybookTriggerScalarFieldEnum[]
   }
 
   /**
@@ -86420,6 +86731,2223 @@ export namespace Prisma {
 
 
   /**
+   * Model PlaybookTrigger
+   */
+
+  export type AggregatePlaybookTrigger = {
+    _count: PlaybookTriggerCountAggregateOutputType | null
+    _min: PlaybookTriggerMinAggregateOutputType | null
+    _max: PlaybookTriggerMaxAggregateOutputType | null
+  }
+
+  export type PlaybookTriggerMinAggregateOutputType = {
+    id: string | null
+    playbookId: string | null
+    tenantId: string | null
+    triggerEvent: $Enums.TriggerEvent | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookTriggerMaxAggregateOutputType = {
+    id: string | null
+    playbookId: string | null
+    tenantId: string | null
+    triggerEvent: $Enums.TriggerEvent | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookTriggerCountAggregateOutputType = {
+    id: number
+    playbookId: number
+    tenantId: number
+    triggerEvent: number
+    conditions: number
+    recurringConfig: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlaybookTriggerMinAggregateInputType = {
+    id?: true
+    playbookId?: true
+    tenantId?: true
+    triggerEvent?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookTriggerMaxAggregateInputType = {
+    id?: true
+    playbookId?: true
+    tenantId?: true
+    triggerEvent?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookTriggerCountAggregateInputType = {
+    id?: true
+    playbookId?: true
+    tenantId?: true
+    triggerEvent?: true
+    conditions?: true
+    recurringConfig?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlaybookTriggerAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookTrigger to aggregate.
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookTriggers to fetch.
+     */
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaybookTriggerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookTriggers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookTriggers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaybookTriggers
+    **/
+    _count?: true | PlaybookTriggerCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaybookTriggerMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaybookTriggerMaxAggregateInputType
+  }
+
+  export type GetPlaybookTriggerAggregateType<T extends PlaybookTriggerAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaybookTrigger]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaybookTrigger[P]>
+      : GetScalarType<T[P], AggregatePlaybookTrigger[P]>
+  }
+
+
+
+
+  export type PlaybookTriggerGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookTriggerWhereInput
+    orderBy?: PlaybookTriggerOrderByWithAggregationInput | PlaybookTriggerOrderByWithAggregationInput[]
+    by: PlaybookTriggerScalarFieldEnum[] | PlaybookTriggerScalarFieldEnum
+    having?: PlaybookTriggerScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaybookTriggerCountAggregateInputType | true
+    _min?: PlaybookTriggerMinAggregateInputType
+    _max?: PlaybookTriggerMaxAggregateInputType
+  }
+
+  export type PlaybookTriggerGroupByOutputType = {
+    id: string
+    playbookId: string
+    tenantId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions: JsonValue | null
+    recurringConfig: JsonValue | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: PlaybookTriggerCountAggregateOutputType | null
+    _min: PlaybookTriggerMinAggregateOutputType | null
+    _max: PlaybookTriggerMaxAggregateOutputType | null
+  }
+
+  type GetPlaybookTriggerGroupByPayload<T extends PlaybookTriggerGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaybookTriggerGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaybookTriggerGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaybookTriggerGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaybookTriggerGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaybookTriggerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    tenantId?: boolean
+    triggerEvent?: boolean
+    conditions?: boolean
+    recurringConfig?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookTrigger"]>
+
+  export type PlaybookTriggerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    tenantId?: boolean
+    triggerEvent?: boolean
+    conditions?: boolean
+    recurringConfig?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookTrigger"]>
+
+  export type PlaybookTriggerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    tenantId?: boolean
+    triggerEvent?: boolean
+    conditions?: boolean
+    recurringConfig?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookTrigger"]>
+
+  export type PlaybookTriggerSelectScalar = {
+    id?: boolean
+    playbookId?: boolean
+    tenantId?: boolean
+    triggerEvent?: boolean
+    conditions?: boolean
+    recurringConfig?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlaybookTriggerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookId" | "tenantId" | "triggerEvent" | "conditions" | "recurringConfig" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["playbookTrigger"]>
+  export type PlaybookTriggerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type PlaybookTriggerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type PlaybookTriggerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $PlaybookTriggerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaybookTrigger"
+    objects: {
+      playbook: Prisma.$PlaybookPayload<ExtArgs>
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playbookId: string
+      tenantId: string
+      triggerEvent: $Enums.TriggerEvent
+      conditions: Prisma.JsonValue | null
+      recurringConfig: Prisma.JsonValue | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["playbookTrigger"]>
+    composites: {}
+  }
+
+  type PlaybookTriggerGetPayload<S extends boolean | null | undefined | PlaybookTriggerDefaultArgs> = $Result.GetResult<Prisma.$PlaybookTriggerPayload, S>
+
+  type PlaybookTriggerCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaybookTriggerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaybookTriggerCountAggregateInputType | true
+    }
+
+  export interface PlaybookTriggerDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaybookTrigger'], meta: { name: 'PlaybookTrigger' } }
+    /**
+     * Find zero or one PlaybookTrigger that matches the filter.
+     * @param {PlaybookTriggerFindUniqueArgs} args - Arguments to find a PlaybookTrigger
+     * @example
+     * // Get one PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaybookTriggerFindUniqueArgs>(args: SelectSubset<T, PlaybookTriggerFindUniqueArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaybookTrigger that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaybookTriggerFindUniqueOrThrowArgs} args - Arguments to find a PlaybookTrigger
+     * @example
+     * // Get one PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaybookTriggerFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaybookTriggerFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookTrigger that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerFindFirstArgs} args - Arguments to find a PlaybookTrigger
+     * @example
+     * // Get one PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaybookTriggerFindFirstArgs>(args?: SelectSubset<T, PlaybookTriggerFindFirstArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookTrigger that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerFindFirstOrThrowArgs} args - Arguments to find a PlaybookTrigger
+     * @example
+     * // Get one PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaybookTriggerFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaybookTriggerFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaybookTriggers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaybookTriggers
+     * const playbookTriggers = await prisma.playbookTrigger.findMany()
+     * 
+     * // Get first 10 PlaybookTriggers
+     * const playbookTriggers = await prisma.playbookTrigger.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playbookTriggerWithIdOnly = await prisma.playbookTrigger.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaybookTriggerFindManyArgs>(args?: SelectSubset<T, PlaybookTriggerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaybookTrigger.
+     * @param {PlaybookTriggerCreateArgs} args - Arguments to create a PlaybookTrigger.
+     * @example
+     * // Create one PlaybookTrigger
+     * const PlaybookTrigger = await prisma.playbookTrigger.create({
+     *   data: {
+     *     // ... data to create a PlaybookTrigger
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaybookTriggerCreateArgs>(args: SelectSubset<T, PlaybookTriggerCreateArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaybookTriggers.
+     * @param {PlaybookTriggerCreateManyArgs} args - Arguments to create many PlaybookTriggers.
+     * @example
+     * // Create many PlaybookTriggers
+     * const playbookTrigger = await prisma.playbookTrigger.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaybookTriggerCreateManyArgs>(args?: SelectSubset<T, PlaybookTriggerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaybookTriggers and returns the data saved in the database.
+     * @param {PlaybookTriggerCreateManyAndReturnArgs} args - Arguments to create many PlaybookTriggers.
+     * @example
+     * // Create many PlaybookTriggers
+     * const playbookTrigger = await prisma.playbookTrigger.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaybookTriggers and only return the `id`
+     * const playbookTriggerWithIdOnly = await prisma.playbookTrigger.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaybookTriggerCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaybookTriggerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaybookTrigger.
+     * @param {PlaybookTriggerDeleteArgs} args - Arguments to delete one PlaybookTrigger.
+     * @example
+     * // Delete one PlaybookTrigger
+     * const PlaybookTrigger = await prisma.playbookTrigger.delete({
+     *   where: {
+     *     // ... filter to delete one PlaybookTrigger
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaybookTriggerDeleteArgs>(args: SelectSubset<T, PlaybookTriggerDeleteArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaybookTrigger.
+     * @param {PlaybookTriggerUpdateArgs} args - Arguments to update one PlaybookTrigger.
+     * @example
+     * // Update one PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaybookTriggerUpdateArgs>(args: SelectSubset<T, PlaybookTriggerUpdateArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaybookTriggers.
+     * @param {PlaybookTriggerDeleteManyArgs} args - Arguments to filter PlaybookTriggers to delete.
+     * @example
+     * // Delete a few PlaybookTriggers
+     * const { count } = await prisma.playbookTrigger.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaybookTriggerDeleteManyArgs>(args?: SelectSubset<T, PlaybookTriggerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookTriggers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaybookTriggers
+     * const playbookTrigger = await prisma.playbookTrigger.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaybookTriggerUpdateManyArgs>(args: SelectSubset<T, PlaybookTriggerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookTriggers and returns the data updated in the database.
+     * @param {PlaybookTriggerUpdateManyAndReturnArgs} args - Arguments to update many PlaybookTriggers.
+     * @example
+     * // Update many PlaybookTriggers
+     * const playbookTrigger = await prisma.playbookTrigger.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaybookTriggers and only return the `id`
+     * const playbookTriggerWithIdOnly = await prisma.playbookTrigger.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaybookTriggerUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaybookTriggerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaybookTrigger.
+     * @param {PlaybookTriggerUpsertArgs} args - Arguments to update or create a PlaybookTrigger.
+     * @example
+     * // Update or create a PlaybookTrigger
+     * const playbookTrigger = await prisma.playbookTrigger.upsert({
+     *   create: {
+     *     // ... data to create a PlaybookTrigger
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaybookTrigger we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaybookTriggerUpsertArgs>(args: SelectSubset<T, PlaybookTriggerUpsertArgs<ExtArgs>>): Prisma__PlaybookTriggerClient<$Result.GetResult<Prisma.$PlaybookTriggerPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaybookTriggers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerCountArgs} args - Arguments to filter PlaybookTriggers to count.
+     * @example
+     * // Count the number of PlaybookTriggers
+     * const count = await prisma.playbookTrigger.count({
+     *   where: {
+     *     // ... the filter for the PlaybookTriggers we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaybookTriggerCountArgs>(
+      args?: Subset<T, PlaybookTriggerCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaybookTriggerCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaybookTrigger.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaybookTriggerAggregateArgs>(args: Subset<T, PlaybookTriggerAggregateArgs>): Prisma.PrismaPromise<GetPlaybookTriggerAggregateType<T>>
+
+    /**
+     * Group by PlaybookTrigger.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookTriggerGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaybookTriggerGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaybookTriggerGroupByArgs['orderBy'] }
+        : { orderBy?: PlaybookTriggerGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaybookTriggerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaybookTriggerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaybookTrigger model
+   */
+  readonly fields: PlaybookTriggerFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaybookTrigger.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaybookTriggerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    playbook<T extends PlaybookDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookDefaultArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaybookTrigger model
+   */
+  interface PlaybookTriggerFieldRefs {
+    readonly id: FieldRef<"PlaybookTrigger", 'String'>
+    readonly playbookId: FieldRef<"PlaybookTrigger", 'String'>
+    readonly tenantId: FieldRef<"PlaybookTrigger", 'String'>
+    readonly triggerEvent: FieldRef<"PlaybookTrigger", 'TriggerEvent'>
+    readonly conditions: FieldRef<"PlaybookTrigger", 'Json'>
+    readonly recurringConfig: FieldRef<"PlaybookTrigger", 'Json'>
+    readonly isActive: FieldRef<"PlaybookTrigger", 'Boolean'>
+    readonly createdAt: FieldRef<"PlaybookTrigger", 'DateTime'>
+    readonly updatedAt: FieldRef<"PlaybookTrigger", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaybookTrigger findUnique
+   */
+  export type PlaybookTriggerFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookTrigger to fetch.
+     */
+    where: PlaybookTriggerWhereUniqueInput
+  }
+
+  /**
+   * PlaybookTrigger findUniqueOrThrow
+   */
+  export type PlaybookTriggerFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookTrigger to fetch.
+     */
+    where: PlaybookTriggerWhereUniqueInput
+  }
+
+  /**
+   * PlaybookTrigger findFirst
+   */
+  export type PlaybookTriggerFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookTrigger to fetch.
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookTriggers to fetch.
+     */
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookTriggers.
+     */
+    cursor?: PlaybookTriggerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookTriggers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookTriggers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookTriggers.
+     */
+    distinct?: PlaybookTriggerScalarFieldEnum | PlaybookTriggerScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookTrigger findFirstOrThrow
+   */
+  export type PlaybookTriggerFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookTrigger to fetch.
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookTriggers to fetch.
+     */
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookTriggers.
+     */
+    cursor?: PlaybookTriggerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookTriggers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookTriggers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookTriggers.
+     */
+    distinct?: PlaybookTriggerScalarFieldEnum | PlaybookTriggerScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookTrigger findMany
+   */
+  export type PlaybookTriggerFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookTriggers to fetch.
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookTriggers to fetch.
+     */
+    orderBy?: PlaybookTriggerOrderByWithRelationInput | PlaybookTriggerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaybookTriggers.
+     */
+    cursor?: PlaybookTriggerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookTriggers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookTriggers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookTriggers.
+     */
+    distinct?: PlaybookTriggerScalarFieldEnum | PlaybookTriggerScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookTrigger create
+   */
+  export type PlaybookTriggerCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlaybookTrigger.
+     */
+    data: XOR<PlaybookTriggerCreateInput, PlaybookTriggerUncheckedCreateInput>
+  }
+
+  /**
+   * PlaybookTrigger createMany
+   */
+  export type PlaybookTriggerCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaybookTriggers.
+     */
+    data: PlaybookTriggerCreateManyInput | PlaybookTriggerCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlaybookTrigger createManyAndReturn
+   */
+  export type PlaybookTriggerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaybookTriggers.
+     */
+    data: PlaybookTriggerCreateManyInput | PlaybookTriggerCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookTrigger update
+   */
+  export type PlaybookTriggerUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlaybookTrigger.
+     */
+    data: XOR<PlaybookTriggerUpdateInput, PlaybookTriggerUncheckedUpdateInput>
+    /**
+     * Choose, which PlaybookTrigger to update.
+     */
+    where: PlaybookTriggerWhereUniqueInput
+  }
+
+  /**
+   * PlaybookTrigger updateMany
+   */
+  export type PlaybookTriggerUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaybookTriggers.
+     */
+    data: XOR<PlaybookTriggerUpdateManyMutationInput, PlaybookTriggerUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookTriggers to update
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * Limit how many PlaybookTriggers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookTrigger updateManyAndReturn
+   */
+  export type PlaybookTriggerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaybookTriggers.
+     */
+    data: XOR<PlaybookTriggerUpdateManyMutationInput, PlaybookTriggerUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookTriggers to update
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * Limit how many PlaybookTriggers to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookTrigger upsert
+   */
+  export type PlaybookTriggerUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlaybookTrigger to update in case it exists.
+     */
+    where: PlaybookTriggerWhereUniqueInput
+    /**
+     * In case the PlaybookTrigger found by the `where` argument doesn't exist, create a new PlaybookTrigger with this data.
+     */
+    create: XOR<PlaybookTriggerCreateInput, PlaybookTriggerUncheckedCreateInput>
+    /**
+     * In case the PlaybookTrigger was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaybookTriggerUpdateInput, PlaybookTriggerUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaybookTrigger delete
+   */
+  export type PlaybookTriggerDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+    /**
+     * Filter which PlaybookTrigger to delete.
+     */
+    where: PlaybookTriggerWhereUniqueInput
+  }
+
+  /**
+   * PlaybookTrigger deleteMany
+   */
+  export type PlaybookTriggerDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookTriggers to delete
+     */
+    where?: PlaybookTriggerWhereInput
+    /**
+     * Limit how many PlaybookTriggers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookTrigger without action
+   */
+  export type PlaybookTriggerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookTrigger
+     */
+    select?: PlaybookTriggerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookTrigger
+     */
+    omit?: PlaybookTriggerOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookTriggerInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DispatchOverrideAudit
+   */
+
+  export type AggregateDispatchOverrideAudit = {
+    _count: DispatchOverrideAuditCountAggregateOutputType | null
+    _min: DispatchOverrideAuditMinAggregateOutputType | null
+    _max: DispatchOverrideAuditMaxAggregateOutputType | null
+  }
+
+  export type DispatchOverrideAuditMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    dispatchId: string | null
+    userId: string | null
+    reason: string | null
+    entityType: string | null
+    entityId: string | null
+    createdAt: Date | null
+  }
+
+  export type DispatchOverrideAuditMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    dispatchId: string | null
+    userId: string | null
+    reason: string | null
+    entityType: string | null
+    entityId: string | null
+    createdAt: Date | null
+  }
+
+  export type DispatchOverrideAuditCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    dispatchId: number
+    userId: number
+    reason: number
+    entityType: number
+    entityId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type DispatchOverrideAuditMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    dispatchId?: true
+    userId?: true
+    reason?: true
+    entityType?: true
+    entityId?: true
+    createdAt?: true
+  }
+
+  export type DispatchOverrideAuditMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    dispatchId?: true
+    userId?: true
+    reason?: true
+    entityType?: true
+    entityId?: true
+    createdAt?: true
+  }
+
+  export type DispatchOverrideAuditCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    dispatchId?: true
+    userId?: true
+    reason?: true
+    entityType?: true
+    entityId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type DispatchOverrideAuditAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DispatchOverrideAudit to aggregate.
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchOverrideAudits to fetch.
+     */
+    orderBy?: DispatchOverrideAuditOrderByWithRelationInput | DispatchOverrideAuditOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DispatchOverrideAuditWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchOverrideAudits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchOverrideAudits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DispatchOverrideAudits
+    **/
+    _count?: true | DispatchOverrideAuditCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DispatchOverrideAuditMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DispatchOverrideAuditMaxAggregateInputType
+  }
+
+  export type GetDispatchOverrideAuditAggregateType<T extends DispatchOverrideAuditAggregateArgs> = {
+        [P in keyof T & keyof AggregateDispatchOverrideAudit]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDispatchOverrideAudit[P]>
+      : GetScalarType<T[P], AggregateDispatchOverrideAudit[P]>
+  }
+
+
+
+
+  export type DispatchOverrideAuditGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchOverrideAuditWhereInput
+    orderBy?: DispatchOverrideAuditOrderByWithAggregationInput | DispatchOverrideAuditOrderByWithAggregationInput[]
+    by: DispatchOverrideAuditScalarFieldEnum[] | DispatchOverrideAuditScalarFieldEnum
+    having?: DispatchOverrideAuditScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DispatchOverrideAuditCountAggregateInputType | true
+    _min?: DispatchOverrideAuditMinAggregateInputType
+    _max?: DispatchOverrideAuditMaxAggregateInputType
+  }
+
+  export type DispatchOverrideAuditGroupByOutputType = {
+    id: string
+    tenantId: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt: Date
+    _count: DispatchOverrideAuditCountAggregateOutputType | null
+    _min: DispatchOverrideAuditMinAggregateOutputType | null
+    _max: DispatchOverrideAuditMaxAggregateOutputType | null
+  }
+
+  type GetDispatchOverrideAuditGroupByPayload<T extends DispatchOverrideAuditGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DispatchOverrideAuditGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DispatchOverrideAuditGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DispatchOverrideAuditGroupByOutputType[P]>
+            : GetScalarType<T[P], DispatchOverrideAuditGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DispatchOverrideAuditSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    dispatchId?: boolean
+    userId?: boolean
+    reason?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dispatchOverrideAudit"]>
+
+  export type DispatchOverrideAuditSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    dispatchId?: boolean
+    userId?: boolean
+    reason?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dispatchOverrideAudit"]>
+
+  export type DispatchOverrideAuditSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    dispatchId?: boolean
+    userId?: boolean
+    reason?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["dispatchOverrideAudit"]>
+
+  export type DispatchOverrideAuditSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    dispatchId?: boolean
+    userId?: boolean
+    reason?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    createdAt?: boolean
+  }
+
+  export type DispatchOverrideAuditOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "dispatchId" | "userId" | "reason" | "entityType" | "entityId" | "createdAt", ExtArgs["result"]["dispatchOverrideAudit"]>
+  export type DispatchOverrideAuditInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type DispatchOverrideAuditIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type DispatchOverrideAuditIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $DispatchOverrideAuditPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DispatchOverrideAudit"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      dispatchId: string
+      userId: string
+      reason: string
+      entityType: string
+      entityId: string
+      createdAt: Date
+    }, ExtArgs["result"]["dispatchOverrideAudit"]>
+    composites: {}
+  }
+
+  type DispatchOverrideAuditGetPayload<S extends boolean | null | undefined | DispatchOverrideAuditDefaultArgs> = $Result.GetResult<Prisma.$DispatchOverrideAuditPayload, S>
+
+  type DispatchOverrideAuditCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DispatchOverrideAuditFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DispatchOverrideAuditCountAggregateInputType | true
+    }
+
+  export interface DispatchOverrideAuditDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DispatchOverrideAudit'], meta: { name: 'DispatchOverrideAudit' } }
+    /**
+     * Find zero or one DispatchOverrideAudit that matches the filter.
+     * @param {DispatchOverrideAuditFindUniqueArgs} args - Arguments to find a DispatchOverrideAudit
+     * @example
+     * // Get one DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DispatchOverrideAuditFindUniqueArgs>(args: SelectSubset<T, DispatchOverrideAuditFindUniqueArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DispatchOverrideAudit that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DispatchOverrideAuditFindUniqueOrThrowArgs} args - Arguments to find a DispatchOverrideAudit
+     * @example
+     * // Get one DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DispatchOverrideAuditFindUniqueOrThrowArgs>(args: SelectSubset<T, DispatchOverrideAuditFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DispatchOverrideAudit that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditFindFirstArgs} args - Arguments to find a DispatchOverrideAudit
+     * @example
+     * // Get one DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DispatchOverrideAuditFindFirstArgs>(args?: SelectSubset<T, DispatchOverrideAuditFindFirstArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DispatchOverrideAudit that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditFindFirstOrThrowArgs} args - Arguments to find a DispatchOverrideAudit
+     * @example
+     * // Get one DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DispatchOverrideAuditFindFirstOrThrowArgs>(args?: SelectSubset<T, DispatchOverrideAuditFindFirstOrThrowArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DispatchOverrideAudits that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DispatchOverrideAudits
+     * const dispatchOverrideAudits = await prisma.dispatchOverrideAudit.findMany()
+     * 
+     * // Get first 10 DispatchOverrideAudits
+     * const dispatchOverrideAudits = await prisma.dispatchOverrideAudit.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dispatchOverrideAuditWithIdOnly = await prisma.dispatchOverrideAudit.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DispatchOverrideAuditFindManyArgs>(args?: SelectSubset<T, DispatchOverrideAuditFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DispatchOverrideAudit.
+     * @param {DispatchOverrideAuditCreateArgs} args - Arguments to create a DispatchOverrideAudit.
+     * @example
+     * // Create one DispatchOverrideAudit
+     * const DispatchOverrideAudit = await prisma.dispatchOverrideAudit.create({
+     *   data: {
+     *     // ... data to create a DispatchOverrideAudit
+     *   }
+     * })
+     * 
+     */
+    create<T extends DispatchOverrideAuditCreateArgs>(args: SelectSubset<T, DispatchOverrideAuditCreateArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DispatchOverrideAudits.
+     * @param {DispatchOverrideAuditCreateManyArgs} args - Arguments to create many DispatchOverrideAudits.
+     * @example
+     * // Create many DispatchOverrideAudits
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DispatchOverrideAuditCreateManyArgs>(args?: SelectSubset<T, DispatchOverrideAuditCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DispatchOverrideAudits and returns the data saved in the database.
+     * @param {DispatchOverrideAuditCreateManyAndReturnArgs} args - Arguments to create many DispatchOverrideAudits.
+     * @example
+     * // Create many DispatchOverrideAudits
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DispatchOverrideAudits and only return the `id`
+     * const dispatchOverrideAuditWithIdOnly = await prisma.dispatchOverrideAudit.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DispatchOverrideAuditCreateManyAndReturnArgs>(args?: SelectSubset<T, DispatchOverrideAuditCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DispatchOverrideAudit.
+     * @param {DispatchOverrideAuditDeleteArgs} args - Arguments to delete one DispatchOverrideAudit.
+     * @example
+     * // Delete one DispatchOverrideAudit
+     * const DispatchOverrideAudit = await prisma.dispatchOverrideAudit.delete({
+     *   where: {
+     *     // ... filter to delete one DispatchOverrideAudit
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DispatchOverrideAuditDeleteArgs>(args: SelectSubset<T, DispatchOverrideAuditDeleteArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DispatchOverrideAudit.
+     * @param {DispatchOverrideAuditUpdateArgs} args - Arguments to update one DispatchOverrideAudit.
+     * @example
+     * // Update one DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DispatchOverrideAuditUpdateArgs>(args: SelectSubset<T, DispatchOverrideAuditUpdateArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DispatchOverrideAudits.
+     * @param {DispatchOverrideAuditDeleteManyArgs} args - Arguments to filter DispatchOverrideAudits to delete.
+     * @example
+     * // Delete a few DispatchOverrideAudits
+     * const { count } = await prisma.dispatchOverrideAudit.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DispatchOverrideAuditDeleteManyArgs>(args?: SelectSubset<T, DispatchOverrideAuditDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DispatchOverrideAudits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DispatchOverrideAudits
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DispatchOverrideAuditUpdateManyArgs>(args: SelectSubset<T, DispatchOverrideAuditUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DispatchOverrideAudits and returns the data updated in the database.
+     * @param {DispatchOverrideAuditUpdateManyAndReturnArgs} args - Arguments to update many DispatchOverrideAudits.
+     * @example
+     * // Update many DispatchOverrideAudits
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DispatchOverrideAudits and only return the `id`
+     * const dispatchOverrideAuditWithIdOnly = await prisma.dispatchOverrideAudit.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DispatchOverrideAuditUpdateManyAndReturnArgs>(args: SelectSubset<T, DispatchOverrideAuditUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DispatchOverrideAudit.
+     * @param {DispatchOverrideAuditUpsertArgs} args - Arguments to update or create a DispatchOverrideAudit.
+     * @example
+     * // Update or create a DispatchOverrideAudit
+     * const dispatchOverrideAudit = await prisma.dispatchOverrideAudit.upsert({
+     *   create: {
+     *     // ... data to create a DispatchOverrideAudit
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DispatchOverrideAudit we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DispatchOverrideAuditUpsertArgs>(args: SelectSubset<T, DispatchOverrideAuditUpsertArgs<ExtArgs>>): Prisma__DispatchOverrideAuditClient<$Result.GetResult<Prisma.$DispatchOverrideAuditPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DispatchOverrideAudits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditCountArgs} args - Arguments to filter DispatchOverrideAudits to count.
+     * @example
+     * // Count the number of DispatchOverrideAudits
+     * const count = await prisma.dispatchOverrideAudit.count({
+     *   where: {
+     *     // ... the filter for the DispatchOverrideAudits we want to count
+     *   }
+     * })
+    **/
+    count<T extends DispatchOverrideAuditCountArgs>(
+      args?: Subset<T, DispatchOverrideAuditCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DispatchOverrideAuditCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DispatchOverrideAudit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DispatchOverrideAuditAggregateArgs>(args: Subset<T, DispatchOverrideAuditAggregateArgs>): Prisma.PrismaPromise<GetDispatchOverrideAuditAggregateType<T>>
+
+    /**
+     * Group by DispatchOverrideAudit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchOverrideAuditGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DispatchOverrideAuditGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DispatchOverrideAuditGroupByArgs['orderBy'] }
+        : { orderBy?: DispatchOverrideAuditGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DispatchOverrideAuditGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDispatchOverrideAuditGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DispatchOverrideAudit model
+   */
+  readonly fields: DispatchOverrideAuditFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DispatchOverrideAudit.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DispatchOverrideAuditClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DispatchOverrideAudit model
+   */
+  interface DispatchOverrideAuditFieldRefs {
+    readonly id: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly tenantId: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly dispatchId: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly userId: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly reason: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly entityType: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly entityId: FieldRef<"DispatchOverrideAudit", 'String'>
+    readonly createdAt: FieldRef<"DispatchOverrideAudit", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DispatchOverrideAudit findUnique
+   */
+  export type DispatchOverrideAuditFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchOverrideAudit to fetch.
+     */
+    where: DispatchOverrideAuditWhereUniqueInput
+  }
+
+  /**
+   * DispatchOverrideAudit findUniqueOrThrow
+   */
+  export type DispatchOverrideAuditFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchOverrideAudit to fetch.
+     */
+    where: DispatchOverrideAuditWhereUniqueInput
+  }
+
+  /**
+   * DispatchOverrideAudit findFirst
+   */
+  export type DispatchOverrideAuditFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchOverrideAudit to fetch.
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchOverrideAudits to fetch.
+     */
+    orderBy?: DispatchOverrideAuditOrderByWithRelationInput | DispatchOverrideAuditOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DispatchOverrideAudits.
+     */
+    cursor?: DispatchOverrideAuditWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchOverrideAudits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchOverrideAudits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DispatchOverrideAudits.
+     */
+    distinct?: DispatchOverrideAuditScalarFieldEnum | DispatchOverrideAuditScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchOverrideAudit findFirstOrThrow
+   */
+  export type DispatchOverrideAuditFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchOverrideAudit to fetch.
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchOverrideAudits to fetch.
+     */
+    orderBy?: DispatchOverrideAuditOrderByWithRelationInput | DispatchOverrideAuditOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DispatchOverrideAudits.
+     */
+    cursor?: DispatchOverrideAuditWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchOverrideAudits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchOverrideAudits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DispatchOverrideAudits.
+     */
+    distinct?: DispatchOverrideAuditScalarFieldEnum | DispatchOverrideAuditScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchOverrideAudit findMany
+   */
+  export type DispatchOverrideAuditFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchOverrideAudits to fetch.
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchOverrideAudits to fetch.
+     */
+    orderBy?: DispatchOverrideAuditOrderByWithRelationInput | DispatchOverrideAuditOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DispatchOverrideAudits.
+     */
+    cursor?: DispatchOverrideAuditWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchOverrideAudits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchOverrideAudits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DispatchOverrideAudits.
+     */
+    distinct?: DispatchOverrideAuditScalarFieldEnum | DispatchOverrideAuditScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchOverrideAudit create
+   */
+  export type DispatchOverrideAuditCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DispatchOverrideAudit.
+     */
+    data: XOR<DispatchOverrideAuditCreateInput, DispatchOverrideAuditUncheckedCreateInput>
+  }
+
+  /**
+   * DispatchOverrideAudit createMany
+   */
+  export type DispatchOverrideAuditCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DispatchOverrideAudits.
+     */
+    data: DispatchOverrideAuditCreateManyInput | DispatchOverrideAuditCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DispatchOverrideAudit createManyAndReturn
+   */
+  export type DispatchOverrideAuditCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * The data used to create many DispatchOverrideAudits.
+     */
+    data: DispatchOverrideAuditCreateManyInput | DispatchOverrideAuditCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DispatchOverrideAudit update
+   */
+  export type DispatchOverrideAuditUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DispatchOverrideAudit.
+     */
+    data: XOR<DispatchOverrideAuditUpdateInput, DispatchOverrideAuditUncheckedUpdateInput>
+    /**
+     * Choose, which DispatchOverrideAudit to update.
+     */
+    where: DispatchOverrideAuditWhereUniqueInput
+  }
+
+  /**
+   * DispatchOverrideAudit updateMany
+   */
+  export type DispatchOverrideAuditUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DispatchOverrideAudits.
+     */
+    data: XOR<DispatchOverrideAuditUpdateManyMutationInput, DispatchOverrideAuditUncheckedUpdateManyInput>
+    /**
+     * Filter which DispatchOverrideAudits to update
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * Limit how many DispatchOverrideAudits to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DispatchOverrideAudit updateManyAndReturn
+   */
+  export type DispatchOverrideAuditUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * The data used to update DispatchOverrideAudits.
+     */
+    data: XOR<DispatchOverrideAuditUpdateManyMutationInput, DispatchOverrideAuditUncheckedUpdateManyInput>
+    /**
+     * Filter which DispatchOverrideAudits to update
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * Limit how many DispatchOverrideAudits to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DispatchOverrideAudit upsert
+   */
+  export type DispatchOverrideAuditUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DispatchOverrideAudit to update in case it exists.
+     */
+    where: DispatchOverrideAuditWhereUniqueInput
+    /**
+     * In case the DispatchOverrideAudit found by the `where` argument doesn't exist, create a new DispatchOverrideAudit with this data.
+     */
+    create: XOR<DispatchOverrideAuditCreateInput, DispatchOverrideAuditUncheckedCreateInput>
+    /**
+     * In case the DispatchOverrideAudit was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DispatchOverrideAuditUpdateInput, DispatchOverrideAuditUncheckedUpdateInput>
+  }
+
+  /**
+   * DispatchOverrideAudit delete
+   */
+  export type DispatchOverrideAuditDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+    /**
+     * Filter which DispatchOverrideAudit to delete.
+     */
+    where: DispatchOverrideAuditWhereUniqueInput
+  }
+
+  /**
+   * DispatchOverrideAudit deleteMany
+   */
+  export type DispatchOverrideAuditDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DispatchOverrideAudits to delete
+     */
+    where?: DispatchOverrideAuditWhereInput
+    /**
+     * Limit how many DispatchOverrideAudits to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DispatchOverrideAudit without action
+   */
+  export type DispatchOverrideAuditDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchOverrideAudit
+     */
+    select?: DispatchOverrideAuditSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DispatchOverrideAudit
+     */
+    omit?: DispatchOverrideAuditOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchOverrideAuditInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -87653,6 +90181,35 @@ export namespace Prisma {
   export type PlaybookNotificationScalarFieldEnum = (typeof PlaybookNotificationScalarFieldEnum)[keyof typeof PlaybookNotificationScalarFieldEnum]
 
 
+  export const PlaybookTriggerScalarFieldEnum: {
+    id: 'id',
+    playbookId: 'playbookId',
+    tenantId: 'tenantId',
+    triggerEvent: 'triggerEvent',
+    conditions: 'conditions',
+    recurringConfig: 'recurringConfig',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlaybookTriggerScalarFieldEnum = (typeof PlaybookTriggerScalarFieldEnum)[keyof typeof PlaybookTriggerScalarFieldEnum]
+
+
+  export const DispatchOverrideAuditScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    dispatchId: 'dispatchId',
+    userId: 'userId',
+    reason: 'reason',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    createdAt: 'createdAt'
+  };
+
+  export type DispatchOverrideAuditScalarFieldEnum = (typeof DispatchOverrideAuditScalarFieldEnum)[keyof typeof DispatchOverrideAuditScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -88355,6 +90912,20 @@ export namespace Prisma {
    */
   export type ListEnumNotifChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifChannel[]'>
     
+
+
+  /**
+   * Reference to a field of type 'TriggerEvent'
+   */
+  export type EnumTriggerEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TriggerEvent'>
+    
+
+
+  /**
+   * Reference to a field of type 'TriggerEvent[]'
+   */
+  export type ListEnumTriggerEventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TriggerEvent[]'>
+    
   /**
    * Deep Input Types
    */
@@ -88420,6 +90991,8 @@ export namespace Prisma {
     playbooks?: PlaybookListRelationFilter
     playbookInstances?: PlaybookInstanceListRelationFilter
     playbookNotifications?: PlaybookNotificationListRelationFilter
+    playbookTriggers?: PlaybookTriggerListRelationFilter
+    dispatchOverrideAudits?: DispatchOverrideAuditListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -88479,6 +91052,8 @@ export namespace Prisma {
     playbooks?: PlaybookOrderByRelationAggregateInput
     playbookInstances?: PlaybookInstanceOrderByRelationAggregateInput
     playbookNotifications?: PlaybookNotificationOrderByRelationAggregateInput
+    playbookTriggers?: PlaybookTriggerOrderByRelationAggregateInput
+    dispatchOverrideAudits?: DispatchOverrideAuditOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -88541,6 +91116,8 @@ export namespace Prisma {
     playbooks?: PlaybookListRelationFilter
     playbookInstances?: PlaybookInstanceListRelationFilter
     playbookNotifications?: PlaybookNotificationListRelationFilter
+    playbookTriggers?: PlaybookTriggerListRelationFilter
+    dispatchOverrideAudits?: DispatchOverrideAuditListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -94799,6 +97376,7 @@ export namespace Prisma {
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     steps?: PlaybookStepListRelationFilter
     instances?: PlaybookInstanceListRelationFilter
+    triggers?: PlaybookTriggerListRelationFilter
   }
 
   export type PlaybookOrderByWithRelationInput = {
@@ -94816,6 +97394,7 @@ export namespace Prisma {
     tenant?: TenantOrderByWithRelationInput
     steps?: PlaybookStepOrderByRelationAggregateInput
     instances?: PlaybookInstanceOrderByRelationAggregateInput
+    triggers?: PlaybookTriggerOrderByRelationAggregateInput
   }
 
   export type PlaybookWhereUniqueInput = Prisma.AtLeast<{
@@ -94836,6 +97415,7 @@ export namespace Prisma {
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
     steps?: PlaybookStepListRelationFilter
     instances?: PlaybookInstanceListRelationFilter
+    triggers?: PlaybookTriggerListRelationFilter
   }, "id">
 
   export type PlaybookOrderByWithAggregationInput = {
@@ -95280,6 +97860,154 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PlaybookNotification"> | Date | string
   }
 
+  export type PlaybookTriggerWhereInput = {
+    AND?: PlaybookTriggerWhereInput | PlaybookTriggerWhereInput[]
+    OR?: PlaybookTriggerWhereInput[]
+    NOT?: PlaybookTriggerWhereInput | PlaybookTriggerWhereInput[]
+    id?: UuidFilter<"PlaybookTrigger"> | string
+    playbookId?: UuidFilter<"PlaybookTrigger"> | string
+    tenantId?: UuidFilter<"PlaybookTrigger"> | string
+    triggerEvent?: EnumTriggerEventFilter<"PlaybookTrigger"> | $Enums.TriggerEvent
+    conditions?: JsonNullableFilter<"PlaybookTrigger">
+    recurringConfig?: JsonNullableFilter<"PlaybookTrigger">
+    isActive?: BoolFilter<"PlaybookTrigger"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type PlaybookTriggerOrderByWithRelationInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    tenantId?: SortOrder
+    triggerEvent?: SortOrder
+    conditions?: SortOrderInput | SortOrder
+    recurringConfig?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    playbook?: PlaybookOrderByWithRelationInput
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type PlaybookTriggerWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlaybookTriggerWhereInput | PlaybookTriggerWhereInput[]
+    OR?: PlaybookTriggerWhereInput[]
+    NOT?: PlaybookTriggerWhereInput | PlaybookTriggerWhereInput[]
+    playbookId?: UuidFilter<"PlaybookTrigger"> | string
+    tenantId?: UuidFilter<"PlaybookTrigger"> | string
+    triggerEvent?: EnumTriggerEventFilter<"PlaybookTrigger"> | $Enums.TriggerEvent
+    conditions?: JsonNullableFilter<"PlaybookTrigger">
+    recurringConfig?: JsonNullableFilter<"PlaybookTrigger">
+    isActive?: BoolFilter<"PlaybookTrigger"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id">
+
+  export type PlaybookTriggerOrderByWithAggregationInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    tenantId?: SortOrder
+    triggerEvent?: SortOrder
+    conditions?: SortOrderInput | SortOrder
+    recurringConfig?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlaybookTriggerCountOrderByAggregateInput
+    _max?: PlaybookTriggerMaxOrderByAggregateInput
+    _min?: PlaybookTriggerMinOrderByAggregateInput
+  }
+
+  export type PlaybookTriggerScalarWhereWithAggregatesInput = {
+    AND?: PlaybookTriggerScalarWhereWithAggregatesInput | PlaybookTriggerScalarWhereWithAggregatesInput[]
+    OR?: PlaybookTriggerScalarWhereWithAggregatesInput[]
+    NOT?: PlaybookTriggerScalarWhereWithAggregatesInput | PlaybookTriggerScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"PlaybookTrigger"> | string
+    playbookId?: UuidWithAggregatesFilter<"PlaybookTrigger"> | string
+    tenantId?: UuidWithAggregatesFilter<"PlaybookTrigger"> | string
+    triggerEvent?: EnumTriggerEventWithAggregatesFilter<"PlaybookTrigger"> | $Enums.TriggerEvent
+    conditions?: JsonNullableWithAggregatesFilter<"PlaybookTrigger">
+    recurringConfig?: JsonNullableWithAggregatesFilter<"PlaybookTrigger">
+    isActive?: BoolWithAggregatesFilter<"PlaybookTrigger"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"PlaybookTrigger"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlaybookTrigger"> | Date | string
+  }
+
+  export type DispatchOverrideAuditWhereInput = {
+    AND?: DispatchOverrideAuditWhereInput | DispatchOverrideAuditWhereInput[]
+    OR?: DispatchOverrideAuditWhereInput[]
+    NOT?: DispatchOverrideAuditWhereInput | DispatchOverrideAuditWhereInput[]
+    id?: UuidFilter<"DispatchOverrideAudit"> | string
+    tenantId?: UuidFilter<"DispatchOverrideAudit"> | string
+    dispatchId?: UuidFilter<"DispatchOverrideAudit"> | string
+    userId?: UuidFilter<"DispatchOverrideAudit"> | string
+    reason?: StringFilter<"DispatchOverrideAudit"> | string
+    entityType?: StringFilter<"DispatchOverrideAudit"> | string
+    entityId?: UuidFilter<"DispatchOverrideAudit"> | string
+    createdAt?: DateTimeFilter<"DispatchOverrideAudit"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }
+
+  export type DispatchOverrideAuditOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    dispatchId?: SortOrder
+    userId?: SortOrder
+    reason?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+  }
+
+  export type DispatchOverrideAuditWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DispatchOverrideAuditWhereInput | DispatchOverrideAuditWhereInput[]
+    OR?: DispatchOverrideAuditWhereInput[]
+    NOT?: DispatchOverrideAuditWhereInput | DispatchOverrideAuditWhereInput[]
+    tenantId?: UuidFilter<"DispatchOverrideAudit"> | string
+    dispatchId?: UuidFilter<"DispatchOverrideAudit"> | string
+    userId?: UuidFilter<"DispatchOverrideAudit"> | string
+    reason?: StringFilter<"DispatchOverrideAudit"> | string
+    entityType?: StringFilter<"DispatchOverrideAudit"> | string
+    entityId?: UuidFilter<"DispatchOverrideAudit"> | string
+    createdAt?: DateTimeFilter<"DispatchOverrideAudit"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+  }, "id">
+
+  export type DispatchOverrideAuditOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    dispatchId?: SortOrder
+    userId?: SortOrder
+    reason?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+    _count?: DispatchOverrideAuditCountOrderByAggregateInput
+    _max?: DispatchOverrideAuditMaxOrderByAggregateInput
+    _min?: DispatchOverrideAuditMinOrderByAggregateInput
+  }
+
+  export type DispatchOverrideAuditScalarWhereWithAggregatesInput = {
+    AND?: DispatchOverrideAuditScalarWhereWithAggregatesInput | DispatchOverrideAuditScalarWhereWithAggregatesInput[]
+    OR?: DispatchOverrideAuditScalarWhereWithAggregatesInput[]
+    NOT?: DispatchOverrideAuditScalarWhereWithAggregatesInput | DispatchOverrideAuditScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    tenantId?: UuidWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    dispatchId?: UuidWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    userId?: UuidWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    reason?: StringWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    entityType?: StringWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    entityId?: UuidWithAggregatesFilter<"DispatchOverrideAudit"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DispatchOverrideAudit"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -95337,6 +98065,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -95396,6 +98126,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -95455,6 +98187,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -95514,6 +98248,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -102485,6 +105221,7 @@ export namespace Prisma {
     tenant: TenantCreateNestedOneWithoutPlaybooksInput
     steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
     instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookUncheckedCreateInput = {
@@ -102501,6 +105238,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
     instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookUpdateInput = {
@@ -102517,6 +105255,7 @@ export namespace Prisma {
     tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
     steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
     instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookUncheckedUpdateInput = {
@@ -102533,6 +105272,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
     instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUncheckedUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookCreateManyInput = {
@@ -103031,6 +105771,164 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PlaybookTriggerCreateInput = {
+    id?: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbook: PlaybookCreateNestedOneWithoutTriggersInput
+    tenant: TenantCreateNestedOneWithoutPlaybookTriggersInput
+  }
+
+  export type PlaybookTriggerUncheckedCreateInput = {
+    id?: string
+    playbookId: string
+    tenantId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookTriggerUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbook?: PlaybookUpdateOneRequiredWithoutTriggersNestedInput
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookTriggersNestedInput
+  }
+
+  export type PlaybookTriggerUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerCreateManyInput = {
+    id?: string
+    playbookId: string
+    tenantId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookTriggerUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditCreateInput = {
+    id?: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutDispatchOverrideAuditsInput
+  }
+
+  export type DispatchOverrideAuditUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt?: Date | string
+  }
+
+  export type DispatchOverrideAuditUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutDispatchOverrideAuditsNestedInput
+  }
+
+  export type DispatchOverrideAuditUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditCreateManyInput = {
+    id?: string
+    tenantId: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt?: Date | string
+  }
+
+  export type DispatchOverrideAuditUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -103376,6 +106274,18 @@ export namespace Prisma {
     none?: PlaybookNotificationWhereInput
   }
 
+  export type PlaybookTriggerListRelationFilter = {
+    every?: PlaybookTriggerWhereInput
+    some?: PlaybookTriggerWhereInput
+    none?: PlaybookTriggerWhereInput
+  }
+
+  export type DispatchOverrideAuditListRelationFilter = {
+    every?: DispatchOverrideAuditWhereInput
+    some?: DispatchOverrideAuditWhereInput
+    none?: DispatchOverrideAuditWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -103562,6 +106472,14 @@ export namespace Prisma {
   }
 
   export type PlaybookNotificationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlaybookTriggerOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DispatchOverrideAuditOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -108587,6 +111505,88 @@ export namespace Prisma {
     _max?: NestedEnumNotifChannelFilter<$PrismaModel>
   }
 
+  export type EnumTriggerEventFilter<$PrismaModel = never> = {
+    equals?: $Enums.TriggerEvent | EnumTriggerEventFieldRefInput<$PrismaModel>
+    in?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    not?: NestedEnumTriggerEventFilter<$PrismaModel> | $Enums.TriggerEvent
+  }
+
+  export type PlaybookTriggerCountOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    tenantId?: SortOrder
+    triggerEvent?: SortOrder
+    conditions?: SortOrder
+    recurringConfig?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookTriggerMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    tenantId?: SortOrder
+    triggerEvent?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookTriggerMinOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    tenantId?: SortOrder
+    triggerEvent?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumTriggerEventWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TriggerEvent | EnumTriggerEventFieldRefInput<$PrismaModel>
+    in?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    not?: NestedEnumTriggerEventWithAggregatesFilter<$PrismaModel> | $Enums.TriggerEvent
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTriggerEventFilter<$PrismaModel>
+    _max?: NestedEnumTriggerEventFilter<$PrismaModel>
+  }
+
+  export type DispatchOverrideAuditCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    dispatchId?: SortOrder
+    userId?: SortOrder
+    reason?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DispatchOverrideAuditMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    dispatchId?: SortOrder
+    userId?: SortOrder
+    reason?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type DispatchOverrideAuditMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    dispatchId?: SortOrder
+    userId?: SortOrder
+    reason?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -108909,6 +111909,20 @@ export namespace Prisma {
     connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
   }
 
+  export type PlaybookTriggerCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput> | PlaybookTriggerCreateWithoutTenantInput[] | PlaybookTriggerUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutTenantInput | PlaybookTriggerCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookTriggerCreateManyTenantInputEnvelope
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+  }
+
+  export type DispatchOverrideAuditCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput> | DispatchOverrideAuditCreateWithoutTenantInput[] | DispatchOverrideAuditUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DispatchOverrideAuditCreateOrConnectWithoutTenantInput | DispatchOverrideAuditCreateOrConnectWithoutTenantInput[]
+    createMany?: DispatchOverrideAuditCreateManyTenantInputEnvelope
+    connect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -109229,6 +112243,20 @@ export namespace Prisma {
     connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutTenantInput | PlaybookNotificationCreateOrConnectWithoutTenantInput[]
     createMany?: PlaybookNotificationCreateManyTenantInputEnvelope
     connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+  }
+
+  export type PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput> | PlaybookTriggerCreateWithoutTenantInput[] | PlaybookTriggerUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutTenantInput | PlaybookTriggerCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookTriggerCreateManyTenantInputEnvelope
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+  }
+
+  export type DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput> | DispatchOverrideAuditCreateWithoutTenantInput[] | DispatchOverrideAuditUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DispatchOverrideAuditCreateOrConnectWithoutTenantInput | DispatchOverrideAuditCreateOrConnectWithoutTenantInput[]
+    createMany?: DispatchOverrideAuditCreateManyTenantInputEnvelope
+    connect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -109899,6 +112927,34 @@ export namespace Prisma {
     deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
   }
 
+  export type PlaybookTriggerUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput> | PlaybookTriggerCreateWithoutTenantInput[] | PlaybookTriggerUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutTenantInput | PlaybookTriggerCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookTriggerUpsertWithWhereUniqueWithoutTenantInput | PlaybookTriggerUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookTriggerCreateManyTenantInputEnvelope
+    set?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    disconnect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    delete?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    update?: PlaybookTriggerUpdateWithWhereUniqueWithoutTenantInput | PlaybookTriggerUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookTriggerUpdateManyWithWhereWithoutTenantInput | PlaybookTriggerUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
+  }
+
+  export type DispatchOverrideAuditUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput> | DispatchOverrideAuditCreateWithoutTenantInput[] | DispatchOverrideAuditUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DispatchOverrideAuditCreateOrConnectWithoutTenantInput | DispatchOverrideAuditCreateOrConnectWithoutTenantInput[]
+    upsert?: DispatchOverrideAuditUpsertWithWhereUniqueWithoutTenantInput | DispatchOverrideAuditUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DispatchOverrideAuditCreateManyTenantInputEnvelope
+    set?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    disconnect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    delete?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    connect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    update?: DispatchOverrideAuditUpdateWithWhereUniqueWithoutTenantInput | DispatchOverrideAuditUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DispatchOverrideAuditUpdateManyWithWhereWithoutTenantInput | DispatchOverrideAuditUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DispatchOverrideAuditScalarWhereInput | DispatchOverrideAuditScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -110541,6 +113597,34 @@ export namespace Prisma {
     update?: PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput | PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: PlaybookNotificationUpdateManyWithWhereWithoutTenantInput | PlaybookNotificationUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+  }
+
+  export type PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput> | PlaybookTriggerCreateWithoutTenantInput[] | PlaybookTriggerUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutTenantInput | PlaybookTriggerCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookTriggerUpsertWithWhereUniqueWithoutTenantInput | PlaybookTriggerUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookTriggerCreateManyTenantInputEnvelope
+    set?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    disconnect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    delete?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    update?: PlaybookTriggerUpdateWithWhereUniqueWithoutTenantInput | PlaybookTriggerUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookTriggerUpdateManyWithWhereWithoutTenantInput | PlaybookTriggerUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
+  }
+
+  export type DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput> | DispatchOverrideAuditCreateWithoutTenantInput[] | DispatchOverrideAuditUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: DispatchOverrideAuditCreateOrConnectWithoutTenantInput | DispatchOverrideAuditCreateOrConnectWithoutTenantInput[]
+    upsert?: DispatchOverrideAuditUpsertWithWhereUniqueWithoutTenantInput | DispatchOverrideAuditUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: DispatchOverrideAuditCreateManyTenantInputEnvelope
+    set?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    disconnect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    delete?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    connect?: DispatchOverrideAuditWhereUniqueInput | DispatchOverrideAuditWhereUniqueInput[]
+    update?: DispatchOverrideAuditUpdateWithWhereUniqueWithoutTenantInput | DispatchOverrideAuditUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: DispatchOverrideAuditUpdateManyWithWhereWithoutTenantInput | DispatchOverrideAuditUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: DispatchOverrideAuditScalarWhereInput | DispatchOverrideAuditScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutUsersInput = {
@@ -117017,6 +120101,13 @@ export namespace Prisma {
     connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
   }
 
+  export type PlaybookTriggerCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput> | PlaybookTriggerCreateWithoutPlaybookInput[] | PlaybookTriggerUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutPlaybookInput | PlaybookTriggerCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookTriggerCreateManyPlaybookInputEnvelope
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+  }
+
   export type PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput = {
     create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
     connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
@@ -117029,6 +120120,13 @@ export namespace Prisma {
     connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutPlaybookInput | PlaybookInstanceCreateOrConnectWithoutPlaybookInput[]
     createMany?: PlaybookInstanceCreateManyPlaybookInputEnvelope
     connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookTriggerUncheckedCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput> | PlaybookTriggerCreateWithoutPlaybookInput[] | PlaybookTriggerUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutPlaybookInput | PlaybookTriggerCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookTriggerCreateManyPlaybookInputEnvelope
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
   }
 
   export type EnumPlaybookEntityTypeFieldUpdateOperationsInput = {
@@ -117079,6 +120177,20 @@ export namespace Prisma {
     deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
   }
 
+  export type PlaybookTriggerUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput> | PlaybookTriggerCreateWithoutPlaybookInput[] | PlaybookTriggerUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutPlaybookInput | PlaybookTriggerCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookTriggerUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookTriggerUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookTriggerCreateManyPlaybookInputEnvelope
+    set?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    disconnect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    delete?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    update?: PlaybookTriggerUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookTriggerUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookTriggerUpdateManyWithWhereWithoutPlaybookInput | PlaybookTriggerUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
+  }
+
   export type PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput = {
     create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
     connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
@@ -117105,6 +120217,20 @@ export namespace Prisma {
     update?: PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput[]
     updateMany?: PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput | PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput[]
     deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookTriggerUncheckedUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput> | PlaybookTriggerCreateWithoutPlaybookInput[] | PlaybookTriggerUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookTriggerCreateOrConnectWithoutPlaybookInput | PlaybookTriggerCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookTriggerUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookTriggerUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookTriggerCreateManyPlaybookInputEnvelope
+    set?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    disconnect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    delete?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    connect?: PlaybookTriggerWhereUniqueInput | PlaybookTriggerWhereUniqueInput[]
+    update?: PlaybookTriggerUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookTriggerUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookTriggerUpdateManyWithWhereWithoutPlaybookInput | PlaybookTriggerUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
   }
 
   export type PlaybookCreateNestedOneWithoutStepsInput = {
@@ -117327,6 +120453,52 @@ export namespace Prisma {
     upsert?: PlaybookInstanceUpsertWithoutNotificationsInput
     connect?: PlaybookInstanceWhereUniqueInput
     update?: XOR<XOR<PlaybookInstanceUpdateToOneWithWhereWithoutNotificationsInput, PlaybookInstanceUpdateWithoutNotificationsInput>, PlaybookInstanceUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type PlaybookCreateNestedOneWithoutTriggersInput = {
+    create?: XOR<PlaybookCreateWithoutTriggersInput, PlaybookUncheckedCreateWithoutTriggersInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTriggersInput
+    connect?: PlaybookWhereUniqueInput
+  }
+
+  export type TenantCreateNestedOneWithoutPlaybookTriggersInput = {
+    create?: XOR<TenantCreateWithoutPlaybookTriggersInput, TenantUncheckedCreateWithoutPlaybookTriggersInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookTriggersInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type EnumTriggerEventFieldUpdateOperationsInput = {
+    set?: $Enums.TriggerEvent
+  }
+
+  export type PlaybookUpdateOneRequiredWithoutTriggersNestedInput = {
+    create?: XOR<PlaybookCreateWithoutTriggersInput, PlaybookUncheckedCreateWithoutTriggersInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTriggersInput
+    upsert?: PlaybookUpsertWithoutTriggersInput
+    connect?: PlaybookWhereUniqueInput
+    update?: XOR<XOR<PlaybookUpdateToOneWithWhereWithoutTriggersInput, PlaybookUpdateWithoutTriggersInput>, PlaybookUncheckedUpdateWithoutTriggersInput>
+  }
+
+  export type TenantUpdateOneRequiredWithoutPlaybookTriggersNestedInput = {
+    create?: XOR<TenantCreateWithoutPlaybookTriggersInput, TenantUncheckedCreateWithoutPlaybookTriggersInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookTriggersInput
+    upsert?: TenantUpsertWithoutPlaybookTriggersInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutPlaybookTriggersInput, TenantUpdateWithoutPlaybookTriggersInput>, TenantUncheckedUpdateWithoutPlaybookTriggersInput>
+  }
+
+  export type TenantCreateNestedOneWithoutDispatchOverrideAuditsInput = {
+    create?: XOR<TenantCreateWithoutDispatchOverrideAuditsInput, TenantUncheckedCreateWithoutDispatchOverrideAuditsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDispatchOverrideAuditsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type TenantUpdateOneRequiredWithoutDispatchOverrideAuditsNestedInput = {
+    create?: XOR<TenantCreateWithoutDispatchOverrideAuditsInput, TenantUncheckedCreateWithoutDispatchOverrideAuditsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutDispatchOverrideAuditsInput
+    upsert?: TenantUpsertWithoutDispatchOverrideAuditsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutDispatchOverrideAuditsInput, TenantUpdateWithoutDispatchOverrideAuditsInput>, TenantUncheckedUpdateWithoutDispatchOverrideAuditsInput>
   }
 
   export type NestedUuidFilter<$PrismaModel = never> = {
@@ -118390,6 +121562,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotifChannelFilter<$PrismaModel>
     _max?: NestedEnumNotifChannelFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTriggerEventFilter<$PrismaModel = never> = {
+    equals?: $Enums.TriggerEvent | EnumTriggerEventFieldRefInput<$PrismaModel>
+    in?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    not?: NestedEnumTriggerEventFilter<$PrismaModel> | $Enums.TriggerEvent
+  }
+
+  export type NestedEnumTriggerEventWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TriggerEvent | EnumTriggerEventFieldRefInput<$PrismaModel>
+    in?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TriggerEvent[] | ListEnumTriggerEventFieldRefInput<$PrismaModel>
+    not?: NestedEnumTriggerEventWithAggregatesFilter<$PrismaModel> | $Enums.TriggerEvent
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTriggerEventFilter<$PrismaModel>
+    _max?: NestedEnumTriggerEventFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutTenantInput = {
@@ -120537,6 +123726,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
     instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookUncheckedCreateWithoutTenantInput = {
@@ -120552,6 +123742,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
     instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookCreateOrConnectWithoutTenantInput = {
@@ -120643,6 +123834,68 @@ export namespace Prisma {
 
   export type PlaybookNotificationCreateManyTenantInputEnvelope = {
     data: PlaybookNotificationCreateManyTenantInput | PlaybookNotificationCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookTriggerCreateWithoutTenantInput = {
+    id?: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbook: PlaybookCreateNestedOneWithoutTriggersInput
+  }
+
+  export type PlaybookTriggerUncheckedCreateWithoutTenantInput = {
+    id?: string
+    playbookId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookTriggerCreateOrConnectWithoutTenantInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    create: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookTriggerCreateManyTenantInputEnvelope = {
+    data: PlaybookTriggerCreateManyTenantInput | PlaybookTriggerCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DispatchOverrideAuditCreateWithoutTenantInput = {
+    id?: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt?: Date | string
+  }
+
+  export type DispatchOverrideAuditUncheckedCreateWithoutTenantInput = {
+    id?: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
+    createdAt?: Date | string
+  }
+
+  export type DispatchOverrideAuditCreateOrConnectWithoutTenantInput = {
+    where: DispatchOverrideAuditWhereUniqueInput
+    create: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DispatchOverrideAuditCreateManyTenantInputEnvelope = {
+    data: DispatchOverrideAuditCreateManyTenantInput | DispatchOverrideAuditCreateManyTenantInput[]
     skipDuplicates?: boolean
   }
 
@@ -122363,6 +125616,67 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"PlaybookNotification"> | Date | string
   }
 
+  export type PlaybookTriggerUpsertWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    update: XOR<PlaybookTriggerUpdateWithoutTenantInput, PlaybookTriggerUncheckedUpdateWithoutTenantInput>
+    create: XOR<PlaybookTriggerCreateWithoutTenantInput, PlaybookTriggerUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookTriggerUpdateWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    data: XOR<PlaybookTriggerUpdateWithoutTenantInput, PlaybookTriggerUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type PlaybookTriggerUpdateManyWithWhereWithoutTenantInput = {
+    where: PlaybookTriggerScalarWhereInput
+    data: XOR<PlaybookTriggerUpdateManyMutationInput, PlaybookTriggerUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type PlaybookTriggerScalarWhereInput = {
+    AND?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
+    OR?: PlaybookTriggerScalarWhereInput[]
+    NOT?: PlaybookTriggerScalarWhereInput | PlaybookTriggerScalarWhereInput[]
+    id?: UuidFilter<"PlaybookTrigger"> | string
+    playbookId?: UuidFilter<"PlaybookTrigger"> | string
+    tenantId?: UuidFilter<"PlaybookTrigger"> | string
+    triggerEvent?: EnumTriggerEventFilter<"PlaybookTrigger"> | $Enums.TriggerEvent
+    conditions?: JsonNullableFilter<"PlaybookTrigger">
+    recurringConfig?: JsonNullableFilter<"PlaybookTrigger">
+    isActive?: BoolFilter<"PlaybookTrigger"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookTrigger"> | Date | string
+  }
+
+  export type DispatchOverrideAuditUpsertWithWhereUniqueWithoutTenantInput = {
+    where: DispatchOverrideAuditWhereUniqueInput
+    update: XOR<DispatchOverrideAuditUpdateWithoutTenantInput, DispatchOverrideAuditUncheckedUpdateWithoutTenantInput>
+    create: XOR<DispatchOverrideAuditCreateWithoutTenantInput, DispatchOverrideAuditUncheckedCreateWithoutTenantInput>
+  }
+
+  export type DispatchOverrideAuditUpdateWithWhereUniqueWithoutTenantInput = {
+    where: DispatchOverrideAuditWhereUniqueInput
+    data: XOR<DispatchOverrideAuditUpdateWithoutTenantInput, DispatchOverrideAuditUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type DispatchOverrideAuditUpdateManyWithWhereWithoutTenantInput = {
+    where: DispatchOverrideAuditScalarWhereInput
+    data: XOR<DispatchOverrideAuditUpdateManyMutationInput, DispatchOverrideAuditUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type DispatchOverrideAuditScalarWhereInput = {
+    AND?: DispatchOverrideAuditScalarWhereInput | DispatchOverrideAuditScalarWhereInput[]
+    OR?: DispatchOverrideAuditScalarWhereInput[]
+    NOT?: DispatchOverrideAuditScalarWhereInput | DispatchOverrideAuditScalarWhereInput[]
+    id?: UuidFilter<"DispatchOverrideAudit"> | string
+    tenantId?: UuidFilter<"DispatchOverrideAudit"> | string
+    dispatchId?: UuidFilter<"DispatchOverrideAudit"> | string
+    userId?: UuidFilter<"DispatchOverrideAudit"> | string
+    reason?: StringFilter<"DispatchOverrideAudit"> | string
+    entityType?: StringFilter<"DispatchOverrideAudit"> | string
+    entityId?: UuidFilter<"DispatchOverrideAudit"> | string
+    createdAt?: DateTimeFilter<"DispatchOverrideAudit"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -122419,6 +125733,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -122477,6 +125793,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -124140,6 +127458,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -124198,6 +127518,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -124815,6 +128137,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -124873,6 +128197,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -125565,6 +128891,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -125623,6 +128951,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -126027,6 +129357,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -126085,6 +129417,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -126159,6 +129493,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -126217,6 +129553,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -126275,6 +129613,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -126333,6 +129673,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -127117,6 +130459,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -127175,6 +130519,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -128061,6 +131407,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -128119,6 +131467,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -128582,6 +131932,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -128640,6 +131992,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -129117,6 +132471,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -129175,6 +132531,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -129308,6 +132666,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -129366,6 +132726,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -129489,6 +132851,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -129547,6 +132911,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -129680,6 +133046,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -129738,6 +133106,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -129861,6 +133231,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -129919,6 +133291,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -129993,6 +133367,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -130051,6 +133427,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -130109,6 +133487,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -130167,6 +133547,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -130363,6 +133745,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -130421,6 +133805,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -130613,6 +133999,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -130671,6 +134059,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -130964,6 +134354,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -131022,6 +134414,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -131317,6 +134711,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -131375,6 +134771,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -131508,6 +134906,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -131566,6 +134966,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -131689,6 +135091,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -131747,6 +135151,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -131847,6 +135253,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -131905,6 +135313,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -131979,6 +135389,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -132037,6 +135449,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -132288,6 +135702,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -132346,6 +135762,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -132599,6 +136017,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -132657,6 +136077,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -132791,6 +136213,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -132849,6 +136273,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -132939,6 +136365,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -132997,6 +136425,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -133161,6 +136591,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -133219,6 +136651,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -133379,6 +136813,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -133437,6 +136873,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -133537,6 +136975,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -133595,6 +137035,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -133715,6 +137157,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -133773,6 +137217,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -133905,6 +137351,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -133963,6 +137411,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -134021,6 +137471,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -134079,6 +137531,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -134218,6 +137672,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -134276,6 +137732,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -134405,6 +137863,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -134463,6 +137923,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -134649,6 +138111,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -134707,6 +138171,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -134797,6 +138263,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -134855,6 +138323,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -134980,6 +138450,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -135038,6 +138510,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -135153,6 +138627,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -135211,6 +138687,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -135582,6 +139060,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -135640,6 +139120,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -136060,6 +139542,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -136118,6 +139602,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -136261,6 +139747,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -136319,6 +139807,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -136377,6 +139867,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -136435,6 +139927,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -136537,6 +140031,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -136595,6 +140091,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -136774,6 +140272,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -136832,6 +140332,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -137191,6 +140693,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -137249,6 +140753,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -137610,6 +141116,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -137668,6 +141176,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -138490,6 +142000,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -138548,6 +142060,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -139272,6 +142786,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -139330,6 +142846,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -139404,6 +142922,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -139462,6 +142982,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -139585,6 +143107,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -139643,6 +143167,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -140023,6 +143549,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -140081,6 +143609,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadUpsertWithoutRouteStopsInput = {
@@ -140252,6 +143782,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -140310,6 +143842,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -140544,6 +144078,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -140602,6 +144138,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -141300,6 +144838,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
@@ -141358,6 +144898,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
@@ -141527,6 +145069,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
@@ -141585,6 +145129,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHosEntriesInput = {
@@ -141744,6 +145290,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
@@ -141802,6 +145350,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
@@ -141971,6 +145521,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
@@ -142029,6 +145581,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutIncidentsInput = {
@@ -142188,6 +145742,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierClientsInput = {
@@ -142246,6 +145802,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierClientsInput = {
@@ -142780,6 +146338,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierClientsInput = {
@@ -142838,6 +146398,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierContractUpsertWithWhereUniqueWithoutClientInput = {
@@ -143041,6 +146603,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierContractsInput = {
@@ -143099,6 +146663,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierContractsInput = {
@@ -143446,6 +147012,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierContractsInput = {
@@ -143504,6 +147072,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutContractsInput = {
@@ -143689,6 +147259,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierFacilitiesInput = {
@@ -143747,6 +147319,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierFacilitiesInput = {
@@ -144001,6 +147575,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierFacilitiesInput = {
@@ -144059,6 +147635,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithWhereUniqueWithoutHomeTerminalInput = {
@@ -144186,6 +147764,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDriversInput = {
@@ -144244,6 +147824,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDriversInput = {
@@ -144786,6 +148368,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDriversInput = {
@@ -144844,6 +148428,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCarrierDriverProfileInput = {
@@ -145146,6 +148732,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierTrucksInput = {
@@ -145204,6 +148792,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierTrucksInput = {
@@ -145510,6 +149100,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierTrucksInput = {
@@ -145568,6 +149160,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithWhereUniqueWithoutTruckInput = {
@@ -145690,6 +149284,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteTemplatesInput = {
@@ -145748,6 +149344,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteTemplatesInput = {
@@ -146184,6 +149782,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -146242,6 +149842,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutRouteTemplatesInput = {
@@ -146848,6 +150450,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDispatchesInput = {
@@ -146906,6 +150510,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDispatchesInput = {
@@ -147748,6 +151354,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDispatchesInput = {
@@ -147806,6 +151414,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteTemplateUpsertWithoutDispatchesInput = {
@@ -148408,6 +152018,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierLoadsInput = {
@@ -148466,6 +152078,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierLoadsInput = {
@@ -148983,6 +152597,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -149041,6 +152657,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutCarrierLoadsInput = {
@@ -151358,6 +154976,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDocumentTypesInput = {
@@ -151416,6 +155036,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDocumentTypesInput = {
@@ -151544,6 +155166,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDocumentTypesInput = {
@@ -151602,6 +155226,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput = {
@@ -151676,6 +155302,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierExpensesInput = {
@@ -151734,6 +155362,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierExpensesInput = {
@@ -152291,6 +155921,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierExpensesInput = {
@@ -152349,6 +155981,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutExpensesInput = {
@@ -152932,6 +156566,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -152990,6 +156626,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -153429,6 +157067,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -153487,6 +157127,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverPayRecordsInput = {
@@ -153940,6 +157582,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInAppNotificationsInput = {
@@ -153998,6 +157642,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInAppNotificationsInput = {
@@ -154167,6 +157813,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -154225,6 +157873,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInAppNotificationsInput = {
@@ -154384,6 +158034,8 @@ export namespace Prisma {
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutStepTemplatesInput = {
@@ -154442,6 +158094,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutStepTemplatesInput = {
@@ -154600,6 +158254,8 @@ export namespace Prisma {
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutStepTemplatesInput = {
@@ -154658,6 +158314,8 @@ export namespace Prisma {
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput = {
@@ -154788,6 +158446,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybooksInput = {
@@ -154846,6 +158506,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybooksInput = {
@@ -154937,6 +158599,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PlaybookTriggerCreateWithoutPlaybookInput = {
+    id?: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookTriggersInput
+  }
+
+  export type PlaybookTriggerUncheckedCreateWithoutPlaybookInput = {
+    id?: string
+    tenantId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookTriggerCreateOrConnectWithoutPlaybookInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    create: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookTriggerCreateManyPlaybookInputEnvelope = {
+    data: PlaybookTriggerCreateManyPlaybookInput | PlaybookTriggerCreateManyPlaybookInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TenantUpsertWithoutPlaybooksInput = {
     update: XOR<TenantUpdateWithoutPlaybooksInput, TenantUncheckedUpdateWithoutPlaybooksInput>
     create: XOR<TenantCreateWithoutPlaybooksInput, TenantUncheckedCreateWithoutPlaybooksInput>
@@ -155004,6 +158698,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybooksInput = {
@@ -155062,6 +158758,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput = {
@@ -155096,6 +158794,22 @@ export namespace Prisma {
     data: XOR<PlaybookInstanceUpdateManyMutationInput, PlaybookInstanceUncheckedUpdateManyWithoutPlaybookInput>
   }
 
+  export type PlaybookTriggerUpsertWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    update: XOR<PlaybookTriggerUpdateWithoutPlaybookInput, PlaybookTriggerUncheckedUpdateWithoutPlaybookInput>
+    create: XOR<PlaybookTriggerCreateWithoutPlaybookInput, PlaybookTriggerUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookTriggerUpdateWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookTriggerWhereUniqueInput
+    data: XOR<PlaybookTriggerUpdateWithoutPlaybookInput, PlaybookTriggerUncheckedUpdateWithoutPlaybookInput>
+  }
+
+  export type PlaybookTriggerUpdateManyWithWhereWithoutPlaybookInput = {
+    where: PlaybookTriggerScalarWhereInput
+    data: XOR<PlaybookTriggerUpdateManyMutationInput, PlaybookTriggerUncheckedUpdateManyWithoutPlaybookInput>
+  }
+
   export type PlaybookCreateWithoutStepsInput = {
     id?: string
     name: string
@@ -155109,6 +158823,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutPlaybooksInput
     instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookUncheckedCreateWithoutStepsInput = {
@@ -155124,6 +158839,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookCreateOrConnectWithoutStepsInput = {
@@ -155190,6 +158906,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
     instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookUncheckedUpdateWithoutStepsInput = {
@@ -155205,6 +158922,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUncheckedUpdateManyWithoutPlaybookNestedInput
   }
 
   export type StepTemplateUpsertWithoutPlaybookStepsInput = {
@@ -155304,6 +159022,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybookInstancesInput = {
@@ -155362,6 +159082,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybookInstancesInput = {
@@ -155382,6 +159104,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutPlaybooksInput
     steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookUncheckedCreateWithoutInstancesInput = {
@@ -155397,6 +159120,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
+    triggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutPlaybookInput
   }
 
   export type PlaybookCreateOrConnectWithoutInstancesInput = {
@@ -155553,6 +159277,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybookInstancesInput = {
@@ -155611,6 +159337,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookUpsertWithoutInstancesInput = {
@@ -155637,6 +159365,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
     steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookUncheckedUpdateWithoutInstancesInput = {
@@ -155652,6 +159381,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUncheckedUpdateManyWithoutPlaybookNestedInput
   }
 
   export type StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput = {
@@ -155906,6 +159636,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
     playbooks?: PlaybookCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPlaybookNotificationsInput = {
@@ -155964,6 +159696,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
     playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
     playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPlaybookNotificationsInput = {
@@ -156079,6 +159813,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
     playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPlaybookNotificationsInput = {
@@ -156137,6 +159873,8 @@ export namespace Prisma {
     stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
     playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
     playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PlaybookInstanceUpsertWithoutNotificationsInput = {
@@ -156184,6 +159922,598 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     stepInstances?: StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookCreateWithoutTriggersInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybooksInput
+    steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUncheckedCreateWithoutTriggersInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookCreateOrConnectWithoutTriggersInput = {
+    where: PlaybookWhereUniqueInput
+    create: XOR<PlaybookCreateWithoutTriggersInput, PlaybookUncheckedCreateWithoutTriggersInput>
+  }
+
+  export type TenantCreateWithoutPlaybookTriggersInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutPlaybookTriggersInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutPlaybookTriggersInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutPlaybookTriggersInput, TenantUncheckedCreateWithoutPlaybookTriggersInput>
+  }
+
+  export type PlaybookUpsertWithoutTriggersInput = {
+    update: XOR<PlaybookUpdateWithoutTriggersInput, PlaybookUncheckedUpdateWithoutTriggersInput>
+    create: XOR<PlaybookCreateWithoutTriggersInput, PlaybookUncheckedCreateWithoutTriggersInput>
+    where?: PlaybookWhereInput
+  }
+
+  export type PlaybookUpdateToOneWithWhereWithoutTriggersInput = {
+    where?: PlaybookWhereInput
+    data: XOR<PlaybookUpdateWithoutTriggersInput, PlaybookUncheckedUpdateWithoutTriggersInput>
+  }
+
+  export type PlaybookUpdateWithoutTriggersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
+    steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateWithoutTriggersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type TenantUpsertWithoutPlaybookTriggersInput = {
+    update: XOR<TenantUpdateWithoutPlaybookTriggersInput, TenantUncheckedUpdateWithoutPlaybookTriggersInput>
+    create: XOR<TenantCreateWithoutPlaybookTriggersInput, TenantUncheckedCreateWithoutPlaybookTriggersInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutPlaybookTriggersInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutPlaybookTriggersInput, TenantUncheckedUpdateWithoutPlaybookTriggersInput>
+  }
+
+  export type TenantUpdateWithoutPlaybookTriggersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutPlaybookTriggersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    dispatchOverrideAudits?: DispatchOverrideAuditUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantCreateWithoutDispatchOverrideAuditsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutDispatchOverrideAuditsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+    playbookTriggers?: PlaybookTriggerUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutDispatchOverrideAuditsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutDispatchOverrideAuditsInput, TenantUncheckedCreateWithoutDispatchOverrideAuditsInput>
+  }
+
+  export type TenantUpsertWithoutDispatchOverrideAuditsInput = {
+    update: XOR<TenantUpdateWithoutDispatchOverrideAuditsInput, TenantUncheckedUpdateWithoutDispatchOverrideAuditsInput>
+    create: XOR<TenantCreateWithoutDispatchOverrideAuditsInput, TenantUncheckedCreateWithoutDispatchOverrideAuditsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutDispatchOverrideAuditsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutDispatchOverrideAuditsInput, TenantUncheckedUpdateWithoutDispatchOverrideAuditsInput>
+  }
+
+  export type TenantUpdateWithoutDispatchOverrideAuditsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutDispatchOverrideAuditsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    playbookTriggers?: PlaybookTriggerUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateManyTenantInput = {
@@ -156980,6 +161310,27 @@ export namespace Prisma {
     message: string
     sentAt?: Date | string | null
     deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PlaybookTriggerCreateManyTenantInput = {
+    id?: string
+    playbookId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchOverrideAuditCreateManyTenantInput = {
+    id?: string
+    dispatchId: string
+    userId: string
+    reason: string
+    entityType: string
+    entityId: string
     createdAt?: Date | string
   }
 
@@ -159453,6 +163804,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
     instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookUncheckedUpdateWithoutTenantInput = {
@@ -159468,6 +163820,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
     instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+    triggers?: PlaybookTriggerUncheckedUpdateManyWithoutPlaybookNestedInput
   }
 
   export type PlaybookUncheckedUpdateManyWithoutTenantInput = {
@@ -159571,6 +163924,69 @@ export namespace Prisma {
     message?: StringFieldUpdateOperationsInput | string
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbook?: PlaybookUpdateOneRequiredWithoutTriggersNestedInput
+  }
+
+  export type PlaybookTriggerUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchOverrideAuditUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    reason?: StringFieldUpdateOperationsInput | string
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -168106,6 +172522,17 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PlaybookTriggerCreateManyPlaybookInput = {
+    id?: string
+    tenantId: string
+    triggerEvent: $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type PlaybookStepUpdateWithoutPlaybookInput = {
     id?: StringFieldUpdateOperationsInput | string
     sequence?: IntFieldUpdateOperationsInput | number
@@ -168196,6 +172623,39 @@ export namespace Prisma {
     startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookTriggersNestedInput
+  }
+
+  export type PlaybookTriggerUncheckedUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookTriggerUncheckedUpdateManyWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    triggerEvent?: EnumTriggerEventFieldUpdateOperationsInput | $Enums.TriggerEvent
+    conditions?: NullableJsonNullValueInput | InputJsonValue
+    recurringConfig?: NullableJsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

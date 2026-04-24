@@ -174,10 +174,12 @@ model Tenant {
   carrierDocumentTypes  CarrierDocumentType[]
 
   // Workflow Engine reverse relations
-  stepTemplates         StepTemplate[]
-  playbooks             Playbook[]
-  playbookInstances     PlaybookInstance[]
-  playbookNotifications PlaybookNotification[]
+  stepTemplates          StepTemplate[]
+  playbooks              Playbook[]
+  playbookInstances      PlaybookInstance[]
+  playbookNotifications  PlaybookNotification[]
+  playbookTriggers       PlaybookTrigger[]
+  dispatchOverrideAudits DispatchOverrideAudit[]
 }
 
 model User {
@@ -1313,6 +1315,17 @@ enum AssigneeRole {
   THIRD_PARTY
 }
 
+enum TriggerEvent {
+  ON_DRIVER_CREATE
+  ON_VEHICLE_CREATE
+  ON_DISPATCH_CREATE
+  ON_DISPATCH_DEPART
+  ON_DISPATCH_DELIVER
+  ON_PARTNER_CREATE
+  MANUAL_ONLY
+  RECURRING
+}
+
 model DriverHOSEntry {
   id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId  String        @db.Uuid
@@ -1960,6 +1973,7 @@ model Playbook {
   tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   steps     PlaybookStep[]
   instances PlaybookInstance[]
+  triggers  PlaybookTrigger[]
 
   @@index([tenantId, isActive])
   @@index([tenantId, entityType])
@@ -2057,4 +2071,38 @@ model PlaybookNotification {
 
   @@index([playbookInstanceId])
   @@index([recipientUserId])
+}
+
+// ─── Phase 45 Automation Models ──────────────────────────────────────────────
+
+model PlaybookTrigger {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookId      String       @db.Uuid
+  playbook        Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  tenantId        String       @db.Uuid
+  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  triggerEvent    TriggerEvent
+  conditions      Json?        // { driverType: "CDL" } — flat key-value only per spec Section 6.5
+  recurringConfig Json?        // { frequency:"daily", daysOfWeek:[1..5], time:"07:00" } — reserved, not used in Phase 45
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now()) @db.Timestamptz
+  updatedAt       DateTime     @updatedAt @db.Timestamptz
+
+  @@index([tenantId, triggerEvent])
+  @@index([playbookId])
+}
+
+model DispatchOverrideAudit {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dispatchId String   @db.Uuid // CarrierDispatch.id — no FK because CarrierDispatch lives in a different module
+  userId     String   @db.Uuid // Admin user who approved the override
+  reason     String
+  entityType String   // "DRIVER" or "VEHICLE"
+  entityId   String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([dispatchId])
 }
