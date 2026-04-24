@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 45 Workflow Engine 4 Automation — IN PROGRESS
-Current Plan: 1 of 6 plans complete
-Status: 45-01 complete — TriggerEvent enum, PlaybookTrigger table, DispatchOverrideAudit table added to Supabase; playbookCategorySchema VEHICLE_INSPECTION gap closed
-Last activity: 2026-04-24 - Completed 45-01: DB foundation for automation (2 tasks, 3 files, ~3min)
-Last session: 2026-04-24T19:28:00Z
-Stopped at: Completed 45-01-PLAN.md
+Current Plan: 3 of 6 plans complete
+Status: 45-03 complete — Unified notification module (7 NotifType exports), DISPATCH_READY + INSTANCE_BLOCKED flip gates wired, cron endpoint for STEP_OVERDUE and 48h email escalation
+Last activity: 2026-04-24 - Completed 45-03: Full notification suite (3 tasks, 7 files, ~9min)
+Last session: 2026-04-24T19:40:00Z
+Stopped at: Completed 45-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -120,6 +120,7 @@ Progress: [███████████████████████
 - Phase 44-05 (2026-04-24): ApproveDialog + truck isDispatchReady badge — ApproveDialog bottom sheet for mechanic APPROVAL steps, truck profile dispatch readiness badge, tRPC approve procedure call — 1 task, 2 files, ~3min
 - Phase 44-06 (2026-04-24): Final test suite — 5 failInspectionItem unit tests (category gating, photo validation, readiness recompute) + 4 InspectionModeScreen tap-target static-analysis tests; fixed pre-existing regression in workflows-complete-step.test.ts — 1 task, 3 files, ~5min — Phase 44 COMPLETE
 - Phase 45-01 (2026-04-24): Automation DB foundation — TriggerEvent enum (8 values), PlaybookTrigger table (composite index on tenantId+triggerEvent), DispatchOverrideAudit table (tenantId+dispatchId indexes), Playbook.triggers + Tenant.playbookTriggers + Tenant.dispatchOverrideAudits back-relations, migration applied to Supabase, Prisma client regenerated; Phase 44 validation gap closed (VEHICLE_INSPECTION added to playbookCategorySchema) — 2 tasks, 3 files, ~3min
+- Phase 45-03 (2026-04-24): Full notification suite — notifications.ts module (7 exports: sendStepAssigned/Overdue/InstanceBlocked/DispatchReady/StepFailed/ApprovalNeeded/InstanceBlockedEmail), DISPATCH_READY + INSTANCE_BLOCKED flip gates in computeDispatchReadiness, inline sends refactored in generatePlaybookInstance/failInspectionItem/completeStep, /api/cron/workflow-notifications cron route (STEP_OVERDUE 24h + INSTANCE_BLOCKED email 48h sweeps with isOverdue dedup), WorkflowInstanceBlockedEmail React template — 3 tasks, 7 files, 522s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
