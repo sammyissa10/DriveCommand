@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 44 Workflow Engine 3 Inspection Mode — IN PROGRESS
-Current Plan: Plan 3 of 6 complete — 44-03 DONE
-Status: Phase 44 underway — failInspectionItem service complete, mobile fail + upload-photo REST endpoints added, InspectionModeScreen (Plan 04) can call them directly
-Last activity: 2026-04-24 - Completed 44-03: Mobile fail + upload-photo endpoints — POST tasks/[id]/fail + POST tasks/upload-photo, 1 task, 3 files, ~8min
-Last session: 2026-04-24T18:25:00Z
-Stopped at: Completed 44-03-PLAN.md — 1 task auto, 3 files modified (2 new routes + DocumentCategory type extended)
+Current Plan: Plan 5 of 6 complete — 44-05 DONE
+Status: Phase 44 underway — ApproveDialog + isDispatchReady badge complete, Plan 06 (final) remaining
+Last activity: 2026-04-24 - Completed 44-05: ApproveDialog in ChecklistDetailClient + isDispatchReady badge on truck profile, 1 task, 2 files, ~2min
+Last session: 2026-04-24T18:46:00Z
+Stopped at: Completed 44-05-PLAN.md — 1 task auto, 2 files modified (ChecklistDetailClient + trucks/[id]/page)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -1296,9 +1296,13 @@ None blocking immediate progress.
 - Native checkbox for FormFillEditor: @/components/ui/checkbox (shadcn) is not installed in this project; used native <input type="checkbox"> with accent-primary class — functionally equivalent
 | Phase 43 P02 | 2 | 2 tasks | 3 files |
 
+**Phase 44-05 decisions (ApproveDialog + truck dispatch badge):**
+- Show Approve button only for APPROVAL-type NOT_STARTED steps; non-APPROVAL NOT_STARTED steps show View Details — cleaner UX, the action is approval not inspection
+- Truck page uses (truck as any).isDispatchReady: getTruck uses include (not select) so Prisma returns all scalars but TypeScript doesn't surface isDispatchReady in the inferred return type without explicit select casting
+
 ## Session Continuity
 
-Last session: 2026-04-24T03:36:09Z
-Stopped at: Completed 42-06-PLAN.md — 2 tasks, 11 files created, branch feat/workflow-engine-spec
+Last session: 2026-04-24T18:46:00Z
+Stopped at: Completed 44-05-PLAN.md — 1 task auto, 2 files modified (ChecklistDetailClient + trucks/[id]/page)
 Resume file: None
-Next action: Phase 42 complete — all 6 plans done. Phase 42 UAT goal achievable (build Pre-Trip Inspection in under 10 minutes).
+Next action: Phase 44 Plan 06 — final plan (TBD)
