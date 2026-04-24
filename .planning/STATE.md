@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 2 of 7 complete — 43-02 DONE
-Status: Phase 43 active — instance + stepInstance Zod schemas added to @drivecommand/validation (generateInstanceSchema, completeStepSchema, skipStepSchema, getForEntitySchema, and 5 others)
-Last activity: 2026-04-24 - Completed 43-02: Zod Validation Schemas (instance.ts + stepInstance.ts + index re-exports)
-Last session: 2026-04-24T05:07:04Z
-Stopped at: Completed 43-02-PLAN.md — 2 tasks auto, 3 files modified, 2 files created
+Current Plan: Plan 3 of 7 complete — 43-03 DONE
+Status: Phase 43 active — 4 service functions (generatePlaybookInstance, computeDispatchReadiness, completeStep, skipStep) + 2 tRPC routers (instanceRouter, stepInstanceRouter) added; snapshot immutability and dispatch readiness fully wired
+Last activity: 2026-04-24 - Completed 43-03: Service Layer + tRPC Routers (6 files created, 1 modified)
+Last session: 2026-04-24T05:17:23Z
+Stopped at: Completed 43-03-PLAN.md — 2 tasks auto, 6 files created, 1 file modified, 408s
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -108,6 +108,7 @@ Progress: [███████████████████████
 - Phase 42-06 (2026-04-24): Playbook Builder UI — 3-column DnD builder (/checklists/playbooks/[id]/edit), BuilderClient + BuilderCanvas + 5 PhaseSection columns with SortableContext, BuilderStepRow, StepLibraryPanel (filterable, draggable templates), NewStepTemplateButton dialog, StepDetailEditor with all 8 step-type editors (FormFillEditor/InspectionItemEditor/6 SimpleEditors), overrideConfig persistence via updateStep — 2 tasks, 11 files, ~900s
 - Phase 42-07 (2026-04-23): Naming lint Vitest test + phase UAT — workflows-naming-lint.test.ts (recursive walk of /checklists route, strips import/type/JSDoc lines, asserts PlaybookInstance/StepInstance/PlaybookTrigger absent from JSX text + string attributes), user UAT approved (Pre-Trip Inspection built end-to-end in under 10 minutes), Phase 42 COMPLETE — 1 auto task + 1 human-verify, 1 file, ~5min
 - Phase 43-01 (2026-04-24): Phase 43 schema foundation — InstanceStatus/StepStatus/NotifType/NotifChannel enums, PlaybookInstance+StepInstance+PlaybookNotification models, isDispatchReady on User+Truck, 4 dispatch-blocker columns on PlaybookStep, migration applied to Supabase with RLS policies, Prisma client regenerated — 2 tasks, 8 files, ~5min
+- Phase 43-03 (2026-04-24): Service layer + tRPC routers — generatePlaybookInstance/computeDispatchReadiness/completeStep/skipStep services, instanceRouter + stepInstanceRouter tRPC routers, workflowsRouter updated — 2 tasks, 6 files created, 1 file modified, 408s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -235,6 +236,14 @@ Progress: [███████████████████████
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
 - Rate limit key prefix dir: (not dist:) to isolate directions quota from distance quota on shared geocodingLimiter
 - Coordinate order [lng, lat] preserved end-to-end — GeoJSON standard, matches Mapbox ShapeSource natively, no swap needed on mobile
+
+**Phase 43-03 decisions (Service layer + tRPC routers):**
+- isDispatchBlocker read from stepSnapshot (not PlaybookStep template) — snapshot immutability is the invariant; live template changes must not affect running checklists
+- INSPECTION_ITEM rejected with USE_FAIL_ENDPOINT in completeStep — failInspectionItem is a Phase 44 concern
+- Assignee resolution runs outside transaction (best-effort) — push notification failure must not roll back checklist creation
+- instance.list sorted client-side after DB fetch — Prisma lacks CASE WHEN ordering support natively
+- StepTemplate.defaultConfig (JSON) used in snapshot — schema has no requiresPhoto/requiresSignature/formSchema/documentTypeName fields
+- User firstName+lastName concatenated for entity labels in dispatch-ready notifications — User model has no name field
 
 **Phase 43-01 decisions (Phase 43 schema foundation):**
 - Backfill UPDATE in migration must use quoted column names (`"overrideConfig"`) — PostgreSQL lowercases unquoted identifiers, causing column-not-found errors
