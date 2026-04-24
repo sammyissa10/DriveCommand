@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 44 Workflow Engine 3 Inspection Mode — IN PROGRESS
-Current Plan: Plan 5 of 6 complete — 44-05 DONE
-Status: Phase 44 underway — ApproveDialog + isDispatchReady badge complete, Plan 06 (final) remaining
-Last activity: 2026-04-24 - Completed 44-05: ApproveDialog in ChecklistDetailClient + isDispatchReady badge on truck profile, 1 task, 2 files, ~2min
-Last session: 2026-04-24T18:46:00Z
-Stopped at: Completed 44-05-PLAN.md — 1 task auto, 2 files modified (ChecklistDetailClient + trucks/[id]/page)
+Current Plan: Plans 4 and 5 of 6 complete — 44-04 and 44-05 DONE
+Status: Phase 44 underway — InspectionModeScreen + ApproveDialog + isDispatchReady badge complete, Plan 06 (final) remaining
+Last activity: 2026-04-24 - Completed 44-04: InspectionModeScreen (full DVIR UX, card-slide animation, PASS/FAIL, photo upload, completion screen) + TaskActionDispatcher updated, 1 task, 2 files, ~3min
+Last session: 2026-04-24T18:31:07Z
+Stopped at: Completed 44-04-PLAN.md — 1 task auto, 2 files modified (InspectionModeScreen + TaskActionDispatcher)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -903,6 +903,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick-282]: Stop-scoped messaging uses FleetMessage.stopId FK with dispatch-level tenant isolation and auto-resolved driver recipient from primaryDriver
 - [Phase 43-02]: stepResultSchema uses all-optional fields — service layer enforces type-specific requirements to avoid over-coupling schema to all 8 step types
 - [Phase 43-02]: Used z.record(z.string(), z.unknown()) for formData in stepResultSchema — Zod v4 requires two type arguments
+- [Phase 44-workflow-engine-3-inspection-mode]: PASS is fire-and-forget (animation-first, API in background); FAIL awaits API before advancing to ensure photo/note data persists
 
 ### Pending Todos
 
@@ -1299,6 +1300,7 @@ None blocking immediate progress.
 **Phase 44-05 decisions (ApproveDialog + truck dispatch badge):**
 - Show Approve button only for APPROVAL-type NOT_STARTED steps; non-APPROVAL NOT_STARTED steps show View Details — cleaner UX, the action is approval not inspection
 - Truck page uses (truck as any).isDispatchReady: getTruck uses include (not select) so Prisma returns all scalars but TypeScript doesn't surface isDispatchReady in the inferred return type without explicit select casting
+| Phase 44-workflow-engine-3-inspection-mode P04 | 3 | 1 tasks | 2 files |
 
 ## Session Continuity
 
