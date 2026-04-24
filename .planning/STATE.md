@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 5 of 7 complete — 43-05 DONE
-Status: Phase 43 active — Driver/Truck/CRM profiles have Checklists sections; driver profile shows isDispatchReady badge; mobile task fetch/complete/skip REST endpoints live at /api/mobile/driver/tasks
-Last activity: 2026-04-24 - Completed 43-05: Profile Checklists integration + mobile task API (3 mobile routes created, 3 profile pages updated, 3 action files annotated)
-Last session: 2026-04-24T16:15:00Z
-Stopped at: Completed 43-05-PLAN.md — 2 tasks auto, 3 files created, 6 modified, TypeScript clean, naming lint passes
+Current Plan: Plan 6 of 7 complete — 43-06 DONE
+Status: Phase 43 active — Tasks tab live in driver navigator; My Tasks feed, DocumentUpload, FormFill, Signature action screens complete; all tap targets ≥56px; TypeScript clean
+Last activity: 2026-04-24 - Completed 43-06: Mobile driver Tasks tab + My Tasks screen + 3 action screens (Document Upload, Form Fill, Signature) + TaskActionDispatcher (7 files created, 1 modified, 344s)
+Last session: 2026-04-24T16:24:00Z
+Stopped at: Completed 43-06-PLAN.md — 2 tasks auto, 7 files created, 1 modified, TypeScript clean
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -244,6 +244,11 @@ Progress: [███████████████████████
 - fireEvent TODO placed in inviteDriver (not accept-invitation route) — drivers.ts is the owner-facing create lifecycle point per spec intent
 - URL path parsing used for [id] extraction in mobile routes — withMobileAuth does not forward Next.js route params to handler
 - StatusBadge helper duplicated inline per page — avoids premature abstraction for a 10-line display component
+
+**Phase 43-06 decisions (Mobile driver Tasks UI):**
+- Screen components placed in components/driver/workflows/ — mobile app has no src/ directory; components/ is the existing pattern
+- TaskActionDispatcher fetches full task list and filters by stepInstanceId — avoids needing a single-task GET endpoint not yet built
+- SignatureScreen uploads PNG via react-native-view-shot captureRef with JSON path data fallback — both packages (react-native-svg 15.15.3, react-native-view-shot 4.0.3) confirmed installed
 
 **Phase 43-03 decisions (Service layer + tRPC routers):**
 - isDispatchBlocker read from stepSnapshot (not PlaybookStep template) — snapshot immutability is the invariant; live template changes must not affect running checklists
