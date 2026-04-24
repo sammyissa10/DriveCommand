@@ -571,19 +571,19 @@ Plans:
 
 ---
 
-### Phase 44: Workflow Engine 3 — Inspection Mode — Full-screen DVIR, fail-capture, mechanic sign-offs
+### ✅ Phase 44: Workflow Engine 3 — Inspection Mode — Full-screen DVIR, fail-capture, mechanic sign-offs (complete 2026-04-24)
 
 **Goal:** Build the signature UX of the product: full-screen Inspection Mode for drivers (card-by-card pass/fail, fail photo capture, completion moment). Failed inspection items auto-create mechanic approval steps. Vehicle `isDispatchReady` computed and enforced. Push + SMS notifications for `STEP_FAILED` and `APPROVAL_NEEDED`.
 **Depends on:** Phase 43 (execution layer complete)
 **Plans:** 6 plans
 
 Plans:
-- [ ] 44-01-PLAN.md — Schema migration: add VEHICLE_INSPECTION to PlaybookCategory enum, make StepInstance.stepTemplateId nullable for ad-hoc APPROVAL steps
-- [ ] 44-02-PLAN.md — Fix completeStep INSPECTION_ITEM PASS bug, implement failInspectionItem service + Zod schema, add fail/requestApproval/approve tRPC procedures
-- [ ] 44-03-PLAN.md — REST endpoints: POST /api/mobile/driver/tasks/[id]/fail + POST /api/mobile/driver/tasks/upload-photo
-- [ ] 44-04-PLAN.md — Mobile: InspectionModeScreen (card-slide UX, PASS/FAIL, fail-capture, completion screen), update TaskActionDispatcher
-- [ ] 44-05-PLAN.md — Web: mechanic ApproveDialog in ChecklistDetailClient, isDispatchReady badge on truck profile
-- [ ] 44-06-PLAN.md — Tests: failInspectionItem unit tests (5), InspectionModeScreen tap-target audit (4)
+- [x] 44-01-PLAN.md — Schema migration: add VEHICLE_INSPECTION to PlaybookCategory enum, make StepInstance.stepTemplateId nullable for ad-hoc APPROVAL steps
+- [x] 44-02-PLAN.md — Fix completeStep INSPECTION_ITEM PASS bug, implement failInspectionItem service + Zod schema, add fail/requestApproval/approve tRPC procedures
+- [x] 44-03-PLAN.md — REST endpoints: POST /api/mobile/driver/tasks/[id]/fail + POST /api/mobile/driver/tasks/upload-photo
+- [x] 44-04-PLAN.md — Mobile: InspectionModeScreen (card-slide UX, PASS/FAIL, fail-capture, completion screen), update TaskActionDispatcher
+- [x] 44-05-PLAN.md — Web: mechanic ApproveDialog in ChecklistDetailClient, isDispatchReady badge on truck profile
+- [x] 44-06-PLAN.md — Tests: failInspectionItem unit tests (5), InspectionModeScreen tap-target audit (4)
 
 ---
 
