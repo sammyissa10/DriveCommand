@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 45 Workflow Engine 4 Automation — IN PROGRESS
-Current Plan: 3 of 6 plans complete
-Status: 45-03 complete — Unified notification module (7 NotifType exports), DISPATCH_READY + INSTANCE_BLOCKED flip gates wired, cron endpoint for STEP_OVERDUE and 48h email escalation
-Last activity: 2026-04-24 - Completed 45-03: Full notification suite (3 tasks, 7 files, ~9min)
-Last session: 2026-04-24T19:40:00Z
-Stopped at: Completed 45-03-PLAN.md
+Current Plan: 4 of 6 plans complete
+Status: 45-04 complete — tRPC trigger router (listRecipes/enableRecipe/disableRecipe), 8 lifecycle hook attachment points wired (3 owner actions + 2 carrier fleet routes + 3 dispatch transitions)
+Last activity: 2026-04-24 - Completed 45-04: Trigger router + lifecycle hooks (3 tasks, 11 files, ~11min)
+Last session: 2026-04-24T20:02:09Z
+Stopped at: Completed 45-04-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -270,6 +270,11 @@ Progress: [███████████████████████
 - Ad-hoc APPROVAL step created with stepTemplateId: null only when playbookCategory === VEHICLE_INSPECTION — other inspection categories do not get mechanic steps per spec Section 6.4
 - No MECHANIC user role exists — both STEP_FAILED and APPROVAL_NEEDED push notifications delivered to OWNER/MANAGER dispatchers
 - SMS delivery stubbed with TODO(phase-5) — Twilio not in Phase 44 scope
+
+**Phase 45-04 decisions (Trigger router + lifecycle hooks):**
+- ON_DRIVER_CREATE fires at DriverInvitation creation (owner invite flow) — DriverInvitation has no driverType field so CDL/NON_CDL/OWNER_OP recipe conditions will not match; driverType addition deferred to Phase 46
+- disableRecipe uses findMany + client-side JSON.stringify filter → updateMany(id: in []) — avoids Prisma's unreliable JSONB deep-equality filter
+- Carrier status literals confirmed lowercase ('in_progress', 'completed') — no deviation needed from spec assumptions
 
 **Phase 45-01 decisions (Automation DB foundation):**
 - No FK from DispatchOverrideAudit to CarrierDispatch — different module boundary, loose coupling via UUID string per spec Section 13 (cross-module audit trail pattern)
