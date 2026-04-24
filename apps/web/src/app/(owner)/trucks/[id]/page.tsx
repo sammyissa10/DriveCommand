@@ -124,7 +124,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           Back to Trucks
         </Link>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {truck.year} {truck.make} {truck.model}
             </h1>
@@ -134,6 +134,17 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
             >
               {truckStatus}
             </span>
+            {truckInstances.length > 0 && (
+              (truck as any).isDispatchReady ? (
+                <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Dispatch Ready
+                </span>
+              ) : (
+                <span className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Not Dispatch Ready
+                </span>
+              )
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <MaintenanceToggleButton

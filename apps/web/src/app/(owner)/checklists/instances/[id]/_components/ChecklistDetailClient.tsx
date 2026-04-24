@@ -60,6 +60,7 @@ type StepSnap = {
   playbookPhase?: string;
   assigneeRole?: string;
   isDispatchBlocker?: boolean;
+  stepType?: string;
 };
 
 type StepResultData = {
@@ -303,6 +304,77 @@ function SkipDialog({ stepInstanceId, stepName, open, onClose, onSkipped }: Skip
 }
 
 // ---------------------------------------------------------------------------
+// Approve (mechanic sign-off) dialog
+// ---------------------------------------------------------------------------
+
+interface ApproveDialogProps {
+  stepInstanceId: string;
+  stepName: string;
+  open: boolean;
+  onClose: () => void;
+  onApproved: () => void;
+}
+
+function ApproveDialog({ stepInstanceId, stepName, open, onClose, onApproved }: ApproveDialogProps) {
+  const trpc = useTRPC();
+  const [note, setNote] = useState('');
+
+  const approveMutation = useMutation(
+    trpc.workflows.stepInstance.approve.mutationOptions({
+      onSuccess: () => {
+        onApproved();
+        onClose();
+        setNote('');
+      },
+    }),
+  );
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    approveMutation.mutate({ stepInstanceId, note: note.trim() || undefined });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) { onClose(); setNote(''); } }}>
+      <DialogContent className="sm:max-w-[420px]">
+        <DialogHeader>
+          <DialogTitle>Approve Repair Sign-off</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          <p className="text-sm text-muted-foreground">
+            Approving: <span className="font-medium text-foreground">{stepName}</span>
+          </p>
+          <div className="space-y-1.5">
+            <Label htmlFor="approve-note">Note (optional)</Label>
+            <Textarea
+              id="approve-note"
+              placeholder="Add approval notes…"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={3}
+              maxLength={500}
+            />
+          </div>
+          {approveMutation.isError && (
+            <p className="text-xs text-destructive">
+              {approveMutation.error?.message ?? 'Failed to approve. Please try again.'}
+            </p>
+          )}
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="outline" onClick={onClose} disabled={approveMutation.isPending}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={approveMutation.isPending}>
+              {approveMutation.isPending ? 'Approving…' : 'Approve'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // View Result sheet
 // ---------------------------------------------------------------------------
 
@@ -330,10 +402,11 @@ function ResultSheet({ result, open, onClose }: { result: unknown; open: boolean
 interface StepRowProps {
   step: StepInstance;
   onSkip: (stepId: string, stepName: string) => void;
+  onApprove: (stepId: string, stepName: string) => void;
   onViewResult: (result: unknown) => void;
 }
 
-function StepRow({ step, onSkip, onViewResult }: StepRowProps) {
+function StepRow({ step, onSkip, onApprove, onViewResult }: StepRowProps) {
   const snap = (step.stepSnapshot ?? {}) as StepSnap;
   const stepName = snap.name ?? 'Unnamed Task';
   const assignee = getAssigneeLabel(step);
@@ -341,6 +414,7 @@ function StepRow({ step, onSkip, onViewResult }: StepRowProps) {
   const overdue = isDueDateOverdue(step.dueDate, step.status);
   const resultSummary = summarizeResult(step.result);
   const canSkip = step.status === 'NOT_STARTED' || step.status === 'IN_PROGRESS';
+  const isApprovalStep = snap.stepType === 'APPROVAL';
 
   return (
     <div className="flex items-start gap-3 py-3 px-4 hover:bg-muted/30 rounded-lg transition-colors">
@@ -373,7 +447,17 @@ function StepRow({ step, onSkip, onViewResult }: StepRowProps) {
 
       {/* Action */}
       <div className="flex items-center gap-1 flex-shrink-0">
-        {step.status === 'NOT_STARTED' && (
+        {step.status === 'NOT_STARTED' && isApprovalStep && (
+          <Button
+            variant="default"
+            size="sm"
+            className="h-7 px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => onApprove(step.id, stepName)}
+          >
+            Approve
+          </Button>
+        )}
+        {step.status === 'NOT_STARTED' && !isApprovalStep && (
           <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
             View Details
           </Button>
@@ -426,10 +510,11 @@ interface PhaseSectionProps {
   phaseKey: string;
   steps: StepInstance[];
   onSkip: (stepId: string, stepName: string) => void;
+  onApprove: (stepId: string, stepName: string) => void;
   onViewResult: (result: unknown) => void;
 }
 
-function PhaseSection({ phaseKey, steps, onSkip, onViewResult }: PhaseSectionProps) {
+function PhaseSection({ phaseKey, steps, onSkip, onApprove, onViewResult }: PhaseSectionProps) {
   const [open, setOpen] = useState(true);
   const completeCount = steps.filter((s) => s.status === 'COMPLETE').length;
   const label = PHASE_LABEL[phaseKey] ?? phaseKey;
@@ -445,7 +530,7 @@ function PhaseSection({ phaseKey, steps, onSkip, onViewResult }: PhaseSectionPro
       <CollapsibleContent>
         <div className="mt-1 divide-y divide-border">
           {steps.map((step) => (
-            <StepRow key={step.id} step={step} onSkip={onSkip} onViewResult={onViewResult} />
+            <StepRow key={step.id} step={step} onSkip={onSkip} onApprove={onApprove} onViewResult={onViewResult} />
           ))}
         </div>
       </CollapsibleContent>
@@ -466,6 +551,7 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
   const queryClient = useQueryClient();
 
   const [skipDialog, setSkipDialog] = useState<{ id: string; name: string } | null>(null);
+  const [approveDialog, setApproveDialog] = useState<{ id: string; name: string } | null>(null);
   const [resultSheet, setResultSheet] = useState<unknown>(null);
 
   const { data, isLoading, isError } = useQuery(
@@ -473,6 +559,12 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
   );
 
   function handleSkipped() {
+    void queryClient.invalidateQueries({
+      queryKey: trpc.workflows.instance.get.queryKey({ id: instanceId }),
+    });
+  }
+
+  function handleApproved() {
     void queryClient.invalidateQueries({
       queryKey: trpc.workflows.instance.get.queryKey({ id: instanceId }),
     });
@@ -604,6 +696,7 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
               phaseKey={phase}
               steps={phaseGroups[phase] ?? []}
               onSkip={(id, name) => setSkipDialog({ id, name })}
+              onApprove={(id, name) => setApproveDialog({ id, name })}
               onViewResult={(result) => setResultSheet(result)}
             />
           ))}
@@ -626,6 +719,15 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
           onSkipped={handleSkipped}
         />
       )}
+
+      {/* Approve dialog */}
+      <ApproveDialog
+        stepInstanceId={approveDialog?.id ?? ''}
+        stepName={approveDialog?.name ?? ''}
+        open={approveDialog !== null}
+        onClose={() => setApproveDialog(null)}
+        onApproved={handleApproved}
+      />
 
       {/* Result sheet */}
       <ResultSheet
