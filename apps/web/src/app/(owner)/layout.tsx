@@ -5,6 +5,7 @@ import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
 import { SupportBadge } from "@/components/navigation/support-badge";
 import { prisma } from "@/lib/db/prisma";
+import { TRPCReactProvider } from "@/trpc/Provider";
 
 // All owner-portal pages require auth — force dynamic rendering so Next.js
 // never attempts static pre-rendering (which has no session context).
@@ -47,8 +48,10 @@ export default async function OwnerLayout({
   }
 
   return (
-    <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
-      {children}
-    </OwnerShell>
+    <TRPCReactProvider>
+      <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
+        {children}
+      </OwnerShell>
+    </TRPCReactProvider>
   );
 }
