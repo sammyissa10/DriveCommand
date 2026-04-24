@@ -41,6 +41,7 @@ export const playbookCategorySchema = z.enum([
   'COMPLIANCE',
   'PARTNER',
   'CUSTOM',
+  'VEHICLE_INSPECTION',
 ]);
 export type PlaybookCategory = z.infer<typeof playbookCategorySchema>;
 
