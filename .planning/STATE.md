@@ -918,6 +918,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 43-02]: stepResultSchema uses all-optional fields — service layer enforces type-specific requirements to avoid over-coupling schema to all 8 step types
 - [Phase 43-02]: Used z.record(z.string(), z.unknown()) for formData in stepResultSchema — Zod v4 requires two type arguments
 - [Phase 44-workflow-engine-3-inspection-mode]: PASS is fire-and-forget (animation-first, API in background); FAIL awaits API before advancing to ensure photo/note data persists
+- [Phase 45]: generatePlaybookInstance already accepts triggeredBy: 'trigger' — no adapter needed in fireEvent
+- [Phase 45]: fireEvent uses after() from next/server — runs outside mutation transactions for best-effort semantics
 
 ### Pending Todos
 
@@ -1316,6 +1318,7 @@ None blocking immediate progress.
 - Truck page uses (truck as any).isDispatchReady: getTruck uses include (not select) so Prisma returns all scalars but TypeScript doesn't surface isDispatchReady in the inferred return type without explicit select casting
 | Phase 44-workflow-engine-3-inspection-mode P04 | 3 | 1 tasks | 2 files |
 | Phase 44-workflow-engine-3-inspection-mode P06 | 6 | 1 tasks | 3 files |
+| Phase 45 P02 | 7 | 3 tasks | 3 files |
 
 ## Session Continuity
 
