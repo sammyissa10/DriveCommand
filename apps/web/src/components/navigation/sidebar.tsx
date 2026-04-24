@@ -21,6 +21,7 @@ import {
   Boxes,
   BarChart3,
   MessageSquare,
+  ListChecks,
 } from "lucide-react"
 import {
   Sidebar,
@@ -359,6 +360,31 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     </SidebarMenuSub>
                   </SidebarMenuItem>
                 )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Workflows — OWNER/MANAGER only */}
+        {isOwnerOrManager && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-foreground/40 uppercase text-[11px] font-semibold tracking-wider">
+              Workflows
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith("/checklists")}
+                    tooltip="Checklists & Workflows"
+                  >
+                    <Link href="/checklists" onClick={handleNavClick}>
+                      <ListChecks />
+                      <span>Checklists &amp; Workflows</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
