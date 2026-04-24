@@ -278,6 +278,36 @@ export type CarrierCatalogMeta = $Result.DefaultSelection<Prisma.$CarrierCatalog
  * 
  */
 export type InAppNotification = $Result.DefaultSelection<Prisma.$InAppNotificationPayload>
+/**
+ * Model StepTemplate
+ * 
+ */
+export type StepTemplate = $Result.DefaultSelection<Prisma.$StepTemplatePayload>
+/**
+ * Model Playbook
+ * 
+ */
+export type Playbook = $Result.DefaultSelection<Prisma.$PlaybookPayload>
+/**
+ * Model PlaybookStep
+ * 
+ */
+export type PlaybookStep = $Result.DefaultSelection<Prisma.$PlaybookStepPayload>
+/**
+ * Model PlaybookInstance
+ * 
+ */
+export type PlaybookInstance = $Result.DefaultSelection<Prisma.$PlaybookInstancePayload>
+/**
+ * Model StepInstance
+ * 
+ */
+export type StepInstance = $Result.DefaultSelection<Prisma.$StepInstancePayload>
+/**
+ * Model PlaybookNotification
+ * 
+ */
+export type PlaybookNotification = $Result.DefaultSelection<Prisma.$PlaybookNotificationPayload>
 
 /**
  * Enums
@@ -609,6 +639,108 @@ export const IncidentSeverity: {
 
 export type IncidentSeverity = (typeof IncidentSeverity)[keyof typeof IncidentSeverity]
 
+
+export const PlaybookEntityType: {
+  DRIVER: 'DRIVER',
+  VEHICLE: 'VEHICLE',
+  PARTNER: 'PARTNER',
+  DISPATCH: 'DISPATCH',
+  OTHER: 'OTHER'
+};
+
+export type PlaybookEntityType = (typeof PlaybookEntityType)[keyof typeof PlaybookEntityType]
+
+
+export const PlaybookCategory: {
+  ONBOARDING: 'ONBOARDING',
+  SAFETY: 'SAFETY',
+  OPERATIONS: 'OPERATIONS',
+  COMPLIANCE: 'COMPLIANCE',
+  PARTNER: 'PARTNER',
+  CUSTOM: 'CUSTOM'
+};
+
+export type PlaybookCategory = (typeof PlaybookCategory)[keyof typeof PlaybookCategory]
+
+
+export const InstanceStatus: {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  BLOCKED: 'BLOCKED'
+};
+
+export type InstanceStatus = (typeof InstanceStatus)[keyof typeof InstanceStatus]
+
+
+export const StepStatus: {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETE: 'COMPLETE',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+export type StepStatus = (typeof StepStatus)[keyof typeof StepStatus]
+
+
+export const NotifType: {
+  STEP_ASSIGNED: 'STEP_ASSIGNED',
+  STEP_OVERDUE: 'STEP_OVERDUE',
+  INSTANCE_BLOCKED: 'INSTANCE_BLOCKED',
+  DISPATCH_READY: 'DISPATCH_READY',
+  STEP_FAILED: 'STEP_FAILED',
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED'
+};
+
+export type NotifType = (typeof NotifType)[keyof typeof NotifType]
+
+
+export const NotifChannel: {
+  PUSH: 'PUSH',
+  SMS: 'SMS',
+  IN_APP: 'IN_APP',
+  EMAIL: 'EMAIL'
+};
+
+export type NotifChannel = (typeof NotifChannel)[keyof typeof NotifChannel]
+
+
+export const PhaseType: {
+  PRE_START: 'PRE_START',
+  DAY_1: 'DAY_1',
+  WEEK_1: 'WEEK_1',
+  ONGOING: 'ONGOING',
+  NONE: 'NONE'
+};
+
+export type PhaseType = (typeof PhaseType)[keyof typeof PhaseType]
+
+
+export const StepType: {
+  DOCUMENT_UPLOAD: 'DOCUMENT_UPLOAD',
+  FORM_FILL: 'FORM_FILL',
+  INSPECTION_ITEM: 'INSPECTION_ITEM',
+  SIGNATURE: 'SIGNATURE',
+  TRAINING_ACK: 'TRAINING_ACK',
+  APPROVAL: 'APPROVAL',
+  THIRD_PARTY: 'THIRD_PARTY',
+  CUSTOM_NOTE: 'CUSTOM_NOTE'
+};
+
+export type StepType = (typeof StepType)[keyof typeof StepType]
+
+
+export const AssigneeRole: {
+  DRIVER: 'DRIVER',
+  DISPATCHER: 'DISPATCHER',
+  MECHANIC: 'MECHANIC',
+  SAFETY_MANAGER: 'SAFETY_MANAGER',
+  THIRD_PARTY: 'THIRD_PARTY'
+};
+
+export type AssigneeRole = (typeof AssigneeRole)[keyof typeof AssigneeRole]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -734,6 +866,42 @@ export const IncidentCategory: typeof $Enums.IncidentCategory
 export type IncidentSeverity = $Enums.IncidentSeverity
 
 export const IncidentSeverity: typeof $Enums.IncidentSeverity
+
+export type PlaybookEntityType = $Enums.PlaybookEntityType
+
+export const PlaybookEntityType: typeof $Enums.PlaybookEntityType
+
+export type PlaybookCategory = $Enums.PlaybookCategory
+
+export const PlaybookCategory: typeof $Enums.PlaybookCategory
+
+export type InstanceStatus = $Enums.InstanceStatus
+
+export const InstanceStatus: typeof $Enums.InstanceStatus
+
+export type StepStatus = $Enums.StepStatus
+
+export const StepStatus: typeof $Enums.StepStatus
+
+export type NotifType = $Enums.NotifType
+
+export const NotifType: typeof $Enums.NotifType
+
+export type NotifChannel = $Enums.NotifChannel
+
+export const NotifChannel: typeof $Enums.NotifChannel
+
+export type PhaseType = $Enums.PhaseType
+
+export const PhaseType: typeof $Enums.PhaseType
+
+export type StepType = $Enums.StepType
+
+export const StepType: typeof $Enums.StepType
+
+export type AssigneeRole = $Enums.AssigneeRole
+
+export const AssigneeRole: typeof $Enums.AssigneeRole
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1385,6 +1553,66 @@ export class PrismaClient<
     * ```
     */
   get inAppNotification(): Prisma.InAppNotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stepTemplate`: Exposes CRUD operations for the **StepTemplate** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StepTemplates
+    * const stepTemplates = await prisma.stepTemplate.findMany()
+    * ```
+    */
+  get stepTemplate(): Prisma.StepTemplateDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playbook`: Exposes CRUD operations for the **Playbook** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Playbooks
+    * const playbooks = await prisma.playbook.findMany()
+    * ```
+    */
+  get playbook(): Prisma.PlaybookDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playbookStep`: Exposes CRUD operations for the **PlaybookStep** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaybookSteps
+    * const playbookSteps = await prisma.playbookStep.findMany()
+    * ```
+    */
+  get playbookStep(): Prisma.PlaybookStepDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playbookInstance`: Exposes CRUD operations for the **PlaybookInstance** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaybookInstances
+    * const playbookInstances = await prisma.playbookInstance.findMany()
+    * ```
+    */
+  get playbookInstance(): Prisma.PlaybookInstanceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stepInstance`: Exposes CRUD operations for the **StepInstance** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StepInstances
+    * const stepInstances = await prisma.stepInstance.findMany()
+    * ```
+    */
+  get stepInstance(): Prisma.StepInstanceDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.playbookNotification`: Exposes CRUD operations for the **PlaybookNotification** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PlaybookNotifications
+    * const playbookNotifications = await prisma.playbookNotification.findMany()
+    * ```
+    */
+  get playbookNotification(): Prisma.PlaybookNotificationDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1871,7 +2099,13 @@ export namespace Prisma {
     CarrierExpense: 'CarrierExpense',
     DriverPayRecord: 'DriverPayRecord',
     CarrierCatalogMeta: 'CarrierCatalogMeta',
-    InAppNotification: 'InAppNotification'
+    InAppNotification: 'InAppNotification',
+    StepTemplate: 'StepTemplate',
+    Playbook: 'Playbook',
+    PlaybookStep: 'PlaybookStep',
+    PlaybookInstance: 'PlaybookInstance',
+    StepInstance: 'StepInstance',
+    PlaybookNotification: 'PlaybookNotification'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1887,7 +2121,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification"
+      modelProps: "tenant" | "user" | "truck" | "driverInvitation" | "route" | "routeDriver" | "document" | "maintenanceEvent" | "scheduledService" | "notificationLog" | "gPSLocation" | "safetyEvent" | "fuelRecord" | "tag" | "tagAssignment" | "expenseCategory" | "routeExpense" | "expenseTemplate" | "expenseTemplateItem" | "routePayment" | "customer" | "customerInteraction" | "invoice" | "invoiceItem" | "sysAdminInvoice" | "sysAdminInvoiceItem" | "payrollRecord" | "load" | "tenantIntegration" | "supportTicket" | "ticketMessage" | "routeStop" | "driverRouteJoin" | "fleetMessage" | "pushToken" | "driverHOSEntry" | "driverIncident" | "carrierClient" | "carrierContract" | "carrierFacility" | "carrierDriver" | "carrierTruck" | "routeTemplate" | "routeTemplateStop" | "carrierDispatch" | "carrierLoad" | "carrierStop" | "carrierDocument" | "carrierDocumentType" | "carrierExpense" | "driverPayRecord" | "carrierCatalogMeta" | "inAppNotification" | "stepTemplate" | "playbook" | "playbookStep" | "playbookInstance" | "stepInstance" | "playbookNotification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5813,6 +6047,450 @@ export namespace Prisma {
           }
         }
       }
+      StepTemplate: {
+        payload: Prisma.$StepTemplatePayload<ExtArgs>
+        fields: Prisma.StepTemplateFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StepTemplateFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StepTemplateFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          findFirst: {
+            args: Prisma.StepTemplateFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StepTemplateFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          findMany: {
+            args: Prisma.StepTemplateFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>[]
+          }
+          create: {
+            args: Prisma.StepTemplateCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          createMany: {
+            args: Prisma.StepTemplateCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StepTemplateCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>[]
+          }
+          delete: {
+            args: Prisma.StepTemplateDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          update: {
+            args: Prisma.StepTemplateUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          deleteMany: {
+            args: Prisma.StepTemplateDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StepTemplateUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StepTemplateUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>[]
+          }
+          upsert: {
+            args: Prisma.StepTemplateUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepTemplatePayload>
+          }
+          aggregate: {
+            args: Prisma.StepTemplateAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStepTemplate>
+          }
+          groupBy: {
+            args: Prisma.StepTemplateGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StepTemplateGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StepTemplateCountArgs<ExtArgs>
+            result: $Utils.Optional<StepTemplateCountAggregateOutputType> | number
+          }
+        }
+      }
+      Playbook: {
+        payload: Prisma.$PlaybookPayload<ExtArgs>
+        fields: Prisma.PlaybookFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaybookFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaybookFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaybookFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaybookFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          findMany: {
+            args: Prisma.PlaybookFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>[]
+          }
+          create: {
+            args: Prisma.PlaybookCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          createMany: {
+            args: Prisma.PlaybookCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaybookCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaybookDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          update: {
+            args: Prisma.PlaybookUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaybookDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaybookUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaybookUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaybookUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaybookAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaybook>
+          }
+          groupBy: {
+            args: Prisma.PlaybookGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaybookCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlaybookStep: {
+        payload: Prisma.$PlaybookStepPayload<ExtArgs>
+        fields: Prisma.PlaybookStepFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaybookStepFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaybookStepFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaybookStepFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaybookStepFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          findMany: {
+            args: Prisma.PlaybookStepFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>[]
+          }
+          create: {
+            args: Prisma.PlaybookStepCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          createMany: {
+            args: Prisma.PlaybookStepCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaybookStepCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaybookStepDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          update: {
+            args: Prisma.PlaybookStepUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaybookStepDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaybookStepUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaybookStepUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaybookStepUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookStepPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaybookStepAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaybookStep>
+          }
+          groupBy: {
+            args: Prisma.PlaybookStepGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookStepGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaybookStepCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookStepCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlaybookInstance: {
+        payload: Prisma.$PlaybookInstancePayload<ExtArgs>
+        fields: Prisma.PlaybookInstanceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaybookInstanceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaybookInstanceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          findFirst: {
+            args: Prisma.PlaybookInstanceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaybookInstanceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          findMany: {
+            args: Prisma.PlaybookInstanceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>[]
+          }
+          create: {
+            args: Prisma.PlaybookInstanceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          createMany: {
+            args: Prisma.PlaybookInstanceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaybookInstanceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>[]
+          }
+          delete: {
+            args: Prisma.PlaybookInstanceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          update: {
+            args: Prisma.PlaybookInstanceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaybookInstanceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaybookInstanceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaybookInstanceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaybookInstanceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookInstancePayload>
+          }
+          aggregate: {
+            args: Prisma.PlaybookInstanceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaybookInstance>
+          }
+          groupBy: {
+            args: Prisma.PlaybookInstanceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookInstanceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaybookInstanceCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookInstanceCountAggregateOutputType> | number
+          }
+        }
+      }
+      StepInstance: {
+        payload: Prisma.$StepInstancePayload<ExtArgs>
+        fields: Prisma.StepInstanceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StepInstanceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StepInstanceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          findFirst: {
+            args: Prisma.StepInstanceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StepInstanceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          findMany: {
+            args: Prisma.StepInstanceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>[]
+          }
+          create: {
+            args: Prisma.StepInstanceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          createMany: {
+            args: Prisma.StepInstanceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StepInstanceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>[]
+          }
+          delete: {
+            args: Prisma.StepInstanceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          update: {
+            args: Prisma.StepInstanceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          deleteMany: {
+            args: Prisma.StepInstanceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StepInstanceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StepInstanceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>[]
+          }
+          upsert: {
+            args: Prisma.StepInstanceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StepInstancePayload>
+          }
+          aggregate: {
+            args: Prisma.StepInstanceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStepInstance>
+          }
+          groupBy: {
+            args: Prisma.StepInstanceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StepInstanceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StepInstanceCountArgs<ExtArgs>
+            result: $Utils.Optional<StepInstanceCountAggregateOutputType> | number
+          }
+        }
+      }
+      PlaybookNotification: {
+        payload: Prisma.$PlaybookNotificationPayload<ExtArgs>
+        fields: Prisma.PlaybookNotificationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PlaybookNotificationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PlaybookNotificationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          findFirst: {
+            args: Prisma.PlaybookNotificationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PlaybookNotificationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          findMany: {
+            args: Prisma.PlaybookNotificationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>[]
+          }
+          create: {
+            args: Prisma.PlaybookNotificationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          createMany: {
+            args: Prisma.PlaybookNotificationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PlaybookNotificationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>[]
+          }
+          delete: {
+            args: Prisma.PlaybookNotificationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          update: {
+            args: Prisma.PlaybookNotificationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          deleteMany: {
+            args: Prisma.PlaybookNotificationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PlaybookNotificationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PlaybookNotificationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>[]
+          }
+          upsert: {
+            args: Prisma.PlaybookNotificationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PlaybookNotificationPayload>
+          }
+          aggregate: {
+            args: Prisma.PlaybookNotificationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePlaybookNotification>
+          }
+          groupBy: {
+            args: Prisma.PlaybookNotificationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookNotificationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PlaybookNotificationCountArgs<ExtArgs>
+            result: $Utils.Optional<PlaybookNotificationCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -5974,6 +6652,12 @@ export namespace Prisma {
     driverPayRecord?: DriverPayRecordOmit
     carrierCatalogMeta?: CarrierCatalogMetaOmit
     inAppNotification?: InAppNotificationOmit
+    stepTemplate?: StepTemplateOmit
+    playbook?: PlaybookOmit
+    playbookStep?: PlaybookStepOmit
+    playbookInstance?: PlaybookInstanceOmit
+    stepInstance?: StepInstanceOmit
+    playbookNotification?: PlaybookNotificationOmit
   }
 
   /* Types for Logging */
@@ -6096,6 +6780,10 @@ export namespace Prisma {
     driverPayRecords: number
     inAppNotifications: number
     carrierDocumentTypes: number
+    stepTemplates: number
+    playbooks: number
+    playbookInstances: number
+    playbookNotifications: number
   }
 
   export type TenantCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6141,6 +6829,10 @@ export namespace Prisma {
     driverPayRecords?: boolean | TenantCountOutputTypeCountDriverPayRecordsArgs
     inAppNotifications?: boolean | TenantCountOutputTypeCountInAppNotificationsArgs
     carrierDocumentTypes?: boolean | TenantCountOutputTypeCountCarrierDocumentTypesArgs
+    stepTemplates?: boolean | TenantCountOutputTypeCountStepTemplatesArgs
+    playbooks?: boolean | TenantCountOutputTypeCountPlaybooksArgs
+    playbookInstances?: boolean | TenantCountOutputTypeCountPlaybookInstancesArgs
+    playbookNotifications?: boolean | TenantCountOutputTypeCountPlaybookNotificationsArgs
   }
 
   // Custom InputTypes
@@ -6446,6 +7138,34 @@ export namespace Prisma {
    */
   export type TenantCountOutputTypeCountCarrierDocumentTypesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CarrierDocumentTypeWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountStepTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StepTemplateWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountPlaybooksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountPlaybookInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookInstanceWhereInput
+  }
+
+  /**
+   * TenantCountOutputType without action
+   */
+  export type TenantCountOutputTypeCountPlaybookNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookNotificationWhereInput
   }
 
 
@@ -7807,6 +8527,126 @@ export namespace Prisma {
 
 
   /**
+   * Count Type StepTemplateCountOutputType
+   */
+
+  export type StepTemplateCountOutputType = {
+    playbookSteps: number
+    stepInstances: number
+  }
+
+  export type StepTemplateCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbookSteps?: boolean | StepTemplateCountOutputTypeCountPlaybookStepsArgs
+    stepInstances?: boolean | StepTemplateCountOutputTypeCountStepInstancesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * StepTemplateCountOutputType without action
+   */
+  export type StepTemplateCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplateCountOutputType
+     */
+    select?: StepTemplateCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * StepTemplateCountOutputType without action
+   */
+  export type StepTemplateCountOutputTypeCountPlaybookStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookStepWhereInput
+  }
+
+  /**
+   * StepTemplateCountOutputType without action
+   */
+  export type StepTemplateCountOutputTypeCountStepInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StepInstanceWhereInput
+  }
+
+
+  /**
+   * Count Type PlaybookCountOutputType
+   */
+
+  export type PlaybookCountOutputType = {
+    steps: number
+    instances: number
+  }
+
+  export type PlaybookCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    steps?: boolean | PlaybookCountOutputTypeCountStepsArgs
+    instances?: boolean | PlaybookCountOutputTypeCountInstancesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlaybookCountOutputType without action
+   */
+  export type PlaybookCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookCountOutputType
+     */
+    select?: PlaybookCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookCountOutputType without action
+   */
+  export type PlaybookCountOutputTypeCountStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookStepWhereInput
+  }
+
+  /**
+   * PlaybookCountOutputType without action
+   */
+  export type PlaybookCountOutputTypeCountInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookInstanceWhereInput
+  }
+
+
+  /**
+   * Count Type PlaybookInstanceCountOutputType
+   */
+
+  export type PlaybookInstanceCountOutputType = {
+    stepInstances: number
+    notifications: number
+  }
+
+  export type PlaybookInstanceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    stepInstances?: boolean | PlaybookInstanceCountOutputTypeCountStepInstancesArgs
+    notifications?: boolean | PlaybookInstanceCountOutputTypeCountNotificationsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * PlaybookInstanceCountOutputType without action
+   */
+  export type PlaybookInstanceCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstanceCountOutputType
+     */
+    select?: PlaybookInstanceCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookInstanceCountOutputType without action
+   */
+  export type PlaybookInstanceCountOutputTypeCountStepInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StepInstanceWhereInput
+  }
+
+  /**
+   * PlaybookInstanceCountOutputType without action
+   */
+  export type PlaybookInstanceCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookNotificationWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -8090,6 +8930,10 @@ export namespace Prisma {
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
     inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
     carrierDocumentTypes?: boolean | Tenant$carrierDocumentTypesArgs<ExtArgs>
+    stepTemplates?: boolean | Tenant$stepTemplatesArgs<ExtArgs>
+    playbooks?: boolean | Tenant$playbooksArgs<ExtArgs>
+    playbookInstances?: boolean | Tenant$playbookInstancesArgs<ExtArgs>
+    playbookNotifications?: boolean | Tenant$playbookNotificationsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["tenant"]>
 
@@ -8176,6 +9020,10 @@ export namespace Prisma {
     driverPayRecords?: boolean | Tenant$driverPayRecordsArgs<ExtArgs>
     inAppNotifications?: boolean | Tenant$inAppNotificationsArgs<ExtArgs>
     carrierDocumentTypes?: boolean | Tenant$carrierDocumentTypesArgs<ExtArgs>
+    stepTemplates?: boolean | Tenant$stepTemplatesArgs<ExtArgs>
+    playbooks?: boolean | Tenant$playbooksArgs<ExtArgs>
+    playbookInstances?: boolean | Tenant$playbookInstancesArgs<ExtArgs>
+    playbookNotifications?: boolean | Tenant$playbookNotificationsArgs<ExtArgs>
     _count?: boolean | TenantCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TenantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -8226,6 +9074,10 @@ export namespace Prisma {
       driverPayRecords: Prisma.$DriverPayRecordPayload<ExtArgs>[]
       inAppNotifications: Prisma.$InAppNotificationPayload<ExtArgs>[]
       carrierDocumentTypes: Prisma.$CarrierDocumentTypePayload<ExtArgs>[]
+      stepTemplates: Prisma.$StepTemplatePayload<ExtArgs>[]
+      playbooks: Prisma.$PlaybookPayload<ExtArgs>[]
+      playbookInstances: Prisma.$PlaybookInstancePayload<ExtArgs>[]
+      playbookNotifications: Prisma.$PlaybookNotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8674,6 +9526,10 @@ export namespace Prisma {
     driverPayRecords<T extends Tenant$driverPayRecordsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$driverPayRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DriverPayRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     inAppNotifications<T extends Tenant$inAppNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$inAppNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InAppNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     carrierDocumentTypes<T extends Tenant$carrierDocumentTypesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$carrierDocumentTypesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CarrierDocumentTypePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stepTemplates<T extends Tenant$stepTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$stepTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    playbooks<T extends Tenant$playbooksArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbooksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    playbookInstances<T extends Tenant$playbookInstancesArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbookInstancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    playbookNotifications<T extends Tenant$playbookNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, Tenant$playbookNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10114,6 +10970,102 @@ export namespace Prisma {
   }
 
   /**
+   * Tenant.stepTemplates
+   */
+  export type Tenant$stepTemplatesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    where?: StepTemplateWhereInput
+    orderBy?: StepTemplateOrderByWithRelationInput | StepTemplateOrderByWithRelationInput[]
+    cursor?: StepTemplateWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StepTemplateScalarFieldEnum | StepTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.playbooks
+   */
+  export type Tenant$playbooksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    where?: PlaybookWhereInput
+    orderBy?: PlaybookOrderByWithRelationInput | PlaybookOrderByWithRelationInput[]
+    cursor?: PlaybookWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookScalarFieldEnum | PlaybookScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.playbookInstances
+   */
+  export type Tenant$playbookInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    where?: PlaybookInstanceWhereInput
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    cursor?: PlaybookInstanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * Tenant.playbookNotifications
+   */
+  export type Tenant$playbookNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    where?: PlaybookNotificationWhereInput
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    cursor?: PlaybookNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
    * Tenant without action
    */
   export type TenantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10153,6 +11105,7 @@ export namespace Prisma {
     lastName: string | null
     licenseNumber: string | null
     isActive: boolean | null
+    isDispatchReady: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10168,6 +11121,7 @@ export namespace Prisma {
     lastName: string | null
     licenseNumber: string | null
     isActive: boolean | null
+    isDispatchReady: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10184,6 +11138,7 @@ export namespace Prisma {
     licenseNumber: number
     isActive: number
     permissions: number
+    isDispatchReady: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10201,6 +11156,7 @@ export namespace Prisma {
     lastName?: true
     licenseNumber?: true
     isActive?: true
+    isDispatchReady?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10216,6 +11172,7 @@ export namespace Prisma {
     lastName?: true
     licenseNumber?: true
     isActive?: true
+    isDispatchReady?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10232,6 +11189,7 @@ export namespace Prisma {
     licenseNumber?: true
     isActive?: true
     permissions?: true
+    isDispatchReady?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10321,6 +11279,7 @@ export namespace Prisma {
     licenseNumber: string | null
     isActive: boolean
     permissions: JsonValue | null
+    isDispatchReady: boolean
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -10354,6 +11313,7 @@ export namespace Prisma {
     licenseNumber?: boolean
     isActive?: boolean
     permissions?: boolean
+    isDispatchReady?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10401,6 +11361,7 @@ export namespace Prisma {
     licenseNumber?: boolean
     isActive?: boolean
     permissions?: boolean
+    isDispatchReady?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10418,6 +11379,7 @@ export namespace Prisma {
     licenseNumber?: boolean
     isActive?: boolean
     permissions?: boolean
+    isDispatchReady?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -10435,11 +11397,12 @@ export namespace Prisma {
     licenseNumber?: boolean
     isActive?: boolean
     permissions?: boolean
+    isDispatchReady?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "passwordHash" | "role" | "isSystemAdmin" | "firstName" | "lastName" | "licenseNumber" | "isActive" | "permissions" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "email" | "passwordHash" | "role" | "isSystemAdmin" | "firstName" | "lastName" | "licenseNumber" | "isActive" | "permissions" | "isDispatchReady" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     assignedRoutes?: boolean | User$assignedRoutesArgs<ExtArgs>
@@ -10526,6 +11489,7 @@ export namespace Prisma {
       licenseNumber: string | null
       isActive: boolean
       permissions: Prisma.JsonValue | null
+      isDispatchReady: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -10992,6 +11956,7 @@ export namespace Prisma {
     readonly licenseNumber: FieldRef<"User", 'String'>
     readonly isActive: FieldRef<"User", 'Boolean'>
     readonly permissions: FieldRef<"User", 'Json'>
+    readonly isDispatchReady: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -12136,6 +13101,7 @@ export namespace Prisma {
     licensePlate: string | null
     odometer: number | null
     inMaintenance: boolean | null
+    isDispatchReady: boolean | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -12153,6 +13119,7 @@ export namespace Prisma {
     licensePlate: string | null
     odometer: number | null
     inMaintenance: boolean | null
+    isDispatchReady: boolean | null
     createdById: string | null
     updatedById: string | null
     createdAt: Date | null
@@ -12171,6 +13138,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance: number
     documentMetadata: number
+    isDispatchReady: number
     createdById: number
     updatedById: number
     createdAt: number
@@ -12200,6 +13168,7 @@ export namespace Prisma {
     licensePlate?: true
     odometer?: true
     inMaintenance?: true
+    isDispatchReady?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -12217,6 +13186,7 @@ export namespace Prisma {
     licensePlate?: true
     odometer?: true
     inMaintenance?: true
+    isDispatchReady?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -12235,6 +13205,7 @@ export namespace Prisma {
     odometer?: true
     inMaintenance?: true
     documentMetadata?: true
+    isDispatchReady?: true
     createdById?: true
     updatedById?: true
     createdAt?: true
@@ -12340,6 +13311,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance: boolean
     documentMetadata: JsonValue | null
+    isDispatchReady: boolean
     createdById: string | null
     updatedById: string | null
     createdAt: Date
@@ -12377,6 +13349,7 @@ export namespace Prisma {
     odometer?: boolean
     inMaintenance?: boolean
     documentMetadata?: boolean
+    isDispatchReady?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -12408,6 +13381,7 @@ export namespace Prisma {
     odometer?: boolean
     inMaintenance?: boolean
     documentMetadata?: boolean
+    isDispatchReady?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -12429,6 +13403,7 @@ export namespace Prisma {
     odometer?: boolean
     inMaintenance?: boolean
     documentMetadata?: boolean
+    isDispatchReady?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -12450,6 +13425,7 @@ export namespace Prisma {
     odometer?: boolean
     inMaintenance?: boolean
     documentMetadata?: boolean
+    isDispatchReady?: boolean
     createdById?: boolean
     updatedById?: boolean
     createdAt?: boolean
@@ -12457,7 +13433,7 @@ export namespace Prisma {
     archivedAt?: boolean
   }
 
-  export type TruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "make" | "model" | "year" | "vin" | "licensePlate" | "odometer" | "inMaintenance" | "documentMetadata" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["truck"]>
+  export type TruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "make" | "model" | "year" | "vin" | "licensePlate" | "odometer" | "inMaintenance" | "documentMetadata" | "isDispatchReady" | "createdById" | "updatedById" | "createdAt" | "updatedAt" | "archivedAt", ExtArgs["result"]["truck"]>
   export type TruckInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     createdBy?: boolean | Truck$createdByArgs<ExtArgs>
@@ -12511,6 +13487,7 @@ export namespace Prisma {
       odometer: number
       inMaintenance: boolean
       documentMetadata: Prisma.JsonValue | null
+      isDispatchReady: boolean
       createdById: string | null
       updatedById: string | null
       createdAt: Date
@@ -12961,6 +13938,7 @@ export namespace Prisma {
     readonly odometer: FieldRef<"Truck", 'Int'>
     readonly inMaintenance: FieldRef<"Truck", 'Boolean'>
     readonly documentMetadata: FieldRef<"Truck", 'Json'>
+    readonly isDispatchReady: FieldRef<"Truck", 'Boolean'>
     readonly createdById: FieldRef<"Truck", 'String'>
     readonly updatedById: FieldRef<"Truck", 'String'>
     readonly createdAt: FieldRef<"Truck", 'DateTime'>
@@ -78201,6 +79179,7227 @@ export namespace Prisma {
 
 
   /**
+   * Model StepTemplate
+   */
+
+  export type AggregateStepTemplate = {
+    _count: StepTemplateCountAggregateOutputType | null
+    _min: StepTemplateMinAggregateOutputType | null
+    _max: StepTemplateMaxAggregateOutputType | null
+  }
+
+  export type StepTemplateMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    stepType: $Enums.StepType | null
+    assigneeRole: $Enums.AssigneeRole | null
+    isActive: boolean | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StepTemplateMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    stepType: $Enums.StepType | null
+    assigneeRole: $Enums.AssigneeRole | null
+    isActive: boolean | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StepTemplateCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    name: number
+    description: number
+    stepType: number
+    assigneeRole: number
+    defaultConfig: number
+    isActive: number
+    deletedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StepTemplateMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    stepType?: true
+    assigneeRole?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StepTemplateMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    stepType?: true
+    assigneeRole?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StepTemplateCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    stepType?: true
+    assigneeRole?: true
+    defaultConfig?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StepTemplateAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StepTemplate to aggregate.
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepTemplates to fetch.
+     */
+    orderBy?: StepTemplateOrderByWithRelationInput | StepTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StepTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StepTemplates
+    **/
+    _count?: true | StepTemplateCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StepTemplateMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StepTemplateMaxAggregateInputType
+  }
+
+  export type GetStepTemplateAggregateType<T extends StepTemplateAggregateArgs> = {
+        [P in keyof T & keyof AggregateStepTemplate]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStepTemplate[P]>
+      : GetScalarType<T[P], AggregateStepTemplate[P]>
+  }
+
+
+
+
+  export type StepTemplateGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StepTemplateWhereInput
+    orderBy?: StepTemplateOrderByWithAggregationInput | StepTemplateOrderByWithAggregationInput[]
+    by: StepTemplateScalarFieldEnum[] | StepTemplateScalarFieldEnum
+    having?: StepTemplateScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StepTemplateCountAggregateInputType | true
+    _min?: StepTemplateMinAggregateInputType
+    _max?: StepTemplateMaxAggregateInputType
+  }
+
+  export type StepTemplateGroupByOutputType = {
+    id: string
+    tenantId: string
+    name: string
+    description: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig: JsonValue
+    isActive: boolean
+    deletedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: StepTemplateCountAggregateOutputType | null
+    _min: StepTemplateMinAggregateOutputType | null
+    _max: StepTemplateMaxAggregateOutputType | null
+  }
+
+  type GetStepTemplateGroupByPayload<T extends StepTemplateGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StepTemplateGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StepTemplateGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StepTemplateGroupByOutputType[P]>
+            : GetScalarType<T[P], StepTemplateGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StepTemplateSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    stepType?: boolean
+    assigneeRole?: boolean
+    defaultConfig?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookSteps?: boolean | StepTemplate$playbookStepsArgs<ExtArgs>
+    stepInstances?: boolean | StepTemplate$stepInstancesArgs<ExtArgs>
+    _count?: boolean | StepTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepTemplate"]>
+
+  export type StepTemplateSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    stepType?: boolean
+    assigneeRole?: boolean
+    defaultConfig?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepTemplate"]>
+
+  export type StepTemplateSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    stepType?: boolean
+    assigneeRole?: boolean
+    defaultConfig?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepTemplate"]>
+
+  export type StepTemplateSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    stepType?: boolean
+    assigneeRole?: boolean
+    defaultConfig?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type StepTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "description" | "stepType" | "assigneeRole" | "defaultConfig" | "isActive" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["stepTemplate"]>
+  export type StepTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookSteps?: boolean | StepTemplate$playbookStepsArgs<ExtArgs>
+    stepInstances?: boolean | StepTemplate$stepInstancesArgs<ExtArgs>
+    _count?: boolean | StepTemplateCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type StepTemplateIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type StepTemplateIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $StepTemplatePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StepTemplate"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      playbookSteps: Prisma.$PlaybookStepPayload<ExtArgs>[]
+      stepInstances: Prisma.$StepInstancePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      name: string
+      description: string | null
+      stepType: $Enums.StepType
+      assigneeRole: $Enums.AssigneeRole
+      defaultConfig: Prisma.JsonValue
+      isActive: boolean
+      deletedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["stepTemplate"]>
+    composites: {}
+  }
+
+  type StepTemplateGetPayload<S extends boolean | null | undefined | StepTemplateDefaultArgs> = $Result.GetResult<Prisma.$StepTemplatePayload, S>
+
+  type StepTemplateCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StepTemplateFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StepTemplateCountAggregateInputType | true
+    }
+
+  export interface StepTemplateDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StepTemplate'], meta: { name: 'StepTemplate' } }
+    /**
+     * Find zero or one StepTemplate that matches the filter.
+     * @param {StepTemplateFindUniqueArgs} args - Arguments to find a StepTemplate
+     * @example
+     * // Get one StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StepTemplateFindUniqueArgs>(args: SelectSubset<T, StepTemplateFindUniqueArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StepTemplate that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StepTemplateFindUniqueOrThrowArgs} args - Arguments to find a StepTemplate
+     * @example
+     * // Get one StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StepTemplateFindUniqueOrThrowArgs>(args: SelectSubset<T, StepTemplateFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StepTemplate that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateFindFirstArgs} args - Arguments to find a StepTemplate
+     * @example
+     * // Get one StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StepTemplateFindFirstArgs>(args?: SelectSubset<T, StepTemplateFindFirstArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StepTemplate that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateFindFirstOrThrowArgs} args - Arguments to find a StepTemplate
+     * @example
+     * // Get one StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StepTemplateFindFirstOrThrowArgs>(args?: SelectSubset<T, StepTemplateFindFirstOrThrowArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StepTemplates that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StepTemplates
+     * const stepTemplates = await prisma.stepTemplate.findMany()
+     * 
+     * // Get first 10 StepTemplates
+     * const stepTemplates = await prisma.stepTemplate.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stepTemplateWithIdOnly = await prisma.stepTemplate.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StepTemplateFindManyArgs>(args?: SelectSubset<T, StepTemplateFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StepTemplate.
+     * @param {StepTemplateCreateArgs} args - Arguments to create a StepTemplate.
+     * @example
+     * // Create one StepTemplate
+     * const StepTemplate = await prisma.stepTemplate.create({
+     *   data: {
+     *     // ... data to create a StepTemplate
+     *   }
+     * })
+     * 
+     */
+    create<T extends StepTemplateCreateArgs>(args: SelectSubset<T, StepTemplateCreateArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StepTemplates.
+     * @param {StepTemplateCreateManyArgs} args - Arguments to create many StepTemplates.
+     * @example
+     * // Create many StepTemplates
+     * const stepTemplate = await prisma.stepTemplate.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StepTemplateCreateManyArgs>(args?: SelectSubset<T, StepTemplateCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StepTemplates and returns the data saved in the database.
+     * @param {StepTemplateCreateManyAndReturnArgs} args - Arguments to create many StepTemplates.
+     * @example
+     * // Create many StepTemplates
+     * const stepTemplate = await prisma.stepTemplate.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StepTemplates and only return the `id`
+     * const stepTemplateWithIdOnly = await prisma.stepTemplate.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StepTemplateCreateManyAndReturnArgs>(args?: SelectSubset<T, StepTemplateCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StepTemplate.
+     * @param {StepTemplateDeleteArgs} args - Arguments to delete one StepTemplate.
+     * @example
+     * // Delete one StepTemplate
+     * const StepTemplate = await prisma.stepTemplate.delete({
+     *   where: {
+     *     // ... filter to delete one StepTemplate
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StepTemplateDeleteArgs>(args: SelectSubset<T, StepTemplateDeleteArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StepTemplate.
+     * @param {StepTemplateUpdateArgs} args - Arguments to update one StepTemplate.
+     * @example
+     * // Update one StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StepTemplateUpdateArgs>(args: SelectSubset<T, StepTemplateUpdateArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StepTemplates.
+     * @param {StepTemplateDeleteManyArgs} args - Arguments to filter StepTemplates to delete.
+     * @example
+     * // Delete a few StepTemplates
+     * const { count } = await prisma.stepTemplate.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StepTemplateDeleteManyArgs>(args?: SelectSubset<T, StepTemplateDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StepTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StepTemplates
+     * const stepTemplate = await prisma.stepTemplate.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StepTemplateUpdateManyArgs>(args: SelectSubset<T, StepTemplateUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StepTemplates and returns the data updated in the database.
+     * @param {StepTemplateUpdateManyAndReturnArgs} args - Arguments to update many StepTemplates.
+     * @example
+     * // Update many StepTemplates
+     * const stepTemplate = await prisma.stepTemplate.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StepTemplates and only return the `id`
+     * const stepTemplateWithIdOnly = await prisma.stepTemplate.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StepTemplateUpdateManyAndReturnArgs>(args: SelectSubset<T, StepTemplateUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StepTemplate.
+     * @param {StepTemplateUpsertArgs} args - Arguments to update or create a StepTemplate.
+     * @example
+     * // Update or create a StepTemplate
+     * const stepTemplate = await prisma.stepTemplate.upsert({
+     *   create: {
+     *     // ... data to create a StepTemplate
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StepTemplate we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StepTemplateUpsertArgs>(args: SelectSubset<T, StepTemplateUpsertArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StepTemplates.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateCountArgs} args - Arguments to filter StepTemplates to count.
+     * @example
+     * // Count the number of StepTemplates
+     * const count = await prisma.stepTemplate.count({
+     *   where: {
+     *     // ... the filter for the StepTemplates we want to count
+     *   }
+     * })
+    **/
+    count<T extends StepTemplateCountArgs>(
+      args?: Subset<T, StepTemplateCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StepTemplateCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StepTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StepTemplateAggregateArgs>(args: Subset<T, StepTemplateAggregateArgs>): Prisma.PrismaPromise<GetStepTemplateAggregateType<T>>
+
+    /**
+     * Group by StepTemplate.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepTemplateGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StepTemplateGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StepTemplateGroupByArgs['orderBy'] }
+        : { orderBy?: StepTemplateGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StepTemplateGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStepTemplateGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StepTemplate model
+   */
+  readonly fields: StepTemplateFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StepTemplate.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StepTemplateClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    playbookSteps<T extends StepTemplate$playbookStepsArgs<ExtArgs> = {}>(args?: Subset<T, StepTemplate$playbookStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stepInstances<T extends StepTemplate$stepInstancesArgs<ExtArgs> = {}>(args?: Subset<T, StepTemplate$stepInstancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StepTemplate model
+   */
+  interface StepTemplateFieldRefs {
+    readonly id: FieldRef<"StepTemplate", 'String'>
+    readonly tenantId: FieldRef<"StepTemplate", 'String'>
+    readonly name: FieldRef<"StepTemplate", 'String'>
+    readonly description: FieldRef<"StepTemplate", 'String'>
+    readonly stepType: FieldRef<"StepTemplate", 'StepType'>
+    readonly assigneeRole: FieldRef<"StepTemplate", 'AssigneeRole'>
+    readonly defaultConfig: FieldRef<"StepTemplate", 'Json'>
+    readonly isActive: FieldRef<"StepTemplate", 'Boolean'>
+    readonly deletedAt: FieldRef<"StepTemplate", 'DateTime'>
+    readonly createdAt: FieldRef<"StepTemplate", 'DateTime'>
+    readonly updatedAt: FieldRef<"StepTemplate", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StepTemplate findUnique
+   */
+  export type StepTemplateFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which StepTemplate to fetch.
+     */
+    where: StepTemplateWhereUniqueInput
+  }
+
+  /**
+   * StepTemplate findUniqueOrThrow
+   */
+  export type StepTemplateFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which StepTemplate to fetch.
+     */
+    where: StepTemplateWhereUniqueInput
+  }
+
+  /**
+   * StepTemplate findFirst
+   */
+  export type StepTemplateFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which StepTemplate to fetch.
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepTemplates to fetch.
+     */
+    orderBy?: StepTemplateOrderByWithRelationInput | StepTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StepTemplates.
+     */
+    cursor?: StepTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepTemplates.
+     */
+    distinct?: StepTemplateScalarFieldEnum | StepTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StepTemplate findFirstOrThrow
+   */
+  export type StepTemplateFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which StepTemplate to fetch.
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepTemplates to fetch.
+     */
+    orderBy?: StepTemplateOrderByWithRelationInput | StepTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StepTemplates.
+     */
+    cursor?: StepTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepTemplates.
+     */
+    distinct?: StepTemplateScalarFieldEnum | StepTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StepTemplate findMany
+   */
+  export type StepTemplateFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter, which StepTemplates to fetch.
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepTemplates to fetch.
+     */
+    orderBy?: StepTemplateOrderByWithRelationInput | StepTemplateOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StepTemplates.
+     */
+    cursor?: StepTemplateWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepTemplates from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepTemplates.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepTemplates.
+     */
+    distinct?: StepTemplateScalarFieldEnum | StepTemplateScalarFieldEnum[]
+  }
+
+  /**
+   * StepTemplate create
+   */
+  export type StepTemplateCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StepTemplate.
+     */
+    data: XOR<StepTemplateCreateInput, StepTemplateUncheckedCreateInput>
+  }
+
+  /**
+   * StepTemplate createMany
+   */
+  export type StepTemplateCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StepTemplates.
+     */
+    data: StepTemplateCreateManyInput | StepTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StepTemplate createManyAndReturn
+   */
+  export type StepTemplateCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to create many StepTemplates.
+     */
+    data: StepTemplateCreateManyInput | StepTemplateCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StepTemplate update
+   */
+  export type StepTemplateUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StepTemplate.
+     */
+    data: XOR<StepTemplateUpdateInput, StepTemplateUncheckedUpdateInput>
+    /**
+     * Choose, which StepTemplate to update.
+     */
+    where: StepTemplateWhereUniqueInput
+  }
+
+  /**
+   * StepTemplate updateMany
+   */
+  export type StepTemplateUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StepTemplates.
+     */
+    data: XOR<StepTemplateUpdateManyMutationInput, StepTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which StepTemplates to update
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * Limit how many StepTemplates to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StepTemplate updateManyAndReturn
+   */
+  export type StepTemplateUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * The data used to update StepTemplates.
+     */
+    data: XOR<StepTemplateUpdateManyMutationInput, StepTemplateUncheckedUpdateManyInput>
+    /**
+     * Filter which StepTemplates to update
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * Limit how many StepTemplates to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StepTemplate upsert
+   */
+  export type StepTemplateUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StepTemplate to update in case it exists.
+     */
+    where: StepTemplateWhereUniqueInput
+    /**
+     * In case the StepTemplate found by the `where` argument doesn't exist, create a new StepTemplate with this data.
+     */
+    create: XOR<StepTemplateCreateInput, StepTemplateUncheckedCreateInput>
+    /**
+     * In case the StepTemplate was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StepTemplateUpdateInput, StepTemplateUncheckedUpdateInput>
+  }
+
+  /**
+   * StepTemplate delete
+   */
+  export type StepTemplateDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    /**
+     * Filter which StepTemplate to delete.
+     */
+    where: StepTemplateWhereUniqueInput
+  }
+
+  /**
+   * StepTemplate deleteMany
+   */
+  export type StepTemplateDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StepTemplates to delete
+     */
+    where?: StepTemplateWhereInput
+    /**
+     * Limit how many StepTemplates to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StepTemplate.playbookSteps
+   */
+  export type StepTemplate$playbookStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    where?: PlaybookStepWhereInput
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    cursor?: PlaybookStepWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookStepScalarFieldEnum | PlaybookStepScalarFieldEnum[]
+  }
+
+  /**
+   * StepTemplate.stepInstances
+   */
+  export type StepTemplate$stepInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    where?: StepInstanceWhereInput
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    cursor?: StepInstanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StepInstanceScalarFieldEnum | StepInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * StepTemplate without action
+   */
+  export type StepTemplateDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Playbook
+   */
+
+  export type AggregatePlaybook = {
+    _count: PlaybookCountAggregateOutputType | null
+    _min: PlaybookMinAggregateOutputType | null
+    _max: PlaybookMaxAggregateOutputType | null
+  }
+
+  export type PlaybookMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    entityType: $Enums.PlaybookEntityType | null
+    category: $Enums.PlaybookCategory | null
+    playbookPhase: $Enums.PhaseType | null
+    isActive: boolean | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    name: string | null
+    description: string | null
+    entityType: $Enums.PlaybookEntityType | null
+    category: $Enums.PlaybookCategory | null
+    playbookPhase: $Enums.PhaseType | null
+    isActive: boolean | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    name: number
+    description: number
+    entityType: number
+    category: number
+    playbookPhase: number
+    isActive: number
+    deletedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlaybookMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    entityType?: true
+    category?: true
+    playbookPhase?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    entityType?: true
+    category?: true
+    playbookPhase?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    name?: true
+    description?: true
+    entityType?: true
+    category?: true
+    playbookPhase?: true
+    isActive?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlaybookAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Playbook to aggregate.
+     */
+    where?: PlaybookWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Playbooks to fetch.
+     */
+    orderBy?: PlaybookOrderByWithRelationInput | PlaybookOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaybookWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Playbooks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Playbooks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Playbooks
+    **/
+    _count?: true | PlaybookCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaybookMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaybookMaxAggregateInputType
+  }
+
+  export type GetPlaybookAggregateType<T extends PlaybookAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaybook]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaybook[P]>
+      : GetScalarType<T[P], AggregatePlaybook[P]>
+  }
+
+
+
+
+  export type PlaybookGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookWhereInput
+    orderBy?: PlaybookOrderByWithAggregationInput | PlaybookOrderByWithAggregationInput[]
+    by: PlaybookScalarFieldEnum[] | PlaybookScalarFieldEnum
+    having?: PlaybookScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaybookCountAggregateInputType | true
+    _min?: PlaybookMinAggregateInputType
+    _max?: PlaybookMaxAggregateInputType
+  }
+
+  export type PlaybookGroupByOutputType = {
+    id: string
+    tenantId: string
+    name: string
+    description: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase: $Enums.PhaseType
+    isActive: boolean
+    deletedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PlaybookCountAggregateOutputType | null
+    _min: PlaybookMinAggregateOutputType | null
+    _max: PlaybookMaxAggregateOutputType | null
+  }
+
+  type GetPlaybookGroupByPayload<T extends PlaybookGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaybookGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaybookGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaybookGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaybookGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaybookSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    entityType?: boolean
+    category?: boolean
+    playbookPhase?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    steps?: boolean | Playbook$stepsArgs<ExtArgs>
+    instances?: boolean | Playbook$instancesArgs<ExtArgs>
+    _count?: boolean | PlaybookCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbook"]>
+
+  export type PlaybookSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    entityType?: boolean
+    category?: boolean
+    playbookPhase?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbook"]>
+
+  export type PlaybookSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    entityType?: boolean
+    category?: boolean
+    playbookPhase?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbook"]>
+
+  export type PlaybookSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    name?: boolean
+    description?: boolean
+    entityType?: boolean
+    category?: boolean
+    playbookPhase?: boolean
+    isActive?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlaybookOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "name" | "description" | "entityType" | "category" | "playbookPhase" | "isActive" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["playbook"]>
+  export type PlaybookInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    steps?: boolean | Playbook$stepsArgs<ExtArgs>
+    instances?: boolean | Playbook$instancesArgs<ExtArgs>
+    _count?: boolean | PlaybookCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PlaybookIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+  export type PlaybookIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+  }
+
+  export type $PlaybookPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Playbook"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      steps: Prisma.$PlaybookStepPayload<ExtArgs>[]
+      instances: Prisma.$PlaybookInstancePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      name: string
+      description: string | null
+      entityType: $Enums.PlaybookEntityType
+      category: $Enums.PlaybookCategory
+      playbookPhase: $Enums.PhaseType
+      isActive: boolean
+      deletedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["playbook"]>
+    composites: {}
+  }
+
+  type PlaybookGetPayload<S extends boolean | null | undefined | PlaybookDefaultArgs> = $Result.GetResult<Prisma.$PlaybookPayload, S>
+
+  type PlaybookCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaybookFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaybookCountAggregateInputType | true
+    }
+
+  export interface PlaybookDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Playbook'], meta: { name: 'Playbook' } }
+    /**
+     * Find zero or one Playbook that matches the filter.
+     * @param {PlaybookFindUniqueArgs} args - Arguments to find a Playbook
+     * @example
+     * // Get one Playbook
+     * const playbook = await prisma.playbook.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaybookFindUniqueArgs>(args: SelectSubset<T, PlaybookFindUniqueArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Playbook that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaybookFindUniqueOrThrowArgs} args - Arguments to find a Playbook
+     * @example
+     * // Get one Playbook
+     * const playbook = await prisma.playbook.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaybookFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaybookFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Playbook that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookFindFirstArgs} args - Arguments to find a Playbook
+     * @example
+     * // Get one Playbook
+     * const playbook = await prisma.playbook.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaybookFindFirstArgs>(args?: SelectSubset<T, PlaybookFindFirstArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Playbook that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookFindFirstOrThrowArgs} args - Arguments to find a Playbook
+     * @example
+     * // Get one Playbook
+     * const playbook = await prisma.playbook.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaybookFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaybookFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Playbooks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Playbooks
+     * const playbooks = await prisma.playbook.findMany()
+     * 
+     * // Get first 10 Playbooks
+     * const playbooks = await prisma.playbook.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playbookWithIdOnly = await prisma.playbook.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaybookFindManyArgs>(args?: SelectSubset<T, PlaybookFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Playbook.
+     * @param {PlaybookCreateArgs} args - Arguments to create a Playbook.
+     * @example
+     * // Create one Playbook
+     * const Playbook = await prisma.playbook.create({
+     *   data: {
+     *     // ... data to create a Playbook
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaybookCreateArgs>(args: SelectSubset<T, PlaybookCreateArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Playbooks.
+     * @param {PlaybookCreateManyArgs} args - Arguments to create many Playbooks.
+     * @example
+     * // Create many Playbooks
+     * const playbook = await prisma.playbook.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaybookCreateManyArgs>(args?: SelectSubset<T, PlaybookCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Playbooks and returns the data saved in the database.
+     * @param {PlaybookCreateManyAndReturnArgs} args - Arguments to create many Playbooks.
+     * @example
+     * // Create many Playbooks
+     * const playbook = await prisma.playbook.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Playbooks and only return the `id`
+     * const playbookWithIdOnly = await prisma.playbook.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaybookCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaybookCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Playbook.
+     * @param {PlaybookDeleteArgs} args - Arguments to delete one Playbook.
+     * @example
+     * // Delete one Playbook
+     * const Playbook = await prisma.playbook.delete({
+     *   where: {
+     *     // ... filter to delete one Playbook
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaybookDeleteArgs>(args: SelectSubset<T, PlaybookDeleteArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Playbook.
+     * @param {PlaybookUpdateArgs} args - Arguments to update one Playbook.
+     * @example
+     * // Update one Playbook
+     * const playbook = await prisma.playbook.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaybookUpdateArgs>(args: SelectSubset<T, PlaybookUpdateArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Playbooks.
+     * @param {PlaybookDeleteManyArgs} args - Arguments to filter Playbooks to delete.
+     * @example
+     * // Delete a few Playbooks
+     * const { count } = await prisma.playbook.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaybookDeleteManyArgs>(args?: SelectSubset<T, PlaybookDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Playbooks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Playbooks
+     * const playbook = await prisma.playbook.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaybookUpdateManyArgs>(args: SelectSubset<T, PlaybookUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Playbooks and returns the data updated in the database.
+     * @param {PlaybookUpdateManyAndReturnArgs} args - Arguments to update many Playbooks.
+     * @example
+     * // Update many Playbooks
+     * const playbook = await prisma.playbook.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Playbooks and only return the `id`
+     * const playbookWithIdOnly = await prisma.playbook.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaybookUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaybookUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Playbook.
+     * @param {PlaybookUpsertArgs} args - Arguments to update or create a Playbook.
+     * @example
+     * // Update or create a Playbook
+     * const playbook = await prisma.playbook.upsert({
+     *   create: {
+     *     // ... data to create a Playbook
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Playbook we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaybookUpsertArgs>(args: SelectSubset<T, PlaybookUpsertArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Playbooks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookCountArgs} args - Arguments to filter Playbooks to count.
+     * @example
+     * // Count the number of Playbooks
+     * const count = await prisma.playbook.count({
+     *   where: {
+     *     // ... the filter for the Playbooks we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaybookCountArgs>(
+      args?: Subset<T, PlaybookCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaybookCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Playbook.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaybookAggregateArgs>(args: Subset<T, PlaybookAggregateArgs>): Prisma.PrismaPromise<GetPlaybookAggregateType<T>>
+
+    /**
+     * Group by Playbook.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaybookGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaybookGroupByArgs['orderBy'] }
+        : { orderBy?: PlaybookGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaybookGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaybookGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Playbook model
+   */
+  readonly fields: PlaybookFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Playbook.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaybookClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    steps<T extends Playbook$stepsArgs<ExtArgs> = {}>(args?: Subset<T, Playbook$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    instances<T extends Playbook$instancesArgs<ExtArgs> = {}>(args?: Subset<T, Playbook$instancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Playbook model
+   */
+  interface PlaybookFieldRefs {
+    readonly id: FieldRef<"Playbook", 'String'>
+    readonly tenantId: FieldRef<"Playbook", 'String'>
+    readonly name: FieldRef<"Playbook", 'String'>
+    readonly description: FieldRef<"Playbook", 'String'>
+    readonly entityType: FieldRef<"Playbook", 'PlaybookEntityType'>
+    readonly category: FieldRef<"Playbook", 'PlaybookCategory'>
+    readonly playbookPhase: FieldRef<"Playbook", 'PhaseType'>
+    readonly isActive: FieldRef<"Playbook", 'Boolean'>
+    readonly deletedAt: FieldRef<"Playbook", 'DateTime'>
+    readonly createdAt: FieldRef<"Playbook", 'DateTime'>
+    readonly updatedAt: FieldRef<"Playbook", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Playbook findUnique
+   */
+  export type PlaybookFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter, which Playbook to fetch.
+     */
+    where: PlaybookWhereUniqueInput
+  }
+
+  /**
+   * Playbook findUniqueOrThrow
+   */
+  export type PlaybookFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter, which Playbook to fetch.
+     */
+    where: PlaybookWhereUniqueInput
+  }
+
+  /**
+   * Playbook findFirst
+   */
+  export type PlaybookFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter, which Playbook to fetch.
+     */
+    where?: PlaybookWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Playbooks to fetch.
+     */
+    orderBy?: PlaybookOrderByWithRelationInput | PlaybookOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Playbooks.
+     */
+    cursor?: PlaybookWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Playbooks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Playbooks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Playbooks.
+     */
+    distinct?: PlaybookScalarFieldEnum | PlaybookScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook findFirstOrThrow
+   */
+  export type PlaybookFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter, which Playbook to fetch.
+     */
+    where?: PlaybookWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Playbooks to fetch.
+     */
+    orderBy?: PlaybookOrderByWithRelationInput | PlaybookOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Playbooks.
+     */
+    cursor?: PlaybookWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Playbooks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Playbooks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Playbooks.
+     */
+    distinct?: PlaybookScalarFieldEnum | PlaybookScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook findMany
+   */
+  export type PlaybookFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter, which Playbooks to fetch.
+     */
+    where?: PlaybookWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Playbooks to fetch.
+     */
+    orderBy?: PlaybookOrderByWithRelationInput | PlaybookOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Playbooks.
+     */
+    cursor?: PlaybookWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Playbooks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Playbooks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Playbooks.
+     */
+    distinct?: PlaybookScalarFieldEnum | PlaybookScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook create
+   */
+  export type PlaybookCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Playbook.
+     */
+    data: XOR<PlaybookCreateInput, PlaybookUncheckedCreateInput>
+  }
+
+  /**
+   * Playbook createMany
+   */
+  export type PlaybookCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Playbooks.
+     */
+    data: PlaybookCreateManyInput | PlaybookCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Playbook createManyAndReturn
+   */
+  export type PlaybookCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * The data used to create many Playbooks.
+     */
+    data: PlaybookCreateManyInput | PlaybookCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Playbook update
+   */
+  export type PlaybookUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Playbook.
+     */
+    data: XOR<PlaybookUpdateInput, PlaybookUncheckedUpdateInput>
+    /**
+     * Choose, which Playbook to update.
+     */
+    where: PlaybookWhereUniqueInput
+  }
+
+  /**
+   * Playbook updateMany
+   */
+  export type PlaybookUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Playbooks.
+     */
+    data: XOR<PlaybookUpdateManyMutationInput, PlaybookUncheckedUpdateManyInput>
+    /**
+     * Filter which Playbooks to update
+     */
+    where?: PlaybookWhereInput
+    /**
+     * Limit how many Playbooks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Playbook updateManyAndReturn
+   */
+  export type PlaybookUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * The data used to update Playbooks.
+     */
+    data: XOR<PlaybookUpdateManyMutationInput, PlaybookUncheckedUpdateManyInput>
+    /**
+     * Filter which Playbooks to update
+     */
+    where?: PlaybookWhereInput
+    /**
+     * Limit how many Playbooks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Playbook upsert
+   */
+  export type PlaybookUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Playbook to update in case it exists.
+     */
+    where: PlaybookWhereUniqueInput
+    /**
+     * In case the Playbook found by the `where` argument doesn't exist, create a new Playbook with this data.
+     */
+    create: XOR<PlaybookCreateInput, PlaybookUncheckedCreateInput>
+    /**
+     * In case the Playbook was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaybookUpdateInput, PlaybookUncheckedUpdateInput>
+  }
+
+  /**
+   * Playbook delete
+   */
+  export type PlaybookDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+    /**
+     * Filter which Playbook to delete.
+     */
+    where: PlaybookWhereUniqueInput
+  }
+
+  /**
+   * Playbook deleteMany
+   */
+  export type PlaybookDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Playbooks to delete
+     */
+    where?: PlaybookWhereInput
+    /**
+     * Limit how many Playbooks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Playbook.steps
+   */
+  export type Playbook$stepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    where?: PlaybookStepWhereInput
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    cursor?: PlaybookStepWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookStepScalarFieldEnum | PlaybookStepScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook.instances
+   */
+  export type Playbook$instancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    where?: PlaybookInstanceWhereInput
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    cursor?: PlaybookInstanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * Playbook without action
+   */
+  export type PlaybookDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Playbook
+     */
+    select?: PlaybookSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Playbook
+     */
+    omit?: PlaybookOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlaybookStep
+   */
+
+  export type AggregatePlaybookStep = {
+    _count: PlaybookStepCountAggregateOutputType | null
+    _avg: PlaybookStepAvgAggregateOutputType | null
+    _sum: PlaybookStepSumAggregateOutputType | null
+    _min: PlaybookStepMinAggregateOutputType | null
+    _max: PlaybookStepMaxAggregateOutputType | null
+  }
+
+  export type PlaybookStepAvgAggregateOutputType = {
+    sequence: number | null
+    dueDaysFromStart: number | null
+  }
+
+  export type PlaybookStepSumAggregateOutputType = {
+    sequence: number | null
+    dueDaysFromStart: number | null
+  }
+
+  export type PlaybookStepMinAggregateOutputType = {
+    id: string | null
+    playbookId: string | null
+    stepTemplateId: string | null
+    sequence: number | null
+    playbookPhase: $Enums.PhaseType | null
+    isRequired: boolean | null
+    isDispatchBlocker: boolean | null
+    dueDaysFromStart: number | null
+    dueBeforeDispatch: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookStepMaxAggregateOutputType = {
+    id: string | null
+    playbookId: string | null
+    stepTemplateId: string | null
+    sequence: number | null
+    playbookPhase: $Enums.PhaseType | null
+    isRequired: boolean | null
+    isDispatchBlocker: boolean | null
+    dueDaysFromStart: number | null
+    dueBeforeDispatch: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookStepCountAggregateOutputType = {
+    id: number
+    playbookId: number
+    stepTemplateId: number
+    sequence: number
+    playbookPhase: number
+    overrideConfig: number
+    isRequired: number
+    isDispatchBlocker: number
+    dueDaysFromStart: number
+    dueBeforeDispatch: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlaybookStepAvgAggregateInputType = {
+    sequence?: true
+    dueDaysFromStart?: true
+  }
+
+  export type PlaybookStepSumAggregateInputType = {
+    sequence?: true
+    dueDaysFromStart?: true
+  }
+
+  export type PlaybookStepMinAggregateInputType = {
+    id?: true
+    playbookId?: true
+    stepTemplateId?: true
+    sequence?: true
+    playbookPhase?: true
+    isRequired?: true
+    isDispatchBlocker?: true
+    dueDaysFromStart?: true
+    dueBeforeDispatch?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookStepMaxAggregateInputType = {
+    id?: true
+    playbookId?: true
+    stepTemplateId?: true
+    sequence?: true
+    playbookPhase?: true
+    isRequired?: true
+    isDispatchBlocker?: true
+    dueDaysFromStart?: true
+    dueBeforeDispatch?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookStepCountAggregateInputType = {
+    id?: true
+    playbookId?: true
+    stepTemplateId?: true
+    sequence?: true
+    playbookPhase?: true
+    overrideConfig?: true
+    isRequired?: true
+    isDispatchBlocker?: true
+    dueDaysFromStart?: true
+    dueBeforeDispatch?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlaybookStepAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookStep to aggregate.
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookSteps to fetch.
+     */
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaybookStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaybookSteps
+    **/
+    _count?: true | PlaybookStepCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlaybookStepAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlaybookStepSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaybookStepMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaybookStepMaxAggregateInputType
+  }
+
+  export type GetPlaybookStepAggregateType<T extends PlaybookStepAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaybookStep]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaybookStep[P]>
+      : GetScalarType<T[P], AggregatePlaybookStep[P]>
+  }
+
+
+
+
+  export type PlaybookStepGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookStepWhereInput
+    orderBy?: PlaybookStepOrderByWithAggregationInput | PlaybookStepOrderByWithAggregationInput[]
+    by: PlaybookStepScalarFieldEnum[] | PlaybookStepScalarFieldEnum
+    having?: PlaybookStepScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaybookStepCountAggregateInputType | true
+    _avg?: PlaybookStepAvgAggregateInputType
+    _sum?: PlaybookStepSumAggregateInputType
+    _min?: PlaybookStepMinAggregateInputType
+    _max?: PlaybookStepMaxAggregateInputType
+  }
+
+  export type PlaybookStepGroupByOutputType = {
+    id: string
+    playbookId: string
+    stepTemplateId: string
+    sequence: number
+    playbookPhase: $Enums.PhaseType
+    overrideConfig: JsonValue
+    isRequired: boolean
+    isDispatchBlocker: boolean
+    dueDaysFromStart: number | null
+    dueBeforeDispatch: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: PlaybookStepCountAggregateOutputType | null
+    _avg: PlaybookStepAvgAggregateOutputType | null
+    _sum: PlaybookStepSumAggregateOutputType | null
+    _min: PlaybookStepMinAggregateOutputType | null
+    _max: PlaybookStepMaxAggregateOutputType | null
+  }
+
+  type GetPlaybookStepGroupByPayload<T extends PlaybookStepGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaybookStepGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaybookStepGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaybookStepGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaybookStepGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaybookStepSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    stepTemplateId?: boolean
+    sequence?: boolean
+    playbookPhase?: boolean
+    overrideConfig?: boolean
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: boolean
+    dueBeforeDispatch?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookStep"]>
+
+  export type PlaybookStepSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    stepTemplateId?: boolean
+    sequence?: boolean
+    playbookPhase?: boolean
+    overrideConfig?: boolean
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: boolean
+    dueBeforeDispatch?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookStep"]>
+
+  export type PlaybookStepSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookId?: boolean
+    stepTemplateId?: boolean
+    sequence?: boolean
+    playbookPhase?: boolean
+    overrideConfig?: boolean
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: boolean
+    dueBeforeDispatch?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookStep"]>
+
+  export type PlaybookStepSelectScalar = {
+    id?: boolean
+    playbookId?: boolean
+    stepTemplateId?: boolean
+    sequence?: boolean
+    playbookPhase?: boolean
+    overrideConfig?: boolean
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: boolean
+    dueBeforeDispatch?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlaybookStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookId" | "stepTemplateId" | "sequence" | "playbookPhase" | "overrideConfig" | "isRequired" | "isDispatchBlocker" | "dueDaysFromStart" | "dueBeforeDispatch" | "createdAt" | "updatedAt", ExtArgs["result"]["playbookStep"]>
+  export type PlaybookStepInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+  export type PlaybookStepIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+  export type PlaybookStepIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $PlaybookStepPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaybookStep"
+    objects: {
+      playbook: Prisma.$PlaybookPayload<ExtArgs>
+      stepTemplate: Prisma.$StepTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playbookId: string
+      stepTemplateId: string
+      sequence: number
+      playbookPhase: $Enums.PhaseType
+      overrideConfig: Prisma.JsonValue
+      isRequired: boolean
+      isDispatchBlocker: boolean
+      dueDaysFromStart: number | null
+      dueBeforeDispatch: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["playbookStep"]>
+    composites: {}
+  }
+
+  type PlaybookStepGetPayload<S extends boolean | null | undefined | PlaybookStepDefaultArgs> = $Result.GetResult<Prisma.$PlaybookStepPayload, S>
+
+  type PlaybookStepCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaybookStepFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaybookStepCountAggregateInputType | true
+    }
+
+  export interface PlaybookStepDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaybookStep'], meta: { name: 'PlaybookStep' } }
+    /**
+     * Find zero or one PlaybookStep that matches the filter.
+     * @param {PlaybookStepFindUniqueArgs} args - Arguments to find a PlaybookStep
+     * @example
+     * // Get one PlaybookStep
+     * const playbookStep = await prisma.playbookStep.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaybookStepFindUniqueArgs>(args: SelectSubset<T, PlaybookStepFindUniqueArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaybookStep that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaybookStepFindUniqueOrThrowArgs} args - Arguments to find a PlaybookStep
+     * @example
+     * // Get one PlaybookStep
+     * const playbookStep = await prisma.playbookStep.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaybookStepFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaybookStepFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookStep that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepFindFirstArgs} args - Arguments to find a PlaybookStep
+     * @example
+     * // Get one PlaybookStep
+     * const playbookStep = await prisma.playbookStep.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaybookStepFindFirstArgs>(args?: SelectSubset<T, PlaybookStepFindFirstArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookStep that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepFindFirstOrThrowArgs} args - Arguments to find a PlaybookStep
+     * @example
+     * // Get one PlaybookStep
+     * const playbookStep = await prisma.playbookStep.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaybookStepFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaybookStepFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaybookSteps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaybookSteps
+     * const playbookSteps = await prisma.playbookStep.findMany()
+     * 
+     * // Get first 10 PlaybookSteps
+     * const playbookSteps = await prisma.playbookStep.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playbookStepWithIdOnly = await prisma.playbookStep.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaybookStepFindManyArgs>(args?: SelectSubset<T, PlaybookStepFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaybookStep.
+     * @param {PlaybookStepCreateArgs} args - Arguments to create a PlaybookStep.
+     * @example
+     * // Create one PlaybookStep
+     * const PlaybookStep = await prisma.playbookStep.create({
+     *   data: {
+     *     // ... data to create a PlaybookStep
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaybookStepCreateArgs>(args: SelectSubset<T, PlaybookStepCreateArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaybookSteps.
+     * @param {PlaybookStepCreateManyArgs} args - Arguments to create many PlaybookSteps.
+     * @example
+     * // Create many PlaybookSteps
+     * const playbookStep = await prisma.playbookStep.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaybookStepCreateManyArgs>(args?: SelectSubset<T, PlaybookStepCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaybookSteps and returns the data saved in the database.
+     * @param {PlaybookStepCreateManyAndReturnArgs} args - Arguments to create many PlaybookSteps.
+     * @example
+     * // Create many PlaybookSteps
+     * const playbookStep = await prisma.playbookStep.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaybookSteps and only return the `id`
+     * const playbookStepWithIdOnly = await prisma.playbookStep.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaybookStepCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaybookStepCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaybookStep.
+     * @param {PlaybookStepDeleteArgs} args - Arguments to delete one PlaybookStep.
+     * @example
+     * // Delete one PlaybookStep
+     * const PlaybookStep = await prisma.playbookStep.delete({
+     *   where: {
+     *     // ... filter to delete one PlaybookStep
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaybookStepDeleteArgs>(args: SelectSubset<T, PlaybookStepDeleteArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaybookStep.
+     * @param {PlaybookStepUpdateArgs} args - Arguments to update one PlaybookStep.
+     * @example
+     * // Update one PlaybookStep
+     * const playbookStep = await prisma.playbookStep.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaybookStepUpdateArgs>(args: SelectSubset<T, PlaybookStepUpdateArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaybookSteps.
+     * @param {PlaybookStepDeleteManyArgs} args - Arguments to filter PlaybookSteps to delete.
+     * @example
+     * // Delete a few PlaybookSteps
+     * const { count } = await prisma.playbookStep.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaybookStepDeleteManyArgs>(args?: SelectSubset<T, PlaybookStepDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookSteps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaybookSteps
+     * const playbookStep = await prisma.playbookStep.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaybookStepUpdateManyArgs>(args: SelectSubset<T, PlaybookStepUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookSteps and returns the data updated in the database.
+     * @param {PlaybookStepUpdateManyAndReturnArgs} args - Arguments to update many PlaybookSteps.
+     * @example
+     * // Update many PlaybookSteps
+     * const playbookStep = await prisma.playbookStep.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaybookSteps and only return the `id`
+     * const playbookStepWithIdOnly = await prisma.playbookStep.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaybookStepUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaybookStepUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaybookStep.
+     * @param {PlaybookStepUpsertArgs} args - Arguments to update or create a PlaybookStep.
+     * @example
+     * // Update or create a PlaybookStep
+     * const playbookStep = await prisma.playbookStep.upsert({
+     *   create: {
+     *     // ... data to create a PlaybookStep
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaybookStep we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaybookStepUpsertArgs>(args: SelectSubset<T, PlaybookStepUpsertArgs<ExtArgs>>): Prisma__PlaybookStepClient<$Result.GetResult<Prisma.$PlaybookStepPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaybookSteps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepCountArgs} args - Arguments to filter PlaybookSteps to count.
+     * @example
+     * // Count the number of PlaybookSteps
+     * const count = await prisma.playbookStep.count({
+     *   where: {
+     *     // ... the filter for the PlaybookSteps we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaybookStepCountArgs>(
+      args?: Subset<T, PlaybookStepCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaybookStepCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaybookStep.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaybookStepAggregateArgs>(args: Subset<T, PlaybookStepAggregateArgs>): Prisma.PrismaPromise<GetPlaybookStepAggregateType<T>>
+
+    /**
+     * Group by PlaybookStep.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookStepGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaybookStepGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaybookStepGroupByArgs['orderBy'] }
+        : { orderBy?: PlaybookStepGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaybookStepGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaybookStepGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaybookStep model
+   */
+  readonly fields: PlaybookStepFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaybookStep.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaybookStepClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    playbook<T extends PlaybookDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookDefaultArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    stepTemplate<T extends StepTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StepTemplateDefaultArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaybookStep model
+   */
+  interface PlaybookStepFieldRefs {
+    readonly id: FieldRef<"PlaybookStep", 'String'>
+    readonly playbookId: FieldRef<"PlaybookStep", 'String'>
+    readonly stepTemplateId: FieldRef<"PlaybookStep", 'String'>
+    readonly sequence: FieldRef<"PlaybookStep", 'Int'>
+    readonly playbookPhase: FieldRef<"PlaybookStep", 'PhaseType'>
+    readonly overrideConfig: FieldRef<"PlaybookStep", 'Json'>
+    readonly isRequired: FieldRef<"PlaybookStep", 'Boolean'>
+    readonly isDispatchBlocker: FieldRef<"PlaybookStep", 'Boolean'>
+    readonly dueDaysFromStart: FieldRef<"PlaybookStep", 'Int'>
+    readonly dueBeforeDispatch: FieldRef<"PlaybookStep", 'Boolean'>
+    readonly createdAt: FieldRef<"PlaybookStep", 'DateTime'>
+    readonly updatedAt: FieldRef<"PlaybookStep", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaybookStep findUnique
+   */
+  export type PlaybookStepFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookStep to fetch.
+     */
+    where: PlaybookStepWhereUniqueInput
+  }
+
+  /**
+   * PlaybookStep findUniqueOrThrow
+   */
+  export type PlaybookStepFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookStep to fetch.
+     */
+    where: PlaybookStepWhereUniqueInput
+  }
+
+  /**
+   * PlaybookStep findFirst
+   */
+  export type PlaybookStepFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookStep to fetch.
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookSteps to fetch.
+     */
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookSteps.
+     */
+    cursor?: PlaybookStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookSteps.
+     */
+    distinct?: PlaybookStepScalarFieldEnum | PlaybookStepScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookStep findFirstOrThrow
+   */
+  export type PlaybookStepFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookStep to fetch.
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookSteps to fetch.
+     */
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookSteps.
+     */
+    cursor?: PlaybookStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookSteps.
+     */
+    distinct?: PlaybookStepScalarFieldEnum | PlaybookStepScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookStep findMany
+   */
+  export type PlaybookStepFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookSteps to fetch.
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookSteps to fetch.
+     */
+    orderBy?: PlaybookStepOrderByWithRelationInput | PlaybookStepOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaybookSteps.
+     */
+    cursor?: PlaybookStepWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookSteps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookSteps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookSteps.
+     */
+    distinct?: PlaybookStepScalarFieldEnum | PlaybookStepScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookStep create
+   */
+  export type PlaybookStepCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlaybookStep.
+     */
+    data: XOR<PlaybookStepCreateInput, PlaybookStepUncheckedCreateInput>
+  }
+
+  /**
+   * PlaybookStep createMany
+   */
+  export type PlaybookStepCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaybookSteps.
+     */
+    data: PlaybookStepCreateManyInput | PlaybookStepCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlaybookStep createManyAndReturn
+   */
+  export type PlaybookStepCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaybookSteps.
+     */
+    data: PlaybookStepCreateManyInput | PlaybookStepCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookStep update
+   */
+  export type PlaybookStepUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlaybookStep.
+     */
+    data: XOR<PlaybookStepUpdateInput, PlaybookStepUncheckedUpdateInput>
+    /**
+     * Choose, which PlaybookStep to update.
+     */
+    where: PlaybookStepWhereUniqueInput
+  }
+
+  /**
+   * PlaybookStep updateMany
+   */
+  export type PlaybookStepUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaybookSteps.
+     */
+    data: XOR<PlaybookStepUpdateManyMutationInput, PlaybookStepUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookSteps to update
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * Limit how many PlaybookSteps to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookStep updateManyAndReturn
+   */
+  export type PlaybookStepUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaybookSteps.
+     */
+    data: XOR<PlaybookStepUpdateManyMutationInput, PlaybookStepUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookSteps to update
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * Limit how many PlaybookSteps to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookStep upsert
+   */
+  export type PlaybookStepUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlaybookStep to update in case it exists.
+     */
+    where: PlaybookStepWhereUniqueInput
+    /**
+     * In case the PlaybookStep found by the `where` argument doesn't exist, create a new PlaybookStep with this data.
+     */
+    create: XOR<PlaybookStepCreateInput, PlaybookStepUncheckedCreateInput>
+    /**
+     * In case the PlaybookStep was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaybookStepUpdateInput, PlaybookStepUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaybookStep delete
+   */
+  export type PlaybookStepDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+    /**
+     * Filter which PlaybookStep to delete.
+     */
+    where: PlaybookStepWhereUniqueInput
+  }
+
+  /**
+   * PlaybookStep deleteMany
+   */
+  export type PlaybookStepDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookSteps to delete
+     */
+    where?: PlaybookStepWhereInput
+    /**
+     * Limit how many PlaybookSteps to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookStep without action
+   */
+  export type PlaybookStepDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookStep
+     */
+    select?: PlaybookStepSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookStep
+     */
+    omit?: PlaybookStepOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookStepInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlaybookInstance
+   */
+
+  export type AggregatePlaybookInstance = {
+    _count: PlaybookInstanceCountAggregateOutputType | null
+    _avg: PlaybookInstanceAvgAggregateOutputType | null
+    _sum: PlaybookInstanceSumAggregateOutputType | null
+    _min: PlaybookInstanceMinAggregateOutputType | null
+    _max: PlaybookInstanceMaxAggregateOutputType | null
+  }
+
+  export type PlaybookInstanceAvgAggregateOutputType = {
+    completionPercent: number | null
+  }
+
+  export type PlaybookInstanceSumAggregateOutputType = {
+    completionPercent: number | null
+  }
+
+  export type PlaybookInstanceMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    playbookId: string | null
+    entityType: $Enums.PlaybookEntityType | null
+    entityId: string | null
+    status: $Enums.InstanceStatus | null
+    completionPercent: number | null
+    isDispatchReady: boolean | null
+    startedAt: Date | null
+    completedAt: Date | null
+    dueDate: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookInstanceMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    playbookId: string | null
+    entityType: $Enums.PlaybookEntityType | null
+    entityId: string | null
+    status: $Enums.InstanceStatus | null
+    completionPercent: number | null
+    isDispatchReady: boolean | null
+    startedAt: Date | null
+    completedAt: Date | null
+    dueDate: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type PlaybookInstanceCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    playbookId: number
+    playbookSnapshot: number
+    entityType: number
+    entityId: number
+    status: number
+    completionPercent: number
+    isDispatchReady: number
+    startedAt: number
+    completedAt: number
+    dueDate: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type PlaybookInstanceAvgAggregateInputType = {
+    completionPercent?: true
+  }
+
+  export type PlaybookInstanceSumAggregateInputType = {
+    completionPercent?: true
+  }
+
+  export type PlaybookInstanceMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookId?: true
+    entityType?: true
+    entityId?: true
+    status?: true
+    completionPercent?: true
+    isDispatchReady?: true
+    startedAt?: true
+    completedAt?: true
+    dueDate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookInstanceMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookId?: true
+    entityType?: true
+    entityId?: true
+    status?: true
+    completionPercent?: true
+    isDispatchReady?: true
+    startedAt?: true
+    completedAt?: true
+    dueDate?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type PlaybookInstanceCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookId?: true
+    playbookSnapshot?: true
+    entityType?: true
+    entityId?: true
+    status?: true
+    completionPercent?: true
+    isDispatchReady?: true
+    startedAt?: true
+    completedAt?: true
+    dueDate?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type PlaybookInstanceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookInstance to aggregate.
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookInstances to fetch.
+     */
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaybookInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaybookInstances
+    **/
+    _count?: true | PlaybookInstanceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PlaybookInstanceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PlaybookInstanceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaybookInstanceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaybookInstanceMaxAggregateInputType
+  }
+
+  export type GetPlaybookInstanceAggregateType<T extends PlaybookInstanceAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaybookInstance]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaybookInstance[P]>
+      : GetScalarType<T[P], AggregatePlaybookInstance[P]>
+  }
+
+
+
+
+  export type PlaybookInstanceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookInstanceWhereInput
+    orderBy?: PlaybookInstanceOrderByWithAggregationInput | PlaybookInstanceOrderByWithAggregationInput[]
+    by: PlaybookInstanceScalarFieldEnum[] | PlaybookInstanceScalarFieldEnum
+    having?: PlaybookInstanceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaybookInstanceCountAggregateInputType | true
+    _avg?: PlaybookInstanceAvgAggregateInputType
+    _sum?: PlaybookInstanceSumAggregateInputType
+    _min?: PlaybookInstanceMinAggregateInputType
+    _max?: PlaybookInstanceMaxAggregateInputType
+  }
+
+  export type PlaybookInstanceGroupByOutputType = {
+    id: string
+    tenantId: string
+    playbookId: string
+    playbookSnapshot: JsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status: $Enums.InstanceStatus
+    completionPercent: number
+    isDispatchReady: boolean
+    startedAt: Date | null
+    completedAt: Date | null
+    dueDate: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: PlaybookInstanceCountAggregateOutputType | null
+    _avg: PlaybookInstanceAvgAggregateOutputType | null
+    _sum: PlaybookInstanceSumAggregateOutputType | null
+    _min: PlaybookInstanceMinAggregateOutputType | null
+    _max: PlaybookInstanceMaxAggregateOutputType | null
+  }
+
+  type GetPlaybookInstanceGroupByPayload<T extends PlaybookInstanceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaybookInstanceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaybookInstanceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaybookInstanceGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaybookInstanceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaybookInstanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookId?: boolean
+    playbookSnapshot?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    status?: boolean
+    completionPercent?: boolean
+    isDispatchReady?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    dueDate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepInstances?: boolean | PlaybookInstance$stepInstancesArgs<ExtArgs>
+    notifications?: boolean | PlaybookInstance$notificationsArgs<ExtArgs>
+    _count?: boolean | PlaybookInstanceCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookInstance"]>
+
+  export type PlaybookInstanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookId?: boolean
+    playbookSnapshot?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    status?: boolean
+    completionPercent?: boolean
+    isDispatchReady?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    dueDate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookInstance"]>
+
+  export type PlaybookInstanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookId?: boolean
+    playbookSnapshot?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    status?: boolean
+    completionPercent?: boolean
+    isDispatchReady?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    dueDate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookInstance"]>
+
+  export type PlaybookInstanceSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    playbookId?: boolean
+    playbookSnapshot?: boolean
+    entityType?: boolean
+    entityId?: boolean
+    status?: boolean
+    completionPercent?: boolean
+    isDispatchReady?: boolean
+    startedAt?: boolean
+    completedAt?: boolean
+    dueDate?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type PlaybookInstanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "playbookId" | "playbookSnapshot" | "entityType" | "entityId" | "status" | "completionPercent" | "isDispatchReady" | "startedAt" | "completedAt" | "dueDate" | "createdAt" | "updatedAt", ExtArgs["result"]["playbookInstance"]>
+  export type PlaybookInstanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+    stepInstances?: boolean | PlaybookInstance$stepInstancesArgs<ExtArgs>
+    notifications?: boolean | PlaybookInstance$notificationsArgs<ExtArgs>
+    _count?: boolean | PlaybookInstanceCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type PlaybookInstanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+  }
+  export type PlaybookInstanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
+  }
+
+  export type $PlaybookInstancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaybookInstance"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      playbook: Prisma.$PlaybookPayload<ExtArgs>
+      stepInstances: Prisma.$StepInstancePayload<ExtArgs>[]
+      notifications: Prisma.$PlaybookNotificationPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      playbookId: string
+      playbookSnapshot: Prisma.JsonValue
+      entityType: $Enums.PlaybookEntityType
+      entityId: string
+      status: $Enums.InstanceStatus
+      completionPercent: number
+      isDispatchReady: boolean
+      startedAt: Date | null
+      completedAt: Date | null
+      dueDate: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["playbookInstance"]>
+    composites: {}
+  }
+
+  type PlaybookInstanceGetPayload<S extends boolean | null | undefined | PlaybookInstanceDefaultArgs> = $Result.GetResult<Prisma.$PlaybookInstancePayload, S>
+
+  type PlaybookInstanceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaybookInstanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaybookInstanceCountAggregateInputType | true
+    }
+
+  export interface PlaybookInstanceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaybookInstance'], meta: { name: 'PlaybookInstance' } }
+    /**
+     * Find zero or one PlaybookInstance that matches the filter.
+     * @param {PlaybookInstanceFindUniqueArgs} args - Arguments to find a PlaybookInstance
+     * @example
+     * // Get one PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaybookInstanceFindUniqueArgs>(args: SelectSubset<T, PlaybookInstanceFindUniqueArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaybookInstance that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaybookInstanceFindUniqueOrThrowArgs} args - Arguments to find a PlaybookInstance
+     * @example
+     * // Get one PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaybookInstanceFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaybookInstanceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookInstance that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceFindFirstArgs} args - Arguments to find a PlaybookInstance
+     * @example
+     * // Get one PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaybookInstanceFindFirstArgs>(args?: SelectSubset<T, PlaybookInstanceFindFirstArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookInstance that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceFindFirstOrThrowArgs} args - Arguments to find a PlaybookInstance
+     * @example
+     * // Get one PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaybookInstanceFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaybookInstanceFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaybookInstances that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaybookInstances
+     * const playbookInstances = await prisma.playbookInstance.findMany()
+     * 
+     * // Get first 10 PlaybookInstances
+     * const playbookInstances = await prisma.playbookInstance.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playbookInstanceWithIdOnly = await prisma.playbookInstance.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaybookInstanceFindManyArgs>(args?: SelectSubset<T, PlaybookInstanceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaybookInstance.
+     * @param {PlaybookInstanceCreateArgs} args - Arguments to create a PlaybookInstance.
+     * @example
+     * // Create one PlaybookInstance
+     * const PlaybookInstance = await prisma.playbookInstance.create({
+     *   data: {
+     *     // ... data to create a PlaybookInstance
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaybookInstanceCreateArgs>(args: SelectSubset<T, PlaybookInstanceCreateArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaybookInstances.
+     * @param {PlaybookInstanceCreateManyArgs} args - Arguments to create many PlaybookInstances.
+     * @example
+     * // Create many PlaybookInstances
+     * const playbookInstance = await prisma.playbookInstance.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaybookInstanceCreateManyArgs>(args?: SelectSubset<T, PlaybookInstanceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaybookInstances and returns the data saved in the database.
+     * @param {PlaybookInstanceCreateManyAndReturnArgs} args - Arguments to create many PlaybookInstances.
+     * @example
+     * // Create many PlaybookInstances
+     * const playbookInstance = await prisma.playbookInstance.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaybookInstances and only return the `id`
+     * const playbookInstanceWithIdOnly = await prisma.playbookInstance.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaybookInstanceCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaybookInstanceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaybookInstance.
+     * @param {PlaybookInstanceDeleteArgs} args - Arguments to delete one PlaybookInstance.
+     * @example
+     * // Delete one PlaybookInstance
+     * const PlaybookInstance = await prisma.playbookInstance.delete({
+     *   where: {
+     *     // ... filter to delete one PlaybookInstance
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaybookInstanceDeleteArgs>(args: SelectSubset<T, PlaybookInstanceDeleteArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaybookInstance.
+     * @param {PlaybookInstanceUpdateArgs} args - Arguments to update one PlaybookInstance.
+     * @example
+     * // Update one PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaybookInstanceUpdateArgs>(args: SelectSubset<T, PlaybookInstanceUpdateArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaybookInstances.
+     * @param {PlaybookInstanceDeleteManyArgs} args - Arguments to filter PlaybookInstances to delete.
+     * @example
+     * // Delete a few PlaybookInstances
+     * const { count } = await prisma.playbookInstance.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaybookInstanceDeleteManyArgs>(args?: SelectSubset<T, PlaybookInstanceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookInstances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaybookInstances
+     * const playbookInstance = await prisma.playbookInstance.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaybookInstanceUpdateManyArgs>(args: SelectSubset<T, PlaybookInstanceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookInstances and returns the data updated in the database.
+     * @param {PlaybookInstanceUpdateManyAndReturnArgs} args - Arguments to update many PlaybookInstances.
+     * @example
+     * // Update many PlaybookInstances
+     * const playbookInstance = await prisma.playbookInstance.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaybookInstances and only return the `id`
+     * const playbookInstanceWithIdOnly = await prisma.playbookInstance.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaybookInstanceUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaybookInstanceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaybookInstance.
+     * @param {PlaybookInstanceUpsertArgs} args - Arguments to update or create a PlaybookInstance.
+     * @example
+     * // Update or create a PlaybookInstance
+     * const playbookInstance = await prisma.playbookInstance.upsert({
+     *   create: {
+     *     // ... data to create a PlaybookInstance
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaybookInstance we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaybookInstanceUpsertArgs>(args: SelectSubset<T, PlaybookInstanceUpsertArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaybookInstances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceCountArgs} args - Arguments to filter PlaybookInstances to count.
+     * @example
+     * // Count the number of PlaybookInstances
+     * const count = await prisma.playbookInstance.count({
+     *   where: {
+     *     // ... the filter for the PlaybookInstances we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaybookInstanceCountArgs>(
+      args?: Subset<T, PlaybookInstanceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaybookInstanceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaybookInstance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaybookInstanceAggregateArgs>(args: Subset<T, PlaybookInstanceAggregateArgs>): Prisma.PrismaPromise<GetPlaybookInstanceAggregateType<T>>
+
+    /**
+     * Group by PlaybookInstance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookInstanceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaybookInstanceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaybookInstanceGroupByArgs['orderBy'] }
+        : { orderBy?: PlaybookInstanceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaybookInstanceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaybookInstanceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaybookInstance model
+   */
+  readonly fields: PlaybookInstanceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaybookInstance.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaybookInstanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    playbook<T extends PlaybookDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookDefaultArgs<ExtArgs>>): Prisma__PlaybookClient<$Result.GetResult<Prisma.$PlaybookPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    stepInstances<T extends PlaybookInstance$stepInstancesArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookInstance$stepInstancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends PlaybookInstance$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookInstance$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaybookInstance model
+   */
+  interface PlaybookInstanceFieldRefs {
+    readonly id: FieldRef<"PlaybookInstance", 'String'>
+    readonly tenantId: FieldRef<"PlaybookInstance", 'String'>
+    readonly playbookId: FieldRef<"PlaybookInstance", 'String'>
+    readonly playbookSnapshot: FieldRef<"PlaybookInstance", 'Json'>
+    readonly entityType: FieldRef<"PlaybookInstance", 'PlaybookEntityType'>
+    readonly entityId: FieldRef<"PlaybookInstance", 'String'>
+    readonly status: FieldRef<"PlaybookInstance", 'InstanceStatus'>
+    readonly completionPercent: FieldRef<"PlaybookInstance", 'Float'>
+    readonly isDispatchReady: FieldRef<"PlaybookInstance", 'Boolean'>
+    readonly startedAt: FieldRef<"PlaybookInstance", 'DateTime'>
+    readonly completedAt: FieldRef<"PlaybookInstance", 'DateTime'>
+    readonly dueDate: FieldRef<"PlaybookInstance", 'DateTime'>
+    readonly createdAt: FieldRef<"PlaybookInstance", 'DateTime'>
+    readonly updatedAt: FieldRef<"PlaybookInstance", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaybookInstance findUnique
+   */
+  export type PlaybookInstanceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookInstance to fetch.
+     */
+    where: PlaybookInstanceWhereUniqueInput
+  }
+
+  /**
+   * PlaybookInstance findUniqueOrThrow
+   */
+  export type PlaybookInstanceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookInstance to fetch.
+     */
+    where: PlaybookInstanceWhereUniqueInput
+  }
+
+  /**
+   * PlaybookInstance findFirst
+   */
+  export type PlaybookInstanceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookInstance to fetch.
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookInstances to fetch.
+     */
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookInstances.
+     */
+    cursor?: PlaybookInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookInstances.
+     */
+    distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookInstance findFirstOrThrow
+   */
+  export type PlaybookInstanceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookInstance to fetch.
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookInstances to fetch.
+     */
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookInstances.
+     */
+    cursor?: PlaybookInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookInstances.
+     */
+    distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookInstance findMany
+   */
+  export type PlaybookInstanceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookInstances to fetch.
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookInstances to fetch.
+     */
+    orderBy?: PlaybookInstanceOrderByWithRelationInput | PlaybookInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaybookInstances.
+     */
+    cursor?: PlaybookInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookInstances.
+     */
+    distinct?: PlaybookInstanceScalarFieldEnum | PlaybookInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookInstance create
+   */
+  export type PlaybookInstanceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlaybookInstance.
+     */
+    data: XOR<PlaybookInstanceCreateInput, PlaybookInstanceUncheckedCreateInput>
+  }
+
+  /**
+   * PlaybookInstance createMany
+   */
+  export type PlaybookInstanceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaybookInstances.
+     */
+    data: PlaybookInstanceCreateManyInput | PlaybookInstanceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlaybookInstance createManyAndReturn
+   */
+  export type PlaybookInstanceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaybookInstances.
+     */
+    data: PlaybookInstanceCreateManyInput | PlaybookInstanceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookInstance update
+   */
+  export type PlaybookInstanceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlaybookInstance.
+     */
+    data: XOR<PlaybookInstanceUpdateInput, PlaybookInstanceUncheckedUpdateInput>
+    /**
+     * Choose, which PlaybookInstance to update.
+     */
+    where: PlaybookInstanceWhereUniqueInput
+  }
+
+  /**
+   * PlaybookInstance updateMany
+   */
+  export type PlaybookInstanceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaybookInstances.
+     */
+    data: XOR<PlaybookInstanceUpdateManyMutationInput, PlaybookInstanceUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookInstances to update
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * Limit how many PlaybookInstances to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookInstance updateManyAndReturn
+   */
+  export type PlaybookInstanceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaybookInstances.
+     */
+    data: XOR<PlaybookInstanceUpdateManyMutationInput, PlaybookInstanceUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookInstances to update
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * Limit how many PlaybookInstances to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookInstance upsert
+   */
+  export type PlaybookInstanceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlaybookInstance to update in case it exists.
+     */
+    where: PlaybookInstanceWhereUniqueInput
+    /**
+     * In case the PlaybookInstance found by the `where` argument doesn't exist, create a new PlaybookInstance with this data.
+     */
+    create: XOR<PlaybookInstanceCreateInput, PlaybookInstanceUncheckedCreateInput>
+    /**
+     * In case the PlaybookInstance was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaybookInstanceUpdateInput, PlaybookInstanceUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaybookInstance delete
+   */
+  export type PlaybookInstanceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+    /**
+     * Filter which PlaybookInstance to delete.
+     */
+    where: PlaybookInstanceWhereUniqueInput
+  }
+
+  /**
+   * PlaybookInstance deleteMany
+   */
+  export type PlaybookInstanceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookInstances to delete
+     */
+    where?: PlaybookInstanceWhereInput
+    /**
+     * Limit how many PlaybookInstances to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookInstance.stepInstances
+   */
+  export type PlaybookInstance$stepInstancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    where?: StepInstanceWhereInput
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    cursor?: StepInstanceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StepInstanceScalarFieldEnum | StepInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookInstance.notifications
+   */
+  export type PlaybookInstance$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    where?: PlaybookNotificationWhereInput
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    cursor?: PlaybookNotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookInstance without action
+   */
+  export type PlaybookInstanceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookInstance
+     */
+    select?: PlaybookInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookInstance
+     */
+    omit?: PlaybookInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookInstanceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StepInstance
+   */
+
+  export type AggregateStepInstance = {
+    _count: StepInstanceCountAggregateOutputType | null
+    _min: StepInstanceMinAggregateOutputType | null
+    _max: StepInstanceMaxAggregateOutputType | null
+  }
+
+  export type StepInstanceMinAggregateOutputType = {
+    id: string | null
+    playbookInstanceId: string | null
+    stepTemplateId: string | null
+    status: $Enums.StepStatus | null
+    assigneeRole: $Enums.AssigneeRole | null
+    assignedUserId: string | null
+    completedByUserId: string | null
+    completedAt: Date | null
+    skipReason: string | null
+    skippedByUserId: string | null
+    dueDate: Date | null
+    isOverdue: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StepInstanceMaxAggregateOutputType = {
+    id: string | null
+    playbookInstanceId: string | null
+    stepTemplateId: string | null
+    status: $Enums.StepStatus | null
+    assigneeRole: $Enums.AssigneeRole | null
+    assignedUserId: string | null
+    completedByUserId: string | null
+    completedAt: Date | null
+    skipReason: string | null
+    skippedByUserId: string | null
+    dueDate: Date | null
+    isOverdue: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StepInstanceCountAggregateOutputType = {
+    id: number
+    playbookInstanceId: number
+    stepTemplateId: number
+    stepSnapshot: number
+    status: number
+    assigneeRole: number
+    assignedUserId: number
+    completedByUserId: number
+    completedAt: number
+    result: number
+    skipReason: number
+    skippedByUserId: number
+    dueDate: number
+    isOverdue: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StepInstanceMinAggregateInputType = {
+    id?: true
+    playbookInstanceId?: true
+    stepTemplateId?: true
+    status?: true
+    assigneeRole?: true
+    assignedUserId?: true
+    completedByUserId?: true
+    completedAt?: true
+    skipReason?: true
+    skippedByUserId?: true
+    dueDate?: true
+    isOverdue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StepInstanceMaxAggregateInputType = {
+    id?: true
+    playbookInstanceId?: true
+    stepTemplateId?: true
+    status?: true
+    assigneeRole?: true
+    assignedUserId?: true
+    completedByUserId?: true
+    completedAt?: true
+    skipReason?: true
+    skippedByUserId?: true
+    dueDate?: true
+    isOverdue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StepInstanceCountAggregateInputType = {
+    id?: true
+    playbookInstanceId?: true
+    stepTemplateId?: true
+    stepSnapshot?: true
+    status?: true
+    assigneeRole?: true
+    assignedUserId?: true
+    completedByUserId?: true
+    completedAt?: true
+    result?: true
+    skipReason?: true
+    skippedByUserId?: true
+    dueDate?: true
+    isOverdue?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StepInstanceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StepInstance to aggregate.
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepInstances to fetch.
+     */
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StepInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StepInstances
+    **/
+    _count?: true | StepInstanceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StepInstanceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StepInstanceMaxAggregateInputType
+  }
+
+  export type GetStepInstanceAggregateType<T extends StepInstanceAggregateArgs> = {
+        [P in keyof T & keyof AggregateStepInstance]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStepInstance[P]>
+      : GetScalarType<T[P], AggregateStepInstance[P]>
+  }
+
+
+
+
+  export type StepInstanceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StepInstanceWhereInput
+    orderBy?: StepInstanceOrderByWithAggregationInput | StepInstanceOrderByWithAggregationInput[]
+    by: StepInstanceScalarFieldEnum[] | StepInstanceScalarFieldEnum
+    having?: StepInstanceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StepInstanceCountAggregateInputType | true
+    _min?: StepInstanceMinAggregateInputType
+    _max?: StepInstanceMaxAggregateInputType
+  }
+
+  export type StepInstanceGroupByOutputType = {
+    id: string
+    playbookInstanceId: string
+    stepTemplateId: string
+    stepSnapshot: JsonValue
+    status: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId: string | null
+    completedByUserId: string | null
+    completedAt: Date | null
+    result: JsonValue | null
+    skipReason: string | null
+    skippedByUserId: string | null
+    dueDate: Date | null
+    isOverdue: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: StepInstanceCountAggregateOutputType | null
+    _min: StepInstanceMinAggregateOutputType | null
+    _max: StepInstanceMaxAggregateOutputType | null
+  }
+
+  type GetStepInstanceGroupByPayload<T extends StepInstanceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StepInstanceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StepInstanceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StepInstanceGroupByOutputType[P]>
+            : GetScalarType<T[P], StepInstanceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StepInstanceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookInstanceId?: boolean
+    stepTemplateId?: boolean
+    stepSnapshot?: boolean
+    status?: boolean
+    assigneeRole?: boolean
+    assignedUserId?: boolean
+    completedByUserId?: boolean
+    completedAt?: boolean
+    result?: boolean
+    skipReason?: boolean
+    skippedByUserId?: boolean
+    dueDate?: boolean
+    isOverdue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepInstance"]>
+
+  export type StepInstanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookInstanceId?: boolean
+    stepTemplateId?: boolean
+    stepSnapshot?: boolean
+    status?: boolean
+    assigneeRole?: boolean
+    assignedUserId?: boolean
+    completedByUserId?: boolean
+    completedAt?: boolean
+    result?: boolean
+    skipReason?: boolean
+    skippedByUserId?: boolean
+    dueDate?: boolean
+    isOverdue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepInstance"]>
+
+  export type StepInstanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    playbookInstanceId?: boolean
+    stepTemplateId?: boolean
+    stepSnapshot?: boolean
+    status?: boolean
+    assigneeRole?: boolean
+    assignedUserId?: boolean
+    completedByUserId?: boolean
+    completedAt?: boolean
+    result?: boolean
+    skipReason?: boolean
+    skippedByUserId?: boolean
+    dueDate?: boolean
+    isOverdue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["stepInstance"]>
+
+  export type StepInstanceSelectScalar = {
+    id?: boolean
+    playbookInstanceId?: boolean
+    stepTemplateId?: boolean
+    stepSnapshot?: boolean
+    status?: boolean
+    assigneeRole?: boolean
+    assignedUserId?: boolean
+    completedByUserId?: boolean
+    completedAt?: boolean
+    result?: boolean
+    skipReason?: boolean
+    skippedByUserId?: boolean
+    dueDate?: boolean
+    isOverdue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type StepInstanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookInstanceId" | "stepTemplateId" | "stepSnapshot" | "status" | "assigneeRole" | "assignedUserId" | "completedByUserId" | "completedAt" | "result" | "skipReason" | "skippedByUserId" | "dueDate" | "isOverdue" | "createdAt" | "updatedAt", ExtArgs["result"]["stepInstance"]>
+  export type StepInstanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+  export type StepInstanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+  export type StepInstanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+  }
+
+  export type $StepInstancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StepInstance"
+    objects: {
+      playbookInstance: Prisma.$PlaybookInstancePayload<ExtArgs>
+      stepTemplate: Prisma.$StepTemplatePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      playbookInstanceId: string
+      stepTemplateId: string
+      stepSnapshot: Prisma.JsonValue
+      status: $Enums.StepStatus
+      assigneeRole: $Enums.AssigneeRole
+      assignedUserId: string | null
+      completedByUserId: string | null
+      completedAt: Date | null
+      result: Prisma.JsonValue | null
+      skipReason: string | null
+      skippedByUserId: string | null
+      dueDate: Date | null
+      isOverdue: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["stepInstance"]>
+    composites: {}
+  }
+
+  type StepInstanceGetPayload<S extends boolean | null | undefined | StepInstanceDefaultArgs> = $Result.GetResult<Prisma.$StepInstancePayload, S>
+
+  type StepInstanceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StepInstanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StepInstanceCountAggregateInputType | true
+    }
+
+  export interface StepInstanceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StepInstance'], meta: { name: 'StepInstance' } }
+    /**
+     * Find zero or one StepInstance that matches the filter.
+     * @param {StepInstanceFindUniqueArgs} args - Arguments to find a StepInstance
+     * @example
+     * // Get one StepInstance
+     * const stepInstance = await prisma.stepInstance.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StepInstanceFindUniqueArgs>(args: SelectSubset<T, StepInstanceFindUniqueArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StepInstance that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StepInstanceFindUniqueOrThrowArgs} args - Arguments to find a StepInstance
+     * @example
+     * // Get one StepInstance
+     * const stepInstance = await prisma.stepInstance.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StepInstanceFindUniqueOrThrowArgs>(args: SelectSubset<T, StepInstanceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StepInstance that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceFindFirstArgs} args - Arguments to find a StepInstance
+     * @example
+     * // Get one StepInstance
+     * const stepInstance = await prisma.stepInstance.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StepInstanceFindFirstArgs>(args?: SelectSubset<T, StepInstanceFindFirstArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StepInstance that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceFindFirstOrThrowArgs} args - Arguments to find a StepInstance
+     * @example
+     * // Get one StepInstance
+     * const stepInstance = await prisma.stepInstance.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StepInstanceFindFirstOrThrowArgs>(args?: SelectSubset<T, StepInstanceFindFirstOrThrowArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StepInstances that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StepInstances
+     * const stepInstances = await prisma.stepInstance.findMany()
+     * 
+     * // Get first 10 StepInstances
+     * const stepInstances = await prisma.stepInstance.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stepInstanceWithIdOnly = await prisma.stepInstance.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StepInstanceFindManyArgs>(args?: SelectSubset<T, StepInstanceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StepInstance.
+     * @param {StepInstanceCreateArgs} args - Arguments to create a StepInstance.
+     * @example
+     * // Create one StepInstance
+     * const StepInstance = await prisma.stepInstance.create({
+     *   data: {
+     *     // ... data to create a StepInstance
+     *   }
+     * })
+     * 
+     */
+    create<T extends StepInstanceCreateArgs>(args: SelectSubset<T, StepInstanceCreateArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StepInstances.
+     * @param {StepInstanceCreateManyArgs} args - Arguments to create many StepInstances.
+     * @example
+     * // Create many StepInstances
+     * const stepInstance = await prisma.stepInstance.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StepInstanceCreateManyArgs>(args?: SelectSubset<T, StepInstanceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StepInstances and returns the data saved in the database.
+     * @param {StepInstanceCreateManyAndReturnArgs} args - Arguments to create many StepInstances.
+     * @example
+     * // Create many StepInstances
+     * const stepInstance = await prisma.stepInstance.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StepInstances and only return the `id`
+     * const stepInstanceWithIdOnly = await prisma.stepInstance.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StepInstanceCreateManyAndReturnArgs>(args?: SelectSubset<T, StepInstanceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StepInstance.
+     * @param {StepInstanceDeleteArgs} args - Arguments to delete one StepInstance.
+     * @example
+     * // Delete one StepInstance
+     * const StepInstance = await prisma.stepInstance.delete({
+     *   where: {
+     *     // ... filter to delete one StepInstance
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StepInstanceDeleteArgs>(args: SelectSubset<T, StepInstanceDeleteArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StepInstance.
+     * @param {StepInstanceUpdateArgs} args - Arguments to update one StepInstance.
+     * @example
+     * // Update one StepInstance
+     * const stepInstance = await prisma.stepInstance.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StepInstanceUpdateArgs>(args: SelectSubset<T, StepInstanceUpdateArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StepInstances.
+     * @param {StepInstanceDeleteManyArgs} args - Arguments to filter StepInstances to delete.
+     * @example
+     * // Delete a few StepInstances
+     * const { count } = await prisma.stepInstance.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StepInstanceDeleteManyArgs>(args?: SelectSubset<T, StepInstanceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StepInstances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StepInstances
+     * const stepInstance = await prisma.stepInstance.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StepInstanceUpdateManyArgs>(args: SelectSubset<T, StepInstanceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StepInstances and returns the data updated in the database.
+     * @param {StepInstanceUpdateManyAndReturnArgs} args - Arguments to update many StepInstances.
+     * @example
+     * // Update many StepInstances
+     * const stepInstance = await prisma.stepInstance.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StepInstances and only return the `id`
+     * const stepInstanceWithIdOnly = await prisma.stepInstance.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StepInstanceUpdateManyAndReturnArgs>(args: SelectSubset<T, StepInstanceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StepInstance.
+     * @param {StepInstanceUpsertArgs} args - Arguments to update or create a StepInstance.
+     * @example
+     * // Update or create a StepInstance
+     * const stepInstance = await prisma.stepInstance.upsert({
+     *   create: {
+     *     // ... data to create a StepInstance
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StepInstance we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StepInstanceUpsertArgs>(args: SelectSubset<T, StepInstanceUpsertArgs<ExtArgs>>): Prisma__StepInstanceClient<$Result.GetResult<Prisma.$StepInstancePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StepInstances.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceCountArgs} args - Arguments to filter StepInstances to count.
+     * @example
+     * // Count the number of StepInstances
+     * const count = await prisma.stepInstance.count({
+     *   where: {
+     *     // ... the filter for the StepInstances we want to count
+     *   }
+     * })
+    **/
+    count<T extends StepInstanceCountArgs>(
+      args?: Subset<T, StepInstanceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StepInstanceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StepInstance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StepInstanceAggregateArgs>(args: Subset<T, StepInstanceAggregateArgs>): Prisma.PrismaPromise<GetStepInstanceAggregateType<T>>
+
+    /**
+     * Group by StepInstance.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StepInstanceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StepInstanceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StepInstanceGroupByArgs['orderBy'] }
+        : { orderBy?: StepInstanceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StepInstanceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStepInstanceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StepInstance model
+   */
+  readonly fields: StepInstanceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StepInstance.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StepInstanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    playbookInstance<T extends PlaybookInstanceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookInstanceDefaultArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    stepTemplate<T extends StepTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StepTemplateDefaultArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StepInstance model
+   */
+  interface StepInstanceFieldRefs {
+    readonly id: FieldRef<"StepInstance", 'String'>
+    readonly playbookInstanceId: FieldRef<"StepInstance", 'String'>
+    readonly stepTemplateId: FieldRef<"StepInstance", 'String'>
+    readonly stepSnapshot: FieldRef<"StepInstance", 'Json'>
+    readonly status: FieldRef<"StepInstance", 'StepStatus'>
+    readonly assigneeRole: FieldRef<"StepInstance", 'AssigneeRole'>
+    readonly assignedUserId: FieldRef<"StepInstance", 'String'>
+    readonly completedByUserId: FieldRef<"StepInstance", 'String'>
+    readonly completedAt: FieldRef<"StepInstance", 'DateTime'>
+    readonly result: FieldRef<"StepInstance", 'Json'>
+    readonly skipReason: FieldRef<"StepInstance", 'String'>
+    readonly skippedByUserId: FieldRef<"StepInstance", 'String'>
+    readonly dueDate: FieldRef<"StepInstance", 'DateTime'>
+    readonly isOverdue: FieldRef<"StepInstance", 'Boolean'>
+    readonly createdAt: FieldRef<"StepInstance", 'DateTime'>
+    readonly updatedAt: FieldRef<"StepInstance", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StepInstance findUnique
+   */
+  export type StepInstanceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which StepInstance to fetch.
+     */
+    where: StepInstanceWhereUniqueInput
+  }
+
+  /**
+   * StepInstance findUniqueOrThrow
+   */
+  export type StepInstanceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which StepInstance to fetch.
+     */
+    where: StepInstanceWhereUniqueInput
+  }
+
+  /**
+   * StepInstance findFirst
+   */
+  export type StepInstanceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which StepInstance to fetch.
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepInstances to fetch.
+     */
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StepInstances.
+     */
+    cursor?: StepInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepInstances.
+     */
+    distinct?: StepInstanceScalarFieldEnum | StepInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * StepInstance findFirstOrThrow
+   */
+  export type StepInstanceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which StepInstance to fetch.
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepInstances to fetch.
+     */
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StepInstances.
+     */
+    cursor?: StepInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepInstances.
+     */
+    distinct?: StepInstanceScalarFieldEnum | StepInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * StepInstance findMany
+   */
+  export type StepInstanceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter, which StepInstances to fetch.
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StepInstances to fetch.
+     */
+    orderBy?: StepInstanceOrderByWithRelationInput | StepInstanceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StepInstances.
+     */
+    cursor?: StepInstanceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StepInstances from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StepInstances.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StepInstances.
+     */
+    distinct?: StepInstanceScalarFieldEnum | StepInstanceScalarFieldEnum[]
+  }
+
+  /**
+   * StepInstance create
+   */
+  export type StepInstanceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StepInstance.
+     */
+    data: XOR<StepInstanceCreateInput, StepInstanceUncheckedCreateInput>
+  }
+
+  /**
+   * StepInstance createMany
+   */
+  export type StepInstanceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StepInstances.
+     */
+    data: StepInstanceCreateManyInput | StepInstanceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StepInstance createManyAndReturn
+   */
+  export type StepInstanceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * The data used to create many StepInstances.
+     */
+    data: StepInstanceCreateManyInput | StepInstanceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StepInstance update
+   */
+  export type StepInstanceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StepInstance.
+     */
+    data: XOR<StepInstanceUpdateInput, StepInstanceUncheckedUpdateInput>
+    /**
+     * Choose, which StepInstance to update.
+     */
+    where: StepInstanceWhereUniqueInput
+  }
+
+  /**
+   * StepInstance updateMany
+   */
+  export type StepInstanceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StepInstances.
+     */
+    data: XOR<StepInstanceUpdateManyMutationInput, StepInstanceUncheckedUpdateManyInput>
+    /**
+     * Filter which StepInstances to update
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * Limit how many StepInstances to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StepInstance updateManyAndReturn
+   */
+  export type StepInstanceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * The data used to update StepInstances.
+     */
+    data: XOR<StepInstanceUpdateManyMutationInput, StepInstanceUncheckedUpdateManyInput>
+    /**
+     * Filter which StepInstances to update
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * Limit how many StepInstances to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StepInstance upsert
+   */
+  export type StepInstanceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StepInstance to update in case it exists.
+     */
+    where: StepInstanceWhereUniqueInput
+    /**
+     * In case the StepInstance found by the `where` argument doesn't exist, create a new StepInstance with this data.
+     */
+    create: XOR<StepInstanceCreateInput, StepInstanceUncheckedCreateInput>
+    /**
+     * In case the StepInstance was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StepInstanceUpdateInput, StepInstanceUncheckedUpdateInput>
+  }
+
+  /**
+   * StepInstance delete
+   */
+  export type StepInstanceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+    /**
+     * Filter which StepInstance to delete.
+     */
+    where: StepInstanceWhereUniqueInput
+  }
+
+  /**
+   * StepInstance deleteMany
+   */
+  export type StepInstanceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StepInstances to delete
+     */
+    where?: StepInstanceWhereInput
+    /**
+     * Limit how many StepInstances to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StepInstance without action
+   */
+  export type StepInstanceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepInstance
+     */
+    select?: StepInstanceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepInstance
+     */
+    omit?: StepInstanceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepInstanceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PlaybookNotification
+   */
+
+  export type AggregatePlaybookNotification = {
+    _count: PlaybookNotificationCountAggregateOutputType | null
+    _min: PlaybookNotificationMinAggregateOutputType | null
+    _max: PlaybookNotificationMaxAggregateOutputType | null
+  }
+
+  export type PlaybookNotificationMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    playbookInstanceId: string | null
+    stepInstanceId: string | null
+    notificationType: $Enums.NotifType | null
+    channel: $Enums.NotifChannel | null
+    recipientUserId: string | null
+    message: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PlaybookNotificationMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    playbookInstanceId: string | null
+    stepInstanceId: string | null
+    notificationType: $Enums.NotifType | null
+    channel: $Enums.NotifChannel | null
+    recipientUserId: string | null
+    message: string | null
+    sentAt: Date | null
+    deliveredAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type PlaybookNotificationCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    playbookInstanceId: number
+    stepInstanceId: number
+    notificationType: number
+    channel: number
+    recipientUserId: number
+    message: number
+    sentAt: number
+    deliveredAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PlaybookNotificationMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookInstanceId?: true
+    stepInstanceId?: true
+    notificationType?: true
+    channel?: true
+    recipientUserId?: true
+    message?: true
+    sentAt?: true
+    deliveredAt?: true
+    createdAt?: true
+  }
+
+  export type PlaybookNotificationMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookInstanceId?: true
+    stepInstanceId?: true
+    notificationType?: true
+    channel?: true
+    recipientUserId?: true
+    message?: true
+    sentAt?: true
+    deliveredAt?: true
+    createdAt?: true
+  }
+
+  export type PlaybookNotificationCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    playbookInstanceId?: true
+    stepInstanceId?: true
+    notificationType?: true
+    channel?: true
+    recipientUserId?: true
+    message?: true
+    sentAt?: true
+    deliveredAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PlaybookNotificationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookNotification to aggregate.
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookNotifications to fetch.
+     */
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PlaybookNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PlaybookNotifications
+    **/
+    _count?: true | PlaybookNotificationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PlaybookNotificationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PlaybookNotificationMaxAggregateInputType
+  }
+
+  export type GetPlaybookNotificationAggregateType<T extends PlaybookNotificationAggregateArgs> = {
+        [P in keyof T & keyof AggregatePlaybookNotification]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePlaybookNotification[P]>
+      : GetScalarType<T[P], AggregatePlaybookNotification[P]>
+  }
+
+
+
+
+  export type PlaybookNotificationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PlaybookNotificationWhereInput
+    orderBy?: PlaybookNotificationOrderByWithAggregationInput | PlaybookNotificationOrderByWithAggregationInput[]
+    by: PlaybookNotificationScalarFieldEnum[] | PlaybookNotificationScalarFieldEnum
+    having?: PlaybookNotificationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PlaybookNotificationCountAggregateInputType | true
+    _min?: PlaybookNotificationMinAggregateInputType
+    _max?: PlaybookNotificationMaxAggregateInputType
+  }
+
+  export type PlaybookNotificationGroupByOutputType = {
+    id: string
+    tenantId: string
+    playbookInstanceId: string
+    stepInstanceId: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt: Date | null
+    deliveredAt: Date | null
+    createdAt: Date
+    _count: PlaybookNotificationCountAggregateOutputType | null
+    _min: PlaybookNotificationMinAggregateOutputType | null
+    _max: PlaybookNotificationMaxAggregateOutputType | null
+  }
+
+  type GetPlaybookNotificationGroupByPayload<T extends PlaybookNotificationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PlaybookNotificationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PlaybookNotificationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PlaybookNotificationGroupByOutputType[P]>
+            : GetScalarType<T[P], PlaybookNotificationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PlaybookNotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookInstanceId?: boolean
+    stepInstanceId?: boolean
+    notificationType?: boolean
+    channel?: boolean
+    recipientUserId?: boolean
+    message?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookNotification"]>
+
+  export type PlaybookNotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookInstanceId?: boolean
+    stepInstanceId?: boolean
+    notificationType?: boolean
+    channel?: boolean
+    recipientUserId?: boolean
+    message?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookNotification"]>
+
+  export type PlaybookNotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    playbookInstanceId?: boolean
+    stepInstanceId?: boolean
+    notificationType?: boolean
+    channel?: boolean
+    recipientUserId?: boolean
+    message?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    createdAt?: boolean
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["playbookNotification"]>
+
+  export type PlaybookNotificationSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    playbookInstanceId?: boolean
+    stepInstanceId?: boolean
+    notificationType?: boolean
+    channel?: boolean
+    recipientUserId?: boolean
+    message?: boolean
+    sentAt?: boolean
+    deliveredAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type PlaybookNotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "tenantId" | "playbookInstanceId" | "stepInstanceId" | "notificationType" | "channel" | "recipientUserId" | "message" | "sentAt" | "deliveredAt" | "createdAt", ExtArgs["result"]["playbookNotification"]>
+  export type PlaybookNotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }
+  export type PlaybookNotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }
+  export type PlaybookNotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | TenantDefaultArgs<ExtArgs>
+    playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
+  }
+
+  export type $PlaybookNotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PlaybookNotification"
+    objects: {
+      tenant: Prisma.$TenantPayload<ExtArgs>
+      playbookInstance: Prisma.$PlaybookInstancePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      playbookInstanceId: string
+      stepInstanceId: string | null
+      notificationType: $Enums.NotifType
+      channel: $Enums.NotifChannel
+      recipientUserId: string
+      message: string
+      sentAt: Date | null
+      deliveredAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["playbookNotification"]>
+    composites: {}
+  }
+
+  type PlaybookNotificationGetPayload<S extends boolean | null | undefined | PlaybookNotificationDefaultArgs> = $Result.GetResult<Prisma.$PlaybookNotificationPayload, S>
+
+  type PlaybookNotificationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PlaybookNotificationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PlaybookNotificationCountAggregateInputType | true
+    }
+
+  export interface PlaybookNotificationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PlaybookNotification'], meta: { name: 'PlaybookNotification' } }
+    /**
+     * Find zero or one PlaybookNotification that matches the filter.
+     * @param {PlaybookNotificationFindUniqueArgs} args - Arguments to find a PlaybookNotification
+     * @example
+     * // Get one PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PlaybookNotificationFindUniqueArgs>(args: SelectSubset<T, PlaybookNotificationFindUniqueArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PlaybookNotification that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PlaybookNotificationFindUniqueOrThrowArgs} args - Arguments to find a PlaybookNotification
+     * @example
+     * // Get one PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PlaybookNotificationFindUniqueOrThrowArgs>(args: SelectSubset<T, PlaybookNotificationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookNotification that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationFindFirstArgs} args - Arguments to find a PlaybookNotification
+     * @example
+     * // Get one PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PlaybookNotificationFindFirstArgs>(args?: SelectSubset<T, PlaybookNotificationFindFirstArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PlaybookNotification that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationFindFirstOrThrowArgs} args - Arguments to find a PlaybookNotification
+     * @example
+     * // Get one PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PlaybookNotificationFindFirstOrThrowArgs>(args?: SelectSubset<T, PlaybookNotificationFindFirstOrThrowArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PlaybookNotifications that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PlaybookNotifications
+     * const playbookNotifications = await prisma.playbookNotification.findMany()
+     * 
+     * // Get first 10 PlaybookNotifications
+     * const playbookNotifications = await prisma.playbookNotification.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const playbookNotificationWithIdOnly = await prisma.playbookNotification.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PlaybookNotificationFindManyArgs>(args?: SelectSubset<T, PlaybookNotificationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PlaybookNotification.
+     * @param {PlaybookNotificationCreateArgs} args - Arguments to create a PlaybookNotification.
+     * @example
+     * // Create one PlaybookNotification
+     * const PlaybookNotification = await prisma.playbookNotification.create({
+     *   data: {
+     *     // ... data to create a PlaybookNotification
+     *   }
+     * })
+     * 
+     */
+    create<T extends PlaybookNotificationCreateArgs>(args: SelectSubset<T, PlaybookNotificationCreateArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PlaybookNotifications.
+     * @param {PlaybookNotificationCreateManyArgs} args - Arguments to create many PlaybookNotifications.
+     * @example
+     * // Create many PlaybookNotifications
+     * const playbookNotification = await prisma.playbookNotification.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PlaybookNotificationCreateManyArgs>(args?: SelectSubset<T, PlaybookNotificationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PlaybookNotifications and returns the data saved in the database.
+     * @param {PlaybookNotificationCreateManyAndReturnArgs} args - Arguments to create many PlaybookNotifications.
+     * @example
+     * // Create many PlaybookNotifications
+     * const playbookNotification = await prisma.playbookNotification.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PlaybookNotifications and only return the `id`
+     * const playbookNotificationWithIdOnly = await prisma.playbookNotification.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PlaybookNotificationCreateManyAndReturnArgs>(args?: SelectSubset<T, PlaybookNotificationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PlaybookNotification.
+     * @param {PlaybookNotificationDeleteArgs} args - Arguments to delete one PlaybookNotification.
+     * @example
+     * // Delete one PlaybookNotification
+     * const PlaybookNotification = await prisma.playbookNotification.delete({
+     *   where: {
+     *     // ... filter to delete one PlaybookNotification
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PlaybookNotificationDeleteArgs>(args: SelectSubset<T, PlaybookNotificationDeleteArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PlaybookNotification.
+     * @param {PlaybookNotificationUpdateArgs} args - Arguments to update one PlaybookNotification.
+     * @example
+     * // Update one PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PlaybookNotificationUpdateArgs>(args: SelectSubset<T, PlaybookNotificationUpdateArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PlaybookNotifications.
+     * @param {PlaybookNotificationDeleteManyArgs} args - Arguments to filter PlaybookNotifications to delete.
+     * @example
+     * // Delete a few PlaybookNotifications
+     * const { count } = await prisma.playbookNotification.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PlaybookNotificationDeleteManyArgs>(args?: SelectSubset<T, PlaybookNotificationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PlaybookNotifications
+     * const playbookNotification = await prisma.playbookNotification.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PlaybookNotificationUpdateManyArgs>(args: SelectSubset<T, PlaybookNotificationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PlaybookNotifications and returns the data updated in the database.
+     * @param {PlaybookNotificationUpdateManyAndReturnArgs} args - Arguments to update many PlaybookNotifications.
+     * @example
+     * // Update many PlaybookNotifications
+     * const playbookNotification = await prisma.playbookNotification.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PlaybookNotifications and only return the `id`
+     * const playbookNotificationWithIdOnly = await prisma.playbookNotification.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PlaybookNotificationUpdateManyAndReturnArgs>(args: SelectSubset<T, PlaybookNotificationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PlaybookNotification.
+     * @param {PlaybookNotificationUpsertArgs} args - Arguments to update or create a PlaybookNotification.
+     * @example
+     * // Update or create a PlaybookNotification
+     * const playbookNotification = await prisma.playbookNotification.upsert({
+     *   create: {
+     *     // ... data to create a PlaybookNotification
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PlaybookNotification we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PlaybookNotificationUpsertArgs>(args: SelectSubset<T, PlaybookNotificationUpsertArgs<ExtArgs>>): Prisma__PlaybookNotificationClient<$Result.GetResult<Prisma.$PlaybookNotificationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PlaybookNotifications.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationCountArgs} args - Arguments to filter PlaybookNotifications to count.
+     * @example
+     * // Count the number of PlaybookNotifications
+     * const count = await prisma.playbookNotification.count({
+     *   where: {
+     *     // ... the filter for the PlaybookNotifications we want to count
+     *   }
+     * })
+    **/
+    count<T extends PlaybookNotificationCountArgs>(
+      args?: Subset<T, PlaybookNotificationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PlaybookNotificationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PlaybookNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PlaybookNotificationAggregateArgs>(args: Subset<T, PlaybookNotificationAggregateArgs>): Prisma.PrismaPromise<GetPlaybookNotificationAggregateType<T>>
+
+    /**
+     * Group by PlaybookNotification.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PlaybookNotificationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PlaybookNotificationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PlaybookNotificationGroupByArgs['orderBy'] }
+        : { orderBy?: PlaybookNotificationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PlaybookNotificationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPlaybookNotificationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PlaybookNotification model
+   */
+  readonly fields: PlaybookNotificationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PlaybookNotification.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PlaybookNotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends TenantDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TenantDefaultArgs<ExtArgs>>): Prisma__TenantClient<$Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    playbookInstance<T extends PlaybookInstanceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookInstanceDefaultArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PlaybookNotification model
+   */
+  interface PlaybookNotificationFieldRefs {
+    readonly id: FieldRef<"PlaybookNotification", 'String'>
+    readonly tenantId: FieldRef<"PlaybookNotification", 'String'>
+    readonly playbookInstanceId: FieldRef<"PlaybookNotification", 'String'>
+    readonly stepInstanceId: FieldRef<"PlaybookNotification", 'String'>
+    readonly notificationType: FieldRef<"PlaybookNotification", 'NotifType'>
+    readonly channel: FieldRef<"PlaybookNotification", 'NotifChannel'>
+    readonly recipientUserId: FieldRef<"PlaybookNotification", 'String'>
+    readonly message: FieldRef<"PlaybookNotification", 'String'>
+    readonly sentAt: FieldRef<"PlaybookNotification", 'DateTime'>
+    readonly deliveredAt: FieldRef<"PlaybookNotification", 'DateTime'>
+    readonly createdAt: FieldRef<"PlaybookNotification", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PlaybookNotification findUnique
+   */
+  export type PlaybookNotificationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookNotification to fetch.
+     */
+    where: PlaybookNotificationWhereUniqueInput
+  }
+
+  /**
+   * PlaybookNotification findUniqueOrThrow
+   */
+  export type PlaybookNotificationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookNotification to fetch.
+     */
+    where: PlaybookNotificationWhereUniqueInput
+  }
+
+  /**
+   * PlaybookNotification findFirst
+   */
+  export type PlaybookNotificationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookNotification to fetch.
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookNotifications to fetch.
+     */
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookNotifications.
+     */
+    cursor?: PlaybookNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookNotifications.
+     */
+    distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookNotification findFirstOrThrow
+   */
+  export type PlaybookNotificationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookNotification to fetch.
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookNotifications to fetch.
+     */
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PlaybookNotifications.
+     */
+    cursor?: PlaybookNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookNotifications.
+     */
+    distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookNotification findMany
+   */
+  export type PlaybookNotificationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter, which PlaybookNotifications to fetch.
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PlaybookNotifications to fetch.
+     */
+    orderBy?: PlaybookNotificationOrderByWithRelationInput | PlaybookNotificationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PlaybookNotifications.
+     */
+    cursor?: PlaybookNotificationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PlaybookNotifications from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PlaybookNotifications.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PlaybookNotifications.
+     */
+    distinct?: PlaybookNotificationScalarFieldEnum | PlaybookNotificationScalarFieldEnum[]
+  }
+
+  /**
+   * PlaybookNotification create
+   */
+  export type PlaybookNotificationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PlaybookNotification.
+     */
+    data: XOR<PlaybookNotificationCreateInput, PlaybookNotificationUncheckedCreateInput>
+  }
+
+  /**
+   * PlaybookNotification createMany
+   */
+  export type PlaybookNotificationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PlaybookNotifications.
+     */
+    data: PlaybookNotificationCreateManyInput | PlaybookNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PlaybookNotification createManyAndReturn
+   */
+  export type PlaybookNotificationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to create many PlaybookNotifications.
+     */
+    data: PlaybookNotificationCreateManyInput | PlaybookNotificationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookNotification update
+   */
+  export type PlaybookNotificationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PlaybookNotification.
+     */
+    data: XOR<PlaybookNotificationUpdateInput, PlaybookNotificationUncheckedUpdateInput>
+    /**
+     * Choose, which PlaybookNotification to update.
+     */
+    where: PlaybookNotificationWhereUniqueInput
+  }
+
+  /**
+   * PlaybookNotification updateMany
+   */
+  export type PlaybookNotificationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PlaybookNotifications.
+     */
+    data: XOR<PlaybookNotificationUpdateManyMutationInput, PlaybookNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookNotifications to update
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * Limit how many PlaybookNotifications to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookNotification updateManyAndReturn
+   */
+  export type PlaybookNotificationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * The data used to update PlaybookNotifications.
+     */
+    data: XOR<PlaybookNotificationUpdateManyMutationInput, PlaybookNotificationUncheckedUpdateManyInput>
+    /**
+     * Filter which PlaybookNotifications to update
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * Limit how many PlaybookNotifications to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PlaybookNotification upsert
+   */
+  export type PlaybookNotificationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PlaybookNotification to update in case it exists.
+     */
+    where: PlaybookNotificationWhereUniqueInput
+    /**
+     * In case the PlaybookNotification found by the `where` argument doesn't exist, create a new PlaybookNotification with this data.
+     */
+    create: XOR<PlaybookNotificationCreateInput, PlaybookNotificationUncheckedCreateInput>
+    /**
+     * In case the PlaybookNotification was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PlaybookNotificationUpdateInput, PlaybookNotificationUncheckedUpdateInput>
+  }
+
+  /**
+   * PlaybookNotification delete
+   */
+  export type PlaybookNotificationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+    /**
+     * Filter which PlaybookNotification to delete.
+     */
+    where: PlaybookNotificationWhereUniqueInput
+  }
+
+  /**
+   * PlaybookNotification deleteMany
+   */
+  export type PlaybookNotificationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PlaybookNotifications to delete
+     */
+    where?: PlaybookNotificationWhereInput
+    /**
+     * Limit how many PlaybookNotifications to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PlaybookNotification without action
+   */
+  export type PlaybookNotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PlaybookNotification
+     */
+    select?: PlaybookNotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PlaybookNotification
+     */
+    omit?: PlaybookNotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PlaybookNotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -78242,6 +86441,7 @@ export namespace Prisma {
     licenseNumber: 'licenseNumber',
     isActive: 'isActive',
     permissions: 'permissions',
+    isDispatchReady: 'isDispatchReady',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -78260,6 +86460,7 @@ export namespace Prisma {
     odometer: 'odometer',
     inMaintenance: 'inMaintenance',
     documentMetadata: 'documentMetadata',
+    isDispatchReady: 'isDispatchReady',
     createdById: 'createdById',
     updatedById: 'updatedById',
     createdAt: 'createdAt',
@@ -79321,6 +87522,117 @@ export namespace Prisma {
   export type InAppNotificationScalarFieldEnum = (typeof InAppNotificationScalarFieldEnum)[keyof typeof InAppNotificationScalarFieldEnum]
 
 
+  export const StepTemplateScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    name: 'name',
+    description: 'description',
+    stepType: 'stepType',
+    assigneeRole: 'assigneeRole',
+    defaultConfig: 'defaultConfig',
+    isActive: 'isActive',
+    deletedAt: 'deletedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StepTemplateScalarFieldEnum = (typeof StepTemplateScalarFieldEnum)[keyof typeof StepTemplateScalarFieldEnum]
+
+
+  export const PlaybookScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    name: 'name',
+    description: 'description',
+    entityType: 'entityType',
+    category: 'category',
+    playbookPhase: 'playbookPhase',
+    isActive: 'isActive',
+    deletedAt: 'deletedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlaybookScalarFieldEnum = (typeof PlaybookScalarFieldEnum)[keyof typeof PlaybookScalarFieldEnum]
+
+
+  export const PlaybookStepScalarFieldEnum: {
+    id: 'id',
+    playbookId: 'playbookId',
+    stepTemplateId: 'stepTemplateId',
+    sequence: 'sequence',
+    playbookPhase: 'playbookPhase',
+    overrideConfig: 'overrideConfig',
+    isRequired: 'isRequired',
+    isDispatchBlocker: 'isDispatchBlocker',
+    dueDaysFromStart: 'dueDaysFromStart',
+    dueBeforeDispatch: 'dueBeforeDispatch',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlaybookStepScalarFieldEnum = (typeof PlaybookStepScalarFieldEnum)[keyof typeof PlaybookStepScalarFieldEnum]
+
+
+  export const PlaybookInstanceScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    playbookId: 'playbookId',
+    playbookSnapshot: 'playbookSnapshot',
+    entityType: 'entityType',
+    entityId: 'entityId',
+    status: 'status',
+    completionPercent: 'completionPercent',
+    isDispatchReady: 'isDispatchReady',
+    startedAt: 'startedAt',
+    completedAt: 'completedAt',
+    dueDate: 'dueDate',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type PlaybookInstanceScalarFieldEnum = (typeof PlaybookInstanceScalarFieldEnum)[keyof typeof PlaybookInstanceScalarFieldEnum]
+
+
+  export const StepInstanceScalarFieldEnum: {
+    id: 'id',
+    playbookInstanceId: 'playbookInstanceId',
+    stepTemplateId: 'stepTemplateId',
+    stepSnapshot: 'stepSnapshot',
+    status: 'status',
+    assigneeRole: 'assigneeRole',
+    assignedUserId: 'assignedUserId',
+    completedByUserId: 'completedByUserId',
+    completedAt: 'completedAt',
+    result: 'result',
+    skipReason: 'skipReason',
+    skippedByUserId: 'skippedByUserId',
+    dueDate: 'dueDate',
+    isOverdue: 'isOverdue',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StepInstanceScalarFieldEnum = (typeof StepInstanceScalarFieldEnum)[keyof typeof StepInstanceScalarFieldEnum]
+
+
+  export const PlaybookNotificationScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    playbookInstanceId: 'playbookInstanceId',
+    stepInstanceId: 'stepInstanceId',
+    notificationType: 'notificationType',
+    channel: 'channel',
+    recipientUserId: 'recipientUserId',
+    message: 'message',
+    sentAt: 'sentAt',
+    deliveredAt: 'deliveredAt',
+    createdAt: 'createdAt'
+  };
+
+  export type PlaybookNotificationScalarFieldEnum = (typeof PlaybookNotificationScalarFieldEnum)[keyof typeof PlaybookNotificationScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -79897,6 +88209,132 @@ export namespace Prisma {
    */
   export type ListEnumInAppNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InAppNotificationType[]'>
     
+
+
+  /**
+   * Reference to a field of type 'StepType'
+   */
+  export type EnumStepTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StepType'>
+    
+
+
+  /**
+   * Reference to a field of type 'StepType[]'
+   */
+  export type ListEnumStepTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StepType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssigneeRole'
+   */
+  export type EnumAssigneeRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssigneeRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'AssigneeRole[]'
+   */
+  export type ListEnumAssigneeRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AssigneeRole[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PlaybookEntityType'
+   */
+  export type EnumPlaybookEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlaybookEntityType'>
+    
+
+
+  /**
+   * Reference to a field of type 'PlaybookEntityType[]'
+   */
+  export type ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlaybookEntityType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PlaybookCategory'
+   */
+  export type EnumPlaybookCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlaybookCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'PlaybookCategory[]'
+   */
+  export type ListEnumPlaybookCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlaybookCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PhaseType'
+   */
+  export type EnumPhaseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PhaseType'>
+    
+
+
+  /**
+   * Reference to a field of type 'PhaseType[]'
+   */
+  export type ListEnumPhaseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PhaseType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'InstanceStatus'
+   */
+  export type EnumInstanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InstanceStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'InstanceStatus[]'
+   */
+  export type ListEnumInstanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InstanceStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'StepStatus'
+   */
+  export type EnumStepStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StepStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'StepStatus[]'
+   */
+  export type ListEnumStepStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StepStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotifType'
+   */
+  export type EnumNotifTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifType'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotifType[]'
+   */
+  export type ListEnumNotifTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotifChannel'
+   */
+  export type EnumNotifChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifChannel'>
+    
+
+
+  /**
+   * Reference to a field of type 'NotifChannel[]'
+   */
+  export type ListEnumNotifChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotifChannel[]'>
+    
   /**
    * Deep Input Types
    */
@@ -79958,6 +88396,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordListRelationFilter
     inAppNotifications?: InAppNotificationListRelationFilter
     carrierDocumentTypes?: CarrierDocumentTypeListRelationFilter
+    stepTemplates?: StepTemplateListRelationFilter
+    playbooks?: PlaybookListRelationFilter
+    playbookInstances?: PlaybookInstanceListRelationFilter
+    playbookNotifications?: PlaybookNotificationListRelationFilter
   }
 
   export type TenantOrderByWithRelationInput = {
@@ -80013,6 +88455,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordOrderByRelationAggregateInput
     inAppNotifications?: InAppNotificationOrderByRelationAggregateInput
     carrierDocumentTypes?: CarrierDocumentTypeOrderByRelationAggregateInput
+    stepTemplates?: StepTemplateOrderByRelationAggregateInput
+    playbooks?: PlaybookOrderByRelationAggregateInput
+    playbookInstances?: PlaybookInstanceOrderByRelationAggregateInput
+    playbookNotifications?: PlaybookNotificationOrderByRelationAggregateInput
   }
 
   export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -80071,6 +88517,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordListRelationFilter
     inAppNotifications?: InAppNotificationListRelationFilter
     carrierDocumentTypes?: CarrierDocumentTypeListRelationFilter
+    stepTemplates?: StepTemplateListRelationFilter
+    playbooks?: PlaybookListRelationFilter
+    playbookInstances?: PlaybookInstanceListRelationFilter
+    playbookNotifications?: PlaybookNotificationListRelationFilter
   }, "id" | "slug">
 
   export type TenantOrderByWithAggregationInput = {
@@ -80122,6 +88572,7 @@ export namespace Prisma {
     licenseNumber?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
     permissions?: JsonNullableFilter<"User">
+    isDispatchReady?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -80168,6 +88619,7 @@ export namespace Prisma {
     licenseNumber?: SortOrderInput | SortOrder
     isActive?: SortOrder
     permissions?: SortOrderInput | SortOrder
+    isDispatchReady?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -80218,6 +88670,7 @@ export namespace Prisma {
     licenseNumber?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
     permissions?: JsonNullableFilter<"User">
+    isDispatchReady?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
@@ -80264,6 +88717,7 @@ export namespace Prisma {
     licenseNumber?: SortOrderInput | SortOrder
     isActive?: SortOrder
     permissions?: SortOrderInput | SortOrder
+    isDispatchReady?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -80286,6 +88740,7 @@ export namespace Prisma {
     licenseNumber?: StringNullableWithAggregatesFilter<"User"> | string | null
     isActive?: BoolWithAggregatesFilter<"User"> | boolean
     permissions?: JsonNullableWithAggregatesFilter<"User">
+    isDispatchReady?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -80304,6 +88759,7 @@ export namespace Prisma {
     odometer?: IntFilter<"Truck"> | number
     inMaintenance?: BoolFilter<"Truck"> | boolean
     documentMetadata?: JsonNullableFilter<"Truck">
+    isDispatchReady?: BoolFilter<"Truck"> | boolean
     createdById?: UuidNullableFilter<"Truck"> | string | null
     updatedById?: UuidNullableFilter<"Truck"> | string | null
     createdAt?: DateTimeFilter<"Truck"> | Date | string
@@ -80334,6 +88790,7 @@ export namespace Prisma {
     odometer?: SortOrder
     inMaintenance?: SortOrder
     documentMetadata?: SortOrderInput | SortOrder
+    isDispatchReady?: SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -80368,6 +88825,7 @@ export namespace Prisma {
     odometer?: IntFilter<"Truck"> | number
     inMaintenance?: BoolFilter<"Truck"> | boolean
     documentMetadata?: JsonNullableFilter<"Truck">
+    isDispatchReady?: BoolFilter<"Truck"> | boolean
     createdById?: UuidNullableFilter<"Truck"> | string | null
     updatedById?: UuidNullableFilter<"Truck"> | string | null
     createdAt?: DateTimeFilter<"Truck"> | Date | string
@@ -80398,6 +88856,7 @@ export namespace Prisma {
     odometer?: SortOrder
     inMaintenance?: SortOrder
     documentMetadata?: SortOrderInput | SortOrder
+    isDispatchReady?: SortOrder
     createdById?: SortOrderInput | SortOrder
     updatedById?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -80424,6 +88883,7 @@ export namespace Prisma {
     odometer?: IntWithAggregatesFilter<"Truck"> | number
     inMaintenance?: BoolWithAggregatesFilter<"Truck"> | boolean
     documentMetadata?: JsonNullableWithAggregatesFilter<"Truck">
+    isDispatchReady?: BoolWithAggregatesFilter<"Truck"> | boolean
     createdById?: UuidNullableWithAggregatesFilter<"Truck"> | string | null
     updatedById?: UuidNullableWithAggregatesFilter<"Truck"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Truck"> | Date | string
@@ -86210,6 +94670,596 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"InAppNotification"> | Date | string
   }
 
+  export type StepTemplateWhereInput = {
+    AND?: StepTemplateWhereInput | StepTemplateWhereInput[]
+    OR?: StepTemplateWhereInput[]
+    NOT?: StepTemplateWhereInput | StepTemplateWhereInput[]
+    id?: UuidFilter<"StepTemplate"> | string
+    tenantId?: UuidFilter<"StepTemplate"> | string
+    name?: StringFilter<"StepTemplate"> | string
+    description?: StringNullableFilter<"StepTemplate"> | string | null
+    stepType?: EnumStepTypeFilter<"StepTemplate"> | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFilter<"StepTemplate"> | $Enums.AssigneeRole
+    defaultConfig?: JsonFilter<"StepTemplate">
+    isActive?: BoolFilter<"StepTemplate"> | boolean
+    deletedAt?: DateTimeNullableFilter<"StepTemplate"> | Date | string | null
+    createdAt?: DateTimeFilter<"StepTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"StepTemplate"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbookSteps?: PlaybookStepListRelationFilter
+    stepInstances?: StepInstanceListRelationFilter
+  }
+
+  export type StepTemplateOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    stepType?: SortOrder
+    assigneeRole?: SortOrder
+    defaultConfig?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    playbookSteps?: PlaybookStepOrderByRelationAggregateInput
+    stepInstances?: StepInstanceOrderByRelationAggregateInput
+  }
+
+  export type StepTemplateWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StepTemplateWhereInput | StepTemplateWhereInput[]
+    OR?: StepTemplateWhereInput[]
+    NOT?: StepTemplateWhereInput | StepTemplateWhereInput[]
+    tenantId?: UuidFilter<"StepTemplate"> | string
+    name?: StringFilter<"StepTemplate"> | string
+    description?: StringNullableFilter<"StepTemplate"> | string | null
+    stepType?: EnumStepTypeFilter<"StepTemplate"> | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFilter<"StepTemplate"> | $Enums.AssigneeRole
+    defaultConfig?: JsonFilter<"StepTemplate">
+    isActive?: BoolFilter<"StepTemplate"> | boolean
+    deletedAt?: DateTimeNullableFilter<"StepTemplate"> | Date | string | null
+    createdAt?: DateTimeFilter<"StepTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"StepTemplate"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbookSteps?: PlaybookStepListRelationFilter
+    stepInstances?: StepInstanceListRelationFilter
+  }, "id">
+
+  export type StepTemplateOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    stepType?: SortOrder
+    assigneeRole?: SortOrder
+    defaultConfig?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StepTemplateCountOrderByAggregateInput
+    _max?: StepTemplateMaxOrderByAggregateInput
+    _min?: StepTemplateMinOrderByAggregateInput
+  }
+
+  export type StepTemplateScalarWhereWithAggregatesInput = {
+    AND?: StepTemplateScalarWhereWithAggregatesInput | StepTemplateScalarWhereWithAggregatesInput[]
+    OR?: StepTemplateScalarWhereWithAggregatesInput[]
+    NOT?: StepTemplateScalarWhereWithAggregatesInput | StepTemplateScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"StepTemplate"> | string
+    tenantId?: UuidWithAggregatesFilter<"StepTemplate"> | string
+    name?: StringWithAggregatesFilter<"StepTemplate"> | string
+    description?: StringNullableWithAggregatesFilter<"StepTemplate"> | string | null
+    stepType?: EnumStepTypeWithAggregatesFilter<"StepTemplate"> | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleWithAggregatesFilter<"StepTemplate"> | $Enums.AssigneeRole
+    defaultConfig?: JsonWithAggregatesFilter<"StepTemplate">
+    isActive?: BoolWithAggregatesFilter<"StepTemplate"> | boolean
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"StepTemplate"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"StepTemplate"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StepTemplate"> | Date | string
+  }
+
+  export type PlaybookWhereInput = {
+    AND?: PlaybookWhereInput | PlaybookWhereInput[]
+    OR?: PlaybookWhereInput[]
+    NOT?: PlaybookWhereInput | PlaybookWhereInput[]
+    id?: UuidFilter<"Playbook"> | string
+    tenantId?: UuidFilter<"Playbook"> | string
+    name?: StringFilter<"Playbook"> | string
+    description?: StringNullableFilter<"Playbook"> | string | null
+    entityType?: EnumPlaybookEntityTypeFilter<"Playbook"> | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFilter<"Playbook"> | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFilter<"Playbook"> | $Enums.PhaseType
+    isActive?: BoolFilter<"Playbook"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Playbook"> | Date | string | null
+    createdAt?: DateTimeFilter<"Playbook"> | Date | string
+    updatedAt?: DateTimeFilter<"Playbook"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    steps?: PlaybookStepListRelationFilter
+    instances?: PlaybookInstanceListRelationFilter
+  }
+
+  export type PlaybookOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    entityType?: SortOrder
+    category?: SortOrder
+    playbookPhase?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    steps?: PlaybookStepOrderByRelationAggregateInput
+    instances?: PlaybookInstanceOrderByRelationAggregateInput
+  }
+
+  export type PlaybookWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlaybookWhereInput | PlaybookWhereInput[]
+    OR?: PlaybookWhereInput[]
+    NOT?: PlaybookWhereInput | PlaybookWhereInput[]
+    tenantId?: UuidFilter<"Playbook"> | string
+    name?: StringFilter<"Playbook"> | string
+    description?: StringNullableFilter<"Playbook"> | string | null
+    entityType?: EnumPlaybookEntityTypeFilter<"Playbook"> | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFilter<"Playbook"> | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFilter<"Playbook"> | $Enums.PhaseType
+    isActive?: BoolFilter<"Playbook"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Playbook"> | Date | string | null
+    createdAt?: DateTimeFilter<"Playbook"> | Date | string
+    updatedAt?: DateTimeFilter<"Playbook"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    steps?: PlaybookStepListRelationFilter
+    instances?: PlaybookInstanceListRelationFilter
+  }, "id">
+
+  export type PlaybookOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    entityType?: SortOrder
+    category?: SortOrder
+    playbookPhase?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlaybookCountOrderByAggregateInput
+    _max?: PlaybookMaxOrderByAggregateInput
+    _min?: PlaybookMinOrderByAggregateInput
+  }
+
+  export type PlaybookScalarWhereWithAggregatesInput = {
+    AND?: PlaybookScalarWhereWithAggregatesInput | PlaybookScalarWhereWithAggregatesInput[]
+    OR?: PlaybookScalarWhereWithAggregatesInput[]
+    NOT?: PlaybookScalarWhereWithAggregatesInput | PlaybookScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"Playbook"> | string
+    tenantId?: UuidWithAggregatesFilter<"Playbook"> | string
+    name?: StringWithAggregatesFilter<"Playbook"> | string
+    description?: StringNullableWithAggregatesFilter<"Playbook"> | string | null
+    entityType?: EnumPlaybookEntityTypeWithAggregatesFilter<"Playbook"> | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryWithAggregatesFilter<"Playbook"> | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeWithAggregatesFilter<"Playbook"> | $Enums.PhaseType
+    isActive?: BoolWithAggregatesFilter<"Playbook"> | boolean
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Playbook"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Playbook"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Playbook"> | Date | string
+  }
+
+  export type PlaybookStepWhereInput = {
+    AND?: PlaybookStepWhereInput | PlaybookStepWhereInput[]
+    OR?: PlaybookStepWhereInput[]
+    NOT?: PlaybookStepWhereInput | PlaybookStepWhereInput[]
+    id?: UuidFilter<"PlaybookStep"> | string
+    playbookId?: UuidFilter<"PlaybookStep"> | string
+    stepTemplateId?: UuidFilter<"PlaybookStep"> | string
+    sequence?: IntFilter<"PlaybookStep"> | number
+    playbookPhase?: EnumPhaseTypeFilter<"PlaybookStep"> | $Enums.PhaseType
+    overrideConfig?: JsonFilter<"PlaybookStep">
+    isRequired?: BoolFilter<"PlaybookStep"> | boolean
+    isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
+    dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+  }
+
+  export type PlaybookStepOrderByWithRelationInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    stepTemplateId?: SortOrder
+    sequence?: SortOrder
+    playbookPhase?: SortOrder
+    overrideConfig?: SortOrder
+    isRequired?: SortOrder
+    isDispatchBlocker?: SortOrder
+    dueDaysFromStart?: SortOrderInput | SortOrder
+    dueBeforeDispatch?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    playbook?: PlaybookOrderByWithRelationInput
+    stepTemplate?: StepTemplateOrderByWithRelationInput
+  }
+
+  export type PlaybookStepWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    playbookId_sequence?: PlaybookStepPlaybookIdSequenceCompoundUniqueInput
+    AND?: PlaybookStepWhereInput | PlaybookStepWhereInput[]
+    OR?: PlaybookStepWhereInput[]
+    NOT?: PlaybookStepWhereInput | PlaybookStepWhereInput[]
+    playbookId?: UuidFilter<"PlaybookStep"> | string
+    stepTemplateId?: UuidFilter<"PlaybookStep"> | string
+    sequence?: IntFilter<"PlaybookStep"> | number
+    playbookPhase?: EnumPhaseTypeFilter<"PlaybookStep"> | $Enums.PhaseType
+    overrideConfig?: JsonFilter<"PlaybookStep">
+    isRequired?: BoolFilter<"PlaybookStep"> | boolean
+    isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
+    dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+  }, "id" | "playbookId_sequence">
+
+  export type PlaybookStepOrderByWithAggregationInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    stepTemplateId?: SortOrder
+    sequence?: SortOrder
+    playbookPhase?: SortOrder
+    overrideConfig?: SortOrder
+    isRequired?: SortOrder
+    isDispatchBlocker?: SortOrder
+    dueDaysFromStart?: SortOrderInput | SortOrder
+    dueBeforeDispatch?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlaybookStepCountOrderByAggregateInput
+    _avg?: PlaybookStepAvgOrderByAggregateInput
+    _max?: PlaybookStepMaxOrderByAggregateInput
+    _min?: PlaybookStepMinOrderByAggregateInput
+    _sum?: PlaybookStepSumOrderByAggregateInput
+  }
+
+  export type PlaybookStepScalarWhereWithAggregatesInput = {
+    AND?: PlaybookStepScalarWhereWithAggregatesInput | PlaybookStepScalarWhereWithAggregatesInput[]
+    OR?: PlaybookStepScalarWhereWithAggregatesInput[]
+    NOT?: PlaybookStepScalarWhereWithAggregatesInput | PlaybookStepScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"PlaybookStep"> | string
+    playbookId?: UuidWithAggregatesFilter<"PlaybookStep"> | string
+    stepTemplateId?: UuidWithAggregatesFilter<"PlaybookStep"> | string
+    sequence?: IntWithAggregatesFilter<"PlaybookStep"> | number
+    playbookPhase?: EnumPhaseTypeWithAggregatesFilter<"PlaybookStep"> | $Enums.PhaseType
+    overrideConfig?: JsonWithAggregatesFilter<"PlaybookStep">
+    isRequired?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
+    isDispatchBlocker?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
+    dueDaysFromStart?: IntNullableWithAggregatesFilter<"PlaybookStep"> | number | null
+    dueBeforeDispatch?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"PlaybookStep"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlaybookStep"> | Date | string
+  }
+
+  export type PlaybookInstanceWhereInput = {
+    AND?: PlaybookInstanceWhereInput | PlaybookInstanceWhereInput[]
+    OR?: PlaybookInstanceWhereInput[]
+    NOT?: PlaybookInstanceWhereInput | PlaybookInstanceWhereInput[]
+    id?: UuidFilter<"PlaybookInstance"> | string
+    tenantId?: UuidFilter<"PlaybookInstance"> | string
+    playbookId?: UuidFilter<"PlaybookInstance"> | string
+    playbookSnapshot?: JsonFilter<"PlaybookInstance">
+    entityType?: EnumPlaybookEntityTypeFilter<"PlaybookInstance"> | $Enums.PlaybookEntityType
+    entityId?: UuidFilter<"PlaybookInstance"> | string
+    status?: EnumInstanceStatusFilter<"PlaybookInstance"> | $Enums.InstanceStatus
+    completionPercent?: FloatFilter<"PlaybookInstance"> | number
+    isDispatchReady?: BoolFilter<"PlaybookInstance"> | boolean
+    startedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    dueDate?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    stepInstances?: StepInstanceListRelationFilter
+    notifications?: PlaybookNotificationListRelationFilter
+  }
+
+  export type PlaybookInstanceOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookId?: SortOrder
+    playbookSnapshot?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    status?: SortOrder
+    completionPercent?: SortOrder
+    isDispatchReady?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    playbook?: PlaybookOrderByWithRelationInput
+    stepInstances?: StepInstanceOrderByRelationAggregateInput
+    notifications?: PlaybookNotificationOrderByRelationAggregateInput
+  }
+
+  export type PlaybookInstanceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlaybookInstanceWhereInput | PlaybookInstanceWhereInput[]
+    OR?: PlaybookInstanceWhereInput[]
+    NOT?: PlaybookInstanceWhereInput | PlaybookInstanceWhereInput[]
+    tenantId?: UuidFilter<"PlaybookInstance"> | string
+    playbookId?: UuidFilter<"PlaybookInstance"> | string
+    playbookSnapshot?: JsonFilter<"PlaybookInstance">
+    entityType?: EnumPlaybookEntityTypeFilter<"PlaybookInstance"> | $Enums.PlaybookEntityType
+    entityId?: UuidFilter<"PlaybookInstance"> | string
+    status?: EnumInstanceStatusFilter<"PlaybookInstance"> | $Enums.InstanceStatus
+    completionPercent?: FloatFilter<"PlaybookInstance"> | number
+    isDispatchReady?: BoolFilter<"PlaybookInstance"> | boolean
+    startedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    dueDate?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbook?: XOR<PlaybookScalarRelationFilter, PlaybookWhereInput>
+    stepInstances?: StepInstanceListRelationFilter
+    notifications?: PlaybookNotificationListRelationFilter
+  }, "id">
+
+  export type PlaybookInstanceOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookId?: SortOrder
+    playbookSnapshot?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    status?: SortOrder
+    completionPercent?: SortOrder
+    isDispatchReady?: SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: PlaybookInstanceCountOrderByAggregateInput
+    _avg?: PlaybookInstanceAvgOrderByAggregateInput
+    _max?: PlaybookInstanceMaxOrderByAggregateInput
+    _min?: PlaybookInstanceMinOrderByAggregateInput
+    _sum?: PlaybookInstanceSumOrderByAggregateInput
+  }
+
+  export type PlaybookInstanceScalarWhereWithAggregatesInput = {
+    AND?: PlaybookInstanceScalarWhereWithAggregatesInput | PlaybookInstanceScalarWhereWithAggregatesInput[]
+    OR?: PlaybookInstanceScalarWhereWithAggregatesInput[]
+    NOT?: PlaybookInstanceScalarWhereWithAggregatesInput | PlaybookInstanceScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"PlaybookInstance"> | string
+    tenantId?: UuidWithAggregatesFilter<"PlaybookInstance"> | string
+    playbookId?: UuidWithAggregatesFilter<"PlaybookInstance"> | string
+    playbookSnapshot?: JsonWithAggregatesFilter<"PlaybookInstance">
+    entityType?: EnumPlaybookEntityTypeWithAggregatesFilter<"PlaybookInstance"> | $Enums.PlaybookEntityType
+    entityId?: UuidWithAggregatesFilter<"PlaybookInstance"> | string
+    status?: EnumInstanceStatusWithAggregatesFilter<"PlaybookInstance"> | $Enums.InstanceStatus
+    completionPercent?: FloatWithAggregatesFilter<"PlaybookInstance"> | number
+    isDispatchReady?: BoolWithAggregatesFilter<"PlaybookInstance"> | boolean
+    startedAt?: DateTimeNullableWithAggregatesFilter<"PlaybookInstance"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"PlaybookInstance"> | Date | string | null
+    dueDate?: DateTimeNullableWithAggregatesFilter<"PlaybookInstance"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PlaybookInstance"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"PlaybookInstance"> | Date | string
+  }
+
+  export type StepInstanceWhereInput = {
+    AND?: StepInstanceWhereInput | StepInstanceWhereInput[]
+    OR?: StepInstanceWhereInput[]
+    NOT?: StepInstanceWhereInput | StepInstanceWhereInput[]
+    id?: UuidFilter<"StepInstance"> | string
+    playbookInstanceId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepSnapshot?: JsonFilter<"StepInstance">
+    status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
+    assignedUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedAt?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    result?: JsonNullableFilter<"StepInstance">
+    skipReason?: StringNullableFilter<"StepInstance"> | string | null
+    skippedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    dueDate?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    isOverdue?: BoolFilter<"StepInstance"> | boolean
+    createdAt?: DateTimeFilter<"StepInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"StepInstance"> | Date | string
+    playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
+    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+  }
+
+  export type StepInstanceOrderByWithRelationInput = {
+    id?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepTemplateId?: SortOrder
+    stepSnapshot?: SortOrder
+    status?: SortOrder
+    assigneeRole?: SortOrder
+    assignedUserId?: SortOrderInput | SortOrder
+    completedByUserId?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    result?: SortOrderInput | SortOrder
+    skipReason?: SortOrderInput | SortOrder
+    skippedByUserId?: SortOrderInput | SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    isOverdue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    playbookInstance?: PlaybookInstanceOrderByWithRelationInput
+    stepTemplate?: StepTemplateOrderByWithRelationInput
+  }
+
+  export type StepInstanceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: StepInstanceWhereInput | StepInstanceWhereInput[]
+    OR?: StepInstanceWhereInput[]
+    NOT?: StepInstanceWhereInput | StepInstanceWhereInput[]
+    playbookInstanceId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepSnapshot?: JsonFilter<"StepInstance">
+    status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
+    assignedUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedAt?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    result?: JsonNullableFilter<"StepInstance">
+    skipReason?: StringNullableFilter<"StepInstance"> | string | null
+    skippedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    dueDate?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    isOverdue?: BoolFilter<"StepInstance"> | boolean
+    createdAt?: DateTimeFilter<"StepInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"StepInstance"> | Date | string
+    playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
+    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+  }, "id">
+
+  export type StepInstanceOrderByWithAggregationInput = {
+    id?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepTemplateId?: SortOrder
+    stepSnapshot?: SortOrder
+    status?: SortOrder
+    assigneeRole?: SortOrder
+    assignedUserId?: SortOrderInput | SortOrder
+    completedByUserId?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    result?: SortOrderInput | SortOrder
+    skipReason?: SortOrderInput | SortOrder
+    skippedByUserId?: SortOrderInput | SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    isOverdue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StepInstanceCountOrderByAggregateInput
+    _max?: StepInstanceMaxOrderByAggregateInput
+    _min?: StepInstanceMinOrderByAggregateInput
+  }
+
+  export type StepInstanceScalarWhereWithAggregatesInput = {
+    AND?: StepInstanceScalarWhereWithAggregatesInput | StepInstanceScalarWhereWithAggregatesInput[]
+    OR?: StepInstanceScalarWhereWithAggregatesInput[]
+    NOT?: StepInstanceScalarWhereWithAggregatesInput | StepInstanceScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"StepInstance"> | string
+    playbookInstanceId?: UuidWithAggregatesFilter<"StepInstance"> | string
+    stepTemplateId?: UuidWithAggregatesFilter<"StepInstance"> | string
+    stepSnapshot?: JsonWithAggregatesFilter<"StepInstance">
+    status?: EnumStepStatusWithAggregatesFilter<"StepInstance"> | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleWithAggregatesFilter<"StepInstance"> | $Enums.AssigneeRole
+    assignedUserId?: UuidNullableWithAggregatesFilter<"StepInstance"> | string | null
+    completedByUserId?: UuidNullableWithAggregatesFilter<"StepInstance"> | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"StepInstance"> | Date | string | null
+    result?: JsonNullableWithAggregatesFilter<"StepInstance">
+    skipReason?: StringNullableWithAggregatesFilter<"StepInstance"> | string | null
+    skippedByUserId?: UuidNullableWithAggregatesFilter<"StepInstance"> | string | null
+    dueDate?: DateTimeNullableWithAggregatesFilter<"StepInstance"> | Date | string | null
+    isOverdue?: BoolWithAggregatesFilter<"StepInstance"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"StepInstance"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StepInstance"> | Date | string
+  }
+
+  export type PlaybookNotificationWhereInput = {
+    AND?: PlaybookNotificationWhereInput | PlaybookNotificationWhereInput[]
+    OR?: PlaybookNotificationWhereInput[]
+    NOT?: PlaybookNotificationWhereInput | PlaybookNotificationWhereInput[]
+    id?: UuidFilter<"PlaybookNotification"> | string
+    tenantId?: UuidFilter<"PlaybookNotification"> | string
+    playbookInstanceId?: UuidFilter<"PlaybookNotification"> | string
+    stepInstanceId?: UuidNullableFilter<"PlaybookNotification"> | string | null
+    notificationType?: EnumNotifTypeFilter<"PlaybookNotification"> | $Enums.NotifType
+    channel?: EnumNotifChannelFilter<"PlaybookNotification"> | $Enums.NotifChannel
+    recipientUserId?: UuidFilter<"PlaybookNotification"> | string
+    message?: StringFilter<"PlaybookNotification"> | string
+    sentAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookNotification"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
+  }
+
+  export type PlaybookNotificationOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepInstanceId?: SortOrderInput | SortOrder
+    notificationType?: SortOrder
+    channel?: SortOrder
+    recipientUserId?: SortOrder
+    message?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    tenant?: TenantOrderByWithRelationInput
+    playbookInstance?: PlaybookInstanceOrderByWithRelationInput
+  }
+
+  export type PlaybookNotificationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PlaybookNotificationWhereInput | PlaybookNotificationWhereInput[]
+    OR?: PlaybookNotificationWhereInput[]
+    NOT?: PlaybookNotificationWhereInput | PlaybookNotificationWhereInput[]
+    tenantId?: UuidFilter<"PlaybookNotification"> | string
+    playbookInstanceId?: UuidFilter<"PlaybookNotification"> | string
+    stepInstanceId?: UuidNullableFilter<"PlaybookNotification"> | string | null
+    notificationType?: EnumNotifTypeFilter<"PlaybookNotification"> | $Enums.NotifType
+    channel?: EnumNotifChannelFilter<"PlaybookNotification"> | $Enums.NotifChannel
+    recipientUserId?: UuidFilter<"PlaybookNotification"> | string
+    message?: StringFilter<"PlaybookNotification"> | string
+    sentAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookNotification"> | Date | string
+    tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
+    playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
+  }, "id">
+
+  export type PlaybookNotificationOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepInstanceId?: SortOrderInput | SortOrder
+    notificationType?: SortOrder
+    channel?: SortOrder
+    recipientUserId?: SortOrder
+    message?: SortOrder
+    sentAt?: SortOrderInput | SortOrder
+    deliveredAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PlaybookNotificationCountOrderByAggregateInput
+    _max?: PlaybookNotificationMaxOrderByAggregateInput
+    _min?: PlaybookNotificationMinOrderByAggregateInput
+  }
+
+  export type PlaybookNotificationScalarWhereWithAggregatesInput = {
+    AND?: PlaybookNotificationScalarWhereWithAggregatesInput | PlaybookNotificationScalarWhereWithAggregatesInput[]
+    OR?: PlaybookNotificationScalarWhereWithAggregatesInput[]
+    NOT?: PlaybookNotificationScalarWhereWithAggregatesInput | PlaybookNotificationScalarWhereWithAggregatesInput[]
+    id?: UuidWithAggregatesFilter<"PlaybookNotification"> | string
+    tenantId?: UuidWithAggregatesFilter<"PlaybookNotification"> | string
+    playbookInstanceId?: UuidWithAggregatesFilter<"PlaybookNotification"> | string
+    stepInstanceId?: UuidNullableWithAggregatesFilter<"PlaybookNotification"> | string | null
+    notificationType?: EnumNotifTypeWithAggregatesFilter<"PlaybookNotification"> | $Enums.NotifType
+    channel?: EnumNotifChannelWithAggregatesFilter<"PlaybookNotification"> | $Enums.NotifChannel
+    recipientUserId?: UuidWithAggregatesFilter<"PlaybookNotification"> | string
+    message?: StringWithAggregatesFilter<"PlaybookNotification"> | string
+    sentAt?: DateTimeNullableWithAggregatesFilter<"PlaybookNotification"> | Date | string | null
+    deliveredAt?: DateTimeNullableWithAggregatesFilter<"PlaybookNotification"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PlaybookNotification"> | Date | string
+  }
+
   export type TenantCreateInput = {
     id?: string
     name: string
@@ -86263,6 +95313,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateInput = {
@@ -86318,6 +95372,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUpdateInput = {
@@ -86373,6 +95431,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateInput = {
@@ -86428,6 +95490,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateManyInput = {
@@ -86480,6 +95546,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -86526,6 +95593,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -86570,6 +95638,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -86616,6 +95685,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -86661,6 +95731,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -86676,6 +95747,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -86692,6 +95764,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -86706,6 +95779,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -86734,6 +95808,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -86760,6 +95835,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -86788,6 +95864,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -86815,6 +95892,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -86832,6 +95910,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -86848,6 +95927,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -93266,6 +102346,671 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StepTemplateCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutStepTemplatesInput
+    playbookSteps?: PlaybookStepCreateNestedManyWithoutStepTemplateInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutStepTemplateInput
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutStepTemplatesNestedInput
+    playbookSteps?: PlaybookStepUpdateManyWithoutStepTemplateNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutStepTemplateNestedInput
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateCreateManyInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepTemplateUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepTemplateUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybooksInput
+    steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
+    steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookCreateManyInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepCreateInput = {
+    id?: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbook: PlaybookCreateNestedOneWithoutStepsInput
+    stepTemplate: StepTemplateCreateNestedOneWithoutPlaybookStepsInput
+  }
+
+  export type PlaybookStepUncheckedCreateInput = {
+    id?: string
+    playbookId: string
+    stepTemplateId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbook?: PlaybookUpdateOneRequiredWithoutStepsNestedInput
+    stepTemplate?: StepTemplateUpdateOneRequiredWithoutPlaybookStepsNestedInput
+  }
+
+  export type PlaybookStepUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepCreateManyInput = {
+    id?: string
+    playbookId: string
+    stepTemplateId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookInstanceCreateInput = {
+    id?: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookInstancesInput
+    playbook: PlaybookCreateNestedOneWithoutInstancesInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookInstancesNestedInput
+    playbook?: PlaybookUpdateOneRequiredWithoutInstancesNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceCreateManyInput = {
+    id?: string
+    tenantId: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookInstanceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookInstanceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceCreateInput = {
+    id?: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookInstance: PlaybookInstanceCreateNestedOneWithoutStepInstancesInput
+    stepTemplate: StepTemplateCreateNestedOneWithoutStepInstancesInput
+  }
+
+  export type StepInstanceUncheckedCreateInput = {
+    id?: string
+    playbookInstanceId: string
+    stepTemplateId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepInstanceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookInstance?: PlaybookInstanceUpdateOneRequiredWithoutStepInstancesNestedInput
+    stepTemplate?: StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput
+  }
+
+  export type StepInstanceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceCreateManyInput = {
+    id?: string
+    playbookInstanceId: string
+    stepTemplateId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepInstanceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationCreateInput = {
+    id?: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookNotificationsInput
+    playbookInstance: PlaybookInstanceCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type PlaybookNotificationUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    playbookInstanceId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PlaybookNotificationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookNotificationsNestedInput
+    playbookInstance?: PlaybookInstanceUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type PlaybookNotificationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationCreateManyInput = {
+    id?: string
+    tenantId: string
+    playbookInstanceId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PlaybookNotificationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -93587,6 +103332,30 @@ export namespace Prisma {
     none?: CarrierDocumentTypeWhereInput
   }
 
+  export type StepTemplateListRelationFilter = {
+    every?: StepTemplateWhereInput
+    some?: StepTemplateWhereInput
+    none?: StepTemplateWhereInput
+  }
+
+  export type PlaybookListRelationFilter = {
+    every?: PlaybookWhereInput
+    some?: PlaybookWhereInput
+    none?: PlaybookWhereInput
+  }
+
+  export type PlaybookInstanceListRelationFilter = {
+    every?: PlaybookInstanceWhereInput
+    some?: PlaybookInstanceWhereInput
+    none?: PlaybookInstanceWhereInput
+  }
+
+  export type PlaybookNotificationListRelationFilter = {
+    every?: PlaybookNotificationWhereInput
+    some?: PlaybookNotificationWhereInput
+    none?: PlaybookNotificationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -93757,6 +103526,22 @@ export namespace Prisma {
   }
 
   export type CarrierDocumentTypeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StepTemplateOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlaybookOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlaybookInstanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PlaybookNotificationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -93983,6 +103768,7 @@ export namespace Prisma {
     licenseNumber?: SortOrder
     isActive?: SortOrder
     permissions?: SortOrder
+    isDispatchReady?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -93998,6 +103784,7 @@ export namespace Prisma {
     lastName?: SortOrder
     licenseNumber?: SortOrder
     isActive?: SortOrder
+    isDispatchReady?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -94013,6 +103800,7 @@ export namespace Prisma {
     lastName?: SortOrder
     licenseNumber?: SortOrder
     isActive?: SortOrder
+    isDispatchReady?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -94108,6 +103896,7 @@ export namespace Prisma {
     odometer?: SortOrder
     inMaintenance?: SortOrder
     documentMetadata?: SortOrder
+    isDispatchReady?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -94130,6 +103919,7 @@ export namespace Prisma {
     licensePlate?: SortOrder
     odometer?: SortOrder
     inMaintenance?: SortOrder
+    isDispatchReady?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -94147,6 +103937,7 @@ export namespace Prisma {
     licensePlate?: SortOrder
     odometer?: SortOrder
     inMaintenance?: SortOrder
+    isDispatchReady?: SortOrder
     createdById?: SortOrder
     updatedById?: SortOrder
     createdAt?: SortOrder
@@ -98264,6 +108055,513 @@ export namespace Prisma {
     _max?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
   }
 
+  export type EnumStepTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepType | EnumStepTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepTypeFilter<$PrismaModel> | $Enums.StepType
+  }
+
+  export type EnumAssigneeRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssigneeRole | EnumAssigneeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssigneeRoleFilter<$PrismaModel> | $Enums.AssigneeRole
+  }
+
+  export type PlaybookStepListRelationFilter = {
+    every?: PlaybookStepWhereInput
+    some?: PlaybookStepWhereInput
+    none?: PlaybookStepWhereInput
+  }
+
+  export type StepInstanceListRelationFilter = {
+    every?: StepInstanceWhereInput
+    some?: StepInstanceWhereInput
+    none?: StepInstanceWhereInput
+  }
+
+  export type PlaybookStepOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StepInstanceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StepTemplateCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    stepType?: SortOrder
+    assigneeRole?: SortOrder
+    defaultConfig?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StepTemplateMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    stepType?: SortOrder
+    assigneeRole?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StepTemplateMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    stepType?: SortOrder
+    assigneeRole?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumStepTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepType | EnumStepTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepTypeWithAggregatesFilter<$PrismaModel> | $Enums.StepType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStepTypeFilter<$PrismaModel>
+    _max?: NestedEnumStepTypeFilter<$PrismaModel>
+  }
+
+  export type EnumAssigneeRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssigneeRole | EnumAssigneeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssigneeRoleWithAggregatesFilter<$PrismaModel> | $Enums.AssigneeRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssigneeRoleFilter<$PrismaModel>
+    _max?: NestedEnumAssigneeRoleFilter<$PrismaModel>
+  }
+
+  export type EnumPlaybookEntityTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookEntityType | EnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel> | $Enums.PlaybookEntityType
+  }
+
+  export type EnumPlaybookCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookCategory | EnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookCategoryFilter<$PrismaModel> | $Enums.PlaybookCategory
+  }
+
+  export type EnumPhaseTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PhaseType | EnumPhaseTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPhaseTypeFilter<$PrismaModel> | $Enums.PhaseType
+  }
+
+  export type PlaybookCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    entityType?: SortOrder
+    category?: SortOrder
+    playbookPhase?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    entityType?: SortOrder
+    category?: SortOrder
+    playbookPhase?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    entityType?: SortOrder
+    category?: SortOrder
+    playbookPhase?: SortOrder
+    isActive?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumPlaybookEntityTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookEntityType | EnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookEntityTypeWithAggregatesFilter<$PrismaModel> | $Enums.PlaybookEntityType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel>
+    _max?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel>
+  }
+
+  export type EnumPlaybookCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookCategory | EnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookCategoryWithAggregatesFilter<$PrismaModel> | $Enums.PlaybookCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlaybookCategoryFilter<$PrismaModel>
+    _max?: NestedEnumPlaybookCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumPhaseTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PhaseType | EnumPhaseTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPhaseTypeWithAggregatesFilter<$PrismaModel> | $Enums.PhaseType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPhaseTypeFilter<$PrismaModel>
+    _max?: NestedEnumPhaseTypeFilter<$PrismaModel>
+  }
+
+  export type PlaybookScalarRelationFilter = {
+    is?: PlaybookWhereInput
+    isNot?: PlaybookWhereInput
+  }
+
+  export type StepTemplateScalarRelationFilter = {
+    is?: StepTemplateWhereInput
+    isNot?: StepTemplateWhereInput
+  }
+
+  export type PlaybookStepPlaybookIdSequenceCompoundUniqueInput = {
+    playbookId: string
+    sequence: number
+  }
+
+  export type PlaybookStepCountOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    stepTemplateId?: SortOrder
+    sequence?: SortOrder
+    playbookPhase?: SortOrder
+    overrideConfig?: SortOrder
+    isRequired?: SortOrder
+    isDispatchBlocker?: SortOrder
+    dueDaysFromStart?: SortOrder
+    dueBeforeDispatch?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookStepAvgOrderByAggregateInput = {
+    sequence?: SortOrder
+    dueDaysFromStart?: SortOrder
+  }
+
+  export type PlaybookStepMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    stepTemplateId?: SortOrder
+    sequence?: SortOrder
+    playbookPhase?: SortOrder
+    isRequired?: SortOrder
+    isDispatchBlocker?: SortOrder
+    dueDaysFromStart?: SortOrder
+    dueBeforeDispatch?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookStepMinOrderByAggregateInput = {
+    id?: SortOrder
+    playbookId?: SortOrder
+    stepTemplateId?: SortOrder
+    sequence?: SortOrder
+    playbookPhase?: SortOrder
+    isRequired?: SortOrder
+    isDispatchBlocker?: SortOrder
+    dueDaysFromStart?: SortOrder
+    dueBeforeDispatch?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookStepSumOrderByAggregateInput = {
+    sequence?: SortOrder
+    dueDaysFromStart?: SortOrder
+  }
+
+  export type EnumInstanceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.InstanceStatus | EnumInstanceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumInstanceStatusFilter<$PrismaModel> | $Enums.InstanceStatus
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type PlaybookInstanceCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookId?: SortOrder
+    playbookSnapshot?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    status?: SortOrder
+    completionPercent?: SortOrder
+    isDispatchReady?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    dueDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookInstanceAvgOrderByAggregateInput = {
+    completionPercent?: SortOrder
+  }
+
+  export type PlaybookInstanceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    status?: SortOrder
+    completionPercent?: SortOrder
+    isDispatchReady?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    dueDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookInstanceMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookId?: SortOrder
+    entityType?: SortOrder
+    entityId?: SortOrder
+    status?: SortOrder
+    completionPercent?: SortOrder
+    isDispatchReady?: SortOrder
+    startedAt?: SortOrder
+    completedAt?: SortOrder
+    dueDate?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type PlaybookInstanceSumOrderByAggregateInput = {
+    completionPercent?: SortOrder
+  }
+
+  export type EnumInstanceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InstanceStatus | EnumInstanceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumInstanceStatusWithAggregatesFilter<$PrismaModel> | $Enums.InstanceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInstanceStatusFilter<$PrismaModel>
+    _max?: NestedEnumInstanceStatusFilter<$PrismaModel>
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type EnumStepStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepStatus | EnumStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepStatusFilter<$PrismaModel> | $Enums.StepStatus
+  }
+
+  export type PlaybookInstanceScalarRelationFilter = {
+    is?: PlaybookInstanceWhereInput
+    isNot?: PlaybookInstanceWhereInput
+  }
+
+  export type StepInstanceCountOrderByAggregateInput = {
+    id?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepTemplateId?: SortOrder
+    stepSnapshot?: SortOrder
+    status?: SortOrder
+    assigneeRole?: SortOrder
+    assignedUserId?: SortOrder
+    completedByUserId?: SortOrder
+    completedAt?: SortOrder
+    result?: SortOrder
+    skipReason?: SortOrder
+    skippedByUserId?: SortOrder
+    dueDate?: SortOrder
+    isOverdue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StepInstanceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepTemplateId?: SortOrder
+    status?: SortOrder
+    assigneeRole?: SortOrder
+    assignedUserId?: SortOrder
+    completedByUserId?: SortOrder
+    completedAt?: SortOrder
+    skipReason?: SortOrder
+    skippedByUserId?: SortOrder
+    dueDate?: SortOrder
+    isOverdue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StepInstanceMinOrderByAggregateInput = {
+    id?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepTemplateId?: SortOrder
+    status?: SortOrder
+    assigneeRole?: SortOrder
+    assignedUserId?: SortOrder
+    completedByUserId?: SortOrder
+    completedAt?: SortOrder
+    skipReason?: SortOrder
+    skippedByUserId?: SortOrder
+    dueDate?: SortOrder
+    isOverdue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumStepStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepStatus | EnumStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepStatusWithAggregatesFilter<$PrismaModel> | $Enums.StepStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStepStatusFilter<$PrismaModel>
+    _max?: NestedEnumStepStatusFilter<$PrismaModel>
+  }
+
+  export type EnumNotifTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifType | EnumNotifTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifTypeFilter<$PrismaModel> | $Enums.NotifType
+  }
+
+  export type EnumNotifChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifChannelFilter<$PrismaModel> | $Enums.NotifChannel
+  }
+
+  export type PlaybookNotificationCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepInstanceId?: SortOrder
+    notificationType?: SortOrder
+    channel?: SortOrder
+    recipientUserId?: SortOrder
+    message?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlaybookNotificationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepInstanceId?: SortOrder
+    notificationType?: SortOrder
+    channel?: SortOrder
+    recipientUserId?: SortOrder
+    message?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PlaybookNotificationMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    playbookInstanceId?: SortOrder
+    stepInstanceId?: SortOrder
+    notificationType?: SortOrder
+    channel?: SortOrder
+    recipientUserId?: SortOrder
+    message?: SortOrder
+    sentAt?: SortOrder
+    deliveredAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumNotifTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifType | EnumNotifTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotifType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotifTypeFilter<$PrismaModel>
+    _max?: NestedEnumNotifTypeFilter<$PrismaModel>
+  }
+
+  export type EnumNotifChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel> | $Enums.NotifChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotifChannelFilter<$PrismaModel>
+    _max?: NestedEnumNotifChannelFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -98558,6 +108856,34 @@ export namespace Prisma {
     connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
   }
 
+  export type StepTemplateCreateNestedManyWithoutTenantInput = {
+    create?: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput> | StepTemplateCreateWithoutTenantInput[] | StepTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutTenantInput | StepTemplateCreateOrConnectWithoutTenantInput[]
+    createMany?: StepTemplateCreateManyTenantInputEnvelope
+    connect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+  }
+
+  export type PlaybookCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput> | PlaybookCreateWithoutTenantInput[] | PlaybookUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTenantInput | PlaybookCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookCreateManyTenantInputEnvelope
+    connect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+  }
+
+  export type PlaybookInstanceCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput> | PlaybookInstanceCreateWithoutTenantInput[] | PlaybookInstanceUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutTenantInput | PlaybookInstanceCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookInstanceCreateManyTenantInputEnvelope
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookNotificationCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput> | PlaybookNotificationCreateWithoutTenantInput[] | PlaybookNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutTenantInput | PlaybookNotificationCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookNotificationCreateManyTenantInputEnvelope
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutTenantInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -98850,6 +109176,34 @@ export namespace Prisma {
     connectOrCreate?: CarrierDocumentTypeCreateOrConnectWithoutTenantInput | CarrierDocumentTypeCreateOrConnectWithoutTenantInput[]
     createMany?: CarrierDocumentTypeCreateManyTenantInputEnvelope
     connect?: CarrierDocumentTypeWhereUniqueInput | CarrierDocumentTypeWhereUniqueInput[]
+  }
+
+  export type StepTemplateUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput> | StepTemplateCreateWithoutTenantInput[] | StepTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutTenantInput | StepTemplateCreateOrConnectWithoutTenantInput[]
+    createMany?: StepTemplateCreateManyTenantInputEnvelope
+    connect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+  }
+
+  export type PlaybookUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput> | PlaybookCreateWithoutTenantInput[] | PlaybookUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTenantInput | PlaybookCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookCreateManyTenantInputEnvelope
+    connect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+  }
+
+  export type PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput> | PlaybookInstanceCreateWithoutTenantInput[] | PlaybookInstanceUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutTenantInput | PlaybookInstanceCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookInstanceCreateManyTenantInputEnvelope
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput> | PlaybookNotificationCreateWithoutTenantInput[] | PlaybookNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutTenantInput | PlaybookNotificationCreateOrConnectWithoutTenantInput[]
+    createMany?: PlaybookNotificationCreateManyTenantInputEnvelope
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -99464,6 +109818,62 @@ export namespace Prisma {
     deleteMany?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
   }
 
+  export type StepTemplateUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput> | StepTemplateCreateWithoutTenantInput[] | StepTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutTenantInput | StepTemplateCreateOrConnectWithoutTenantInput[]
+    upsert?: StepTemplateUpsertWithWhereUniqueWithoutTenantInput | StepTemplateUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: StepTemplateCreateManyTenantInputEnvelope
+    set?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    disconnect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    delete?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    connect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    update?: StepTemplateUpdateWithWhereUniqueWithoutTenantInput | StepTemplateUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: StepTemplateUpdateManyWithWhereWithoutTenantInput | StepTemplateUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: StepTemplateScalarWhereInput | StepTemplateScalarWhereInput[]
+  }
+
+  export type PlaybookUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput> | PlaybookCreateWithoutTenantInput[] | PlaybookUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTenantInput | PlaybookCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookUpsertWithWhereUniqueWithoutTenantInput | PlaybookUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookCreateManyTenantInputEnvelope
+    set?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    disconnect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    delete?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    connect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    update?: PlaybookUpdateWithWhereUniqueWithoutTenantInput | PlaybookUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookUpdateManyWithWhereWithoutTenantInput | PlaybookUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookScalarWhereInput | PlaybookScalarWhereInput[]
+  }
+
+  export type PlaybookInstanceUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput> | PlaybookInstanceCreateWithoutTenantInput[] | PlaybookInstanceUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutTenantInput | PlaybookInstanceCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookInstanceUpsertWithWhereUniqueWithoutTenantInput | PlaybookInstanceUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookInstanceCreateManyTenantInputEnvelope
+    set?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    disconnect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    delete?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    update?: PlaybookInstanceUpdateWithWhereUniqueWithoutTenantInput | PlaybookInstanceUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookInstanceUpdateManyWithWhereWithoutTenantInput | PlaybookInstanceUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookNotificationUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput> | PlaybookNotificationCreateWithoutTenantInput[] | PlaybookNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutTenantInput | PlaybookNotificationCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookNotificationUpsertWithWhereUniqueWithoutTenantInput | PlaybookNotificationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookNotificationCreateManyTenantInputEnvelope
+    set?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    disconnect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    delete?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    update?: PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput | PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookNotificationUpdateManyWithWhereWithoutTenantInput | PlaybookNotificationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutTenantNestedInput = {
     create?: XOR<UserCreateWithoutTenantInput, UserUncheckedCreateWithoutTenantInput> | UserCreateWithoutTenantInput[] | UserUncheckedCreateWithoutTenantInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTenantInput | UserCreateOrConnectWithoutTenantInput[]
@@ -100050,6 +110460,62 @@ export namespace Prisma {
     update?: CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput | CarrierDocumentTypeUpdateWithWhereUniqueWithoutTenantInput[]
     updateMany?: CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput | CarrierDocumentTypeUpdateManyWithWhereWithoutTenantInput[]
     deleteMany?: CarrierDocumentTypeScalarWhereInput | CarrierDocumentTypeScalarWhereInput[]
+  }
+
+  export type StepTemplateUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput> | StepTemplateCreateWithoutTenantInput[] | StepTemplateUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutTenantInput | StepTemplateCreateOrConnectWithoutTenantInput[]
+    upsert?: StepTemplateUpsertWithWhereUniqueWithoutTenantInput | StepTemplateUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: StepTemplateCreateManyTenantInputEnvelope
+    set?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    disconnect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    delete?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    connect?: StepTemplateWhereUniqueInput | StepTemplateWhereUniqueInput[]
+    update?: StepTemplateUpdateWithWhereUniqueWithoutTenantInput | StepTemplateUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: StepTemplateUpdateManyWithWhereWithoutTenantInput | StepTemplateUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: StepTemplateScalarWhereInput | StepTemplateScalarWhereInput[]
+  }
+
+  export type PlaybookUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput> | PlaybookCreateWithoutTenantInput[] | PlaybookUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookCreateOrConnectWithoutTenantInput | PlaybookCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookUpsertWithWhereUniqueWithoutTenantInput | PlaybookUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookCreateManyTenantInputEnvelope
+    set?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    disconnect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    delete?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    connect?: PlaybookWhereUniqueInput | PlaybookWhereUniqueInput[]
+    update?: PlaybookUpdateWithWhereUniqueWithoutTenantInput | PlaybookUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookUpdateManyWithWhereWithoutTenantInput | PlaybookUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookScalarWhereInput | PlaybookScalarWhereInput[]
+  }
+
+  export type PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput> | PlaybookInstanceCreateWithoutTenantInput[] | PlaybookInstanceUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutTenantInput | PlaybookInstanceCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookInstanceUpsertWithWhereUniqueWithoutTenantInput | PlaybookInstanceUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookInstanceCreateManyTenantInputEnvelope
+    set?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    disconnect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    delete?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    update?: PlaybookInstanceUpdateWithWhereUniqueWithoutTenantInput | PlaybookInstanceUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookInstanceUpdateManyWithWhereWithoutTenantInput | PlaybookInstanceUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput> | PlaybookNotificationCreateWithoutTenantInput[] | PlaybookNotificationUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutTenantInput | PlaybookNotificationCreateOrConnectWithoutTenantInput[]
+    upsert?: PlaybookNotificationUpsertWithWhereUniqueWithoutTenantInput | PlaybookNotificationUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: PlaybookNotificationCreateManyTenantInputEnvelope
+    set?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    disconnect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    delete?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    update?: PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput | PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: PlaybookNotificationUpdateManyWithWhereWithoutTenantInput | PlaybookNotificationUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
   }
 
   export type TenantCreateNestedOneWithoutUsersInput = {
@@ -106400,6 +116866,442 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInAppNotificationsInput, UserUpdateWithoutInAppNotificationsInput>, UserUncheckedUpdateWithoutInAppNotificationsInput>
   }
 
+  export type TenantCreateNestedOneWithoutStepTemplatesInput = {
+    create?: XOR<TenantCreateWithoutStepTemplatesInput, TenantUncheckedCreateWithoutStepTemplatesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutStepTemplatesInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type PlaybookStepCreateNestedManyWithoutStepTemplateInput = {
+    create?: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput> | PlaybookStepCreateWithoutStepTemplateInput[] | PlaybookStepUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutStepTemplateInput | PlaybookStepCreateOrConnectWithoutStepTemplateInput[]
+    createMany?: PlaybookStepCreateManyStepTemplateInputEnvelope
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+  }
+
+  export type StepInstanceCreateNestedManyWithoutStepTemplateInput = {
+    create?: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput> | StepInstanceCreateWithoutStepTemplateInput[] | StepInstanceUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutStepTemplateInput | StepInstanceCreateOrConnectWithoutStepTemplateInput[]
+    createMany?: StepInstanceCreateManyStepTemplateInputEnvelope
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookStepUncheckedCreateNestedManyWithoutStepTemplateInput = {
+    create?: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput> | PlaybookStepCreateWithoutStepTemplateInput[] | PlaybookStepUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutStepTemplateInput | PlaybookStepCreateOrConnectWithoutStepTemplateInput[]
+    createMany?: PlaybookStepCreateManyStepTemplateInputEnvelope
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+  }
+
+  export type StepInstanceUncheckedCreateNestedManyWithoutStepTemplateInput = {
+    create?: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput> | StepInstanceCreateWithoutStepTemplateInput[] | StepInstanceUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutStepTemplateInput | StepInstanceCreateOrConnectWithoutStepTemplateInput[]
+    createMany?: StepInstanceCreateManyStepTemplateInputEnvelope
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type EnumStepTypeFieldUpdateOperationsInput = {
+    set?: $Enums.StepType
+  }
+
+  export type EnumAssigneeRoleFieldUpdateOperationsInput = {
+    set?: $Enums.AssigneeRole
+  }
+
+  export type TenantUpdateOneRequiredWithoutStepTemplatesNestedInput = {
+    create?: XOR<TenantCreateWithoutStepTemplatesInput, TenantUncheckedCreateWithoutStepTemplatesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutStepTemplatesInput
+    upsert?: TenantUpsertWithoutStepTemplatesInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutStepTemplatesInput, TenantUpdateWithoutStepTemplatesInput>, TenantUncheckedUpdateWithoutStepTemplatesInput>
+  }
+
+  export type PlaybookStepUpdateManyWithoutStepTemplateNestedInput = {
+    create?: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput> | PlaybookStepCreateWithoutStepTemplateInput[] | PlaybookStepUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutStepTemplateInput | PlaybookStepCreateOrConnectWithoutStepTemplateInput[]
+    upsert?: PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput | PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput[]
+    createMany?: PlaybookStepCreateManyStepTemplateInputEnvelope
+    set?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    disconnect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    delete?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    update?: PlaybookStepUpdateWithWhereUniqueWithoutStepTemplateInput | PlaybookStepUpdateWithWhereUniqueWithoutStepTemplateInput[]
+    updateMany?: PlaybookStepUpdateManyWithWhereWithoutStepTemplateInput | PlaybookStepUpdateManyWithWhereWithoutStepTemplateInput[]
+    deleteMany?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+  }
+
+  export type StepInstanceUpdateManyWithoutStepTemplateNestedInput = {
+    create?: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput> | StepInstanceCreateWithoutStepTemplateInput[] | StepInstanceUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutStepTemplateInput | StepInstanceCreateOrConnectWithoutStepTemplateInput[]
+    upsert?: StepInstanceUpsertWithWhereUniqueWithoutStepTemplateInput | StepInstanceUpsertWithWhereUniqueWithoutStepTemplateInput[]
+    createMany?: StepInstanceCreateManyStepTemplateInputEnvelope
+    set?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    disconnect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    delete?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    update?: StepInstanceUpdateWithWhereUniqueWithoutStepTemplateInput | StepInstanceUpdateWithWhereUniqueWithoutStepTemplateInput[]
+    updateMany?: StepInstanceUpdateManyWithWhereWithoutStepTemplateInput | StepInstanceUpdateManyWithWhereWithoutStepTemplateInput[]
+    deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookStepUncheckedUpdateManyWithoutStepTemplateNestedInput = {
+    create?: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput> | PlaybookStepCreateWithoutStepTemplateInput[] | PlaybookStepUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutStepTemplateInput | PlaybookStepCreateOrConnectWithoutStepTemplateInput[]
+    upsert?: PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput | PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput[]
+    createMany?: PlaybookStepCreateManyStepTemplateInputEnvelope
+    set?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    disconnect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    delete?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    update?: PlaybookStepUpdateWithWhereUniqueWithoutStepTemplateInput | PlaybookStepUpdateWithWhereUniqueWithoutStepTemplateInput[]
+    updateMany?: PlaybookStepUpdateManyWithWhereWithoutStepTemplateInput | PlaybookStepUpdateManyWithWhereWithoutStepTemplateInput[]
+    deleteMany?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+  }
+
+  export type StepInstanceUncheckedUpdateManyWithoutStepTemplateNestedInput = {
+    create?: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput> | StepInstanceCreateWithoutStepTemplateInput[] | StepInstanceUncheckedCreateWithoutStepTemplateInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutStepTemplateInput | StepInstanceCreateOrConnectWithoutStepTemplateInput[]
+    upsert?: StepInstanceUpsertWithWhereUniqueWithoutStepTemplateInput | StepInstanceUpsertWithWhereUniqueWithoutStepTemplateInput[]
+    createMany?: StepInstanceCreateManyStepTemplateInputEnvelope
+    set?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    disconnect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    delete?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    update?: StepInstanceUpdateWithWhereUniqueWithoutStepTemplateInput | StepInstanceUpdateWithWhereUniqueWithoutStepTemplateInput[]
+    updateMany?: StepInstanceUpdateManyWithWhereWithoutStepTemplateInput | StepInstanceUpdateManyWithWhereWithoutStepTemplateInput[]
+    deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+  }
+
+  export type TenantCreateNestedOneWithoutPlaybooksInput = {
+    create?: XOR<TenantCreateWithoutPlaybooksInput, TenantUncheckedCreateWithoutPlaybooksInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybooksInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type PlaybookStepCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookStepCreateManyPlaybookInputEnvelope
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+  }
+
+  export type PlaybookInstanceCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput> | PlaybookInstanceCreateWithoutPlaybookInput[] | PlaybookInstanceUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutPlaybookInput | PlaybookInstanceCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookInstanceCreateManyPlaybookInputEnvelope
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookStepCreateManyPlaybookInputEnvelope
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+  }
+
+  export type PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput> | PlaybookInstanceCreateWithoutPlaybookInput[] | PlaybookInstanceUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutPlaybookInput | PlaybookInstanceCreateOrConnectWithoutPlaybookInput[]
+    createMany?: PlaybookInstanceCreateManyPlaybookInputEnvelope
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+  }
+
+  export type EnumPlaybookEntityTypeFieldUpdateOperationsInput = {
+    set?: $Enums.PlaybookEntityType
+  }
+
+  export type EnumPlaybookCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.PlaybookCategory
+  }
+
+  export type EnumPhaseTypeFieldUpdateOperationsInput = {
+    set?: $Enums.PhaseType
+  }
+
+  export type TenantUpdateOneRequiredWithoutPlaybooksNestedInput = {
+    create?: XOR<TenantCreateWithoutPlaybooksInput, TenantUncheckedCreateWithoutPlaybooksInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybooksInput
+    upsert?: TenantUpsertWithoutPlaybooksInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutPlaybooksInput, TenantUpdateWithoutPlaybooksInput>, TenantUncheckedUpdateWithoutPlaybooksInput>
+  }
+
+  export type PlaybookStepUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookStepCreateManyPlaybookInputEnvelope
+    set?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    disconnect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    delete?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    update?: PlaybookStepUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookStepUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookStepUpdateManyWithWhereWithoutPlaybookInput | PlaybookStepUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+  }
+
+  export type PlaybookInstanceUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput> | PlaybookInstanceCreateWithoutPlaybookInput[] | PlaybookInstanceUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutPlaybookInput | PlaybookInstanceCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookInstanceUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookInstanceUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookInstanceCreateManyPlaybookInputEnvelope
+    set?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    disconnect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    delete?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    update?: PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput | PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput> | PlaybookStepCreateWithoutPlaybookInput[] | PlaybookStepUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookStepCreateOrConnectWithoutPlaybookInput | PlaybookStepCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookStepCreateManyPlaybookInputEnvelope
+    set?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    disconnect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    delete?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    connect?: PlaybookStepWhereUniqueInput | PlaybookStepWhereUniqueInput[]
+    update?: PlaybookStepUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookStepUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookStepUpdateManyWithWhereWithoutPlaybookInput | PlaybookStepUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+  }
+
+  export type PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput> | PlaybookInstanceCreateWithoutPlaybookInput[] | PlaybookInstanceUncheckedCreateWithoutPlaybookInput[]
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutPlaybookInput | PlaybookInstanceCreateOrConnectWithoutPlaybookInput[]
+    upsert?: PlaybookInstanceUpsertWithWhereUniqueWithoutPlaybookInput | PlaybookInstanceUpsertWithWhereUniqueWithoutPlaybookInput[]
+    createMany?: PlaybookInstanceCreateManyPlaybookInputEnvelope
+    set?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    disconnect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    delete?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    connect?: PlaybookInstanceWhereUniqueInput | PlaybookInstanceWhereUniqueInput[]
+    update?: PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput | PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput[]
+    updateMany?: PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput | PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput[]
+    deleteMany?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookCreateNestedOneWithoutStepsInput = {
+    create?: XOR<PlaybookCreateWithoutStepsInput, PlaybookUncheckedCreateWithoutStepsInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutStepsInput
+    connect?: PlaybookWhereUniqueInput
+  }
+
+  export type StepTemplateCreateNestedOneWithoutPlaybookStepsInput = {
+    create?: XOR<StepTemplateCreateWithoutPlaybookStepsInput, StepTemplateUncheckedCreateWithoutPlaybookStepsInput>
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutPlaybookStepsInput
+    connect?: StepTemplateWhereUniqueInput
+  }
+
+  export type PlaybookUpdateOneRequiredWithoutStepsNestedInput = {
+    create?: XOR<PlaybookCreateWithoutStepsInput, PlaybookUncheckedCreateWithoutStepsInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutStepsInput
+    upsert?: PlaybookUpsertWithoutStepsInput
+    connect?: PlaybookWhereUniqueInput
+    update?: XOR<XOR<PlaybookUpdateToOneWithWhereWithoutStepsInput, PlaybookUpdateWithoutStepsInput>, PlaybookUncheckedUpdateWithoutStepsInput>
+  }
+
+  export type StepTemplateUpdateOneRequiredWithoutPlaybookStepsNestedInput = {
+    create?: XOR<StepTemplateCreateWithoutPlaybookStepsInput, StepTemplateUncheckedCreateWithoutPlaybookStepsInput>
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutPlaybookStepsInput
+    upsert?: StepTemplateUpsertWithoutPlaybookStepsInput
+    connect?: StepTemplateWhereUniqueInput
+    update?: XOR<XOR<StepTemplateUpdateToOneWithWhereWithoutPlaybookStepsInput, StepTemplateUpdateWithoutPlaybookStepsInput>, StepTemplateUncheckedUpdateWithoutPlaybookStepsInput>
+  }
+
+  export type TenantCreateNestedOneWithoutPlaybookInstancesInput = {
+    create?: XOR<TenantCreateWithoutPlaybookInstancesInput, TenantUncheckedCreateWithoutPlaybookInstancesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookInstancesInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type PlaybookCreateNestedOneWithoutInstancesInput = {
+    create?: XOR<PlaybookCreateWithoutInstancesInput, PlaybookUncheckedCreateWithoutInstancesInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutInstancesInput
+    connect?: PlaybookWhereUniqueInput
+  }
+
+  export type StepInstanceCreateNestedManyWithoutPlaybookInstanceInput = {
+    create?: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput> | StepInstanceCreateWithoutPlaybookInstanceInput[] | StepInstanceUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutPlaybookInstanceInput | StepInstanceCreateOrConnectWithoutPlaybookInstanceInput[]
+    createMany?: StepInstanceCreateManyPlaybookInstanceInputEnvelope
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookNotificationCreateNestedManyWithoutPlaybookInstanceInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput> | PlaybookNotificationCreateWithoutPlaybookInstanceInput[] | PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput | PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput[]
+    createMany?: PlaybookNotificationCreateManyPlaybookInstanceInputEnvelope
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+  }
+
+  export type StepInstanceUncheckedCreateNestedManyWithoutPlaybookInstanceInput = {
+    create?: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput> | StepInstanceCreateWithoutPlaybookInstanceInput[] | StepInstanceUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutPlaybookInstanceInput | StepInstanceCreateOrConnectWithoutPlaybookInstanceInput[]
+    createMany?: StepInstanceCreateManyPlaybookInstanceInputEnvelope
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+  }
+
+  export type PlaybookNotificationUncheckedCreateNestedManyWithoutPlaybookInstanceInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput> | PlaybookNotificationCreateWithoutPlaybookInstanceInput[] | PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput | PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput[]
+    createMany?: PlaybookNotificationCreateManyPlaybookInstanceInputEnvelope
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+  }
+
+  export type EnumInstanceStatusFieldUpdateOperationsInput = {
+    set?: $Enums.InstanceStatus
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type TenantUpdateOneRequiredWithoutPlaybookInstancesNestedInput = {
+    create?: XOR<TenantCreateWithoutPlaybookInstancesInput, TenantUncheckedCreateWithoutPlaybookInstancesInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookInstancesInput
+    upsert?: TenantUpsertWithoutPlaybookInstancesInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutPlaybookInstancesInput, TenantUpdateWithoutPlaybookInstancesInput>, TenantUncheckedUpdateWithoutPlaybookInstancesInput>
+  }
+
+  export type PlaybookUpdateOneRequiredWithoutInstancesNestedInput = {
+    create?: XOR<PlaybookCreateWithoutInstancesInput, PlaybookUncheckedCreateWithoutInstancesInput>
+    connectOrCreate?: PlaybookCreateOrConnectWithoutInstancesInput
+    upsert?: PlaybookUpsertWithoutInstancesInput
+    connect?: PlaybookWhereUniqueInput
+    update?: XOR<XOR<PlaybookUpdateToOneWithWhereWithoutInstancesInput, PlaybookUpdateWithoutInstancesInput>, PlaybookUncheckedUpdateWithoutInstancesInput>
+  }
+
+  export type StepInstanceUpdateManyWithoutPlaybookInstanceNestedInput = {
+    create?: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput> | StepInstanceCreateWithoutPlaybookInstanceInput[] | StepInstanceUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutPlaybookInstanceInput | StepInstanceCreateOrConnectWithoutPlaybookInstanceInput[]
+    upsert?: StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput | StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput[]
+    createMany?: StepInstanceCreateManyPlaybookInstanceInputEnvelope
+    set?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    disconnect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    delete?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    update?: StepInstanceUpdateWithWhereUniqueWithoutPlaybookInstanceInput | StepInstanceUpdateWithWhereUniqueWithoutPlaybookInstanceInput[]
+    updateMany?: StepInstanceUpdateManyWithWhereWithoutPlaybookInstanceInput | StepInstanceUpdateManyWithWhereWithoutPlaybookInstanceInput[]
+    deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookNotificationUpdateManyWithoutPlaybookInstanceNestedInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput> | PlaybookNotificationCreateWithoutPlaybookInstanceInput[] | PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput | PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput[]
+    upsert?: PlaybookNotificationUpsertWithWhereUniqueWithoutPlaybookInstanceInput | PlaybookNotificationUpsertWithWhereUniqueWithoutPlaybookInstanceInput[]
+    createMany?: PlaybookNotificationCreateManyPlaybookInstanceInputEnvelope
+    set?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    disconnect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    delete?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    update?: PlaybookNotificationUpdateWithWhereUniqueWithoutPlaybookInstanceInput | PlaybookNotificationUpdateWithWhereUniqueWithoutPlaybookInstanceInput[]
+    updateMany?: PlaybookNotificationUpdateManyWithWhereWithoutPlaybookInstanceInput | PlaybookNotificationUpdateManyWithWhereWithoutPlaybookInstanceInput[]
+    deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+  }
+
+  export type StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput = {
+    create?: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput> | StepInstanceCreateWithoutPlaybookInstanceInput[] | StepInstanceUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: StepInstanceCreateOrConnectWithoutPlaybookInstanceInput | StepInstanceCreateOrConnectWithoutPlaybookInstanceInput[]
+    upsert?: StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput | StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput[]
+    createMany?: StepInstanceCreateManyPlaybookInstanceInputEnvelope
+    set?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    disconnect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    delete?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    connect?: StepInstanceWhereUniqueInput | StepInstanceWhereUniqueInput[]
+    update?: StepInstanceUpdateWithWhereUniqueWithoutPlaybookInstanceInput | StepInstanceUpdateWithWhereUniqueWithoutPlaybookInstanceInput[]
+    updateMany?: StepInstanceUpdateManyWithWhereWithoutPlaybookInstanceInput | StepInstanceUpdateManyWithWhereWithoutPlaybookInstanceInput[]
+    deleteMany?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+  }
+
+  export type PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceNestedInput = {
+    create?: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput> | PlaybookNotificationCreateWithoutPlaybookInstanceInput[] | PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput[]
+    connectOrCreate?: PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput | PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput[]
+    upsert?: PlaybookNotificationUpsertWithWhereUniqueWithoutPlaybookInstanceInput | PlaybookNotificationUpsertWithWhereUniqueWithoutPlaybookInstanceInput[]
+    createMany?: PlaybookNotificationCreateManyPlaybookInstanceInputEnvelope
+    set?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    disconnect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    delete?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    connect?: PlaybookNotificationWhereUniqueInput | PlaybookNotificationWhereUniqueInput[]
+    update?: PlaybookNotificationUpdateWithWhereUniqueWithoutPlaybookInstanceInput | PlaybookNotificationUpdateWithWhereUniqueWithoutPlaybookInstanceInput[]
+    updateMany?: PlaybookNotificationUpdateManyWithWhereWithoutPlaybookInstanceInput | PlaybookNotificationUpdateManyWithWhereWithoutPlaybookInstanceInput[]
+    deleteMany?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+  }
+
+  export type PlaybookInstanceCreateNestedOneWithoutStepInstancesInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutStepInstancesInput, PlaybookInstanceUncheckedCreateWithoutStepInstancesInput>
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutStepInstancesInput
+    connect?: PlaybookInstanceWhereUniqueInput
+  }
+
+  export type StepTemplateCreateNestedOneWithoutStepInstancesInput = {
+    create?: XOR<StepTemplateCreateWithoutStepInstancesInput, StepTemplateUncheckedCreateWithoutStepInstancesInput>
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutStepInstancesInput
+    connect?: StepTemplateWhereUniqueInput
+  }
+
+  export type EnumStepStatusFieldUpdateOperationsInput = {
+    set?: $Enums.StepStatus
+  }
+
+  export type PlaybookInstanceUpdateOneRequiredWithoutStepInstancesNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutStepInstancesInput, PlaybookInstanceUncheckedCreateWithoutStepInstancesInput>
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutStepInstancesInput
+    upsert?: PlaybookInstanceUpsertWithoutStepInstancesInput
+    connect?: PlaybookInstanceWhereUniqueInput
+    update?: XOR<XOR<PlaybookInstanceUpdateToOneWithWhereWithoutStepInstancesInput, PlaybookInstanceUpdateWithoutStepInstancesInput>, PlaybookInstanceUncheckedUpdateWithoutStepInstancesInput>
+  }
+
+  export type StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput = {
+    create?: XOR<StepTemplateCreateWithoutStepInstancesInput, StepTemplateUncheckedCreateWithoutStepInstancesInput>
+    connectOrCreate?: StepTemplateCreateOrConnectWithoutStepInstancesInput
+    upsert?: StepTemplateUpsertWithoutStepInstancesInput
+    connect?: StepTemplateWhereUniqueInput
+    update?: XOR<XOR<StepTemplateUpdateToOneWithWhereWithoutStepInstancesInput, StepTemplateUpdateWithoutStepInstancesInput>, StepTemplateUncheckedUpdateWithoutStepInstancesInput>
+  }
+
+  export type TenantCreateNestedOneWithoutPlaybookNotificationsInput = {
+    create?: XOR<TenantCreateWithoutPlaybookNotificationsInput, TenantUncheckedCreateWithoutPlaybookNotificationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookNotificationsInput
+    connect?: TenantWhereUniqueInput
+  }
+
+  export type PlaybookInstanceCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutNotificationsInput, PlaybookInstanceUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutNotificationsInput
+    connect?: PlaybookInstanceWhereUniqueInput
+  }
+
+  export type EnumNotifTypeFieldUpdateOperationsInput = {
+    set?: $Enums.NotifType
+  }
+
+  export type EnumNotifChannelFieldUpdateOperationsInput = {
+    set?: $Enums.NotifChannel
+  }
+
+  export type TenantUpdateOneRequiredWithoutPlaybookNotificationsNestedInput = {
+    create?: XOR<TenantCreateWithoutPlaybookNotificationsInput, TenantUncheckedCreateWithoutPlaybookNotificationsInput>
+    connectOrCreate?: TenantCreateOrConnectWithoutPlaybookNotificationsInput
+    upsert?: TenantUpsertWithoutPlaybookNotificationsInput
+    connect?: TenantWhereUniqueInput
+    update?: XOR<XOR<TenantUpdateToOneWithWhereWithoutPlaybookNotificationsInput, TenantUpdateWithoutPlaybookNotificationsInput>, TenantUncheckedUpdateWithoutPlaybookNotificationsInput>
+  }
+
+  export type PlaybookInstanceUpdateOneRequiredWithoutNotificationsNestedInput = {
+    create?: XOR<PlaybookInstanceCreateWithoutNotificationsInput, PlaybookInstanceUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: PlaybookInstanceCreateOrConnectWithoutNotificationsInput
+    upsert?: PlaybookInstanceUpsertWithoutNotificationsInput
+    connect?: PlaybookInstanceWhereUniqueInput
+    update?: XOR<XOR<PlaybookInstanceUpdateToOneWithWhereWithoutNotificationsInput, PlaybookInstanceUpdateWithoutNotificationsInput>, PlaybookInstanceUncheckedUpdateWithoutNotificationsInput>
+  }
+
   export type NestedUuidFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -107294,6 +118196,175 @@ export namespace Prisma {
     _max?: NestedEnumInAppNotificationTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumStepTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepType | EnumStepTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepTypeFilter<$PrismaModel> | $Enums.StepType
+  }
+
+  export type NestedEnumAssigneeRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssigneeRole | EnumAssigneeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssigneeRoleFilter<$PrismaModel> | $Enums.AssigneeRole
+  }
+
+  export type NestedEnumStepTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepType | EnumStepTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepType[] | ListEnumStepTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepTypeWithAggregatesFilter<$PrismaModel> | $Enums.StepType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStepTypeFilter<$PrismaModel>
+    _max?: NestedEnumStepTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAssigneeRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AssigneeRole | EnumAssigneeRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AssigneeRole[] | ListEnumAssigneeRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumAssigneeRoleWithAggregatesFilter<$PrismaModel> | $Enums.AssigneeRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAssigneeRoleFilter<$PrismaModel>
+    _max?: NestedEnumAssigneeRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPlaybookEntityTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookEntityType | EnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel> | $Enums.PlaybookEntityType
+  }
+
+  export type NestedEnumPlaybookCategoryFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookCategory | EnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookCategoryFilter<$PrismaModel> | $Enums.PlaybookCategory
+  }
+
+  export type NestedEnumPhaseTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.PhaseType | EnumPhaseTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPhaseTypeFilter<$PrismaModel> | $Enums.PhaseType
+  }
+
+  export type NestedEnumPlaybookEntityTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookEntityType | EnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookEntityType[] | ListEnumPlaybookEntityTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookEntityTypeWithAggregatesFilter<$PrismaModel> | $Enums.PlaybookEntityType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel>
+    _max?: NestedEnumPlaybookEntityTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPlaybookCategoryWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PlaybookCategory | EnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    in?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PlaybookCategory[] | ListEnumPlaybookCategoryFieldRefInput<$PrismaModel>
+    not?: NestedEnumPlaybookCategoryWithAggregatesFilter<$PrismaModel> | $Enums.PlaybookCategory
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPlaybookCategoryFilter<$PrismaModel>
+    _max?: NestedEnumPlaybookCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPhaseTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PhaseType | EnumPhaseTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.PhaseType[] | ListEnumPhaseTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumPhaseTypeWithAggregatesFilter<$PrismaModel> | $Enums.PhaseType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumPhaseTypeFilter<$PrismaModel>
+    _max?: NestedEnumPhaseTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumInstanceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.InstanceStatus | EnumInstanceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumInstanceStatusFilter<$PrismaModel> | $Enums.InstanceStatus
+  }
+
+  export type NestedEnumInstanceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.InstanceStatus | EnumInstanceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.InstanceStatus[] | ListEnumInstanceStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumInstanceStatusWithAggregatesFilter<$PrismaModel> | $Enums.InstanceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumInstanceStatusFilter<$PrismaModel>
+    _max?: NestedEnumInstanceStatusFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type NestedEnumStepStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepStatus | EnumStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepStatusFilter<$PrismaModel> | $Enums.StepStatus
+  }
+
+  export type NestedEnumStepStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.StepStatus | EnumStepStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.StepStatus[] | ListEnumStepStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumStepStatusWithAggregatesFilter<$PrismaModel> | $Enums.StepStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumStepStatusFilter<$PrismaModel>
+    _max?: NestedEnumStepStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumNotifTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifType | EnumNotifTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifTypeFilter<$PrismaModel> | $Enums.NotifType
+  }
+
+  export type NestedEnumNotifChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifChannelFilter<$PrismaModel> | $Enums.NotifChannel
+  }
+
+  export type NestedEnumNotifTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifType | EnumNotifTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifType[] | ListEnumNotifTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifTypeWithAggregatesFilter<$PrismaModel> | $Enums.NotifType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotifTypeFilter<$PrismaModel>
+    _max?: NestedEnumNotifTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.NotifChannel | EnumNotifChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.NotifChannel[] | ListEnumNotifChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumNotifChannelWithAggregatesFilter<$PrismaModel> | $Enums.NotifChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumNotifChannelFilter<$PrismaModel>
+    _max?: NestedEnumNotifChannelFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutTenantInput = {
     id?: string
     email: string
@@ -107305,6 +118376,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteCreateNestedManyWithoutDriverInput
@@ -107349,6 +118421,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -107402,6 +118475,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -107428,6 +118502,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -109382,6 +120457,168 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StepTemplateCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookSteps?: PlaybookStepCreateNestedManyWithoutStepTemplateInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateUncheckedCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutStepTemplateInput
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateCreateOrConnectWithoutTenantInput = {
+    where: StepTemplateWhereUniqueInput
+    create: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput>
+  }
+
+  export type StepTemplateCreateManyTenantInputEnvelope = {
+    data: StepTemplateCreateManyTenantInput | StepTemplateCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUncheckedCreateWithoutTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
+    instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookCreateOrConnectWithoutTenantInput = {
+    where: PlaybookWhereUniqueInput
+    create: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookCreateManyTenantInputEnvelope = {
+    data: PlaybookCreateManyTenantInput | PlaybookCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookInstanceCreateWithoutTenantInput = {
+    id?: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbook: PlaybookCreateNestedOneWithoutInstancesInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUncheckedCreateWithoutTenantInput = {
+    id?: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceCreateOrConnectWithoutTenantInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    create: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookInstanceCreateManyTenantInputEnvelope = {
+    data: PlaybookInstanceCreateManyTenantInput | PlaybookInstanceCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookNotificationCreateWithoutTenantInput = {
+    id?: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+    playbookInstance: PlaybookInstanceCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type PlaybookNotificationUncheckedCreateWithoutTenantInput = {
+    id?: string
+    playbookInstanceId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PlaybookNotificationCreateOrConnectWithoutTenantInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    create: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookNotificationCreateManyTenantInputEnvelope = {
+    data: PlaybookNotificationCreateManyTenantInput | PlaybookNotificationCreateManyTenantInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithWhereUniqueWithoutTenantInput = {
     where: UserWhereUniqueInput
     update: XOR<UserUpdateWithoutTenantInput, UserUncheckedUpdateWithoutTenantInput>
@@ -109413,6 +120650,7 @@ export namespace Prisma {
     licenseNumber?: StringNullableFilter<"User"> | string | null
     isActive?: BoolFilter<"User"> | boolean
     permissions?: JsonNullableFilter<"User">
+    isDispatchReady?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
   }
@@ -109447,6 +120685,7 @@ export namespace Prisma {
     odometer?: IntFilter<"Truck"> | number
     inMaintenance?: BoolFilter<"Truck"> | boolean
     documentMetadata?: JsonNullableFilter<"Truck">
+    isDispatchReady?: BoolFilter<"Truck"> | boolean
     createdById?: UuidNullableFilter<"Truck"> | string | null
     updatedById?: UuidNullableFilter<"Truck"> | string | null
     createdAt?: DateTimeFilter<"Truck"> | Date | string
@@ -110962,6 +122201,141 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CarrierDocumentType"> | Date | string
   }
 
+  export type StepTemplateUpsertWithWhereUniqueWithoutTenantInput = {
+    where: StepTemplateWhereUniqueInput
+    update: XOR<StepTemplateUpdateWithoutTenantInput, StepTemplateUncheckedUpdateWithoutTenantInput>
+    create: XOR<StepTemplateCreateWithoutTenantInput, StepTemplateUncheckedCreateWithoutTenantInput>
+  }
+
+  export type StepTemplateUpdateWithWhereUniqueWithoutTenantInput = {
+    where: StepTemplateWhereUniqueInput
+    data: XOR<StepTemplateUpdateWithoutTenantInput, StepTemplateUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type StepTemplateUpdateManyWithWhereWithoutTenantInput = {
+    where: StepTemplateScalarWhereInput
+    data: XOR<StepTemplateUpdateManyMutationInput, StepTemplateUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type StepTemplateScalarWhereInput = {
+    AND?: StepTemplateScalarWhereInput | StepTemplateScalarWhereInput[]
+    OR?: StepTemplateScalarWhereInput[]
+    NOT?: StepTemplateScalarWhereInput | StepTemplateScalarWhereInput[]
+    id?: UuidFilter<"StepTemplate"> | string
+    tenantId?: UuidFilter<"StepTemplate"> | string
+    name?: StringFilter<"StepTemplate"> | string
+    description?: StringNullableFilter<"StepTemplate"> | string | null
+    stepType?: EnumStepTypeFilter<"StepTemplate"> | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFilter<"StepTemplate"> | $Enums.AssigneeRole
+    defaultConfig?: JsonFilter<"StepTemplate">
+    isActive?: BoolFilter<"StepTemplate"> | boolean
+    deletedAt?: DateTimeNullableFilter<"StepTemplate"> | Date | string | null
+    createdAt?: DateTimeFilter<"StepTemplate"> | Date | string
+    updatedAt?: DateTimeFilter<"StepTemplate"> | Date | string
+  }
+
+  export type PlaybookUpsertWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookWhereUniqueInput
+    update: XOR<PlaybookUpdateWithoutTenantInput, PlaybookUncheckedUpdateWithoutTenantInput>
+    create: XOR<PlaybookCreateWithoutTenantInput, PlaybookUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookUpdateWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookWhereUniqueInput
+    data: XOR<PlaybookUpdateWithoutTenantInput, PlaybookUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type PlaybookUpdateManyWithWhereWithoutTenantInput = {
+    where: PlaybookScalarWhereInput
+    data: XOR<PlaybookUpdateManyMutationInput, PlaybookUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type PlaybookScalarWhereInput = {
+    AND?: PlaybookScalarWhereInput | PlaybookScalarWhereInput[]
+    OR?: PlaybookScalarWhereInput[]
+    NOT?: PlaybookScalarWhereInput | PlaybookScalarWhereInput[]
+    id?: UuidFilter<"Playbook"> | string
+    tenantId?: UuidFilter<"Playbook"> | string
+    name?: StringFilter<"Playbook"> | string
+    description?: StringNullableFilter<"Playbook"> | string | null
+    entityType?: EnumPlaybookEntityTypeFilter<"Playbook"> | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFilter<"Playbook"> | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFilter<"Playbook"> | $Enums.PhaseType
+    isActive?: BoolFilter<"Playbook"> | boolean
+    deletedAt?: DateTimeNullableFilter<"Playbook"> | Date | string | null
+    createdAt?: DateTimeFilter<"Playbook"> | Date | string
+    updatedAt?: DateTimeFilter<"Playbook"> | Date | string
+  }
+
+  export type PlaybookInstanceUpsertWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    update: XOR<PlaybookInstanceUpdateWithoutTenantInput, PlaybookInstanceUncheckedUpdateWithoutTenantInput>
+    create: XOR<PlaybookInstanceCreateWithoutTenantInput, PlaybookInstanceUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookInstanceUpdateWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    data: XOR<PlaybookInstanceUpdateWithoutTenantInput, PlaybookInstanceUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type PlaybookInstanceUpdateManyWithWhereWithoutTenantInput = {
+    where: PlaybookInstanceScalarWhereInput
+    data: XOR<PlaybookInstanceUpdateManyMutationInput, PlaybookInstanceUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type PlaybookInstanceScalarWhereInput = {
+    AND?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+    OR?: PlaybookInstanceScalarWhereInput[]
+    NOT?: PlaybookInstanceScalarWhereInput | PlaybookInstanceScalarWhereInput[]
+    id?: UuidFilter<"PlaybookInstance"> | string
+    tenantId?: UuidFilter<"PlaybookInstance"> | string
+    playbookId?: UuidFilter<"PlaybookInstance"> | string
+    playbookSnapshot?: JsonFilter<"PlaybookInstance">
+    entityType?: EnumPlaybookEntityTypeFilter<"PlaybookInstance"> | $Enums.PlaybookEntityType
+    entityId?: UuidFilter<"PlaybookInstance"> | string
+    status?: EnumInstanceStatusFilter<"PlaybookInstance"> | $Enums.InstanceStatus
+    completionPercent?: FloatFilter<"PlaybookInstance"> | number
+    isDispatchReady?: BoolFilter<"PlaybookInstance"> | boolean
+    startedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    dueDate?: DateTimeNullableFilter<"PlaybookInstance"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookInstance"> | Date | string
+  }
+
+  export type PlaybookNotificationUpsertWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    update: XOR<PlaybookNotificationUpdateWithoutTenantInput, PlaybookNotificationUncheckedUpdateWithoutTenantInput>
+    create: XOR<PlaybookNotificationCreateWithoutTenantInput, PlaybookNotificationUncheckedCreateWithoutTenantInput>
+  }
+
+  export type PlaybookNotificationUpdateWithWhereUniqueWithoutTenantInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    data: XOR<PlaybookNotificationUpdateWithoutTenantInput, PlaybookNotificationUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type PlaybookNotificationUpdateManyWithWhereWithoutTenantInput = {
+    where: PlaybookNotificationScalarWhereInput
+    data: XOR<PlaybookNotificationUpdateManyMutationInput, PlaybookNotificationUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type PlaybookNotificationScalarWhereInput = {
+    AND?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+    OR?: PlaybookNotificationScalarWhereInput[]
+    NOT?: PlaybookNotificationScalarWhereInput | PlaybookNotificationScalarWhereInput[]
+    id?: UuidFilter<"PlaybookNotification"> | string
+    tenantId?: UuidFilter<"PlaybookNotification"> | string
+    playbookInstanceId?: UuidFilter<"PlaybookNotification"> | string
+    stepInstanceId?: UuidNullableFilter<"PlaybookNotification"> | string | null
+    notificationType?: EnumNotifTypeFilter<"PlaybookNotification"> | $Enums.NotifType
+    channel?: EnumNotifChannelFilter<"PlaybookNotification"> | $Enums.NotifChannel
+    recipientUserId?: UuidFilter<"PlaybookNotification"> | string
+    message?: StringFilter<"PlaybookNotification"> | string
+    sentAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    deliveredAt?: DateTimeNullableFilter<"PlaybookNotification"> | Date | string | null
+    createdAt?: DateTimeFilter<"PlaybookNotification"> | Date | string
+  }
+
   export type TenantCreateWithoutUsersInput = {
     id?: string
     name: string
@@ -111014,6 +122388,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutUsersInput = {
@@ -111068,6 +122446,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutUsersInput = {
@@ -111481,6 +122863,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -111508,6 +122891,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -111543,6 +122927,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -111570,6 +122955,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -112723,6 +124109,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutUsersInput = {
@@ -112777,6 +124167,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithWhereUniqueWithoutDriverInput = {
@@ -113390,6 +124784,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTrucksInput = {
@@ -113444,6 +124842,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTrucksInput = {
@@ -113462,6 +124864,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -113507,6 +124910,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -113555,6 +124959,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -113600,6 +125005,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -114128,6 +125534,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTrucksInput = {
@@ -114182,6 +125592,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutTrucksCreatedInput = {
@@ -114206,6 +125620,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -114251,6 +125666,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -114305,6 +125721,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -114350,6 +125767,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -114578,6 +125996,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverInvitationsInput = {
@@ -114632,6 +126054,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverInvitationsInput = {
@@ -114702,6 +126128,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverInvitationsInput = {
@@ -114756,6 +126186,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutesInput = {
@@ -114810,6 +126244,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutesInput = {
@@ -114864,6 +126302,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutesInput = {
@@ -114882,6 +126324,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -114927,6 +126370,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     uploadedDocuments?: DocumentUncheckedCreateNestedManyWithoutUploaderInput
@@ -114974,6 +126418,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -115001,6 +126446,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -115032,6 +126478,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -115077,6 +126524,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -115125,6 +126573,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -115170,6 +126619,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -115636,6 +127086,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutesInput = {
@@ -115690,6 +127144,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAssignedRoutesInput = {
@@ -115714,6 +127172,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -115759,6 +127218,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     uploadedDocuments?: DocumentUncheckedUpdateManyWithoutUploaderNestedInput
@@ -115812,6 +127272,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -115839,6 +127300,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -115876,6 +127338,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -115921,6 +127384,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -115975,6 +127439,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -116020,6 +127485,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -116256,6 +127722,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -116301,6 +127768,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -116431,6 +127899,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -116476,6 +127945,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -116560,6 +128030,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDocumentsInput = {
@@ -116614,6 +128088,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDocumentsInput = {
@@ -116631,6 +128109,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -116658,6 +128137,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -116754,6 +128234,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -116799,6 +128280,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -116922,6 +128404,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -116967,6 +128450,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -117067,6 +128551,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDocumentsInput = {
@@ -117121,6 +128609,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutDocumentsInput = {
@@ -117144,6 +128636,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117171,6 +128664,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117279,6 +128773,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -117324,6 +128819,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -117459,6 +128955,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -117504,6 +129001,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -117588,6 +129086,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutMaintenanceEventsInput = {
@@ -117642,6 +129144,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutMaintenanceEventsInput = {
@@ -117659,6 +129165,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -117686,6 +129193,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -117769,6 +129277,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutMaintenanceEventsInput = {
@@ -117823,6 +129335,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutMaintenanceEventsInput = {
@@ -117846,6 +129362,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -117873,6 +129390,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117940,6 +129458,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutScheduledServicesInput = {
@@ -117994,6 +129516,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutScheduledServicesInput = {
@@ -118011,6 +129537,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -118038,6 +129565,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -118121,6 +129649,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutScheduledServicesInput = {
@@ -118175,6 +129707,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutScheduledServicesInput = {
@@ -118198,6 +129734,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118225,6 +129762,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -118292,6 +129830,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutNotificationLogsInput = {
@@ -118346,6 +129888,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutNotificationLogsInput = {
@@ -118416,6 +129962,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutNotificationLogsInput = {
@@ -118470,6 +130020,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutGpsLocationsInput = {
@@ -118524,6 +130078,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutGpsLocationsInput = {
@@ -118578,6 +130136,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutGpsLocationsInput = {
@@ -118595,6 +130157,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -118622,6 +130185,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -118768,6 +130332,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutGpsLocationsInput = {
@@ -118822,6 +130390,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutGpsLocationsInput = {
@@ -118845,6 +130417,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -118872,6 +130445,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119008,6 +130582,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSafetyEventsInput = {
@@ -119062,6 +130640,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSafetyEventsInput = {
@@ -119079,6 +130661,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -119106,6 +130689,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -119137,6 +130721,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -119182,6 +130767,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -119347,6 +130933,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSafetyEventsInput = {
@@ -119401,6 +130991,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutSafetyEventsInput = {
@@ -119424,6 +131018,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119451,6 +131046,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -119488,6 +131084,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -119533,6 +131130,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -119688,6 +131286,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutFuelRecordsInput = {
@@ -119742,6 +131344,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutFuelRecordsInput = {
@@ -119759,6 +131365,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -119786,6 +131393,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -119869,6 +131477,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutFuelRecordsInput = {
@@ -119923,6 +131535,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TruckUpsertWithoutFuelRecordsInput = {
@@ -119946,6 +131562,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -119973,6 +131590,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120040,6 +131658,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagsInput = {
@@ -120094,6 +131716,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagsInput = {
@@ -120190,6 +131816,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -120244,6 +131874,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagAssignmentUpsertWithWhereUniqueWithoutTagInput = {
@@ -120314,6 +131948,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTagAssignmentsInput = {
@@ -120368,6 +132006,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTagAssignmentsInput = {
@@ -120408,6 +132050,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -120435,6 +132078,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -120466,6 +132110,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -120511,6 +132156,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -120611,6 +132257,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTagAssignmentsInput = {
@@ -120665,6 +132315,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TagUpsertWithoutAssignmentsInput = {
@@ -120717,6 +132371,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -120744,6 +132399,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -120781,6 +132437,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -120826,6 +132483,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -120910,6 +132568,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseCategoriesInput = {
@@ -120964,6 +132626,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseCategoriesInput = {
@@ -121094,6 +132760,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseCategoriesInput = {
@@ -121148,6 +132818,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteExpenseUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -121234,6 +132908,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteExpensesInput = {
@@ -121288,6 +132966,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteExpensesInput = {
@@ -121448,6 +133130,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteExpensesInput = {
@@ -121502,6 +133188,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutExpensesInput = {
@@ -121658,6 +133348,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplatesInput = {
@@ -121712,6 +133406,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplatesInput = {
@@ -121808,6 +133506,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplatesInput = {
@@ -121862,6 +133564,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ExpenseTemplateItemUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -121978,6 +133684,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutExpenseTemplateItemsInput = {
@@ -122032,6 +133742,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutExpenseTemplateItemsInput = {
@@ -122160,6 +133874,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutExpenseTemplateItemsInput = {
@@ -122214,6 +133932,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutRoutePaymentsInput = {
@@ -122268,6 +133990,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRoutePaymentsInput = {
@@ -122322,6 +134048,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRoutePaymentsInput = {
@@ -122457,6 +134187,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRoutePaymentsInput = {
@@ -122511,6 +134245,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutPaymentsInput = {
@@ -122636,6 +134374,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomersInput = {
@@ -122690,6 +134432,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomersInput = {
@@ -122872,6 +134618,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomersInput = {
@@ -122926,6 +134676,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerInteractionUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -123012,6 +134766,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCustomerInteractionsInput = {
@@ -123066,6 +134824,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCustomerInteractionsInput = {
@@ -123187,6 +134949,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCustomerInteractionsInput = {
@@ -123241,6 +135007,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutInteractionsInput = {
@@ -123352,6 +135122,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoicesInput = {
@@ -123406,6 +135180,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoicesInput = {
@@ -123424,6 +135202,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -123469,6 +135248,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -123517,6 +135297,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -123562,6 +135343,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -123769,6 +135551,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoicesInput = {
@@ -123823,6 +135609,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInvoicesCreatedInput = {
@@ -123847,6 +135637,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -123892,6 +135683,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -123946,6 +135738,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -123991,6 +135784,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -124235,6 +136029,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInvoiceItemsInput = {
@@ -124289,6 +136087,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInvoiceItemsInput = {
@@ -124428,6 +136230,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInvoiceItemsInput = {
@@ -124482,6 +136288,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantCreateWithoutSysAdminInvoicesInput = {
@@ -124536,6 +136346,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutSysAdminInvoicesInput = {
@@ -124590,6 +136404,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutSysAdminInvoicesInput = {
@@ -124688,6 +136506,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutSysAdminInvoicesInput = {
@@ -124742,6 +136564,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SysAdminInvoiceItemUpsertWithWhereUniqueWithoutInvoiceInput = {
@@ -124917,6 +136743,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutPayrollRecordsInput = {
@@ -124971,6 +136801,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutPayrollRecordsInput = {
@@ -124989,6 +136823,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -125034,6 +136869,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -125082,6 +136918,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -125127,6 +136964,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -125175,6 +137013,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -125220,6 +137059,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -125320,6 +137160,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutPayrollRecordsInput = {
@@ -125374,6 +137218,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutPayrollRecordsInput = {
@@ -125398,6 +137246,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -125443,6 +137292,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -125497,6 +137347,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -125542,6 +137393,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -125596,6 +137448,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -125641,6 +137494,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -125725,6 +137579,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutLoadsInput = {
@@ -125779,6 +137637,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutLoadsInput = {
@@ -125913,6 +137775,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -125958,6 +137821,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -126005,6 +137869,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     archivedAt?: Date | string | null
@@ -126032,6 +137897,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -126063,6 +137929,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -126108,6 +137975,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -126156,6 +138024,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -126201,6 +138070,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -126589,6 +138459,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutLoadsInput = {
@@ -126643,6 +138517,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CustomerUpsertWithoutLoadsInput = {
@@ -126795,6 +138673,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -126840,6 +138719,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -126893,6 +138773,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -126920,6 +138801,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -126957,6 +138839,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -127002,6 +138885,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -127056,6 +138940,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -127101,6 +138986,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -127355,6 +139241,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutTenantIntegrationsInput = {
@@ -127409,6 +139299,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutTenantIntegrationsInput = {
@@ -127479,6 +139373,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutTenantIntegrationsInput = {
@@ -127533,6 +139431,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteCreateWithoutStopsInput = {
@@ -127652,6 +139554,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteStopsInput = {
@@ -127706,6 +139612,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteStopsInput = {
@@ -128082,6 +139992,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteStopsInput = {
@@ -128136,6 +140050,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LoadUpsertWithoutRouteStopsInput = {
@@ -128303,6 +140221,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverRouteJoinsInput = {
@@ -128357,6 +140279,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverRouteJoinsInput = {
@@ -128440,6 +140366,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -128485,6 +140412,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -128585,6 +140513,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverRouteJoinsInput = {
@@ -128639,6 +140571,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteUpsertWithoutDriverAssignmentsInput = {
@@ -128734,6 +140670,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -128779,6 +140716,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -129094,6 +141032,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -129139,6 +141078,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -129198,6 +141138,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -129243,6 +141184,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -129327,6 +141269,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverHOSEntriesInput = {
@@ -129381,6 +141327,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverHOSEntriesInput = {
@@ -129399,6 +141349,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -129444,6 +141395,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -129544,6 +141496,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverHOSEntriesInput = {
@@ -129598,6 +141554,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHosEntriesInput = {
@@ -129622,6 +141582,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -129667,6 +141628,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -129751,6 +141713,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverIncidentsInput = {
@@ -129805,6 +141771,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverIncidentsInput = {
@@ -129823,6 +141793,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -129868,6 +141839,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -129968,6 +141940,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverIncidentsInput = {
@@ -130022,6 +141998,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutIncidentsInput = {
@@ -130046,6 +142026,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -130091,6 +142072,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -130175,6 +142157,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierClientsInput = {
@@ -130229,6 +142215,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierClientsInput = {
@@ -130759,6 +142749,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierClientsInput = {
@@ -130813,6 +142807,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierContractUpsertWithWhereUniqueWithoutClientInput = {
@@ -131012,6 +143010,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierContractsInput = {
@@ -131066,6 +143068,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierContractsInput = {
@@ -131409,6 +143415,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierContractsInput = {
@@ -131463,6 +143473,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutContractsInput = {
@@ -131644,6 +143658,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierFacilitiesInput = {
@@ -131698,6 +143716,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierFacilitiesInput = {
@@ -131948,6 +143970,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierFacilitiesInput = {
@@ -132002,6 +144028,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithWhereUniqueWithoutHomeTerminalInput = {
@@ -132125,6 +144155,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDriversInput = {
@@ -132179,6 +144213,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDriversInput = {
@@ -132197,6 +144235,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -132242,6 +144281,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -132715,6 +144755,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDriversInput = {
@@ -132769,6 +144813,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCarrierDriverProfileInput = {
@@ -132793,6 +144841,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -132838,6 +144887,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -133065,6 +145115,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierTrucksInput = {
@@ -133119,6 +145173,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierTrucksInput = {
@@ -133421,6 +145479,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierTrucksInput = {
@@ -133475,6 +145537,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithWhereUniqueWithoutTruckInput = {
@@ -133593,6 +145659,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutRouteTemplatesInput = {
@@ -133647,6 +145717,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutRouteTemplatesInput = {
@@ -134079,6 +146153,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutRouteTemplatesInput = {
@@ -134133,6 +146211,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierClientUpsertWithoutRouteTemplatesInput = {
@@ -134735,6 +146817,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDispatchesInput = {
@@ -134789,6 +146875,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDispatchesInput = {
@@ -135104,6 +147194,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -135149,6 +147240,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -135625,6 +147717,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDispatchesInput = {
@@ -135679,6 +147775,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RouteTemplateUpsertWithoutDispatchesInput = {
@@ -136030,6 +148130,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -136075,6 +148176,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -136275,6 +148377,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierLoadsInput = {
@@ -136329,6 +148435,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierLoadsInput = {
@@ -136842,6 +148952,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierLoadsInput = {
@@ -136896,6 +149010,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutCarrierLoadsInput = {
@@ -137942,6 +150060,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -137987,6 +150106,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -138035,6 +150155,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -138080,6 +150201,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -138555,6 +150677,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -138600,6 +150723,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -138654,6 +150778,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -138699,6 +150824,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -139201,6 +151327,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierDocumentTypesInput = {
@@ -139255,6 +151385,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierDocumentTypesInput = {
@@ -139379,6 +151513,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierDocumentTypesInput = {
@@ -139433,6 +151571,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDocumentUpsertWithWhereUniqueWithoutDocumentTypeRefInput = {
@@ -139503,6 +151645,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutCarrierExpensesInput = {
@@ -139557,6 +151703,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutCarrierExpensesInput = {
@@ -139963,6 +152113,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -140008,6 +152159,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -140108,6 +152260,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutCarrierExpensesInput = {
@@ -140162,6 +152318,10 @@ export namespace Prisma {
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDispatchUpsertWithoutExpensesInput = {
@@ -140610,6 +152770,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -140655,6 +152816,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -140739,6 +152901,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutDriverPayRecordsInput = {
@@ -140793,6 +152959,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutDriverPayRecordsInput = {
@@ -141081,6 +153251,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -141126,6 +153297,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -141226,6 +153398,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutDriverPayRecordsInput = {
@@ -141280,6 +153456,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CarrierDriverUpsertWithoutDriverPayRecordsInput = {
@@ -141598,6 +153778,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -141643,6 +153824,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -141727,6 +153909,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
   }
 
   export type TenantUncheckedCreateWithoutInAppNotificationsInput = {
@@ -141781,6 +153967,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
     driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type TenantCreateOrConnectWithoutInAppNotificationsInput = {
@@ -141799,6 +153989,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant: TenantCreateNestedOneWithoutUsersInput
@@ -141844,6 +154035,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     assignedRoutes?: RouteUncheckedCreateNestedManyWithoutDriverInput
@@ -141944,6 +154136,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
   }
 
   export type TenantUncheckedUpdateWithoutInAppNotificationsInput = {
@@ -141998,6 +154194,10 @@ export namespace Prisma {
     carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
     driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
     carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutInAppNotificationsInput = {
@@ -142022,6 +154222,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneRequiredWithoutUsersNestedInput
@@ -142067,6 +154268,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -142099,6 +154301,1864 @@ export namespace Prisma {
     approvedPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutApproverNestedInput
   }
 
+  export type TenantCreateWithoutStepTemplatesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutStepTemplatesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutStepTemplatesInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutStepTemplatesInput, TenantUncheckedCreateWithoutStepTemplatesInput>
+  }
+
+  export type PlaybookStepCreateWithoutStepTemplateInput = {
+    id?: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbook: PlaybookCreateNestedOneWithoutStepsInput
+  }
+
+  export type PlaybookStepUncheckedCreateWithoutStepTemplateInput = {
+    id?: string
+    playbookId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepCreateOrConnectWithoutStepTemplateInput = {
+    where: PlaybookStepWhereUniqueInput
+    create: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput>
+  }
+
+  export type PlaybookStepCreateManyStepTemplateInputEnvelope = {
+    data: PlaybookStepCreateManyStepTemplateInput | PlaybookStepCreateManyStepTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type StepInstanceCreateWithoutStepTemplateInput = {
+    id?: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookInstance: PlaybookInstanceCreateNestedOneWithoutStepInstancesInput
+  }
+
+  export type StepInstanceUncheckedCreateWithoutStepTemplateInput = {
+    id?: string
+    playbookInstanceId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepInstanceCreateOrConnectWithoutStepTemplateInput = {
+    where: StepInstanceWhereUniqueInput
+    create: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput>
+  }
+
+  export type StepInstanceCreateManyStepTemplateInputEnvelope = {
+    data: StepInstanceCreateManyStepTemplateInput | StepInstanceCreateManyStepTemplateInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantUpsertWithoutStepTemplatesInput = {
+    update: XOR<TenantUpdateWithoutStepTemplatesInput, TenantUncheckedUpdateWithoutStepTemplatesInput>
+    create: XOR<TenantCreateWithoutStepTemplatesInput, TenantUncheckedCreateWithoutStepTemplatesInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutStepTemplatesInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutStepTemplatesInput, TenantUncheckedUpdateWithoutStepTemplatesInput>
+  }
+
+  export type TenantUpdateWithoutStepTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutStepTemplatesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type PlaybookStepUpsertWithWhereUniqueWithoutStepTemplateInput = {
+    where: PlaybookStepWhereUniqueInput
+    update: XOR<PlaybookStepUpdateWithoutStepTemplateInput, PlaybookStepUncheckedUpdateWithoutStepTemplateInput>
+    create: XOR<PlaybookStepCreateWithoutStepTemplateInput, PlaybookStepUncheckedCreateWithoutStepTemplateInput>
+  }
+
+  export type PlaybookStepUpdateWithWhereUniqueWithoutStepTemplateInput = {
+    where: PlaybookStepWhereUniqueInput
+    data: XOR<PlaybookStepUpdateWithoutStepTemplateInput, PlaybookStepUncheckedUpdateWithoutStepTemplateInput>
+  }
+
+  export type PlaybookStepUpdateManyWithWhereWithoutStepTemplateInput = {
+    where: PlaybookStepScalarWhereInput
+    data: XOR<PlaybookStepUpdateManyMutationInput, PlaybookStepUncheckedUpdateManyWithoutStepTemplateInput>
+  }
+
+  export type PlaybookStepScalarWhereInput = {
+    AND?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+    OR?: PlaybookStepScalarWhereInput[]
+    NOT?: PlaybookStepScalarWhereInput | PlaybookStepScalarWhereInput[]
+    id?: UuidFilter<"PlaybookStep"> | string
+    playbookId?: UuidFilter<"PlaybookStep"> | string
+    stepTemplateId?: UuidFilter<"PlaybookStep"> | string
+    sequence?: IntFilter<"PlaybookStep"> | number
+    playbookPhase?: EnumPhaseTypeFilter<"PlaybookStep"> | $Enums.PhaseType
+    overrideConfig?: JsonFilter<"PlaybookStep">
+    isRequired?: BoolFilter<"PlaybookStep"> | boolean
+    isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
+    dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
+    createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+    updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
+  }
+
+  export type StepInstanceUpsertWithWhereUniqueWithoutStepTemplateInput = {
+    where: StepInstanceWhereUniqueInput
+    update: XOR<StepInstanceUpdateWithoutStepTemplateInput, StepInstanceUncheckedUpdateWithoutStepTemplateInput>
+    create: XOR<StepInstanceCreateWithoutStepTemplateInput, StepInstanceUncheckedCreateWithoutStepTemplateInput>
+  }
+
+  export type StepInstanceUpdateWithWhereUniqueWithoutStepTemplateInput = {
+    where: StepInstanceWhereUniqueInput
+    data: XOR<StepInstanceUpdateWithoutStepTemplateInput, StepInstanceUncheckedUpdateWithoutStepTemplateInput>
+  }
+
+  export type StepInstanceUpdateManyWithWhereWithoutStepTemplateInput = {
+    where: StepInstanceScalarWhereInput
+    data: XOR<StepInstanceUpdateManyMutationInput, StepInstanceUncheckedUpdateManyWithoutStepTemplateInput>
+  }
+
+  export type StepInstanceScalarWhereInput = {
+    AND?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+    OR?: StepInstanceScalarWhereInput[]
+    NOT?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
+    id?: UuidFilter<"StepInstance"> | string
+    playbookInstanceId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepSnapshot?: JsonFilter<"StepInstance">
+    status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
+    assignedUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    completedAt?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    result?: JsonNullableFilter<"StepInstance">
+    skipReason?: StringNullableFilter<"StepInstance"> | string | null
+    skippedByUserId?: UuidNullableFilter<"StepInstance"> | string | null
+    dueDate?: DateTimeNullableFilter<"StepInstance"> | Date | string | null
+    isOverdue?: BoolFilter<"StepInstance"> | boolean
+    createdAt?: DateTimeFilter<"StepInstance"> | Date | string
+    updatedAt?: DateTimeFilter<"StepInstance"> | Date | string
+  }
+
+  export type TenantCreateWithoutPlaybooksInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutPlaybooksInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutPlaybooksInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutPlaybooksInput, TenantUncheckedCreateWithoutPlaybooksInput>
+  }
+
+  export type PlaybookStepCreateWithoutPlaybookInput = {
+    id?: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepTemplate: StepTemplateCreateNestedOneWithoutPlaybookStepsInput
+  }
+
+  export type PlaybookStepUncheckedCreateWithoutPlaybookInput = {
+    id?: string
+    stepTemplateId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepCreateOrConnectWithoutPlaybookInput = {
+    where: PlaybookStepWhereUniqueInput
+    create: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookStepCreateManyPlaybookInputEnvelope = {
+    data: PlaybookStepCreateManyPlaybookInput | PlaybookStepCreateManyPlaybookInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookInstanceCreateWithoutPlaybookInput = {
+    id?: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookInstancesInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUncheckedCreateWithoutPlaybookInput = {
+    id?: string
+    tenantId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+    notifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceCreateOrConnectWithoutPlaybookInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    create: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookInstanceCreateManyPlaybookInputEnvelope = {
+    data: PlaybookInstanceCreateManyPlaybookInput | PlaybookInstanceCreateManyPlaybookInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantUpsertWithoutPlaybooksInput = {
+    update: XOR<TenantUpdateWithoutPlaybooksInput, TenantUncheckedUpdateWithoutPlaybooksInput>
+    create: XOR<TenantCreateWithoutPlaybooksInput, TenantUncheckedCreateWithoutPlaybooksInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutPlaybooksInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutPlaybooksInput, TenantUncheckedUpdateWithoutPlaybooksInput>
+  }
+
+  export type TenantUpdateWithoutPlaybooksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutPlaybooksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type PlaybookStepUpsertWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookStepWhereUniqueInput
+    update: XOR<PlaybookStepUpdateWithoutPlaybookInput, PlaybookStepUncheckedUpdateWithoutPlaybookInput>
+    create: XOR<PlaybookStepCreateWithoutPlaybookInput, PlaybookStepUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookStepUpdateWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookStepWhereUniqueInput
+    data: XOR<PlaybookStepUpdateWithoutPlaybookInput, PlaybookStepUncheckedUpdateWithoutPlaybookInput>
+  }
+
+  export type PlaybookStepUpdateManyWithWhereWithoutPlaybookInput = {
+    where: PlaybookStepScalarWhereInput
+    data: XOR<PlaybookStepUpdateManyMutationInput, PlaybookStepUncheckedUpdateManyWithoutPlaybookInput>
+  }
+
+  export type PlaybookInstanceUpsertWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    update: XOR<PlaybookInstanceUpdateWithoutPlaybookInput, PlaybookInstanceUncheckedUpdateWithoutPlaybookInput>
+    create: XOR<PlaybookInstanceCreateWithoutPlaybookInput, PlaybookInstanceUncheckedCreateWithoutPlaybookInput>
+  }
+
+  export type PlaybookInstanceUpdateWithWhereUniqueWithoutPlaybookInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    data: XOR<PlaybookInstanceUpdateWithoutPlaybookInput, PlaybookInstanceUncheckedUpdateWithoutPlaybookInput>
+  }
+
+  export type PlaybookInstanceUpdateManyWithWhereWithoutPlaybookInput = {
+    where: PlaybookInstanceScalarWhereInput
+    data: XOR<PlaybookInstanceUpdateManyMutationInput, PlaybookInstanceUncheckedUpdateManyWithoutPlaybookInput>
+  }
+
+  export type PlaybookCreateWithoutStepsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybooksInput
+    instances?: PlaybookInstanceCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUncheckedCreateWithoutStepsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    instances?: PlaybookInstanceUncheckedCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookCreateOrConnectWithoutStepsInput = {
+    where: PlaybookWhereUniqueInput
+    create: XOR<PlaybookCreateWithoutStepsInput, PlaybookUncheckedCreateWithoutStepsInput>
+  }
+
+  export type StepTemplateCreateWithoutPlaybookStepsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutStepTemplatesInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateUncheckedCreateWithoutPlaybookStepsInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateCreateOrConnectWithoutPlaybookStepsInput = {
+    where: StepTemplateWhereUniqueInput
+    create: XOR<StepTemplateCreateWithoutPlaybookStepsInput, StepTemplateUncheckedCreateWithoutPlaybookStepsInput>
+  }
+
+  export type PlaybookUpsertWithoutStepsInput = {
+    update: XOR<PlaybookUpdateWithoutStepsInput, PlaybookUncheckedUpdateWithoutStepsInput>
+    create: XOR<PlaybookCreateWithoutStepsInput, PlaybookUncheckedCreateWithoutStepsInput>
+    where?: PlaybookWhereInput
+  }
+
+  export type PlaybookUpdateToOneWithWhereWithoutStepsInput = {
+    where?: PlaybookWhereInput
+    data: XOR<PlaybookUpdateWithoutStepsInput, PlaybookUncheckedUpdateWithoutStepsInput>
+  }
+
+  export type PlaybookUpdateWithoutStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
+    instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateWithoutStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type StepTemplateUpsertWithoutPlaybookStepsInput = {
+    update: XOR<StepTemplateUpdateWithoutPlaybookStepsInput, StepTemplateUncheckedUpdateWithoutPlaybookStepsInput>
+    create: XOR<StepTemplateCreateWithoutPlaybookStepsInput, StepTemplateUncheckedCreateWithoutPlaybookStepsInput>
+    where?: StepTemplateWhereInput
+  }
+
+  export type StepTemplateUpdateToOneWithWhereWithoutPlaybookStepsInput = {
+    where?: StepTemplateWhereInput
+    data: XOR<StepTemplateUpdateWithoutPlaybookStepsInput, StepTemplateUncheckedUpdateWithoutPlaybookStepsInput>
+  }
+
+  export type StepTemplateUpdateWithoutPlaybookStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutStepTemplatesNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateUncheckedUpdateWithoutPlaybookStepsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type TenantCreateWithoutPlaybookInstancesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutPlaybookInstancesInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookNotifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutPlaybookInstancesInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutPlaybookInstancesInput, TenantUncheckedCreateWithoutPlaybookInstancesInput>
+  }
+
+  export type PlaybookCreateWithoutInstancesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybooksInput
+    steps?: PlaybookStepCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookUncheckedCreateWithoutInstancesInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    steps?: PlaybookStepUncheckedCreateNestedManyWithoutPlaybookInput
+  }
+
+  export type PlaybookCreateOrConnectWithoutInstancesInput = {
+    where: PlaybookWhereUniqueInput
+    create: XOR<PlaybookCreateWithoutInstancesInput, PlaybookUncheckedCreateWithoutInstancesInput>
+  }
+
+  export type StepInstanceCreateWithoutPlaybookInstanceInput = {
+    id?: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepTemplate: StepTemplateCreateNestedOneWithoutStepInstancesInput
+  }
+
+  export type StepInstanceUncheckedCreateWithoutPlaybookInstanceInput = {
+    id?: string
+    stepTemplateId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepInstanceCreateOrConnectWithoutPlaybookInstanceInput = {
+    where: StepInstanceWhereUniqueInput
+    create: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput>
+  }
+
+  export type StepInstanceCreateManyPlaybookInstanceInputEnvelope = {
+    data: StepInstanceCreateManyPlaybookInstanceInput | StepInstanceCreateManyPlaybookInstanceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PlaybookNotificationCreateWithoutPlaybookInstanceInput = {
+    id?: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookNotificationsInput
+  }
+
+  export type PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput = {
+    id?: string
+    tenantId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PlaybookNotificationCreateOrConnectWithoutPlaybookInstanceInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    create: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput>
+  }
+
+  export type PlaybookNotificationCreateManyPlaybookInstanceInputEnvelope = {
+    data: PlaybookNotificationCreateManyPlaybookInstanceInput | PlaybookNotificationCreateManyPlaybookInstanceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantUpsertWithoutPlaybookInstancesInput = {
+    update: XOR<TenantUpdateWithoutPlaybookInstancesInput, TenantUncheckedUpdateWithoutPlaybookInstancesInput>
+    create: XOR<TenantCreateWithoutPlaybookInstancesInput, TenantUncheckedCreateWithoutPlaybookInstancesInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutPlaybookInstancesInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutPlaybookInstancesInput, TenantUncheckedUpdateWithoutPlaybookInstancesInput>
+  }
+
+  export type TenantUpdateWithoutPlaybookInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutPlaybookInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookNotifications?: PlaybookNotificationUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type PlaybookUpsertWithoutInstancesInput = {
+    update: XOR<PlaybookUpdateWithoutInstancesInput, PlaybookUncheckedUpdateWithoutInstancesInput>
+    create: XOR<PlaybookCreateWithoutInstancesInput, PlaybookUncheckedCreateWithoutInstancesInput>
+    where?: PlaybookWhereInput
+  }
+
+  export type PlaybookUpdateToOneWithWhereWithoutInstancesInput = {
+    where?: PlaybookWhereInput
+    data: XOR<PlaybookUpdateWithoutInstancesInput, PlaybookUncheckedUpdateWithoutInstancesInput>
+  }
+
+  export type PlaybookUpdateWithoutInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybooksNestedInput
+    steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateWithoutInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type StepInstanceUpsertWithWhereUniqueWithoutPlaybookInstanceInput = {
+    where: StepInstanceWhereUniqueInput
+    update: XOR<StepInstanceUpdateWithoutPlaybookInstanceInput, StepInstanceUncheckedUpdateWithoutPlaybookInstanceInput>
+    create: XOR<StepInstanceCreateWithoutPlaybookInstanceInput, StepInstanceUncheckedCreateWithoutPlaybookInstanceInput>
+  }
+
+  export type StepInstanceUpdateWithWhereUniqueWithoutPlaybookInstanceInput = {
+    where: StepInstanceWhereUniqueInput
+    data: XOR<StepInstanceUpdateWithoutPlaybookInstanceInput, StepInstanceUncheckedUpdateWithoutPlaybookInstanceInput>
+  }
+
+  export type StepInstanceUpdateManyWithWhereWithoutPlaybookInstanceInput = {
+    where: StepInstanceScalarWhereInput
+    data: XOR<StepInstanceUpdateManyMutationInput, StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceInput>
+  }
+
+  export type PlaybookNotificationUpsertWithWhereUniqueWithoutPlaybookInstanceInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    update: XOR<PlaybookNotificationUpdateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedUpdateWithoutPlaybookInstanceInput>
+    create: XOR<PlaybookNotificationCreateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedCreateWithoutPlaybookInstanceInput>
+  }
+
+  export type PlaybookNotificationUpdateWithWhereUniqueWithoutPlaybookInstanceInput = {
+    where: PlaybookNotificationWhereUniqueInput
+    data: XOR<PlaybookNotificationUpdateWithoutPlaybookInstanceInput, PlaybookNotificationUncheckedUpdateWithoutPlaybookInstanceInput>
+  }
+
+  export type PlaybookNotificationUpdateManyWithWhereWithoutPlaybookInstanceInput = {
+    where: PlaybookNotificationScalarWhereInput
+    data: XOR<PlaybookNotificationUpdateManyMutationInput, PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceInput>
+  }
+
+  export type PlaybookInstanceCreateWithoutStepInstancesInput = {
+    id?: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookInstancesInput
+    playbook: PlaybookCreateNestedOneWithoutInstancesInput
+    notifications?: PlaybookNotificationCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUncheckedCreateWithoutStepInstancesInput = {
+    id?: string
+    tenantId: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    notifications?: PlaybookNotificationUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceCreateOrConnectWithoutStepInstancesInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    create: XOR<PlaybookInstanceCreateWithoutStepInstancesInput, PlaybookInstanceUncheckedCreateWithoutStepInstancesInput>
+  }
+
+  export type StepTemplateCreateWithoutStepInstancesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutStepTemplatesInput
+    playbookSteps?: PlaybookStepCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateUncheckedCreateWithoutStepInstancesInput = {
+    id?: string
+    tenantId: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    playbookSteps?: PlaybookStepUncheckedCreateNestedManyWithoutStepTemplateInput
+  }
+
+  export type StepTemplateCreateOrConnectWithoutStepInstancesInput = {
+    where: StepTemplateWhereUniqueInput
+    create: XOR<StepTemplateCreateWithoutStepInstancesInput, StepTemplateUncheckedCreateWithoutStepInstancesInput>
+  }
+
+  export type PlaybookInstanceUpsertWithoutStepInstancesInput = {
+    update: XOR<PlaybookInstanceUpdateWithoutStepInstancesInput, PlaybookInstanceUncheckedUpdateWithoutStepInstancesInput>
+    create: XOR<PlaybookInstanceCreateWithoutStepInstancesInput, PlaybookInstanceUncheckedCreateWithoutStepInstancesInput>
+    where?: PlaybookInstanceWhereInput
+  }
+
+  export type PlaybookInstanceUpdateToOneWithWhereWithoutStepInstancesInput = {
+    where?: PlaybookInstanceWhereInput
+    data: XOR<PlaybookInstanceUpdateWithoutStepInstancesInput, PlaybookInstanceUncheckedUpdateWithoutStepInstancesInput>
+  }
+
+  export type PlaybookInstanceUpdateWithoutStepInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookInstancesNestedInput
+    playbook?: PlaybookUpdateOneRequiredWithoutInstancesNestedInput
+    notifications?: PlaybookNotificationUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateWithoutStepInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notifications?: PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type StepTemplateUpsertWithoutStepInstancesInput = {
+    update: XOR<StepTemplateUpdateWithoutStepInstancesInput, StepTemplateUncheckedUpdateWithoutStepInstancesInput>
+    create: XOR<StepTemplateCreateWithoutStepInstancesInput, StepTemplateUncheckedCreateWithoutStepInstancesInput>
+    where?: StepTemplateWhereInput
+  }
+
+  export type StepTemplateUpdateToOneWithWhereWithoutStepInstancesInput = {
+    where?: StepTemplateWhereInput
+    data: XOR<StepTemplateUpdateWithoutStepInstancesInput, StepTemplateUncheckedUpdateWithoutStepInstancesInput>
+  }
+
+  export type StepTemplateUpdateWithoutStepInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutStepTemplatesNestedInput
+    playbookSteps?: PlaybookStepUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateUncheckedUpdateWithoutStepInstancesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type TenantCreateWithoutPlaybookNotificationsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutTenantInput
+    trucks?: TruckCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationCreateNestedManyWithoutTenantInput
+    routes?: RouteCreateNestedManyWithoutTenantInput
+    documents?: DocumentCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordCreateNestedManyWithoutTenantInput
+    tags?: TagCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentCreateNestedManyWithoutTenantInput
+    customers?: CustomerCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemCreateNestedManyWithoutTenantInput
+    loads?: LoadCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantUncheckedCreateWithoutPlaybookNotificationsInput = {
+    id?: string
+    name: string
+    slug?: string | null
+    timezone?: string
+    contactEmail?: string | null
+    plan?: string
+    isActive?: boolean
+    profitMarginThreshold?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutTenantInput
+    trucks?: TruckUncheckedCreateNestedManyWithoutTenantInput
+    driverInvitations?: DriverInvitationUncheckedCreateNestedManyWithoutTenantInput
+    routes?: RouteUncheckedCreateNestedManyWithoutTenantInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutTenantInput
+    maintenanceEvents?: MaintenanceEventUncheckedCreateNestedManyWithoutTenantInput
+    scheduledServices?: ScheduledServiceUncheckedCreateNestedManyWithoutTenantInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutTenantInput
+    gpsLocations?: GPSLocationUncheckedCreateNestedManyWithoutTenantInput
+    safetyEvents?: SafetyEventUncheckedCreateNestedManyWithoutTenantInput
+    fuelRecords?: FuelRecordUncheckedCreateNestedManyWithoutTenantInput
+    tags?: TagUncheckedCreateNestedManyWithoutTenantInput
+    tagAssignments?: TagAssignmentUncheckedCreateNestedManyWithoutTenantInput
+    expenseCategories?: ExpenseCategoryUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplates?: ExpenseTemplateUncheckedCreateNestedManyWithoutTenantInput
+    routeExpenses?: RouteExpenseUncheckedCreateNestedManyWithoutTenantInput
+    routePayments?: RoutePaymentUncheckedCreateNestedManyWithoutTenantInput
+    customers?: CustomerUncheckedCreateNestedManyWithoutTenantInput
+    customerInteractions?: CustomerInteractionUncheckedCreateNestedManyWithoutTenantInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutTenantInput
+    invoiceItems?: InvoiceItemUncheckedCreateNestedManyWithoutTenantInput
+    payrollRecords?: PayrollRecordUncheckedCreateNestedManyWithoutTenantInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedCreateNestedManyWithoutTenantInput
+    loads?: LoadUncheckedCreateNestedManyWithoutTenantInput
+    tenantIntegrations?: TenantIntegrationUncheckedCreateNestedManyWithoutTenantInput
+    routeStops?: RouteStopUncheckedCreateNestedManyWithoutTenantInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedCreateNestedManyWithoutTenantInput
+    driverRouteJoins?: DriverRouteJoinUncheckedCreateNestedManyWithoutTenantInput
+    driverHOSEntries?: DriverHOSEntryUncheckedCreateNestedManyWithoutTenantInput
+    driverIncidents?: DriverIncidentUncheckedCreateNestedManyWithoutTenantInput
+    carrierClients?: CarrierClientUncheckedCreateNestedManyWithoutTenantInput
+    carrierContracts?: CarrierContractUncheckedCreateNestedManyWithoutTenantInput
+    carrierFacilities?: CarrierFacilityUncheckedCreateNestedManyWithoutTenantInput
+    carrierDrivers?: CarrierDriverUncheckedCreateNestedManyWithoutTenantInput
+    carrierTrucks?: CarrierTruckUncheckedCreateNestedManyWithoutTenantInput
+    routeTemplates?: RouteTemplateUncheckedCreateNestedManyWithoutTenantInput
+    carrierDispatches?: CarrierDispatchUncheckedCreateNestedManyWithoutTenantInput
+    carrierLoads?: CarrierLoadUncheckedCreateNestedManyWithoutTenantInput
+    carrierExpenses?: CarrierExpenseUncheckedCreateNestedManyWithoutTenantInput
+    driverPayRecords?: DriverPayRecordUncheckedCreateNestedManyWithoutTenantInput
+    inAppNotifications?: InAppNotificationUncheckedCreateNestedManyWithoutTenantInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedCreateNestedManyWithoutTenantInput
+    stepTemplates?: StepTemplateUncheckedCreateNestedManyWithoutTenantInput
+    playbooks?: PlaybookUncheckedCreateNestedManyWithoutTenantInput
+    playbookInstances?: PlaybookInstanceUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type TenantCreateOrConnectWithoutPlaybookNotificationsInput = {
+    where: TenantWhereUniqueInput
+    create: XOR<TenantCreateWithoutPlaybookNotificationsInput, TenantUncheckedCreateWithoutPlaybookNotificationsInput>
+  }
+
+  export type PlaybookInstanceCreateWithoutNotificationsInput = {
+    id?: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    tenant: TenantCreateNestedOneWithoutPlaybookInstancesInput
+    playbook: PlaybookCreateNestedOneWithoutInstancesInput
+    stepInstances?: StepInstanceCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceUncheckedCreateWithoutNotificationsInput = {
+    id?: string
+    tenantId: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    stepInstances?: StepInstanceUncheckedCreateNestedManyWithoutPlaybookInstanceInput
+  }
+
+  export type PlaybookInstanceCreateOrConnectWithoutNotificationsInput = {
+    where: PlaybookInstanceWhereUniqueInput
+    create: XOR<PlaybookInstanceCreateWithoutNotificationsInput, PlaybookInstanceUncheckedCreateWithoutNotificationsInput>
+  }
+
+  export type TenantUpsertWithoutPlaybookNotificationsInput = {
+    update: XOR<TenantUpdateWithoutPlaybookNotificationsInput, TenantUncheckedUpdateWithoutPlaybookNotificationsInput>
+    create: XOR<TenantCreateWithoutPlaybookNotificationsInput, TenantUncheckedCreateWithoutPlaybookNotificationsInput>
+    where?: TenantWhereInput
+  }
+
+  export type TenantUpdateToOneWithWhereWithoutPlaybookNotificationsInput = {
+    where?: TenantWhereInput
+    data: XOR<TenantUpdateWithoutPlaybookNotificationsInput, TenantUncheckedUpdateWithoutPlaybookNotificationsInput>
+  }
+
+  export type TenantUpdateWithoutPlaybookNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUpdateManyWithoutTenantNestedInput
+    routes?: RouteUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUpdateManyWithoutTenantNestedInput
+    tags?: TagUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUpdateManyWithoutTenantNestedInput
+    loads?: LoadUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUpdateManyWithoutTenantNestedInput
+  }
+
+  export type TenantUncheckedUpdateWithoutPlaybookNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    contactEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    plan?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    profitMarginThreshold?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutTenantNestedInput
+    trucks?: TruckUncheckedUpdateManyWithoutTenantNestedInput
+    driverInvitations?: DriverInvitationUncheckedUpdateManyWithoutTenantNestedInput
+    routes?: RouteUncheckedUpdateManyWithoutTenantNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutTenantNestedInput
+    maintenanceEvents?: MaintenanceEventUncheckedUpdateManyWithoutTenantNestedInput
+    scheduledServices?: ScheduledServiceUncheckedUpdateManyWithoutTenantNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutTenantNestedInput
+    gpsLocations?: GPSLocationUncheckedUpdateManyWithoutTenantNestedInput
+    safetyEvents?: SafetyEventUncheckedUpdateManyWithoutTenantNestedInput
+    fuelRecords?: FuelRecordUncheckedUpdateManyWithoutTenantNestedInput
+    tags?: TagUncheckedUpdateManyWithoutTenantNestedInput
+    tagAssignments?: TagAssignmentUncheckedUpdateManyWithoutTenantNestedInput
+    expenseCategories?: ExpenseCategoryUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplates?: ExpenseTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    routeExpenses?: RouteExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    routePayments?: RoutePaymentUncheckedUpdateManyWithoutTenantNestedInput
+    customers?: CustomerUncheckedUpdateManyWithoutTenantNestedInput
+    customerInteractions?: CustomerInteractionUncheckedUpdateManyWithoutTenantNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    invoiceItems?: InvoiceItemUncheckedUpdateManyWithoutTenantNestedInput
+    payrollRecords?: PayrollRecordUncheckedUpdateManyWithoutTenantNestedInput
+    expenseTemplateItems?: ExpenseTemplateItemUncheckedUpdateManyWithoutTenantNestedInput
+    loads?: LoadUncheckedUpdateManyWithoutTenantNestedInput
+    tenantIntegrations?: TenantIntegrationUncheckedUpdateManyWithoutTenantNestedInput
+    routeStops?: RouteStopUncheckedUpdateManyWithoutTenantNestedInput
+    sysAdminInvoices?: SysAdminInvoiceUncheckedUpdateManyWithoutTenantNestedInput
+    driverRouteJoins?: DriverRouteJoinUncheckedUpdateManyWithoutTenantNestedInput
+    driverHOSEntries?: DriverHOSEntryUncheckedUpdateManyWithoutTenantNestedInput
+    driverIncidents?: DriverIncidentUncheckedUpdateManyWithoutTenantNestedInput
+    carrierClients?: CarrierClientUncheckedUpdateManyWithoutTenantNestedInput
+    carrierContracts?: CarrierContractUncheckedUpdateManyWithoutTenantNestedInput
+    carrierFacilities?: CarrierFacilityUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDrivers?: CarrierDriverUncheckedUpdateManyWithoutTenantNestedInput
+    carrierTrucks?: CarrierTruckUncheckedUpdateManyWithoutTenantNestedInput
+    routeTemplates?: RouteTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDispatches?: CarrierDispatchUncheckedUpdateManyWithoutTenantNestedInput
+    carrierLoads?: CarrierLoadUncheckedUpdateManyWithoutTenantNestedInput
+    carrierExpenses?: CarrierExpenseUncheckedUpdateManyWithoutTenantNestedInput
+    driverPayRecords?: DriverPayRecordUncheckedUpdateManyWithoutTenantNestedInput
+    inAppNotifications?: InAppNotificationUncheckedUpdateManyWithoutTenantNestedInput
+    carrierDocumentTypes?: CarrierDocumentTypeUncheckedUpdateManyWithoutTenantNestedInput
+    stepTemplates?: StepTemplateUncheckedUpdateManyWithoutTenantNestedInput
+    playbooks?: PlaybookUncheckedUpdateManyWithoutTenantNestedInput
+    playbookInstances?: PlaybookInstanceUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type PlaybookInstanceUpsertWithoutNotificationsInput = {
+    update: XOR<PlaybookInstanceUpdateWithoutNotificationsInput, PlaybookInstanceUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<PlaybookInstanceCreateWithoutNotificationsInput, PlaybookInstanceUncheckedCreateWithoutNotificationsInput>
+    where?: PlaybookInstanceWhereInput
+  }
+
+  export type PlaybookInstanceUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: PlaybookInstanceWhereInput
+    data: XOR<PlaybookInstanceUpdateWithoutNotificationsInput, PlaybookInstanceUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type PlaybookInstanceUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookInstancesNestedInput
+    playbook?: PlaybookUpdateOneRequiredWithoutInstancesNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
   export type UserCreateManyTenantInput = {
     id?: string
     email: string
@@ -142110,6 +156170,7 @@ export namespace Prisma {
     licenseNumber?: string | null
     isActive?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -142124,6 +156185,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     updatedById?: string | null
     createdAt?: Date | string
@@ -142839,6 +156901,61 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type StepTemplateCreateManyTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    stepType: $Enums.StepType
+    assigneeRole: $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookCreateManyTenantInput = {
+    id?: string
+    name: string
+    description?: string | null
+    entityType: $Enums.PlaybookEntityType
+    category: $Enums.PlaybookCategory
+    playbookPhase?: $Enums.PhaseType
+    isActive?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookInstanceCreateManyTenantInput = {
+    id?: string
+    playbookId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookNotificationCreateManyTenantInput = {
+    id?: string
+    playbookInstanceId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
   export type UserUpdateWithoutTenantInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
@@ -142850,6 +156967,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUpdateManyWithoutDriverNestedInput
@@ -142894,6 +157012,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignedRoutes?: RouteUncheckedUpdateManyWithoutDriverNestedInput
@@ -142938,6 +157057,7 @@ export namespace Prisma {
     licenseNumber?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -142952,6 +157072,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -142978,6 +157099,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -143004,6 +157126,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -145247,6 +159370,183 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type StepTemplateUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookSteps?: PlaybookStepUpdateManyWithoutStepTemplateNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookSteps?: PlaybookStepUncheckedUpdateManyWithoutStepTemplateNestedInput
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutStepTemplateNestedInput
+  }
+
+  export type StepTemplateUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    stepType?: EnumStepTypeFieldUpdateOperationsInput | $Enums.StepType
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    defaultConfig?: JsonNullValueInput | InputJsonValue
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: PlaybookStepUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    steps?: PlaybookStepUncheckedUpdateManyWithoutPlaybookNestedInput
+    instances?: PlaybookInstanceUncheckedUpdateManyWithoutPlaybookNestedInput
+  }
+
+  export type PlaybookUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    category?: EnumPlaybookCategoryFieldUpdateOperationsInput | $Enums.PlaybookCategory
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookInstanceUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbook?: PlaybookUpdateOneRequiredWithoutInstancesNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookInstance?: PlaybookInstanceUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type PlaybookNotificationUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type RouteCreateManyDriverInput = {
     id?: string
     tenantId: string
@@ -145405,6 +159705,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     updatedById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -145422,6 +159723,7 @@ export namespace Prisma {
     odometer: number
     inMaintenance?: boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: boolean
     createdById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -146283,6 +160585,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -146310,6 +160613,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -146336,6 +160640,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -146352,6 +160657,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -146379,6 +160685,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -146405,6 +160712,7 @@ export namespace Prisma {
     odometer?: IntFieldUpdateOperationsInput | number
     inMaintenance?: BoolFieldUpdateOperationsInput | boolean
     documentMetadata?: NullableJsonNullValueInput | InputJsonValue
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -153610,6 +167918,382 @@ export namespace Prisma {
     verifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepCreateManyStepTemplateInput = {
+    id?: string
+    playbookId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StepInstanceCreateManyStepTemplateInput = {
+    id?: string
+    playbookInstanceId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepUpdateWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbook?: PlaybookUpdateOneRequiredWithoutStepsNestedInput
+  }
+
+  export type PlaybookStepUncheckedUpdateWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepUncheckedUpdateManyWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceUpdateWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    playbookInstance?: PlaybookInstanceUpdateOneRequiredWithoutStepInstancesNestedInput
+  }
+
+  export type StepInstanceUncheckedUpdateWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceUncheckedUpdateManyWithoutStepTemplateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookInstanceId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepCreateManyPlaybookInput = {
+    id?: string
+    stepTemplateId: string
+    sequence: number
+    playbookPhase?: $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: boolean
+    isDispatchBlocker?: boolean
+    dueDaysFromStart?: number | null
+    dueBeforeDispatch?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookInstanceCreateManyPlaybookInput = {
+    id?: string
+    tenantId: string
+    playbookSnapshot: JsonNullValueInput | InputJsonValue
+    entityType: $Enums.PlaybookEntityType
+    entityId: string
+    status?: $Enums.InstanceStatus
+    completionPercent?: number
+    isDispatchReady?: boolean
+    startedAt?: Date | string | null
+    completedAt?: Date | string | null
+    dueDate?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookStepUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepTemplate?: StepTemplateUpdateOneRequiredWithoutPlaybookStepsNestedInput
+  }
+
+  export type PlaybookStepUncheckedUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookStepUncheckedUpdateManyWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    sequence?: IntFieldUpdateOperationsInput | number
+    playbookPhase?: EnumPhaseTypeFieldUpdateOperationsInput | $Enums.PhaseType
+    overrideConfig?: JsonNullValueInput | InputJsonValue
+    isRequired?: BoolFieldUpdateOperationsInput | boolean
+    isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
+    dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookInstanceUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookInstancesNestedInput
+    stepInstances?: StepInstanceUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepInstances?: StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+    notifications?: PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceNestedInput
+  }
+
+  export type PlaybookInstanceUncheckedUpdateManyWithoutPlaybookInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    playbookSnapshot?: JsonNullValueInput | InputJsonValue
+    entityType?: EnumPlaybookEntityTypeFieldUpdateOperationsInput | $Enums.PlaybookEntityType
+    entityId?: StringFieldUpdateOperationsInput | string
+    status?: EnumInstanceStatusFieldUpdateOperationsInput | $Enums.InstanceStatus
+    completionPercent?: FloatFieldUpdateOperationsInput | number
+    isDispatchReady?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceCreateManyPlaybookInstanceInput = {
+    id?: string
+    stepTemplateId: string
+    stepSnapshot: JsonNullValueInput | InputJsonValue
+    status?: $Enums.StepStatus
+    assigneeRole: $Enums.AssigneeRole
+    assignedUserId?: string | null
+    completedByUserId?: string | null
+    completedAt?: Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: string | null
+    skippedByUserId?: string | null
+    dueDate?: Date | string | null
+    isOverdue?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PlaybookNotificationCreateManyPlaybookInstanceInput = {
+    id?: string
+    tenantId: string
+    stepInstanceId?: string | null
+    notificationType: $Enums.NotifType
+    channel: $Enums.NotifChannel
+    recipientUserId: string
+    message: string
+    sentAt?: Date | string | null
+    deliveredAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type StepInstanceUpdateWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stepTemplate?: StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput
+  }
+
+  export type StepInstanceUncheckedUpdateWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepSnapshot?: JsonNullValueInput | InputJsonValue
+    status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
+    assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
+    assignedUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    result?: NullableJsonNullValueInput | InputJsonValue
+    skipReason?: NullableStringFieldUpdateOperationsInput | string | null
+    skippedByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOverdue?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationUpdateWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenant?: TenantUpdateOneRequiredWithoutPlaybookNotificationsNestedInput
+  }
+
+  export type PlaybookNotificationUncheckedUpdateWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PlaybookNotificationUncheckedUpdateManyWithoutPlaybookInstanceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    stepInstanceId?: NullableStringFieldUpdateOperationsInput | string | null
+    notificationType?: EnumNotifTypeFieldUpdateOperationsInput | $Enums.NotifType
+    channel?: EnumNotifChannelFieldUpdateOperationsInput | $Enums.NotifChannel
+    recipientUserId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deliveredAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

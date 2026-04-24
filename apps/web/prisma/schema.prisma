@@ -174,8 +174,10 @@ model Tenant {
   carrierDocumentTypes  CarrierDocumentType[]
 
   // Workflow Engine reverse relations
-  stepTemplates  StepTemplate[]
-  playbooks      Playbook[]
+  stepTemplates         StepTemplate[]
+  playbooks             Playbook[]
+  playbookInstances     PlaybookInstance[]
+  playbookNotifications PlaybookNotification[]
 }
 
 model User {
@@ -188,10 +190,11 @@ model User {
   firstName     String?
   lastName      String?
   licenseNumber String?
-  isActive      Boolean  @default(true)
-  permissions   Json?
-  createdAt     DateTime @default(now()) @db.Timestamptz
-  updatedAt     DateTime @updatedAt @db.Timestamptz
+  isActive        Boolean  @default(true)
+  permissions     Json?
+  isDispatchReady Boolean  @default(false)
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
@@ -243,6 +246,7 @@ model Truck {
   odometer         Int // Whole miles only (federal requirement)
   inMaintenance    Boolean   @default(false)
   documentMetadata Json? // JSONB: registration number, insurance expiry, etc.
+  isDispatchReady  Boolean   @default(false)
   createdById      String?   @db.Uuid
   updatedById      String?   @db.Uuid
   createdAt        DateTime  @default(now()) @db.Timestamptz
@@ -1250,6 +1254,37 @@ enum PlaybookCategory {
   CUSTOM
 }
 
+enum InstanceStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETE
+  FAILED
+  SKIPPED
+}
+
+enum NotifType {
+  STEP_ASSIGNED
+  STEP_OVERDUE
+  INSTANCE_BLOCKED
+  DISPATCH_READY
+  STEP_FAILED
+  APPROVAL_NEEDED
+}
+
+enum NotifChannel {
+  PUSH
+  SMS
+  IN_APP
+  EMAIL
+}
+
 enum PhaseType {
   PRE_START
   DAY_1
@@ -1902,6 +1937,7 @@ model StepTemplate {
 
   tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   playbookSteps PlaybookStep[]
+  stepInstances StepInstance[]
 
   @@index([tenantId, isActive])
   @@index([tenantId, stepType])
@@ -1920,8 +1956,9 @@ model Playbook {
   createdAt     DateTime           @default(now()) @db.Timestamptz
   updatedAt     DateTime           @updatedAt @db.Timestamptz
 
-  tenant Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  steps  PlaybookStep[]
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  steps     PlaybookStep[]
+  instances PlaybookInstance[]
 
   @@index([tenantId, isActive])
   @@index([tenantId, entityType])
@@ -1932,10 +1969,14 @@ model PlaybookStep {
   playbookId     String     @db.Uuid
   stepTemplateId String     @db.Uuid
   sequence       Int
-  playbookPhase  PhaseType  @default(NONE)
-  overrideConfig Json       @default("{}")
-  createdAt      DateTime   @default(now()) @db.Timestamptz
-  updatedAt      DateTime   @updatedAt @db.Timestamptz
+  playbookPhase     PhaseType  @default(NONE)
+  overrideConfig    Json       @default("{}")
+  isRequired        Boolean    @default(true)
+  isDispatchBlocker Boolean    @default(false)
+  dueDaysFromStart  Int?
+  dueBeforeDispatch Boolean    @default(false)
+  createdAt         DateTime   @default(now()) @db.Timestamptz
+  updatedAt         DateTime   @updatedAt @db.Timestamptz
 
   playbook     Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
   stepTemplate StepTemplate @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
@@ -1943,4 +1984,76 @@ model PlaybookStep {
   @@unique([playbookId, sequence])
   @@index([playbookId])
   @@index([stepTemplateId])
+}
+
+model PlaybookInstance {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String             @db.Uuid
+  playbookId        String             @db.Uuid
+  playbookSnapshot  Json
+  entityType        PlaybookEntityType
+  entityId          String             @db.Uuid
+  status            InstanceStatus     @default(NOT_STARTED)
+  completionPercent Float              @default(0)
+  isDispatchReady   Boolean            @default(false)
+  startedAt         DateTime?          @db.Timestamptz
+  completedAt       DateTime?          @db.Timestamptz
+  dueDate           DateTime?          @db.Timestamptz
+  createdAt         DateTime           @default(now()) @db.Timestamptz
+  updatedAt         DateTime           @updatedAt @db.Timestamptz
+
+  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbook       Playbook               @relation(fields: [playbookId], references: [id], onDelete: Restrict)
+  stepInstances  StepInstance[]
+  notifications  PlaybookNotification[]
+
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, status])
+  @@index([tenantId, isDispatchReady])
+}
+
+model StepInstance {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookInstanceId String       @db.Uuid
+  stepTemplateId     String       @db.Uuid
+  stepSnapshot       Json
+  status             StepStatus   @default(NOT_STARTED)
+  assigneeRole       AssigneeRole
+  assignedUserId     String?      @db.Uuid
+  completedByUserId  String?      @db.Uuid
+  completedAt        DateTime?    @db.Timestamptz
+  result             Json?
+  skipReason         String?
+  skippedByUserId    String?      @db.Uuid
+  dueDate            DateTime?    @db.Timestamptz
+  isOverdue          Boolean      @default(false)
+  createdAt          DateTime     @default(now()) @db.Timestamptz
+  updatedAt          DateTime     @updatedAt @db.Timestamptz
+
+  playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
+  stepTemplate     StepTemplate     @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
+
+  @@index([playbookInstanceId])
+  @@index([assignedUserId, status])
+  @@index([playbookInstanceId, status])
+}
+
+model PlaybookNotification {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String       @db.Uuid
+  playbookInstanceId String       @db.Uuid
+  stepInstanceId     String?      @db.Uuid
+  notificationType   NotifType
+  channel            NotifChannel
+  recipientUserId    String       @db.Uuid
+  message            String
+  sentAt             DateTime?    @db.Timestamptz
+  deliveredAt        DateTime?    @db.Timestamptz
+  createdAt          DateTime     @default(now()) @db.Timestamptz
+
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
+
+  @@index([playbookInstanceId])
+  @@index([recipientUserId])
 }

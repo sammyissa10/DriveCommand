@@ -145,6 +145,7 @@ exports.Prisma.UserScalarFieldEnum = {
   licenseNumber: 'licenseNumber',
   isActive: 'isActive',
   permissions: 'permissions',
+  isDispatchReady: 'isDispatchReady',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -160,6 +161,7 @@ exports.Prisma.TruckScalarFieldEnum = {
   odometer: 'odometer',
   inMaintenance: 'inMaintenance',
   documentMetadata: 'documentMetadata',
+  isDispatchReady: 'isDispatchReady',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
@@ -1068,6 +1070,99 @@ exports.Prisma.InAppNotificationScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.StepTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  stepType: 'stepType',
+  assigneeRole: 'assigneeRole',
+  defaultConfig: 'defaultConfig',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  entityType: 'entityType',
+  category: 'category',
+  playbookPhase: 'playbookPhase',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookStepScalarFieldEnum = {
+  id: 'id',
+  playbookId: 'playbookId',
+  stepTemplateId: 'stepTemplateId',
+  sequence: 'sequence',
+  playbookPhase: 'playbookPhase',
+  overrideConfig: 'overrideConfig',
+  isRequired: 'isRequired',
+  isDispatchBlocker: 'isDispatchBlocker',
+  dueDaysFromStart: 'dueDaysFromStart',
+  dueBeforeDispatch: 'dueBeforeDispatch',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookInstanceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  playbookId: 'playbookId',
+  playbookSnapshot: 'playbookSnapshot',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  status: 'status',
+  completionPercent: 'completionPercent',
+  isDispatchReady: 'isDispatchReady',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  dueDate: 'dueDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StepInstanceScalarFieldEnum = {
+  id: 'id',
+  playbookInstanceId: 'playbookInstanceId',
+  stepTemplateId: 'stepTemplateId',
+  stepSnapshot: 'stepSnapshot',
+  status: 'status',
+  assigneeRole: 'assigneeRole',
+  assignedUserId: 'assignedUserId',
+  completedByUserId: 'completedByUserId',
+  completedAt: 'completedAt',
+  result: 'result',
+  skipReason: 'skipReason',
+  skippedByUserId: 'skippedByUserId',
+  dueDate: 'dueDate',
+  isOverdue: 'isOverdue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookNotificationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  playbookInstanceId: 'playbookInstanceId',
+  stepInstanceId: 'stepInstanceId',
+  notificationType: 'notificationType',
+  channel: 'channel',
+  recipientUserId: 'recipientUserId',
+  message: 'message',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1331,6 +1426,81 @@ exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   fleet_message: 'fleet_message'
 };
 
+exports.StepType = exports.$Enums.StepType = {
+  DOCUMENT_UPLOAD: 'DOCUMENT_UPLOAD',
+  FORM_FILL: 'FORM_FILL',
+  INSPECTION_ITEM: 'INSPECTION_ITEM',
+  SIGNATURE: 'SIGNATURE',
+  TRAINING_ACK: 'TRAINING_ACK',
+  APPROVAL: 'APPROVAL',
+  THIRD_PARTY: 'THIRD_PARTY',
+  CUSTOM_NOTE: 'CUSTOM_NOTE'
+};
+
+exports.AssigneeRole = exports.$Enums.AssigneeRole = {
+  DRIVER: 'DRIVER',
+  DISPATCHER: 'DISPATCHER',
+  MECHANIC: 'MECHANIC',
+  SAFETY_MANAGER: 'SAFETY_MANAGER',
+  THIRD_PARTY: 'THIRD_PARTY'
+};
+
+exports.PlaybookEntityType = exports.$Enums.PlaybookEntityType = {
+  DRIVER: 'DRIVER',
+  VEHICLE: 'VEHICLE',
+  PARTNER: 'PARTNER',
+  DISPATCH: 'DISPATCH',
+  OTHER: 'OTHER'
+};
+
+exports.PlaybookCategory = exports.$Enums.PlaybookCategory = {
+  ONBOARDING: 'ONBOARDING',
+  SAFETY: 'SAFETY',
+  OPERATIONS: 'OPERATIONS',
+  COMPLIANCE: 'COMPLIANCE',
+  PARTNER: 'PARTNER',
+  CUSTOM: 'CUSTOM'
+};
+
+exports.PhaseType = exports.$Enums.PhaseType = {
+  PRE_START: 'PRE_START',
+  DAY_1: 'DAY_1',
+  WEEK_1: 'WEEK_1',
+  ONGOING: 'ONGOING',
+  NONE: 'NONE'
+};
+
+exports.InstanceStatus = exports.$Enums.InstanceStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  BLOCKED: 'BLOCKED'
+};
+
+exports.StepStatus = exports.$Enums.StepStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETE: 'COMPLETE',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+exports.NotifType = exports.$Enums.NotifType = {
+  STEP_ASSIGNED: 'STEP_ASSIGNED',
+  STEP_OVERDUE: 'STEP_OVERDUE',
+  INSTANCE_BLOCKED: 'INSTANCE_BLOCKED',
+  DISPATCH_READY: 'DISPATCH_READY',
+  STEP_FAILED: 'STEP_FAILED',
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED'
+};
+
+exports.NotifChannel = exports.$Enums.NotifChannel = {
+  PUSH: 'PUSH',
+  SMS: 'SMS',
+  IN_APP: 'IN_APP',
+  EMAIL: 'EMAIL'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -1384,7 +1554,13 @@ exports.Prisma.ModelName = {
   CarrierExpense: 'CarrierExpense',
   DriverPayRecord: 'DriverPayRecord',
   CarrierCatalogMeta: 'CarrierCatalogMeta',
-  InAppNotification: 'InAppNotification'
+  InAppNotification: 'InAppNotification',
+  StepTemplate: 'StepTemplate',
+  Playbook: 'Playbook',
+  PlaybookStep: 'PlaybookStep',
+  PlaybookInstance: 'PlaybookInstance',
+  StepInstance: 'StepInstance',
+  PlaybookNotification: 'PlaybookNotification'
 };
 
 /**
