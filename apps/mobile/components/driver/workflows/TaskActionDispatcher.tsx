@@ -19,6 +19,7 @@ import { useThemeColors } from '../../../constants/tokens'
 import { haptic } from '../../../lib/haptics'
 import { DocumentUploadScreen } from './DocumentUploadScreen'
 import { FormFillScreen } from './FormFillScreen'
+import { InspectionModeScreen } from './InspectionModeScreen'
 import { SignatureScreen } from './SignatureScreen'
 import type { StepInstance } from './MyTasksScreen'
 
@@ -289,64 +290,6 @@ const noteStyles = StyleSheet.create({
 })
 
 // ---------------------------------------------------------------------------
-// Inspection placeholder screen
-// ---------------------------------------------------------------------------
-
-function InspectionPlaceholderScreen() {
-  const c = useThemeColors()
-  const router = useRouter()
-
-  return (
-    <SafeAreaView style={[inspStyles.container, { backgroundColor: c.background }]} edges={['bottom', 'left', 'right']}>
-      <View style={[inspStyles.headerRow, { borderBottomColor: c.border }]}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={inspStyles.backBtn}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          accessibilityLabel="Go back"
-          accessibilityRole="button"
-        >
-          <ArrowLeft color={c.textSecondary} size={22} />
-        </TouchableOpacity>
-        <Text style={[inspStyles.headerTitle, { color: c.textPrimary }]}>Inspection</Text>
-      </View>
-      <View style={inspStyles.content}>
-        <AlertCircle size={48} color={c.textTertiary} />
-        <Text style={[inspStyles.title, { color: c.textSecondary }]}>
-          Full inspection mode coming soon.
-        </Text>
-        <Text style={[inspStyles.subtitle, { color: c.textTertiary }]}>
-          Use the web dashboard to manage this task.
-        </Text>
-      </View>
-    </SafeAreaView>
-  )
-}
-
-const inspStyles = StyleSheet.create({
-  container: { flex: 1 },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: 12,
-  },
-  backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 8 },
-  headerTitle: { flex: 1, fontSize: 17, fontWeight: '600' },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 32,
-    gap: 16,
-  },
-  title: { fontSize: 17, fontWeight: '600', textAlign: 'center' },
-  subtitle: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
-})
-
-// ---------------------------------------------------------------------------
 // Main Dispatcher
 // ---------------------------------------------------------------------------
 
@@ -425,7 +368,7 @@ export function TaskActionScreen({ stepInstanceId }: TaskActionScreenProps) {
     case 'TRAINING_ACK':
       return <TrainingAckScreen stepInstance={stepInstance} />
     case 'INSPECTION_ITEM':
-      return <InspectionPlaceholderScreen />
+      return <InspectionModeScreen stepInstance={stepInstance} />
     case 'APPROVAL':
       return <GenericNoteScreen stepInstance={stepInstance} actionLabel="Review & Approve" />
     case 'THIRD_PARTY':
