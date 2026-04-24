@@ -293,11 +293,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   backBtn: {
-    width: 44,
-    height: 44,
+    width: 56,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: 10,
   },
   headerTitle: {
     flex: 1,
