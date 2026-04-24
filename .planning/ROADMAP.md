@@ -541,10 +541,16 @@ Plans:
 
 **Goal:** Build the template creation layer. Admin creates Playbooks, adds Steps from a library, configures categories, and saves. Seed 3 starter playbooks for new tenants. No runtime, no triggers, no mobile. At the end of this phase, an admin can open Checklists & Workflows from the sidebar and build a functional Pre-Trip Inspection checklist in under 10 minutes.
 **Depends on:** None (new feature, additive)
-**Plans:** TBD (after context + planning)
+**Plans:** 7 plans
 
 Plans:
-- [ ] TBD
+- [ ] 42-01-PLAN.md — Prisma schema (StepTemplate, Playbook, PlaybookStep + 5 enums) + migration SQL with RLS + idempotent seedStarterPlaybooks + post-migrate hook backfilling all tenants
+- [ ] 42-02-PLAN.md — Zod validation schemas in packages/validation/src/workflows/ (enums, stepTemplate, playbook including addStep / reorderSteps)
+- [ ] 42-03-PLAN.md — tRPC v11 foundation: install packages, createTRPCContext wired to Supabase session, tenantMemberProcedure + adminProcedure, App Router fetch handler at /api/trpc, client provider scoped to (owner)/layout.tsx only
+- [ ] 42-04-PLAN.md — stepTemplate router (list/getById/create/update/delete) + playbook router (list/getById/create/update/delete/addStep/removeStep/reorderSteps/updateStep) + reorderPlaybookSteps transactional service
+- [ ] 42-05-PLAN.md — Sidebar 'Workflows' group with 'Checklists & Workflows' link + /checklists dashboard (PlaybookCard grid, entity-type filter tabs, CreatePlaybookDialog redirecting to builder)
+- [ ] 42-06-PLAN.md — Playbook Builder: 3-column page with DnD canvas (5 phase sections), StepLibraryPanel with drag-to-add + New Step Template dialog, StepDetailEditor supporting all 8 step types (FORM_FILL + INSPECTION_ITEM full editors, other 6 simpler)
+- [ ] 42-07-PLAN.md — Naming lint Vitest test (spec Section 3) + human-verify checkpoint: admin builds a Pre-Trip Inspection in under 10 minutes
 
 ---
 
