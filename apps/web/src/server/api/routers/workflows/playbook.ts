@@ -1,0 +1,243 @@
+/**
+ * tRPC router for Playbook CRUD + step management.
+ * All queries are scoped by ctx.tenantId — tenant isolation is NON-NEGOTIABLE.
+ * 9 procedures total: list, getById, create, update, delete, addStep, removeStep, updateStep, reorderSteps.
+ * Mutations require adminProcedure (OWNER or MANAGER role).
+ * Queries use tenantMemberProcedure (any authenticated role).
+ */
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { Prisma } from '@/generated/prisma/client';
+import { router, adminProcedure, tenantMemberProcedure } from '@/server/api/trpc';
+import { prisma } from '@/lib/db/prisma';
+import {
+  createPlaybookSchema,
+  updatePlaybookSchema,
+  addStepSchema,
+  removeStepSchema,
+  updatePlaybookStepSchema,
+  reorderStepsSchema,
+  playbookEntityTypeSchema,
+} from '@drivecommand/validation';
+import { reorderPlaybookSteps } from '@/server/services/workflows/playbookStepService';
+
+const list = tenantMemberProcedure
+  .input(z.object({ entityType: playbookEntityTypeSchema.optional() }))
+  .query(async ({ ctx, input }) => {
+    return prisma.playbook.findMany({
+      where: {
+        tenantId: ctx.tenantId,
+        deletedAt: null,
+        ...(input.entityType ? { entityType: input.entityType } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        _count: { select: { steps: true } },
+      },
+    });
+  });
+
+const getById = tenantMemberProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .query(async ({ ctx, input }) => {
+    const playbook = await prisma.playbook.findFirst({
+      where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
+      include: {
+        steps: {
+          include: { stepTemplate: true },
+          orderBy: [
+            { playbookPhase: 'asc' },
+            { sequence: 'asc' },
+          ],
+        },
+      },
+    });
+    if (!playbook) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+    return playbook;
+  });
+
+const create = adminProcedure
+  .input(createPlaybookSchema)
+  .mutation(async ({ ctx, input }) => {
+    return prisma.playbook.create({
+      data: {
+        ...input,
+        tenantId: ctx.tenantId,
+      },
+    });
+  });
+
+const update = adminProcedure
+  .input(updatePlaybookSchema)
+  .mutation(async ({ ctx, input }) => {
+    const { id, ...rest } = input;
+    const existing = await prisma.playbook.findFirst({
+      where: { id, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!existing) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+    return prisma.playbook.update({
+      where: { id: existing.id },
+      data: { ...rest },
+    });
+  });
+
+const deleteProc = adminProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .mutation(async ({ ctx, input }) => {
+    const existing = await prisma.playbook.findFirst({
+      where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!existing) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+    await prisma.playbook.update({
+      where: { id: existing.id },
+      data: { isActive: false, deletedAt: new Date() },
+    });
+    return { success: true };
+  });
+
+const addStep = adminProcedure
+  .input(addStepSchema)
+  .mutation(async ({ ctx, input }) => {
+    // Verify the playbook belongs to this tenant
+    const playbook = await prisma.playbook.findFirst({
+      where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!playbook) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Playbook not found' });
+    }
+
+    // Verify the StepTemplate belongs to this tenant
+    const stepTemplate = await prisma.stepTemplate.findFirst({
+      where: { id: input.stepTemplateId, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!stepTemplate) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'StepTemplate not found' });
+    }
+
+    // Compute sequence if not provided
+    let sequence = input.sequence;
+    if (sequence === undefined) {
+      const lastStep = await prisma.playbookStep.findFirst({
+        where: { playbookId: input.playbookId },
+        orderBy: { sequence: 'desc' },
+        select: { sequence: true },
+      });
+      sequence = lastStep ? lastStep.sequence + 1 : 0;
+    }
+
+    return prisma.playbookStep.create({
+      data: {
+        playbookId: input.playbookId,
+        stepTemplateId: input.stepTemplateId,
+        playbookPhase: input.playbookPhase,
+        sequence,
+        overrideConfig: input.overrideConfig,
+      },
+      include: { stepTemplate: true },
+    });
+  });
+
+const removeStep = adminProcedure
+  .input(removeStepSchema)
+  .mutation(async ({ ctx, input }) => {
+    // Verify the playbook belongs to this tenant
+    const playbook = await prisma.playbook.findFirst({
+      where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!playbook) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Playbook not found' });
+    }
+
+    // Verify the step belongs to this playbook
+    const step = await prisma.playbookStep.findFirst({
+      where: { id: input.stepId, playbookId: input.playbookId },
+    });
+    if (!step) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Step not found in this playbook' });
+    }
+
+    // Hard delete of the junction row (StepTemplate itself is retained)
+    await prisma.playbookStep.delete({ where: { id: step.id } });
+    return { success: true };
+  });
+
+const updateStep = adminProcedure
+  .input(updatePlaybookStepSchema)
+  .mutation(async ({ ctx, input }) => {
+    // 1. Verify the Playbook belongs to ctx.tenantId
+    const playbook = await prisma.playbook.findFirst({
+      where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!playbook) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+
+    // 2. Verify the PlaybookStep belongs to that playbook
+    const step = await prisma.playbookStep.findFirst({
+      where: { id: input.stepId, playbookId: input.playbookId },
+    });
+    if (!step) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+
+    // 3. Build the update data object
+    const data: Prisma.PlaybookStepUpdateInput = {
+      overrideConfig: input.overrideConfig,
+    };
+    if (input.playbookPhase !== undefined) {
+      data.playbookPhase = input.playbookPhase;
+    }
+
+    // 4. Return the updated PlaybookStep with stepTemplate so client can re-render without refetch
+    return prisma.playbookStep.update({
+      where: { id: step.id },
+      data,
+      include: { stepTemplate: true },
+    });
+  });
+
+const reorderSteps = adminProcedure
+  .input(reorderStepsSchema)
+  .mutation(async ({ ctx, input }) => {
+    await reorderPlaybookSteps({
+      playbookId: input.playbookId,
+      tenantId: ctx.tenantId,
+      steps: input.steps.map((s) => ({
+        stepId: s.stepId,
+        sequence: s.sequence,
+        playbookPhase: s.playbookPhase,
+      })),
+    });
+
+    // Return updated playbook with steps (same shape as getById)
+    return prisma.playbook.findFirst({
+      where: { id: input.playbookId, tenantId: ctx.tenantId },
+      include: {
+        steps: {
+          include: { stepTemplate: true },
+          orderBy: [
+            { playbookPhase: 'asc' },
+            { sequence: 'asc' },
+          ],
+        },
+      },
+    });
+  });
+
+export const playbookRouter = router({
+  list,
+  getById,
+  create,
+  update,
+  delete: deleteProc,
+  addStep,
+  removeStep,
+  updateStep,
+  reorderSteps,
+});
