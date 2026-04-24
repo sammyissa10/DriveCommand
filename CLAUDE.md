@@ -299,3 +299,19 @@ Migration strategy: Prisma migrate deploy via hook on every migration.sql write.
 - **Mobile terminal:** Always `cd apps/mobile` before running Expo/EAS commands
 - **TypeScript:** Run `tsc --noEmit` before every Vercel deploy
 - **Git:** Always `git push origin master` after every commit
+
+---
+
+# Workflow Engine Spec — Always Load
+
+ 
+
+When any task touches Checklists & Workflows, Playbooks, Step Templates, Active Checklists, Tasks, Auto-Start Rules, or DVIR flows:
+
+1. Read docs/specs/workflow-engine.md in full before writing code.
+
+2. Section 14 defines scope per phase — do not build ahead.
+
+3. UI copy uses only user-facing names (Section 3 naming table).
+
+4. Follow existing codebase conventions — do not introduce new patterns.
