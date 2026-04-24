@@ -10,9 +10,11 @@
  *
  * Also updates the entity-level isDispatchReady field on User or Truck when applicable.
  * Emits a DISPATCH_READY push notification when readiness flips from false → true.
+ * Emits an INSTANCE_BLOCKED in-app push when status flips to BLOCKED (not BLOCKED → BLOCKED).
  */
 import { prisma } from '@/lib/db/prisma';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { logger } from '@/lib/logger';
+import { sendDispatchReady, sendInstanceBlocked } from './notifications';
 import type { PlaybookEntityType } from '@/generated/prisma';
 
 export async function computeDispatchReadiness(instanceId: string): Promise<{
@@ -47,71 +49,44 @@ export async function computeDispatchReadiness(instanceId: string): Promise<{
   else if (completeCount > 0) status = 'IN_PROGRESS';
 
   const wasReady = instance.isDispatchReady;
+  const wasBlocked = instance.status === 'BLOCKED';
 
   await prisma.playbookInstance.update({
     where: { id: instanceId },
     data: { completionPercent, isDispatchReady: isReady, status },
   });
 
-  // Emit DISPATCH_READY notification when readiness flips to true
-  if (!wasReady && isReady) {
-    await notifyDispatchers(instance.tenantId, instance.entityType, instance.entityId);
+  // Fire DISPATCH_READY notification only on false → true flip
+  // IMPORTANT: strict gate — do NOT fire on repeated true → true calls (no notification spam)
+  if (wasReady === false && isReady === true) {
+    try {
+      await sendDispatchReady({
+        userId: instance.entityId,
+        tenantId: instance.tenantId,
+        playbookInstanceId: instanceId,
+      });
+    } catch (err) {
+      logger.error('[computeDispatchReadiness] sendDispatchReady failed', { instanceId, err });
+    }
+  }
+
+  // Fire INSTANCE_BLOCKED in-app push only on non-BLOCKED → BLOCKED transition
+  // Prevents duplicate push on repeat calls when already blocked
+  if (!wasBlocked && status === 'BLOCKED') {
+    try {
+      await sendInstanceBlocked({
+        playbookInstanceId: instanceId,
+        tenantId: instance.tenantId,
+      });
+    } catch (err) {
+      logger.error('[computeDispatchReadiness] sendInstanceBlocked failed', { instanceId, err });
+    }
   }
 
   // Aggregate entity-level readiness
   await updateEntityReadiness(instance.entityType, instance.entityId, instance.tenantId);
 
   return { isReady, blockers: openBlockers.map((s) => ({ id: s.id, status: s.status })) };
-}
-
-async function notifyDispatchers(
-  tenantId: string,
-  entityType: PlaybookEntityType,
-  entityId: string
-) {
-  try {
-    const dispatchers = await prisma.user.findMany({
-      where: { tenantId, role: { in: ['OWNER', 'MANAGER'] }, isActive: true },
-      select: { id: true },
-    });
-    const entityLabel = await getEntityLabel(entityType, entityId, tenantId);
-    await Promise.all(
-      dispatchers.map((d) =>
-        sendPushToUser(d.id, {
-          title: 'Dispatch Ready',
-          body: `${entityLabel} is dispatch ready — all required steps complete.`,
-          data: { type: 'DISPATCH_READY' },
-        }).catch(() => null) // best-effort
-      )
-    );
-  } catch {
-    // Notifications are best-effort
-  }
-}
-
-async function getEntityLabel(
-  entityType: PlaybookEntityType,
-  entityId: string,
-  tenantId: string
-): Promise<string> {
-  if (entityType === 'DRIVER') {
-    const u = await prisma.user.findFirst({
-      where: { id: entityId, tenantId },
-      select: { firstName: true, lastName: true, email: true },
-    });
-    if (u?.firstName || u?.lastName) {
-      return [u.firstName, u.lastName].filter(Boolean).join(' ');
-    }
-    return u?.email ?? 'Driver';
-  }
-  if (entityType === 'VEHICLE') {
-    const t = await prisma.truck.findFirst({
-      where: { id: entityId, tenantId },
-      select: { licensePlate: true },
-    });
-    return t ? `Truck ${t.licensePlate}` : 'Vehicle';
-  }
-  return 'Entity';
 }
 
 async function updateEntityReadiness(

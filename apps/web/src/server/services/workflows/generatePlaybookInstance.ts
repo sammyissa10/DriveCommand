@@ -10,7 +10,7 @@
  */
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { TRPCError } from '@trpc/server';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { sendStepAssigned } from './notifications';
 import type { PlaybookEntityType } from '@/generated/prisma';
 import { Prisma } from '@/generated/prisma';
 
@@ -109,28 +109,8 @@ export async function generatePlaybookInstance(args: {
         data: { assignedUserId },
       });
 
-      const stepName = (stepInstance.stepSnapshot as { name?: string }).name ?? 'Task';
-      try {
-        await sendPushToUser(assignedUserId, {
-          title: 'New task ready',
-          body: `"${stepName}". Tap to complete.`,
-          data: { type: 'STEP_ASSIGNED', stepInstanceId: stepInstance.id },
-        });
-        await prisma.playbookNotification.create({
-          data: {
-            tenantId,
-            playbookInstanceId: instance.id,
-            stepInstanceId: stepInstance.id,
-            notificationType: 'STEP_ASSIGNED',
-            channel: 'PUSH',
-            recipientUserId: assignedUserId,
-            message: `New task: "${stepName}"`,
-            sentAt: new Date(),
-          },
-        });
-      } catch {
-        // Notifications are best-effort — never throw
-      }
+      // Notify assignee via centralized notifications module (best-effort — never throws)
+      await sendStepAssigned({ stepInstanceId: stepInstance.id, tenantId });
     }
   }
 

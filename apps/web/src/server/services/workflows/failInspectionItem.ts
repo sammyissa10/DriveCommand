@@ -11,7 +11,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { sendStepFailed, sendApprovalNeeded } from './notifications';
 
 export async function failInspectionItem(args: {
   stepInstanceId: string;
@@ -51,7 +51,6 @@ export async function failInspectionItem(args: {
 
   const playbookInstance = stepInstance.playbookInstance;
   const playbookCategory = playbookInstance.playbook.category;
-  const stepName = snap.name ?? 'Inspection Item';
 
   // 1. Mark step as FAILED
   await prisma.stepInstance.update({
@@ -65,8 +64,10 @@ export async function failInspectionItem(args: {
   });
 
   // 2. If VEHICLE_INSPECTION: create ad-hoc mechanic APPROVAL step (stepTemplateId is now nullable)
+  let adHocStepId: string | undefined;
   if (playbookCategory === 'VEHICLE_INSPECTION') {
-    await prisma.stepInstance.create({
+    const stepName = snap.name ?? 'Inspection Item';
+    const adHocStep = await prisma.stepInstance.create({
       data: {
         playbookInstanceId: stepInstance.playbookInstanceId,
         stepTemplateId: null, // ad-hoc step — no template
@@ -82,6 +83,7 @@ export async function failInspectionItem(args: {
         status: 'NOT_STARTED',
       },
     });
+    adHocStepId = adHocStep.id;
   }
 
   // 3. Block the PlaybookInstance
@@ -90,99 +92,30 @@ export async function failInspectionItem(args: {
     data: { status: 'BLOCKED' },
   });
 
-  // 4. Send push notifications (best-effort — do not throw on push failure)
-  await notifyOnFail({
-    tenantId,
-    playbookInstanceId: stepInstance.playbookInstanceId,
-    stepInstanceId,
-    stepName,
-    playbookName: playbookInstance.playbook.name,
-    playbookCategory: playbookCategory as string,
-  });
+  // 4. Send push notifications via centralized module (best-effort — do not throw on push failure)
+  // STEP_FAILED — dispatcher variant
+  await sendStepFailed({ stepInstanceId, tenantId, recipientRole: 'DISPATCHER' });
+
+  // If VEHICLE_INSPECTION: also send STEP_FAILED mechanic variant + APPROVAL_NEEDED
+  if (playbookCategory === 'VEHICLE_INSPECTION') {
+    await sendStepFailed({ stepInstanceId, tenantId, recipientRole: 'MECHANIC' });
+
+    // APPROVAL_NEEDED — sent to dispatchers (OWNER/MANAGER) since no MECHANIC user role exists
+    // Use ad-hoc step ID if available; fall back to the original step
+    const approvalStepId = adHocStepId ?? stepInstanceId;
+    const dispatchers = await prisma.user.findMany({
+      where: { tenantId, role: { in: ['OWNER', 'MANAGER'] }, isActive: true },
+      select: { id: true },
+    });
+    for (const dispatcher of dispatchers) {
+      await sendApprovalNeeded({
+        stepInstanceId: approvalStepId,
+        tenantId,
+        approverUserId: dispatcher.id,
+      });
+    }
+  }
 
   // 5. Recompute dispatch readiness — vehicle flips isDispatchReady=false
   await computeDispatchReadiness(stepInstance.playbookInstanceId);
-}
-
-async function notifyOnFail(args: {
-  tenantId: string;
-  playbookInstanceId: string;
-  stepInstanceId: string;
-  stepName: string;
-  playbookName: string;
-  playbookCategory: string;
-}) {
-  const {
-    tenantId,
-    playbookInstanceId,
-    stepInstanceId,
-    stepName,
-    playbookName,
-    playbookCategory,
-  } = args;
-
-  try {
-    // Find dispatchers (OWNER + MANAGER roles) in this tenant
-    const dispatchers = await prisma.user.findMany({
-      where: { tenantId, role: { in: ['OWNER', 'MANAGER'] } },
-      select: { id: true },
-    });
-
-    for (const dispatcher of dispatchers) {
-      await sendPushToUser(dispatcher.id, {
-        title: 'Inspection item failed',
-        body: `"${stepName}" flagged in ${playbookName}. Review required.`,
-        data: {
-          type: 'STEP_FAILED',
-          stepInstanceId,
-          playbookInstanceId,
-        },
-      });
-      // Log notification
-      await prisma.playbookNotification.create({
-        data: {
-          tenantId,
-          playbookInstanceId,
-          stepInstanceId,
-          notificationType: 'STEP_FAILED',
-          channel: 'PUSH',
-          recipientUserId: dispatcher.id,
-          message: `Inspection item failed: "${stepName}"`,
-          sentAt: new Date(),
-        },
-      });
-    }
-
-    // If VEHICLE_INSPECTION: also notify dispatchers of APPROVAL_NEEDED for mechanic sign-off
-    // (No MECHANIC user role exists — OWNER/MANAGER handles mechanic approval)
-    if (playbookCategory === 'VEHICLE_INSPECTION') {
-      for (const dispatcher of dispatchers) {
-        await sendPushToUser(dispatcher.id, {
-          title: 'Mechanic sign-off needed',
-          body: `Repair required for: "${stepName}". Approve in Checklists.`,
-          data: {
-            type: 'APPROVAL_NEEDED',
-            stepInstanceId,
-            playbookInstanceId,
-          },
-        });
-        await prisma.playbookNotification.create({
-          data: {
-            tenantId,
-            playbookInstanceId,
-            stepInstanceId,
-            notificationType: 'APPROVAL_NEEDED',
-            channel: 'PUSH',
-            recipientUserId: dispatcher.id,
-            message: `Mechanic approval needed: "${stepName}"`,
-            sentAt: new Date(),
-          },
-        });
-      }
-    }
-    // TODO(phase-5): SMS delivery via Twilio for STEP_FAILED and APPROVAL_NEEDED
-  } catch (err) {
-    // Notifications are best-effort — never fail the main operation
-    console.error('[failInspectionItem] notification error:', err);
-  }
 }

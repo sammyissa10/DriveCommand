@@ -13,7 +13,7 @@
 import { prisma } from '@/lib/db/prisma';
 import { TRPCError } from '@trpc/server';
 import { computeDispatchReadiness } from './computeDispatchReadiness';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { sendStepAssigned } from './notifications';
 import type { StepResult } from '@drivecommand/validation';
 
 export async function completeStep(args: {
@@ -176,12 +176,8 @@ async function notifyNextStep(playbookInstanceId: string, tenantId: string) {
       orderBy: { dueDate: 'asc' },
     });
     if (nextStep?.assignedUserId) {
-      const stepName = (nextStep.stepSnapshot as { name?: string }).name ?? 'Task';
-      await sendPushToUser(nextStep.assignedUserId, {
-        title: 'New task ready',
-        body: `"${stepName}". Tap to complete.`,
-        data: { type: 'STEP_ASSIGNED', stepInstanceId: nextStep.id },
-      });
+      // Route through centralized notifications module for consistent audit trail
+      await sendStepAssigned({ stepInstanceId: nextStep.id, tenantId });
     }
   } catch {
     // Best-effort
