@@ -591,10 +591,15 @@ Plans:
 
 **Goal:** Playbooks fire automatically based on lifecycle events (driver create, dispatch depart/deliver, etc.). Tenants toggle recipe presets from the Automation page. Dispatch creation blocks non-ready drivers with an admin override + audit trail. Full notification suite across all types and channels.
 **Depends on:** Phase 44 (readiness computation stable)
-**Plans:** TBD (after context + planning)
+**Plans:** 6 plans
 
 Plans:
-- [ ] TBD
+- [ ] 45-01-PLAN.md — Schema foundation (PlaybookTrigger + DispatchOverrideAudit + VEHICLE_INSPECTION validation fix)
+- [ ] 45-02-PLAN.md — fireEvent service + recipes constants + match/skip unit tests (DoD test 1)
+- [ ] 45-03-PLAN.md — Unified notifications module (all 7 NotifType) + DISPATCH_READY + overdue cron
+- [ ] 45-04-PLAN.md — tRPC trigger router + wire 8 lifecycle hooks (owner actions + carrier routes + dispatch transitions)
+- [ ] 45-05-PLAN.md — Auto-Start Rules page (7 recipe cards + custom rules) + dispatch enforcement modal + override audit
+- [ ] 45-06-PLAN.md — Integration tests for DoD tests 2, 3, 4 (instance preservation + audit write + block without override)
 
 ---
 
