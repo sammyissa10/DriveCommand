@@ -52,7 +52,7 @@ const list = tenantMemberProcedure
         { createdAt: 'desc' },
       ],
       take: take + 1,
-      include: { stepInstances: { select: { id: true, status: true } } },
+      include: { stepInstances: { select: { id: true, status: true, dueDate: true } } },
     });
 
     // Sort: BLOCKED first, then IN_PROGRESS, then NOT_STARTED, then COMPLETED
