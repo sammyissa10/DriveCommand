@@ -14,7 +14,12 @@ import { TRPCError } from '@trpc/server';
 import { router, adminProcedure } from '@/server/api/trpc';
 import { prisma } from '@/lib/db/prisma';
 import { RECIPES, getRecipeByKey } from '@/server/services/workflows/recipes';
-import { enableRecipeSchema, disableRecipeSchema } from '@drivecommand/validation';
+import {
+  enableRecipeSchema,
+  disableRecipeSchema,
+  createCustomRuleSchema,
+  deleteRuleSchema,
+} from '@drivecommand/validation';
 import type { Prisma } from '@/generated/prisma';
 
 export const triggerRouter = router({
@@ -128,6 +133,81 @@ export const triggerRouter = router({
     });
 
     return { disabled: result.count };
+  }),
+
+  /**
+   * List all custom (non-recipe) PlaybookTrigger rows for this tenant.
+   * A "custom rule" is any trigger whose (triggerEvent + conditions) does NOT match
+   * any of the 7 pre-built RECIPES.
+   */
+  listCustomRules: adminProcedure.query(async ({ ctx }) => {
+    const triggers = await prisma.playbookTrigger.findMany({
+      where: { tenantId: ctx.tenantId },
+      include: {
+        playbook: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    // Filter to non-recipe rows only
+    const customTriggers = triggers.filter((t) => {
+      return !RECIPES.some(
+        (r) =>
+          r.triggerEvent === t.triggerEvent &&
+          JSON.stringify(r.conditions ?? {}) === JSON.stringify(t.conditions ?? {})
+      );
+    });
+
+    return customTriggers.map((t) => ({
+      id: t.id,
+      triggerEvent: t.triggerEvent,
+      conditions: t.conditions,
+      isActive: t.isActive,
+      playbookId: t.playbookId,
+      playbookName: t.playbook.name,
+      createdAt: t.createdAt,
+    }));
+  }),
+
+  /** Create a custom PlaybookTrigger (not linked to any recipe). */
+  createCustomRule: adminProcedure.input(createCustomRuleSchema).mutation(async ({ ctx, input }) => {
+    // Validate playbookId belongs to this tenant
+    const playbook = await prisma.playbook.findFirst({
+      where: { id: input.playbookId, tenantId: ctx.tenantId, deletedAt: null },
+    });
+    if (!playbook) throw new TRPCError({ code: 'NOT_FOUND', message: 'Playbook not found' });
+
+    // Parse conditions from JSON string — keeps schema types simple
+    let conditions: Record<string, unknown> = {};
+    try {
+      if (input.conditions) {
+        conditions = JSON.parse(input.conditions) as Record<string, unknown>;
+      }
+    } catch {
+      conditions = {};
+    }
+
+    return prisma.playbookTrigger.create({
+      data: {
+        tenantId: ctx.tenantId,
+        playbookId: input.playbookId,
+        triggerEvent: input.triggerEvent,
+        conditions: conditions as Prisma.InputJsonValue,
+        isActive: true,
+      },
+    });
+  }),
+
+  /** Hard-delete a PlaybookTrigger by ID (custom rules only). */
+  deleteRule: adminProcedure.input(deleteRuleSchema).mutation(async ({ ctx, input }) => {
+    // Verify ownership before deleting
+    const trigger = await prisma.playbookTrigger.findFirst({
+      where: { id: input.triggerId, tenantId: ctx.tenantId },
+    });
+    if (!trigger) throw new TRPCError({ code: 'NOT_FOUND', message: 'Trigger not found' });
+
+    await prisma.playbookTrigger.delete({ where: { id: input.triggerId } });
+    return { deleted: true };
   }),
 });
 
