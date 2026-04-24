@@ -20,8 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Plus, Trash2 } from 'lucide-react';
 
 // Plain-English labels for each trigger event
 const TRIGGER_OPTIONS = [
@@ -35,16 +33,28 @@ const TRIGGER_OPTIONS = [
 
 type TriggerEvent = (typeof TRIGGER_OPTIONS)[number]['value'];
 
-const DRIVER_TYPE_OPTIONS = [
-  { value: 'CDL', label: 'CDL Driver' },
-  { value: 'NON_CDL', label: 'Non-CDL Driver' },
-  { value: 'OWNER_OP', label: 'Owner-Operator' },
-];
-
-interface Condition {
-  key: string;
-  value: string;
-}
+// Known filterable fields per trigger event — each field is a dropdown, not free text
+const EVENT_CONDITION_FIELDS: Record<
+  TriggerEvent,
+  Array<{ key: string; label: string; options: Array<{ value: string; label: string }> }>
+> = {
+  ON_DRIVER_CREATE: [
+    {
+      key: 'driverType',
+      label: 'Driver type',
+      options: [
+        { value: 'CDL', label: 'CDL' },
+        { value: 'NON_CDL', label: 'Non-CDL' },
+        { value: 'OWNER_OP', label: 'Owner-Operator' },
+      ],
+    },
+  ],
+  ON_VEHICLE_CREATE: [],
+  ON_DISPATCH_CREATE: [],
+  ON_DISPATCH_DEPART: [],
+  ON_DISPATCH_DELIVER: [],
+  ON_PARTNER_CREATE: [],
+};
 
 interface CreateCustomRuleDialogProps {
   open: boolean;
@@ -59,9 +69,8 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
   // Step 1 state
   const [triggerEvent, setTriggerEvent] = useState<TriggerEvent | ''>('');
 
-  // Step 2 state
-  const [driverType, setDriverType] = useState<string>('ANY');
-  const [extraConditions, setExtraConditions] = useState<Condition[]>([]);
+  // Step 2 state — one selected value per filterable field key, 'ANY' means no condition
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
 
   // Step 3 state
   const [selectedPlaybookId, setSelectedPlaybookId] = useState<string>('');
@@ -76,7 +85,6 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
     trpc.workflows.trigger.createCustomRule.mutationOptions() as any,
   );
 
-  // Handle side effects imperatively to avoid tRPC type depth issues
   const handleCreateMutate = async (vars: { triggerEvent: string; playbookId: string; conditions: string }) => {
     try {
       await createMutation.mutateAsync(vars);
@@ -91,31 +99,19 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
 
   function handleClose() {
     onOpenChange(false);
-    // Reset state after dialog animation completes
     setTimeout(() => {
       setStep(1);
       setTriggerEvent('');
-      setDriverType('ANY');
-      setExtraConditions([]);
+      setFieldValues({});
       setSelectedPlaybookId('');
     }, 200);
   }
 
   function buildConditions(): Record<string, unknown> {
     const conditions: Record<string, unknown> = {};
-
-    // Driver-type condition for ON_DRIVER_CREATE
-    if (triggerEvent === 'ON_DRIVER_CREATE' && driverType !== 'ANY') {
-      conditions.driverType = driverType;
+    for (const [key, value] of Object.entries(fieldValues)) {
+      if (value && value !== 'ANY') conditions[key] = value;
     }
-
-    // Extra conditions (key = value pairs)
-    for (const cond of extraConditions) {
-      if (cond.key.trim() && cond.value.trim()) {
-        conditions[cond.key.trim()] = cond.value.trim();
-      }
-    }
-
     return conditions;
   }
 
@@ -127,6 +123,14 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
       conditions: JSON.stringify(buildConditions()),
     });
   }
+
+  // Reset field values when trigger event changes
+  function handleTriggerChange(value: TriggerEvent) {
+    setTriggerEvent(value);
+    setFieldValues({});
+  }
+
+  const conditionFields = triggerEvent ? EVENT_CONDITION_FIELDS[triggerEvent] : [];
 
   const canGoNext =
     (step === 1 && Boolean(triggerEvent)) ||
@@ -181,7 +185,7 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
                     name="triggerEvent"
                     value={opt.value}
                     checked={triggerEvent === opt.value}
-                    onChange={() => setTriggerEvent(opt.value)}
+                    onChange={() => handleTriggerChange(opt.value)}
                     className="accent-primary"
                   />
                   <span className="text-sm flex-1">{opt.label}</span>
@@ -191,87 +195,39 @@ export function CreateCustomRuleDialog({ open, onOpenChange, onCreated }: Create
           </div>
         )}
 
-        {/* Step 2: Conditions */}
+        {/* Step 2: Conditions — entity-specific dropdowns per trigger event */}
         {step === 2 && (
           <div className="space-y-4">
-            {/* Driver-type filter for ON_DRIVER_CREATE */}
-            {triggerEvent === 'ON_DRIVER_CREATE' && (
-              <div>
-                <Label className="text-sm font-medium mb-2 block">Driver type</Label>
-                <Select value={driverType} onValueChange={setDriverType}>
-                  <SelectTrigger className="h-9" aria-label="Select driver type">
-                    <SelectValue placeholder="Any driver type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ANY">Any driver type</SelectItem>
-                    {DRIVER_TYPE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {conditionFields.length === 0 ? (
+              <div className="rounded-md border border-border bg-muted/40 px-4 py-3">
+                <p className="text-sm font-medium text-foreground">All records</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  This rule will run for every matching event with no additional filtering.
+                </p>
               </div>
+            ) : (
+              conditionFields.map((field) => (
+                <div key={field.key}>
+                  <Label className="text-sm font-medium mb-2 block">{field.label}</Label>
+                  <Select
+                    value={fieldValues[field.key] ?? 'ANY'}
+                    onValueChange={(v) => setFieldValues((prev) => ({ ...prev, [field.key]: v }))}
+                  >
+                    <SelectTrigger className="h-9" aria-label={`Select ${field.label}`}>
+                      <SelectValue placeholder={`Any ${field.label.toLowerCase()}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ANY">Any {field.label.toLowerCase()}</SelectItem>
+                      {field.options.map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))
             )}
-
-            {/* For all other events, show "All records" + optional extra conditions */}
-            {triggerEvent !== 'ON_DRIVER_CREATE' && (
-              <p className="text-sm text-muted-foreground">
-                All records — this rule will run for every matching event.
-              </p>
-            )}
-
-            {/* Extra key=value conditions (optional for all event types) */}
-            <div>
-              <Label className="text-sm font-medium mb-2 block">
-                Additional conditions <span className="text-muted-foreground font-normal">(optional)</span>
-              </Label>
-              <div className="space-y-2">
-                {extraConditions.map((cond, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <Input
-                      placeholder="Field"
-                      value={cond.key}
-                      onChange={(e) => {
-                        const updated = [...extraConditions];
-                        updated[i] = { ...updated[i], key: e.target.value };
-                        setExtraConditions(updated);
-                      }}
-                      className="h-8 text-sm flex-1"
-                    />
-                    <span className="text-muted-foreground text-sm">=</span>
-                    <Input
-                      placeholder="Value"
-                      value={cond.value}
-                      onChange={(e) => {
-                        const updated = [...extraConditions];
-                        updated[i] = { ...updated[i], value: e.target.value };
-                        setExtraConditions(updated);
-                      }}
-                      className="h-8 text-sm flex-1"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => setExtraConditions(extraConditions.filter((_, j) => j !== i))}
-                      aria-label="Remove condition"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2 h-8 text-xs gap-1"
-                onClick={() => setExtraConditions([...extraConditions, { key: '', value: '' }])}
-              >
-                <Plus className="w-3 h-3" />
-                Add condition
-              </Button>
-            </div>
           </div>
         )}
 
