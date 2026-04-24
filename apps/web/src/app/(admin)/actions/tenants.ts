@@ -11,6 +11,7 @@ import { sendEmail } from '@/lib/email/gmail-client';
 import React from 'react';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { seedStarterPlaybooks } from '@/server/services/workflows/seedStarterPlaybooks';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -101,6 +102,19 @@ export async function createTenant(formData: FormData) {
         isActive: true,
       },
     });
+
+    // Seed starter playbooks for the new tenant (non-fatal — idempotent, can be re-run)
+    try {
+      await seedStarterPlaybooks(tenant.id);
+      logger.info(`Seeded starter playbooks for new tenant ${tenant.name} (${tenant.id})`);
+    } catch (seedError: unknown) {
+      // Seeding failure is NON-FATAL — tenant creation succeeded. Log and continue so the
+      // invitation email still sends. An admin can re-run seed-starter-playbooks.ts later (idempotent).
+      logger.error('Failed to seed starter playbooks for new tenant:', {
+        tenantId: tenant.id,
+        error: seedError instanceof Error ? seedError.message : String(seedError),
+      });
+    }
 
     // Create owner invitation (7 days expiry)
     const expiresAt = new Date();
