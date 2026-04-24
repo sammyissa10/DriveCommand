@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
-Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
-Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-23 - Completed quick task 284: Fix workflow-engine spec filename to match CLAUDE.md loader path
-Last session: 2026-04-23T20:24:36Z
-Stopped at: Completed quick-284-PLAN.md — 2 tasks, docs/specs/workflow-engine.md correctly named, branch feat/workflow-engine-spec pushed
+Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
+Current Plan: Plan 1 of 3 complete — 42-01 DONE
+Status: Plan 01 complete — StepTemplate, Playbook, PlaybookStep models + 5 enums, migration SQL with RLS, seedStarterPlaybooks idempotent seeder, all 7 existing tenants seeded, createTenant auto-seeds new tenants
+Last activity: 2026-04-24 - Completed 42-01: Workflow Engine Database Foundation
+Last session: 2026-04-24T02:25:30Z
+Stopped at: Completed 42-01-PLAN.md — 4 tasks, 3 files created, 3 files modified, branch feat/workflow-engine-spec
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -100,6 +100,7 @@ Progress: [███████████████████████
 
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
+- Phase 42-01 (2026-04-24): Workflow Engine DB foundation — StepTemplate/Playbook/PlaybookStep models + 5 enums, migration SQL with RLS (current_tenant_id pattern + bypass_rls_policy), seedStarterPlaybooks idempotent seeder, all 7 existing tenants seeded, createTenant auto-seeds new tenants — 4 tasks, 6 files, 350s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -1184,10 +1185,17 @@ None blocking immediate progress.
 | Phase 37.2 P03 | 215 | 1 tasks | 1 files |
 | Phase quick-210 P01 | 15m | 2 tasks | 14 files |
 | Phase quick-243 P01 | 10 | 2 tasks | 2 files |
+| Phase 42-01 | 350s | 4 tasks | 6 files |
+
+**Phase 42-01 decisions (Workflow Engine DB foundation):**
+- Idempotency sentinel: 'CDL Driver Onboarding' playbook name used as existence check — simple, no extra schema column needed
+- Non-fatal seeding in createTenant: tenant creation is critical path; transient seeder failures should not block onboarding; seeder is idempotent so re-run recovers
+- PlaybookStep RLS via subquery: no tenantId on PlaybookStep, isolation via `playbookId IN (SELECT id FROM Playbook WHERE tenantId = current_tenant_id())`
+- migrate.mjs invokes seed-starter-playbooks.ts via spawnSync npx tsx — cleanly handles ESM .mjs → TypeScript .ts import boundary
 
 ## Session Continuity
 
-Last session: 2026-03-18
-Stopped at: Completed Quick-81 — Fix mobile layout on loads and routes list pages.
+Last session: 2026-04-24T02:25:30Z
+Stopped at: Completed 42-01-PLAN.md — 4 tasks, Workflow Engine DB foundation, branch feat/workflow-engine-spec
 Resume file: None
-Next action: Deploy to Vercel or pick next quick task.
+Next action: Execute 42-02 (tRPC router + service layer) or 42-03 (Playbook Builder UI).
