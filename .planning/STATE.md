@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 7 of 7 complete — 43-07 DONE — Phase 43 COMPLETE
-Status: Phase 43 complete — full test suite passing: snapshot immutability, zero-blocker readiness, 7 completeStep validations, mobile tap-target audit (4 screens ≥56px); pre-existing auth test failures unrelated to this work
-Last activity: 2026-04-24 - Completed 43-07: Phase 43 test suite — 3 test files created, 3 mobile screen files fixed (tap targets), 303s
-Last session: 2026-04-24T16:32:27Z
-Stopped at: Completed 43-07-PLAN.md — 2 tasks auto, 6 files created/modified, all tests passing
+Phase: Phase 44 Workflow Engine 3 Inspection Mode — IN PROGRESS
+Current Plan: Plan 1 of 6 complete — 44-01 DONE
+Status: Phase 44 underway — VEHICLE_INSPECTION enum added to PlaybookCategory, StepInstance.stepTemplateId made nullable, migration applied to Supabase
+Last activity: 2026-04-24 - Completed 44-01: Schema migration — VEHICLE_INSPECTION enum + nullable stepTemplateId, 1 task, 8 files, 2min
+Last session: 2026-04-24T18:08:34Z
+Stopped at: Completed 44-01-PLAN.md — 1 task auto, 8 files modified, migration deployed
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -113,6 +113,7 @@ Progress: [███████████████████████
 - Phase 43-05 (2026-04-24): Profile Checklists integration + mobile task API — Driver/Truck/CRM profiles show Checklists section (status badge + completion %), driver profile shows isDispatchReady badge, GET/POST complete/POST skip mobile endpoints at /api/mobile/driver/tasks, fireEvent TODOs in 3 action files — 2 tasks, 3 files created, 6 modified, 281s
 - Phase 43-06 (2026-04-24): Mobile driver Tasks tab + My Tasks screen + 3 action screens (Document Upload, Form Fill, Signature) + TaskActionDispatcher — 2 tasks, 7 files created, 1 modified, 344s
 - Phase 43-07 (2026-04-24): Phase 43 test suite — workflows-instance.test.ts (2 tests), workflows-complete-step.test.ts (7 tests), workflows-tap-targets.test.ts (4 tests); fixed backBtn+clearBtn tap targets 44→56px in 3 screen files — 2 tasks, 3 files created, 3 modified, 303s — Phase 43 COMPLETE
+- Phase 44-01 (2026-04-24): Schema migration — VEHICLE_INSPECTION enum + nullable stepTemplateId — 1 task, 1 file created, 7 modified, 2min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -252,6 +253,10 @@ Progress: [███████████████████████
 - SCREENS_DIR set to components/driver/workflows/ — actual screen location in mobile project (not src/screens/workflows/ as plan speculated)
 - Added 'Btn' to touchable-context heuristic to catch backBtn/clearBtn style names used in workflow screens
 - Back buttons (backBtn) and clear buttons (clearBtn) fixed from 44px to 56px in DocumentUploadScreen, FormFillScreen, SignatureScreen — spec mandates ≥56px for all interactive elements in task action screens
+
+**Phase 44-01 decisions (Schema migration — Inspection Mode):**
+- ALTER TYPE ADD VALUE IF NOT EXISTS used for VEHICLE_INSPECTION enum — idempotent, no transaction wrapper needed, PostgreSQL-safe
+- StepInstance.stepTemplateId made nullable (String?) rather than creating a separate ad-hoc step model — keeps single step record model per spec
 
 **Phase 43-06 decisions (Mobile driver Tasks UI):**
 - Screen components placed in components/driver/workflows/ — mobile app has no src/ directory; components/ is the existing pattern
