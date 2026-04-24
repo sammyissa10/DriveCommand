@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 44 Workflow Engine 3 Inspection Mode — COMPLETE
-Current Plan: All 6 of 6 plans complete — Phase 44 DONE
-Status: Phase 44 complete — all 6 plans executed: DB schema, failInspectionItem service, mobile FAIL REST endpoints, InspectionModeScreen DVIR UX, ApproveDialog, final test suite (9 tests)
-Last activity: 2026-04-24 - Completed 44-06: failInspectionItem unit tests (5) + InspectionModeScreen tap-target tests (4), 1 task, 3 files, ~5min
-Last session: 2026-04-24T18:37:30Z
-Stopped at: Completed 44-06-PLAN.md — Phase 44 complete
+Phase: Phase 45 Workflow Engine 4 Automation — IN PROGRESS
+Current Plan: 1 of 6 plans complete
+Status: 45-01 complete — TriggerEvent enum, PlaybookTrigger table, DispatchOverrideAudit table added to Supabase; playbookCategorySchema VEHICLE_INSPECTION gap closed
+Last activity: 2026-04-24 - Completed 45-01: DB foundation for automation (2 tasks, 3 files, ~3min)
+Last session: 2026-04-24T19:28:00Z
+Stopped at: Completed 45-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -119,6 +119,7 @@ Progress: [███████████████████████
 - Phase 44-04 (2026-04-24): InspectionModeScreen — full-screen DVIR card-by-card UX with react-native-reanimated slide animation, PASS (56px fire-and-forget)/FAIL (56px await-before-advance) buttons, in-card fail capture (photo upload + note), exit Alert, FadeIn completion screen; TaskActionDispatcher updated — 1 task, 2 files, ~3min
 - Phase 44-05 (2026-04-24): ApproveDialog + truck isDispatchReady badge — ApproveDialog bottom sheet for mechanic APPROVAL steps, truck profile dispatch readiness badge, tRPC approve procedure call — 1 task, 2 files, ~3min
 - Phase 44-06 (2026-04-24): Final test suite — 5 failInspectionItem unit tests (category gating, photo validation, readiness recompute) + 4 InspectionModeScreen tap-target static-analysis tests; fixed pre-existing regression in workflows-complete-step.test.ts — 1 task, 3 files, ~5min — Phase 44 COMPLETE
+- Phase 45-01 (2026-04-24): Automation DB foundation — TriggerEvent enum (8 values), PlaybookTrigger table (composite index on tenantId+triggerEvent), DispatchOverrideAudit table (tenantId+dispatchId indexes), Playbook.triggers + Tenant.playbookTriggers + Tenant.dispatchOverrideAudits back-relations, migration applied to Supabase, Prisma client regenerated; Phase 44 validation gap closed (VEHICLE_INSPECTION added to playbookCategorySchema) — 2 tasks, 3 files, ~3min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -268,6 +269,11 @@ Progress: [███████████████████████
 - Ad-hoc APPROVAL step created with stepTemplateId: null only when playbookCategory === VEHICLE_INSPECTION — other inspection categories do not get mechanic steps per spec Section 6.4
 - No MECHANIC user role exists — both STEP_FAILED and APPROVAL_NEEDED push notifications delivered to OWNER/MANAGER dispatchers
 - SMS delivery stubbed with TODO(phase-5) — Twilio not in Phase 44 scope
+
+**Phase 45-01 decisions (Automation DB foundation):**
+- No FK from DispatchOverrideAudit to CarrierDispatch — different module boundary, loose coupling via UUID string per spec Section 13 (cross-module audit trail pattern)
+- TriggerEvent enum uses ON_ prefix for lifecycle events (ON_DRIVER_CREATE etc.) + MANUAL_ONLY and RECURRING for non-lifecycle triggers — matches spec Section 5.1 exactly
+- VEHICLE_INSPECTION added as 7th (final) value in playbookCategorySchema — closes Phase 44 tech-debt gap where Prisma enum had the value but Zod schema did not, causing runtime Zod failure for VEHICLE_INSPECTION category playbooks
 
 **Phase 44-06 decisions (Final test suite — failInspectionItem + InspectionModeScreen):**
 - Mobile tap-target test uses Vitest (not Jest) — consistent with existing workflows-tap-targets.test.ts; `tests/` directory uses Vitest imports throughout
