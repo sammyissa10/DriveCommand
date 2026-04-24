@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 44 Workflow Engine 3 Inspection Mode — IN PROGRESS
-Current Plan: Plans 4 and 5 of 6 complete — 44-04 and 44-05 DONE
-Status: Phase 44 underway — InspectionModeScreen + ApproveDialog + isDispatchReady badge complete, Plan 06 (final) remaining
-Last activity: 2026-04-24 - Completed 44-04: InspectionModeScreen (full DVIR UX, card-slide animation, PASS/FAIL, photo upload, completion screen) + TaskActionDispatcher updated, 1 task, 2 files, ~3min
-Last session: 2026-04-24T18:31:07Z
-Stopped at: Completed 44-04-PLAN.md — 1 task auto, 2 files modified (InspectionModeScreen + TaskActionDispatcher)
+Phase: Phase 44 Workflow Engine 3 Inspection Mode — COMPLETE
+Current Plan: All 6 of 6 plans complete — Phase 44 DONE
+Status: Phase 44 complete — all 6 plans executed: DB schema, failInspectionItem service, mobile FAIL REST endpoints, InspectionModeScreen DVIR UX, ApproveDialog, final test suite (9 tests)
+Last activity: 2026-04-24 - Completed 44-06: failInspectionItem unit tests (5) + InspectionModeScreen tap-target tests (4), 1 task, 3 files, ~5min
+Last session: 2026-04-24T18:37:30Z
+Stopped at: Completed 44-06-PLAN.md — Phase 44 complete
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -116,6 +116,9 @@ Progress: [███████████████████████
 - Phase 44-01 (2026-04-24): Schema migration — VEHICLE_INSPECTION enum + nullable stepTemplateId — 1 task, 1 file created, 7 modified, 2min
 - Phase 44-02 (2026-04-24): INSPECTION_ITEM execution path — failInspectionItem service (photo validation, ad-hoc APPROVAL step, instance blocking, push notifications), completeStep pass/fail routing fix, failInspectionItemSchema + approveStepSchema in packages/validation, fail/requestApproval/approve tRPC procedures — 2 tasks, 4 files, ~10min
 - Phase 44-03 (2026-04-24): Mobile REST endpoints for inspection fail — POST /api/mobile/driver/tasks/[id]/fail (calls failInspectionItem), POST /api/mobile/driver/tasks/upload-photo (presigned R2 URL with 'inspections' prefix), added 'inspections' to DocumentCategory type — 1 task, 3 files, ~8min
+- Phase 44-04 (2026-04-24): InspectionModeScreen — full-screen DVIR card-by-card UX with react-native-reanimated slide animation, PASS (56px fire-and-forget)/FAIL (56px await-before-advance) buttons, in-card fail capture (photo upload + note), exit Alert, FadeIn completion screen; TaskActionDispatcher updated — 1 task, 2 files, ~3min
+- Phase 44-05 (2026-04-24): ApproveDialog + truck isDispatchReady badge — ApproveDialog bottom sheet for mechanic APPROVAL steps, truck profile dispatch readiness badge, tRPC approve procedure call — 1 task, 2 files, ~3min
+- Phase 44-06 (2026-04-24): Final test suite — 5 failInspectionItem unit tests (category gating, photo validation, readiness recompute) + 4 InspectionModeScreen tap-target static-analysis tests; fixed pre-existing regression in workflows-complete-step.test.ts — 1 task, 3 files, ~5min — Phase 44 COMPLETE
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -265,6 +268,10 @@ Progress: [███████████████████████
 - Ad-hoc APPROVAL step created with stepTemplateId: null only when playbookCategory === VEHICLE_INSPECTION — other inspection categories do not get mechanic steps per spec Section 6.4
 - No MECHANIC user role exists — both STEP_FAILED and APPROVAL_NEEDED push notifications delivered to OWNER/MANAGER dispatchers
 - SMS delivery stubbed with TODO(phase-5) — Twilio not in Phase 44 scope
+
+**Phase 44-06 decisions (Final test suite — failInspectionItem + InspectionModeScreen):**
+- Mobile tap-target test uses Vitest (not Jest) — consistent with existing workflows-tap-targets.test.ts; `tests/` directory uses Vitest imports throughout
+- Auto-fixed pre-existing regression in workflows-complete-step.test.ts: INSPECTION_ITEM test sent passOrFail='pass' which now succeeds per 44-02; updated to 'fail' which still correctly throws USE_FAIL_ENDPOINT
 
 **Phase 44-03 decisions (Mobile fail + upload-photo endpoints):**
 - Used withMobileAuth instead of old validateMobileToken pattern — matches tasks/complete and tasks/skip conventions (not incidents pattern)
@@ -1301,10 +1308,11 @@ None blocking immediate progress.
 - Show Approve button only for APPROVAL-type NOT_STARTED steps; non-APPROVAL NOT_STARTED steps show View Details — cleaner UX, the action is approval not inspection
 - Truck page uses (truck as any).isDispatchReady: getTruck uses include (not select) so Prisma returns all scalars but TypeScript doesn't surface isDispatchReady in the inferred return type without explicit select casting
 | Phase 44-workflow-engine-3-inspection-mode P04 | 3 | 1 tasks | 2 files |
+| Phase 44-workflow-engine-3-inspection-mode P06 | 6 | 1 tasks | 3 files |
 
 ## Session Continuity
 
-Last session: 2026-04-24T18:46:00Z
-Stopped at: Completed 44-05-PLAN.md — 1 task auto, 2 files modified (ChecklistDetailClient + trucks/[id]/page)
+Last session: 2026-04-24T18:37:30Z
+Stopped at: Completed 44-06-PLAN.md — Phase 44 complete (all 6 plans done)
 Resume file: None
-Next action: Phase 44 Plan 06 — final plan (TBD)
+Next action: Phase 44 complete — determine next phase
