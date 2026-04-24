@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
-Current Plan: Plan 4 of 6 complete — 42-04 DONE
-Status: Plan 04 complete — 14 tRPC procedures across stepTemplateRouter (5) and playbookRouter (9), workflowsRouter mounted on appRouter, transactional reorder service implemented
-Last activity: 2026-04-24 - Completed 42-04: tRPC Workflow Engine Routers
-Last session: 2026-04-24T03:01:50Z
-Stopped at: Completed 42-04-PLAN.md — 2 tasks, 4 files created, 1 file modified, branch feat/workflow-engine-spec
+Current Plan: Plan 5 of 6 complete — 42-05 DONE
+Status: Plan 05 complete — /checklists dashboard with sidebar Workflows group, entity-type filter tabs, PlaybookCard grid, CreatePlaybookCard, and CreatePlaybookDialog wired to tRPC playbook.create
+Last activity: 2026-04-24 - Completed 42-05: Checklists Dashboard UI
+Last session: 2026-04-24T03:14:39Z
+Stopped at: Completed 42-05-PLAN.md — 2 tasks, 6 files created, 1 file modified, branch feat/workflow-engine-spec
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -104,6 +104,7 @@ Progress: [███████████████████████
 - Phase 42-02 (2026-04-24): Workflow Engine validation schemas — 5 Zod enum schemas (StepType/AssigneeRole/PlaybookEntityType/PlaybookCategory/PhaseType), createStepTemplateSchema + updateStepTemplateSchema, createPlaybookSchema + updatePlaybookSchema + addStepSchema + removeStepSchema + updatePlaybookStepSchema + reorderStepsSchema, barrel exported from @drivecommand/validation — 2 tasks, 5 files, ~4min
 - Phase 42-03 (2026-04-23): tRPC foundation — tRPC v11 installed (6 packages), createTRPCContext (Supabase session), tenantMemberProcedure + adminProcedure, /api/trpc route handler, TRPCReactProvider + useTRPC hook, server-side caller, wired into (owner)/layout.tsx — 2 tasks, 8 files, 717s
 - Phase 42-04 (2026-04-24): tRPC workflow engine routers — stepTemplateRouter (5 procedures), playbookRouter (9 procedures incl. updateStep + reorderSteps), reorderPlaybookSteps transactional service, workflowsRouter, mounted on appRouter end-to-end — 2 tasks, 5 files, ~600s
+- Phase 42-05 (2026-04-24): Checklists dashboard UI — Workflows SidebarGroup + ListChecks nav link, /checklists page with entity-type filter tabs, PlaybookCard grid (color-coded category icons, step count, entity badge), CreatePlaybookCard (dashed-border), CreatePlaybookDialog (controlled form calling workflows.playbook.create tRPC mutation) — 2 tasks, 7 files, ~600s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -1192,6 +1193,7 @@ None blocking immediate progress.
 | Phase 42-02 | ~240s | 2 tasks | 5 files |
 | Phase 42-03 | 717s | 2 tasks | 8 files |
 | Phase 42-04 | ~600s | 2 tasks | 5 files |
+| Phase 42-05 | ~600s | 2 tasks | 7 files |
 
 **Phase 42-01 decisions (Workflow Engine DB foundation):**
 - Idempotency sentinel: 'CDL Driver Onboarding' playbook name used as existence check — simple, no extra schema column needed
@@ -1216,9 +1218,15 @@ None blocking immediate progress.
 - reorderSteps returns the full updated Playbook with steps (same shape as getById) — client avoids a follow-up query after reordering
 - removeStep is a hard delete of the PlaybookStep junction row — StepTemplate itself is retained per spec (spec explicitly allows this)
 
+**Phase 42-05 decisions (Checklists Dashboard UI):**
+- Workflows SidebarGroup placed between Carrier Ops and Business — standalone per CONTEXT.md decision, not nested under either group
+- Controlled form state used in CreatePlaybookDialog (not react-hook-form) — react-hook-form is not installed in the web app
+- PlaybookCard links to /checklists/playbooks/[id]/edit before Plan 06 builds the page — 404 expected until then, by design
+- Naming lint: all JSX text uses user-facing names; internal names (StepTemplate/PlaybookInstance/PlaybookTrigger/StepInstance) only appear in import/type lines — lint test in Plan 07 will enforce this
+
 ## Session Continuity
 
-Last session: 2026-04-24T03:01:50Z
-Stopped at: Completed 42-04-PLAN.md — 2 tasks, 4 files created, 1 file modified, branch feat/workflow-engine-spec
+Last session: 2026-04-24T03:14:39Z
+Stopped at: Completed 42-05-PLAN.md — 2 tasks, 6 files created, 1 file modified, branch feat/workflow-engine-spec
 Resume file: None
-Next action: Continue Phase 42 — Plan 05 (Playbook Library dashboard) is next.
+Next action: Continue Phase 42 — Plan 06 (Playbook Builder UI) is next.
