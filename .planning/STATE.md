@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
-Current Plan: Plan 1 of 3 complete — 42-01 DONE
-Status: Plan 01 complete — StepTemplate, Playbook, PlaybookStep models + 5 enums, migration SQL with RLS, seedStarterPlaybooks idempotent seeder, all 7 existing tenants seeded, createTenant auto-seeds new tenants
-Last activity: 2026-04-24 - Completed 42-01: Workflow Engine Database Foundation
-Last session: 2026-04-24T02:25:30Z
-Stopped at: Completed 42-01-PLAN.md — 4 tasks, 3 files created, 3 files modified, branch feat/workflow-engine-spec
+Current Plan: Plan 2 of 3 complete — 42-02 DONE
+Status: Plan 02 complete — Zod validation schemas for all Workflow Engine inputs: 5 enum schemas (StepType/AssigneeRole/PlaybookEntityType/PlaybookCategory/PhaseType), createStepTemplateSchema + updateStepTemplateSchema, createPlaybookSchema + updatePlaybookSchema + addStepSchema + removeStepSchema + updatePlaybookStepSchema + reorderStepsSchema — all exported from @drivecommand/validation
+Last activity: 2026-04-24 - Completed 42-02: Workflow Engine Validation Schemas
+Last session: 2026-04-24T02:32:22Z
+Stopped at: Completed 42-02-PLAN.md — 2 tasks, 4 files created, 1 file modified, branch feat/workflow-engine-spec
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -101,6 +101,7 @@ Progress: [███████████████████████
 - Phase 37.7-02 (2026-04-03): Directions backend — getOSRMDirections added to osrm.ts (overview=full&geometries=geojson, [lng,lat] GeoJSON polyline), POST /api/geocoding/directions endpoint with validation + rate limiting (dir: prefix), RouteStop.lat/lng + DirectionsResult + driverApi.getDirections in api-client — 2 tasks, 3 files, ~3min
 - Phase 37.7-05 (2026-04-03): Start Route nav deep link + nav-settings screen — lib/navigation.ts (getNavPreference/setNavPreference/buildNavUrl/openNavigation), StatusUpdateButton EN_ROUTE triggers router.navigate to Map tab + openNavigation, map.tsx Start Navigation wired, nav-settings.tsx (iOS 3-option picker / Android static Google Maps card) — 2 tasks, 4 files, 121s
 - Phase 42-01 (2026-04-24): Workflow Engine DB foundation — StepTemplate/Playbook/PlaybookStep models + 5 enums, migration SQL with RLS (current_tenant_id pattern + bypass_rls_policy), seedStarterPlaybooks idempotent seeder, all 7 existing tenants seeded, createTenant auto-seeds new tenants — 4 tasks, 6 files, 350s
+- Phase 42-02 (2026-04-24): Workflow Engine validation schemas — 5 Zod enum schemas (StepType/AssigneeRole/PlaybookEntityType/PlaybookCategory/PhaseType), createStepTemplateSchema + updateStepTemplateSchema, createPlaybookSchema + updatePlaybookSchema + addStepSchema + removeStepSchema + updatePlaybookStepSchema + reorderStepsSchema, barrel exported from @drivecommand/validation — 2 tasks, 5 files, ~4min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -1186,6 +1187,7 @@ None blocking immediate progress.
 | Phase quick-210 P01 | 15m | 2 tasks | 14 files |
 | Phase quick-243 P01 | 10 | 2 tasks | 2 files |
 | Phase 42-01 | 350s | 4 tasks | 6 files |
+| Phase 42-02 | ~240s | 2 tasks | 5 files |
 
 **Phase 42-01 decisions (Workflow Engine DB foundation):**
 - Idempotency sentinel: 'CDL Driver Onboarding' playbook name used as existence check — simple, no extra schema column needed
@@ -1193,9 +1195,15 @@ None blocking immediate progress.
 - PlaybookStep RLS via subquery: no tenantId on PlaybookStep, isolation via `playbookId IN (SELECT id FROM Playbook WHERE tenantId = current_tenant_id())`
 - migrate.mjs invokes seed-starter-playbooks.ts via spawnSync npx tsx — cleanly handles ESM .mjs → TypeScript .ts import boundary
 
+**Phase 42-02 decisions (Workflow Engine validation schemas):**
+- defaultConfig/overrideConfig validated as z.record(z.string(), z.any()) — shape validation deferred to service/editor layer since structure depends on stepType
+- updatePlaybookStepSchema excludes sequence — sequence changes go exclusively through reorderStepsSchema (two separate concerns, two separate schemas)
+- playbookPhase is optional in updatePlaybookStepSchema — only sent when the step's phase changes via the editor
+- reorderStepsSchema requires min(1) steps and expects complete final ordered list from client (not deltas)
+
 ## Session Continuity
 
-Last session: 2026-04-24T02:25:30Z
-Stopped at: Completed 42-01-PLAN.md — 4 tasks, Workflow Engine DB foundation, branch feat/workflow-engine-spec
+Last session: 2026-04-24T02:32:22Z
+Stopped at: Completed 42-02-PLAN.md — 2 tasks, Workflow Engine validation schemas, branch feat/workflow-engine-spec
 Resume file: None
-Next action: Execute 42-02 (tRPC router + service layer) or 42-03 (Playbook Builder UI).
+Next action: Execute 42-03 (tRPC router registration).
