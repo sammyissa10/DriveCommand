@@ -13,9 +13,9 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 37.2 Owner Route Maintenance — COMPLETE
 Current Plan: Plan 4 of 4 complete — 37.2-04 DONE
 Status: Plan 04 complete — Maintenance UI: MaintenanceServicePicker, ScheduleServiceSheet, top-level maintenance screen with Due Soon alerts, scheduled services on truck detail with mark-complete flow, warning badge on truck list
-Last activity: 2026-04-23 - Completed quick task 283: Add voice message recording to all message threads
+Last activity: 2026-04-23 - Completed quick task 284: Fix workflow-engine spec filename to match CLAUDE.md loader path
 Last session: 2026-04-23T20:24:36Z
-Stopped at: Completed quick-283-PLAN.md — 3 tasks, 15 files created/modified, zero TypeScript errors
+Stopped at: Completed quick-284-PLAN.md — 2 tasks, docs/specs/workflow-engine.md correctly named, branch feat/workflow-engine-spec pushed
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -188,6 +188,7 @@ Progress: [███████████████████████
 - Quick-280 (2026-04-22): Add dispatch option to load create form — "Dispatch immediately" toggle in LoadForm (create mode only), collapsible dispatch section (driver, truck, departure, co-driver, planned miles, route template with auto-populate), dual-path submit (toggle OFF = existing flow unchanged; toggle ON = create load → create dispatch → PATCH load with dispatchId → redirect to dispatch detail with DC-XXXX toast), NewLoadPage fetches active drivers + trucks in parallel — 2 tasks, 2 files
 - Quick-281 (2026-04-22): Add tenant settings, user list, password reset, and role change to sysadmin tenant detail — contactEmail+plan schema fields, TenantSettingsForm (contactEmail/timezone/plan), GET /api/admin/tenants/[id]/users, TenantUsersSection (role badges, status dots, actions dropdown), ChangeRoleModal, PATCH /api/admin/users/[id]/role (blocks OWNER + updates Supabase Auth app_metadata), Prisma client regenerated — 3 tasks, 9 files
 - Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
+- Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
 
 ## Accumulated Context
 
