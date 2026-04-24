@@ -16,6 +16,10 @@ const DispatchCreateSchema = z.object({
   plannedMiles: z.number().optional(),
   hosCycle: z.string().optional(),
   notes: z.string().optional(),
+  // Phase 45 dispatch enforcement — admin override path
+  overrideReason: z.string().min(1).optional(),
+  overrideForEntityType: z.literal('DRIVER').optional(),
+  overrideForEntityId: z.string().uuid().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -71,15 +75,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const dispatch = await createDispatch(orgId, parsed.data);
+    const dispatch = await createDispatch(orgId, {
+      ...parsed.data,
+      currentUserId: session.userId,
+    });
     return NextResponse.json({ data: dispatch }, { status: 201 });
   } catch (err) {
-    if (err instanceof Error && (
-      err.message === 'Invalid driver' ||
-      err.message === 'Invalid truck' ||
-      err.message === 'Invalid co-driver'
-    )) {
-      return NextResponse.json({ error: err.message }, { status: 400 });
+    if (err instanceof Error) {
+      if (err.message === 'DRIVER_NOT_DISPATCH_READY') {
+        return NextResponse.json(
+          {
+            error: 'DRIVER_NOT_DISPATCH_READY',
+            message: 'Driver has incomplete required steps. Provide overrideReason to proceed.',
+          },
+          { status: 409 }
+        );
+      }
+      if (err.message === 'OVERRIDE_REQUIRES_ADMIN') {
+        return NextResponse.json({ error: 'OVERRIDE_REQUIRES_ADMIN' }, { status: 403 });
+      }
+      if (
+        err.message === 'Invalid driver' ||
+        err.message === 'Invalid truck' ||
+        err.message === 'Invalid co-driver'
+      ) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
     }
     logger.error('POST /api/v1/carrier/dispatches failed', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

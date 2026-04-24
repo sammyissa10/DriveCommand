@@ -40,6 +40,11 @@ export interface DispatchCreateInput {
   plannedMiles?: number;
   hosCycle?: string;
   notes?: string;
+  // Dispatch enforcement (Phase 45)
+  overrideReason?: string;
+  overrideForEntityType?: 'DRIVER';
+  overrideForEntityId?: string;
+  currentUserId?: string;
 }
 
 export type DispatchUpdateInput = Partial<Omit<DispatchCreateInput, 'primaryDriverId' | 'truckId' | 'coDriverId'>> & {
@@ -183,6 +188,31 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
     }
   }
 
+  // --- Phase 45 Dispatch Enforcement: DRIVER readiness check ---
+  // Truck-level enforcement is Phase 6 tech-debt (no isDispatchReady on CarrierTruck).
+  if (driver.userId) {
+    const driverUser = await prisma.user.findUnique({
+      where: { id: driver.userId },
+      select: { isDispatchReady: true },
+    });
+
+    if (driverUser && !driverUser.isDispatchReady && !data.overrideReason) {
+      throw new Error('DRIVER_NOT_DISPATCH_READY');
+    }
+
+    // If override was provided, verify the current user is admin (OWNER or MANAGER)
+    if (data.overrideReason && data.currentUserId) {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: data.currentUserId },
+        select: { role: true },
+      });
+      if (currentUser?.role !== 'OWNER' && currentUser?.role !== 'MANAGER') {
+        throw new Error('OVERRIDE_REQUIRES_ADMIN');
+      }
+    }
+  }
+  // --- End dispatch enforcement ---
+
   // Auto-generate dispatch number as DC-YYYY-NNNNN, stored in notes
   const year = new Date().getFullYear();
   const lastDispatch = await prisma.carrierDispatch.findFirst({
@@ -244,6 +274,20 @@ export async function createDispatch(orgId: string, data: DispatchCreateInput) {
   });
 
   logger.info('createDispatch: created', { orgId, dispatchId: dispatch.id, dispatchNumber });
+
+  // Write dispatch override audit row (Phase 45 enforcement)
+  if (data.overrideReason && data.overrideForEntityId && data.overrideForEntityType && data.currentUserId) {
+    await prisma.dispatchOverrideAudit.create({
+      data: {
+        tenantId: orgId,
+        dispatchId: dispatch.id,
+        userId: data.currentUserId,
+        reason: data.overrideReason,
+        entityType: data.overrideForEntityType,
+        entityId: data.overrideForEntityId,
+      },
+    }).catch((err) => logger.error('createDispatch: failed to write DispatchOverrideAudit', err));
+  }
 
   // If routeTemplateId is set, inherit stops from template
   if (data.routeTemplateId) {

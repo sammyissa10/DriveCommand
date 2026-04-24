@@ -83,38 +83,40 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   const dropdownPlaybooks =
     filteredPlaybooks.length > 0 ? filteredPlaybooks : playbooks;
 
-  const enableMutation = useMutation(
-    trpc.workflows.trigger.enableRecipe.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: trpc.workflows.trigger.listRecipes.queryKey() });
-        toast.success(`Recipe "${recipe.displayName}" enabled`);
-      },
-      onError: (err) => {
-        toast.error(err.message ?? 'Failed to enable recipe');
-      },
-    }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const enableMutation = useMutation<any, Error, any>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    trpc.workflows.trigger.enableRecipe.mutationOptions() as any,
   );
 
-  const disableMutation = useMutation(
-    trpc.workflows.trigger.disableRecipe.mutationOptions({
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: trpc.workflows.trigger.listRecipes.queryKey() });
-        toast.success(`Recipe "${recipe.displayName}" disabled`);
-      },
-      onError: (err) => {
-        toast.error(err.message ?? 'Failed to disable recipe');
-      },
-    }),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const disableMutation = useMutation<any, Error, any>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    trpc.workflows.trigger.disableRecipe.mutationOptions() as any,
   );
 
   const isPending = enableMutation.isPending || disableMutation.isPending;
 
-  function handleToggle(checked: boolean) {
+  async function handleToggle(checked: boolean) {
     if (checked) {
       if (!selectedPlaybookId) return; // Guard: no playbook selected
-      enableMutation.mutate({ recipeKey: recipe.key, playbookId: selectedPlaybookId });
+      try {
+        await enableMutation.mutateAsync({ recipeKey: recipe.key, playbookId: selectedPlaybookId });
+        await queryClient.invalidateQueries({ queryKey: trpc.workflows.trigger.listRecipes.queryKey() });
+        toast.success(`Recipe "${recipe.displayName}" enabled`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to enable recipe';
+        toast.error(msg);
+      }
     } else {
-      disableMutation.mutate({ recipeKey: recipe.key });
+      try {
+        await disableMutation.mutateAsync({ recipeKey: recipe.key });
+        await queryClient.invalidateQueries({ queryKey: trpc.workflows.trigger.listRecipes.queryKey() });
+        toast.success(`Recipe "${recipe.displayName}" disabled`);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Failed to disable recipe';
+        toast.error(msg);
+      }
     }
   }
 
@@ -180,7 +182,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             </span>
             <Switch
               checked={recipe.enabled}
-              onCheckedChange={handleToggle}
+              onCheckedChange={(v) => void handleToggle(v)}
               disabled={isPending || (!recipe.enabled && !canToggleOn)}
               aria-label={`${recipe.enabled ? 'Disable' : 'Enable'} recipe: ${recipe.displayName}`}
             />

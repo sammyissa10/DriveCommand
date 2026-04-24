@@ -39,6 +39,7 @@ interface LoadItem {
 interface DispatchListProps {
   driverMap: Record<string, string>;
   truckMap: Record<string, string>;
+  userRole?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -80,7 +81,7 @@ const STATUS_ACTIVE_CLASS: Record<string, string> = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function DispatchList({ driverMap, truckMap }: DispatchListProps) {
+export function DispatchList({ driverMap, truckMap, userRole }: DispatchListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -317,6 +318,7 @@ export function DispatchList({ driverMap, truckMap }: DispatchListProps) {
             truckMap={truckMap}
             onSuccess={handleNewDispatchSuccess}
             onCancel={() => setSheetOpen(false)}
+            userRole={userRole}
           />
         </SheetContent>
       </Sheet>

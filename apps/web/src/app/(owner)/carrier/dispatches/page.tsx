@@ -42,7 +42,7 @@ export default async function DispatchesPage() {
         </div>
       </div>
 
-      <DispatchList driverMap={driverMap} truckMap={truckMap} />
+      <DispatchList driverMap={driverMap} truckMap={truckMap} userRole={session.role} />
     </div>
   );
 }
