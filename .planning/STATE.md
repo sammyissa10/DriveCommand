@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 1 of 7 complete — 43-01 DONE
-Status: Phase 43 active — schema foundation complete (PlaybookInstance/StepInstance/PlaybookNotification tables, 4 enums, isDispatchReady fields, migration applied to Supabase)
-Last activity: 2026-04-24 - Completed 43-01: Phase 43 Schema Foundation (Prisma migration + Prisma client regen)
-Last session: 2026-04-24T05:02:35Z
-Stopped at: Completed 43-01-PLAN.md — 2 tasks auto, 8 files modified, 1 file created, migration applied
+Current Plan: Plan 2 of 7 complete — 43-02 DONE
+Status: Phase 43 active — instance + stepInstance Zod schemas added to @drivecommand/validation (generateInstanceSchema, completeStepSchema, skipStepSchema, getForEntitySchema, and 5 others)
+Last activity: 2026-04-24 - Completed 43-02: Zod Validation Schemas (instance.ts + stepInstance.ts + index re-exports)
+Last session: 2026-04-24T05:07:04Z
+Stopped at: Completed 43-02-PLAN.md — 2 tasks auto, 3 files modified, 2 files created
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -854,6 +854,8 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase quick]: Single-vehicle map centering uses setView(zoom 13) instead of fitBounds to avoid point-bbox over-zoom
 - [Phase quick-275]: Stop display uses stopType+sequenceOrder (CarrierStop has no name field); Dispatch display uses UUID prefix (no dispatchNumber field)
 - [Phase quick-282]: Stop-scoped messaging uses FleetMessage.stopId FK with dispatch-level tenant isolation and auto-resolved driver recipient from primaryDriver
+- [Phase 43-02]: stepResultSchema uses all-optional fields — service layer enforces type-specific requirements to avoid over-coupling schema to all 8 step types
+- [Phase 43-02]: Used z.record(z.string(), z.unknown()) for formData in stepResultSchema — Zod v4 requires two type arguments
 
 ### Pending Todos
 
@@ -1245,6 +1247,7 @@ None blocking immediate progress.
 - PlaybookStepItem exported from BuilderClient: single source of truth shared across BuilderCanvas/BuilderStepRow/StepDetailEditor — no duplicate interface definitions needed
 - updateStep onError moved to mutate() second arg: passing onError inside mutationOptions() for updateStep (returns complex Prisma include type) triggered TS2589; splitting to mutate() callback resolves it without loss of functionality
 - Native checkbox for FormFillEditor: @/components/ui/checkbox (shadcn) is not installed in this project; used native <input type="checkbox"> with accent-primary class — functionally equivalent
+| Phase 43 P02 | 2 | 2 tasks | 3 files |
 
 ## Session Continuity
 
