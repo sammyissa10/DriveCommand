@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest'
+
 /**
  * Mobile tap-target audit — workflow task screens.
  *
