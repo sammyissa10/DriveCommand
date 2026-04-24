@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 6 of 7 complete — 43-06 DONE
-Status: Phase 43 active — Tasks tab live in driver navigator; My Tasks feed, DocumentUpload, FormFill, Signature action screens complete; all tap targets ≥56px; TypeScript clean
-Last activity: 2026-04-24 - Completed 43-06: Mobile driver Tasks tab + My Tasks screen + 3 action screens (Document Upload, Form Fill, Signature) + TaskActionDispatcher (7 files created, 1 modified, 344s)
-Last session: 2026-04-24T16:24:00Z
-Stopped at: Completed 43-06-PLAN.md — 2 tasks auto, 7 files created, 1 modified, TypeScript clean
+Current Plan: Plan 7 of 7 complete — 43-07 DONE — Phase 43 COMPLETE
+Status: Phase 43 complete — full test suite passing: snapshot immutability, zero-blocker readiness, 7 completeStep validations, mobile tap-target audit (4 screens ≥56px); pre-existing auth test failures unrelated to this work
+Last activity: 2026-04-24 - Completed 43-07: Phase 43 test suite — 3 test files created, 3 mobile screen files fixed (tap targets), 303s
+Last session: 2026-04-24T16:32:27Z
+Stopped at: Completed 43-07-PLAN.md — 2 tasks auto, 6 files created/modified, all tests passing
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -111,6 +111,8 @@ Progress: [███████████████████████
 - Phase 43-03 (2026-04-24): Service layer + tRPC routers — generatePlaybookInstance/computeDispatchReadiness/completeStep/skipStep services, instanceRouter + stepInstanceRouter tRPC routers, workflowsRouter updated — 2 tasks, 6 files created, 1 file modified, 408s
 - Phase 43-04 (2026-04-24): Active Work Board + Checklist Detail UI — WorkBoardSection (3 swimlane columns: Needs Attention/In Progress/Completed Today), StartChecklistDialog (playbook+entity picker → instance.generate), ChecklistDetailClient (phase-grouped collapsible step rows, dispatch readiness banner, SkipDialog, ResultSheet), installed collapsible+dropdown-menu shadcn components — 2 tasks, 4 files created, 1 modified
 - Phase 43-05 (2026-04-24): Profile Checklists integration + mobile task API — Driver/Truck/CRM profiles show Checklists section (status badge + completion %), driver profile shows isDispatchReady badge, GET/POST complete/POST skip mobile endpoints at /api/mobile/driver/tasks, fireEvent TODOs in 3 action files — 2 tasks, 3 files created, 6 modified, 281s
+- Phase 43-06 (2026-04-24): Mobile driver Tasks tab + My Tasks screen + 3 action screens (Document Upload, Form Fill, Signature) + TaskActionDispatcher — 2 tasks, 7 files created, 1 modified, 344s
+- Phase 43-07 (2026-04-24): Phase 43 test suite — workflows-instance.test.ts (2 tests), workflows-complete-step.test.ts (7 tests), workflows-tap-targets.test.ts (4 tests); fixed backBtn+clearBtn tap targets 44→56px in 3 screen files — 2 tasks, 3 files created, 3 modified, 303s — Phase 43 COMPLETE
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -244,6 +246,12 @@ Progress: [███████████████████████
 - fireEvent TODO placed in inviteDriver (not accept-invitation route) — drivers.ts is the owner-facing create lifecycle point per spec intent
 - URL path parsing used for [id] extraction in mobile routes — withMobileAuth does not forward Next.js route params to handler
 - StatusBadge helper duplicated inline per page — avoids premature abstraction for a 10-line display component
+
+**Phase 43-07 decisions (Phase 43 test suite):**
+- Mobile tap-target test placed in apps/mobile/tests/ (not apps/mobile/src/__tests__/) — mobile project has no src/ directory; jest-expo default testMatch picks up tests/
+- SCREENS_DIR set to components/driver/workflows/ — actual screen location in mobile project (not src/screens/workflows/ as plan speculated)
+- Added 'Btn' to touchable-context heuristic to catch backBtn/clearBtn style names used in workflow screens
+- Back buttons (backBtn) and clear buttons (clearBtn) fixed from 44px to 56px in DocumentUploadScreen, FormFillScreen, SignatureScreen — spec mandates ≥56px for all interactive elements in task action screens
 
 **Phase 43-06 decisions (Mobile driver Tasks UI):**
 - Screen components placed in components/driver/workflows/ — mobile app has no src/ directory; components/ is the existing pattern
