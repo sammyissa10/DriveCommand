@@ -1252,6 +1252,7 @@ enum PlaybookCategory {
   COMPLIANCE
   PARTNER
   CUSTOM
+  VEHICLE_INSPECTION
 }
 
 enum InstanceStatus {
@@ -2015,7 +2016,7 @@ model PlaybookInstance {
 model StepInstance {
   id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   playbookInstanceId String       @db.Uuid
-  stepTemplateId     String       @db.Uuid
+  stepTemplateId     String?      @db.Uuid
   stepSnapshot       Json
   status             StepStatus   @default(NOT_STARTED)
   assigneeRole       AssigneeRole
@@ -2031,7 +2032,7 @@ model StepInstance {
   updatedAt          DateTime     @updatedAt @db.Timestamptz
 
   playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
-  stepTemplate     StepTemplate     @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
+  stepTemplate     StepTemplate?    @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
 
   @@index([playbookInstanceId])
   @@index([assignedUserId, status])

@@ -657,7 +657,8 @@ export const PlaybookCategory: {
   OPERATIONS: 'OPERATIONS',
   COMPLIANCE: 'COMPLIANCE',
   PARTNER: 'PARTNER',
-  CUSTOM: 'CUSTOM'
+  CUSTOM: 'CUSTOM',
+  VEHICLE_INSPECTION: 'VEHICLE_INSPECTION'
 };
 
 export type PlaybookCategory = (typeof PlaybookCategory)[keyof typeof PlaybookCategory]
@@ -84238,7 +84239,7 @@ export namespace Prisma {
   export type StepInstanceGroupByOutputType = {
     id: string
     playbookInstanceId: string
-    stepTemplateId: string
+    stepTemplateId: string | null
     stepSnapshot: JsonValue
     status: $Enums.StepStatus
     assigneeRole: $Enums.AssigneeRole
@@ -84289,7 +84290,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }, ExtArgs["result"]["stepInstance"]>
 
   export type StepInstanceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -84310,7 +84311,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }, ExtArgs["result"]["stepInstance"]>
 
   export type StepInstanceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -84331,7 +84332,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }, ExtArgs["result"]["stepInstance"]>
 
   export type StepInstanceSelectScalar = {
@@ -84356,27 +84357,27 @@ export namespace Prisma {
   export type StepInstanceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookInstanceId" | "stepTemplateId" | "stepSnapshot" | "status" | "assigneeRole" | "assignedUserId" | "completedByUserId" | "completedAt" | "result" | "skipReason" | "skippedByUserId" | "dueDate" | "isOverdue" | "createdAt" | "updatedAt", ExtArgs["result"]["stepInstance"]>
   export type StepInstanceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }
   export type StepInstanceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }
   export type StepInstanceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playbookInstance?: boolean | PlaybookInstanceDefaultArgs<ExtArgs>
-    stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
+    stepTemplate?: boolean | StepInstance$stepTemplateArgs<ExtArgs>
   }
 
   export type $StepInstancePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "StepInstance"
     objects: {
       playbookInstance: Prisma.$PlaybookInstancePayload<ExtArgs>
-      stepTemplate: Prisma.$StepTemplatePayload<ExtArgs>
+      stepTemplate: Prisma.$StepTemplatePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       playbookInstanceId: string
-      stepTemplateId: string
+      stepTemplateId: string | null
       stepSnapshot: Prisma.JsonValue
       status: $Enums.StepStatus
       assigneeRole: $Enums.AssigneeRole
@@ -84785,7 +84786,7 @@ export namespace Prisma {
   export interface Prisma__StepInstanceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     playbookInstance<T extends PlaybookInstanceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PlaybookInstanceDefaultArgs<ExtArgs>>): Prisma__PlaybookInstanceClient<$Result.GetResult<Prisma.$PlaybookInstancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    stepTemplate<T extends StepTemplateDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StepTemplateDefaultArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    stepTemplate<T extends StepInstance$stepTemplateArgs<ExtArgs> = {}>(args?: Subset<T, StepInstance$stepTemplateArgs<ExtArgs>>): Prisma__StepTemplateClient<$Result.GetResult<Prisma.$StepTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -85229,6 +85230,25 @@ export namespace Prisma {
      * Limit how many StepInstances to delete.
      */
     limit?: number
+  }
+
+  /**
+   * StepInstance.stepTemplate
+   */
+  export type StepInstance$stepTemplateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StepTemplate
+     */
+    select?: StepTemplateSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StepTemplate
+     */
+    omit?: StepTemplateOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StepTemplateInclude<ExtArgs> | null
+    where?: StepTemplateWhereInput
   }
 
   /**
@@ -95065,7 +95085,7 @@ export namespace Prisma {
     NOT?: StepInstanceWhereInput | StepInstanceWhereInput[]
     id?: UuidFilter<"StepInstance"> | string
     playbookInstanceId?: UuidFilter<"StepInstance"> | string
-    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidNullableFilter<"StepInstance"> | string | null
     stepSnapshot?: JsonFilter<"StepInstance">
     status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
@@ -95080,13 +95100,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"StepInstance"> | Date | string
     updatedAt?: DateTimeFilter<"StepInstance"> | Date | string
     playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
-    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+    stepTemplate?: XOR<StepTemplateNullableScalarRelationFilter, StepTemplateWhereInput> | null
   }
 
   export type StepInstanceOrderByWithRelationInput = {
     id?: SortOrder
     playbookInstanceId?: SortOrder
-    stepTemplateId?: SortOrder
+    stepTemplateId?: SortOrderInput | SortOrder
     stepSnapshot?: SortOrder
     status?: SortOrder
     assigneeRole?: SortOrder
@@ -95110,7 +95130,7 @@ export namespace Prisma {
     OR?: StepInstanceWhereInput[]
     NOT?: StepInstanceWhereInput | StepInstanceWhereInput[]
     playbookInstanceId?: UuidFilter<"StepInstance"> | string
-    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidNullableFilter<"StepInstance"> | string | null
     stepSnapshot?: JsonFilter<"StepInstance">
     status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
@@ -95125,13 +95145,13 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"StepInstance"> | Date | string
     updatedAt?: DateTimeFilter<"StepInstance"> | Date | string
     playbookInstance?: XOR<PlaybookInstanceScalarRelationFilter, PlaybookInstanceWhereInput>
-    stepTemplate?: XOR<StepTemplateScalarRelationFilter, StepTemplateWhereInput>
+    stepTemplate?: XOR<StepTemplateNullableScalarRelationFilter, StepTemplateWhereInput> | null
   }, "id">
 
   export type StepInstanceOrderByWithAggregationInput = {
     id?: SortOrder
     playbookInstanceId?: SortOrder
-    stepTemplateId?: SortOrder
+    stepTemplateId?: SortOrderInput | SortOrder
     stepSnapshot?: SortOrder
     status?: SortOrder
     assigneeRole?: SortOrder
@@ -95156,7 +95176,7 @@ export namespace Prisma {
     NOT?: StepInstanceScalarWhereWithAggregatesInput | StepInstanceScalarWhereWithAggregatesInput[]
     id?: UuidWithAggregatesFilter<"StepInstance"> | string
     playbookInstanceId?: UuidWithAggregatesFilter<"StepInstance"> | string
-    stepTemplateId?: UuidWithAggregatesFilter<"StepInstance"> | string
+    stepTemplateId?: UuidNullableWithAggregatesFilter<"StepInstance"> | string | null
     stepSnapshot?: JsonWithAggregatesFilter<"StepInstance">
     status?: EnumStepStatusWithAggregatesFilter<"StepInstance"> | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleWithAggregatesFilter<"StepInstance"> | $Enums.AssigneeRole
@@ -102800,13 +102820,13 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     playbookInstance: PlaybookInstanceCreateNestedOneWithoutStepInstancesInput
-    stepTemplate: StepTemplateCreateNestedOneWithoutStepInstancesInput
+    stepTemplate?: StepTemplateCreateNestedOneWithoutStepInstancesInput
   }
 
   export type StepInstanceUncheckedCreateInput = {
     id?: string
     playbookInstanceId: string
-    stepTemplateId: string
+    stepTemplateId?: string | null
     stepSnapshot: JsonNullValueInput | InputJsonValue
     status?: $Enums.StepStatus
     assigneeRole: $Enums.AssigneeRole
@@ -102838,13 +102858,13 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     playbookInstance?: PlaybookInstanceUpdateOneRequiredWithoutStepInstancesNestedInput
-    stepTemplate?: StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput
+    stepTemplate?: StepTemplateUpdateOneWithoutStepInstancesNestedInput
   }
 
   export type StepInstanceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     playbookInstanceId?: StringFieldUpdateOperationsInput | string
-    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
     stepSnapshot?: JsonNullValueInput | InputJsonValue
     status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
@@ -102863,7 +102883,7 @@ export namespace Prisma {
   export type StepInstanceCreateManyInput = {
     id?: string
     playbookInstanceId: string
-    stepTemplateId: string
+    stepTemplateId?: string | null
     stepSnapshot: JsonNullValueInput | InputJsonValue
     status?: $Enums.StepStatus
     assigneeRole: $Enums.AssigneeRole
@@ -102899,7 +102919,7 @@ export namespace Prisma {
   export type StepInstanceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     playbookInstanceId?: StringFieldUpdateOperationsInput | string
-    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
     stepSnapshot?: JsonNullValueInput | InputJsonValue
     status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
@@ -108421,6 +108441,11 @@ export namespace Prisma {
   export type PlaybookInstanceScalarRelationFilter = {
     is?: PlaybookInstanceWhereInput
     isNot?: PlaybookInstanceWhereInput
+  }
+
+  export type StepTemplateNullableScalarRelationFilter = {
+    is?: StepTemplateWhereInput | null
+    isNot?: StepTemplateWhereInput | null
   }
 
   export type StepInstanceCountOrderByAggregateInput = {
@@ -117258,10 +117283,12 @@ export namespace Prisma {
     update?: XOR<XOR<PlaybookInstanceUpdateToOneWithWhereWithoutStepInstancesInput, PlaybookInstanceUpdateWithoutStepInstancesInput>, PlaybookInstanceUncheckedUpdateWithoutStepInstancesInput>
   }
 
-  export type StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput = {
+  export type StepTemplateUpdateOneWithoutStepInstancesNestedInput = {
     create?: XOR<StepTemplateCreateWithoutStepInstancesInput, StepTemplateUncheckedCreateWithoutStepInstancesInput>
     connectOrCreate?: StepTemplateCreateOrConnectWithoutStepInstancesInput
     upsert?: StepTemplateUpsertWithoutStepInstancesInput
+    disconnect?: StepTemplateWhereInput | boolean
+    delete?: StepTemplateWhereInput | boolean
     connect?: StepTemplateWhereUniqueInput
     update?: XOR<XOR<StepTemplateUpdateToOneWithWhereWithoutStepInstancesInput, StepTemplateUpdateWithoutStepInstancesInput>, StepTemplateUncheckedUpdateWithoutStepInstancesInput>
   }
@@ -154689,7 +154716,7 @@ export namespace Prisma {
     NOT?: StepInstanceScalarWhereInput | StepInstanceScalarWhereInput[]
     id?: UuidFilter<"StepInstance"> | string
     playbookInstanceId?: UuidFilter<"StepInstance"> | string
-    stepTemplateId?: UuidFilter<"StepInstance"> | string
+    stepTemplateId?: UuidNullableFilter<"StepInstance"> | string | null
     stepSnapshot?: JsonFilter<"StepInstance">
     status?: EnumStepStatusFilter<"StepInstance"> | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFilter<"StepInstance"> | $Enums.AssigneeRole
@@ -155392,12 +155419,12 @@ export namespace Prisma {
     isOverdue?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    stepTemplate: StepTemplateCreateNestedOneWithoutStepInstancesInput
+    stepTemplate?: StepTemplateCreateNestedOneWithoutStepInstancesInput
   }
 
   export type StepInstanceUncheckedCreateWithoutPlaybookInstanceInput = {
     id?: string
-    stepTemplateId: string
+    stepTemplateId?: string | null
     stepSnapshot: JsonNullValueInput | InputJsonValue
     status?: $Enums.StepStatus
     assigneeRole: $Enums.AssigneeRole
@@ -168175,7 +168202,7 @@ export namespace Prisma {
 
   export type StepInstanceCreateManyPlaybookInstanceInput = {
     id?: string
-    stepTemplateId: string
+    stepTemplateId?: string | null
     stepSnapshot: JsonNullValueInput | InputJsonValue
     status?: $Enums.StepStatus
     assigneeRole: $Enums.AssigneeRole
@@ -168219,12 +168246,12 @@ export namespace Prisma {
     isOverdue?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    stepTemplate?: StepTemplateUpdateOneRequiredWithoutStepInstancesNestedInput
+    stepTemplate?: StepTemplateUpdateOneWithoutStepInstancesNestedInput
   }
 
   export type StepInstanceUncheckedUpdateWithoutPlaybookInstanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
     stepSnapshot?: JsonNullValueInput | InputJsonValue
     status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole
@@ -168242,7 +168269,7 @@ export namespace Prisma {
 
   export type StepInstanceUncheckedUpdateManyWithoutPlaybookInstanceInput = {
     id?: StringFieldUpdateOperationsInput | string
-    stepTemplateId?: StringFieldUpdateOperationsInput | string
+    stepTemplateId?: NullableStringFieldUpdateOperationsInput | string | null
     stepSnapshot?: JsonNullValueInput | InputJsonValue
     status?: EnumStepStatusFieldUpdateOperationsInput | $Enums.StepStatus
     assigneeRole?: EnumAssigneeRoleFieldUpdateOperationsInput | $Enums.AssigneeRole

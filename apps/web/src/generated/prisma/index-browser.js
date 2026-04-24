@@ -1459,7 +1459,8 @@ exports.PlaybookCategory = exports.$Enums.PlaybookCategory = {
   OPERATIONS: 'OPERATIONS',
   COMPLIANCE: 'COMPLIANCE',
   PARTNER: 'PARTNER',
-  CUSTOM: 'CUSTOM'
+  CUSTOM: 'CUSTOM',
+  VEHICLE_INSPECTION: 'VEHICLE_INSPECTION'
 };
 
 exports.PhaseType = exports.$Enums.PhaseType = {
