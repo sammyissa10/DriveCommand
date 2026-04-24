@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 42 Workflow Engine Foundation — IN PROGRESS
-Current Plan: Plan 5 of 6 complete — 42-05 DONE
-Status: Plan 05 complete — /checklists dashboard with sidebar Workflows group, entity-type filter tabs, PlaybookCard grid, CreatePlaybookCard, and CreatePlaybookDialog wired to tRPC playbook.create
-Last activity: 2026-04-24 - Completed 42-05: Checklists Dashboard UI
-Last session: 2026-04-24T03:14:39Z
-Stopped at: Completed 42-05-PLAN.md — 2 tasks, 6 files created, 1 file modified, branch feat/workflow-engine-spec
+Current Plan: Plan 6 of 6 complete — 42-06 DONE
+Status: Plan 06 complete — Playbook Builder UI: 3-column DnD builder (library + canvas + detail editor), 5 phase sections, all 8 step-type editors, drag-to-add from library, drag-to-reorder within and across phases, overrideConfig persistence via updateStep
+Last activity: 2026-04-24 - Completed 42-06: Playbook Builder UI
+Last session: 2026-04-24T03:36:09Z
+Stopped at: Completed 42-06-PLAN.md — 2 tasks, 11 files created, branch feat/workflow-engine-spec
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -105,6 +105,7 @@ Progress: [███████████████████████
 - Phase 42-03 (2026-04-23): tRPC foundation — tRPC v11 installed (6 packages), createTRPCContext (Supabase session), tenantMemberProcedure + adminProcedure, /api/trpc route handler, TRPCReactProvider + useTRPC hook, server-side caller, wired into (owner)/layout.tsx — 2 tasks, 8 files, 717s
 - Phase 42-04 (2026-04-24): tRPC workflow engine routers — stepTemplateRouter (5 procedures), playbookRouter (9 procedures incl. updateStep + reorderSteps), reorderPlaybookSteps transactional service, workflowsRouter, mounted on appRouter end-to-end — 2 tasks, 5 files, ~600s
 - Phase 42-05 (2026-04-24): Checklists dashboard UI — Workflows SidebarGroup + ListChecks nav link, /checklists page with entity-type filter tabs, PlaybookCard grid (color-coded category icons, step count, entity badge), CreatePlaybookCard (dashed-border), CreatePlaybookDialog (controlled form calling workflows.playbook.create tRPC mutation) — 2 tasks, 7 files, ~600s
+- Phase 42-06 (2026-04-24): Playbook Builder UI — 3-column DnD builder (/checklists/playbooks/[id]/edit), BuilderClient + BuilderCanvas + 5 PhaseSection columns with SortableContext, BuilderStepRow, StepLibraryPanel (filterable, draggable templates), NewStepTemplateButton dialog, StepDetailEditor with all 8 step-type editors (FormFillEditor/InspectionItemEditor/6 SimpleEditors), overrideConfig persistence via updateStep — 2 tasks, 11 files, ~900s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -1194,6 +1195,7 @@ None blocking immediate progress.
 | Phase 42-03 | 717s | 2 tasks | 8 files |
 | Phase 42-04 | ~600s | 2 tasks | 5 files |
 | Phase 42-05 | ~600s | 2 tasks | 7 files |
+| Phase 42-06 | ~900s | 2 tasks | 11 files |
 
 **Phase 42-01 decisions (Workflow Engine DB foundation):**
 - Idempotency sentinel: 'CDL Driver Onboarding' playbook name used as existence check — simple, no extra schema column needed
@@ -1224,9 +1226,15 @@ None blocking immediate progress.
 - PlaybookCard links to /checklists/playbooks/[id]/edit before Plan 06 builds the page — 404 expected until then, by design
 - Naming lint: all JSX text uses user-facing names; internal names (StepTemplate/PlaybookInstance/PlaybookTrigger/StepInstance) only appear in import/type lines — lint test in Plan 07 will enforce this
 
+**Phase 42-06 decisions (Playbook Builder UI):**
+- normaliseSteps() helper instead of direct as-cast: Next.js build TypeScript is stricter than tsc --noEmit; playbook.steps as PlaybookStepItem[] caused TS2589 instantiation-too-deep in build worker; normalising via an any-typed function breaks the inference chain cleanly
+- PlaybookStepItem exported from BuilderClient: single source of truth shared across BuilderCanvas/BuilderStepRow/StepDetailEditor — no duplicate interface definitions needed
+- updateStep onError moved to mutate() second arg: passing onError inside mutationOptions() for updateStep (returns complex Prisma include type) triggered TS2589; splitting to mutate() callback resolves it without loss of functionality
+- Native checkbox for FormFillEditor: @/components/ui/checkbox (shadcn) is not installed in this project; used native <input type="checkbox"> with accent-primary class — functionally equivalent
+
 ## Session Continuity
 
-Last session: 2026-04-24T03:14:39Z
-Stopped at: Completed 42-05-PLAN.md — 2 tasks, 6 files created, 1 file modified, branch feat/workflow-engine-spec
+Last session: 2026-04-24T03:36:09Z
+Stopped at: Completed 42-06-PLAN.md — 2 tasks, 11 files created, branch feat/workflow-engine-spec
 Resume file: None
-Next action: Continue Phase 42 — Plan 06 (Playbook Builder UI) is next.
+Next action: Phase 42 complete — all 6 plans done. Phase 42 UAT goal achievable (build Pre-Trip Inspection in under 10 minutes).
