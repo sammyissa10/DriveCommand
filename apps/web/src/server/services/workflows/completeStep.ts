@@ -6,7 +6,7 @@
  * then recomputes dispatch readiness.
  *
  * Type-specific validation follows spec Section 6.3.
- * INSPECTION_ITEM is explicitly rejected — handled by failInspectionItem (Phase 44).
+ * INSPECTION_ITEM PASS flows through completeStep; FAIL is routed to failInspectionItem.
  *
  * TODO(phase-44): fireEvent('STEP_COMPLETE', stepInstance, tenantId)
  */
@@ -105,8 +105,12 @@ function validateStepResult(stepType: string, result: StepResult) {
       }
       break;
     case 'INSPECTION_ITEM':
-      // Inspection items use failInspectionItem (Phase 44) — reject here
-      throw new TRPCError({ code: 'BAD_REQUEST', message: 'USE_FAIL_ENDPOINT' });
+      // PASS flows through completeStep; FAIL routes to failInspectionItem
+      if (!result.passOrFail || result.passOrFail === 'fail') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'USE_FAIL_ENDPOINT' });
+      }
+      // passOrFail === 'pass' — no additional validation required
+      break;
     case 'TRAINING_ACK':
       if (!result.acknowledged && !result.note) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'MISSING_ACK' });

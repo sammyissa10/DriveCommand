@@ -41,3 +41,22 @@ export type StepResult = z.infer<typeof stepResultSchema>;
 export type CompleteStepInput = z.infer<typeof completeStepSchema>;
 export type SkipStepInput = z.infer<typeof skipStepSchema>;
 export type GetForDriverInput = z.infer<typeof getForDriverSchema>;
+
+// Schema for stepInstance.fail (inspection fail capture)
+export const failInspectionItemSchema = z.object({
+  stepInstanceId: z.string().uuid(),
+  result: z.object({
+    photoUrls: z.array(z.string()).default([]),
+    note: z.string().max(1000).optional(),
+  }),
+});
+
+export type FailInspectionItemInput = z.infer<typeof failInspectionItemSchema>;
+
+// Schema for stepInstance.approve (mechanic sign-off)
+export const approveStepSchema = z.object({
+  stepInstanceId: z.string().uuid(),
+  note: z.string().max(1000).optional(),
+});
+
+export type ApproveStepInput = z.infer<typeof approveStepSchema>;
