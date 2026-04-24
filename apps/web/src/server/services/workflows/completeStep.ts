@@ -8,7 +8,8 @@
  * Type-specific validation follows spec Section 6.3.
  * INSPECTION_ITEM PASS flows through completeStep; FAIL is routed to failInspectionItem.
  *
- * TODO(phase-44): fireEvent('STEP_COMPLETE', stepInstance, tenantId)
+ * Note: STEP_COMPLETE is NOT a TriggerEvent per spec Section 5.1 — step completion
+ * does not spawn playbooks. The previously planned TODO has been removed.
  */
 import { prisma } from '@/lib/db/prisma';
 import { TRPCError } from '@trpc/server';
@@ -78,8 +79,6 @@ export async function completeStep(args: {
 
   // Recompute dispatch readiness
   await computeDispatchReadiness(stepInstance.playbookInstanceId);
-
-  // TODO(phase-44): fireEvent('STEP_COMPLETE', stepInstance, tenantId)
 
   // Notify next assignee (best-effort)
   await notifyNextStep(stepInstance.playbookInstanceId, tenantId);

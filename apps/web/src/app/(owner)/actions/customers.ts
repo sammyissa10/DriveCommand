@@ -9,6 +9,7 @@ import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } f
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { logger } from '@/lib/logger';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 /**
  * Create a new customer.
@@ -56,7 +57,16 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
         tenantId,
       },
     });
-    // TODO(phase-44): fireEvent('ON_PARTNER_CREATE', customer, tenantId)
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    try {
+      await fireEvent({
+        event: 'ON_PARTNER_CREATE',
+        entityData: { ...customer, id: customer.id },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[createCustomer] fireEvent failed', { customerId: customer.id, err });
+    }
     createdId = customer.id;
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {

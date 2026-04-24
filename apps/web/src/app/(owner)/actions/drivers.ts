@@ -16,6 +16,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
 import { logger } from '@/lib/logger';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 /**
  * Invite a new driver.
@@ -104,7 +105,24 @@ export async function inviteDriver(prevState: ActionState | null, formData: Form
         status: 'PENDING',
       },
     });
-    // TODO(phase-44): fireEvent('ON_DRIVER_CREATE', invitation, tenantId)
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    // Note: DriverInvitation has no driverType field, so entityData includes only id + email.
+    // CDL/NON_CDL/OWNER_OP recipe conditions will not match without driverType — this is a known
+    // limitation documented in research Open Question 1. The ON_DRIVER_CREATE event fires; only
+    // the blanket (no-condition) triggers will activate until driverType is added to invitation flow.
+    try {
+      await fireEvent({
+        event: 'ON_DRIVER_CREATE',
+        entityData: {
+          id: invitation.id, // DriverInvitation.id — entity the checklist will attach to
+          email: invitation.email,
+        },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[inviteDriver] fireEvent failed', { invitationId: invitation.id, err });
+      // Do not throw — the invitation is already created successfully
+    }
 
     // Fetch tenant name for the invitation email
     let organizationName = 'your fleet';

@@ -9,6 +9,7 @@ import { Prisma } from '@/generated/prisma';
  */
 
 import { requireRole, requireAuth } from '@/lib/auth/supabase';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 /**
  * Null-safe FormData string extraction helpers.
@@ -111,7 +112,16 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
         updatedById: userId,
       },
     });
-    // TODO(phase-44): fireEvent('ON_VEHICLE_CREATE', truck, tenantId)
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    try {
+      await fireEvent({
+        event: 'ON_VEHICLE_CREATE',
+        entityData: { ...truck, id: truck.id },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[createTruck] fireEvent failed', { truckId: truck.id, err });
+    }
     truckId = truck.id;
   } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN
