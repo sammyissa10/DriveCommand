@@ -7,10 +7,12 @@ import { stepTemplateRouter } from './stepTemplate';
 import { playbookRouter } from './playbook';
 import { instanceRouter } from './instance';
 import { stepInstanceRouter } from './stepInstance';
+import { triggerRouter } from './trigger';
 
 export const workflowsRouter = router({
   stepTemplate: stepTemplateRouter,
   playbook: playbookRouter,
   instance: instanceRouter,
   stepInstance: stepInstanceRouter,
+  trigger: triggerRouter,
 });

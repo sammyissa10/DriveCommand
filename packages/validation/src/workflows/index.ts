@@ -3,3 +3,4 @@ export * from './stepTemplate';
 export * from './playbook';
 export * from './instance';
 export * from './stepInstance';
+export * from './trigger';
