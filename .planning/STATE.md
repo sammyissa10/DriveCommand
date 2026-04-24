@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
-Current Plan: Plan 4 of 7 complete — 43-04 DONE
-Status: Phase 43 active — Active Work Board swimlanes + Start Checklist dialog added to /checklists dashboard; Active Checklist Detail page live at /checklists/instances/[id] with phase-grouped step rows, dispatch readiness banner, skip-with-reason, and view-result sheet
-Last activity: 2026-04-24 - Completed 43-04: Active Work Board + Checklist Detail page (4 files created, 1 modified, 2 shadcn components installed)
-Last session: 2026-04-24T11:07:00Z
-Stopped at: Completed 43-04-PLAN.md — 2 tasks auto, 4 files created, 1 modified, naming lint passes, TypeScript clean
+Current Plan: Plan 5 of 7 complete — 43-05 DONE
+Status: Phase 43 active — Driver/Truck/CRM profiles have Checklists sections; driver profile shows isDispatchReady badge; mobile task fetch/complete/skip REST endpoints live at /api/mobile/driver/tasks
+Last activity: 2026-04-24 - Completed 43-05: Profile Checklists integration + mobile task API (3 mobile routes created, 3 profile pages updated, 3 action files annotated)
+Last session: 2026-04-24T16:15:00Z
+Stopped at: Completed 43-05-PLAN.md — 2 tasks auto, 3 files created, 6 modified, TypeScript clean, naming lint passes
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -110,6 +110,7 @@ Progress: [███████████████████████
 - Phase 43-01 (2026-04-24): Phase 43 schema foundation — InstanceStatus/StepStatus/NotifType/NotifChannel enums, PlaybookInstance+StepInstance+PlaybookNotification models, isDispatchReady on User+Truck, 4 dispatch-blocker columns on PlaybookStep, migration applied to Supabase with RLS policies, Prisma client regenerated — 2 tasks, 8 files, ~5min
 - Phase 43-03 (2026-04-24): Service layer + tRPC routers — generatePlaybookInstance/computeDispatchReadiness/completeStep/skipStep services, instanceRouter + stepInstanceRouter tRPC routers, workflowsRouter updated — 2 tasks, 6 files created, 1 file modified, 408s
 - Phase 43-04 (2026-04-24): Active Work Board + Checklist Detail UI — WorkBoardSection (3 swimlane columns: Needs Attention/In Progress/Completed Today), StartChecklistDialog (playbook+entity picker → instance.generate), ChecklistDetailClient (phase-grouped collapsible step rows, dispatch readiness banner, SkipDialog, ResultSheet), installed collapsible+dropdown-menu shadcn components — 2 tasks, 4 files created, 1 modified
+- Phase 43-05 (2026-04-24): Profile Checklists integration + mobile task API — Driver/Truck/CRM profiles show Checklists section (status badge + completion %), driver profile shows isDispatchReady badge, GET/POST complete/POST skip mobile endpoints at /api/mobile/driver/tasks, fireEvent TODOs in 3 action files — 2 tasks, 3 files created, 6 modified, 281s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -237,6 +238,12 @@ Progress: [███████████████████████
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
 - Rate limit key prefix dir: (not dist:) to isolate directions quota from distance quota on shared geocodingLimiter
 - Coordinate order [lng, lat] preserved end-to-end — GeoJSON standard, matches Mapbox ShapeSource natively, no swap needed on mobile
+
+**Phase 43-05 decisions (Profile Checklists + mobile task API):**
+- isDispatchReady badge is display-only in Phase 43 — no enforcement or gating, shown next to driver name when instances exist
+- fireEvent TODO placed in inviteDriver (not accept-invitation route) — drivers.ts is the owner-facing create lifecycle point per spec intent
+- URL path parsing used for [id] extraction in mobile routes — withMobileAuth does not forward Next.js route params to handler
+- StatusBadge helper duplicated inline per page — avoids premature abstraction for a 10-line display component
 
 **Phase 43-03 decisions (Service layer + tRPC routers):**
 - isDispatchBlocker read from stepSnapshot (not PlaybookStep template) — snapshot immutability is the invariant; live template changes must not affect running checklists
