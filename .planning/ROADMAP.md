@@ -529,6 +529,69 @@ Plans:
 
 ---
 
+## v7.0 Checklists & Workflows
+
+**Milestone Goal:** Build the Workflow Template Engine — a configurable checklist system that lets carriers define reusable playbooks (driver onboarding, vehicle inspections, partner setup), automatically assign them when real-world events happen, and block dispatch until required steps are complete. Replaces spreadsheets, paper DVIRs, and tribal knowledge.
+
+**Spec:** `docs/specs/workflow-engine.md` (source of truth for all implementation details)
+
+---
+
+### Phase 42: Workflow Engine 1 — Foundation — Playbook Builder, Step Library, and starter seed data
+
+**Goal:** Build the template creation layer. Admin creates Playbooks, adds Steps from a library, configures categories, and saves. Seed 3 starter playbooks for new tenants. No runtime, no triggers, no mobile. At the end of this phase, an admin can open Checklists & Workflows from the sidebar and build a functional Pre-Trip Inspection checklist in under 10 minutes.
+**Depends on:** None (new feature, additive)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 43: Workflow Engine 2 — Execution — Active Checklists, step completion, and dispatch readiness
+
+**Goal:** Build the runtime layer. Dispatchers manually create Active Checklists from Playbooks, drivers complete non-inspection steps on mobile (document upload, form fill, signature, training ack). `isDispatchReady` surfaced on driver profile. Active Work Board swimlanes appear on the dashboard. Dispatch enforcement not yet wired — readiness is surfaced but not blocking.
+**Depends on:** Phase 42 (Playbook templates must exist)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 44: Workflow Engine 3 — Inspection Mode — Full-screen DVIR, fail-capture, mechanic sign-offs
+
+**Goal:** Build the signature UX of the product: full-screen Inspection Mode for drivers (card-by-card pass/fail, fail photo capture, completion moment). Failed inspection items auto-create mechanic approval steps. Vehicle `isDispatchReady` computed and enforced. Push + SMS notifications for `STEP_FAILED` and `APPROVAL_NEEDED`.
+**Depends on:** Phase 43 (execution layer complete)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 45: Workflow Engine 4 — Automation — Auto-Start Rules, event triggers, dispatch enforcement
+
+**Goal:** Playbooks fire automatically based on lifecycle events (driver create, dispatch depart/deliver, etc.). Tenants toggle recipe presets from the Automation page. Dispatch creation blocks non-ready drivers with an admin override + audit trail. Full notification suite across all types and channels.
+**Depends on:** Phase 44 (readiness computation stable)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 46: Workflow Engine 5 — Polish & Analytics — Preview panel, SMS, overdue alerts, analytics
+
+**Goal:** Builder Preview Panel (phone-frame driver view + dispatcher card). SMS delivery confirmed end-to-end in staging. Overdue alerts fire 24h after due date. Analytics dashboard: completion rate per playbook, average time, step drop-off. Daily email digest for Safety Managers. Skip-with-reason audit trail visible on instance detail.
+**Depends on:** Phase 45 (full feature complete)
+**Plans:** TBD (after context + planning)
+
+Plans:
+- [ ] TBD
+
+---
+
 ## v6.0 Owner Portal Permissions
 
 ### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
