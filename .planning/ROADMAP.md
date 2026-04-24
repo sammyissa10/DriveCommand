@@ -558,10 +558,16 @@ Plans:
 
 **Goal:** Build the runtime layer. Dispatchers manually create Active Checklists from Playbooks, drivers complete non-inspection steps on mobile (document upload, form fill, signature, training ack). `isDispatchReady` surfaced on driver profile. Active Work Board swimlanes appear on the dashboard. Dispatch enforcement not yet wired — readiness is surfaced but not blocking.
 **Depends on:** Phase 42 (Playbook templates must exist)
-**Plans:** TBD (after context + planning)
+**Plans:** 7 plans
 
 Plans:
-- [ ] TBD
+- [ ] 43-01-PLAN.md — Prisma schema: PlaybookInstance, StepInstance, PlaybookNotification, enums, isDispatchReady fields, RLS policies
+- [ ] 43-02-PLAN.md — Zod validation schemas for instance and stepInstance inputs
+- [ ] 43-03-PLAN.md — Service layer (generatePlaybookInstance, computeDispatchReadiness, completeStep, skipStep) + tRPC routers (instance, stepInstance)
+- [ ] 43-04-PLAN.md — Active Work Board swimlanes on /checklists dashboard + Active Checklist Detail screen
+- [ ] 43-05-PLAN.md — Checklists tabs on Driver/Vehicle/Partner profiles + isDispatchReady badge + mobile REST API endpoints + fireEvent TODOs
+- [ ] 43-06-PLAN.md — Mobile: Tasks tab + My Tasks screen + DocumentUpload/FormFill/Signature screens
+- [ ] 43-07-PLAN.md — Tests: snapshot immutability, readiness, completeStep type validation, mobile tap-target audit
 
 ---
 
