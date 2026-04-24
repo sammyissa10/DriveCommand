@@ -11,7 +11,7 @@ Mapbox.setAccessToken(
   (Constants.expoConfig?.extra?.mapboxToken as string | undefined) ??
   ''
 )
-import { House, Truck, MessageSquare, Navigation, Grid2X2 } from 'lucide-react-native'
+import { House, Truck, MessageSquare, Navigation, Grid2X2, CheckSquare } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
@@ -28,6 +28,7 @@ import type { HOSStatus } from '@drivecommand/types'
 
 const LAST_READ_KEY = 'messages_last_read_at'
 const UNREAD_POLL_INTERVAL_MS = 30_000
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000'
 
 /**
  * Small colored dot indicating background GPS status.
@@ -80,6 +81,7 @@ export default function DriverLayout() {
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
   const [showNotifModal, setShowNotifModal] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [openTaskCount, setOpenTaskCount] = useState(0)
   const [hasActiveLoad, setHasActiveLoad] = useState(false)
 
   // Show notification permission modal on first login
@@ -130,21 +132,40 @@ export default function DriverLayout() {
     fetchUnreadCount()
   }, [fetchUnreadCount])
 
+  // Fetch open task count — best-effort, used for Tasks tab badge
+  const fetchTaskCount = useCallback(async () => {
+    if (!token) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mobile/driver/tasks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      setOpenTaskCount(data.stepInstances?.length ?? 0)
+    } catch {
+      // Best-effort — don't disrupt navigation if this fails
+    }
+  }, [token])
+
+  useEffect(() => {
+    fetchTaskCount()
+  }, [fetchTaskCount])
+
   // Poll unread count every 30s
   useEffect(() => {
     const timer = setInterval(fetchUnreadCount, UNREAD_POLL_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [fetchUnreadCount])
 
-  // Refresh unread count when app comes back to foreground
+  // Refresh unread count and task count when app comes back to foreground
   useEffect(() => {
     const sub = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
         fetchUnreadCount()
+        fetchTaskCount()
       }
     })
     return () => sub.remove()
-  }, [fetchUnreadCount])
+  }, [fetchUnreadCount, fetchTaskCount])
 
   const { gpsStatus } = useBackgroundGPS(hosStatus, hasActiveLoad)
   const { isOnline, isSyncing, pendingCount, failedCount, retryFailed } = useOfflineSync()
@@ -250,7 +271,28 @@ export default function DriverLayout() {
           listeners={{ tabPress: () => haptic.light() }}
         />
 
-        {/* Tab 5: More — NEW */}
+        {/* Tab 5: Tasks */}
+        <Tabs.Screen
+          name="tasks"
+          options={{
+            tabBarLabel: 'Tasks',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <CheckSquare color={color} size={tabBar.iconSize} />
+                {openTaskCount > 0 && (
+                  <View style={styles.unreadBadge}>
+                    <Text style={styles.unreadBadgeText}>
+                      {openTaskCount > 99 ? '99+' : String(openTaskCount)}
+                    </Text>
+                  </View>
+                )}
+              </TabIcon>
+            ),
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+
+        {/* Tab 6: More */}
         <Tabs.Screen
           name="more"
           options={{
@@ -269,6 +311,7 @@ export default function DriverLayout() {
         <Tabs.Screen name="documents" options={{ href: null }} />
         <Tabs.Screen name="incidents" options={{ href: null }} />
         <Tabs.Screen name="carrier" options={{ href: null }} />
+        <Tabs.Screen name="tasks/[id]" options={{ href: null }} />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}
