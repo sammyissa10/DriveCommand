@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 42 Workflow Engine Foundation — COMPLETE
-Current Plan: Plan 7 of 7 complete — 42-07 DONE
-Status: Phase 42 fully closed — naming lint Vitest test (spec Section 3 enforcement) committed, user UAT approved (Pre-Trip Inspection built in under 10 minutes, all pass criteria confirmed)
-Last activity: 2026-04-23 - Completed 42-07: Naming Lint Test + Phase UAT (phase close)
-Last session: 2026-04-23T00:00:00Z
-Stopped at: Completed 42-07-PLAN.md — 1 task auto + 1 human-verify, 1 file created, Phase 42 COMPLETE
+Phase: Phase 43 Workflow Engine 2 Execution — IN PROGRESS
+Current Plan: Plan 1 of 7 complete — 43-01 DONE
+Status: Phase 43 active — schema foundation complete (PlaybookInstance/StepInstance/PlaybookNotification tables, 4 enums, isDispatchReady fields, migration applied to Supabase)
+Last activity: 2026-04-24 - Completed 43-01: Phase 43 Schema Foundation (Prisma migration + Prisma client regen)
+Last session: 2026-04-24T05:02:35Z
+Stopped at: Completed 43-01-PLAN.md — 2 tasks auto, 8 files modified, 1 file created, migration applied
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -107,6 +107,7 @@ Progress: [███████████████████████
 - Phase 42-05 (2026-04-24): Checklists dashboard UI — Workflows SidebarGroup + ListChecks nav link, /checklists page with entity-type filter tabs, PlaybookCard grid (color-coded category icons, step count, entity badge), CreatePlaybookCard (dashed-border), CreatePlaybookDialog (controlled form calling workflows.playbook.create tRPC mutation) — 2 tasks, 7 files, ~600s
 - Phase 42-06 (2026-04-24): Playbook Builder UI — 3-column DnD builder (/checklists/playbooks/[id]/edit), BuilderClient + BuilderCanvas + 5 PhaseSection columns with SortableContext, BuilderStepRow, StepLibraryPanel (filterable, draggable templates), NewStepTemplateButton dialog, StepDetailEditor with all 8 step-type editors (FormFillEditor/InspectionItemEditor/6 SimpleEditors), overrideConfig persistence via updateStep — 2 tasks, 11 files, ~900s
 - Phase 42-07 (2026-04-23): Naming lint Vitest test + phase UAT — workflows-naming-lint.test.ts (recursive walk of /checklists route, strips import/type/JSDoc lines, asserts PlaybookInstance/StepInstance/PlaybookTrigger absent from JSX text + string attributes), user UAT approved (Pre-Trip Inspection built end-to-end in under 10 minutes), Phase 42 COMPLETE — 1 auto task + 1 human-verify, 1 file, ~5min
+- Phase 43-01 (2026-04-24): Phase 43 schema foundation — InstanceStatus/StepStatus/NotifType/NotifChannel enums, PlaybookInstance+StepInstance+PlaybookNotification models, isDispatchReady on User+Truck, 4 dispatch-blocker columns on PlaybookStep, migration applied to Supabase with RLS policies, Prisma client regenerated — 2 tasks, 8 files, ~5min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -234,6 +235,12 @@ Progress: [███████████████████████
 - Return 200 with all-null payload when OSRM fails — allows mobile map to render without route polyline gracefully (not a 500)
 - Rate limit key prefix dir: (not dist:) to isolate directions quota from distance quota on shared geocodingLimiter
 - Coordinate order [lng, lat] preserved end-to-end — GeoJSON standard, matches Mapbox ShapeSource natively, no swap needed on mobile
+
+**Phase 43-01 decisions (Phase 43 schema foundation):**
+- Backfill UPDATE in migration must use quoted column names (`"overrideConfig"`) — PostgreSQL lowercases unquoted identifiers, causing column-not-found errors
+- StepInstance has no tenantId column — RLS isolation via playbookInstanceId JOIN avoids denormalization (mirrors PlaybookStep pattern)
+- PlaybookInstance.playbookId uses onDelete: Restrict to prevent orphaned instances if a playbook is deleted
+- isDispatchReady added to both User and Truck to support dual entity-level readiness check per spec
 
 **Phase 42-07 decisions (Naming lint + Phase UAT):**
 - Naming lint scoped to /checklists route only (not entire owner portal) — enforces naming discipline exactly where internal names are most likely to leak without generating noise from unrelated code
