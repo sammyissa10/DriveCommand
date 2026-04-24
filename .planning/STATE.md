@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 44 Workflow Engine 3 Inspection Mode — IN PROGRESS
-Current Plan: Plan 2 of 6 complete — 44-02 DONE
-Status: Phase 44 underway — failInspectionItem service complete, INSPECTION_ITEM pass/fail routing implemented, fail/requestApproval/approve tRPC procedures wired
-Last activity: 2026-04-24 - Completed 44-02: INSPECTION_ITEM execution path — failInspectionItem service, Zod schemas, tRPC procedures, 2 tasks, 4 files, ~10min
-Last session: 2026-04-24T18:15:53Z
-Stopped at: Completed 44-02-PLAN.md — 2 tasks auto, 4 files modified, failInspectionItem service + tRPC router updated
+Current Plan: Plan 3 of 6 complete — 44-03 DONE
+Status: Phase 44 underway — failInspectionItem service complete, mobile fail + upload-photo REST endpoints added, InspectionModeScreen (Plan 04) can call them directly
+Last activity: 2026-04-24 - Completed 44-03: Mobile fail + upload-photo endpoints — POST tasks/[id]/fail + POST tasks/upload-photo, 1 task, 3 files, ~8min
+Last session: 2026-04-24T18:25:00Z
+Stopped at: Completed 44-03-PLAN.md — 1 task auto, 3 files modified (2 new routes + DocumentCategory type extended)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -115,6 +115,7 @@ Progress: [███████████████████████
 - Phase 43-07 (2026-04-24): Phase 43 test suite — workflows-instance.test.ts (2 tests), workflows-complete-step.test.ts (7 tests), workflows-tap-targets.test.ts (4 tests); fixed backBtn+clearBtn tap targets 44→56px in 3 screen files — 2 tasks, 3 files created, 3 modified, 303s — Phase 43 COMPLETE
 - Phase 44-01 (2026-04-24): Schema migration — VEHICLE_INSPECTION enum + nullable stepTemplateId — 1 task, 1 file created, 7 modified, 2min
 - Phase 44-02 (2026-04-24): INSPECTION_ITEM execution path — failInspectionItem service (photo validation, ad-hoc APPROVAL step, instance blocking, push notifications), completeStep pass/fail routing fix, failInspectionItemSchema + approveStepSchema in packages/validation, fail/requestApproval/approve tRPC procedures — 2 tasks, 4 files, ~10min
+- Phase 44-03 (2026-04-24): Mobile REST endpoints for inspection fail — POST /api/mobile/driver/tasks/[id]/fail (calls failInspectionItem), POST /api/mobile/driver/tasks/upload-photo (presigned R2 URL with 'inspections' prefix), added 'inspections' to DocumentCategory type — 1 task, 3 files, ~8min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -264,6 +265,10 @@ Progress: [███████████████████████
 - Ad-hoc APPROVAL step created with stepTemplateId: null only when playbookCategory === VEHICLE_INSPECTION — other inspection categories do not get mechanic steps per spec Section 6.4
 - No MECHANIC user role exists — both STEP_FAILED and APPROVAL_NEEDED push notifications delivered to OWNER/MANAGER dispatchers
 - SMS delivery stubbed with TODO(phase-5) — Twilio not in Phase 44 scope
+
+**Phase 44-03 decisions (Mobile fail + upload-photo endpoints):**
+- Used withMobileAuth instead of old validateMobileToken pattern — matches tasks/complete and tasks/skip conventions (not incidents pattern)
+- Added 'inspections' to DocumentCategory union in presigned.ts — required for TypeScript type safety, distinct R2 prefix from 'drivers' used by incidents
 
 **Phase 43-06 decisions (Mobile driver Tasks UI):**
 - Screen components placed in components/driver/workflows/ — mobile app has no src/ directory; components/ is the existing pattern
