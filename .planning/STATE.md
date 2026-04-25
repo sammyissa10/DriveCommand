@@ -12,10 +12,10 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 46 Workflow Engine 5 Polish & Analytics — IN PROGRESS
 Current Plan: 4 of 4 plans complete — Phase 46 DONE
-Status: Plan 05 done — Analytics tRPC router (getPlaybookStats, getAvgCompletionTime, getStepDropOff) + /checklists/analytics page with Recharts BarCharts + Analytics nav link on /checklists
-Last activity: 2026-04-25 - Completed 46-02: Overdue cron fan-out + TODO(phase-5) cleanup
-Last session: 2026-04-25T04:03:00Z
-Stopped at: Completed 46-02-PLAN.md
+Status: Plan 04 done — PreviewPanel (phone-frame Driver View + Dispatcher tab, position:fixed DnD-safe) + StepDetailEditor dueWithinHours/overdueRecipient fields wired to updateStep tRPC
+Last activity: 2026-04-25 - Completed 46-04: Builder Preview Panel + StepDetailEditor overdue fields
+Last session: 2026-04-25T04:05:39Z
+Stopped at: Completed 46-04-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -946,6 +946,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 45]: generatePlaybookInstance already accepts triggeredBy: 'trigger' — no adapter needed in fireEvent
 - [Phase 45]: fireEvent uses after() from next/server — runs outside mutation transactions for best-effort semantics
 - [Phase 45-05]: conditions in createCustomRuleSchema stored as JSON string to avoid Zod v4 deep type inference TS2589 limit in tRPC router chains
+- [Phase 46]: position:fixed for PreviewPanel — keeps panel out of DnD flex container so DragOverlay offset calculations remain correct
 
 ### Pending Todos
 
@@ -1347,6 +1348,7 @@ None blocking immediate progress.
 | Phase 45 P02 | 7 | 3 tasks | 3 files |
 | Phase 46-workflow-engine-5-polish-analytics P03 | 300 | 2 tasks | 2 files |
 | Phase 46-workflow-engine-5-polish-analytics P05 | 230 | 2 tasks | 5 files |
+| Phase 46 P04 | 336 | 2 tasks | 4 files |
 
 ## Session Continuity
 
