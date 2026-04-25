@@ -1108,6 +1108,8 @@ exports.Prisma.PlaybookStepScalarFieldEnum = {
   isRequired: 'isRequired',
   isDispatchBlocker: 'isDispatchBlocker',
   dueDaysFromStart: 'dueDaysFromStart',
+  dueWithinHours: 'dueWithinHours',
+  overdueRecipient: 'overdueRecipient',
   dueBeforeDispatch: 'dueBeforeDispatch',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1494,6 +1496,12 @@ exports.PhaseType = exports.$Enums.PhaseType = {
   NONE: 'NONE'
 };
 
+exports.OverdueRecipient = exports.$Enums.OverdueRecipient = {
+  DRIVER: 'DRIVER',
+  OWNER: 'OWNER',
+  BOTH: 'BOTH'
+};
+
 exports.InstanceStatus = exports.$Enums.InstanceStatus = {
   NOT_STARTED: 'NOT_STARTED',
   IN_PROGRESS: 'IN_PROGRESS',
@@ -1515,7 +1523,8 @@ exports.NotifType = exports.$Enums.NotifType = {
   INSTANCE_BLOCKED: 'INSTANCE_BLOCKED',
   DISPATCH_READY: 'DISPATCH_READY',
   STEP_FAILED: 'STEP_FAILED',
-  APPROVAL_NEEDED: 'APPROVAL_NEEDED'
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED',
+  DAILY_DIGEST: 'DAILY_DIGEST'
 };
 
 exports.NotifChannel = exports.$Enums.NotifChannel = {

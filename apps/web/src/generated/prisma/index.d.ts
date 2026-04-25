@@ -701,10 +701,20 @@ export const NotifType: {
   INSTANCE_BLOCKED: 'INSTANCE_BLOCKED',
   DISPATCH_READY: 'DISPATCH_READY',
   STEP_FAILED: 'STEP_FAILED',
-  APPROVAL_NEEDED: 'APPROVAL_NEEDED'
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED',
+  DAILY_DIGEST: 'DAILY_DIGEST'
 };
 
 export type NotifType = (typeof NotifType)[keyof typeof NotifType]
+
+
+export const OverdueRecipient: {
+  DRIVER: 'DRIVER',
+  OWNER: 'OWNER',
+  BOTH: 'BOTH'
+};
+
+export type OverdueRecipient = (typeof OverdueRecipient)[keyof typeof OverdueRecipient]
 
 
 export const NotifChannel: {
@@ -911,6 +921,10 @@ export const StepStatus: typeof $Enums.StepStatus
 export type NotifType = $Enums.NotifType
 
 export const NotifType: typeof $Enums.NotifType
+
+export type OverdueRecipient = $Enums.OverdueRecipient
+
+export const OverdueRecipient: typeof $Enums.OverdueRecipient
 
 export type NotifChannel = $Enums.NotifChannel
 
@@ -81899,11 +81913,13 @@ export namespace Prisma {
   export type PlaybookStepAvgAggregateOutputType = {
     sequence: number | null
     dueDaysFromStart: number | null
+    dueWithinHours: number | null
   }
 
   export type PlaybookStepSumAggregateOutputType = {
     sequence: number | null
     dueDaysFromStart: number | null
+    dueWithinHours: number | null
   }
 
   export type PlaybookStepMinAggregateOutputType = {
@@ -81915,6 +81931,8 @@ export namespace Prisma {
     isRequired: boolean | null
     isDispatchBlocker: boolean | null
     dueDaysFromStart: number | null
+    dueWithinHours: number | null
+    overdueRecipient: $Enums.OverdueRecipient | null
     dueBeforeDispatch: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -81929,6 +81947,8 @@ export namespace Prisma {
     isRequired: boolean | null
     isDispatchBlocker: boolean | null
     dueDaysFromStart: number | null
+    dueWithinHours: number | null
+    overdueRecipient: $Enums.OverdueRecipient | null
     dueBeforeDispatch: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -81944,6 +81964,8 @@ export namespace Prisma {
     isRequired: number
     isDispatchBlocker: number
     dueDaysFromStart: number
+    dueWithinHours: number
+    overdueRecipient: number
     dueBeforeDispatch: number
     createdAt: number
     updatedAt: number
@@ -81954,11 +81976,13 @@ export namespace Prisma {
   export type PlaybookStepAvgAggregateInputType = {
     sequence?: true
     dueDaysFromStart?: true
+    dueWithinHours?: true
   }
 
   export type PlaybookStepSumAggregateInputType = {
     sequence?: true
     dueDaysFromStart?: true
+    dueWithinHours?: true
   }
 
   export type PlaybookStepMinAggregateInputType = {
@@ -81970,6 +81994,8 @@ export namespace Prisma {
     isRequired?: true
     isDispatchBlocker?: true
     dueDaysFromStart?: true
+    dueWithinHours?: true
+    overdueRecipient?: true
     dueBeforeDispatch?: true
     createdAt?: true
     updatedAt?: true
@@ -81984,6 +82010,8 @@ export namespace Prisma {
     isRequired?: true
     isDispatchBlocker?: true
     dueDaysFromStart?: true
+    dueWithinHours?: true
+    overdueRecipient?: true
     dueBeforeDispatch?: true
     createdAt?: true
     updatedAt?: true
@@ -81999,6 +82027,8 @@ export namespace Prisma {
     isRequired?: true
     isDispatchBlocker?: true
     dueDaysFromStart?: true
+    dueWithinHours?: true
+    overdueRecipient?: true
     dueBeforeDispatch?: true
     createdAt?: true
     updatedAt?: true
@@ -82101,6 +82131,8 @@ export namespace Prisma {
     isRequired: boolean
     isDispatchBlocker: boolean
     dueDaysFromStart: number | null
+    dueWithinHours: number | null
+    overdueRecipient: $Enums.OverdueRecipient
     dueBeforeDispatch: boolean
     createdAt: Date
     updatedAt: Date
@@ -82135,6 +82167,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: boolean
+    dueWithinHours?: boolean
+    overdueRecipient?: boolean
     dueBeforeDispatch?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -82152,6 +82186,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: boolean
+    dueWithinHours?: boolean
+    overdueRecipient?: boolean
     dueBeforeDispatch?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -82169,6 +82205,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: boolean
+    dueWithinHours?: boolean
+    overdueRecipient?: boolean
     dueBeforeDispatch?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -82186,12 +82224,14 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: boolean
+    dueWithinHours?: boolean
+    overdueRecipient?: boolean
     dueBeforeDispatch?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PlaybookStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookId" | "stepTemplateId" | "sequence" | "playbookPhase" | "overrideConfig" | "isRequired" | "isDispatchBlocker" | "dueDaysFromStart" | "dueBeforeDispatch" | "createdAt" | "updatedAt", ExtArgs["result"]["playbookStep"]>
+  export type PlaybookStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "playbookId" | "stepTemplateId" | "sequence" | "playbookPhase" | "overrideConfig" | "isRequired" | "isDispatchBlocker" | "dueDaysFromStart" | "dueWithinHours" | "overdueRecipient" | "dueBeforeDispatch" | "createdAt" | "updatedAt", ExtArgs["result"]["playbookStep"]>
   export type PlaybookStepInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     playbook?: boolean | PlaybookDefaultArgs<ExtArgs>
     stepTemplate?: boolean | StepTemplateDefaultArgs<ExtArgs>
@@ -82221,6 +82261,8 @@ export namespace Prisma {
       isRequired: boolean
       isDispatchBlocker: boolean
       dueDaysFromStart: number | null
+      dueWithinHours: number | null
+      overdueRecipient: $Enums.OverdueRecipient
       dueBeforeDispatch: boolean
       createdAt: Date
       updatedAt: Date
@@ -82658,6 +82700,8 @@ export namespace Prisma {
     readonly isRequired: FieldRef<"PlaybookStep", 'Boolean'>
     readonly isDispatchBlocker: FieldRef<"PlaybookStep", 'Boolean'>
     readonly dueDaysFromStart: FieldRef<"PlaybookStep", 'Int'>
+    readonly dueWithinHours: FieldRef<"PlaybookStep", 'Int'>
+    readonly overdueRecipient: FieldRef<"PlaybookStep", 'OverdueRecipient'>
     readonly dueBeforeDispatch: FieldRef<"PlaybookStep", 'Boolean'>
     readonly createdAt: FieldRef<"PlaybookStep", 'DateTime'>
     readonly updatedAt: FieldRef<"PlaybookStep", 'DateTime'>
@@ -90114,6 +90158,8 @@ export namespace Prisma {
     isRequired: 'isRequired',
     isDispatchBlocker: 'isDispatchBlocker',
     dueDaysFromStart: 'dueDaysFromStart',
+    dueWithinHours: 'dueWithinHours',
+    overdueRecipient: 'overdueRecipient',
     dueBeforeDispatch: 'dueBeforeDispatch',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -90855,6 +90901,20 @@ export namespace Prisma {
    * Reference to a field of type 'PhaseType[]'
    */
   export type ListEnumPhaseTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PhaseType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'OverdueRecipient'
+   */
+  export type EnumOverdueRecipientFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OverdueRecipient'>
+    
+
+
+  /**
+   * Reference to a field of type 'OverdueRecipient[]'
+   */
+  export type ListEnumOverdueRecipientFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OverdueRecipient[]'>
     
 
 
@@ -97465,6 +97525,8 @@ export namespace Prisma {
     isRequired?: BoolFilter<"PlaybookStep"> | boolean
     isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
     dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueWithinHours?: IntNullableFilter<"PlaybookStep"> | number | null
+    overdueRecipient?: EnumOverdueRecipientFilter<"PlaybookStep"> | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
     createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
     updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
@@ -97482,6 +97544,8 @@ export namespace Prisma {
     isRequired?: SortOrder
     isDispatchBlocker?: SortOrder
     dueDaysFromStart?: SortOrderInput | SortOrder
+    dueWithinHours?: SortOrderInput | SortOrder
+    overdueRecipient?: SortOrder
     dueBeforeDispatch?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -97503,6 +97567,8 @@ export namespace Prisma {
     isRequired?: BoolFilter<"PlaybookStep"> | boolean
     isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
     dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueWithinHours?: IntNullableFilter<"PlaybookStep"> | number | null
+    overdueRecipient?: EnumOverdueRecipientFilter<"PlaybookStep"> | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
     createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
     updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
@@ -97520,6 +97586,8 @@ export namespace Prisma {
     isRequired?: SortOrder
     isDispatchBlocker?: SortOrder
     dueDaysFromStart?: SortOrderInput | SortOrder
+    dueWithinHours?: SortOrderInput | SortOrder
+    overdueRecipient?: SortOrder
     dueBeforeDispatch?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -97543,6 +97611,8 @@ export namespace Prisma {
     isRequired?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
     isDispatchBlocker?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
     dueDaysFromStart?: IntNullableWithAggregatesFilter<"PlaybookStep"> | number | null
+    dueWithinHours?: IntNullableWithAggregatesFilter<"PlaybookStep"> | number | null
+    overdueRecipient?: EnumOverdueRecipientWithAggregatesFilter<"PlaybookStep"> | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolWithAggregatesFilter<"PlaybookStep"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"PlaybookStep"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PlaybookStep"> | Date | string
@@ -105324,6 +105394,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -105341,6 +105413,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -105354,6 +105428,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -105371,6 +105447,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -105386,6 +105464,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -105399,6 +105479,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -105414,6 +105496,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -111180,6 +111264,13 @@ export namespace Prisma {
     _max?: NestedEnumPhaseTypeFilter<$PrismaModel>
   }
 
+  export type EnumOverdueRecipientFilter<$PrismaModel = never> = {
+    equals?: $Enums.OverdueRecipient | EnumOverdueRecipientFieldRefInput<$PrismaModel>
+    in?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    not?: NestedEnumOverdueRecipientFilter<$PrismaModel> | $Enums.OverdueRecipient
+  }
+
   export type PlaybookScalarRelationFilter = {
     is?: PlaybookWhereInput
     isNot?: PlaybookWhereInput
@@ -111205,6 +111296,8 @@ export namespace Prisma {
     isRequired?: SortOrder
     isDispatchBlocker?: SortOrder
     dueDaysFromStart?: SortOrder
+    dueWithinHours?: SortOrder
+    overdueRecipient?: SortOrder
     dueBeforeDispatch?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -111213,6 +111306,7 @@ export namespace Prisma {
   export type PlaybookStepAvgOrderByAggregateInput = {
     sequence?: SortOrder
     dueDaysFromStart?: SortOrder
+    dueWithinHours?: SortOrder
   }
 
   export type PlaybookStepMaxOrderByAggregateInput = {
@@ -111224,6 +111318,8 @@ export namespace Prisma {
     isRequired?: SortOrder
     isDispatchBlocker?: SortOrder
     dueDaysFromStart?: SortOrder
+    dueWithinHours?: SortOrder
+    overdueRecipient?: SortOrder
     dueBeforeDispatch?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -111238,6 +111334,8 @@ export namespace Prisma {
     isRequired?: SortOrder
     isDispatchBlocker?: SortOrder
     dueDaysFromStart?: SortOrder
+    dueWithinHours?: SortOrder
+    overdueRecipient?: SortOrder
     dueBeforeDispatch?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -111246,6 +111344,17 @@ export namespace Prisma {
   export type PlaybookStepSumOrderByAggregateInput = {
     sequence?: SortOrder
     dueDaysFromStart?: SortOrder
+    dueWithinHours?: SortOrder
+  }
+
+  export type EnumOverdueRecipientWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OverdueRecipient | EnumOverdueRecipientFieldRefInput<$PrismaModel>
+    in?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    not?: NestedEnumOverdueRecipientWithAggregatesFilter<$PrismaModel> | $Enums.OverdueRecipient
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOverdueRecipientFilter<$PrismaModel>
+    _max?: NestedEnumOverdueRecipientFilter<$PrismaModel>
   }
 
   export type EnumInstanceStatusFilter<$PrismaModel = never> = {
@@ -120245,6 +120354,10 @@ export namespace Prisma {
     connect?: StepTemplateWhereUniqueInput
   }
 
+  export type EnumOverdueRecipientFieldUpdateOperationsInput = {
+    set?: $Enums.OverdueRecipient
+  }
+
   export type PlaybookUpdateOneRequiredWithoutStepsNestedInput = {
     create?: XOR<PlaybookCreateWithoutStepsInput, PlaybookUncheckedCreateWithoutStepsInput>
     connectOrCreate?: PlaybookCreateOrConnectWithoutStepsInput
@@ -121478,6 +121591,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPhaseTypeFilter<$PrismaModel>
     _max?: NestedEnumPhaseTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOverdueRecipientFilter<$PrismaModel = never> = {
+    equals?: $Enums.OverdueRecipient | EnumOverdueRecipientFieldRefInput<$PrismaModel>
+    in?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    not?: NestedEnumOverdueRecipientFilter<$PrismaModel> | $Enums.OverdueRecipient
+  }
+
+  export type NestedEnumOverdueRecipientWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OverdueRecipient | EnumOverdueRecipientFieldRefInput<$PrismaModel>
+    in?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OverdueRecipient[] | ListEnumOverdueRecipientFieldRefInput<$PrismaModel>
+    not?: NestedEnumOverdueRecipientWithAggregatesFilter<$PrismaModel> | $Enums.OverdueRecipient
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOverdueRecipientFilter<$PrismaModel>
+    _max?: NestedEnumOverdueRecipientFilter<$PrismaModel>
   }
 
   export type NestedEnumInstanceStatusFilter<$PrismaModel = never> = {
@@ -158111,6 +158241,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -158126,6 +158258,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -158347,6 +158481,8 @@ export namespace Prisma {
     isRequired?: BoolFilter<"PlaybookStep"> | boolean
     isDispatchBlocker?: BoolFilter<"PlaybookStep"> | boolean
     dueDaysFromStart?: IntNullableFilter<"PlaybookStep"> | number | null
+    dueWithinHours?: IntNullableFilter<"PlaybookStep"> | number | null
+    overdueRecipient?: EnumOverdueRecipientFilter<"PlaybookStep"> | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFilter<"PlaybookStep"> | boolean
     createdAt?: DateTimeFilter<"PlaybookStep"> | Date | string
     updatedAt?: DateTimeFilter<"PlaybookStep"> | Date | string
@@ -158523,6 +158659,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -158538,6 +158676,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -172373,6 +172513,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -172404,6 +172546,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -172419,6 +172563,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -172433,6 +172579,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -172501,6 +172649,8 @@ export namespace Prisma {
     isRequired?: boolean
     isDispatchBlocker?: boolean
     dueDaysFromStart?: number | null
+    dueWithinHours?: number | null
+    overdueRecipient?: $Enums.OverdueRecipient
     dueBeforeDispatch?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -172541,6 +172691,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -172556,6 +172708,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -172570,6 +172724,8 @@ export namespace Prisma {
     isRequired?: BoolFieldUpdateOperationsInput | boolean
     isDispatchBlocker?: BoolFieldUpdateOperationsInput | boolean
     dueDaysFromStart?: NullableIntFieldUpdateOperationsInput | number | null
+    dueWithinHours?: NullableIntFieldUpdateOperationsInput | number | null
+    overdueRecipient?: EnumOverdueRecipientFieldUpdateOperationsInput | $Enums.OverdueRecipient
     dueBeforeDispatch?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

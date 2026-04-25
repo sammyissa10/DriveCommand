@@ -1279,6 +1279,13 @@ enum NotifType {
   DISPATCH_READY
   STEP_FAILED
   APPROVAL_NEEDED
+  DAILY_DIGEST
+}
+
+enum OverdueRecipient {
+  DRIVER
+  OWNER
+  BOTH
 }
 
 enum NotifChannel {
@@ -1980,18 +1987,20 @@ model Playbook {
 }
 
 model PlaybookStep {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  playbookId        String    @db.Uuid
-  stepTemplateId    String    @db.Uuid
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookId        String           @db.Uuid
+  stepTemplateId    String           @db.Uuid
   sequence          Int
-  playbookPhase     PhaseType @default(NONE)
-  overrideConfig    Json      @default("{}")
-  isRequired        Boolean   @default(true)
-  isDispatchBlocker Boolean   @default(false)
+  playbookPhase     PhaseType        @default(NONE)
+  overrideConfig    Json             @default("{}")
+  isRequired        Boolean          @default(true)
+  isDispatchBlocker Boolean          @default(false)
   dueDaysFromStart  Int?
-  dueBeforeDispatch Boolean   @default(false)
-  createdAt         DateTime  @default(now()) @db.Timestamptz
-  updatedAt         DateTime  @updatedAt @db.Timestamptz
+  dueWithinHours    Int? // SLA in hours (e.g. 24). If null, cron skips this step.
+  overdueRecipient  OverdueRecipient @default(OWNER) // Who gets the overdue push notification
+  dueBeforeDispatch Boolean          @default(false)
+  createdAt         DateTime         @default(now()) @db.Timestamptz
+  updatedAt         DateTime         @updatedAt @db.Timestamptz
 
   playbook     Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
   stepTemplate StepTemplate @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)

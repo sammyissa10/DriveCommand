@@ -1281,6 +1281,13 @@ enum NotifType {
   DISPATCH_READY
   STEP_FAILED
   APPROVAL_NEEDED
+  DAILY_DIGEST
+}
+
+enum OverdueRecipient {
+  DRIVER
+  OWNER
+  BOTH
 }
 
 enum NotifChannel {
@@ -1991,6 +1998,8 @@ model PlaybookStep {
   isRequired        Boolean    @default(true)
   isDispatchBlocker Boolean    @default(false)
   dueDaysFromStart  Int?
+  dueWithinHours    Int?                              // SLA in hours (e.g. 24). If null, cron skips this step.
+  overdueRecipient  OverdueRecipient @default(OWNER)  // Who gets the overdue push notification
   dueBeforeDispatch Boolean    @default(false)
   createdAt         DateTime   @default(now()) @db.Timestamptz
   updatedAt         DateTime   @updatedAt @db.Timestamptz
