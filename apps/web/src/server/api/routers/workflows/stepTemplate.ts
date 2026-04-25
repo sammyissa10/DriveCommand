@@ -74,7 +74,7 @@ const update = adminProcedure
     });
   });
 
-const deleteProc = adminProcedure
+const archive = adminProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
     const existing = await prisma.stepTemplate.findFirst({
@@ -95,5 +95,5 @@ export const stepTemplateRouter = router({
   getById,
   create,
   update,
-  delete: deleteProc,
+  archive,
 });
