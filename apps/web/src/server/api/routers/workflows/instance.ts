@@ -23,7 +23,7 @@ import {
 } from '@drivecommand/validation';
 import { generatePlaybookInstance } from '@/server/services/workflows/generatePlaybookInstance';
 import { computeDispatchReadiness } from '@/server/services/workflows/computeDispatchReadiness';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 
 const generate = adminProcedure
   .input(generateInstanceSchema)
@@ -84,7 +84,33 @@ const get = tenantMemberProcedure
       include: { stepInstances: true },
     });
     if (!instance) throw new TRPCError({ code: 'NOT_FOUND' });
-    return instance;
+
+    // Resolve user display names for audit log (secondary query — skippedByUserId has no Prisma relation)
+    const skippedUserIds = [
+      ...new Set(
+        instance.stepInstances
+          .filter((s) => s.skippedByUserId != null)
+          .map((s) => s.skippedByUserId!),
+      ),
+    ];
+
+    const skippedByUsers: Record<string, { fullName: string }> = {};
+    if (skippedUserIds.length > 0) {
+      const users = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.user.findMany({
+          where: { id: { in: skippedUserIds } },
+          select: { id: true, firstName: true, lastName: true, email: true },
+        });
+      }, TX_OPTIONS);
+
+      for (const u of users) {
+        const full = [u.firstName, u.lastName].filter(Boolean).join(' ');
+        skippedByUsers[u.id] = { fullName: full || u.email || 'Unknown' };
+      }
+    }
+
+    return { ...instance, skippedByUsers };
   });
 
 const getForEntity = tenantMemberProcedure
