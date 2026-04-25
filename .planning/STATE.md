@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 46 Workflow Engine 5 Polish & Analytics — IN PROGRESS
-Current Plan: 1 of 4 plans complete
-Status: Plan 01 done — OverdueRecipient enum, dueWithinHours + overdueRecipient on PlaybookStep, DAILY_DIGEST in NotifType, generatePlaybookInstance hours-based dueDate, Zod validation updated, vercel.json crons registered
-Last activity: 2026-04-25 - Completed 46-01: Schema migration — OverdueRecipient enum + PlaybookStep overdue fields + DAILY_DIGEST + vercel.json crons
-Last session: 2026-04-25T03:43:30Z
-Stopped at: Completed 46-01-PLAN.md
+Current Plan: 3 of 4 plans complete
+Status: Plan 03 done — SKIPPED badge inline on step rows, Audit Log Card section with resolved user names via secondary tRPC query (skippedByUsers map)
+Last activity: 2026-04-25 - Completed 46-03: Skip audit trail — SKIPPED badge + Audit Log section
+Last session: 2026-04-25T03:51:00Z
+Stopped at: Completed 46-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -280,6 +280,11 @@ Progress: [███████████████████████
 - ON_DRIVER_CREATE fires at DriverInvitation creation (owner invite flow) — DriverInvitation has no driverType field so CDL/NON_CDL/OWNER_OP recipe conditions will not match; driverType addition deferred to Phase 46
 - disableRecipe uses findMany + client-side JSON.stringify filter → updateMany(id: in []) — avoids Prisma's unreliable JSONB deep-equality filter
 - Carrier status literals confirmed lowercase ('in_progress', 'completed') — no deviation needed from spec assumptions
+
+**Phase 46-03 decisions (Skip audit trail):**
+- Badge inline (no tap required) replaces italic skip text — display-layer only, no schema migration needed
+- Audit Log shows skip events only (not completions or failures) — per locked product decision
+- Secondary prisma.$transaction with bypass_rls resolves skippedByUserId UUIDs without a Prisma relation — avoids adding an unnecessary relation to the schema
 
 **Phase 46-01 decisions (Overdue fields + cron registration):**
 - dueWithinHours (hours) takes precedence over dueDaysFromStart (days) in generatePlaybookInstance — more granular SLA needed by cron without breaking existing playbooks using dueDaysFromStart
@@ -1335,6 +1340,7 @@ None blocking immediate progress.
 | Phase 44-workflow-engine-3-inspection-mode P04 | 3 | 1 tasks | 2 files |
 | Phase 44-workflow-engine-3-inspection-mode P06 | 6 | 1 tasks | 3 files |
 | Phase 45 P02 | 7 | 3 tasks | 3 files |
+| Phase 46-workflow-engine-5-polish-analytics P03 | 300 | 2 tasks | 2 files |
 
 ## Session Continuity
 
