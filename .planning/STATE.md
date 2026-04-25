@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 45 Workflow Engine 4 Automation — COMPLETE
-Current Plan: 6 of 6 plans complete
-Status: All 6 plans done — DB foundation, notifications/cron, fireEvent+recipes, tRPC trigger router, automation UI + dispatch enforcement, DoD integration tests
-Last activity: 2026-04-25 - Completed 45-06: DoD integration tests (trigger router 7 tests, dispatch enforcement 5 tests — all passing)
-Last session: 2026-04-25T01:12:00Z
-Stopped at: Phase 45 COMPLETE — ready for /gsd:verify-work
+Phase: Phase 46 Workflow Engine 5 Polish & Analytics — IN PROGRESS
+Current Plan: 1 of 4 plans complete
+Status: Plan 01 done — OverdueRecipient enum, dueWithinHours + overdueRecipient on PlaybookStep, DAILY_DIGEST in NotifType, generatePlaybookInstance hours-based dueDate, Zod validation updated, vercel.json crons registered
+Last activity: 2026-04-25 - Completed 46-01: Schema migration — OverdueRecipient enum + PlaybookStep overdue fields + DAILY_DIGEST + vercel.json crons
+Last session: 2026-04-25T03:43:30Z
+Stopped at: Completed 46-01-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -125,6 +125,7 @@ Progress: [███████████████████████
 - Phase 45-04 (2026-04-24): 7 recipe constants (cdl/non_cdl/owner_op onboarding, pre/post trip inspection, new vehicle intake, partner onboarding), getRecipeByKey helper, trigger tRPC router (listRecipes/enableRecipe/disableRecipe + listCustomRules/createCustomRule/deleteRule — all adminProcedure), enableRecipe/disableRecipe/createCustomRule/deleteRule Zod schemas — 2 tasks, 4 files
 - Phase 45-05 (2026-04-24): Automation UI — /checklists/automation page (7 RecipeCards + CustomRulesTable + Create button), CreateCustomRuleDialog (3-step wizard with entity-specific condition dropdowns per trigger event), dispatch enforcement: readiness badge + blocking modal + admin override with reason textarea + DispatchOverrideAudit write + ON_DISPATCH_CREATE/DEPART/DELIVER fireEvent hooks via after() — 2 tasks, 6 files
 - Phase 45-06 (2026-04-25): DoD integration tests — workflows-trigger-router.test.ts (7 tests: enableRecipe create/upsert/NOT_FOUND/tenant-scope, disableRecipe preserves instances + idempotent, DRIVER FORBIDDEN); workflows-dispatch-enforcement.test.ts (5 tests: DoD4 block + DoD3 audit write + non-admin reject + ready-driver happy path + tenantId cross-tenant guard); all Phase 45 workflow tests pass — 2 tasks, 2 files, ~8min — Phase 45 COMPLETE
+- Phase 46-01 (2026-04-25): Schema migration — OverdueRecipient enum + dueWithinHours + overdueRecipient on PlaybookStep + DAILY_DIGEST in NotifType + generatePlaybookInstance hours-based dueDate + Zod validation + vercel.json crons — 2 tasks, 6 files, ~4min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -279,6 +280,11 @@ Progress: [███████████████████████
 - ON_DRIVER_CREATE fires at DriverInvitation creation (owner invite flow) — DriverInvitation has no driverType field so CDL/NON_CDL/OWNER_OP recipe conditions will not match; driverType addition deferred to Phase 46
 - disableRecipe uses findMany + client-side JSON.stringify filter → updateMany(id: in []) — avoids Prisma's unreliable JSONB deep-equality filter
 - Carrier status literals confirmed lowercase ('in_progress', 'completed') — no deviation needed from spec assumptions
+
+**Phase 46-01 decisions (Overdue fields + cron registration):**
+- dueWithinHours (hours) takes precedence over dueDaysFromStart (days) in generatePlaybookInstance — more granular SLA needed by cron without breaking existing playbooks using dueDaysFromStart
+- overdueRecipient stored in stepSnapshot JSON — cron reads notification target from snapshot, no extra DB join to PlaybookStep template needed
+- vercel.json cron registration: workflow-notifications hourly (0 * * * *), workflow-digest at 8am UTC daily (0 8 * * *)
 
 **Phase 45-01 decisions (Automation DB foundation):**
 - No FK from DispatchOverrideAudit to CarrierDispatch — different module boundary, loose coupling via UUID string per spec Section 13 (cross-module audit trail pattern)
