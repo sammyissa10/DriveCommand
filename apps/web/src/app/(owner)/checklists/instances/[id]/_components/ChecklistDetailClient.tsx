@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/client';
 import {
@@ -17,7 +18,7 @@ import {
   ShieldCheck,
   ArrowLeft,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -81,7 +82,9 @@ type StepInstance = {
   dueDate: Date | string | null;
   result: unknown;
   skipReason: string | null;
+  skippedByUserId: string | null;
   completedAt: Date | string | null;
+  updatedAt: Date | string | null;
 };
 
 type PlaybookSnap = {
@@ -439,8 +442,8 @@ function StepRow({ step, onSkip, onApprove, onViewResult }: StepRowProps) {
           {resultSummary && (
             <span className="truncate max-w-[200px]">{resultSummary}</span>
           )}
-          {step.status === 'SKIPPED' && step.skipReason && (
-            <span className="italic">Skipped — {step.skipReason}</span>
+          {step.status === 'SKIPPED' && (
+            <Badge variant="secondary" className="text-xs">Skipped</Badge>
           )}
         </div>
       </div>
@@ -600,6 +603,7 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
   }
 
   const instance = data as unknown as Instance;
+  const skippedByUsers = (data as unknown as { skippedByUsers?: Record<string, { fullName: string }> })?.skippedByUsers ?? {};
   const playbookSnap = (instance.playbookSnapshot ?? {}) as PlaybookSnap;
   const playbookName = playbookSnap.name ?? 'Checklist';
   const entityName = playbookSnap.entityName ?? instance.entityType;
@@ -708,6 +712,44 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
           )}
         </CardContent>
       </Card>
+
+      {/* Audit Log — skip events only (per user decision) */}
+      {(() => {
+        const skippedSteps = instance.stepInstances.filter(
+          (s) => s.status === 'SKIPPED' && s.skippedByUserId,
+        );
+
+        if (skippedSteps.length === 0) return null;
+
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Audit Log</CardTitle>
+              <CardDescription>Skip events recorded on this checklist.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {skippedSteps.map((s) => {
+                const user = s.skippedByUserId ? skippedByUsers[s.skippedByUserId] : null;
+                const userName = user?.fullName ?? 'Unknown';
+                const timestamp = s.updatedAt
+                  ? format(new Date(s.updatedAt as string), 'MMM d, yyyy h:mm a')
+                  : '—';
+                const snap = s.stepSnapshot as { name?: string };
+                return (
+                  <div key={s.id} className="flex flex-col gap-0.5 text-sm border-l-2 border-muted pl-3">
+                    <span className="font-medium text-muted-foreground">{snap.name ?? 'Step'}</span>
+                    <span>
+                      Skipped by <span className="font-medium">{userName}</span>
+                      {s.skipReason ? ` — Reason: ${s.skipReason}` : ''}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{timestamp}</span>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Skip dialog */}
       {skipDialog && (
