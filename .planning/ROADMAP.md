@@ -605,12 +605,17 @@ Plans:
 
 ### Phase 46: Workflow Engine 5 — Polish & Analytics — Preview panel, SMS, overdue alerts, analytics
 
-**Goal:** Builder Preview Panel (phone-frame driver view + dispatcher card). SMS delivery confirmed end-to-end in staging. Overdue alerts fire 24h after due date. Analytics dashboard: completion rate per playbook, average time, step drop-off. Daily email digest for Safety Managers. Skip-with-reason audit trail visible on instance detail.
+**Goal:** Builder Preview Panel (phone-frame driver view + dispatcher card). SMS delivery confirmed end-to-end in staging. Overdue alerts fire per-step due date. Analytics dashboard: completion rate per playbook, average time, step drop-off. Daily email digest for Safety Managers. Skip-with-reason audit trail visible on instance detail.
 **Depends on:** Phase 45 (full feature complete)
-**Plans:** TBD (after context + planning)
+**Plans:** 6 plans
 
 Plans:
-- [ ] TBD
+- [ ] 46-01-PLAN.md — Schema migration (dueWithinHours + overdueRecipient + DAILY_DIGEST) + generatePlaybookInstance update + Zod validation + vercel.json cron registration
+- [ ] 46-02-PLAN.md — Twilio SMS helper + wire STEP_ASSIGNED SMS + overdue cron overdueRecipient fan-out
+- [ ] 46-03-PLAN.md — Skip audit trail: SKIPPED badge inline + Audit Log section on instance detail (no schema change)
+- [ ] 46-04-PLAN.md — Builder Preview Panel (fixed-position, phone frame + dispatcher tab) + StepDetailEditor overdue fields
+- [ ] 46-05-PLAN.md — Analytics tRPC router (3 procedures) + /checklists/analytics page with Recharts charts
+- [ ] 46-06-PLAN.md — Daily Safety Manager digest (react-email template + cron route + DAILY_DIGEST dedup)
 
 ---
 
