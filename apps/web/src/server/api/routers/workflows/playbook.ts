@@ -193,6 +193,12 @@ const updateStep = adminProcedure
     if (input.playbookPhase !== undefined) {
       data.playbookPhase = input.playbookPhase;
     }
+    if (input.dueWithinHours !== undefined) {
+      data.dueWithinHours = input.dueWithinHours;
+    }
+    if (input.overdueRecipient !== undefined) {
+      data.overdueRecipient = input.overdueRecipient;
+    }
 
     // 4. Return the updated PlaybookStep with stepTemplate so client can re-render without refetch
     return prisma.playbookStep.update({

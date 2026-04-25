@@ -1,12 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { StepType, AssigneeRole } from '@drivecommand/validation';
 import type { PlaybookStepItem } from './BuilderClient';
 import { FormFillEditor } from './stepConfigEditors/FormFillEditor';
@@ -52,6 +60,17 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
   const [config, setConfig] = useState<Record<string, unknown>>(
     (step.overrideConfig as Record<string, unknown>) ?? {},
   );
+  const [dueWithinHours, setDueWithinHours] = useState<number | null>(step.dueWithinHours ?? null);
+  const [overdueRecipient, setOverdueRecipient] = useState<'DRIVER' | 'OWNER' | 'BOTH'>(
+    (step.overdueRecipient as 'DRIVER' | 'OWNER' | 'BOTH') ?? 'OWNER',
+  );
+
+  // Reset local state when the selected step changes
+  useEffect(() => {
+    setConfig((step.overrideConfig as Record<string, unknown>) ?? {});
+    setDueWithinHours(step.dueWithinHours ?? null);
+    setOverdueRecipient((step.overdueRecipient as 'DRIVER' | 'OWNER' | 'BOTH') ?? 'OWNER');
+  }, [step.id, step.overrideConfig, step.dueWithinHours, step.overdueRecipient]);
 
   const updateStepMutation = useMutation(
     trpc.workflows.playbook.updateStep.mutationOptions({
@@ -66,7 +85,13 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
 
   function handleSave() {
     updateStepMutation.mutate(
-      { playbookId, stepId: step.id, overrideConfig: config },
+      {
+        playbookId,
+        stepId: step.id,
+        overrideConfig: config,
+        dueWithinHours: dueWithinHours,
+        overdueRecipient: overdueRecipient,
+      },
       { onError: (err) => toast.error(err.message ?? 'Failed to save step') },
     );
   }
@@ -170,8 +195,43 @@ export function StepDetailEditor({ playbookId, step, onClose }: StepDetailEditor
       </div>
 
       {/* Config editor body */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {renderEditor()}
+
+        {/* Due Within (Hours) */}
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Due within (hours)</label>
+          <p className="text-xs text-muted-foreground">Leave blank to skip overdue alerts for this step.</p>
+          <Input
+            type="number"
+            min={1}
+            max={8760}
+            placeholder="e.g. 24"
+            value={dueWithinHours ?? ''}
+            onChange={(e) => {
+              const val = e.target.value === '' ? null : parseInt(e.target.value, 10);
+              setDueWithinHours(val !== null && !isNaN(val) ? val : null);
+            }}
+          />
+        </div>
+
+        {/* Overdue Recipient */}
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">Overdue alert recipient</label>
+          <Select
+            value={overdueRecipient}
+            onValueChange={(v) => setOverdueRecipient(v as 'DRIVER' | 'OWNER' | 'BOTH')}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="DRIVER">Driver only</SelectItem>
+              <SelectItem value="OWNER">Owner / Dispatcher only</SelectItem>
+              <SelectItem value="BOTH">Both (driver + owner)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Footer: Save button */}
