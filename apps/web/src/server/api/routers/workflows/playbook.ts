@@ -85,7 +85,7 @@ const update = adminProcedure
     });
   });
 
-const deleteProc = adminProcedure
+const archiveProc = adminProcedure
   .input(z.object({ id: z.string().uuid() }))
   .mutation(async ({ ctx, input }) => {
     const existing = await prisma.playbook.findFirst({
@@ -99,6 +99,48 @@ const deleteProc = adminProcedure
       data: { isActive: false, deletedAt: new Date() },
     });
     return { success: true };
+  });
+
+const duplicate = adminProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .mutation(async ({ ctx, input }) => {
+    const source = await prisma.playbook.findFirst({
+      where: { id: input.id, tenantId: ctx.tenantId, deletedAt: null },
+      include: {
+        steps: { orderBy: [{ playbookPhase: 'asc' }, { sequence: 'asc' }] },
+      },
+    });
+    if (!source) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
+    return prisma.$transaction(async (tx) => {
+      const copy = await tx.playbook.create({
+        data: {
+          tenantId: ctx.tenantId,
+          name: `${source.name} (copy)`,
+          description: source.description,
+          entityType: source.entityType,
+          category: source.category,
+          playbookPhase: source.playbookPhase,
+        },
+      });
+      if (source.steps.length > 0) {
+        await tx.playbookStep.createMany({
+          data: source.steps.map((s) => ({
+            playbookId: copy.id,
+            stepTemplateId: s.stepTemplateId,
+            sequence: s.sequence,
+            playbookPhase: s.playbookPhase,
+            overrideConfig: s.overrideConfig ?? {},
+            isRequired: s.isRequired,
+            isDispatchBlocker: s.isDispatchBlocker,
+            dueDaysFromStart: s.dueDaysFromStart,
+            dueBeforeDispatch: s.dueBeforeDispatch,
+          })),
+        });
+      }
+      return copy;
+    });
   });
 
 const addStep = adminProcedure
@@ -241,7 +283,8 @@ export const playbookRouter = router({
   getById,
   create,
   update,
-  delete: deleteProc,
+  archive: archiveProc,
+  duplicate,
   addStep,
   removeStep,
   updateStep,
