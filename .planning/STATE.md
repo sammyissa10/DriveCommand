@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 46 Workflow Engine 5 Polish & Analytics — COMPLETE
 Current Plan: 6 of 6 plans complete — Phase 46 DONE
 Status: Plan 06 done — Daily workflow safety digest: WorkflowSafetyDigestEmail template + workflow-digest cron with DAILY_DIGEST dedup, per-tenant sweep, OWNER/MANAGER email delivery
-Last activity: 2026-04-25 - Completed 46-06: Daily Safety Digest email template + cron route
+Last activity: 2026-04-25 - Completed quick task 285: Fix FORM_FILL completeStep not validating against formSchema
 Last session: 2026-04-25T04:11:32Z
 Stopped at: Completed 46-06-PLAN.md
 
@@ -1225,6 +1225,7 @@ None blocking immediate progress.
 | 281 | Add tenant settings, user list, password reset, and role management to sysadmin tenant detail page | 2026-04-22 | 9fe7743 | [281-add-tenant-settings-user-list-password-r](./quick/281-add-tenant-settings-user-list-password-r/) |
 | 282 | Stop overview, detail page, document upload, and stop-specific messaging | 2026-04-22 | 1d849a5 | [282-stop-overview-detail-page-document-uploa](./quick/282-stop-overview-detail-page-document-uploa/) |
 | 283 | Add voice message recording to all message threads | 2026-04-23 | 25f0ee7 | [283-add-voice-message-recording-to-all-messa](./quick/283-add-voice-message-recording-to-all-messa/) |
+| 285 | Fix FORM_FILL completeStep not validating against formSchema | 2026-04-25 | 91f2eb2 | [285-fix-form-fill-completestep-not-validatin](./quick/285-fix-form-fill-completestep-not-validatin/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
