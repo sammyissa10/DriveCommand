@@ -28,7 +28,7 @@
     },
     {
       "path": "/api/cron/workflow-notifications",
-      "schedule": "0 * * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron/workflow-digest",
