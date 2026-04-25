@@ -50,7 +50,7 @@ export async function completeStep(args: {
   };
 
   // Type-specific validation (spec Section 6.3)
-  validateStepResult(snap.stepType, result);
+  validateStepResult(snap.stepType, result, snap.defaultConfig);
 
   // Persist completion
   const updated = await prisma.stepInstance.update({
@@ -86,7 +86,7 @@ export async function completeStep(args: {
   return updated;
 }
 
-function validateStepResult(stepType: string, result: StepResult) {
+function validateStepResult(stepType: string, result: StepResult, defaultConfig?: unknown) {
   switch (stepType) {
     case 'DOCUMENT_UPLOAD':
       if (!result.fileUrls || result.fileUrls.length === 0) {
@@ -98,11 +98,35 @@ function validateStepResult(stepType: string, result: StepResult) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'MISSING_SIGNATURE' });
       }
       break;
-    case 'FORM_FILL':
+    case 'FORM_FILL': {
       if (!result.formData || typeof result.formData !== 'object') {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'INVALID_FORM' });
       }
+      // Enforce required fields declared in defaultConfig.formSchema (spec Section 6.3)
+      const config = defaultConfig as { formSchema?: Array<{ id?: string; label?: string; type?: string; required?: boolean }> } | undefined;
+      const schema = config?.formSchema;
+      if (Array.isArray(schema)) {
+        const formData = result.formData as Record<string, unknown>;
+        for (const field of schema) {
+          if (!field.required) continue;
+          const key = field.id ?? field.label;
+          if (!key) continue; // defensive: malformed schema entry — skip
+          const value = formData[key];
+          const isEmpty =
+            value === undefined ||
+            value === null ||
+            (typeof value === 'string' && value.trim() === '') ||
+            (Array.isArray(value) && value.length === 0);
+          if (isEmpty) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: `INVALID_FORM: ${field.label ?? key} is required`,
+            });
+          }
+        }
+      }
       break;
+    }
     case 'INSPECTION_ITEM':
       // PASS flows through completeStep; FAIL routes to failInspectionItem
       if (!result.passOrFail || result.passOrFail === 'fail') {
