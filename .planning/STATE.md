@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 46 Workflow Engine 5 Polish & Analytics — IN PROGRESS
-Current Plan: 3 of 4 plans complete
-Status: Plan 03 done — SKIPPED badge inline on step rows, Audit Log Card section with resolved user names via secondary tRPC query (skippedByUsers map)
-Last activity: 2026-04-25 - Completed 46-03: Skip audit trail — SKIPPED badge + Audit Log section
-Last session: 2026-04-25T03:51:00Z
-Stopped at: Completed 46-03-PLAN.md
+Current Plan: 4 of 4 plans complete — Phase 46 DONE
+Status: Plan 05 done — Analytics tRPC router (getPlaybookStats, getAvgCompletionTime, getStepDropOff) + /checklists/analytics page with Recharts BarCharts + Analytics nav link on /checklists
+Last activity: 2026-04-25 - Completed 46-05: Workflow analytics dashboard
+Last session: 2026-04-25T03:54:38Z
+Stopped at: Completed 46-05-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -280,6 +280,11 @@ Progress: [███████████████████████
 - ON_DRIVER_CREATE fires at DriverInvitation creation (owner invite flow) — DriverInvitation has no driverType field so CDL/NON_CDL/OWNER_OP recipe conditions will not match; driverType addition deferred to Phase 46
 - disableRecipe uses findMany + client-side JSON.stringify filter → updateMany(id: in []) — avoids Prisma's unreliable JSONB deep-equality filter
 - Carrier status literals confirmed lowercase ('in_progress', 'completed') — no deviation needed from spec assumptions
+
+**Phase 46-05 decisions (Analytics dashboard):**
+- Instance ID prefetch pattern: StepInstance has no tenantId column, so groupBy directly would not be tenant-scoped; prefetch playbookInstance IDs filtered by tenantId, then use playbookInstanceId IN (...) for StepInstance groupBy
+- Drop-off chart auto-selects first playbook from stats results — avoids empty state when only one playbook exists
+- Recharts (already installed) used for all charts — no new dependencies
 
 **Phase 46-03 decisions (Skip audit trail):**
 - Badge inline (no tap required) replaces italic skip text — display-layer only, no schema migration needed
@@ -1341,6 +1346,7 @@ None blocking immediate progress.
 | Phase 44-workflow-engine-3-inspection-mode P06 | 6 | 1 tasks | 3 files |
 | Phase 45 P02 | 7 | 3 tasks | 3 files |
 | Phase 46-workflow-engine-5-polish-analytics P03 | 300 | 2 tasks | 2 files |
+| Phase 46-workflow-engine-5-polish-analytics P05 | 230 | 2 tasks | 5 files |
 
 ## Session Continuity
 
