@@ -42,6 +42,10 @@ vi.mock('@/server/services/workflows/computeDispatchReadiness', () => ({
 
 /** Build a mock StepInstance for a given stepType */
 function mockStepInstance(stepType: string) {
+  const formSchema =
+    stepType === 'FORM_FILL'
+      ? [{ id: 'f1', label: 'Name', type: 'text', required: true }]
+      : null;
   return {
     id: 'step-1',
     status: 'NOT_STARTED',
@@ -52,10 +56,10 @@ function mockStepInstance(stepType: string) {
       isDispatchBlocker: false,
       name: 'Test Step',
       documentTypeName: "Driver's License",
-      formSchema:
-        stepType === 'FORM_FILL'
-          ? [{ id: 'f1', label: 'Name', type: 'text', required: true }]
-          : null,
+      // Back-compat: top-level formSchema kept for any existing callers
+      formSchema,
+      // Service reads required fields from defaultConfig.formSchema (spec Section 6.3)
+      defaultConfig: stepType === 'FORM_FILL' ? { formSchema } : undefined,
     },
     playbookInstance: {
       tenantId: 'tenant-1',
@@ -121,6 +125,36 @@ describe('completeStep — type-specific validation', () => {
     await expect(
       completeStep({ ...baseArgs, stepInstanceId: 'step-1', result: {} })
     ).rejects.toThrowError(expect.objectContaining({ message: 'INVALID_FORM' }));
+  });
+
+  it('FORM_FILL: rejects with INVALID_FORM when a required formSchema field is missing', async () => {
+    const { completeStep } = await import('@/server/services/workflows/completeStep');
+    const { prisma } = await import('@/lib/db/prisma');
+    vi.mocked(prisma.stepInstance.findFirst).mockResolvedValue(
+      mockStepInstance('FORM_FILL') as any
+    );
+
+    await expect(
+      completeStep({ ...baseArgs, stepInstanceId: 'step-1', result: { formData: {} } })
+    ).rejects.toThrowError(
+      expect.objectContaining({ message: expect.stringMatching(/^INVALID_FORM/) })
+    );
+  });
+
+  it('FORM_FILL: completes successfully when all required formSchema fields are present', async () => {
+    const { completeStep } = await import('@/server/services/workflows/completeStep');
+    const { prisma } = await import('@/lib/db/prisma');
+    vi.mocked(prisma.stepInstance.findFirst).mockResolvedValue(
+      mockStepInstance('FORM_FILL') as any
+    );
+
+    await expect(
+      completeStep({ ...baseArgs, stepInstanceId: 'step-1', result: { formData: { f1: 'Sammy' } } })
+    ).resolves.not.toThrow();
+    expect(vi.mocked(prisma.stepInstance.update)).toHaveBeenCalledOnce();
+    expect(vi.mocked(prisma.stepInstance.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ status: 'COMPLETE' }) })
+    );
   });
 
   it('INSPECTION_ITEM: rejects with USE_FAIL_ENDPOINT when passOrFail is fail or missing', async () => {
