@@ -15,13 +15,15 @@ import {
   closestCenter,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useTRPC } from '@/trpc/client';
+import { Button } from '@/components/ui/button';
 import type { PhaseType } from '@drivecommand/validation';
 import { BuilderCanvas } from './BuilderCanvas';
 import { StepLibraryPanel } from './StepLibraryPanel';
 import { StepDetailEditor } from './StepDetailEditor';
+import { PreviewPanel } from './PreviewPanel';
 
 interface BuilderClientProps {
   playbookId: string;
@@ -33,6 +35,10 @@ export interface PlaybookStepItem {
   playbookPhase: PhaseType;
   sequence: number;
   overrideConfig: Record<string, unknown> | null;
+  isRequired: boolean;
+  isDispatchBlocker: boolean;
+  dueWithinHours: number | null;
+  overdueRecipient: 'DRIVER' | 'OWNER' | 'BOTH';
   stepTemplate: {
     id: string;
     name: string;
@@ -53,6 +59,10 @@ function normaliseSteps(raw: any[]): PlaybookStepItem[] {
     playbookPhase: s.playbookPhase as PhaseType,
     sequence: Number(s.sequence),
     overrideConfig: s.overrideConfig as Record<string, unknown> | null,
+    isRequired: Boolean(s.isRequired),
+    isDispatchBlocker: Boolean(s.isDispatchBlocker),
+    dueWithinHours: s.dueWithinHours != null ? Number(s.dueWithinHours) : null,
+    overdueRecipient: (s.overdueRecipient ?? 'OWNER') as PlaybookStepItem['overdueRecipient'],
     stepTemplate: {
       id: String(s.stepTemplate.id),
       name: String(s.stepTemplate.name),
@@ -79,6 +89,7 @@ export function BuilderClient({ playbookId }: BuilderClientProps) {
 
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
   // Local step order for optimistic cross-phase moves
   const [localSteps, setLocalSteps] = useState<PlaybookStepItem[] | null>(null);
 
@@ -292,9 +303,20 @@ export function BuilderClient({ playbookId }: BuilderClientProps) {
         <h1 className="text-sm font-semibold text-foreground truncate max-w-xs">
           {playbook.name}
         </h1>
-        {(reorderStepsMutation.isPending || addStepMutation.isPending) && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground ml-auto" />
-        )}
+        <div className="flex items-center gap-2 ml-auto">
+          {(reorderStepsMutation.isPending || addStepMutation.isPending) && (
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPreviewOpen((v) => !v)}
+            className="gap-1.5"
+          >
+            <Eye className="h-4 w-4" />
+            Preview
+          </Button>
+        </div>
       </div>
 
       {/* 3-column layout */}
@@ -344,6 +366,26 @@ export function BuilderClient({ playbookId }: BuilderClientProps) {
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      {/* PreviewPanel — position:fixed so it doesn't shift the DnD flex layout */}
+      {previewOpen && (
+        <PreviewPanel
+          playbookName={playbook.name}
+          category={playbook.category}
+          steps={steps.map((s) => ({
+            id: s.id,
+            name: s.stepTemplate.name,
+            stepType: s.stepTemplate.stepType,
+            assigneeRole: s.stepTemplate.assigneeRole,
+            isRequired: s.isRequired,
+            isDispatchBlocker: s.isDispatchBlocker,
+            dueWithinHours: s.dueWithinHours ?? null,
+            playbookPhase: s.playbookPhase,
+            sequence: s.sequence,
+          }))}
+          onClose={() => setPreviewOpen(false)}
+        />
+      )}
     </div>
   );
 }
