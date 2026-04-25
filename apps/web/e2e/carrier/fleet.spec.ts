@@ -40,7 +40,7 @@ test.describe('Carrier Fleet — Drivers', () => {
     // Pay Period — shadcn Select (trigger has id="payPeriod")
     const payPeriodTrigger = page.locator('#payPeriod');
     await payPeriodTrigger.click();
-    await page.getByRole('option', { name: /Weekly/i }).click();
+    await page.getByRole('option', { name: 'Weekly', exact: true }).click();
 
     // Pay Rate — input with id="payRate"
     const payRateInput = page.locator('#payRate');
@@ -67,12 +67,12 @@ test.describe('Carrier Fleet — Drivers', () => {
       return;
     }
 
-    // Click edit link in first row
+    // Click driver name link — navigates to /carrier/fleet/drivers/:id which has edit form
     const editLink = firstRow.getByRole('link').first();
     await editLink.click();
-    await page.waitForLoadState('domcontentloaded');
-    expect(page.url()).toMatch(/\/carrier\/fleet\/drivers\/.+/);
-    // Edit form should render
+    await page.waitForURL(/\/carrier\/fleet\/drivers\/.+/);
+    await page.waitForLoadState('networkidle');
+    // Edit form is rendered on the detail page
     await expect(page.getByLabel(/First Name/i)).toBeVisible();
   });
 
@@ -140,10 +140,11 @@ test.describe('Carrier Fleet — Trucks', () => {
       return;
     }
 
+    // Click truck link — navigates to /carrier/fleet/trucks/:id which has edit form
     const editLink = firstRow.getByRole('link').first();
     await editLink.click();
-    await page.waitForLoadState('domcontentloaded');
-    expect(page.url()).toMatch(/\/carrier\/fleet\/trucks\/.+/);
+    await page.waitForURL(/\/carrier\/fleet\/trucks\/.+/);
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('#unitNumber')).toBeVisible();
   });
 

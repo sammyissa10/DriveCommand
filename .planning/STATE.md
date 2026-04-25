@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 45 Workflow Engine 4 Automation — IN PROGRESS
-Current Plan: 5 of 6 plans — Tasks 1-2 complete, paused at Task 3 (human checkpoint)
-Status: 45-05 Tasks 1-2 done — Auto-Start Rules page + 3 custom rule tRPC procedures + dispatch enforcement modal + override audit
-Last activity: 2026-04-24 - Completed 45-05 Tasks 1-2: Automation UI + dispatch enforcement (~18min, 13 files)
-Last session: 2026-04-24T20:24:40Z
-Stopped at: 45-05 Task 3 — human verification checkpoint (awaiting user to test /checklists/automation + dispatch enforcement modal)
+Phase: Phase 45 Workflow Engine 4 Automation — COMPLETE
+Current Plan: 6 of 6 plans complete
+Status: All 6 plans done — DB foundation, notifications/cron, fireEvent+recipes, tRPC trigger router, automation UI + dispatch enforcement, DoD integration tests
+Last activity: 2026-04-25 - Completed 45-06: DoD integration tests (trigger router 7 tests, dispatch enforcement 5 tests — all passing)
+Last session: 2026-04-25T01:12:00Z
+Stopped at: Phase 45 COMPLETE — ready for /gsd:verify-work
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -120,7 +120,11 @@ Progress: [███████████████████████
 - Phase 44-05 (2026-04-24): ApproveDialog + truck isDispatchReady badge — ApproveDialog bottom sheet for mechanic APPROVAL steps, truck profile dispatch readiness badge, tRPC approve procedure call — 1 task, 2 files, ~3min
 - Phase 44-06 (2026-04-24): Final test suite — 5 failInspectionItem unit tests (category gating, photo validation, readiness recompute) + 4 InspectionModeScreen tap-target static-analysis tests; fixed pre-existing regression in workflows-complete-step.test.ts — 1 task, 3 files, ~5min — Phase 44 COMPLETE
 - Phase 45-01 (2026-04-24): Automation DB foundation — TriggerEvent enum (8 values), PlaybookTrigger table (composite index on tenantId+triggerEvent), DispatchOverrideAudit table (tenantId+dispatchId indexes), Playbook.triggers + Tenant.playbookTriggers + Tenant.dispatchOverrideAudits back-relations, migration applied to Supabase, Prisma client regenerated; Phase 44 validation gap closed (VEHICLE_INSPECTION added to playbookCategorySchema) — 2 tasks, 3 files, ~3min
+- Phase 45-02 (2026-04-24): fireEvent service — flat key-value condition matching, best-effort per-trigger (no throw), MANUAL_ONLY/RECURRING no-ops, EVENT_TO_ENTITY_TYPE map, calls generatePlaybookInstance with triggeredBy: 'trigger'; 7 Vitest unit tests covering match/skip/empty-conditions/inactive/best-effort/null-conditions/MANUAL_ONLY — 2 tasks, 2 files
 - Phase 45-03 (2026-04-24): Full notification suite — notifications.ts module (7 exports: sendStepAssigned/Overdue/InstanceBlocked/DispatchReady/StepFailed/ApprovalNeeded/InstanceBlockedEmail), DISPATCH_READY + INSTANCE_BLOCKED flip gates in computeDispatchReadiness, inline sends refactored in generatePlaybookInstance/failInspectionItem/completeStep, /api/cron/workflow-notifications cron route (STEP_OVERDUE 24h + INSTANCE_BLOCKED email 48h sweeps with isOverdue dedup), WorkflowInstanceBlockedEmail React template — 3 tasks, 7 files, 522s
+- Phase 45-04 (2026-04-24): 7 recipe constants (cdl/non_cdl/owner_op onboarding, pre/post trip inspection, new vehicle intake, partner onboarding), getRecipeByKey helper, trigger tRPC router (listRecipes/enableRecipe/disableRecipe + listCustomRules/createCustomRule/deleteRule — all adminProcedure), enableRecipe/disableRecipe/createCustomRule/deleteRule Zod schemas — 2 tasks, 4 files
+- Phase 45-05 (2026-04-24): Automation UI — /checklists/automation page (7 RecipeCards + CustomRulesTable + Create button), CreateCustomRuleDialog (3-step wizard with entity-specific condition dropdowns per trigger event), dispatch enforcement: readiness badge + blocking modal + admin override with reason textarea + DispatchOverrideAudit write + ON_DISPATCH_CREATE/DEPART/DELIVER fireEvent hooks via after() — 2 tasks, 6 files
+- Phase 45-06 (2026-04-25): DoD integration tests — workflows-trigger-router.test.ts (7 tests: enableRecipe create/upsert/NOT_FOUND/tenant-scope, disableRecipe preserves instances + idempotent, DRIVER FORBIDDEN); workflows-dispatch-enforcement.test.ts (5 tests: DoD4 block + DoD3 audit write + non-admin reject + ready-driver happy path + tenantId cross-tenant guard); all Phase 45 workflow tests pass — 2 tasks, 2 files, ~8min — Phase 45 COMPLETE
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
