@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BarChart2 } from 'lucide-react';
 import { DashboardClient } from './_components/DashboardClient';
 
 export const dynamic = 'force-dynamic';
@@ -15,8 +16,9 @@ export default function ChecklistsPage() {
         </div>
         <Link
           href="/checklists/analytics"
-          className="shrink-0 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="shrink-0 inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-colors"
         >
+          <BarChart2 className="h-4 w-4" />
           Analytics
         </Link>
       </div>
