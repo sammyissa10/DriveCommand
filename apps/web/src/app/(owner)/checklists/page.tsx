@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BarChart2 } from 'lucide-react';
+import { BarChart2, Zap } from 'lucide-react';
 import { DashboardClient } from './_components/DashboardClient';
 
 export const dynamic = 'force-dynamic';
@@ -23,6 +23,21 @@ export default function ChecklistsPage() {
         </Link>
       </div>
       <DashboardClient />
+      <div className="mt-8 flex items-center justify-between rounded-lg border border-border bg-muted/40 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <Zap className="h-5 w-5 text-muted-foreground shrink-0" />
+          <div>
+            <p className="text-sm font-medium">Auto-Start Rules</p>
+            <p className="text-xs text-muted-foreground">Automatically start checklists when key events happen</p>
+          </div>
+        </div>
+        <Link
+          href="/checklists/automation"
+          className="shrink-0 inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-colors"
+        >
+          Manage Rules
+        </Link>
+      </div>
     </div>
   );
 }
