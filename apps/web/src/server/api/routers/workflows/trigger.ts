@@ -137,8 +137,10 @@ export const triggerRouter = router({
 
   /**
    * List all custom (non-recipe) PlaybookTrigger rows for this tenant.
-   * A "custom rule" is any trigger whose (triggerEvent + conditions) does NOT match
-   * any of the 7 pre-built RECIPES.
+   * Custom rules are identified by the { _custom: true } sentinel written into
+   * recurringConfig at creation time. This avoids false-negative filtering when
+   * a custom rule shares the same triggerEvent + conditions as a built-in recipe
+   * (e.g. ON_DISPATCH_CREATE with empty conditions).
    */
   listCustomRules: adminProcedure.query(async ({ ctx }) => {
     const triggers = await prisma.playbookTrigger.findMany({
@@ -149,13 +151,9 @@ export const triggerRouter = router({
       orderBy: { createdAt: 'asc' },
     });
 
-    // Filter to non-recipe rows only
     const customTriggers = triggers.filter((t) => {
-      return !RECIPES.some(
-        (r) =>
-          r.triggerEvent === t.triggerEvent &&
-          JSON.stringify(r.conditions ?? {}) === JSON.stringify(t.conditions ?? {})
-      );
+      const rc = t.recurringConfig as Record<string, unknown> | null;
+      return rc?._custom === true;
     });
 
     return customTriggers.map((t) => ({
@@ -193,6 +191,7 @@ export const triggerRouter = router({
         playbookId: input.playbookId,
         triggerEvent: input.triggerEvent,
         conditions: conditions as Prisma.InputJsonValue,
+        recurringConfig: { _custom: true } as Prisma.InputJsonValue,
         isActive: true,
       },
     });
