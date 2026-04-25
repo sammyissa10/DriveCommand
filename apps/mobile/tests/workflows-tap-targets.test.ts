@@ -1,5 +1,3 @@
-import { describe, it, expect } from 'vitest'
-
 /**
  * Mobile tap-target audit — workflow task screens.
  *
@@ -9,6 +7,7 @@ import { describe, it, expect } from 'vitest'
  *
  * Static-analysis test — uses Node.js fs/path, not Expo/React renderer.
  */
+import { describe, it, expect } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
