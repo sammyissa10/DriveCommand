@@ -65,7 +65,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         },
         select: {
           id: true,
-          playbookInstance: { select: { tenantId: true } },
+          stepSnapshot: true, // needed to read overdueRecipient + dueWithinHours
+          playbookInstance: { select: { tenantId: true, entityId: true, entityType: true } },
         },
       });
     }, TX_OPTIONS);
@@ -74,9 +75,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     for (const step of overdueSteps) {
       const tenantId = step.playbookInstance.tenantId;
+      const snap = step.stepSnapshot as { overdueRecipient?: string; dueWithinHours?: number | null };
+
+      // Steps created before phase 46 have no dueWithinHours — mark overdue but skip alert.
+      if (!snap.dueWithinHours) {
+        await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          await tx.stepInstance.update({ where: { id: step.id }, data: { isOverdue: true } });
+        }, TX_OPTIONS);
+        continue;
+      }
 
       try {
-        await sendStepOverdue({ stepInstanceId: step.id, tenantId });
+        await sendStepOverdue({
+          stepInstanceId: step.id,
+          tenantId,
+          overdueRecipient: (snap.overdueRecipient ?? 'OWNER') as 'DRIVER' | 'OWNER' | 'BOTH',
+        });
 
         // Mark isOverdue=true to prevent duplicate sends on subsequent cron runs
         await prisma.$transaction(async (tx) => {

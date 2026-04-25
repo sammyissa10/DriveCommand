@@ -10,7 +10,6 @@
  *
  * Notifications are best-effort — errors are logged but never thrown to callers.
  *
- * SMS delivery: TODO(phase-5) — see comments inline.
  * Email channel: used only for INSTANCE_BLOCKED admin escalation (>48h blocked).
  *
  * Spec reference: Section 10 (Notification System)
@@ -163,7 +162,7 @@ async function loadStepInstance(stepInstanceId: string): Promise<StepInstanceWit
 
 /**
  * STEP_ASSIGNED — notify the assignee that a new task is ready.
- * Push to assignee. SMS: TODO(phase-5).
+ * Push to assignee.
  */
 export async function sendStepAssigned(args: {
   stepInstanceId: string;
@@ -212,22 +211,27 @@ export async function sendStepAssigned(args: {
       message,
       success,
     });
-
-    // TODO(phase-5): send SMS via Twilio — see spec Section 10 and Phase 5 in docs/specs/DriveCommand_Workflow_Engine_v2.md
   } catch (err) {
     logger.error('[notifications] sendStepAssigned failed', { err, stepInstanceId });
   }
 }
 
 /**
- * STEP_OVERDUE — notify dispatchers that an assignee hasn't completed a step past its due date.
- * Push to dispatchers (OWNER/MANAGER).
+ * STEP_OVERDUE — notify the correct recipient(s) that a step is past its due date.
+ * overdueRecipient controls fan-out:
+ *   'DRIVER' — push to the assignee only
+ *   'OWNER'  — push to dispatchers (OWNER/MANAGER) only (default)
+ *   'BOTH'   — push to assignee + dispatchers (deduped)
  */
-export async function sendStepOverdue(args: {
+export async function sendStepOverdue({
+  stepInstanceId,
+  tenantId,
+  overdueRecipient = 'OWNER',
+}: {
   stepInstanceId: string;
   tenantId: string;
+  overdueRecipient?: 'DRIVER' | 'OWNER' | 'BOTH';
 }): Promise<void> {
-  const { stepInstanceId, tenantId } = args;
   try {
     const step = await loadStepInstance(stepInstanceId);
     if (!step) {
@@ -259,15 +263,27 @@ export async function sendStepOverdue(args: {
     const body = `${assigneeName} hasn't completed '${stepName}' — due ${daysOverdue} ${daysOverdue === 1 ? 'day' : 'days'} ago.`;
     const message = `Overdue: "${stepName}" — ${assigneeName}, ${daysOverdue}d past due`;
 
-    const dispatchers = await findDispatchers(tenantId);
+    // Build recipient list based on overdueRecipient
+    const recipientIds: string[] = [];
 
-    for (const dispatcher of dispatchers) {
+    if (overdueRecipient === 'DRIVER' || overdueRecipient === 'BOTH') {
+      if (step.assignedUserId) recipientIds.push(step.assignedUserId);
+    }
+
+    if (overdueRecipient === 'OWNER' || overdueRecipient === 'BOTH') {
+      const dispatchers = await findDispatchers(tenantId);
+      for (const d of dispatchers) recipientIds.push(d.id);
+    }
+
+    const uniqueRecipientIds = [...new Set(recipientIds)];
+
+    for (const recipientId of uniqueRecipientIds) {
       let success = false;
       try {
-        await sendPushToUser(dispatcher.id, { title, body, data: { type: 'STEP_OVERDUE', stepInstanceId } });
+        await sendPushToUser(recipientId, { title, body, data: { type: 'STEP_OVERDUE', stepInstanceId } });
         success = true;
       } catch (err) {
-        logger.error('[notifications] sendStepOverdue: push failed', { err, dispatcherId: dispatcher.id });
+        logger.error('[notifications] sendStepOverdue: push failed', { err, recipientId });
       }
 
       await writeAuditRow({
@@ -276,7 +292,7 @@ export async function sendStepOverdue(args: {
         stepInstanceId,
         notificationType: 'STEP_OVERDUE',
         channel: 'PUSH',
-        recipientUserId: dispatcher.id,
+        recipientUserId: recipientId,
         message,
         success,
       });
