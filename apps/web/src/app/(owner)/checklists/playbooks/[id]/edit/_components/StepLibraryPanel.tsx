@@ -137,7 +137,7 @@ export function StepLibraryPanel({ playbookId }: StepLibraryPanelProps) {
         ))}
       </div>
 
-      {/* Footer: New Step Template button */}
+      {/* Footer: New Step button */}
       <div className="px-3 py-3 border-t border-border flex-shrink-0">
         <Button
           variant="outline"
@@ -146,7 +146,7 @@ export function StepLibraryPanel({ playbookId }: StepLibraryPanelProps) {
           onClick={() => setNewDialogOpen(true)}
         >
           <Plus className="h-3.5 w-3.5" />
-          New Step Template
+          New Step
         </Button>
       </div>
 
