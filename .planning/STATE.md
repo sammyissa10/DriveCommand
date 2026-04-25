@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 ## Current Position
 
 Milestone: v5.0 Mobile App — IN PROGRESS
-Phase: Phase 46 Workflow Engine 5 Polish & Analytics — IN PROGRESS
-Current Plan: 4 of 4 plans complete — Phase 46 DONE
-Status: Plan 04 done — PreviewPanel (phone-frame Driver View + Dispatcher tab, position:fixed DnD-safe) + StepDetailEditor dueWithinHours/overdueRecipient fields wired to updateStep tRPC
-Last activity: 2026-04-25 - Completed 46-04: Builder Preview Panel + StepDetailEditor overdue fields
-Last session: 2026-04-25T04:05:39Z
-Stopped at: Completed 46-04-PLAN.md
+Phase: Phase 46 Workflow Engine 5 Polish & Analytics — COMPLETE
+Current Plan: 6 of 6 plans complete — Phase 46 DONE
+Status: Plan 06 done — Daily workflow safety digest: WorkflowSafetyDigestEmail template + workflow-digest cron with DAILY_DIGEST dedup, per-tenant sweep, OWNER/MANAGER email delivery
+Last activity: 2026-04-25 - Completed 46-06: Daily Safety Digest email template + cron route
+Last session: 2026-04-25T04:11:32Z
+Stopped at: Completed 46-06-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -126,6 +126,7 @@ Progress: [███████████████████████
 - Phase 45-05 (2026-04-24): Automation UI — /checklists/automation page (7 RecipeCards + CustomRulesTable + Create button), CreateCustomRuleDialog (3-step wizard with entity-specific condition dropdowns per trigger event), dispatch enforcement: readiness badge + blocking modal + admin override with reason textarea + DispatchOverrideAudit write + ON_DISPATCH_CREATE/DEPART/DELIVER fireEvent hooks via after() — 2 tasks, 6 files
 - Phase 45-06 (2026-04-25): DoD integration tests — workflows-trigger-router.test.ts (7 tests: enableRecipe create/upsert/NOT_FOUND/tenant-scope, disableRecipe preserves instances + idempotent, DRIVER FORBIDDEN); workflows-dispatch-enforcement.test.ts (5 tests: DoD4 block + DoD3 audit write + non-admin reject + ready-driver happy path + tenantId cross-tenant guard); all Phase 45 workflow tests pass — 2 tasks, 2 files, ~8min — Phase 45 COMPLETE
 - Phase 46-01 (2026-04-25): Schema migration — OverdueRecipient enum + dueWithinHours + overdueRecipient on PlaybookStep + DAILY_DIGEST in NotifType + generatePlaybookInstance hours-based dueDate + Zod validation + vercel.json crons — 2 tasks, 6 files, ~4min
+- Phase 46-06 (2026-04-25): Daily safety digest — WorkflowSafetyDigestEmail template (3-stat grid, conditional overdue alert) + workflow-digest cron route (per-tenant sweep, DAILY_DIGEST dedup, OWNER/MANAGER email delivery, graceful per-tenant error isolation) — 2 tasks, 2 files, 233s
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
