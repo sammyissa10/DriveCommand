@@ -6,14 +6,14 @@ import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
 import { logger } from '@/lib/logger';
 
 /**
- * GET /api/v1/carrier/stops/[stopId]/messages
+ * GET /api/v1/carrier/stops/[id]/messages
  *
  * Returns all messages scoped to a specific stop. Marks unread messages as read.
  * Requires: session with OWNER or MANAGER role.
  */
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ stopId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -22,7 +22,7 @@ export async function GET(
   }
 
   const { tenantId, userId } = session;
-  const { stopId } = await params;
+  const { id: stopId } = await params;
 
   try {
     /**
@@ -112,20 +112,20 @@ export async function GET(
 
     return NextResponse.json({ messages: result });
   } catch (err) {
-    logger.error('[api/v1/carrier/stops/[stopId]/messages GET] error:', err);
+    logger.error('[api/v1/carrier/stops/[id]/messages GET] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 /**
- * POST /api/v1/carrier/stops/[stopId]/messages
+ * POST /api/v1/carrier/stops/[id]/messages
  *
  * Send a message scoped to a specific stop. Recipient is the assigned primary driver.
  * Requires: session with OWNER or MANAGER role.
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ stopId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -135,7 +135,7 @@ export async function POST(
 
   const { tenantId, userId, role, firstName, lastName } = session;
   const senderName = [firstName, lastName].filter(Boolean).join(' ') || 'Dispatch';
-  const { stopId } = await params;
+  const { id: stopId } = await params;
 
   let body: unknown;
   try {
@@ -251,7 +251,7 @@ export async function POST(
       { status: 201 }
     );
   } catch (err) {
-    logger.error('[api/v1/carrier/stops/[stopId]/messages POST] error:', err);
+    logger.error('[api/v1/carrier/stops/[id]/messages POST] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
