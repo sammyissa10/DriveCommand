@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { playbookEntityTypeSchema, playbookCategorySchema, phaseTypeSchema } from './enums';
+import { playbookEntityTypeSchema, playbookCategorySchema, phaseTypeSchema, overdueRecipientSchema } from './enums';
 
 export const createPlaybookSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
@@ -46,6 +46,8 @@ export const updatePlaybookStepSchema = z.object({
   stepId: z.string().uuid(),
   overrideConfig: z.record(z.string(), z.any()),
   playbookPhase: phaseTypeSchema.optional(),
+  dueWithinHours: z.number().int().min(1).max(8760).nullable().optional(), // up to 365 days in hours
+  overdueRecipient: overdueRecipientSchema.optional(),
 });
 
 /**

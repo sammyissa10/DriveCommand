@@ -70,9 +70,13 @@ export async function generatePlaybookInstance(args: {
     });
 
     for (const step of playbook.steps) {
-      const dueDate = step.dueDaysFromStart
-        ? new Date(Date.now() + step.dueDaysFromStart * 86_400_000)
-        : null;
+      // dueWithinHours takes precedence (hours-based SLA, phase 46).
+      // dueDaysFromStart is the legacy days-based field — still used as fallback if dueWithinHours is null.
+      const dueDate = step.dueWithinHours
+        ? new Date(Date.now() + step.dueWithinHours * 3_600_000)
+        : step.dueDaysFromStart
+          ? new Date(Date.now() + step.dueDaysFromStart * 86_400_000)
+          : null;
 
       const stepSnapshot = buildStepSnapshot(step);
 
@@ -134,6 +138,8 @@ function buildPlaybookSnapshot(playbook: {
     isRequired: boolean;
     isDispatchBlocker: boolean;
     dueDaysFromStart: number | null;
+    dueWithinHours: number | null;
+    overdueRecipient: string;
     dueBeforeDispatch: boolean;
     overrideConfig: unknown;
     stepTemplate: {
@@ -173,6 +179,8 @@ function buildStepSnapshot(step: {
   isRequired: boolean;
   isDispatchBlocker: boolean;
   dueDaysFromStart: number | null;
+  dueWithinHours: number | null;          // NEW: hours-based SLA (phase 46)
+  overdueRecipient: string;               // NEW: OverdueRecipient enum value
   dueBeforeDispatch: boolean;
   playbookPhase: string;
   sequence: number;
@@ -192,6 +200,8 @@ function buildStepSnapshot(step: {
     isRequired: step.isRequired,
     isDispatchBlocker: step.isDispatchBlocker,
     dueDaysFromStart: step.dueDaysFromStart,
+    dueWithinHours: step.dueWithinHours,      // NEW
+    overdueRecipient: step.overdueRecipient,  // NEW
     dueBeforeDispatch: step.dueBeforeDispatch,
     defaultConfig: step.stepTemplate.defaultConfig,
     description: step.stepTemplate.description ?? null,

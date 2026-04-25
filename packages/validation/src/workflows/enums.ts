@@ -53,3 +53,6 @@ export const phaseTypeSchema = z.enum([
   'NONE',
 ]);
 export type PhaseType = z.infer<typeof phaseTypeSchema>;
+
+export const overdueRecipientSchema = z.enum(['DRIVER', 'OWNER', 'BOTH']);
+export type OverdueRecipient = z.infer<typeof overdueRecipientSchema>;
