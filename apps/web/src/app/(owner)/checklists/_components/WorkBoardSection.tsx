@@ -30,21 +30,27 @@ function classifyInstance(instance: InstanceListItem): BucketKey | null {
   todayMidnight.setHours(0, 0, 0, 0);
 
   if (instance.status === 'BLOCKED') return 'attention';
+
   if (instance.status === 'COMPLETED') {
     return instance.completedAt && new Date(instance.completedAt) >= todayMidnight
       ? 'completed'
       : null;
   }
-  if (instance.status === 'IN_PROGRESS') {
+
+  // NOT_STARTED and IN_PROGRESS are both "active" — show on the board.
+  // Route to 'attention' if any step is overdue, otherwise 'progress'.
+  if (instance.status === 'IN_PROGRESS' || instance.status === 'NOT_STARTED') {
+    const now = new Date();
     const hasOverdue = instance.stepInstances.some(
       (s) =>
         s.status !== 'COMPLETE' &&
         s.status !== 'SKIPPED' &&
         s.dueDate != null &&
-        new Date(s.dueDate) < new Date(),
+        new Date(s.dueDate) < now,
     );
     return hasOverdue ? 'attention' : 'progress';
   }
+
   return null;
 }
 
