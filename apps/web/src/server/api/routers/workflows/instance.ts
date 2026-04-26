@@ -3,7 +3,7 @@
  *
  * Procedures:
  *   generate            — adminProcedure: create an Active Checklist from a Playbook
- *   list                — tenantMemberProcedure: paginated list, sorted BLOCKED→IN_PROGRESS→NOT_STARTED→COMPLETED
+ *   list                — tenantMemberProcedure: paginated list across ALL statuses (NOT_STARTED, IN_PROGRESS, BLOCKED, COMPLETED) when no `status` filter is passed; sorted BLOCKED→IN_PROGRESS→NOT_STARTED→COMPLETED. Callers that want to exclude e.g. COMPLETED must pass `status` explicitly or filter client-side.
  *   get                 — tenantMemberProcedure: single instance by ID
  *   getForEntity        — tenantMemberProcedure: all instances for a given entityId + entityType
  *   computeReadiness    — adminProcedure: manually re-trigger dispatch readiness computation
@@ -44,6 +44,7 @@ const list = tenantMemberProcedure
     const instances = await prisma.playbookInstance.findMany({
       where: {
         tenantId: ctx.tenantId,
+        // No filter ⇒ returns all statuses including NOT_STARTED — Active Work Board relies on this.
         ...(status ? { status } : {}),
         ...(entityType ? { entityType } : {}),
         ...(entityId ? { entityId } : {}),
