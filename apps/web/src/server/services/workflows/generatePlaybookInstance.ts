@@ -37,7 +37,7 @@ export async function generatePlaybookInstance(args: {
   if (!playbook.isActive)
     throw new TRPCError({ code: 'BAD_REQUEST', message: 'Playbook is not active' });
 
-  // 2. Verify entity exists (User for DRIVER, Truck for VEHICLE, Customer for PARTNER)
+  // 2. Verify entity exists (User for DRIVER, CarrierTruck for VEHICLE, Customer for PARTNER)
   await verifyEntity(entityType, entityId, tenantId);
 
   // 3. Check for duplicate active instance
@@ -224,7 +224,9 @@ async function verifyEntity(
     return user;
   }
   if (entityType === 'VEHICLE') {
-    const truck = await prisma.truck.findFirst({ where: { id: entityId, tenantId } });
+    const truck = await prisma.carrierTruck.findFirst({
+      where: { id: entityId, orgId: tenantId },
+    });
     if (!truck) throw new TRPCError({ code: 'NOT_FOUND', message: 'Vehicle not found' });
     return truck;
   }
