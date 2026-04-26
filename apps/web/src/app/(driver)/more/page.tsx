@@ -1,10 +1,18 @@
 import Link from 'next/link';
-import { Clock, FileText, AlertTriangle, LifeBuoy, ChevronRight } from 'lucide-react';
+import { Package, Clock, FileText, AlertTriangle, LifeBuoy, ChevronRight } from 'lucide-react';
 import { DriverSignOutButton } from '@/components/driver/driver-sign-out-button';
 
 export const dynamic = 'force-dynamic';
 
 const menuItems = [
+  {
+    href: '/my-load',
+    label: 'My Load',
+    description: 'View your current load details',
+    icon: Package,
+    iconClass: 'text-sky-600 dark:text-sky-400',
+    bgClass: 'bg-sky-50 dark:bg-sky-950',
+  },
   {
     href: '/hours',
     label: 'Hours of Service',
