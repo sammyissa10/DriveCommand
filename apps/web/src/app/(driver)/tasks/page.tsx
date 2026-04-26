@@ -149,9 +149,16 @@ async function fetchDriverTasks(userId: string, tenantId: string) {
 
     return tx.stepInstance.findMany({
       where: {
-        assignedUserId: userId,
-        status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
-        playbookInstance: { tenantId },
+        AND: [
+          { playbookInstance: { tenantId } },
+          { status: { in: ['NOT_STARTED', 'IN_PROGRESS'] } },
+          {
+            OR: [
+              { assignedUserId: userId },
+              { assigneeRole: 'DRIVER', assignedUserId: null },
+            ],
+          },
+        ],
       },
       orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }],
       include: {
