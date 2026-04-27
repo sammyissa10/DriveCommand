@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState, useRef, useTransition, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CheckCircle2, XCircle, Loader2, Upload, FileText, Info } from 'lucide-react';
@@ -113,28 +113,25 @@ export function TaskCompletionClient({ stepInstanceId, stepType, status, default
 
 function useCompleteTask(stepInstanceId: string) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function complete(result: Parameters<typeof completeDriverTask>[1]) {
-    setLoading(true);
-    try {
-      const res = await completeDriverTask(stepInstanceId, result);
-      if (!res.success) {
-        toast.error(res.error ?? 'Failed to complete task');
-        return false;
+  function complete(result: Parameters<typeof completeDriverTask>[1]) {
+    startTransition(async () => {
+      try {
+        const res = await completeDriverTask(stepInstanceId, result);
+        if (!res.success) {
+          toast.error(res.error ?? 'Failed to complete task');
+          return;
+        }
+        toast.success('Task completed');
+        router.push('/tasks');
+      } catch {
+        toast.error('Something went wrong. Please try again.');
       }
-      toast.success('Task completed');
-      router.push('/tasks');
-      return true;
-    } catch {
-      toast.error('Something went wrong. Please try again.');
-      return false;
-    } finally {
-      setLoading(false);
-    }
+    });
   }
 
-  return { complete, loading };
+  return { complete, loading: isPending };
 }
 
 // ─── INSPECTION_ITEM ──────────────────────────────────────────────────────────

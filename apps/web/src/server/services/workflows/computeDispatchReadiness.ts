@@ -104,8 +104,7 @@ async function updateEntityReadiness(
 
   if (entityType === 'DRIVER') {
     await prisma.user.update({ where: { id: entityId }, data: { isDispatchReady: entityReady } });
-  } else if (entityType === 'VEHICLE') {
-    await prisma.truck.update({ where: { id: entityId }, data: { isDispatchReady: entityReady } });
   }
+  // VEHICLE: CarrierTruck has no isDispatchReady column — readiness tracked on PlaybookInstance only
   // PARTNER, DISPATCH, OTHER: no entity-level field to update
 }

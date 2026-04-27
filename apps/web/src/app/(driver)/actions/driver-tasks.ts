@@ -11,8 +11,7 @@ import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { completeStep } from '@/server/services/workflows/completeStep';
 import { failInspectionItem } from '@/server/services/workflows/failInspectionItem';
-import { s3Client, getBucketName } from '@/lib/storage/s3-client';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { nanoid } from 'nanoid';
 import type { StepResult } from '@drivecommand/validation';
 
@@ -91,19 +90,16 @@ export async function uploadTaskFile(
 
     const fileId = nanoid();
     const sanitized = file.name.replace(/[/\\?#]/g, '-');
-    const s3Key = `tenant-${session.tenantId}/inspections/${fileId}-${sanitized}`;
+    const storagePath = `${session.tenantId}/tasks/${fileId}-${sanitized}`;
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: getBucketName(),
-        Key: s3Key,
-        Body: buffer,
-        ContentType: file.type,
-      }),
-    );
+    const supabaseAdmin = createAdminClient();
+    const { error } = await supabaseAdmin.storage
+      .from('drivecommand-files')
+      .upload(storagePath, buffer, { contentType: file.type });
+    if (error) throw new Error(error.message);
 
-    return { success: true, data: { s3Key } };
+    return { success: true, data: { s3Key: storagePath } };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Upload failed' };
   }
