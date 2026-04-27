@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -48,6 +48,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getSignedPhotoUrl } from './actions';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -143,11 +144,33 @@ function isDueDateOverdue(dueDate: Date | string | null, status: StepStatus): bo
   return new Date(dueDate) < new Date();
 }
 
-function summarizeResult(result: unknown): string {
-  if (!result) return '';
-  const r = result as StepResultData;
-  const raw = r.note ?? JSON.stringify(r.formData ?? result);
-  return raw.length > 60 ? raw.slice(0, 57) + '…' : raw;
+function StepResultBadge({ result }: { result: unknown }) {
+  try {
+    const r = result as StepResultData;
+    if (r.passOrFail === 'pass') {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
+          <CheckCircle2 className="w-3 h-3" /> Pass
+        </span>
+      );
+    }
+    if (r.passOrFail === 'fail') {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+          <XCircle className="w-3 h-3" /> Fail
+        </span>
+      );
+    }
+    if (r.formData) return <span className="text-xs text-muted-foreground">Form submitted</span>;
+    if (r.signatureUrl) return <span className="text-xs text-muted-foreground">Signed</span>;
+    if (r.note) {
+      const note = r.note.length > 60 ? r.note.slice(0, 57) + '…' : r.note;
+      return <span className="text-xs text-muted-foreground">{note}</span>;
+    }
+    return <span className="text-xs text-muted-foreground">Completed</span>;
+  } catch {
+    return null;
+  }
 }
 
 function getAssigneeLabel(step: StepInstance): string {
@@ -399,6 +422,108 @@ function ResultSheet({ result, open, onClose }: { result: unknown; open: boolean
 }
 
 // ---------------------------------------------------------------------------
+// View Issue modal
+// ---------------------------------------------------------------------------
+
+function ViewIssueModal({
+  step,
+  open,
+  onClose,
+}: {
+  step: StepInstance | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [signedPhotoUrl, setSignedPhotoUrl] = useState<string | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(false);
+
+  const snap = (step?.stepSnapshot ?? {}) as StepSnap;
+  const stepName = snap.name ?? 'Inspection Step';
+  const result = step?.result as { photoUrls?: string[]; note?: string } | null;
+  const photoPath = result?.photoUrls?.[0] ?? null;
+  const note = result?.note ?? null;
+  const timestamp = step?.completedAt
+    ? format(new Date(step.completedAt as string), 'MMM d, yyyy h:mm a')
+    : null;
+
+  useEffect(() => {
+    if (!open || !photoPath) {
+      setSignedPhotoUrl(null);
+      return;
+    }
+    setPhotoLoading(true);
+    getSignedPhotoUrl(photoPath)
+      .then((url) => setSignedPhotoUrl(url))
+      .catch(() => null)
+      .finally(() => setPhotoLoading(false));
+  }, [open, photoPath]);
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+            <XCircle className="h-5 w-5" />
+            Inspection Failure
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">Step</p>
+            <p className="text-sm font-medium">{stepName}</p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Badge className="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 text-xs">
+              Failed
+            </Badge>
+            {timestamp && (
+              <span className="text-xs text-muted-foreground">{timestamp}</span>
+            )}
+          </div>
+
+          {note && (
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">Notes</p>
+              <p className="text-sm whitespace-pre-wrap">{note}</p>
+            </div>
+          )}
+
+          {photoPath && (
+            <div>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">Photo</p>
+              {photoLoading ? (
+                <div className="h-48 bg-muted rounded-lg flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : signedPhotoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={signedPhotoUrl}
+                  alt="Inspection failure photo"
+                  className="w-full max-h-64 object-contain rounded-lg border border-border"
+                />
+              ) : (
+                <div className="h-16 bg-muted rounded-lg flex items-center justify-center text-sm text-muted-foreground">
+                  Photo unavailable
+                </div>
+              )}
+            </div>
+          )}
+
+          {!note && !photoPath && (
+            <p className="text-sm text-muted-foreground">No additional details were submitted.</p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Step row
 // ---------------------------------------------------------------------------
 
@@ -407,15 +532,15 @@ interface StepRowProps {
   onSkip: (stepId: string, stepName: string) => void;
   onApprove: (stepId: string, stepName: string) => void;
   onViewResult: (result: unknown) => void;
+  onViewIssue: (step: StepInstance) => void;
 }
 
-function StepRow({ step, onSkip, onApprove, onViewResult }: StepRowProps) {
+function StepRow({ step, onSkip, onApprove, onViewResult, onViewIssue }: StepRowProps) {
   const snap = (step.stepSnapshot ?? {}) as StepSnap;
   const stepName = snap.name ?? 'Unnamed Task';
   const assignee = getAssigneeLabel(step);
   const dueDateStr = formatDueDate(step.dueDate);
   const overdue = isDueDateOverdue(step.dueDate, step.status);
-  const resultSummary = summarizeResult(step.result);
   const canSkip = step.status === 'NOT_STARTED' || step.status === 'IN_PROGRESS';
   const isApprovalStep = snap.stepType === 'APPROVAL';
 
@@ -439,8 +564,8 @@ function StepRow({ step, onSkip, onApprove, onViewResult }: StepRowProps) {
               {overdue && ' (overdue)'}
             </span>
           )}
-          {resultSummary && (
-            <span className="truncate max-w-[200px]">{resultSummary}</span>
+          {step.status === 'COMPLETE' && step.result != null && (
+            <StepResultBadge result={step.result} />
           )}
           {step.status === 'SKIPPED' && (
             <Badge variant="secondary" className="text-xs">Skipped</Badge>
@@ -476,7 +601,12 @@ function StepRow({ step, onSkip, onApprove, onViewResult }: StepRowProps) {
           </Button>
         )}
         {step.status === 'FAILED' && (
-          <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-red-600 dark:text-red-400">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 text-xs text-red-600 dark:text-red-400"
+            onClick={() => onViewIssue(step)}
+          >
             View Issue
           </Button>
         )}
@@ -515,9 +645,10 @@ interface PhaseSectionProps {
   onSkip: (stepId: string, stepName: string) => void;
   onApprove: (stepId: string, stepName: string) => void;
   onViewResult: (result: unknown) => void;
+  onViewIssue: (step: StepInstance) => void;
 }
 
-function PhaseSection({ phaseKey, steps, onSkip, onApprove, onViewResult }: PhaseSectionProps) {
+function PhaseSection({ phaseKey, steps, onSkip, onApprove, onViewResult, onViewIssue }: PhaseSectionProps) {
   const [open, setOpen] = useState(true);
   const completeCount = steps.filter((s) => s.status === 'COMPLETE').length;
   const label = PHASE_LABEL[phaseKey] ?? phaseKey;
@@ -533,7 +664,7 @@ function PhaseSection({ phaseKey, steps, onSkip, onApprove, onViewResult }: Phas
       <CollapsibleContent>
         <div className="mt-1 divide-y divide-border">
           {steps.map((step) => (
-            <StepRow key={step.id} step={step} onSkip={onSkip} onApprove={onApprove} onViewResult={onViewResult} />
+            <StepRow key={step.id} step={step} onSkip={onSkip} onApprove={onApprove} onViewResult={onViewResult} onViewIssue={onViewIssue} />
           ))}
         </div>
       </CollapsibleContent>
@@ -556,6 +687,7 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
   const [skipDialog, setSkipDialog] = useState<{ id: string; name: string } | null>(null);
   const [approveDialog, setApproveDialog] = useState<{ id: string; name: string } | null>(null);
   const [resultSheet, setResultSheet] = useState<unknown>(null);
+  const [viewIssueStep, setViewIssueStep] = useState<StepInstance | null>(null);
 
   const { data, isLoading, isError } = useQuery(
     trpc.workflows.instance.get.queryOptions({ id: instanceId }),
@@ -702,6 +834,7 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
               onSkip={(id, name) => setSkipDialog({ id, name })}
               onApprove={(id, name) => setApproveDialog({ id, name })}
               onViewResult={(result) => setResultSheet(result)}
+              onViewIssue={(step) => setViewIssueStep(step)}
             />
           ))}
 
@@ -776,6 +909,13 @@ export function ChecklistDetailClient({ instanceId }: ChecklistDetailClientProps
         result={resultSheet}
         open={resultSheet !== null}
         onClose={() => setResultSheet(null)}
+      />
+
+      {/* View Issue modal */}
+      <ViewIssueModal
+        step={viewIssueStep}
+        open={viewIssueStep !== null}
+        onClose={() => setViewIssueStep(null)}
       />
     </div>
   );
