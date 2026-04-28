@@ -208,6 +208,109 @@ export const triggerRouter = router({
     await prisma.playbookTrigger.delete({ where: { id: input.triggerId } });
     return { deleted: true };
   }),
+
+  /**
+   * Return the most recent 50 trigger-spawned PlaybookInstance rows for this tenant.
+   * Used by the Automation Activity feed on /checklists/automation.
+   * triggeredBy='trigger' filter matches the index added in migration 20260428100001.
+   */
+  listActivityLog: adminProcedure.query(async ({ ctx }) => {
+    const instances = await prisma.playbookInstance.findMany({
+      where: { tenantId: ctx.tenantId, triggeredBy: 'trigger' },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      select: {
+        id: true,
+        createdAt: true,
+        triggeredEvent: true,
+        entityType: true,
+        entityId: true,
+        playbook: { select: { id: true, name: true } },
+      },
+    });
+
+    if (instances.length === 0) return [];
+
+    // Resolve entity display names in batched lookups per entityType
+    const driverIds = instances.filter((i) => i.entityType === 'DRIVER').map((i) => i.entityId);
+    const vehicleIds = instances.filter((i) => i.entityType === 'VEHICLE').map((i) => i.entityId);
+    const partnerIds = instances.filter((i) => i.entityType === 'PARTNER').map((i) => i.entityId);
+    const dispatchIds = instances.filter((i) => i.entityType === 'DISPATCH').map((i) => i.entityId);
+
+    const [drivers, vehicles, partners, dispatches] = await Promise.all([
+      driverIds.length
+        ? prisma.user.findMany({
+            where: { id: { in: driverIds }, tenantId: ctx.tenantId },
+            select: { id: true, firstName: true, lastName: true, email: true },
+          })
+        : Promise.resolve([]),
+      vehicleIds.length
+        ? prisma.carrierTruck.findMany({
+            where: { id: { in: vehicleIds }, orgId: ctx.tenantId },
+            select: { id: true, unitNumber: true, vin: true },
+          })
+        : Promise.resolve([]),
+      partnerIds.length
+        ? prisma.customer.findMany({
+            where: { id: { in: partnerIds }, tenantId: ctx.tenantId },
+            select: { id: true, companyName: true },
+          })
+        : Promise.resolve([]),
+      dispatchIds.length
+        ? prisma.carrierDispatch.findMany({
+            where: { id: { in: dispatchIds } },
+            select: { id: true, status: true, createdAt: true },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const driverMap = new Map(
+      drivers.map((d) => [
+        d.id,
+        [d.firstName, d.lastName].filter(Boolean).join(' ') || d.email,
+      ])
+    );
+    const vehicleMap = new Map(
+      vehicles.map((v) => [v.id, v.unitNumber || v.vin || 'Unknown vehicle'])
+    );
+    const partnerMap = new Map(partners.map((p) => [p.id, p.companyName]));
+    const dispatchMap = new Map(
+      dispatches.map((d) => [
+        d.id,
+        `${d.status} dispatch (${new Date(d.createdAt).toLocaleDateString()})`,
+      ])
+    );
+
+    return instances.map((i) => {
+      let entityName: string;
+      switch (i.entityType) {
+        case 'DRIVER':
+          entityName = driverMap.get(i.entityId) ?? 'Unknown driver';
+          break;
+        case 'VEHICLE':
+          entityName = vehicleMap.get(i.entityId) ?? 'Unknown vehicle';
+          break;
+        case 'PARTNER':
+          entityName = partnerMap.get(i.entityId) ?? 'Unknown partner';
+          break;
+        case 'DISPATCH':
+          entityName = dispatchMap.get(i.entityId) ?? 'Unknown dispatch';
+          break;
+        default:
+          entityName = 'Unknown';
+      }
+
+      return {
+        id: i.id,
+        createdAt: i.createdAt,
+        triggerEvent: i.triggeredEvent,       // e.g. ON_DRIVER_CREATE
+        playbookId: i.playbook.id,
+        playbookName: i.playbook.name,
+        entityType: i.entityType,
+        entityName,
+      };
+    });
+  }),
 });
 
 async function countInstancesForPlaybook(playbookId: string, tenantId: string): Promise<number> {

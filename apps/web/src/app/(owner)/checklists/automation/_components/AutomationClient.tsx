@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import { RecipeCard } from './RecipeCard';
 import { CustomRulesTable } from './CustomRulesTable';
 import { CreateCustomRuleDialog } from './CreateCustomRuleDialog';
+import { AutomationActivityLog } from './AutomationActivityLog';
 
 export function AutomationClient() {
   const trpc = useTRPC();
@@ -81,6 +82,9 @@ export function AutomationClient() {
           deletingId={deleteMutation.isPending ? (deleteMutation.variables as { triggerId: string })?.triggerId : null}
         />
       </section>
+
+      {/* Section 3: Automation Activity Log */}
+      <AutomationActivityLog />
 
       {/* Create Custom Rule Dialog */}
       <CreateCustomRuleDialog
