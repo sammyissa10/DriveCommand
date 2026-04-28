@@ -79,6 +79,7 @@ describe('fireEvent — match/skip behavior (Phase 4 DoD test 1)', () => {
       entityId: 'd1',
       tenantId: TENANT_ID,
       triggeredBy: 'trigger',
+      triggeredEvent: 'ON_DRIVER_CREATE',
     });
   });
 

@@ -11,7 +11,7 @@
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { TRPCError } from '@trpc/server';
 import { sendStepAssigned } from './notifications';
-import type { PlaybookEntityType } from '@/generated/prisma';
+import type { PlaybookEntityType, TriggerEvent } from '@/generated/prisma';
 import { Prisma } from '@/generated/prisma';
 
 export async function generatePlaybookInstance(args: {
@@ -20,8 +20,9 @@ export async function generatePlaybookInstance(args: {
   entityId: string;
   tenantId: string;
   triggeredBy: 'manual' | 'trigger';
+  triggeredEvent?: TriggerEvent;   // Only set when triggeredBy='trigger'
 }) {
-  const { playbookId, entityType, entityId, tenantId, triggeredBy } = args;
+  const { playbookId, entityType, entityId, tenantId, triggeredBy, triggeredEvent } = args;
 
   // 1. Load Playbook with steps ordered by (playbookPhase ASC, sequence ASC)
   const playbook = await prisma.playbook.findFirst({
@@ -66,6 +67,8 @@ export async function generatePlaybookInstance(args: {
         entityId,
         status: 'NOT_STARTED',
         isDispatchReady: false,
+        triggeredBy,
+        triggeredEvent: triggeredEvent ?? null,
       },
     });
 

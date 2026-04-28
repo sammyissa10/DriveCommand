@@ -68,6 +68,7 @@ export async function fireEvent(args: {
         entityId: String(entityData.id),
         tenantId,
         triggeredBy: 'trigger',
+        triggeredEvent: event,
       });
     } catch (err) {
       // Per-trigger best-effort — one failing trigger must not block other triggers
