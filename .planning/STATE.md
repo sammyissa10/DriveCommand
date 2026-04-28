@@ -13,7 +13,7 @@ Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 46 Workflow Engine 5 Polish & Analytics — COMPLETE
 Current Plan: 6 of 6 plans complete — Phase 46 DONE
 Status: Plan 06 done — Daily workflow safety digest: WorkflowSafetyDigestEmail template + workflow-digest cron with DAILY_DIGEST dedup, per-tenant sweep, OWNER/MANAGER email delivery
-Last activity: 2026-04-26 - Completed quick task 287: Fix Active Work Board not showing NOT_STARTED checklist instances
+Last activity: 2026-04-28 - Completed quick task 288: Tenant automation activity log
 Last session: 2026-04-25T04:11:32Z
 Stopped at: Completed 46-06-PLAN.md
 
@@ -1228,6 +1228,7 @@ None blocking immediate progress.
 | 285 | Fix FORM_FILL completeStep not validating against formSchema | 2026-04-25 | 91f2eb2 | [285-fix-form-fill-completestep-not-validatin](./quick/285-fix-form-fill-completestep-not-validatin/) |
 | 286 | Fix "Vehicle not found" error in Start Checklist dialog — entity lookup uses legacy Truck model instead of CarrierTruck | 2026-04-26 | 5b42d39 | [286-fix-vehicle-not-found-error-in-start-che](./quick/286-fix-vehicle-not-found-error-in-start-che/) |
 | 287 | Fix Active Work Board not showing NOT_STARTED checklist instances — status filter excludes NOT_STARTED | 2026-04-26 | 8a8f1d4 | [287-fix-active-work-board-not-showing-not-st](./quick/287-fix-active-work-board-not-showing-not-st/) |
+| 288 | Tenant automation activity log — triggeredBy + triggeredEvent on PlaybookInstance, listActivityLog tRPC procedure, AutomationActivityLog feed on Automation page | 2026-04-28 | 0bf36a2 | [288-tenant-automation-activity-log](./quick/288-tenant-automation-activity-log/) |
 
 **Phase 01 metrics:**
 - Phase 01-01 (2026-02-26): RLS policies + migration SQL for Load/TenantIntegration + tenantId on InvoiceItem/ExpenseTemplateItem — 192s, 2 tasks, 4 files affected
