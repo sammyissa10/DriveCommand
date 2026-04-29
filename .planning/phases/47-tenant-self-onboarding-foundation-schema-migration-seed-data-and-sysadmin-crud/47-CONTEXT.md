@@ -19,16 +19,18 @@ No signup flow, no email, no hydration, no activation tracking — those are Pha
 ## Implementation Decisions
 
 ### Migration Strategy
-- Two separate raw SQL files in `apps/web/migrations/`:
-  - `<timestamp>__tenant_self_onboarding.sql` — all DDL (A-01)
-  - `<timestamp>__seed_plans_and_automations.sql` — seed INSERT statements (A-02)
+- Two separate migration directories in `apps/web/prisma/migrations/` (NOT `migrations/` — scripts/migrate.mjs reads from `prisma/migrations/<dir>/migration.sql`):
+  - `apps/web/prisma/migrations/20260429000001_tenant_self_onboarding/migration.sql` — all DDL (A-01)
+  - `apps/web/prisma/migrations/20260429000002_seed_plans_and_automations/migration.sql` — seed INSERT statements (A-02)
+- Each migration directory contains exactly one `migration.sql` file.
+- Do NOT include `BEGIN`/`COMMIT` — `scripts/migrate.mjs` wraps each file in its own transaction.
 - Do NOT use `prisma migrate dev`. Migrations apply via `scripts/migrate.mjs` at deploy time.
 - Update `apps/web/prisma/schema.prisma` manually to match DDL (no Prisma codegen for the migration itself).
 
 ### New Tables (A-01)
 All from spec section 4. In order:
 - Enums first: `FleetSizeBucket`, `TenantStatus`, `ProvisioningPhase`, `SubscriptionStatus`, `AutomationScope`, `AutomationRunStatus`
-- Extend `Tenant` table: slug, fleetSizeBucket, status, manualTrial, emailConfirmedAt, sampleDataSeeded, provisioningPhase
+- Extend `Tenant` table: **NOTE — `slug` column already exists as nullable** (`slug String? @unique`). Migration must ALTER it to NOT NULL and add the 6 remaining columns: fleetSizeBucket, status, manualTrial, emailConfirmedAt, sampleDataSeeded, provisioningPhase. Use `ALTER TABLE "Tenant" ALTER COLUMN "slug" SET NOT NULL` (after ensuring no NULL values exist or providing a DEFAULT).
 - Add `isSample BOOLEAN DEFAULT FALSE` to: `Truck`, `User`, `Customer` (or equivalent client table — check existing schema), `Load`
 - New tables: `Plan`, `Promo`, `Subscription`, `ActivationProgress`, `AutomationRule`, `AutomationRun`, `AppEvent`, `TenantMetricsDaily`, `TenantHealthScore`
 
@@ -77,7 +79,7 @@ After all three plans complete:
 - Exact migration timestamp format (match existing migrations/ files)
 - SysAdmin page layout details (column widths, sort order) — follow existing patterns
 - Error handling in SysAdmin forms (follow existing form patterns)
-- Whether to use modal dialogs or separate create pages for Plans/Promos — match what already exists in the admin portal
+- SysAdmin UI uses separate create pages (not modals) — confirmed by reading existing admin pages. Use `page.tsx` + `actions.ts` pattern per section.
 
 </decisions>
 
