@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 47 COMPLETE
-Phase: Phase 47 Tenant Self-Onboarding Foundation — COMPLETE
-Current Plan: 3 of 3 plans complete
-Status: All three plans done — DDL migration, seed data, SysAdmin CRUD UI (Plans + Promos)
-Last activity: 2026-04-29 - Completed 47-03: SysAdmin Plans and Promos CRUD UI
-Last session: 2026-04-29T00:00:00Z
-Stopped at: Phase 47 complete — ready for /gsd:verify-work 47
+Milestone: v8.0 Tenant Self-Onboarding — Phase 48 IN PROGRESS
+Phase: Phase 48 Tenant Self-Onboarding — Signup and Provisioning
+Current Plan: 1 of 3 plans complete
+Status: Plan 01 done — provisioning engine (email-token, signup schema, provisionTenant, seedSampleData, hydrateTenant)
+Last activity: 2026-04-28 - Completed 48-01: Provisioning Engine
+Last session: 2026-04-28T00:00:00Z
+Stopped at: Phase 48 Plan 01 complete — ready for Plan 02 (signup server action)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -130,6 +130,7 @@ Progress: [███████████████████████
 - Phase 47-01 (2026-04-29): Tenant self-onboarding schema migration — 6 new enums, 9 new tables (Plan/Promo/Subscription/ActivationProgress/AutomationRule/AutomationRun/AppEvent/TenantMetricsDaily/TenantHealthScore), Tenant extended (slug NOT NULL + 6 cols), isSample on 4 domain tables, RLS on 7 tables — 2 tasks, 9 files, ~12min
 - Phase 47-02 (2026-04-29): Seed migration — 3 Plans (starter $49/5 trucks, pro $99/20 trucks, fleet $199/unlimited) + 6 SYSTEM AutomationRules; all idempotent ON CONFLICT DO NOTHING; trial_ending_soon has runOncePerTenant=false — 1 task, 1 file, ~3min
 - Phase 47-03 (2026-04-29): SysAdmin CRUD UI — Plans list/create/edit + Promos list/create, server actions with Zod validation + requireAdminAccess, admin nav links — 2 tasks, 13 files, ~10min
+- Phase 48-01 (2026-04-28): Provisioning engine — generateEmailToken/verifyEmailToken (AES-256-GCM), signUpSchema Zod object, provisionTenant (14-step bypass_rls tx), seedSampleData (fleet-bucket-aware), hydrateTenant (idempotent wrapper) — 3 tasks, 6 files, ~25min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -336,6 +337,13 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 48-01 decisions (Provisioning engine):**
+- Node.js built-in crypto module used for AES-256-GCM token generation — no extra package needed
+- Unknown/inactive promo codes silently ignored; PROMO_EXHAUSTED (valid but exhausted) throws to roll back the transaction
+- Prisma.TransactionClient type used for seedSampleData TX parameter (cleaner than Parameters<> inference)
+- Steps 12–14 (AppEvent, welcome email, Supabase Auth user creation) intentionally kept outside provisionTenant — signup action controls orchestration
+- Sample loads use ownerUserId as driverId since no real driver exists at provisioning time
 
 **Phase 47-01 decisions (Tenant self-onboarding schema migration):**
 - Plan and Promo tables have no RLS — platform-level configuration, intentionally readable by all tenants, write-gated to SysAdmin
