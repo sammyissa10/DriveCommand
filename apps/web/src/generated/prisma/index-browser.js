@@ -130,7 +130,13 @@ exports.Prisma.TenantScalarFieldEnum = {
   isActive: 'isActive',
   profitMarginThreshold: 'profitMarginThreshold',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  fleetSizeBucket: 'fleetSizeBucket',
+  status: 'status',
+  manualTrial: 'manualTrial',
+  emailConfirmedAt: 'emailConfirmedAt',
+  sampleDataSeeded: 'sampleDataSeeded',
+  provisioningPhase: 'provisioningPhase'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -147,7 +153,8 @@ exports.Prisma.UserScalarFieldEnum = {
   permissions: 'permissions',
   isDispatchReady: 'isDispatchReady',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.TruckScalarFieldEnum = {
@@ -166,7 +173,8 @@ exports.Prisma.TruckScalarFieldEnum = {
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  archivedAt: 'archivedAt'
+  archivedAt: 'archivedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.DriverInvitationScalarFieldEnum = {
@@ -433,7 +441,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   totalRevenue: 'totalRevenue',
   lastLoadDate: 'lastLoadDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.CustomerInteractionScalarFieldEnum = {
@@ -570,7 +579,8 @@ exports.Prisma.LoadScalarFieldEnum = {
   updatedAt: 'updatedAt',
   archivedAt: 'archivedAt',
   pickupStopId: 'pickupStopId',
-  deliveryStopId: 'deliveryStopId'
+  deliveryStopId: 'deliveryStopId',
+  isSample: 'isSample'
 };
 
 exports.Prisma.TenantIntegrationScalarFieldEnum = {
@@ -1128,6 +1138,8 @@ exports.Prisma.PlaybookInstanceScalarFieldEnum = {
   startedAt: 'startedAt',
   completedAt: 'completedAt',
   dueDate: 'dueDate',
+  triggeredBy: 'triggeredBy',
+  triggeredEvent: 'triggeredEvent',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1188,6 +1200,130 @@ exports.Prisma.DispatchOverrideAuditScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.PlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  defaultTrialDays: 'defaultTrialDays',
+  monthlyPriceCents: 'monthlyPriceCents',
+  yearlyPriceCents: 'yearlyPriceCents',
+  maxTrucks: 'maxTrucks',
+  maxUsers: 'maxUsers',
+  storageGbLimit: 'storageGbLimit',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  stripeProductId: 'stripeProductId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PromoScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  bonusTrialDays: 'bonusTrialDays',
+  discountPct: 'discountPct',
+  activeFrom: 'activeFrom',
+  activeTo: 'activeTo',
+  maxRedemptions: 'maxRedemptions',
+  redemptionCount: 'redemptionCount',
+  isActive: 'isActive',
+  stripeCouponId: 'stripeCouponId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planId: 'planId',
+  promoId: 'promoId',
+  status: 'status',
+  trialEndsAt: 'trialEndsAt',
+  manualExtensionUntil: 'manualExtensionUntil',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivationProgressScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  accountCreatedAt: 'accountCreatedAt',
+  firstRealTruckAt: 'firstRealTruckAt',
+  firstRealDriverAt: 'firstRealDriverAt',
+  firstRealClientAt: 'firstRealClientAt',
+  firstRealLoadCreatedAt: 'firstRealLoadCreatedAt',
+  firstLoadInTransitAt: 'firstLoadInTransitAt',
+  firstLoadDeliveredAt: 'firstLoadDeliveredAt',
+  completionPct: 'completionPct',
+  isActivated: 'isActivated',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationRuleScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  triggerEvent: 'triggerEvent',
+  conditionsJson: 'conditionsJson',
+  actionsJson: 'actionsJson',
+  scope: 'scope',
+  tenantId: 'tenantId',
+  isActive: 'isActive',
+  runOncePerTenant: 'runOncePerTenant',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationRunScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  triggeredBy: 'triggeredBy',
+  status: 'status',
+  resultJson: 'resultJson',
+  firedAt: 'firedAt'
+};
+
+exports.Prisma.AppEventScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  eventType: 'eventType',
+  properties: 'properties',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TenantMetricsDailyScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  date: 'date',
+  dauCount: 'dauCount',
+  sessionCount: 'sessionCount',
+  keyActionCount: 'keyActionCount',
+  storageBytes: 'storageBytes',
+  seatsUsed: 'seatsUsed',
+  loadsCreated: 'loadsCreated',
+  loadsInTransit: 'loadsInTransit'
+};
+
+exports.Prisma.TenantHealthScoreScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  score: 'score',
+  topFactorsJson: 'topFactorsJson',
+  computedAt: 'computedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1217,6 +1353,26 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.FleetSizeBucket = exports.$Enums.FleetSizeBucket = {
+  OWNER_OPERATOR: 'OWNER_OPERATOR',
+  SMALL: 'SMALL',
+  MEDIUM: 'MEDIUM',
+  LARGE: 'LARGE'
+};
+
+exports.TenantStatus = exports.$Enums.TenantStatus = {
+  TRIAL: 'TRIAL',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  SUSPENDED: 'SUSPENDED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ProvisioningPhase = exports.$Enums.ProvisioningPhase = {
+  MINIMAL: 'MINIMAL',
+  HYDRATED: 'HYDRATED'
+};
+
 exports.UserRole = exports.$Enums.UserRole = {
   OWNER: 'OWNER',
   MANAGER: 'MANAGER',
@@ -1509,6 +1665,17 @@ exports.InstanceStatus = exports.$Enums.InstanceStatus = {
   BLOCKED: 'BLOCKED'
 };
 
+exports.TriggerEvent = exports.$Enums.TriggerEvent = {
+  ON_DRIVER_CREATE: 'ON_DRIVER_CREATE',
+  ON_VEHICLE_CREATE: 'ON_VEHICLE_CREATE',
+  ON_DISPATCH_CREATE: 'ON_DISPATCH_CREATE',
+  ON_DISPATCH_DEPART: 'ON_DISPATCH_DEPART',
+  ON_DISPATCH_DELIVER: 'ON_DISPATCH_DELIVER',
+  ON_PARTNER_CREATE: 'ON_PARTNER_CREATE',
+  MANUAL_ONLY: 'MANUAL_ONLY',
+  RECURRING: 'RECURRING'
+};
+
 exports.StepStatus = exports.$Enums.StepStatus = {
   NOT_STARTED: 'NOT_STARTED',
   IN_PROGRESS: 'IN_PROGRESS',
@@ -1534,15 +1701,24 @@ exports.NotifChannel = exports.$Enums.NotifChannel = {
   EMAIL: 'EMAIL'
 };
 
-exports.TriggerEvent = exports.$Enums.TriggerEvent = {
-  ON_DRIVER_CREATE: 'ON_DRIVER_CREATE',
-  ON_VEHICLE_CREATE: 'ON_VEHICLE_CREATE',
-  ON_DISPATCH_CREATE: 'ON_DISPATCH_CREATE',
-  ON_DISPATCH_DEPART: 'ON_DISPATCH_DEPART',
-  ON_DISPATCH_DELIVER: 'ON_DISPATCH_DELIVER',
-  ON_PARTNER_CREATE: 'ON_PARTNER_CREATE',
-  MANUAL_ONLY: 'MANUAL_ONLY',
-  RECURRING: 'RECURRING'
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED',
+  SUSPENDED: 'SUSPENDED'
+};
+
+exports.AutomationScope = exports.$Enums.AutomationScope = {
+  SYSTEM: 'SYSTEM',
+  TENANT: 'TENANT'
+};
+
+exports.AutomationRunStatus = exports.$Enums.AutomationRunStatus = {
+  FIRED: 'FIRED',
+  SKIPPED_CONDITION: 'SKIPPED_CONDITION',
+  SKIPPED_ALREADY_RAN: 'SKIPPED_ALREADY_RAN',
+  FAILED: 'FAILED'
 };
 
 exports.Prisma.ModelName = {
@@ -1606,7 +1782,16 @@ exports.Prisma.ModelName = {
   StepInstance: 'StepInstance',
   PlaybookNotification: 'PlaybookNotification',
   PlaybookTrigger: 'PlaybookTrigger',
-  DispatchOverrideAudit: 'DispatchOverrideAudit'
+  DispatchOverrideAudit: 'DispatchOverrideAudit',
+  Plan: 'Plan',
+  Promo: 'Promo',
+  Subscription: 'Subscription',
+  ActivationProgress: 'ActivationProgress',
+  AutomationRule: 'AutomationRule',
+  AutomationRun: 'AutomationRun',
+  AppEvent: 'AppEvent',
+  TenantMetricsDaily: 'TenantMetricsDaily',
+  TenantHealthScore: 'TenantHealthScore'
 };
 
 /**

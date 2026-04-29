@@ -1,4 +1,14 @@
 import { prisma, TX_OPTIONS } from '../prisma';
+import { randomUUID } from 'crypto';
+
+function generateSlug(name: string): string {
+  const base = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+  return base ? `${base}-${randomUUID().slice(0, 8)}` : randomUUID().slice(0, 16);
+}
 
 export class TenantProvisioningRepository {
   /**
@@ -25,6 +35,7 @@ export class TenantProvisioningRepository {
       const tenant = await tx.tenant.create({
         data: {
           name: data.companyName,
+          slug: generateSlug(data.companyName),
           timezone: data.timezone || 'UTC',
           users: {
             create: {

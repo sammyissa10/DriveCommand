@@ -117,16 +117,22 @@ enum InAppNotificationType {
 
 // Models
 model Tenant {
-  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                  String
-  slug                  String?  @unique
-  timezone              String   @default("UTC")
+  slug                  String            @unique
+  timezone              String            @default("UTC")
   contactEmail          String?
-  plan                  String   @default("starter")
-  isActive              Boolean  @default(true)
-  profitMarginThreshold Decimal  @default(10) @db.Decimal(5, 2)
-  createdAt             DateTime @default(now()) @db.Timestamptz
-  updatedAt             DateTime @updatedAt @db.Timestamptz
+  plan                  String            @default("starter")
+  isActive              Boolean           @default(true)
+  profitMarginThreshold Decimal           @default(10) @db.Decimal(5, 2)
+  createdAt             DateTime          @default(now()) @db.Timestamptz
+  updatedAt             DateTime          @updatedAt @db.Timestamptz
+  fleetSizeBucket       FleetSizeBucket   @default(OWNER_OPERATOR)
+  status                TenantStatus      @default(ACTIVE)
+  manualTrial           Boolean           @default(false)
+  emailConfirmedAt      DateTime?         @db.Timestamptz
+  sampleDataSeeded      Boolean           @default(false)
+  provisioningPhase     ProvisioningPhase @default(MINIMAL)
 
   users                User[]
   trucks               Truck[]
@@ -180,6 +186,15 @@ model Tenant {
   playbookNotifications  PlaybookNotification[]
   playbookTriggers       PlaybookTrigger[]
   dispatchOverrideAudits DispatchOverrideAudit[]
+
+  // Phase 47 reverse relations
+  subscription          Subscription?
+  activationProgress    ActivationProgress?
+  automationRules       AutomationRule[]
+  automationRuns        AutomationRun[]
+  appEvents             AppEvent[]
+  tenantMetrics         TenantMetricsDaily[]
+  tenantHealthScore     TenantHealthScore?
 }
 
 model User {
@@ -197,6 +212,7 @@ model User {
   isDispatchReady Boolean  @default(false)
   createdAt       DateTime @default(now()) @db.Timestamptz
   updatedAt       DateTime @updatedAt @db.Timestamptz
+  isSample        Boolean  @default(false)
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
@@ -254,6 +270,7 @@ model Truck {
   createdAt        DateTime  @default(now()) @db.Timestamptz
   updatedAt        DateTime  @updatedAt @db.Timestamptz
   archivedAt       DateTime? @db.Timestamptz
+  isSample         Boolean   @default(false)
 
   tenant            Tenant             @relation(fields: [tenantId], references: [id])
   createdBy         User?              @relation(name: "TruckCreatedBy", fields: [createdById], references: [id])
@@ -724,6 +741,7 @@ model Customer {
   lastLoadDate       DateTime?        @db.Timestamptz
   createdAt          DateTime         @default(now()) @db.Timestamptz
   updatedAt          DateTime         @updatedAt @db.Timestamptz
+  isSample           Boolean          @default(false)
 
   tenant       Tenant                @relation(fields: [tenantId], references: [id])
   interactions CustomerInteraction[]
@@ -984,6 +1002,7 @@ model Load {
   archivedAt     DateTime?  @db.Timestamptz
   pickupStopId   String?    @db.Uuid // FK → RouteStop (set when load is assigned to a route)
   deliveryStopId String?    @db.Uuid // FK → RouteStop
+  isSample       Boolean    @default(false)
 
   tenant       Tenant      @relation(fields: [tenantId], references: [id])
   customer     Customer    @relation(fields: [customerId], references: [id])
@@ -1331,6 +1350,48 @@ enum TriggerEvent {
   ON_PARTNER_CREATE
   MANUAL_ONLY
   RECURRING
+}
+
+// ─── Phase 47 Enums ───────────────────────────────────────────────────────────
+
+enum FleetSizeBucket {
+  OWNER_OPERATOR
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+enum ProvisioningPhase {
+  MINIMAL
+  HYDRATED
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  SUSPENDED
+}
+
+enum AutomationScope {
+  SYSTEM
+  TENANT
+}
+
+enum AutomationRunStatus {
+  FIRED
+  SKIPPED_CONDITION
+  SKIPPED_ALREADY_RAN
+  FAILED
 }
 
 model DriverHOSEntry {
@@ -2117,4 +2178,180 @@ model DispatchOverrideAudit {
 
   @@index([tenantId])
   @@index([dispatchId])
+}
+
+// ─── Phase 47 Models ──────────────────────────────────────────────────────────
+
+model Plan {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key                 String   @unique
+  name                String
+  description         String?
+  defaultTrialDays    Int      @default(14)
+  monthlyPriceCents   Int
+  yearlyPriceCents    Int?
+  maxTrucks           Int?
+  maxUsers            Int?
+  storageGbLimit      Int?
+  isActive            Boolean  @default(true)
+  sortOrder           Int      @default(0)
+  stripeProductId     String?
+  createdAt           DateTime @default(now()) @db.Timestamptz
+  updatedAt           DateTime @updatedAt @db.Timestamptz
+
+  subscriptions Subscription[]
+
+  @@index([isActive])
+}
+
+model Promo {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              String   @unique
+  description       String?
+  bonusTrialDays    Int      @default(0)
+  discountPct       Int?
+  activeFrom        DateTime @db.Timestamptz
+  activeTo          DateTime @db.Timestamptz
+  maxRedemptions    Int?
+  redemptionCount   Int      @default(0)
+  isActive          Boolean  @default(true)
+  stripeCouponId    String?
+  createdAt         DateTime @default(now()) @db.Timestamptz
+  updatedAt         DateTime @updatedAt @db.Timestamptz
+
+  subscriptions Subscription[]
+
+  @@index([isActive])
+}
+
+model Subscription {
+  id                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String             @unique @db.Uuid
+  planId                  String             @db.Uuid
+  promoId                 String?            @db.Uuid
+  status                  SubscriptionStatus @default(TRIALING)
+  trialEndsAt             DateTime           @db.Timestamptz
+  manualExtensionUntil    DateTime?          @db.Timestamptz
+  currentPeriodStart      DateTime?          @db.Timestamptz
+  currentPeriodEnd        DateTime?          @db.Timestamptz
+  stripeCustomerId        String?
+  stripeSubscriptionId    String?
+  cancelAtPeriodEnd       Boolean            @default(false)
+  createdAt               DateTime           @default(now()) @db.Timestamptz
+  updatedAt               DateTime           @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan   Plan   @relation(fields: [planId], references: [id])
+  promo  Promo? @relation(fields: [promoId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([trialEndsAt])
+}
+
+model ActivationProgress {
+  id                      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId                String    @unique @db.Uuid
+  accountCreatedAt        DateTime  @default(now()) @db.Timestamptz
+  firstRealTruckAt        DateTime? @db.Timestamptz
+  firstRealDriverAt       DateTime? @db.Timestamptz
+  firstRealClientAt       DateTime? @db.Timestamptz
+  firstRealLoadCreatedAt  DateTime? @db.Timestamptz
+  firstLoadInTransitAt    DateTime? @db.Timestamptz
+  firstLoadDeliveredAt    DateTime? @db.Timestamptz
+  completionPct           Int       @default(20)
+  isActivated             Boolean   @default(false)
+  createdAt               DateTime  @default(now()) @db.Timestamptz
+  updatedAt               DateTime  @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([isActivated])
+}
+
+model AutomationRule {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key               String          @unique
+  name              String
+  description       String?
+  triggerEvent      String
+  conditionsJson    Json            @default("{}")
+  actionsJson       Json
+  scope             AutomationScope @default(SYSTEM)
+  tenantId          String?         @db.Uuid
+  isActive          Boolean         @default(true)
+  runOncePerTenant  Boolean         @default(true)
+  createdAt         DateTime        @default(now()) @db.Timestamptz
+  updatedAt         DateTime        @updatedAt @db.Timestamptz
+
+  tenant Tenant?         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runs   AutomationRun[]
+
+  @@index([triggerEvent, isActive])
+  @@index([tenantId])
+}
+
+model AutomationRun {
+  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ruleId      String?             @db.Uuid
+  tenantId    String              @db.Uuid
+  userId      String?             @db.Uuid
+  triggeredBy String
+  status      AutomationRunStatus
+  resultJson  Json?
+  firedAt     DateTime            @default(now()) @db.Timestamptz
+
+  rule   AutomationRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([tenantId])
+  @@index([firedAt])
+}
+
+model AppEvent {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String   @db.Uuid
+  userId      String?  @db.Uuid
+  eventType   String
+  properties  Json     @default("{}")
+  createdAt   DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([userId, createdAt])
+}
+
+model TenantMetricsDaily {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @db.Uuid
+  date            DateTime @db.Date
+  dauCount        Int      @default(0)
+  sessionCount    Int      @default(0)
+  keyActionCount  Int      @default(0)
+  storageBytes    BigInt   @default(0)
+  seatsUsed       Int      @default(0)
+  loadsCreated    Int      @default(0)
+  loadsInTransit  Int      @default(0)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
+  @@index([date])
+}
+
+model TenantHealthScore {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @unique @db.Uuid
+  score           Int
+  topFactorsJson  Json
+  computedAt      DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([score])
 }
