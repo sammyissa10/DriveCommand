@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 48 IN PROGRESS
 Phase: Phase 48 Tenant Self-Onboarding — Signup and Provisioning
-Current Plan: 1 of 3 plans complete
-Status: Plan 01 done — provisioning engine (email-token, signup schema, provisionTenant, seedSampleData, hydrateTenant)
-Last activity: 2026-04-28 - Completed 48-01: Provisioning Engine
-Last session: 2026-04-28T00:00:00Z
-Stopped at: Phase 48 Plan 01 complete — ready for Plan 02 (signup server action)
+Current Plan: 3 of 3 plans complete
+Status: Plans 01-03 done — provisioning engine, email-token flow, email templates + confirmation route
+Last activity: 2026-04-29 - Completed 48-03: Email Templates and Confirmation Route
+Last session: 2026-04-29T05:44:23Z
+Stopped at: Phase 48 Plan 03 complete — all 3 plans done, Phase 48 complete
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -131,6 +131,7 @@ Progress: [███████████████████████
 - Phase 47-02 (2026-04-29): Seed migration — 3 Plans (starter $49/5 trucks, pro $99/20 trucks, fleet $199/unlimited) + 6 SYSTEM AutomationRules; all idempotent ON CONFLICT DO NOTHING; trial_ending_soon has runOncePerTenant=false — 1 task, 1 file, ~3min
 - Phase 47-03 (2026-04-29): SysAdmin CRUD UI — Plans list/create/edit + Promos list/create, server actions with Zod validation + requireAdminAccess, admin nav links — 2 tasks, 13 files, ~10min
 - Phase 48-01 (2026-04-28): Provisioning engine — generateEmailToken/verifyEmailToken (AES-256-GCM), signUpSchema Zod object, provisionTenant (14-step bypass_rls tx), seedSampleData (fleet-bucket-aware), hydrateTenant (idempotent wrapper) — 3 tasks, 6 files, ~25min
+- Phase 48-03 (2026-04-29): Email templates + confirmation route — ConfirmEmailTemplate + WelcomeOwnerEmail React Email components, GET /api/email-confirm/[token] (AES-256-GCM verify, sets emailConfirmedAt, idempotent already-confirmed redirect), gmail-client replyTo support — 2 tasks, 4 files, ~15min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
