@@ -634,9 +634,11 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 47-01-PLAN.md — DDL migration (all new tables + Tenant column additions + RLS policies) + Prisma schema update
-- [ ] 47-02-PLAN.md — Seed migration (default Plans: Starter/Pro/Fleet, SYSTEM AutomationRules from spec section 7.4)
-- [ ] 47-03-PLAN.md — SysAdmin CRUD UI: /admin/plans list + create/edit, /admin/promos list + create
+- [x] 47-01-PLAN.md — DDL migration (all new tables + Tenant column additions + RLS policies) + Prisma schema update
+- [x] 47-02-PLAN.md — Seed migration (default Plans: Starter/Pro/Fleet, SYSTEM AutomationRules from spec section 7.4)
+- [x] 47-03-PLAN.md — SysAdmin CRUD UI: /admin/plans list + create/edit, /admin/promos list + create
+
+**Status: COMPLETE (2026-04-29)**
 
 ---
 
