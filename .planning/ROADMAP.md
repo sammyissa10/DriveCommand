@@ -642,6 +642,19 @@ Plans:
 
 ---
 
+### Phase 48: Tenant Self-Onboarding — Signup and Provisioning — Validation schemas, atomic provisioning, signup page, server action, email confirmation, and welcome templates
+
+**Goal:** Complete signup-to-dashboard flow for new tenant owners. Covers three plans: B-01 provisioning logic (Zod schemas, provision-tenant.ts atomic 14-step transaction, seed-sample-data.ts forked by fleet size, hydrate-tenant.ts, AES-GCM email confirmation tokens), B-02 signup page (public /sign-up page, 6-field client form, signUpAction server action with promo support, session cookie, redirect), B-03 email confirmation (GET /api/email-confirm/[token] single-use token handler, confirm-email.tsx React Email template, welcome-owner.tsx from named human). Signup is fully atomic — any failure rolls back. Email enumeration defense and rate limiting (10/IP/hour) required.
+**Depends on:** Phase 47 (schema, Plan/Promo seed data, isSample columns all in place)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 48-01-PLAN.md — Provisioning logic: onboarding Zod schemas, provision-tenant.ts (14-step bypass_rls transaction), seed-sample-data.ts (fleet-bucket forks), hydrate-tenant.ts (idempotent), email token helpers
+- [ ] 48-02-PLAN.md — Signup page and server action: /sign-up page + form component + signUpAction (promo lookup, session set, tenant.created event, redirect)
+- [ ] 48-03-PLAN.md — Email confirmation route + confirm-email template + welcome-owner template
+
+---
+
 ## v6.0 Owner Portal Permissions
 
 ### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
