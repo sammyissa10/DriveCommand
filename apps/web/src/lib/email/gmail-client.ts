@@ -46,6 +46,7 @@ export interface SendEmailOptions {
   to: string | string[];
   subject: string;
   react: ReactElement;
+  replyTo?: string;
 }
 
 /**
@@ -62,6 +63,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ id: string
     to: toAddresses,
     subject: options.subject,
     html,
+    ...(options.replyTo ? { replyTo: options.replyTo } : {}),
   });
 
   return { id: nanoid() };
