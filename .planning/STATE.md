@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v5.0 Mobile App — IN PROGRESS
 Phase: Phase 47 Tenant Self-Onboarding Foundation — IN PROGRESS
-Current Plan: 1 of 4 plans complete
-Status: Plan 01 done — DDL migration (6 enums, 9 tables, Tenant extensions, isSample columns) + schema.prisma updated, prisma generate + tsc clean
-Last activity: 2026-04-29 - Completed 47-01: tenant self-onboarding schema migration
-Last session: 2026-04-29T02:03:41Z
-Stopped at: Completed 47-01-PLAN.md
+Current Plan: 2 of 4 plans complete
+Status: Plan 02 done — Seed migration: 3 Plans (starter/pro/fleet) and 6 SYSTEM AutomationRules with idempotent ON CONFLICT DO NOTHING
+Last activity: 2026-04-29 - Completed 47-02: seed Plans and SYSTEM AutomationRules
+Last session: 2026-04-29T02:09:20Z
+Stopped at: Completed 47-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -329,6 +329,11 @@ Progress: [███████████████████████
 - StepInstance has no tenantId column — RLS isolation via playbookInstanceId JOIN avoids denormalization (mirrors PlaybookStep pattern)
 - PlaybookInstance.playbookId uses onDelete: Restrict to prevent orphaned instances if a playbook is deleted
 - isDispatchReady added to both User and Truck to support dual entity-level readiness check per spec
+
+**Phase 47-02 decisions (Seed Plans and SYSTEM AutomationRules):**
+- trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
+- stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
+- activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
 
 **Phase 47-01 decisions (Tenant self-onboarding schema migration):**
 - Plan and Promo tables have no RLS — platform-level configuration, intentionally readable by all tenants, write-gated to SysAdmin
