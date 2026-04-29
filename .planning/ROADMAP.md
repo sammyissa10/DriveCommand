@@ -619,6 +619,27 @@ Plans:
 
 ---
 
+## v8.0 Tenant Self-Onboarding
+
+**Milestone Goal:** Full self-serve signup and onboarding system for DriveCommand. A trucking-company owner visits the marketing site, fills out a 6-field signup form, and within seconds is logged in to a fully provisioned tenant with sample data, a 5-step activation checklist, and behavior-driven email automations guiding them to dispatch their first load. SysAdmin portal enhanced with activation progress, engagement metrics, health scores, and a full activity timeline per tenant.
+
+**Spec:** `docs/specs/tenant-self-onboarding/01-TECHNICAL-SPEC.md`
+
+---
+
+### Phase 47: Tenant Self-Onboarding Foundation — Schema, Migration, Seed Data, and SysAdmin CRUD
+
+**Goal:** Database foundation for tenant self-onboarding. Adds new tables (Plan, Promo, Subscription, ActivationProgress, AutomationRule, AutomationRun, AppEvent, TenantMetricsDaily, TenantHealthScore), extends Tenant with slug/fleetSizeBucket/status/provisioning columns, adds isSample to domain tables, writes all RLS policies, seeds default Plans and SYSTEM AutomationRules, and builds SysAdmin CRUD for Plans and Promos.
+**Depends on:** Phase 46 (stable schema baseline)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 47-01-PLAN.md — DDL migration (all new tables + Tenant column additions + RLS policies) + Prisma schema update
+- [ ] 47-02-PLAN.md — Seed migration (default Plans: Starter/Pro/Fleet, SYSTEM AutomationRules from spec section 7.4)
+- [ ] 47-03-PLAN.md — SysAdmin CRUD UI: /admin/plans list + create/edit, /admin/promos list + create
+
+---
+
 ## v6.0 Owner Portal Permissions
 
 ### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
