@@ -24,7 +24,9 @@ You are not picking a stack. The project already uses:
 - **Framework:** Next.js 16 (App Router, Server Components, Server Actions)
 - **Database:** PostgreSQL via Supabase, accessed through Prisma 7 with the `pg` adapter
 - **Migrations:** Raw SQL files in `migrations/` folder, applied by `scripts/migrate.mjs` at deploy time. Do not use `prisma migrate dev` for production.
-- **Auth:** Custom session cookie (AES-256-GCM, `session` cookie, 7-day expiry). See `src/lib/auth/session.ts` and `src/lib/auth/server.ts`. Clerk is NOT used in current state — passwords are bcrypt-hashed and stored on `User.passwordHash`.
+- **Auth (web):** Supabase Auth via `@supabase/ssr`. Sessions are stored server-side as Supabase-managed cookies. Security claims (`tenantId`, `role`, `isSystemAdmin`, `permissions`) live in `app_metadata` — admin-only, not writable by end users. Display fields (`firstName`, `lastName`) live in `user_metadata`. See `src/lib/auth/supabase.ts`. **`src/lib/auth/session.ts` does NOT exist** — it was removed when the codebase migrated to Supabase Auth in Phase 37.6.
+- **Auth (mobile):** Bearer tokens (AES-256-GCM) validated via `validateMobileToken`. Passwords are bcrypt-hashed (12 rounds) and stored on `User.passwordHash` in the Prisma `User` table; mobile auth reads this field directly.
+- **Passwords at signup:** Hashed with bcrypt (12 rounds) and written to two places: `User.passwordHash` (for mobile Bearer token auth) and the Supabase Auth user table (for web session auth via `signInWithPassword`). Both writes happen during the signup flow — `provision-tenant.ts` writes `User.passwordHash`, and `signUpAction` calls `admin.auth.admin.createUser()` immediately after.
 - **Multi-tenancy:** Postgres Row-Level Security (RLS) on every tenant-scoped table, with a `current_tenant_id()` SQL function reading the `app.tenant_id` session variable, and a `bypass_rls` pattern for cross-tenant operations (signup, sysadmin).
 - **Email:** Gmail SMTP via Nodemailer, see `src/lib/email/gmail-client.ts`. Templates use `@react-email/components` and live in `src/emails/`.
 - **Cron:** Vercel Cron registered in `vercel.json`, hitting `/api/cron/...` routes guarded by `CRON_SECRET`.
@@ -32,6 +34,8 @@ You are not picking a stack. The project already uses:
 - **SysAdmin auth:** Separate `admin_session` AES-256-GCM cookie keyed off `ADMIN_SECRET_KEY`. Lives in `src/lib/auth/admin-session.ts`. The SysAdmin portal is at the `(admin)` route group.
 
 You will follow these existing patterns exactly. Do not introduce new auth libraries, new ORMs, or new email providers.
+
+> **Spec last reconciled with codebase auth: Phase 48.** If auth changes again, update this section.
 
 ---
 
