@@ -58,6 +58,8 @@ const PUBLIC_PATHS = [
   '/api/warmup',
   '/api/webhooks',
   '/track',
+  '/onboarding/welcome',
+  '/api/email-confirm',
   '/_next/static',
   '/_next/image',
   '/favicon.ico',
