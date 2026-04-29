@@ -15,9 +15,13 @@ export interface ProvisionResult {
   userId: string;
   emailToken: string;
   trialEndsAt: Date;
+  planKey: string;
 }
 
-export async function provisionTenant(input: SignUpInput): Promise<ProvisionResult> {
+export async function provisionTenant(
+  input: SignUpInput,
+  authUserId: string,
+): Promise<ProvisionResult> {
   const { firstName, lastName, email, password, companyName, promoCode } = input;
   const normalizedEmail = email.toLowerCase().trim();
 
@@ -25,11 +29,12 @@ export async function provisionTenant(input: SignUpInput): Promise<ProvisionResu
     // bypass_rls for the entire transaction (scoped to this transaction session only)
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-    // Step 1 — Reject if email already registered
+    // Step 1 — Reject if email already registered (defensive: auth user was created
+    // first, so this normally only fires for orphaned Prisma users from prior failures)
     const existingUser = await tx.user.findFirst({ where: { email: normalizedEmail } });
     if (existingUser) throw new Error('EMAIL_TAKEN');
 
-    // Step 2 — Hash password
+    // Step 2 — Hash password (written to User.passwordHash for mobile Bearer token auth)
     const passwordHash = await bcrypt.hash(password, 12);
 
     // Step 3 — Generate unique slug
@@ -57,9 +62,12 @@ export async function provisionTenant(input: SignUpInput): Promise<ProvisionResu
       },
     });
 
-    // Step 5 — Insert User (OWNER)
+    // Step 5 — Insert User (OWNER) using authUserId so Prisma User.id == auth.users.id.
+    // This is required for signInWithPassword to succeed: the session lookup matches
+    // on id and the Prisma User must exist with the same UUID the auth system assigned.
     const user = await tx.user.create({
       data: {
+        id: authUserId,
         tenantId: tenant.id,
         email: normalizedEmail,
         passwordHash,
@@ -128,6 +136,6 @@ export async function provisionTenant(input: SignUpInput): Promise<ProvisionResu
     const emailToken = generateEmailToken(tenant.id);
 
     // Step 11 — Transaction commits here (implicit on return)
-    return { tenantId: tenant.id, userId: user.id, emailToken, trialEndsAt };
+    return { tenantId: tenant.id, userId: user.id, emailToken, trialEndsAt, planKey: plan.key };
   }, TX_OPTIONS);
 }

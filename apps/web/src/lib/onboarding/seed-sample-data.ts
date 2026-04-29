@@ -1,4 +1,4 @@
-import { Prisma, FleetSizeBucket, LoadStatus } from '../../generated/prisma';
+import { Prisma, FleetSizeBucket, LoadStatus, UserRole } from '../../generated/prisma';
 
 // Use the canonical Prisma transaction client type
 type TX = Prisma.TransactionClient;
@@ -16,9 +16,16 @@ const SEED_CONFIGS: Record<FleetSizeBucket, SeedConfig> = {
   [FleetSizeBucket.LARGE]:          { trucksCount: 3, driversCount: 3, customersCount: 2 },
 };
 
+const SAMPLE_DRIVER_NAMES = [
+  { firstName: 'Alex',   lastName: 'Sample' },
+  { firstName: 'Jordan', lastName: 'Sample' },
+  { firstName: 'Taylor', lastName: 'Sample' },
+];
+
 export async function seedSampleData(
   tx: TX,
   tenantId: string,
+  tenantSlug: string,
   bucket: FleetSizeBucket,
   ownerUserId: string,
 ): Promise<void> {
@@ -41,6 +48,29 @@ export async function seedSampleData(
         },
       })
     )
+  );
+
+  // Sample driver Users — display-only rows, no Supabase Auth identity.
+  // passwordHash is set to an invalid placeholder that bcrypt can never match,
+  // so these rows cannot be used to authenticate.
+  const SAMPLE_PASSWORD_PLACEHOLDER = 'SAMPLE—NOT_A_REAL_LOGIN';
+
+  await Promise.all(
+    Array.from({ length: cfg.driversCount }, (_, i) => {
+      const name = SAMPLE_DRIVER_NAMES[i % SAMPLE_DRIVER_NAMES.length];
+      return tx.user.create({
+        data: {
+          tenantId,
+          email: `sample.driver.${i + 1}@${tenantSlug}.sample.invalid`,
+          passwordHash: SAMPLE_PASSWORD_PLACEHOLDER,
+          role: UserRole.DRIVER,
+          firstName: name.firstName,
+          lastName: name.lastName,
+          isActive: true,
+          isSample: true,
+        },
+      });
+    })
   );
 
   // Customers
@@ -84,7 +114,7 @@ export async function seedSampleData(
         loadNumber: `SAMPLE-${spec.suffix}`,
         customerId: customer.id,
         truckId: truck.id,
-        driverId: ownerUserId, // owner is also the driver on sample data
+        driverId: ownerUserId, // owner is also the driver on sample loads
         origin: 'Chicago, IL',
         destination: 'Detroit, MI',
         pickupDate,

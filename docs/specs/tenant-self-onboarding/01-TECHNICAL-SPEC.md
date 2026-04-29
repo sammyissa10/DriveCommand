@@ -430,24 +430,40 @@ This is the most fragile sequence. Get it right.
 
 ### 6.1 Signup Action (Phase 1: Minimal Provisioning)
 
-User submits the 6-field form. The server action does all of the following inside a single Prisma transaction with `bypass_rls = on`:
+*Spec last reconciled with implementation on Phase B postscript. The actual implementation lives in `src/app/(auth)/sign-up/actions.tsx` + `src/lib/onboarding/provision-tenant.ts`.*
 
-1. Validate the form with Zod. Reject if email already exists on a `User` record.
-2. Hash the password with bcrypt (12 rounds, matches existing pattern).
-3. Generate a unique `slug` from company name (lowercase, kebab-case, append numeric suffix on collision).
-4. Insert `Tenant` row with `status = TRIAL`, `provisioningPhase = MINIMAL`, `sampleDataSeeded = false`.
-5. Insert `User` row with `role = OWNER`, `tenantId = <new>`, `passwordHash`, `firstName`, `lastName`, `email`.
-6. Look up the default `Plan` (key = "starter") and any matching `Promo` (URL param `?promo=`).
-7. Compute `trialEndsAt = now() + plan.defaultTrialDays + (promo?.bonusTrialDays ?? 0)` days.
-8. Insert `Subscription` row with `status = TRIALING`, `trialEndsAt`, `planId`, `promoId`.
-9. Insert `ActivationProgress` row with `accountCreatedAt = now()`, `completionPct = 20`.
-10. Generate one-time email confirmation token, sign with AES-GCM, set 24h expiry.
-11. Commit transaction.
-12. After commit: emit `tenant.created` event → triggers `welcome_owner` automation rule → sends welcome email + confirmation email.
-13. Set `session` cookie for the owner user.
-14. Redirect to `/onboarding/welcome`.
+User submits the 6-field form. The server action executes the following steps — the Supabase Auth user is created **before** the Prisma transaction so both rows share the same UUID.
 
-If any step fails before commit, the entire transaction rolls back. There is no half-provisioned tenant.
+**Step 0 (before transaction): Create Supabase Auth user**
+
+Call `admin.auth.admin.createUser()`. Capture the returned `authUserId`. If this call fails because the email is already registered (status 422 / "already registered"), route immediately to the duplicate-email defense path: send the "account exists" email and return `SUCCESS_MSG` — do not proceed. If it fails for any other reason, log the error and return `SUCCESS_MSG` for enumeration safety. Do not proceed.
+
+**Steps 1–10 (Prisma transaction with `bypass_rls = on`):**
+
+1. Validate the form with Zod.
+2. Reject if `email` already exists on a `User` record (defensive — handles orphaned Prisma users from prior partial failures).
+3. Hash the password with bcrypt (12 rounds, matches existing pattern).
+4. Generate a unique `slug` from company name (lowercase, kebab-case, append numeric suffix on collision).
+5. Insert `Tenant` row with `status = TRIAL`, `provisioningPhase = MINIMAL`, `sampleDataSeeded = false`.
+6. Insert `User` row using **`authUserId` as `User.id`** so the Prisma row and Supabase Auth row share the same UUID. Set `role = OWNER`, `tenantId = <new>`, `passwordHash`, `firstName`, `lastName`, `email`. This UUID alignment is what allows `signInWithPassword` to succeed.
+7. Look up the default `Plan` (key = "starter") and any matching `Promo` (URL param `?promo=`).
+8. Compute `trialEndsAt = now() + plan.defaultTrialDays + (promo?.bonusTrialDays ?? 0)` days.
+9. Insert `Subscription` row with `status = TRIALING`, `trialEndsAt`, `planId`, `promoId`.
+10. Insert `ActivationProgress` row with `accountCreatedAt = now()`, `completionPct = 20`.
+11. Generate one-time email confirmation token, sign with AES-GCM, set 24h expiry.
+12. Commit transaction.
+
+**Rollback note:** If any step in the Prisma transaction throws, `provisionTenant` re-throws, and `signUpAction` immediately calls `admin.auth.admin.deleteUser(authUserId)` before handling the error. This prevents an orphaned `auth.users` row with no corresponding Prisma `User`.
+
+**Steps after commit:**
+
+13. Call `admin.auth.admin.updateUserById(authUserId, { app_metadata: { role, tenantId, isSystemAdmin } })` — patches the auth user's claims now that `tenantId` is known. Non-fatal if this fails.
+14. Emit `tenant.created` event (Phase D automation hook). Non-fatal if this fails.
+15. Send confirmation email via `sendEmail`. Fire-and-forget.
+16. Call `signInWithPassword` to establish the session cookie for the owner user.
+17. Redirect to `/onboarding/welcome`.
+
+If provisioning fails entirely (rollback triggered), the entire operation leaves no orphaned rows.
 
 ### 6.2 First-Landing (Phase 2: Hydration)
 
@@ -668,6 +684,8 @@ For the feature to be considered done, the following must all be true:
 - [ ] Sample data is excluded from `seatsUsed` and `storageBytes` calculations
 - [ ] All TypeScript compiles cleanly (`npx tsc --noEmit`)
 - [ ] Existing E2E tests still pass
+
+> **Phase D gap (intentional):** Until Phase D ships, signups receive only the confirmation email. The welcome email (`WelcomeOwnerEmail`) is NOT sent from `signUpAction` — it is a responsibility of the `welcome_owner` AutomationRule. Phase D's automation evaluator will subscribe to the `tenant.created` AppEvent and fire the rule. Until that evaluator exists, the `tenant.created` event is written but no welcome email is sent. Do not add a direct `sendEmail` call as a workaround.
 
 ---
 
