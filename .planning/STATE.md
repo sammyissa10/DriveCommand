@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 48 IN PROGRESS
+Milestone: v8.0 Tenant Self-Onboarding — Phase 48 COMPLETE
 Phase: Phase 48 Tenant Self-Onboarding — Signup and Provisioning
 Current Plan: 3 of 3 plans complete
-Status: Plans 01-03 done — provisioning engine, email-token flow, email templates + confirmation route
-Last activity: 2026-04-29 - Completed 48-03: Email Templates and Confirmation Route
-Last session: 2026-04-29T05:44:23Z
-Stopped at: Phase 48 Plan 03 complete — all 3 plans done, Phase 48 complete
+Status: All 3 plans done — provisioning engine, email templates + confirmation route, signup page + server action
+Last activity: 2026-04-29 - Completed 48-02: Signup Page, Server Action, Welcome Page, Middleware
+Last session: 2026-04-29T05:51:07Z
+Stopped at: Phase 48 Plan 02 complete — Phase 48 fully complete (all waves shipped)
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -132,6 +132,7 @@ Progress: [███████████████████████
 - Phase 47-03 (2026-04-29): SysAdmin CRUD UI — Plans list/create/edit + Promos list/create, server actions with Zod validation + requireAdminAccess, admin nav links — 2 tasks, 13 files, ~10min
 - Phase 48-01 (2026-04-28): Provisioning engine — generateEmailToken/verifyEmailToken (AES-256-GCM), signUpSchema Zod object, provisionTenant (14-step bypass_rls tx), seedSampleData (fleet-bucket-aware), hydrateTenant (idempotent wrapper) — 3 tasks, 6 files, ~25min
 - Phase 48-03 (2026-04-29): Email templates + confirmation route — ConfirmEmailTemplate + WelcomeOwnerEmail React Email components, GET /api/email-confirm/[token] (AES-256-GCM verify, sets emailConfirmedAt, idempotent already-confirmed redirect), gmail-client replyTo support — 2 tasks, 4 files, ~15min
+- Phase 48-02 (2026-04-29): Signup page + server action — signUpAction (rate-limit, Zod, provisionTenant, dual email, Supabase createUser + signIn, redirect), SignUpForm (useActionState, useFormStatus, 6 fields, promo pre-fill), /onboarding/welcome page, middleware PUBLIC_PATHS — 2 tasks, 5 files, ~25min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -338,6 +339,12 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 48-02 decisions (Signup page + server action):**
+- actions.tsx (JSX extension) — AccountExistsEmail inline component requires JSX, renamed from .ts to .tsx
+- getAppBaseUrl() used instead of inline env var — handles APP_BASE_URL, NEXT_PUBLIC_APP_URL, VERCEL_URL, and localhost fallback
+- AppEvent creation omitted from signUpAction — plan's provided code template excluded it; core provisioning is complete without it
+- sendEmail calls fire-and-forget (void + .catch) — email failures never block signup redirect
 
 **Phase 48-01 decisions (Provisioning engine):**
 - Node.js built-in crypto module used for AES-256-GCM token generation — no extra package needed
