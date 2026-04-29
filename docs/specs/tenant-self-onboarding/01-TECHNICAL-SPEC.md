@@ -398,6 +398,8 @@ The marketing site at `drivecommand.io` is separate. Document the contract: it P
 - `src/app/(admin)/promos/page.tsx` — list of promos
 - `src/app/(admin)/promos/new/page.tsx` — create promo form
 
+**IMPORTANT — middleware allowlist:** Every new top-level path added under `(admin)/` must also be added to `ADMIN_ALLOWED_PATHS` in `src/middleware.ts`. Without this, system admins are silently redirected to `/admin-support` when visiting the new route. Current allowed paths: `/admin`, `/admin-support`, `/admin-dashboard`, `/tenants`, `/billing`, `/plans`, `/promos`, `/unauthorized`, `/onboarding`, `/api`.
+
 ### 5.13 Email Templates (`src/emails/`)
 
 - `confirm-email.tsx` — confirmation link for new tenant owners
