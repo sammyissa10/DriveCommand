@@ -655,6 +655,19 @@ Plans:
 
 ---
 
+### Phase 49: Tenant Self-Onboarding — Onboarding UX + Activation Tracking — Welcome page checklist, activation tracker hooks, and dashboard sample-data integration
+
+**Goal:** Build the onboarding experience that greets new tenants after signup. Delivers three capabilities: (C-01) /onboarding/welcome page with 5-item activation checklist and hydration call on first landing; (C-02) activation tracker library that hooks into existing Truck/Customer/Load/User-DRIVER create actions and updates ActivationProgress + emits AppEvents on milestones; (C-03) sample-data banner and SAMPLE pill components wired into existing dashboard pages, with isSample=false filters added to all KPI/count queries. Drivers are User rows with role=DRIVER. All queries target PascalCase tables only (Truck, Customer, Load, User).
+**Depends on:** Phase 48 (signup flow, hydrate-tenant, seed-sample-data all in place)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 49-01-PLAN.md — Welcome page (/onboarding/welcome) with hydration call + 5-item checklist client component (reads ActivationProgress live state); sample-data-banner.tsx + sample-pill.tsx components
+- [ ] 49-02-PLAN.md — Activation tracker (src/lib/onboarding/activation-tracker.ts): recordActivationEvent, ActivationProgress UPSERT, completionPct formula, tenant.activated AppEvent; wire into Truck/Customer/Load/User create/status-change actions
+- [ ] 49-03-PLAN.md — Dashboard sample-data integration: add sample-data-banner to owner dashboard pages, SAMPLE pills to list tables, isSample=false filters to KPI count queries
+
+---
+
 ## v6.0 Owner Portal Permissions
 
 ### Phase 40: Owner Portal RBAC — Role-based access control for OwnerUser team members
