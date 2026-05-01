@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 48 COMPLETE
-Phase: Phase 48 Tenant Self-Onboarding — Signup and Provisioning
-Current Plan: 3 of 3 plans complete
-Status: All 3 plans done — provisioning engine, email templates + confirmation route, signup page + server action
-Last activity: 2026-04-29 - Completed 48-02: Signup Page, Server Action, Welcome Page, Middleware
-Last session: 2026-04-29T05:51:07Z
-Stopped at: Phase 48 Plan 02 complete — Phase 48 fully complete (all waves shipped)
+Milestone: v8.0 Tenant Self-Onboarding — Phase 49 IN PROGRESS
+Phase: Phase 49 Tenant Self-Onboarding — Onboarding UX + Activation Tracking
+Current Plan: 1 of 3 plans complete
+Status: Plan 01 done — welcome page two-column layout, ActivationChecklist, SamplePill, SampleDataBanner
+Last activity: 2026-05-01 - Completed 49-01: Welcome Page, ActivationChecklist, SamplePill, SampleDataBanner
+Last session: 2026-05-01T17:54:18Z
+Stopped at: Phase 49 Plan 01 complete — Plans 02 and 03 remaining
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -133,6 +133,7 @@ Progress: [███████████████████████
 - Phase 48-01 (2026-04-28): Provisioning engine — generateEmailToken/verifyEmailToken (AES-256-GCM), signUpSchema Zod object, provisionTenant (14-step bypass_rls tx), seedSampleData (fleet-bucket-aware), hydrateTenant (idempotent wrapper) — 3 tasks, 6 files, ~25min
 - Phase 48-03 (2026-04-29): Email templates + confirmation route — ConfirmEmailTemplate + WelcomeOwnerEmail React Email components, GET /api/email-confirm/[token] (AES-256-GCM verify, sets emailConfirmedAt, idempotent already-confirmed redirect), gmail-client replyTo support — 2 tasks, 4 files, ~15min
 - Phase 48-02 (2026-04-29): Signup page + server action — signUpAction (rate-limit, Zod, provisionTenant, dual email, Supabase createUser + signIn, redirect), SignUpForm (useActionState, useFormStatus, 6 fields, promo pre-fill), /onboarding/welcome page, middleware PUBLIC_PATHS — 2 tasks, 5 files, ~25min
+- Phase 49-01 (2026-05-01): Welcome page two-column layout + activation checklist — SamplePill amber badge, SampleDataBanner sessionStorage-dismissed banner, ActivationChecklist (5-item, progress bar, celebration at 100%), welcome page reads ActivationProgress via bypass_rls — 3 tasks, 4 files, ~6min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
