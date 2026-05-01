@@ -67,7 +67,7 @@ Schema reconciliation: `docs/specs/tenant-self-onboarding/04-SCHEMA-RECONCILIATI
 - "First real truck added" → `Truck.create` where `isSample=false`
 - "First real driver added" → `User.create` where `role='DRIVER' AND isSample=false` (Prisma User row, NOT Supabase auth user creation)
 - "First real client added" → `Customer.create` where `isSample=false`
-- "First real load dispatched" → `Load` update where `isSample=false AND status=IN_PROGRESS` (NOT on create — must be status transition)
+- "First real load dispatched" → `Load` update where `isSample=false AND status=IN_TRANSIT` (NOT on create — must be status transition)
 - `tenant.activated` AppEvent properties: `{ tenantId, ownerEmail, completionPct: 100, daysToActivate }`
 - All AppEvent writes use `bypass_rls=on` (system writes, not tenant writes)
 - **Idempotency:** Check `ActivationProgress.<timestampField> IS NULL` before writing. If already set, skip silently. Do not re-fire.
