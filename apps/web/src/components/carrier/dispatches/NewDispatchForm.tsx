@@ -332,7 +332,9 @@ export function NewDispatchForm({ driverMap, truckMap, onSuccess, onCancel, user
                 <>
                   <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
                   <span>
-                    Blocked — {driverReadiness.blockerStepNames.length} open step{driverReadiness.blockerStepNames.length !== 1 ? 's' : ''}
+                    {driverReadiness.blockerStepNames.length > 0
+                      ? `Not ready — ${driverReadiness.blockerStepNames.length} incomplete step${driverReadiness.blockerStepNames.length !== 1 ? 's' : ''}`
+                      : 'Not ready — failed inspection steps'}
                   </span>
                 </>
               )}

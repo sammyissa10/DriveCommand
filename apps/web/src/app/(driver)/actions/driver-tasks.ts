@@ -10,8 +10,8 @@
 import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { completeStep } from '@/server/services/workflows/completeStep';
-import { failInspectionItem } from '@/server/services/workflows/failInspectionItem';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { prisma } from '@/lib/db/prisma';
 import { nanoid } from 'nanoid';
 import type { StepResult } from '@drivecommand/validation';
 
@@ -51,12 +51,27 @@ export async function failDriverInspection(
     await requireRole([UserRole.DRIVER]);
     const session = await getSession();
     if (!session) return { success: false, error: 'Unauthorized' };
-    await failInspectionItem({
-      stepInstanceId,
-      userId: session.userId,
-      tenantId: session.tenantId,
-      result,
+
+    const notes = result.note ?? null;
+    const photoPath = result.photoUrls?.[0] ?? null;
+
+    await prisma.stepInstance.update({
+      where: {
+        id: stepInstanceId,
+        playbookInstance: { tenantId: session.tenantId },
+      },
+      data: {
+        status: 'FAILED',
+        result: {
+          passOrFail: 'fail',
+          notes,
+          photoPath,
+        },
+        completedAt: new Date(),
+        completedByUserId: session.userId,
+      },
     });
+
     return { success: true };
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to record failure' };

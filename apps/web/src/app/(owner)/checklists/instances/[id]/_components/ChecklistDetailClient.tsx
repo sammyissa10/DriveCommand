@@ -439,24 +439,24 @@ function ViewIssueModal({
 
   const snap = (step?.stepSnapshot ?? {}) as StepSnap;
   const stepName = snap.name ?? 'Inspection Step';
-  const result = step?.result as { photoUrls?: string[]; note?: string } | null;
-  const photoPath = result?.photoUrls?.[0] ?? null;
-  const note = result?.note ?? null;
+  const resultData = step?.result as { passOrFail?: string; notes?: string; photoPath?: string } | null;
+  const hasPhoto = !!resultData?.photoPath;
+  const note = resultData?.notes ?? null;
   const timestamp = step?.completedAt
     ? format(new Date(step.completedAt as string), 'MMM d, yyyy h:mm a')
     : null;
 
   useEffect(() => {
-    if (!open || !photoPath) {
+    if (!open || !hasPhoto || !step) {
       setSignedPhotoUrl(null);
       return;
     }
     setPhotoLoading(true);
-    getSignedPhotoUrl(photoPath)
+    getSignedPhotoUrl(step.id)
       .then((url) => setSignedPhotoUrl(url))
       .catch(() => null)
       .finally(() => setPhotoLoading(false));
-  }, [open, photoPath]);
+  }, [open, hasPhoto, step?.id]);
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
@@ -489,7 +489,7 @@ function ViewIssueModal({
             </div>
           )}
 
-          {photoPath && (
+          {hasPhoto && (
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium mb-1">Photo</p>
               {photoLoading ? (
@@ -511,7 +511,7 @@ function ViewIssueModal({
             </div>
           )}
 
-          {!note && !photoPath && (
+          {!note && !hasPhoto && (
             <p className="text-sm text-muted-foreground">No additional details were submitted.</p>
           )}
         </div>
