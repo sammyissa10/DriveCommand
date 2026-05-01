@@ -9,20 +9,44 @@ import { UserPlus } from 'lucide-react';
 import { listDrivers, deactivateDriver, reactivateDriver } from '@/app/(owner)/actions/drivers';
 import { DriverListWrapper } from './driver-list-wrapper';
 import { logger } from '@/lib/logger';
+import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
 async function DriverListSection() {
-  const drivers = await listDrivers().catch((e) => {
-    logger.error('[drivers] listDrivers failed:', e);
-    return [];
-  });
+  const [drivers, tenantId] = await Promise.all([
+    listDrivers().catch((e) => {
+      logger.error('[drivers] listDrivers failed:', e);
+      return [];
+    }),
+    requireTenantId().catch(() => ''),
+  ]);
+
+  const hasSampleRecords = drivers.some((d) => d.isSample);
+
+  let sampleDataSeeded = false;
+  if (hasSampleRecords && tenantId) {
+    try {
+      const prismaClient = await getTenantPrisma();
+      const tenant = await prismaClient.tenant.findFirst({ select: { sampleDataSeeded: true } });
+      sampleDataSeeded = tenant?.sampleDataSeeded ?? false;
+    } catch {
+      // Non-critical — banner is hidden by default
+    }
+  }
+
   return (
-    <DriverListWrapper
-      initialDrivers={drivers}
-      deactivateAction={deactivateDriver}
-      reactivateAction={reactivateDriver}
-    />
+    <>
+      {sampleDataSeeded && hasSampleRecords && tenantId && (
+        <SampleDataBanner tenantId={tenantId} />
+      )}
+      <DriverListWrapper
+        initialDrivers={drivers}
+        deactivateAction={deactivateDriver}
+        reactivateAction={reactivateDriver}
+      />
+    </>
   );
 }
 

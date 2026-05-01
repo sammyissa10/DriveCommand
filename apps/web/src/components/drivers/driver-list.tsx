@@ -14,6 +14,7 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 import type { User } from '@/generated/prisma/client';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -48,7 +49,12 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
     {
       accessorKey: 'firstName',
       header: 'First Name',
-      cell: (info) => <span className="font-medium text-foreground">{info.getValue() as string}</span>,
+      cell: (info) => (
+        <span className="inline-flex items-center">
+          <span className="font-medium text-foreground">{info.getValue() as string}</span>
+          {info.row.original.isSample && <SamplePill />}
+        </span>
+      ),
     },
     {
       accessorKey: 'lastName',
@@ -254,6 +260,7 @@ export function DriverList({ drivers, onDeactivate, onReactivate }: DriverListPr
                     <span className="font-medium text-foreground truncate">
                       {driver.firstName} {driver.lastName}
                     </span>
+                    {driver.isSample && <SamplePill />}
                     {driver.isActive ? (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 flex-shrink-0">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />

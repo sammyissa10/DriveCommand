@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { Building2, Mail, Phone, Star } from 'lucide-react';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 interface Customer {
   id: string;
   companyName: string;
+  isSample?: boolean;
   contactName: string | null;
   email: string | null;
   phone: string | null;
@@ -68,9 +70,12 @@ export function CustomerList({ customers }: { customers: Customer[] }) {
             {customers.map((customer) => (
               <tr key={customer.id} className="border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors">
                 <td className="px-4 py-3">
-                  <Link href={`/crm/${customer.id}`} className="font-medium text-foreground hover:text-primary transition-colors">
-                    {customer.companyName}
-                  </Link>
+                  <span className="inline-flex items-center">
+                    <Link href={`/crm/${customer.id}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                      {customer.companyName}
+                    </Link>
+                    {customer.isSample && <SamplePill />}
+                  </span>
                 </td>
                 <td className="px-4 py-3">
                   <div className="space-y-0.5">
@@ -122,7 +127,10 @@ export function CustomerList({ customers }: { customers: Customer[] }) {
             href={`/crm/${customer.id}`}
             className="block rounded-lg border border-border bg-card p-4 hover:bg-muted/30 transition-colors"
           >
-            <div className="font-semibold text-foreground">{customer.companyName}</div>
+            <div className="inline-flex items-center">
+              <span className="font-semibold text-foreground">{customer.companyName}</span>
+              {customer.isSample && <SamplePill />}
+            </div>
             {customer.contactName && (
               <div className="text-sm text-muted-foreground mt-0.5">{customer.contactName}</div>
             )}

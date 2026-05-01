@@ -8,6 +8,8 @@ import { TodayDispatches } from '@/components/carrier/dashboard/TodayDispatches'
 import { DriverStatusStrip } from '@/components/carrier/dashboard/DriverStatusStrip';
 import { RecentActivity } from '@/components/carrier/dashboard/RecentActivity';
 import { QuickMessageBoard } from '@/components/carrier/dashboard/QuickMessageBoard';
+import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 
 export default async function CarrierDashboardPage() {
   const session = await getSession();
@@ -15,8 +17,32 @@ export default async function CarrierDashboardPage() {
   const orgId = session.tenantId;
   if (!orgId) redirect('/login');
 
+  // Check if tenant has sample data seeded
+  const tenant = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+    return tx.tenant.findUnique({ where: { id: orgId }, select: { sampleDataSeeded: true } });
+  }, TX_OPTIONS).catch(() => null);
+
+  const hasSampleRecords = tenant?.sampleDataSeeded
+    ? await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        const [truckCount, driverCount, loadCount, customerCount] = await Promise.all([
+          tx.truck.count({ where: { tenantId: orgId, isSample: true } }),
+          tx.user.count({ where: { tenantId: orgId, role: 'DRIVER', isSample: true } }),
+          tx.load.count({ where: { tenantId: orgId, isSample: true } }),
+          tx.customer.count({ where: { tenantId: orgId, isSample: true } }),
+        ]);
+        return truckCount + driverCount + loadCount + customerCount > 0;
+      }, TX_OPTIONS).catch(() => false)
+    : false;
+
   return (
     <div className="space-y-6">
+      {/* Sample data banner — shown when tenant has seeded sample records */}
+      {tenant?.sampleDataSeeded && hasSampleRecords && (
+        <SampleDataBanner tenantId={orgId} />
+      )}
+
       {/* Header */}
       <div className="min-w-0">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
