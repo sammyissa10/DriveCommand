@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { logger } from '@/lib/logger';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 /**
  * Create a new customer.
@@ -68,6 +69,13 @@ export async function createCustomer(prevState: ActionState | null, formData: Fo
       logger.error('[createCustomer] fireEvent failed', { customerId: customer.id, err });
     }
     createdId = customer.id;
+
+    // Activation tracker — fire outside main try/catch, never propagates
+    try {
+      await recordActivationEvent(tenantId, 'first_real_client');
+    } catch (err) {
+      console.error('[createCustomer] activation tracker failed', err);
+    }
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       logger.error('[CC-CODE]', error.code);

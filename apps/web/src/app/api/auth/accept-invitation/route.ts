@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { logger } from '@/lib/logger';
 import { applyRateLimit, authLimiter } from '@/lib/rate-limit';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
   logger.warn(
@@ -247,6 +248,15 @@ export async function POST(req: NextRequest) {
 
       return newUser;
     }, TX_OPTIONS);
+
+    // Activation tracker: fire for real drivers (invitation flow always creates real users)
+    if (userRole === 'DRIVER') {
+      try {
+        await recordActivationEvent(invitation.tenantId, 'first_real_driver');
+      } catch (err) {
+        console.error('[accept-invitation] activation tracker failed', err);
+      }
+    }
 
     // Sign the user in — Supabase sets session cookies via @supabase/ssr
     const supabase = await createSupabaseServerClient();

@@ -16,6 +16,7 @@ import {
   createRouteStopsForLoad,
   deleteRouteStopsForLoad,
 } from '@/lib/route-stops/sync-route-stops';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const Decimal = Prisma.Decimal;
 
@@ -494,11 +495,14 @@ export async function updateLoadStatus(id: string, newStatus: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
+  // Declare tenantId at outer scope so it is available to both the notification
+  // block and the activation tracker call below.
+  const tenantId = await requireTenantId();
 
   let invoicedCustomerId: string | null = null;
 
   try {
-    const load = await prisma.load.findUnique({ where: { id }, select: { status: true, customerId: true, rate: true } });
+    const load = await prisma.load.findUnique({ where: { id }, select: { status: true, customerId: true, rate: true, isSample: true } });
     if (!load) {
       return { error: 'Load not found.' };
     }
@@ -528,10 +532,18 @@ export async function updateLoadStatus(id: string, newStatus: string) {
       data: { status: newStatus as LoadStatus },
     });
 
+    // Activation tracker: fire when first real load goes IN_TRANSIT
+    if (newStatus === 'IN_TRANSIT' && !load.isSample) {
+      try {
+        await recordActivationEvent(tenantId, 'first_load_in_transit');
+      } catch (err) {
+        console.error('[updateLoadStatus] activation tracker failed', err);
+      }
+    }
+
     // Only send for customer-relevant statuses
     if (['PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(newStatus)) {
-      const tId = await requireTenantId();
-      sendNotificationAndLogInteraction(prisma, tId, id, newStatus);
+      sendNotificationAndLogInteraction(prisma, tenantId, id, newStatus);
     }
 
     // Update CRM customer performance stats when a load is invoiced

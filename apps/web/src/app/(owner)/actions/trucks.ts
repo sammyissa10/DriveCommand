@@ -10,6 +10,7 @@ import { Prisma } from '@/generated/prisma';
 
 import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 /**
  * Null-safe FormData string extraction helpers.
@@ -123,6 +124,13 @@ export async function createTruck(prevState: ActionState | null, formData: FormD
       logger.error('[createTruck] fireEvent failed', { truckId: truck.id, err });
     }
     truckId = truck.id;
+
+    // Activation tracker — fire outside main try/catch, never propagates
+    try {
+      await recordActivationEvent(tenantId, 'first_real_truck');
+    } catch (err) {
+      console.error('[createTruck] activation tracker failed', err);
+    }
   } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
