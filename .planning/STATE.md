@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 49 IN PROGRESS
+Milestone: v8.0 Tenant Self-Onboarding — Phase 49 COMPLETE
 Phase: Phase 49 Tenant Self-Onboarding — Onboarding UX + Activation Tracking
-Current Plan: 2 of 3 plans complete
-Status: Plan 02 done — activation-tracker.ts library + hooks in trucks, customers, loads, accept-invitation
-Last activity: 2026-05-01 - Completed 49-02: Activation Tracker Library + Hooks
-Last session: 2026-05-01T18:00:41Z
-Stopped at: Phase 49 Plan 02 complete — Plan 03 remaining
+Current Plan: 3 of 3 plans complete
+Status: All 3 plans done — SampleDataBanner + SamplePill wired into 5 pages and 4 list components
+Last activity: 2026-05-01 - Completed 49-03: Sample Data UX — Banner + Pill Wiring
+Last session: 2026-05-01T18:28:00Z
+Stopped at: Phase 49 Plan 03 complete — Phase 49 fully done
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -134,6 +134,8 @@ Progress: [███████████████████████
 - Phase 48-03 (2026-04-29): Email templates + confirmation route — ConfirmEmailTemplate + WelcomeOwnerEmail React Email components, GET /api/email-confirm/[token] (AES-256-GCM verify, sets emailConfirmedAt, idempotent already-confirmed redirect), gmail-client replyTo support — 2 tasks, 4 files, ~15min
 - Phase 48-02 (2026-04-29): Signup page + server action — signUpAction (rate-limit, Zod, provisionTenant, dual email, Supabase createUser + signIn, redirect), SignUpForm (useActionState, useFormStatus, 6 fields, promo pre-fill), /onboarding/welcome page, middleware PUBLIC_PATHS — 2 tasks, 5 files, ~25min
 - Phase 49-01 (2026-05-01): Welcome page two-column layout + activation checklist — SamplePill amber badge, SampleDataBanner sessionStorage-dismissed banner, ActivationChecklist (5-item, progress bar, celebration at 100%), welcome page reads ActivationProgress via bypass_rls — 3 tasks, 4 files, ~6min
+- Phase 49-02 (2026-05-01): Activation tracker library + hooks — recordActivationEvent (5 milestones, Prisma upsert, idempotent), wired in createTruck/createCustomer/createLoad/accept-invitation — 2 tasks, 5 files, ~15min
+- Phase 49-03 (2026-05-01): Sample data UX — SampleDataBanner in 5 pages, SamplePill in 4 list components, isSample=false count filters for loads/CRM, TruckWithRelations extended — 2 tasks, 10 files, ~18min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -340,6 +342,11 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 49-03 decisions (Sample data UX — banner + pill wiring):**
+- SampleDataBanner placed inside TruckListSection/DriverListSection (inner async sub-components) not outer TrucksPage/DriversPage — preserves Suspense streaming, outer page components remain synchronous
+- hasSampleRecords derived from already-fetched rows (rows.some(r => r.isSample)) for trucks/drivers/loads/crm — zero extra DB queries
+- Carrier dashboard uses bypass_rls + Promise.all across Truck/User/Load/Customer for hasSampleRecords since no list data is already fetched on that page
 
 **Phase 49-02 decisions (Activation tracker library + hooks):**
 - Dynamic computed key `[field]: true` in Prisma findUnique select causes TypeScript to infer `accountCreatedAt` as `never` — fixed by listing all fields explicitly and using `current[field as keyof typeof current]` for idempotency check
