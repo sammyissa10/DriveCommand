@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { CustomerList } from '@/components/crm/customer-list';
+import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
 
 export default async function CRMPage() {
-  const prisma = await getTenantPrisma();
+  const [prisma, tenantId] = await Promise.all([
+    getTenantPrisma(),
+    requireTenantId().catch(() => ''),
+  ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let customers: any[] = [];
@@ -25,9 +29,9 @@ export default async function CRMPage() {
         _count: { id: true },
         _sum: { rate: true },
       }),
-      prisma.customer.count(),
-      prisma.customer.count({ where: { status: 'ACTIVE' } }),
-      prisma.customer.count({ where: { priority: 'VIP' } }),
+      prisma.customer.count({ where: { isSample: false } }),
+      prisma.customer.count({ where: { status: 'ACTIVE', isSample: false } }),
+      prisma.customer.count({ where: { priority: 'VIP', isSample: false } }),
     ]);
 
     const statsMap = new Map(
@@ -55,8 +59,25 @@ export default async function CRMPage() {
     totalRevenue,
   };
 
+  // Sample data banner — use already-fetched customers to detect sample records (no extra query)
+  const hasSampleRecords = customers.some((c: any) => c.isSample);
+  let sampleDataSeeded = false;
+  if (hasSampleRecords && tenantId) {
+    try {
+      const tenant = await prisma.tenant.findFirst({ select: { sampleDataSeeded: true } });
+      sampleDataSeeded = tenant?.sampleDataSeeded ?? false;
+    } catch {
+      // Non-critical — banner hidden by default
+    }
+  }
+
   return (
     <div className="space-y-6">
+      {/* Sample data banner */}
+      {sampleDataSeeded && hasSampleRecords && tenantId && (
+        <SampleDataBanner tenantId={tenantId} />
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
