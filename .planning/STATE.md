@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 49 IN PROGRESS
 Phase: Phase 49 Tenant Self-Onboarding — Onboarding UX + Activation Tracking
-Current Plan: 1 of 3 plans complete
-Status: Plan 01 done — welcome page two-column layout, ActivationChecklist, SamplePill, SampleDataBanner
-Last activity: 2026-05-01 - Completed 49-01: Welcome Page, ActivationChecklist, SamplePill, SampleDataBanner
-Last session: 2026-05-01T17:54:18Z
-Stopped at: Phase 49 Plan 01 complete — Plans 02 and 03 remaining
+Current Plan: 2 of 3 plans complete
+Status: Plan 02 done — activation-tracker.ts library + hooks in trucks, customers, loads, accept-invitation
+Last activity: 2026-05-01 - Completed 49-02: Activation Tracker Library + Hooks
+Last session: 2026-05-01T18:00:41Z
+Stopped at: Phase 49 Plan 02 complete — Plan 03 remaining
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -340,6 +340,11 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 49-02 decisions (Activation tracker library + hooks):**
+- Dynamic computed key `[field]: true` in Prisma findUnique select causes TypeScript to infer `accountCreatedAt` as `never` — fixed by listing all fields explicitly and using `current[field as keyof typeof current]` for idempotency check
+- requireTenantId() promoted to outer scope of updateLoadStatus — eliminates conditional `tId` local variable, makes tenantId available to both notification block and new tracker call
+- Activation hook pattern: import recordActivationEvent, wrap in try/catch after primary action succeeds, before revalidatePath/redirect — errors swallowed at both tracker and call-site level
 
 **Phase 48-02 decisions (Signup page + server action):**
 - actions.tsx (JSX extension) — AccountExistsEmail inline component requires JSX, renamed from .ts to .tsx
