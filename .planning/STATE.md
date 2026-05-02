@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 49 COMPLETE
-Phase: Phase 49 Tenant Self-Onboarding — Onboarding UX + Activation Tracking
-Current Plan: 3 of 3 plans complete
-Status: All 3 plans done — SampleDataBanner + SamplePill wired into 5 pages and 4 list components
-Last activity: 2026-05-01 - Completed 49-03: Sample Data UX — Banner + Pill Wiring
-Last session: 2026-05-01T18:28:00Z
-Stopped at: Phase 49 Plan 03 complete — Phase 49 fully done
+Milestone: v8.0 Tenant Self-Onboarding — Phase 50 IN PROGRESS
+Phase: Phase 50 Rebuild Activation Tracking and Sample Data on Snake Case Tables
+Current Plan: 1 of 6 plans complete
+Status: Plan 01 done — is_sample column added to carrier_trucks, clients, loads, carrier_drivers tables via 4 raw SQL migrations; Prisma schema updated and client regenerated
+Last activity: 2026-05-02 - Completed 50-01: is_sample Schema Foundation
+Last session: 2026-05-02T23:50:41Z
+Stopped at: Phase 50 Plan 01 complete — ready for Plan 02
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -136,6 +136,7 @@ Progress: [███████████████████████
 - Phase 49-01 (2026-05-01): Welcome page two-column layout + activation checklist — SamplePill amber badge, SampleDataBanner sessionStorage-dismissed banner, ActivationChecklist (5-item, progress bar, celebration at 100%), welcome page reads ActivationProgress via bypass_rls — 3 tasks, 4 files, ~6min
 - Phase 49-02 (2026-05-01): Activation tracker library + hooks — recordActivationEvent (5 milestones, Prisma upsert, idempotent), wired in createTruck/createCustomer/createLoad/accept-invitation — 2 tasks, 5 files, ~15min
 - Phase 49-03 (2026-05-01): Sample data UX — SampleDataBanner in 5 pages, SamplePill in 4 list components, isSample=false count filters for loads/CRM, TruckWithRelations extended — 2 tasks, 10 files, ~18min
+- Phase 50-01 (2026-05-02): is_sample schema foundation — 4 raw SQL migrations (carrier_trucks/clients/loads/carrier_drivers), isSample added to 4 Prisma carrier models, Prisma client regenerated (v7.6.0), tsc --noEmit passes — 2 tasks, 5 files, 2min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
@@ -343,6 +344,11 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 50-01 decisions (is_sample schema foundation):**
+- Raw SQL migrations (not prisma migrate dev) — migrate.mjs wraps each .sql file in its own BEGIN/COMMIT, files must not include those keywords
+- IF NOT EXISTS guard on all ALTER TABLE — idempotent, safe to re-run if migration state drifts
+- isSample placed after status field in each carrier model — consistent with other boolean flag positioning
 
 **Phase 49-03 decisions (Sample data UX — banner + pill wiring):**
 - SampleDataBanner placed inside TruckListSection/DriverListSection (inner async sub-components) not outer TrucksPage/DriversPage — preserves Suspense streaming, outer page components remain synchronous
