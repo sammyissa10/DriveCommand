@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 50 IN PROGRESS
 Phase: Phase 50 Rebuild Activation Tracking and Sample Data on Snake Case Tables
-Current Plan: 1 of 6 plans complete
-Status: Plan 01 done — is_sample column added to carrier_trucks, clients, loads, carrier_drivers tables via 4 raw SQL migrations; Prisma schema updated and client regenerated
-Last activity: 2026-05-02 - Completed 50-01: is_sample Schema Foundation
-Last session: 2026-05-02T23:50:41Z
-Stopped at: Phase 50 Plan 01 complete — ready for Plan 02
+Current Plan: 2 of 6 plans complete
+Status: Plan 02 done — seedSampleData rewritten to target carrier snake_case tables (carrierTruck, carrierClient, carrierLoad, carrierDriver) with ONBOARDING_SEED_SAMPLES kill switch; generateVehicleId exported; dual User+CarrierDriver sample driver rows
+Last activity: 2026-05-02 - Completed 50-02: Seeder Rewrite for Snake Case Tables
+Last session: 2026-05-02T23:55:36Z
+Stopped at: Phase 50 Plan 02 complete — ready for Plan 03
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -344,6 +344,12 @@ Progress: [███████████████████████
 - trial_ending_soon uses runOncePerTenant=FALSE — fires daily via cron.daily, must re-evaluate every day for each tenant in trial
 - stripeProductId/stripeCouponId left NULL in seed — set by SysAdmin after Stripe product/coupon configuration
 - activation_celebration has 3 actions: immediate in_app_message + immediate email + email at 259200s (3 days) for driver onboarding checklist follow-up
+
+**Phase 50-02 decisions (Seeder rewrite for snake_case tables):**
+- Use orgId (not tenantId) as carrier table FK — carrier tables use org_id column
+- generateVehicleId is async; called sequentially in a for loop (not Promise.all) within the transaction client scope
+- SeedConfig interface updated from customersCount to clientsCount + loadsCount to match carrier model naming
+- Old PascalCase seed code wrapped in PHASE 50 comment block for rollback safety per Option Z shadow retention
 
 **Phase 50-01 decisions (is_sample schema foundation):**
 - Raw SQL migrations (not prisma migrate dev) — migrate.mjs wraps each .sql file in its own BEGIN/COMMIT, files must not include those keywords
