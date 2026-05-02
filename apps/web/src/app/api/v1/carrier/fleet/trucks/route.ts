@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierTrucks, createCarrierTruck } from '@/lib/carrier/fleet-trucks';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const nullableString = z.preprocess(
   (v) => (v === null || v === '' ? undefined : v),
@@ -100,6 +101,17 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         logger.error('[carrier/fleet/trucks] fireEvent failed', { truckId: carrierTruck.id, err });
+      }
+    });
+
+    // After response: record activation event for the first real (non-sample) truck
+    after(async () => {
+      if (!carrierTruck.isSample) {
+        try {
+          await recordActivationEvent(orgId, 'first_real_truck');
+        } catch (err) {
+          logger.error('[carrier/fleet/trucks] activation tracker failed', { truckId: carrierTruck.id, err });
+        }
       }
     });
 
