@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 50 IN PROGRESS
 Phase: Phase 50 Rebuild Activation Tracking and Sample Data on Snake Case Tables
-Current Plan: 2 of 6 plans complete
-Status: Plan 02 done — seedSampleData rewritten to target carrier snake_case tables (carrierTruck, carrierClient, carrierLoad, carrierDriver) with ONBOARDING_SEED_SAMPLES kill switch; generateVehicleId exported; dual User+CarrierDriver sample driver rows
-Last activity: 2026-05-02 - Completed 50-02: Seeder Rewrite for Snake Case Tables
-Last session: 2026-05-02T23:55:36Z
-Stopped at: Phase 50 Plan 02 complete — ready for Plan 03
+Current Plan: 3 of 6 plans complete
+Status: Plan 03 done — activation tracker wired into carrier trucks POST route; second after() block fires recordActivationEvent('first_real_truck') for non-sample trucks; isSample guard and try/catch prevent sample trucks and tracker errors from affecting HTTP response
+Last activity: 2026-05-02 - Completed 50-03: Activation Tracker Hook on Carrier Trucks Route
+Last session: 2026-05-03T00:03:00Z
+Stopped at: Phase 50 Plan 03 complete — ready for Plan 04
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
