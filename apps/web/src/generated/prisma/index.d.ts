@@ -58189,6 +58189,7 @@ export namespace Prisma {
     zip: string | null
     country: string | null
     status: string | null
+    isSample: boolean | null
     portalAccess: boolean | null
     portalEmail: string | null
     paymentTerms: number | null
@@ -58217,6 +58218,7 @@ export namespace Prisma {
     zip: string | null
     country: string | null
     status: string | null
+    isSample: boolean | null
     portalAccess: boolean | null
     portalEmail: string | null
     paymentTerms: number | null
@@ -58245,6 +58247,7 @@ export namespace Prisma {
     zip: number
     country: number
     status: number
+    isSample: number
     portalAccess: number
     portalEmail: number
     paymentTerms: number
@@ -58285,6 +58288,7 @@ export namespace Prisma {
     zip?: true
     country?: true
     status?: true
+    isSample?: true
     portalAccess?: true
     portalEmail?: true
     paymentTerms?: true
@@ -58313,6 +58317,7 @@ export namespace Prisma {
     zip?: true
     country?: true
     status?: true
+    isSample?: true
     portalAccess?: true
     portalEmail?: true
     paymentTerms?: true
@@ -58341,6 +58346,7 @@ export namespace Prisma {
     zip?: true
     country?: true
     status?: true
+    isSample?: true
     portalAccess?: true
     portalEmail?: true
     paymentTerms?: true
@@ -58456,6 +58462,7 @@ export namespace Prisma {
     zip: string | null
     country: string
     status: string
+    isSample: boolean
     portalAccess: boolean
     portalEmail: string | null
     paymentTerms: number
@@ -58503,6 +58510,7 @@ export namespace Prisma {
     zip?: boolean
     country?: boolean
     status?: boolean
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
     paymentTerms?: boolean
@@ -58540,6 +58548,7 @@ export namespace Prisma {
     zip?: boolean
     country?: boolean
     status?: boolean
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
     paymentTerms?: boolean
@@ -58569,6 +58578,7 @@ export namespace Prisma {
     zip?: boolean
     country?: boolean
     status?: boolean
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
     paymentTerms?: boolean
@@ -58598,6 +58608,7 @@ export namespace Prisma {
     zip?: boolean
     country?: boolean
     status?: boolean
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: boolean
     paymentTerms?: boolean
@@ -58607,7 +58618,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CarrierClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "dbaName" | "mcNumber" | "dotNumber" | "taxId" | "primaryContact" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "status" | "portalAccess" | "portalEmail" | "paymentTerms" | "creditLimit" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierClient"]>
+  export type CarrierClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "name" | "dbaName" | "mcNumber" | "dotNumber" | "taxId" | "primaryContact" | "email" | "phone" | "website" | "addressLine1" | "addressLine2" | "city" | "state" | "zip" | "country" | "status" | "isSample" | "portalAccess" | "portalEmail" | "paymentTerms" | "creditLimit" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierClient"]>
   export type CarrierClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     contracts?: boolean | CarrierClient$contractsArgs<ExtArgs>
@@ -58657,6 +58668,7 @@ export namespace Prisma {
       zip: string | null
       country: string
       status: string
+      isSample: boolean
       portalAccess: boolean
       portalEmail: string | null
       paymentTerms: number
@@ -59113,6 +59125,7 @@ export namespace Prisma {
     readonly zip: FieldRef<"CarrierClient", 'String'>
     readonly country: FieldRef<"CarrierClient", 'String'>
     readonly status: FieldRef<"CarrierClient", 'String'>
+    readonly isSample: FieldRef<"CarrierClient", 'Boolean'>
     readonly portalAccess: FieldRef<"CarrierClient", 'Boolean'>
     readonly portalEmail: FieldRef<"CarrierClient", 'String'>
     readonly paymentTerms: FieldRef<"CarrierClient", 'Int'>
@@ -62567,6 +62580,7 @@ export namespace Prisma {
     payRate: Decimal | null
     payPeriod: string | null
     status: string | null
+    isSample: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -62589,6 +62603,7 @@ export namespace Prisma {
     payRate: Decimal | null
     payPeriod: string | null
     status: string | null
+    isSample: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -62611,6 +62626,7 @@ export namespace Prisma {
     payRate: number
     payPeriod: number
     status: number
+    isSample: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -62643,6 +62659,7 @@ export namespace Prisma {
     payRate?: true
     payPeriod?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -62665,6 +62682,7 @@ export namespace Prisma {
     payRate?: true
     payPeriod?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -62687,6 +62705,7 @@ export namespace Prisma {
     payRate?: true
     payPeriod?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -62796,6 +62815,7 @@ export namespace Prisma {
     payRate: Decimal | null
     payPeriod: string
     status: string
+    isSample: boolean
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -62837,6 +62857,7 @@ export namespace Prisma {
     payRate?: boolean
     payPeriod?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -62868,6 +62889,7 @@ export namespace Prisma {
     payRate?: boolean
     payPeriod?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -62893,6 +62915,7 @@ export namespace Prisma {
     payRate?: boolean
     payPeriod?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -62918,12 +62941,13 @@ export namespace Prisma {
     payRate?: boolean
     payPeriod?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierDriverOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "userId" | "firstName" | "lastName" | "email" | "phone" | "cdlNumber" | "cdlState" | "cdlClass" | "cdlExpiry" | "homeTerminalId" | "payModel" | "payRate" | "payPeriod" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierDriver"]>
+  export type CarrierDriverOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "userId" | "firstName" | "lastName" | "email" | "phone" | "cdlNumber" | "cdlState" | "cdlClass" | "cdlExpiry" | "homeTerminalId" | "payModel" | "payRate" | "payPeriod" | "status" | "isSample" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierDriver"]>
   export type CarrierDriverInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     user?: boolean | CarrierDriver$userArgs<ExtArgs>
@@ -62975,6 +62999,7 @@ export namespace Prisma {
       payRate: Prisma.Decimal | null
       payPeriod: string
       status: string
+      isSample: boolean
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -63425,6 +63450,7 @@ export namespace Prisma {
     readonly payRate: FieldRef<"CarrierDriver", 'Decimal'>
     readonly payPeriod: FieldRef<"CarrierDriver", 'String'>
     readonly status: FieldRef<"CarrierDriver", 'String'>
+    readonly isSample: FieldRef<"CarrierDriver", 'Boolean'>
     readonly notes: FieldRef<"CarrierDriver", 'String'>
     readonly createdAt: FieldRef<"CarrierDriver", 'DateTime'>
     readonly updatedAt: FieldRef<"CarrierDriver", 'DateTime'>
@@ -64052,6 +64078,7 @@ export namespace Prisma {
     currentOdometerMiles: number | null
     lastOdometerDate: Date | null
     status: string | null
+    isSample: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -64078,6 +64105,7 @@ export namespace Prisma {
     currentOdometerMiles: number | null
     lastOdometerDate: Date | null
     status: string | null
+    isSample: boolean | null
     notes: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -64104,6 +64132,7 @@ export namespace Prisma {
     currentOdometerMiles: number
     lastOdometerDate: number
     status: number
+    isSample: number
     notes: number
     createdAt: number
     updatedAt: number
@@ -64146,6 +64175,7 @@ export namespace Prisma {
     currentOdometerMiles?: true
     lastOdometerDate?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -64172,6 +64202,7 @@ export namespace Prisma {
     currentOdometerMiles?: true
     lastOdometerDate?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -64198,6 +64229,7 @@ export namespace Prisma {
     currentOdometerMiles?: true
     lastOdometerDate?: true
     status?: true
+    isSample?: true
     notes?: true
     createdAt?: true
     updatedAt?: true
@@ -64311,6 +64343,7 @@ export namespace Prisma {
     currentOdometerMiles: number | null
     lastOdometerDate: Date | null
     status: string
+    isSample: boolean
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -64356,6 +64389,7 @@ export namespace Prisma {
     currentOdometerMiles?: boolean
     lastOdometerDate?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -64388,6 +64422,7 @@ export namespace Prisma {
     currentOdometerMiles?: boolean
     lastOdometerDate?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -64415,6 +64450,7 @@ export namespace Prisma {
     currentOdometerMiles?: boolean
     lastOdometerDate?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -64442,12 +64478,13 @@ export namespace Prisma {
     currentOdometerMiles?: boolean
     lastOdometerDate?: boolean
     status?: boolean
+    isSample?: boolean
     notes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "vehicleId" | "displayName" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
+  export type CarrierTruckOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "vehicleId" | "displayName" | "unitNumber" | "year" | "make" | "model" | "vin" | "truckType" | "payloadCapacityLbs" | "grossWeightLbs" | "licensePlate" | "licenseState" | "licenseExpiry" | "registrationExpiry" | "insuranceExpiry" | "currentOdometerMiles" | "lastOdometerDate" | "status" | "isSample" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierTruck"]>
   export type CarrierTruckInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     primaryDispatches?: boolean | CarrierTruck$primaryDispatchesArgs<ExtArgs>
@@ -64493,6 +64530,7 @@ export namespace Prisma {
       currentOdometerMiles: number | null
       lastOdometerDate: Date | null
       status: string
+      isSample: boolean
       notes: string | null
       createdAt: Date
       updatedAt: Date
@@ -64944,6 +64982,7 @@ export namespace Prisma {
     readonly currentOdometerMiles: FieldRef<"CarrierTruck", 'Int'>
     readonly lastOdometerDate: FieldRef<"CarrierTruck", 'DateTime'>
     readonly status: FieldRef<"CarrierTruck", 'String'>
+    readonly isSample: FieldRef<"CarrierTruck", 'Boolean'>
     readonly notes: FieldRef<"CarrierTruck", 'String'>
     readonly createdAt: FieldRef<"CarrierTruck", 'DateTime'>
     readonly updatedAt: FieldRef<"CarrierTruck", 'DateTime'>
@@ -69843,6 +69882,7 @@ export namespace Prisma {
     otherCharges: Decimal | null
     totalRevenue: Decimal | null
     status: string | null
+    isSample: boolean | null
     specialInstructions: string | null
     notes: string | null
     pendingStopsJson: string | null
@@ -69877,6 +69917,7 @@ export namespace Prisma {
     otherCharges: Decimal | null
     totalRevenue: Decimal | null
     status: string | null
+    isSample: boolean | null
     specialInstructions: string | null
     notes: string | null
     pendingStopsJson: string | null
@@ -69911,6 +69952,7 @@ export namespace Prisma {
     otherCharges: number
     totalRevenue: number
     status: number
+    isSample: number
     specialInstructions: number
     notes: number
     pendingStopsJson: number
@@ -69971,6 +70013,7 @@ export namespace Prisma {
     otherCharges?: true
     totalRevenue?: true
     status?: true
+    isSample?: true
     specialInstructions?: true
     notes?: true
     pendingStopsJson?: true
@@ -70005,6 +70048,7 @@ export namespace Prisma {
     otherCharges?: true
     totalRevenue?: true
     status?: true
+    isSample?: true
     specialInstructions?: true
     notes?: true
     pendingStopsJson?: true
@@ -70039,6 +70083,7 @@ export namespace Prisma {
     otherCharges?: true
     totalRevenue?: true
     status?: true
+    isSample?: true
     specialInstructions?: true
     notes?: true
     pendingStopsJson?: true
@@ -70160,6 +70205,7 @@ export namespace Prisma {
     otherCharges: Decimal | null
     totalRevenue: Decimal | null
     status: string
+    isSample: boolean
     specialInstructions: string | null
     notes: string | null
     pendingStopsJson: string | null
@@ -70213,6 +70259,7 @@ export namespace Prisma {
     otherCharges?: boolean
     totalRevenue?: boolean
     status?: boolean
+    isSample?: boolean
     specialInstructions?: boolean
     notes?: boolean
     pendingStopsJson?: boolean
@@ -70256,6 +70303,7 @@ export namespace Prisma {
     otherCharges?: boolean
     totalRevenue?: boolean
     status?: boolean
+    isSample?: boolean
     specialInstructions?: boolean
     notes?: boolean
     pendingStopsJson?: boolean
@@ -70294,6 +70342,7 @@ export namespace Prisma {
     otherCharges?: boolean
     totalRevenue?: boolean
     status?: boolean
+    isSample?: boolean
     specialInstructions?: boolean
     notes?: boolean
     pendingStopsJson?: boolean
@@ -70332,6 +70381,7 @@ export namespace Prisma {
     otherCharges?: boolean
     totalRevenue?: boolean
     status?: boolean
+    isSample?: boolean
     specialInstructions?: boolean
     notes?: boolean
     pendingStopsJson?: boolean
@@ -70339,7 +70389,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CarrierLoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "dispatchId" | "contractId" | "clientId" | "loadType" | "referenceNumber" | "bolNumber" | "proNumber" | "poNumber" | "commodityDescription" | "commodityWeightLbs" | "commodityPieces" | "commodityPallets" | "hazmat" | "hazmatClass" | "rateType" | "rateAmount" | "currency" | "brokerFlag" | "carrierCost" | "fuelSurcharge" | "detentionAmount" | "otherCharges" | "totalRevenue" | "status" | "specialInstructions" | "notes" | "pendingStopsJson" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierLoad"]>
+  export type CarrierLoadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orgId" | "dispatchId" | "contractId" | "clientId" | "loadType" | "referenceNumber" | "bolNumber" | "proNumber" | "poNumber" | "commodityDescription" | "commodityWeightLbs" | "commodityPieces" | "commodityPallets" | "hazmat" | "hazmatClass" | "rateType" | "rateAmount" | "currency" | "brokerFlag" | "carrierCost" | "fuelSurcharge" | "detentionAmount" | "otherCharges" | "totalRevenue" | "status" | "isSample" | "specialInstructions" | "notes" | "pendingStopsJson" | "createdAt" | "updatedAt", ExtArgs["result"]["carrierLoad"]>
   export type CarrierLoadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
     dispatch?: boolean | CarrierLoad$dispatchArgs<ExtArgs>
@@ -70403,6 +70453,7 @@ export namespace Prisma {
       otherCharges: Prisma.Decimal | null
       totalRevenue: Prisma.Decimal | null
       status: string
+      isSample: boolean
       specialInstructions: string | null
       notes: string | null
       pendingStopsJson: string | null
@@ -70865,6 +70916,7 @@ export namespace Prisma {
     readonly otherCharges: FieldRef<"CarrierLoad", 'Decimal'>
     readonly totalRevenue: FieldRef<"CarrierLoad", 'Decimal'>
     readonly status: FieldRef<"CarrierLoad", 'String'>
+    readonly isSample: FieldRef<"CarrierLoad", 'Boolean'>
     readonly specialInstructions: FieldRef<"CarrierLoad", 'String'>
     readonly notes: FieldRef<"CarrierLoad", 'String'>
     readonly pendingStopsJson: FieldRef<"CarrierLoad", 'String'>
@@ -101688,6 +101740,7 @@ export namespace Prisma {
     zip: 'zip',
     country: 'country',
     status: 'status',
+    isSample: 'isSample',
     portalAccess: 'portalAccess',
     portalEmail: 'portalEmail',
     paymentTerms: 'paymentTerms',
@@ -101772,6 +101825,7 @@ export namespace Prisma {
     payRate: 'payRate',
     payPeriod: 'payPeriod',
     status: 'status',
+    isSample: 'isSample',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -101801,6 +101855,7 @@ export namespace Prisma {
     currentOdometerMiles: 'currentOdometerMiles',
     lastOdometerDate: 'lastOdometerDate',
     status: 'status',
+    isSample: 'isSample',
     notes: 'notes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -101911,6 +101966,7 @@ export namespace Prisma {
     otherCharges: 'otherCharges',
     totalRevenue: 'totalRevenue',
     status: 'status',
+    isSample: 'isSample',
     specialInstructions: 'specialInstructions',
     notes: 'notes',
     pendingStopsJson: 'pendingStopsJson',
@@ -107320,6 +107376,7 @@ export namespace Prisma {
     zip?: StringNullableFilter<"CarrierClient"> | string | null
     country?: StringFilter<"CarrierClient"> | string
     status?: StringFilter<"CarrierClient"> | string
+    isSample?: BoolFilter<"CarrierClient"> | boolean
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
     paymentTerms?: IntFilter<"CarrierClient"> | number
@@ -107356,6 +107413,7 @@ export namespace Prisma {
     zip?: SortOrderInput | SortOrder
     country?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrderInput | SortOrder
     paymentTerms?: SortOrder
@@ -107395,6 +107453,7 @@ export namespace Prisma {
     zip?: StringNullableFilter<"CarrierClient"> | string | null
     country?: StringFilter<"CarrierClient"> | string
     status?: StringFilter<"CarrierClient"> | string
+    isSample?: BoolFilter<"CarrierClient"> | boolean
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
     paymentTerms?: IntFilter<"CarrierClient"> | number
@@ -107431,6 +107490,7 @@ export namespace Prisma {
     zip?: SortOrderInput | SortOrder
     country?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrderInput | SortOrder
     paymentTerms?: SortOrder
@@ -107467,6 +107527,7 @@ export namespace Prisma {
     zip?: StringNullableWithAggregatesFilter<"CarrierClient"> | string | null
     country?: StringWithAggregatesFilter<"CarrierClient"> | string
     status?: StringWithAggregatesFilter<"CarrierClient"> | string
+    isSample?: BoolWithAggregatesFilter<"CarrierClient"> | boolean
     portalAccess?: BoolWithAggregatesFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableWithAggregatesFilter<"CarrierClient"> | string | null
     paymentTerms?: IntWithAggregatesFilter<"CarrierClient"> | number
@@ -107796,6 +107857,7 @@ export namespace Prisma {
     payRate?: DecimalNullableFilter<"CarrierDriver"> | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFilter<"CarrierDriver"> | string
     status?: StringFilter<"CarrierDriver"> | string
+    isSample?: BoolFilter<"CarrierDriver"> | boolean
     notes?: StringNullableFilter<"CarrierDriver"> | string | null
     createdAt?: DateTimeFilter<"CarrierDriver"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierDriver"> | Date | string
@@ -107826,6 +107888,7 @@ export namespace Prisma {
     payRate?: SortOrderInput | SortOrder
     payPeriod?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -107859,6 +107922,7 @@ export namespace Prisma {
     payRate?: DecimalNullableFilter<"CarrierDriver"> | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFilter<"CarrierDriver"> | string
     status?: StringFilter<"CarrierDriver"> | string
+    isSample?: BoolFilter<"CarrierDriver"> | boolean
     notes?: StringNullableFilter<"CarrierDriver"> | string | null
     createdAt?: DateTimeFilter<"CarrierDriver"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierDriver"> | Date | string
@@ -107889,6 +107953,7 @@ export namespace Prisma {
     payRate?: SortOrderInput | SortOrder
     payPeriod?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -107919,6 +107984,7 @@ export namespace Prisma {
     payRate?: DecimalNullableWithAggregatesFilter<"CarrierDriver"> | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringWithAggregatesFilter<"CarrierDriver"> | string
     status?: StringWithAggregatesFilter<"CarrierDriver"> | string
+    isSample?: BoolWithAggregatesFilter<"CarrierDriver"> | boolean
     notes?: StringNullableWithAggregatesFilter<"CarrierDriver"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierDriver"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierDriver"> | Date | string
@@ -107948,6 +108014,7 @@ export namespace Prisma {
     currentOdometerMiles?: IntNullableFilter<"CarrierTruck"> | number | null
     lastOdometerDate?: DateTimeNullableFilter<"CarrierTruck"> | Date | string | null
     status?: StringFilter<"CarrierTruck"> | string
+    isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -107979,6 +108046,7 @@ export namespace Prisma {
     currentOdometerMiles?: SortOrderInput | SortOrder
     lastOdometerDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -108013,6 +108081,7 @@ export namespace Prisma {
     currentOdometerMiles?: IntNullableFilter<"CarrierTruck"> | number | null
     lastOdometerDate?: DateTimeNullableFilter<"CarrierTruck"> | Date | string | null
     status?: StringFilter<"CarrierTruck"> | string
+    isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -108044,6 +108113,7 @@ export namespace Prisma {
     currentOdometerMiles?: SortOrderInput | SortOrder
     lastOdometerDate?: SortOrderInput | SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -108078,6 +108148,7 @@ export namespace Prisma {
     currentOdometerMiles?: IntNullableWithAggregatesFilter<"CarrierTruck"> | number | null
     lastOdometerDate?: DateTimeNullableWithAggregatesFilter<"CarrierTruck"> | Date | string | null
     status?: StringWithAggregatesFilter<"CarrierTruck"> | string
+    isSample?: BoolWithAggregatesFilter<"CarrierTruck"> | boolean
     notes?: StringNullableWithAggregatesFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"CarrierTruck"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CarrierTruck"> | Date | string
@@ -108552,6 +108623,7 @@ export namespace Prisma {
     otherCharges?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     status?: StringFilter<"CarrierLoad"> | string
+    isSample?: BoolFilter<"CarrierLoad"> | boolean
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
     pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
@@ -108594,6 +108666,7 @@ export namespace Prisma {
     otherCharges?: SortOrderInput | SortOrder
     totalRevenue?: SortOrderInput | SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     pendingStopsJson?: SortOrderInput | SortOrder
@@ -108639,6 +108712,7 @@ export namespace Prisma {
     otherCharges?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     status?: StringFilter<"CarrierLoad"> | string
+    isSample?: BoolFilter<"CarrierLoad"> | boolean
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
     pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
@@ -108681,6 +108755,7 @@ export namespace Prisma {
     otherCharges?: SortOrderInput | SortOrder
     totalRevenue?: SortOrderInput | SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     specialInstructions?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
     pendingStopsJson?: SortOrderInput | SortOrder
@@ -108723,6 +108798,7 @@ export namespace Prisma {
     otherCharges?: DecimalNullableWithAggregatesFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: DecimalNullableWithAggregatesFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     status?: StringWithAggregatesFilter<"CarrierLoad"> | string
+    isSample?: BoolWithAggregatesFilter<"CarrierLoad"> | boolean
     specialInstructions?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
     notes?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
     pendingStopsJson?: StringNullableWithAggregatesFilter<"CarrierLoad"> | string | null
@@ -115728,6 +115804,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -115764,6 +115841,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -115798,6 +115876,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -115834,6 +115913,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -115869,6 +115949,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -115896,6 +115977,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -115924,6 +116006,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -116311,6 +116394,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116341,6 +116425,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116365,6 +116450,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116395,6 +116481,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116422,6 +116509,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116441,6 +116529,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116463,6 +116552,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116488,6 +116578,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116519,6 +116610,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116548,6 +116640,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116579,6 +116672,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116609,6 +116703,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -116634,6 +116729,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -116660,6 +116756,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -117168,6 +117265,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -117210,6 +117308,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -117244,6 +117343,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117286,6 +117386,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117324,6 +117425,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -117354,6 +117456,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -117388,6 +117491,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -123838,6 +123942,7 @@ export namespace Prisma {
     zip?: SortOrder
     country?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
     paymentTerms?: SortOrder
@@ -123871,6 +123976,7 @@ export namespace Prisma {
     zip?: SortOrder
     country?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
     paymentTerms?: SortOrder
@@ -123899,6 +124005,7 @@ export namespace Prisma {
     zip?: SortOrder
     country?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     portalAccess?: SortOrder
     portalEmail?: SortOrder
     paymentTerms?: SortOrder
@@ -124172,6 +124279,7 @@ export namespace Prisma {
     payRate?: SortOrder
     payPeriod?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124198,6 +124306,7 @@ export namespace Prisma {
     payRate?: SortOrder
     payPeriod?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124220,6 +124329,7 @@ export namespace Prisma {
     payRate?: SortOrder
     payPeriod?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124250,6 +124360,7 @@ export namespace Prisma {
     currentOdometerMiles?: SortOrder
     lastOdometerDate?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124283,6 +124394,7 @@ export namespace Prisma {
     currentOdometerMiles?: SortOrder
     lastOdometerDate?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124309,6 +124421,7 @@ export namespace Prisma {
     currentOdometerMiles?: SortOrder
     lastOdometerDate?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     notes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -124631,6 +124744,7 @@ export namespace Prisma {
     otherCharges?: SortOrder
     totalRevenue?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
     pendingStopsJson?: SortOrder
@@ -124677,6 +124791,7 @@ export namespace Prisma {
     otherCharges?: SortOrder
     totalRevenue?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
     pendingStopsJson?: SortOrder
@@ -124711,6 +124826,7 @@ export namespace Prisma {
     otherCharges?: SortOrder
     totalRevenue?: SortOrder
     status?: SortOrder
+    isSample?: SortOrder
     specialInstructions?: SortOrder
     notes?: SortOrder
     pendingStopsJson?: SortOrder
@@ -138576,6 +138692,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -138610,6 +138727,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -138776,6 +138894,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -138804,6 +138923,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -138844,6 +138964,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -138873,6 +138994,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -139043,6 +139165,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -139083,6 +139206,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -140856,6 +140980,7 @@ export namespace Prisma {
     zip?: StringNullableFilter<"CarrierClient"> | string | null
     country?: StringFilter<"CarrierClient"> | string
     status?: StringFilter<"CarrierClient"> | string
+    isSample?: BoolFilter<"CarrierClient"> | boolean
     portalAccess?: BoolFilter<"CarrierClient"> | boolean
     portalEmail?: StringNullableFilter<"CarrierClient"> | string | null
     paymentTerms?: IntFilter<"CarrierClient"> | number
@@ -140988,6 +141113,7 @@ export namespace Prisma {
     payRate?: DecimalNullableFilter<"CarrierDriver"> | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFilter<"CarrierDriver"> | string
     status?: StringFilter<"CarrierDriver"> | string
+    isSample?: BoolFilter<"CarrierDriver"> | boolean
     notes?: StringNullableFilter<"CarrierDriver"> | string | null
     createdAt?: DateTimeFilter<"CarrierDriver"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierDriver"> | Date | string
@@ -141033,6 +141159,7 @@ export namespace Prisma {
     currentOdometerMiles?: IntNullableFilter<"CarrierTruck"> | number | null
     lastOdometerDate?: DateTimeNullableFilter<"CarrierTruck"> | Date | string | null
     status?: StringFilter<"CarrierTruck"> | string
+    isSample?: BoolFilter<"CarrierTruck"> | boolean
     notes?: StringNullableFilter<"CarrierTruck"> | string | null
     createdAt?: DateTimeFilter<"CarrierTruck"> | Date | string
     updatedAt?: DateTimeFilter<"CarrierTruck"> | Date | string
@@ -141170,6 +141297,7 @@ export namespace Prisma {
     otherCharges?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: DecimalNullableFilter<"CarrierLoad"> | Decimal | DecimalJsLike | number | string | null
     status?: StringFilter<"CarrierLoad"> | string
+    isSample?: BoolFilter<"CarrierLoad"> | boolean
     specialInstructions?: StringNullableFilter<"CarrierLoad"> | string | null
     notes?: StringNullableFilter<"CarrierLoad"> | string | null
     pendingStopsJson?: StringNullableFilter<"CarrierLoad"> | string | null
@@ -143138,6 +143266,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -143166,6 +143295,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -144068,6 +144198,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -144096,6 +144227,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -150229,6 +150361,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -150259,6 +150392,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -150527,6 +150661,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -150557,6 +150692,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -164044,6 +164180,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -164084,6 +164221,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -164576,6 +164714,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -164611,6 +164750,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -164716,6 +164856,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -164756,6 +164897,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -165017,6 +165159,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -165052,6 +165195,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -165280,6 +165424,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -165308,6 +165453,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -167469,6 +167615,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -167504,6 +167651,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -167597,6 +167745,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -167626,6 +167775,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -167660,6 +167810,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -167690,6 +167841,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -167999,6 +168151,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -168034,6 +168187,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -168139,6 +168293,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -168168,6 +168323,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -168208,6 +168364,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -168238,6 +168395,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -168740,6 +168898,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168769,6 +168928,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168797,6 +168957,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168826,6 +168987,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168860,6 +169022,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168890,6 +169053,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168923,6 +169087,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -168953,6 +169118,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -169160,6 +169326,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -169200,6 +169367,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -169684,6 +169852,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169713,6 +169882,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169747,6 +169917,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169776,6 +169947,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169816,6 +169988,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169846,6 +170019,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169885,6 +170059,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -169915,6 +170090,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -170431,6 +170607,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -170466,6 +170643,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -171054,6 +171232,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -171089,6 +171268,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -171252,6 +171432,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -171293,6 +171474,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -171383,6 +171565,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -171418,6 +171601,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -171685,6 +171869,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -171726,6 +171911,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -171828,6 +172014,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -171863,6 +172050,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -172207,6 +172395,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -172242,6 +172431,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -172310,6 +172500,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -172351,6 +172542,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -172846,6 +173038,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -172881,6 +173074,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -172961,6 +173155,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -173002,6 +173197,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -173773,6 +173969,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -173814,6 +174011,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -173916,6 +174114,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -173951,6 +174150,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -173985,6 +174185,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -174014,6 +174215,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -174432,6 +174634,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -174473,6 +174676,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -174587,6 +174791,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -174622,6 +174827,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -174662,6 +174868,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -174691,6 +174898,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -175023,6 +175231,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -175052,6 +175261,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -175150,6 +175360,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -175191,6 +175402,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -175224,6 +175436,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -175259,6 +175472,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -175558,6 +175772,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -175587,6 +175802,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -175697,6 +175913,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -175738,6 +175955,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -175777,6 +175995,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -175812,6 +176031,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -182397,6 +182617,7 @@ export namespace Prisma {
     zip?: string | null
     country?: string
     status?: string
+    isSample?: boolean
     portalAccess?: boolean
     portalEmail?: string | null
     paymentTerms?: number
@@ -182469,6 +182690,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -182494,6 +182716,7 @@ export namespace Prisma {
     currentOdometerMiles?: number | null
     lastOdometerDate?: Date | string | null
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -182571,6 +182794,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -184334,6 +184558,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -184368,6 +184593,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -184402,6 +184628,7 @@ export namespace Prisma {
     zip?: NullableStringFieldUpdateOperationsInput | string | null
     country?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     portalAccess?: BoolFieldUpdateOperationsInput | boolean
     portalEmail?: NullableStringFieldUpdateOperationsInput | string | null
     paymentTerms?: IntFieldUpdateOperationsInput | number
@@ -184578,6 +184805,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184606,6 +184834,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184632,6 +184861,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184657,6 +184887,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184686,6 +184917,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184715,6 +184947,7 @@ export namespace Prisma {
     currentOdometerMiles?: NullableIntFieldUpdateOperationsInput | number | null
     lastOdometerDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -184897,6 +185130,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -184937,6 +185171,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -184974,6 +185209,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190357,6 +190593,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -190852,6 +191089,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190892,6 +191130,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190929,6 +191168,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190986,6 +191226,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -191113,6 +191354,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191153,6 +191395,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191190,6 +191433,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191278,6 +191522,7 @@ export namespace Prisma {
     payRate?: Decimal | DecimalJsLike | number | string | null
     payPeriod?: string
     status?: string
+    isSample?: boolean
     notes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -191343,6 +191588,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -191371,6 +191617,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -191397,6 +191644,7 @@ export namespace Prisma {
     payRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     payPeriod?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -192629,6 +192877,7 @@ export namespace Prisma {
     otherCharges?: Decimal | DecimalJsLike | number | string | null
     totalRevenue?: Decimal | DecimalJsLike | number | string | null
     status?: string
+    isSample?: boolean
     specialInstructions?: string | null
     notes?: string | null
     pendingStopsJson?: string | null
@@ -192840,6 +193089,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192880,6 +193130,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192917,6 +193168,7 @@ export namespace Prisma {
     otherCharges?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     totalRevenue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     status?: StringFieldUpdateOperationsInput | string
+    isSample?: BoolFieldUpdateOperationsInput | boolean
     specialInstructions?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     pendingStopsJson?: NullableStringFieldUpdateOperationsInput | string | null

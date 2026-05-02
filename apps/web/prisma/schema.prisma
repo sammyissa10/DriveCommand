@@ -1463,6 +1463,7 @@ model CarrierClient {
   zip            String?
   country        String   @default("US")
   status         String   @default("active")
+  isSample       Boolean  @default(false) @map("is_sample")
   portalAccess   Boolean  @default(false) @map("portal_access")
   portalEmail    String?  @map("portal_email")
   paymentTerms   Int      @default(30) @map("payment_terms")
@@ -1571,6 +1572,7 @@ model CarrierDriver {
   payRate        Decimal?  @map("pay_rate") @db.Decimal(10, 4)
   payPeriod      String    @default("weekly") @map("pay_period")
   status         String    @default("active")
+  isSample       Boolean   @default(false) @map("is_sample")
   notes          String?
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz
@@ -1610,6 +1612,7 @@ model CarrierTruck {
   currentOdometerMiles Int?      @map("current_odometer_miles")
   lastOdometerDate     DateTime? @map("last_odometer_date") @db.Date
   status               String    @default("active")
+  isSample             Boolean   @default(false) @map("is_sample")
   notes                String?
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
@@ -1761,6 +1764,7 @@ model CarrierLoad {
   otherCharges         Decimal? @map("other_charges") @db.Decimal(12, 2)
   totalRevenue         Decimal? @map("total_revenue") @db.Decimal(12, 2)
   status               String   @default("pending")
+  isSample             Boolean  @default(false) @map("is_sample")
   specialInstructions  String?  @map("special_instructions")
   notes                String?
   pendingStopsJson     String?  @map("pending_stops_json") @db.Text

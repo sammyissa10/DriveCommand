@@ -737,6 +737,7 @@ exports.Prisma.CarrierClientScalarFieldEnum = {
   zip: 'zip',
   country: 'country',
   status: 'status',
+  isSample: 'isSample',
   portalAccess: 'portalAccess',
   portalEmail: 'portalEmail',
   paymentTerms: 'paymentTerms',
@@ -812,6 +813,7 @@ exports.Prisma.CarrierDriverScalarFieldEnum = {
   payRate: 'payRate',
   payPeriod: 'payPeriod',
   status: 'status',
+  isSample: 'isSample',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -838,6 +840,7 @@ exports.Prisma.CarrierTruckScalarFieldEnum = {
   currentOdometerMiles: 'currentOdometerMiles',
   lastOdometerDate: 'lastOdometerDate',
   status: 'status',
+  isSample: 'isSample',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -936,6 +939,7 @@ exports.Prisma.CarrierLoadScalarFieldEnum = {
   otherCharges: 'otherCharges',
   totalRevenue: 'totalRevenue',
   status: 'status',
+  isSample: 'isSample',
   specialInstructions: 'specialInstructions',
   notes: 'notes',
   pendingStopsJson: 'pendingStopsJson',
