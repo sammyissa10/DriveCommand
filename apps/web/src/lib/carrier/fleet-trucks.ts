@@ -42,7 +42,7 @@ export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;
  * Generate the next globally unique vehicle ID in the format VH-YYYY-NNNNN.
  * Queries the max vehicle_id to determine the next sequence number.
  */
-async function generateVehicleId(): Promise<string> {
+export async function generateVehicleId(): Promise<string> {
   const year = new Date().getFullYear();
   const prefix = `VH-${year}-`;
 
