@@ -666,6 +666,20 @@ Plans:
 - [ ] 49-02-PLAN.md — Activation tracker (src/lib/onboarding/activation-tracker.ts): recordActivationEvent, ActivationProgress UPSERT, completionPct formula, tenant.activated AppEvent; wire into Truck/Customer/Load/User create/status-change actions
 - [ ] 49-03-PLAN.md — Dashboard sample-data integration: add sample-data-banner to owner dashboard pages, SAMPLE pills to list tables, isSample=false filters to KPI count queries
 
+### Phase 50: Rebuild activation tracking and sample data on snake_case tables
+
+**Goal:** Fix Phase 49's broken activation tracker and sample data system by rewriting the seeder to target snake_case carrier tables, wiring tracker hooks into the actual carrier API routes, and integrating SamplePill/SampleDataBanner into the carrier list pages and dashboard.
+**Depends on:** Phase 49
+**Plans:** 6 plans
+
+Plans:
+- [ ] 50-01-PLAN.md — Migrations: add is_sample column to carrier_trucks, clients, loads, carrier_drivers + schema update + prisma generate
+- [ ] 50-02-PLAN.md — Seeder rewrite: write to snake_case carrier tables using orgId, create User+CarrierDriver rows for sample drivers, add ONBOARDING_SEED_SAMPLES kill switch
+- [ ] 50-03-PLAN.md — Trucks tracker hook: wire recordActivationEvent(first_real_truck) into carrier fleet trucks POST route
+- [ ] 50-04-PLAN.md — Clients tracker hook: wire recordActivationEvent(first_real_client) into carrier clients POST route
+- [ ] 50-05-PLAN.md — Dispatch tracker hook: wire recordActivationEvent(first_load_in_transit) into transitionDispatchStatus planned->in_progress
+- [ ] 50-06-PLAN.md — SamplePill + SampleDataBanner: integrate into carrier list pages, fix dashboard hasSampleRecords, add isSample:false to KPI route
+
 ---
 
 ## v6.0 Owner Portal Permissions
