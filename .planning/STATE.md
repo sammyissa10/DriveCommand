@@ -238,6 +238,7 @@ Progress: [███████████████████████
 - Phase 21 added: QuickBooks Online Integration — OAuth2 connect flow, invoice/expense/settlement sync to QBO
 - Phase 22 added: Support Ticket System — in-owner-portal ticket submission and threaded replies, DriveCommand team manages via admin portal
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
+- Phase 50 added: Rebuild activation tracking and sample data on snake_case tables — Phase 49's hooks targeted orphaned PascalCase pages; pivot to carrier_trucks/clients/loads/carrier_drivers. Six atomic plans: migrations, seeder rewrite, trucks tracker, clients tracker, dispatch tracker, SamplePill/Banner integration.
 
 ### Decisions
 
