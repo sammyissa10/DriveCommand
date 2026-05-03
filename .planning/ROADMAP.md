@@ -682,6 +682,24 @@ Plans:
 
 **Status: COMPLETE (2026-05-02)**
 
+### Phase 51: Postscript: Close Activation Gaps from Phases 47-50 Live Verification
+
+**Goal:** [To be planned]
+**Depends on:** Phase 50
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 51 to break down)
+
+### Phase 52: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
+
+**Goal:** [To be planned]
+**Depends on:** Phase 51
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 52 to break down)
+
 ---
 
 ## v6.0 Owner Portal Permissions

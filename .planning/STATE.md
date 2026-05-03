@@ -570,6 +570,7 @@ Progress: [███████████████████████
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 - Phase 50 added: Rebuild activation tracking and sample data on snake_case tables — Phase 49's hooks targeted orphaned PascalCase pages; pivot to carrier_trucks/clients/loads/carrier_drivers. Six atomic plans: migrations, seeder rewrite, trucks tracker, clients tracker, dispatch tracker, SamplePill/Banner integration.
 - Phase 51 added: Postscript: Close Activation Gaps from Phases 47-50 Live Verification — Five atomic plans: IN_TRANSIT fires isActivated+tenant.activated AppEvent, direct driver creation hook, checklist CTAs as clickable links, auto-redirect non-activated tenants on sign-in, welcome page error UI checks Tenant state before rendering error.
+- Phase 52 added: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
 
 ### Decisions
 
@@ -1476,6 +1477,7 @@ None blocking immediate progress.
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 - Phase 50 added: Rebuild activation tracking and sample data on snake_case tables — Phase 49's hooks targeted orphaned PascalCase pages; pivot to carrier_trucks/clients/loads/carrier_drivers. Six atomic plans: migrations, seeder rewrite, trucks tracker, clients tracker, dispatch tracker, SamplePill/Banner integration.
 - Phase 51 added: Postscript: Close Activation Gaps from Phases 47-50 Live Verification — Five atomic plans: IN_TRANSIT fires isActivated+tenant.activated AppEvent, direct driver creation hook, checklist CTAs as clickable links, auto-redirect non-activated tenants on sign-in, welcome page error UI checks Tenant state before rendering error.
+- Phase 52 added: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
 
 ### Decisions
 
@@ -2381,6 +2383,7 @@ None blocking immediate progress.
 - Phase 23 added: System Admin Portal — super-admin /admin/* with ADMIN_SECRET_KEY auth, tenant CRUD, system metrics, cross-tenant support ticket queue
 - Phase 50 added: Rebuild activation tracking and sample data on snake_case tables — Phase 49's hooks targeted orphaned PascalCase pages; pivot to carrier_trucks/clients/loads/carrier_drivers. Six atomic plans: migrations, seeder rewrite, trucks tracker, clients tracker, dispatch tracker, SamplePill/Banner integration.
 - Phase 51 added: Postscript: Close Activation Gaps from Phases 47-50 Live Verification — Five atomic plans: IN_TRANSIT fires isActivated+tenant.activated AppEvent, direct driver creation hook, checklist CTAs as clickable links, auto-redirect non-activated tenants on sign-in, welcome page error UI checks Tenant state before rendering error.
+- Phase 52 added: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
 
 ### Decisions
 
