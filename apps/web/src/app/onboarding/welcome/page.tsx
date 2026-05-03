@@ -27,7 +27,102 @@ export default async function WelcomePage() {
     try {
       await hydrateTenant(tenantId);
     } catch (err) {
-      console.error('[welcome] hydrateTenant failed — full error:', err instanceof Error ? err.stack : err);
+      console.error('[welcome] hydrateTenant failed — checking tenant state before showing error', err instanceof Error ? err.stack : err);
+
+      // Check actual DB state — hydrateTenant may have completed before the client-side timeout
+      let shouldShowError = true;
+      let catchActivation: {
+        completionPct: number;
+        firstRealTruckAt: Date | null;
+        firstRealDriverAt: Date | null;
+        firstRealClientAt: Date | null;
+        firstLoadInTransitAt: Date | null;
+      } | null = null;
+
+      try {
+        const tenantState = await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          return tx.tenant.findUnique({
+            where: { id: tenantId },
+            select: { provisioningPhase: true, sampleDataSeeded: true },
+          });
+        }, TX_OPTIONS);
+
+        if (tenantState?.provisioningPhase === 'HYDRATED') {
+          // Case (a) and (b): tenant is HYDRATED — hydrateTenant error was a false alarm (e.g. client timeout)
+          console.warn('[welcome] hydrateTenant threw but tenant is HYDRATED — ignoring error');
+          shouldShowError = false;
+
+          // Fetch ActivationProgress for the normal render path
+          catchActivation = await prisma.$transaction(async (tx) => {
+            await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+            return tx.activationProgress.findUnique({
+              where: { tenantId },
+              select: {
+                completionPct: true,
+                firstRealTruckAt: true,
+                firstRealDriverAt: true,
+                firstRealClientAt: true,
+                firstLoadInTransitAt: true,
+              },
+            });
+          }, TX_OPTIONS);
+        }
+        // Case (c): provisioningPhase is still MINIMAL (or null) — genuine failure, show error UI
+      } catch (stateCheckErr) {
+        // State check itself failed — fall back to showing error UI
+        console.error('[welcome] tenant state check in catch block failed', stateCheckErr);
+      }
+
+      if (!shouldShowError) {
+        // Render normal welcome page with freshly-fetched activation data (or defaults if no row yet)
+        return (
+          <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+            <div className="w-full max-w-4xl">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left: welcome content */}
+                <div className="flex flex-col justify-center space-y-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-950">
+                    <CheckCircle2 className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                      Welcome to DriveCommand!
+                    </h1>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Your account is set up and ready. Complete the steps on the right
+                      to get your fleet fully operational.
+                    </p>
+                  </div>
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <p>We sent a confirmation email — click the link to verify your address.</p>
+                    <p>
+                      Didn&apos;t receive it? Check your spam folder or{' '}
+                      <a href="mailto:support@drivecommand.app" className="text-primary hover:underline">
+                        contact support
+                      </a>
+                      .
+                    </p>
+                  </div>
+                </div>
+                {/* Right: activation checklist */}
+                <div className="rounded-xl border border-border bg-card shadow-sm p-6">
+                  <h2 className="text-lg font-semibold text-foreground mb-4">Get started checklist</h2>
+                  <ActivationChecklist
+                    completionPct={catchActivation?.completionPct ?? 20}
+                    firstRealTruckAt={catchActivation?.firstRealTruckAt ?? null}
+                    firstRealDriverAt={catchActivation?.firstRealDriverAt ?? null}
+                    firstRealClientAt={catchActivation?.firstRealClientAt ?? null}
+                    firstLoadInTransitAt={catchActivation?.firstLoadInTransitAt ?? null}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Case (c): genuine failure — render error UI
       return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
           <div className="max-w-md w-full rounded-xl border border-destructive/40 bg-card shadow-sm p-8 text-center space-y-6">
