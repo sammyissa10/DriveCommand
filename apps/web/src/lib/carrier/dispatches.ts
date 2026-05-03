@@ -1,6 +1,7 @@
 import { after } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { logger } from '@/lib/logger';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 import { generateDriverPayRecords } from '@/lib/carrier/pay-calculator';
 import { sendDispatchAssignedNotification } from '@/lib/carrier/notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
@@ -601,6 +602,21 @@ export async function transitionDispatchStatus(
         tenantId: orgId,
       }).catch((err) => logger.error('[transitionDispatchStatus] fireEvent ON_DISPATCH_DEPART failed', err))
     );
+
+    // Activation tracker: first real load moved to in_transit
+    // Guard: skip if all loads on this dispatch are sample data (user playing with seeds, not real onboarding)
+    after(async () => {
+      try {
+        const realLoadCount = await prisma.carrierLoad.count({
+          where: { dispatchId: id, isSample: false },
+        });
+        if (realLoadCount > 0) {
+          await recordActivationEvent(orgId, 'first_load_in_transit');
+        }
+      } catch (err) {
+        logger.error('[transitionDispatchStatus] activation tracker failed', { dispatchId: id, err });
+      }
+    });
 
     return { id: updated.id, status: updated.status, notes: updated.notes };
   }
