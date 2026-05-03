@@ -1,5 +1,4 @@
 import { Prisma, FleetSizeBucket, UserRole } from '../../generated/prisma';
-import { generateVehicleId } from '@/lib/carrier/fleet-trucks';
 
 // Use the canonical Prisma transaction client type
 type TX = Prisma.TransactionClient;
@@ -11,97 +10,116 @@ interface SeedConfig {
   loadsCount: number;
 }
 
-const SEED_CONFIGS: Record<FleetSizeBucket, SeedConfig> = {
+export const SEED_CONFIGS: Record<FleetSizeBucket, SeedConfig> = {
   OWNER_OPERATOR: { trucksCount: 1, driversCount: 1, clientsCount: 1, loadsCount: 2 },
   SMALL:          { trucksCount: 3, driversCount: 3, clientsCount: 2, loadsCount: 3 },
   MEDIUM:         { trucksCount: 3, driversCount: 3, clientsCount: 2, loadsCount: 3 },
   LARGE:          { trucksCount: 3, driversCount: 3, clientsCount: 2, loadsCount: 3 },
 };
 
+/**
+ * vehicleIds must be pre-generated OUTSIDE the transaction via generateVehicleIds().
+ * Never call generateVehicleId/generateVehicleIds inside this function — those helpers
+ * use the global prisma client which deadlocks against the max:1 pool when called
+ * inside an active transaction.
+ */
 export async function seedSampleData(
   tx: TX,
   tenantId: string,
   tenantSlug: string,
   bucket: FleetSizeBucket,
   ownerUserId: string,
+  vehicleIds: string[],
 ): Promise<void> {
   if (process.env.ONBOARDING_SEED_SAMPLES === 'false') return;
 
   const cfg = SEED_CONFIGS[bucket];
 
-  // Trucks — write to carrier snake_case table using orgId as tenant FK
-  for (let i = 0; i < cfg.trucksCount; i++) {
-    const vehicleId = await generateVehicleId(); // DO NOT set vehicleId manually
-    await tx.carrierTruck.create({
-      data: {
-        orgId: tenantId,
-        vehicleId,
-        unitNumber: `SAMPLE-${i + 1}`,
-        displayName: `Sample Truck ${i + 1}`,
-        truckType: 'semi',
-        status: 'active',
-        isSample: true,
-      },
-    });
-  }
+  // Phase 1: trucks, clients, and users are independent — issue all writes in parallel.
+  // The pg connection serializes them internally, but we avoid sequential JS awaits.
+  const [, sampleClients, sampleUsers] = await Promise.all([
+    // Trucks
+    Promise.all(
+      vehicleIds.map((vehicleId, i) =>
+        tx.carrierTruck.create({
+          data: {
+            orgId: tenantId,
+            vehicleId,
+            unitNumber: `SAMPLE-${i + 1}`,
+            displayName: `Sample Truck ${i + 1}`,
+            truckType: 'semi',
+            status: 'active',
+            isSample: true,
+          },
+        })
+      )
+    ),
+    // Clients
+    Promise.all(
+      Array.from({ length: cfg.clientsCount }, (_, i) =>
+        tx.carrierClient.create({
+          data: {
+            orgId: tenantId,
+            name: `Sample Client ${i + 1}`,
+            status: 'active',
+            isSample: true,
+          },
+        })
+      )
+    ),
+    // Sample driver User rows — no Supabase Auth identity.
+    // passwordHash is a bcrypt-unmatchable placeholder so these rows cannot log in.
+    Promise.all(
+      Array.from({ length: cfg.driversCount }, (_, i) =>
+        tx.user.create({
+          data: {
+            tenantId,
+            email: `sample-driver-${i + 1}-${tenantSlug}@sample.drivecommand.internal`,
+            firstName: 'Sample',
+            lastName: `Driver ${i + 1}`,
+            role: UserRole.DRIVER,
+            isSample: true,
+            passwordHash: 'SAMPLE—NOT_A_REAL_LOGIN',
+          },
+        })
+      )
+    ),
+  ]);
 
-  // Clients — write to carrier snake_case table using orgId as tenant FK
-  const sampleClients = await Promise.all(
-    Array.from({ length: cfg.clientsCount }, (_, i) =>
-      tx.carrierClient.create({
-        data: {
-          orgId: tenantId,
-          name: `Sample Client ${i + 1}`,
-          status: 'active',
-          isSample: true,
-        },
-      })
-    )
-  );
-
-  // Sample drivers — create BOTH a User row (isSample=true) AND a CarrierDriver row
-  // linked via userId. No Supabase Auth identity — placeholder passwordHash that
-  // bcrypt can never match, so these rows cannot be used to authenticate.
-  for (let i = 0; i < cfg.driversCount; i++) {
-    const sampleUser = await tx.user.create({
-      data: {
-        tenantId,
-        email: `sample-driver-${i + 1}-${tenantSlug}@sample.drivecommand.internal`,
-        firstName: 'Sample',
-        lastName: `Driver ${i + 1}`,
-        role: UserRole.DRIVER,
-        isSample: true,
-        passwordHash: 'SAMPLE—NOT_A_REAL_LOGIN', // bcrypt-unmatchable placeholder
-      },
-    });
-    await tx.carrierDriver.create({
-      data: {
-        orgId: tenantId,
-        firstName: 'Sample',
-        lastName: `Driver ${i + 1}`,
-        email: sampleUser.email,
-        userId: sampleUser.id,
-        status: 'active',
-        isSample: true,
-      },
-    });
-  }
-
-  // Loads — OWNER_OPERATOR gets 2 loads (1 delivered + 1 in_transit)
-  // SMALL/MEDIUM/LARGE gets 3 loads (1 delivered + 2 in_transit)
-  const loadCount = cfg.loadsCount;
-  for (let index = 0; index < loadCount; index++) {
-    await tx.carrierLoad.create({
-      data: {
-        orgId: tenantId,
-        clientId: sampleClients[0].id,
-        loadType: 'ftl',
-        status: index === 0 ? 'delivered' : 'in_transit',
-        referenceNumber: `SAMPLE-${index + 1}`,
-        isSample: true,
-      },
-    });
-  }
+  // Phase 2: CarrierDriver rows (depend on sampleUsers.id) and loads (depend on
+  // sampleClients[0].id) are independent of each other — run them in parallel.
+  await Promise.all([
+    Promise.all(
+      sampleUsers.map((sampleUser, i) =>
+        tx.carrierDriver.create({
+          data: {
+            orgId: tenantId,
+            firstName: 'Sample',
+            lastName: `Driver ${i + 1}`,
+            email: sampleUser.email,
+            userId: sampleUser.id,
+            status: 'active',
+            isSample: true,
+          },
+        })
+      )
+    ),
+    // Loads — OWNER_OPERATOR: 2 (1 delivered + 1 in_transit); others: 3
+    Promise.all(
+      Array.from({ length: cfg.loadsCount }, (_, index) =>
+        tx.carrierLoad.create({
+          data: {
+            orgId: tenantId,
+            clientId: sampleClients[0].id,
+            loadType: 'ftl',
+            status: index === 0 ? 'delivered' : 'in_transit',
+            referenceNumber: `SAMPLE-${index + 1}`,
+            isSample: true,
+          },
+        })
+      )
+    ),
+  ]);
 }
 
 // PHASE 50: legacy seed retained for rollback safety. Will be deleted in a future cleanup phase.

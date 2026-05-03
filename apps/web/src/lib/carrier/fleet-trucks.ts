@@ -43,10 +43,23 @@ export type CarrierTruckUpdateInput = Partial<CarrierTruckCreateInput>;
  * Queries the max vehicle_id to determine the next sequence number.
  */
 export async function generateVehicleId(): Promise<string> {
+  const [id] = await generateVehicleIds(1);
+  return id;
+}
+
+/**
+ * Generate N sequential vehicle IDs in a single DB read.
+ * Use this instead of calling generateVehicleId() N times — multiple single-ID
+ * calls would each read the same max() and produce duplicate IDs.
+ *
+ * IMPORTANT: call this OUTSIDE any prisma.$transaction callback. It uses the
+ * global prisma client; calling it inside a transaction deadlocks the max:1 pool.
+ */
+export async function generateVehicleIds(count: number): Promise<string[]> {
+  if (count === 0) return [];
   const year = new Date().getFullYear();
   const prefix = `VH-${year}-`;
 
-  // Find the highest existing vehicle_id for this year
   const rows = await prisma.$queryRawUnsafe<Array<{ vehicle_id: string }>>(
     `SELECT vehicle_id FROM carrier_trucks WHERE vehicle_id LIKE $1 ORDER BY vehicle_id DESC LIMIT 1`,
     `${prefix}%`
@@ -54,15 +67,14 @@ export async function generateVehicleId(): Promise<string> {
 
   let nextSeq = 1;
   if (rows.length > 0) {
-    const lastId = rows[0].vehicle_id;
-    const suffix = lastId.slice(prefix.length);
+    const suffix = rows[0].vehicle_id.slice(prefix.length);
     const parsed = parseInt(suffix, 10);
-    if (!isNaN(parsed)) {
-      nextSeq = parsed + 1;
-    }
+    if (!isNaN(parsed)) nextSeq = parsed + 1;
   }
 
-  return `${prefix}${String(nextSeq).padStart(5, '0')}`;
+  return Array.from({ length: count }, (_, i) =>
+    `${prefix}${String(nextSeq + i).padStart(5, '0')}`
+  );
 }
 
 // ---------------------------------------------------------------------------
