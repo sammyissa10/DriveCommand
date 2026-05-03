@@ -673,12 +673,14 @@ Plans:
 **Plans:** 6 plans
 
 Plans:
-- [ ] 50-01-PLAN.md — Migrations: add is_sample column to carrier_trucks, clients, loads, carrier_drivers + schema update + prisma generate
-- [ ] 50-02-PLAN.md — Seeder rewrite: write to snake_case carrier tables using orgId, create User+CarrierDriver rows for sample drivers, add ONBOARDING_SEED_SAMPLES kill switch
-- [ ] 50-03-PLAN.md — Trucks tracker hook: wire recordActivationEvent(first_real_truck) into carrier fleet trucks POST route
-- [ ] 50-04-PLAN.md — Clients tracker hook: wire recordActivationEvent(first_real_client) into carrier clients POST route
-- [ ] 50-05-PLAN.md — Dispatch tracker hook: wire recordActivationEvent(first_load_in_transit) into transitionDispatchStatus planned->in_progress
-- [ ] 50-06-PLAN.md — SamplePill + SampleDataBanner: integrate into carrier list pages, fix dashboard hasSampleRecords, add isSample:false to KPI route
+- [x] 50-01-PLAN.md — Migrations: add is_sample column to carrier_trucks, clients, loads, carrier_drivers + schema update + prisma generate
+- [x] 50-02-PLAN.md — Seeder rewrite: write to snake_case carrier tables using orgId, create User+CarrierDriver rows for sample drivers, add ONBOARDING_SEED_SAMPLES kill switch
+- [x] 50-03-PLAN.md — Trucks tracker hook: wire recordActivationEvent(first_real_truck) into carrier fleet trucks POST route
+- [x] 50-04-PLAN.md — Clients tracker hook: wire recordActivationEvent(first_real_client) into carrier clients POST route
+- [x] 50-05-PLAN.md — Dispatch tracker hook: wire recordActivationEvent(first_load_in_transit) into transitionDispatchStatus planned->in_progress
+- [x] 50-06-PLAN.md — SamplePill + SampleDataBanner: integrate into carrier list pages, fix dashboard hasSampleRecords, add isSample:false to KPI route
+
+**Status: COMPLETE (2026-05-02)**
 
 ---
 
