@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 50 IN PROGRESS
+Milestone: v8.0 Tenant Self-Onboarding — Phase 50 COMPLETE
 Phase: Phase 50 Rebuild Activation Tracking and Sample Data on Snake Case Tables
-Current Plan: 5 of 6 plans complete
-Status: Plan 05 done — activation tracker wired into transitionDispatchStatus planned→in_progress branch; after() block fires recordActivationEvent('first_load_in_transit') with isSample guard (COUNT real loads before firing); try/catch prevents tracker errors from affecting HTTP response; isActivated flips true and tenant.activated AppEvent written when completionPct reaches 100
-Last activity: 2026-05-03 - Completed 50-05: Activation Tracker Hook on Dispatch IN_TRANSIT
-Last session: 2026-05-03T00:04:00Z
-Stopped at: Phase 50 Plan 05 complete — ready for Plan 06
+Current Plan: 6 of 6 plans complete
+Status: ALL PLANS COMPLETE — Phase 50 done. SamplePill badges in all 4 carrier list components, dashboard hasSampleRecords queries carrier snake_case tables (orgId FK), KPI route filters isSample:false on all carrierLoad counts.
+Last activity: 2026-05-03 - Completed 50-06: Carrier SamplePill integration + dashboard fix
+Last session: 2026-05-03T00:09:25Z
+Stopped at: Phase 50 complete — all 6 plans done
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -138,6 +138,7 @@ Progress: [███████████████████████
 - Phase 49-03 (2026-05-01): Sample data UX — SampleDataBanner in 5 pages, SamplePill in 4 list components, isSample=false count filters for loads/CRM, TruckWithRelations extended — 2 tasks, 10 files, ~18min
 - Phase 50-01 (2026-05-02): is_sample schema foundation — 4 raw SQL migrations (carrier_trucks/clients/loads/carrier_drivers), isSample added to 4 Prisma carrier models, Prisma client regenerated (v7.6.0), tsc --noEmit passes — 2 tasks, 5 files, 2min
 - Phase 50-04 (2026-05-03): Activation tracker hook on carrier clients route — after() fires recordActivationEvent('first_real_client') for non-sample clients, advancing completionPct to 60%; isSample guard + try/catch in after() block; after added to next/server import — 1 task, 1 file, ~1min
+- Phase 50-06 (2026-05-03): Carrier list SamplePill + dashboard fix — SamplePill in CarrierTruckList/CarrierDriverList/LoadList/ClientList, isSample threaded through page mappings, hasSampleRecords migrated to carrier tables (orgId FK), KPI route adds isSample:false to all 3 carrierLoad queries — 2 tasks, 9 files, 3min
 
 **Combined:**
 - Total: 23 phases complete, 57 plans
