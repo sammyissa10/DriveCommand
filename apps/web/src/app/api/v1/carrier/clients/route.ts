@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { after, NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listClients, createClient } from '@/lib/carrier/clients';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const ClientCreateSchema = z.object({
   name: z.string().min(1),
@@ -66,6 +67,17 @@ export async function POST(req: NextRequest) {
     }
 
     const client = await createClient(orgId, parsed.data);
+
+    after(async () => {
+      if (!client.isSample) {
+        try {
+          await recordActivationEvent(orgId, 'first_real_client');
+        } catch (err) {
+          logger.error('[carrier/clients] activation tracker failed', { clientId: client.id, err });
+        }
+      }
+    });
+
     return NextResponse.json({ data: client }, { status: 201 });
   } catch (err) {
     const detail = err instanceof Error ? err.message : String(err);
