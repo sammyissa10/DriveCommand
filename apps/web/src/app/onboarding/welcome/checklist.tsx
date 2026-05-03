@@ -15,6 +15,7 @@ interface ChecklistProps {
 interface ChecklistItem {
   label: string;
   complete: boolean;
+  href?: string;
 }
 
 export function ActivationChecklist({
@@ -39,10 +40,10 @@ export function ActivationChecklist({
 
   const items: ChecklistItem[] = [
     { label: 'Account created', complete: true },
-    { label: 'Add your first truck', complete: firstRealTruckAt !== null },
-    { label: 'Invite your first driver', complete: firstRealDriverAt !== null },
-    { label: 'Add your first customer', complete: firstRealClientAt !== null },
-    { label: 'Dispatch your first load', complete: firstLoadInTransitAt !== null },
+    { label: 'Add your first truck', complete: firstRealTruckAt !== null, href: '/carrier/fleet/trucks/new' },
+    { label: 'Add your first driver', complete: firstRealDriverAt !== null, href: '/carrier/fleet/drivers/new' },
+    { label: 'Add your first customer', complete: firstRealClientAt !== null, href: '/carrier/clients/new' },
+    { label: 'Dispatch your first load', complete: firstLoadInTransitAt !== null, href: '/carrier/dispatches' },
   ];
 
   return (
@@ -60,24 +61,45 @@ export function ActivationChecklist({
 
       {/* Checklist items */}
       <ul className="space-y-0.5">
-        {items.map((item) => (
-          <li key={item.label} className="flex items-center gap-3 py-2">
-            {item.complete ? (
-              <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-            ) : (
-              <Circle className="h-5 w-5 text-muted-foreground/40 shrink-0" />
-            )}
-            <span
-              className={
-                item.complete
-                  ? 'text-sm line-through text-muted-foreground'
-                  : 'text-sm text-foreground'
-              }
-            >
-              {item.label}
-            </span>
-          </li>
-        ))}
+        {items.map((item) => {
+          const rowContent = (
+            <>
+              {item.complete ? (
+                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+              ) : (
+                <Circle className="h-5 w-5 text-muted-foreground/40 shrink-0" />
+              )}
+              <span
+                className={
+                  item.complete
+                    ? 'text-sm line-through text-muted-foreground'
+                    : 'text-sm text-foreground'
+                }
+              >
+                {item.label}
+              </span>
+            </>
+          );
+
+          if (!item.complete && item.href) {
+            return (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="flex items-center gap-3 py-2 rounded-md px-1 -mx-1 cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors"
+                >
+                  {rowContent}
+                </Link>
+              </li>
+            );
+          }
+
+          return (
+            <li key={item.label} className="flex items-center gap-3 py-2">
+              {rowContent}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
