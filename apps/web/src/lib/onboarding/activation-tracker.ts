@@ -88,6 +88,9 @@ export async function recordActivationEvent(
       );
       updateData.completionPct = newPct;
 
+      // NOTE: isActivated is set here via the shared update path for ALL events including
+      // first_load_in_transit. The idempotency guard (!current.isActivated) ensures the
+      // tenant.activated AppEvent fires exactly once even if this event is re-replayed.
       const nowActivated = newPct === 100;
       if (nowActivated) {
         updateData.isActivated = true;
@@ -118,6 +121,7 @@ export async function recordActivationEvent(
         const daysToActivate = Math.ceil(
           (now.getTime() - current.accountCreatedAt.getTime()) / (1000 * 60 * 60 * 24)
         );
+        console.warn('[activation-tracker] tenant.activated firing', { tenantId, daysToActivate });
         await tx.appEvent.create({
           data: {
             tenantId,
