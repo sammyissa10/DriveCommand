@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 50 IN PROGRESS
 Phase: Phase 50 Rebuild Activation Tracking and Sample Data on Snake Case Tables
-Current Plan: 4 of 6 plans complete
-Status: Plan 04 done — activation tracker wired into carrier clients POST route; after() block fires recordActivationEvent('first_real_client') for non-sample clients; isSample guard and try/catch prevent sample clients and tracker errors from affecting HTTP response; completionPct advances to 60% after first real client
-Last activity: 2026-05-03 - Completed 50-04: Activation Tracker Hook on Carrier Clients Route
-Last session: 2026-05-03T00:01:16Z
-Stopped at: Phase 50 Plan 04 complete — ready for Plan 05
+Current Plan: 5 of 6 plans complete
+Status: Plan 05 done — activation tracker wired into transitionDispatchStatus planned→in_progress branch; after() block fires recordActivationEvent('first_load_in_transit') with isSample guard (COUNT real loads before firing); try/catch prevents tracker errors from affecting HTTP response; isActivated flips true and tenant.activated AppEvent written when completionPct reaches 100
+Last activity: 2026-05-03 - Completed 50-05: Activation Tracker Hook on Dispatch IN_TRANSIT
+Last session: 2026-05-03T00:04:00Z
+Stopped at: Phase 50 Plan 05 complete — ready for Plan 06
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
