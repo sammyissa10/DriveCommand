@@ -9,13 +9,13 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 ## Current Position
 
-Milestone: v8.0 Tenant Self-Onboarding — Phase 51 IN PROGRESS
+Milestone: v8.0 Tenant Self-Onboarding — Phase 51 COMPLETE
 Phase: Phase 51 Postscript — Close Activation Gaps from Phases 47-50 Live Verification
-Current Plan: 4 of 5 plans complete
-Status: 51-04 COMPLETE — Login route queries ActivationProgress (bypass_rls transaction) on OWNER sign-in and redirects to /onboarding/welcome when isActivated=false; DRIVER and sysadmin redirect logic unchanged; non-fatal fallback to dashboard on error.
-Last activity: 2026-05-03 - Completed 51-04: Auto-redirect non-activated tenants on sign-in
-Last session: 2026-05-03T21:28:11Z
-Stopped at: Completed 51-04-PLAN.md
+Current Plan: 5 of 5 plans complete
+Status: 51-05 COMPLETE — Welcome page catch block now queries Tenant.provisioningPhase before rendering error UI; HYDRATED tenants see normal welcome page despite hydrateTenant timeout throws; MINIMAL or state-check-failure path still renders "Setup incomplete" error UI unchanged.
+Last activity: 2026-05-03 - Completed 51-05: Welcome page error UI checks Tenant state before rendering
+Last session: 2026-05-03T21:31:45Z
+Stopped at: Completed 51-05-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -1338,6 +1338,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 51]: activation-tracker.ts isActivated path correct for all 4 events; tenant 7c03ff70 isActivated=false is a data gap needing one-time SQL correction
 - [Phase 51]: POST /api/v1/carrier/fleet/drivers: second after() block added after fireEvent for first_real_driver activation; no isSample guard needed as seeder bypasses this route and tracker is idempotent
 - [Phase 51-04]: Non-fatal activation check in login route — check failure defaults to /carrier/dashboard, never blocks a valid login; missing ActivationProgress row treated as not-activated (defensive fallback to /onboarding/welcome)
+- [Phase 51-05]: Welcome page catch block queries Tenant.provisioningPhase before showing error UI — HYDRATED state means hydrateTenant completed server-side before client timeout; shouldShowError=true default with flip-to-false on HYDRATED is safe-by-default pattern; optional chaining on catchActivation handles HYDRATED-but-no-ActivationProgress edge case
 
 ### Pending Todos
 
@@ -2364,6 +2365,7 @@ None blocking immediate progress.
 - Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
 | Phase 51 P02 | 3 | 3 tasks | 1 files |
+| Phase 51 P05 | 2min | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -3551,10 +3553,11 @@ None blocking immediate progress.
 | Phase 46-workflow-engine-5-polish-analytics P05 | 230 | 2 tasks | 5 files |
 | Phase 46 P04 | 336 | 2 tasks | 4 files |
 | Phase 51 P01 | 5min | 3 tasks | 1 files |
+| Phase 51 P05 | 2min | 3 tasks | 1 files |
 
 ## Session Continuity
 
-Last session: 2026-04-24T18:37:30Z
-Stopped at: Completed 44-06-PLAN.md — Phase 44 complete (all 6 plans done)
+Last session: 2026-05-03T21:31:45Z
+Stopped at: Completed 51-05-PLAN.md — Phase 51 COMPLETE (all 5 plans done)
 Resume file: None
-Next action: Phase 44 complete — determine next phase
+Next action: Phase 51 complete — determine next phase
