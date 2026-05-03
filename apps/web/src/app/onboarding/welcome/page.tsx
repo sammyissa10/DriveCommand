@@ -104,6 +104,11 @@ export default async function WelcomePage() {
                       .
                     </p>
                   </div>
+                  <form action="/api/auth/logout" method="post">
+                    <button type="submit" className="text-xs text-muted-foreground hover:underline cursor-pointer">
+                      Sign out
+                    </button>
+                  </form>
                 </div>
                 {/* Right: activation checklist */}
                 <div className="rounded-xl border border-border bg-card shadow-sm p-6">
@@ -153,6 +158,11 @@ export default async function WelcomePage() {
                   support@drivecommand.app
                 </a>
               </p>
+              <form action="/api/auth/logout" method="post">
+                <button type="submit" className="text-xs text-muted-foreground hover:underline cursor-pointer">
+                  Sign out
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -202,6 +212,11 @@ export default async function WelcomePage() {
                   .
                 </p>
               </div>
+              <form action="/api/auth/logout" method="post">
+                <button type="submit" className="text-xs text-muted-foreground hover:underline cursor-pointer">
+                  Sign out
+                </button>
+              </form>
             </div>
             {/* Right: activation checklist */}
             <div className="rounded-xl border border-border bg-card shadow-sm p-6">

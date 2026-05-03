@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, Circle } from 'lucide-react';
+import { CheckCircle2, Circle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -86,9 +86,10 @@ export function ActivationChecklist({
               <li key={item.label}>
                 <Link
                   href={item.href}
-                  className="flex items-center gap-3 py-2 rounded-md px-1 -mx-1 cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors"
+                  className="flex items-center justify-between py-2 rounded-md px-1 -mx-1 cursor-pointer hover:bg-muted/50 dark:hover:bg-muted/30 transition-colors"
                 >
-                  {rowContent}
+                  <span className="flex items-center gap-3">{rowContent}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                 </Link>
               </li>
             );
