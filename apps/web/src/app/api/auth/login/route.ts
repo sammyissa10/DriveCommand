@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { authLimiter, applyRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 
 /**
  * POST /api/auth/login
@@ -135,11 +135,35 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // For OWNER role: check activation status and redirect to onboarding if not yet activated
+    let ownerIsActivated = true; // default to true — only override for OWNER tenants
+    if (appMeta.tenantId && appMeta.role === 'OWNER') {
+      try {
+        const activationRow = await prisma.$transaction(async (tx) => {
+          await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+          return tx.activationProgress.findUnique({
+            where: { tenantId: appMeta.tenantId as string },
+            select: { isActivated: true },
+          });
+        }, TX_OPTIONS);
+        // If no row exists (defensive), treat as not-activated
+        ownerIsActivated = activationRow?.isActivated ?? false;
+      } catch (activationErr) {
+        // Non-fatal: if the check fails, fall through to dashboard (better than blocking login)
+        logger.warn('[login] ActivationProgress check failed — defaulting to dashboard', {
+          tenantId: appMeta.tenantId as string,
+          activationErr,
+        });
+        ownerIsActivated = true;
+      }
+    }
+
     const name = [userMeta.firstName, userMeta.lastName].filter(Boolean).join(' ') || data.user.email;
 
     let redirectUrl = '/carrier/dashboard';
     if (appMeta.isSystemAdmin) redirectUrl = '/admin-dashboard';
     else if (appMeta.role === 'DRIVER') redirectUrl = '/home';
+    else if (appMeta.role === 'OWNER' && !ownerIsActivated) redirectUrl = '/onboarding/welcome';
 
     return NextResponse.json({
       success: true,
