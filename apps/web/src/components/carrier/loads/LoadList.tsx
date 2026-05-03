@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Plus, Package } from 'lucide-react';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -18,6 +19,7 @@ interface LoadItem {
   status: string;
   totalRevenue: string | null;
   dispatch: { id: string; notes: string | null } | null;
+  isSample: boolean;
 }
 
 interface LoadListProps {
@@ -271,13 +273,16 @@ export function LoadList({ clientMap }: LoadListProps) {
                   onClick={() => { window.location.href = `/carrier/loads/${load.id}`; }}
                 >
                   <td className="px-4 py-3 font-mono text-xs font-medium">
-                    <Link
-                      href={`/carrier/loads/${load.id}`}
-                      className="hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {load.referenceNumber}
-                    </Link>
+                    <div className="flex items-center gap-1">
+                      <Link
+                        href={`/carrier/loads/${load.id}`}
+                        className="hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {load.referenceNumber}
+                      </Link>
+                      {load.isSample && <SamplePill />}
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <Link

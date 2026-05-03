@@ -80,6 +80,7 @@ export default async function ClientsPage() {
           city: c.city,
           state: c.state,
           portalAccess: c.portalAccess,
+          isSample: c.isSample,
         }))}
       />
     </div>

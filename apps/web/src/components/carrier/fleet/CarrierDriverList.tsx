@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Users, Plus, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 export interface CarrierDriverItem {
   id: string;
@@ -13,6 +14,7 @@ export interface CarrierDriverItem {
   cdlExpiry: Date | string | null;
   payModel: string;
   status: string;
+  isSample: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -156,6 +158,7 @@ export function CarrierDriverList({ drivers }: { drivers: CarrierDriverItem[] })
                           >
                             {d.firstName} {d.lastName}
                           </Link>
+                          {d.isSample && <SamplePill />}
                         </div>
                       </td>
                       <td className="px-4 py-3">

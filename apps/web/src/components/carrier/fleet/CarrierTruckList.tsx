@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Truck, Plus, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 export interface CarrierTruckItem {
   id: string;
@@ -19,6 +20,7 @@ export interface CarrierTruckItem {
   registrationExpiry: Date | string | null;
   licenseExpiry: Date | string | null;
   status: string;
+  isSample: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -195,12 +197,15 @@ export function CarrierTruckList({ trucks }: { trucks: CarrierTruckItem[] }) {
                             <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-500" />
                           )}
                           <div>
-                            <Link
-                              href={`/carrier/fleet/trucks/${t.id}`}
-                              className="font-medium text-foreground hover:text-primary transition-colors"
-                            >
-                              {t.displayName || t.unitNumber}
-                            </Link>
+                            <div className="flex items-center gap-1">
+                              <Link
+                                href={`/carrier/fleet/trucks/${t.id}`}
+                                className="font-medium text-foreground hover:text-primary transition-colors"
+                              >
+                                {t.displayName || t.unitNumber}
+                              </Link>
+                              {t.isSample && <SamplePill />}
+                            </div>
                             {t.displayName && t.displayName !== t.unitNumber && (
                               <p className="text-xs text-muted-foreground">{t.unitNumber}</p>
                             )}

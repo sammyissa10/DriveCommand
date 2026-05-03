@@ -69,6 +69,7 @@ export default async function CarrierDriversPage() {
           cdlExpiry: d.cdlExpiry,
           payModel: d.payModel,
           status: d.status,
+          isSample: d.isSample,
         }))}
       />
     </div>

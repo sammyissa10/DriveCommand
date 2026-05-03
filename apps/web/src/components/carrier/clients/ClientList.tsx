@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Users, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 export interface ClientItem {
   id: string;
@@ -15,6 +16,7 @@ export interface ClientItem {
   city: string | null;
   state: string | null;
   portalAccess: boolean;
+  isSample: boolean;
 }
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
@@ -108,12 +110,15 @@ export function ClientList({ clients, role }: { clients: ClientItem[]; role?: st
                 {filtered.map((c) => (
                   <tr key={c.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3">
-                      <Link
-                        href={`/carrier/clients/${c.id}`}
-                        className="font-medium text-foreground hover:text-primary transition-colors"
-                      >
-                        {c.name}
-                      </Link>
+                      <div className="flex items-center gap-1">
+                        <Link
+                          href={`/carrier/clients/${c.id}`}
+                          className="font-medium text-foreground hover:text-primary transition-colors"
+                        >
+                          {c.name}
+                        </Link>
+                        {c.isSample && <SamplePill />}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <Badge

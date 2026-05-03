@@ -87,6 +87,7 @@ export default async function CarrierTrucksPage() {
           registrationExpiry: t.registrationExpiry,
           licenseExpiry: t.licenseExpiry,
           status: t.status,
+          isSample: t.isSample,
         }))}
       />
     </div>
