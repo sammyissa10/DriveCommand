@@ -693,12 +693,14 @@ Plans:
 
 ### Phase 52: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
 
-**Goal:** [To be planned]
+**Goal:** Build the automation evaluation engine that reads AppEvent rows, matches them against AutomationRule rows, schedules AutomationRun records, and executes the send_email action via Gmail SMTP. Wire a cron route driving the evaluator every 5 minutes. Add SysAdmin pages to inspect and manually trigger rules, view per-tenant run history, and extend a tenant's trial.
 **Depends on:** Phase 51
-**Plans:** 0 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 52 to break down)
+- [ ] 52-01-PLAN.md — Schema migration (PENDING/SENT enum values + scheduledAt/eventId/errorMessage columns + unique index) + evaluator core + send_email handler + template registry + activation-celebration template + AppEvent writes for truck.created.real and load.created.real
+- [ ] 52-02-PLAN.md — Cron route (/api/cron/automations, */5 * * * *) + vercel.json entry + CRON_SECRET env + cron-driven rule handlers (no_progress_nudge, add_driver_nudge, dispatch_load_nudge, trial_ending_soon) + 4 remaining email templates
+- [ ] 52-03-PLAN.md — SysAdmin /automations rule list + isActive toggle + /automations/[ruleId] detail + manual trigger + tenant detail enhancements (AutomationRun history, ActivationProgress panel, Extend Trial button/action)
 
 ---
 
