@@ -32,6 +32,7 @@ export async function GET() {
       prisma.carrierLoad.count({
         where: {
           orgId,
+          isSample: false,
           createdAt: { gte: monday },
         },
       }),
@@ -44,13 +45,15 @@ export async function GET() {
       prisma.carrierLoad.count({
         where: {
           orgId,
+          isSample: false,
           status: 'invoiced',
         },
       }),
-      // Fetch revenue fields for this week's non-cancelled loads
+      // Fetch revenue fields for this week's non-cancelled loads (exclude sample data)
       prisma.carrierLoad.findMany({
         where: {
           orgId,
+          isSample: false,
           createdAt: { gte: monday },
           status: { not: 'cancelled' },
         },

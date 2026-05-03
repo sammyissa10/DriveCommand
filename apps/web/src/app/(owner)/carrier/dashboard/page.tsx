@@ -26,13 +26,13 @@ export default async function CarrierDashboardPage() {
   const hasSampleRecords = tenant?.sampleDataSeeded
     ? await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        const [truckCount, driverCount, loadCount, customerCount] = await Promise.all([
-          tx.truck.count({ where: { tenantId: orgId, isSample: true } }),
-          tx.user.count({ where: { tenantId: orgId, role: 'DRIVER', isSample: true } }),
-          tx.load.count({ where: { tenantId: orgId, isSample: true } }),
-          tx.customer.count({ where: { tenantId: orgId, isSample: true } }),
+        const [truckCount, driverCount, loadCount, clientCount] = await Promise.all([
+          tx.carrierTruck.count({ where: { orgId, isSample: true } }),
+          tx.carrierDriver.count({ where: { orgId, isSample: true } }),
+          tx.carrierLoad.count({ where: { orgId, isSample: true } }),
+          tx.carrierClient.count({ where: { orgId, isSample: true } }),
         ]);
-        return truckCount + driverCount + loadCount + customerCount > 0;
+        return truckCount + driverCount + loadCount + clientCount > 0;
       }, TX_OPTIONS).catch(() => false)
     : false;
 
