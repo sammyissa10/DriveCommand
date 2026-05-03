@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 51 IN PROGRESS
 Phase: Phase 51 Postscript — Close Activation Gaps from Phases 47-50 Live Verification
-Current Plan: 2 of 5 plans complete
-Status: 51-02 COMPLETE — POST /api/v1/carrier/fleet/drivers now fires first_real_driver activation event via second after() block; closes gap where direct driver creation never triggered the tracker.
-Last activity: 2026-05-03 - Completed 51-02: Add activation hook to direct driver creation
-Last session: 2026-05-03T21:21:55Z
-Stopped at: Completed 51-02-PLAN.md
+Current Plan: 3 of 5 plans complete
+Status: 51-03 COMPLETE — Onboarding checklist incomplete items are now clickable Links to truck/driver/customer/dispatch create pages; complete items remain plain rows; item 3 label updated from "Invite" to "Add your first driver".
+Last activity: 2026-05-03 - Completed 51-03: Wire checklist CTAs to actionable URLs
+Last session: 2026-05-03T21:45:38Z
+Stopped at: Completed 51-03-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
