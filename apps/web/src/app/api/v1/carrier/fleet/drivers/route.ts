@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth/supabase';
 import { logger } from '@/lib/logger';
 import { listCarrierDrivers, createCarrierDriver } from '@/lib/carrier/fleet-drivers';
 import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const CarrierDriverCreateSchema = z.object({
   firstName: z.string().min(1),
@@ -77,6 +78,15 @@ export async function POST(req: NextRequest) {
         });
       } catch (err) {
         logger.error('[carrier/fleet/drivers] fireEvent failed', { driverId: carrierDriver.id, err });
+      }
+    });
+
+    // After response: record activation event for first real driver creation
+    after(async () => {
+      try {
+        await recordActivationEvent(orgId, 'first_real_driver');
+      } catch {
+        // non-fatal — tracker errors must never break the user action
       }
     });
 
