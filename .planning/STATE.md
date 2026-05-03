@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v8.0 Tenant Self-Onboarding — Phase 51 IN PROGRESS
 Phase: Phase 51 Postscript — Close Activation Gaps from Phases 47-50 Live Verification
-Current Plan: 3 of 5 plans complete
-Status: 51-03 COMPLETE — Onboarding checklist incomplete items are now clickable Links to truck/driver/customer/dispatch create pages; complete items remain plain rows; item 3 label updated from "Invite" to "Add your first driver".
-Last activity: 2026-05-03 - Completed 51-03: Wire checklist CTAs to actionable URLs
-Last session: 2026-05-03T21:45:38Z
-Stopped at: Completed 51-03-PLAN.md
+Current Plan: 4 of 5 plans complete
+Status: 51-04 COMPLETE — Login route queries ActivationProgress (bypass_rls transaction) on OWNER sign-in and redirects to /onboarding/welcome when isActivated=false; DRIVER and sysadmin redirect logic unchanged; non-fatal fallback to dashboard on error.
+Last activity: 2026-05-03 - Completed 51-04: Auto-redirect non-activated tenants on sign-in
+Last session: 2026-05-03T21:28:11Z
+Stopped at: Completed 51-04-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -1337,6 +1337,7 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 46]: position:fixed for PreviewPanel — keeps panel out of DnD flex container so DragOverlay offset calculations remain correct
 - [Phase 51]: activation-tracker.ts isActivated path correct for all 4 events; tenant 7c03ff70 isActivated=false is a data gap needing one-time SQL correction
 - [Phase 51]: POST /api/v1/carrier/fleet/drivers: second after() block added after fireEvent for first_real_driver activation; no isSample guard needed as seeder bypasses this route and tracker is idempotent
+- [Phase 51-04]: Non-fatal activation check in login route — check failure defaults to /carrier/dashboard, never blocks a valid login; missing ActivationProgress row treated as not-activated (defensive fallback to /onboarding/welcome)
 
 ### Pending Todos
 
