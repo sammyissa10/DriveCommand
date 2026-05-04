@@ -6,9 +6,9 @@
  * TWO execution paths are combined into a single runEvaluator() call:
  *
  * PATH 1 — Event-driven (welcome_owner, activation_celebration):
- *   Scans AppEvent rows created since the last evaluator tick, finds matching
- *   AutomationRule rows, and creates AutomationRun records with status=PENDING
- *   and scheduledAt = event.createdAt + rule.delaySeconds.
+ *   Scans AppEvent rows from the last 30 days, finds matching AutomationRule
+ *   rows, and creates AutomationRun records with status=PENDING and
+ *   scheduledAt = event.createdAt + rule.delaySeconds.
  *
  * PATH 2 — Execute-due-runs:
  *   Finds PENDING AutomationRun rows where scheduledAt <= now() and executes
@@ -26,10 +26,21 @@
  *   Event-driven: UNIQUE index on (eventId, ruleId) where eventId IS NOT NULL.
  *   Cron-driven: (tenantId, ruleKey, fired_within_window) check in the cron handler.
  *
- * LAST TICK:
- *   Derived from the most-recent firedAt in AutomationRun, falling back to 10
- *   minutes ago if no rows exist. This is intentionally simple — the cron fires
- *   every 5 minutes so at most 10 minutes of events are processed on cold start.
+ * WHY PER-EVENT TRACKING (not a watermark):
+ *   The previous design derived `since` from max(firedAt) across all AutomationRun
+ *   rows. This caused two silent failure modes:
+ *   (1) Cold-start orphan: on the first cron tick ever, no AutomationRun rows
+ *       exist, so `since` falls back to now()-10min. Any AppEvent older than
+ *       10 minutes is permanently skipped — even one from 2 hours ago.
+ *   (2) Watermark advance: cron-driven runs for other tenants update firedAt,
+ *       pushing `since` forward and permanently orphaning event-driven AppEvents
+ *       that haven't been processed yet.
+ *
+ *   Per-event tracking avoids both problems: every AppEvent in the 30-day window
+ *   is considered on each tick. The UNIQUE index on (eventId, ruleId) enforces
+ *   idempotency — duplicate create attempts are silently caught at the DB layer
+ *   and logged as expected skips. The 30-day cap bounds the query size and ensures
+ *   we never retroactively evaluate stale events.
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
@@ -45,22 +56,16 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
   const result: EvaluatorResult = { pendingCreated: 0, executed: 0, failed: 0 };
 
   // ── PATH 1: Event-driven scheduling ──────────────────────────────────────────
-  // Determine last tick: most recent firedAt in AutomationRun, fallback 10 min
-  const lastRun = await prisma.automationRun.findFirst({
-    orderBy: { firedAt: 'desc' },
-    select: { firedAt: true },
-  });
-  const since = lastRun?.firedAt ?? new Date(Date.now() - 10 * 60 * 1000);
-
-  console.log(`[evaluator] Path 1 — scanning AppEvents since ${since.toISOString()}`);
-
-  // Fetch unprocessed AppEvents since last tick
+  // Scan all AppEvents from the last 30 days. Per-event tracking (not a watermark)
+  // ensures events are never permanently orphaned by cold-start or watermark advance.
+  // The UNIQUE index on (eventId, ruleId) handles idempotency at the DB layer.
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const events = await prisma.appEvent.findMany({
-    where: { createdAt: { gt: since } },
+    where: { createdAt: { gt: thirtyDaysAgo } },
     orderBy: { createdAt: 'asc' },
   });
 
-  console.log(`[evaluator] Path 1 — found ${events.length} AppEvent(s)`);
+  console.log(`[evaluator] Path 1 — found ${events.length} AppEvent(s) in last 30 days`);
 
   for (const event of events) {
     // Find active rules matching this event type
@@ -83,9 +88,7 @@ export async function runEvaluator(): Promise<EvaluatorResult> {
         }
       }
 
-      const delaySeconds: number =
-        typeof (rule as any).delaySeconds === 'number' ? (rule as any).delaySeconds : 0;
-      const scheduledAt = new Date(event.createdAt.getTime() + delaySeconds * 1000);
+      const scheduledAt = new Date(event.createdAt.getTime() + rule.delaySeconds * 1000);
 
       try {
         await prisma.$transaction(async (tx) => {

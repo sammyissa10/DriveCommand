@@ -95322,8 +95322,18 @@ export namespace Prisma {
 
   export type AggregateAutomationRule = {
     _count: AutomationRuleCountAggregateOutputType | null
+    _avg: AutomationRuleAvgAggregateOutputType | null
+    _sum: AutomationRuleSumAggregateOutputType | null
     _min: AutomationRuleMinAggregateOutputType | null
     _max: AutomationRuleMaxAggregateOutputType | null
+  }
+
+  export type AutomationRuleAvgAggregateOutputType = {
+    delaySeconds: number | null
+  }
+
+  export type AutomationRuleSumAggregateOutputType = {
+    delaySeconds: number | null
   }
 
   export type AutomationRuleMinAggregateOutputType = {
@@ -95336,6 +95346,7 @@ export namespace Prisma {
     tenantId: string | null
     isActive: boolean | null
     runOncePerTenant: boolean | null
+    delaySeconds: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -95350,6 +95361,7 @@ export namespace Prisma {
     tenantId: string | null
     isActive: boolean | null
     runOncePerTenant: boolean | null
+    delaySeconds: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -95366,11 +95378,20 @@ export namespace Prisma {
     tenantId: number
     isActive: number
     runOncePerTenant: number
+    delaySeconds: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type AutomationRuleAvgAggregateInputType = {
+    delaySeconds?: true
+  }
+
+  export type AutomationRuleSumAggregateInputType = {
+    delaySeconds?: true
+  }
 
   export type AutomationRuleMinAggregateInputType = {
     id?: true
@@ -95382,6 +95403,7 @@ export namespace Prisma {
     tenantId?: true
     isActive?: true
     runOncePerTenant?: true
+    delaySeconds?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -95396,6 +95418,7 @@ export namespace Prisma {
     tenantId?: true
     isActive?: true
     runOncePerTenant?: true
+    delaySeconds?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -95412,6 +95435,7 @@ export namespace Prisma {
     tenantId?: true
     isActive?: true
     runOncePerTenant?: true
+    delaySeconds?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -95455,6 +95479,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: AutomationRuleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AutomationRuleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AutomationRuleMinAggregateInputType
@@ -95485,6 +95521,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: AutomationRuleCountAggregateInputType | true
+    _avg?: AutomationRuleAvgAggregateInputType
+    _sum?: AutomationRuleSumAggregateInputType
     _min?: AutomationRuleMinAggregateInputType
     _max?: AutomationRuleMaxAggregateInputType
   }
@@ -95501,9 +95539,12 @@ export namespace Prisma {
     tenantId: string | null
     isActive: boolean
     runOncePerTenant: boolean
+    delaySeconds: number
     createdAt: Date
     updatedAt: Date
     _count: AutomationRuleCountAggregateOutputType | null
+    _avg: AutomationRuleAvgAggregateOutputType | null
+    _sum: AutomationRuleSumAggregateOutputType | null
     _min: AutomationRuleMinAggregateOutputType | null
     _max: AutomationRuleMaxAggregateOutputType | null
   }
@@ -95534,6 +95575,7 @@ export namespace Prisma {
     tenantId?: boolean
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | AutomationRule$tenantArgs<ExtArgs>
@@ -95553,6 +95595,7 @@ export namespace Prisma {
     tenantId?: boolean
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | AutomationRule$tenantArgs<ExtArgs>
@@ -95570,6 +95613,7 @@ export namespace Prisma {
     tenantId?: boolean
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     tenant?: boolean | AutomationRule$tenantArgs<ExtArgs>
@@ -95587,11 +95631,12 @@ export namespace Prisma {
     tenantId?: boolean
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AutomationRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "name" | "description" | "triggerEvent" | "conditionsJson" | "actionsJson" | "scope" | "tenantId" | "isActive" | "runOncePerTenant" | "createdAt" | "updatedAt", ExtArgs["result"]["automationRule"]>
+  export type AutomationRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "name" | "description" | "triggerEvent" | "conditionsJson" | "actionsJson" | "scope" | "tenantId" | "isActive" | "runOncePerTenant" | "delaySeconds" | "createdAt" | "updatedAt", ExtArgs["result"]["automationRule"]>
   export type AutomationRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     tenant?: boolean | AutomationRule$tenantArgs<ExtArgs>
     runs?: boolean | AutomationRule$runsArgs<ExtArgs>
@@ -95622,6 +95667,7 @@ export namespace Prisma {
       tenantId: string | null
       isActive: boolean
       runOncePerTenant: boolean
+      delaySeconds: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["automationRule"]>
@@ -96060,6 +96106,7 @@ export namespace Prisma {
     readonly tenantId: FieldRef<"AutomationRule", 'String'>
     readonly isActive: FieldRef<"AutomationRule", 'Boolean'>
     readonly runOncePerTenant: FieldRef<"AutomationRule", 'Boolean'>
+    readonly delaySeconds: FieldRef<"AutomationRule", 'Int'>
     readonly createdAt: FieldRef<"AutomationRule", 'DateTime'>
     readonly updatedAt: FieldRef<"AutomationRule", 'DateTime'>
   }
@@ -102411,6 +102458,7 @@ export namespace Prisma {
     tenantId: 'tenantId',
     isActive: 'isActive',
     runOncePerTenant: 'runOncePerTenant',
+    delaySeconds: 'delaySeconds',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -110917,6 +110965,7 @@ export namespace Prisma {
     tenantId?: UuidNullableFilter<"AutomationRule"> | string | null
     isActive?: BoolFilter<"AutomationRule"> | boolean
     runOncePerTenant?: BoolFilter<"AutomationRule"> | boolean
+    delaySeconds?: IntFilter<"AutomationRule"> | number
     createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
     updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
     tenant?: XOR<TenantNullableScalarRelationFilter, TenantWhereInput> | null
@@ -110935,6 +110984,7 @@ export namespace Prisma {
     tenantId?: SortOrderInput | SortOrder
     isActive?: SortOrder
     runOncePerTenant?: SortOrder
+    delaySeconds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     tenant?: TenantOrderByWithRelationInput
@@ -110956,6 +111006,7 @@ export namespace Prisma {
     tenantId?: UuidNullableFilter<"AutomationRule"> | string | null
     isActive?: BoolFilter<"AutomationRule"> | boolean
     runOncePerTenant?: BoolFilter<"AutomationRule"> | boolean
+    delaySeconds?: IntFilter<"AutomationRule"> | number
     createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
     updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
     tenant?: XOR<TenantNullableScalarRelationFilter, TenantWhereInput> | null
@@ -110974,11 +111025,14 @@ export namespace Prisma {
     tenantId?: SortOrderInput | SortOrder
     isActive?: SortOrder
     runOncePerTenant?: SortOrder
+    delaySeconds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: AutomationRuleCountOrderByAggregateInput
+    _avg?: AutomationRuleAvgOrderByAggregateInput
     _max?: AutomationRuleMaxOrderByAggregateInput
     _min?: AutomationRuleMinOrderByAggregateInput
+    _sum?: AutomationRuleSumOrderByAggregateInput
   }
 
   export type AutomationRuleScalarWhereWithAggregatesInput = {
@@ -110996,6 +111050,7 @@ export namespace Prisma {
     tenantId?: UuidNullableWithAggregatesFilter<"AutomationRule"> | string | null
     isActive?: BoolWithAggregatesFilter<"AutomationRule"> | boolean
     runOncePerTenant?: BoolWithAggregatesFilter<"AutomationRule"> | boolean
+    delaySeconds?: IntWithAggregatesFilter<"AutomationRule"> | number
     createdAt?: DateTimeWithAggregatesFilter<"AutomationRule"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"AutomationRule"> | Date | string
   }
@@ -119847,6 +119902,7 @@ export namespace Prisma {
     scope?: $Enums.AutomationScope
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant?: TenantCreateNestedOneWithoutAutomationRulesInput
@@ -119865,6 +119921,7 @@ export namespace Prisma {
     tenantId?: string | null
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     runs?: AutomationRunUncheckedCreateNestedManyWithoutRuleInput
@@ -119881,6 +119938,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneWithoutAutomationRulesNestedInput
@@ -119899,6 +119957,7 @@ export namespace Prisma {
     tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     runs?: AutomationRunUncheckedUpdateManyWithoutRuleNestedInput
@@ -119916,6 +119975,7 @@ export namespace Prisma {
     tenantId?: string | null
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -119931,6 +119991,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -119947,6 +120008,7 @@ export namespace Prisma {
     tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -126412,8 +126474,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     isActive?: SortOrder
     runOncePerTenant?: SortOrder
+    delaySeconds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type AutomationRuleAvgOrderByAggregateInput = {
+    delaySeconds?: SortOrder
   }
 
   export type AutomationRuleMaxOrderByAggregateInput = {
@@ -126426,6 +126493,7 @@ export namespace Prisma {
     tenantId?: SortOrder
     isActive?: SortOrder
     runOncePerTenant?: SortOrder
+    delaySeconds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -126440,8 +126508,13 @@ export namespace Prisma {
     tenantId?: SortOrder
     isActive?: SortOrder
     runOncePerTenant?: SortOrder
+    delaySeconds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type AutomationRuleSumOrderByAggregateInput = {
+    delaySeconds?: SortOrder
   }
 
   export type EnumAutomationScopeWithAggregatesFilter<$PrismaModel = never> = {
@@ -139816,6 +139889,7 @@ export namespace Prisma {
     scope?: $Enums.AutomationScope
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     runs?: AutomationRunCreateNestedManyWithoutRuleInput
@@ -139832,6 +139906,7 @@ export namespace Prisma {
     scope?: $Enums.AutomationScope
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     runs?: AutomationRunUncheckedCreateNestedManyWithoutRuleInput
@@ -141865,6 +141940,7 @@ export namespace Prisma {
     tenantId?: UuidNullableFilter<"AutomationRule"> | string | null
     isActive?: BoolFilter<"AutomationRule"> | boolean
     runOncePerTenant?: BoolFilter<"AutomationRule"> | boolean
+    delaySeconds?: IntFilter<"AutomationRule"> | number
     createdAt?: DateTimeFilter<"AutomationRule"> | Date | string
     updatedAt?: DateTimeFilter<"AutomationRule"> | Date | string
   }
@@ -180927,6 +181003,7 @@ export namespace Prisma {
     scope?: $Enums.AutomationScope
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     tenant?: TenantCreateNestedOneWithoutAutomationRulesInput
@@ -180944,6 +181021,7 @@ export namespace Prisma {
     tenantId?: string | null
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -181126,6 +181204,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     tenant?: TenantUpdateOneWithoutAutomationRulesNestedInput
@@ -181143,6 +181222,7 @@ export namespace Prisma {
     tenantId?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -183067,6 +183147,7 @@ export namespace Prisma {
     scope?: $Enums.AutomationScope
     isActive?: boolean
     runOncePerTenant?: boolean
+    delaySeconds?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -185801,6 +185882,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     runs?: AutomationRunUpdateManyWithoutRuleNestedInput
@@ -185817,6 +185899,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     runs?: AutomationRunUncheckedUpdateManyWithoutRuleNestedInput
@@ -185833,6 +185916,7 @@ export namespace Prisma {
     scope?: EnumAutomationScopeFieldUpdateOperationsInput | $Enums.AutomationScope
     isActive?: BoolFieldUpdateOperationsInput | boolean
     runOncePerTenant?: BoolFieldUpdateOperationsInput | boolean
+    delaySeconds?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

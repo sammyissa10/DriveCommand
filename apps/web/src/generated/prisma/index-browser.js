@@ -1283,6 +1283,7 @@ exports.Prisma.AutomationRuleScalarFieldEnum = {
   tenantId: 'tenantId',
   isActive: 'isActive',
   runOncePerTenant: 'runOncePerTenant',
+  delaySeconds: 'delaySeconds',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
