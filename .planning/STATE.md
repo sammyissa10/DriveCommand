@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-17)
 
 Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRESS
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
-Current Plan: 1 of 6 plans complete
-Status: 52-01 COMPLETE — Automation evaluator core (runEvaluator two-path: event-driven + execute-due-runs), send_email action handler, TEMPLATE_REGISTRY (welcome-owner + activation-celebration), schema migration (PENDING/SENT enum + scheduledAt/eventId/errorMessage columns), Sammy signature update, seeded actionsJson fixed.
-Last activity: 2026-05-03 - Completed 52-01: Automation evaluator core + schema migration + email templates
-Last session: 2026-05-03T21:58:24Z
-Stopped at: Completed 52-01-PLAN.md
+Current Plan: 2 of 6 plans complete
+Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
+Last activity: 2026-05-04 - Completed 52-02: Cron route + 4 email templates + TEMPLATE_REGISTRY 6 entries
+Last session: 2026-05-04T00:28:56Z
+Stopped at: Completed 52-02-PLAN.md
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -1778,6 +1778,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 51-05]: Welcome page catch block queries Tenant.provisioningPhase before showing error UI — HYDRATED state means hydrateTenant completed server-side before client timeout; shouldShowError=true default with flip-to-false on HYDRATED is safe-by-default pattern; optional chaining on catchActivation handles HYDRATED-but-no-ActivationProgress edge case
 - [Phase 52]: actionsJson templateKey fix: seeded AutomationRule rows used legacy template field; updated to templateKey to match TEMPLATE_REGISTRY
 - [Phase 52]: Evaluator two-path design: event-driven scheduling (Path 1 creates PENDING runs) + execute-due-runs (Path 2 sends them) in single runEvaluator() call
+- [Phase 52-02]: JSDoc block comment fix — cron expression slash-5 in JSDoc closes block comment; rewrite in plain English
+- [Phase 52-02]: Vercel Hobby plan limits cron to once-per-day — /api/cron/automations uses daily schedule (0 0 * * *); upgrade to Vercel Pro for 5-minute cadence
+- [Phase 52-02]: scheduleCronDrivenRule() uses lifetime dedup (runOncePerTenant=true) for onboarding nudges; windowed dedup (20h window on firedAt+PENDING.scheduledAt) for trial_ending_soon
 
 ### Pending Todos
 
@@ -2687,6 +2690,9 @@ All milestone decisions logged in PROJECT.md Key Decisions table.
 - [Phase 51-05]: Welcome page catch block queries Tenant.provisioningPhase before showing error UI — HYDRATED state means hydrateTenant completed server-side before client timeout; shouldShowError=true default with flip-to-false on HYDRATED is safe-by-default pattern; optional chaining on catchActivation handles HYDRATED-but-no-ActivationProgress edge case
 - [Phase 52]: actionsJson templateKey fix: seeded AutomationRule rows used legacy template field; updated to templateKey to match TEMPLATE_REGISTRY
 - [Phase 52]: Evaluator two-path design: event-driven scheduling (Path 1 creates PENDING runs) + execute-due-runs (Path 2 sends them) in single runEvaluator() call
+- [Phase 52-02]: JSDoc block comment fix — cron expression slash-5 in JSDoc closes block comment; rewrite in plain English
+- [Phase 52-02]: Vercel Hobby plan limits cron to once-per-day — /api/cron/automations uses daily schedule (0 0 * * *); upgrade to Vercel Pro for 5-minute cadence
+- [Phase 52-02]: scheduleCronDrivenRule() uses lifetime dedup (runOncePerTenant=true) for onboarding nudges; windowed dedup (20h window on firedAt+PENDING.scheduledAt) for trial_ending_soon
 
 ### Pending Todos
 
@@ -2810,6 +2816,7 @@ None blocking immediate progress.
 - Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
 | Phase 52 P01 | 466 | 3 tasks | 9 files |
+| Phase 52 P02 | 452 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
