@@ -1,8 +1,3 @@
-//
-// Sent via gmail-client.ts with:
-//   from: "Sammy from DriveCommand <...>" (set via GMAIL_FROM_NAME=Sammy from DriveCommand)
-//   replyTo: SUPPORT_REPLY_TO env var (or GMAIL_USER as fallback)
-//
 import {
   Html,
   Head,
@@ -14,19 +9,17 @@ import {
   Hr,
 } from '@react-email/components';
 
-interface WelcomeOwnerEmailProps {
+interface ActivationCelebrationEmailProps {
   firstName: string;
   companyName: string;
-  trialEndsAt: string; // e.g. "May 12, 2026"
   dashboardUrl: string;
 }
 
-export function WelcomeOwnerEmail({
+export function ActivationCelebrationEmail({
   firstName,
   companyName,
-  trialEndsAt,
   dashboardUrl,
-}: WelcomeOwnerEmailProps) {
+}: ActivationCelebrationEmailProps) {
   return (
     <Html>
       <Head />
@@ -39,21 +32,18 @@ export function WelcomeOwnerEmail({
           <Section style={styles.content}>
             <Text style={styles.greeting}>Hey {firstName},</Text>
             <Text style={styles.message}>
-              Welcome to DriveCommand — I&apos;m Sammy, and I&apos;m genuinely stoked you
-              signed up. {companyName} now has a full fleet management platform
-              ready to go.
+              Big milestone — {companyName} just completed the DriveCommand
+              onboarding checklist.
             </Text>
             <Text style={styles.message}>
-              Your 14-day trial runs until <strong>{trialEndsAt}</strong> — no
-              credit card needed, no surprises. Here&apos;s what I&apos;d suggest doing
-              first:
+              You&apos;ve added your fleet, your team is set up, and your first
+              load is moving. That&apos;s the hardest part done.
             </Text>
-
-            <Section style={styles.listSection}>
-              <Text style={styles.listItem}>✓ Add your first truck</Text>
-              <Text style={styles.listItem}>✓ Invite a driver</Text>
-              <Text style={styles.listItem}>✓ Create your first load</Text>
-            </Section>
+            <Text style={styles.message}>
+              Here&apos;s what&apos;s unlocked for you now: full reporting,
+              invoice generation, compliance monitoring, and the profit
+              predictor.
+            </Text>
 
             <Section style={styles.ctaSection}>
               <Button href={dashboardUrl} style={styles.button}>
@@ -78,7 +68,7 @@ export function WelcomeOwnerEmail({
             <Hr style={styles.divider} />
             <Text style={styles.footerText}>DriveCommand — Fleet Management</Text>
             <Text style={styles.footerSubtext}>
-              You&apos;re receiving this because you signed up for DriveCommand.
+              You&apos;re receiving this because you completed onboarding on DriveCommand.
             </Text>
           </Section>
         </Container>
@@ -105,8 +95,6 @@ const styles = {
   content: { backgroundColor: '#ffffff', padding: '32px', borderRadius: '0 0 8px 8px' },
   greeting: { fontSize: '16px', fontWeight: 'bold', margin: '0 0 16px' },
   message: { fontSize: '14px', lineHeight: '24px', color: '#374151', margin: '0 0 16px' },
-  listSection: { margin: '0 0 24px', paddingLeft: '8px' },
-  listItem: { fontSize: '14px', color: '#374151', margin: '0 0 8px', lineHeight: '22px' },
   ctaSection: { textAlign: 'center' as const, marginBottom: '24px' },
   button: {
     backgroundColor: '#1e40af',
