@@ -13,6 +13,10 @@ import { ResendInvitationButton } from './resend-invitation-button';
 import { CopyTenantIdButton } from './copy-tenant-id-button';
 import { ResetPasswordButton } from './reset-password-button';
 import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/db/prisma';
+import { AutomationRunsSection } from './automation-runs-section';
+import { ActivationProgressSection } from './activation-progress-section';
+import { ExtendTrialButton } from './extend-trial-button';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -45,8 +49,13 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
     fetchError = err.message || 'Failed to load tenant';
   }
 
+  let subscription: { trialEndsAt: Date } | null = null;
   if (!fetchError && tenant) {
     billingHistory = await getSysAdminInvoices({ tenantId: id }).catch(() => []);
+    subscription = await prisma.subscription.findUnique({
+      where: { tenantId: id },
+      select: { trialEndsAt: true },
+    }).catch(() => null);
   }
 
   if (fetchError || !tenant) {
@@ -249,6 +258,28 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           <TenantUsersSection tenantId={tenant.id} />
         </CardContent>
       </Card>
+
+      {/* Extend Trial */}
+      {subscription && (
+        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-4 py-3">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Trial</p>
+            <p className="text-xs text-gray-500">
+              Ends {new Date(subscription.trialEndsAt).toLocaleDateString()}
+            </p>
+          </div>
+          <ExtendTrialButton
+            tenantId={tenant.id}
+            currentTrialEndsAt={subscription.trialEndsAt.toISOString()}
+          />
+        </div>
+      )}
+
+      {/* Activation Progress */}
+      <ActivationProgressSection tenantId={tenant.id} />
+
+      {/* Automation Runs */}
+      <AutomationRunsSection tenantId={tenant.id} />
 
       {/* Billing History */}
       <Card>
