@@ -3,7 +3,7 @@
 import { getAppBaseUrl } from '@/lib/app-url';
 import { Prisma } from '@/generated/prisma';
 import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
-import { prisma } from '@/lib/db/prisma';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
@@ -532,6 +532,57 @@ export async function updateTenantSettings(
     return { success: true };
   } catch {
     return { success: false, error: 'Failed to update settings. Please try again.' };
+  }
+}
+
+/**
+ * Extend a tenant's trial by N days.
+ * Updates Subscription.trialEndsAt and writes a trial.extended AppEvent.
+ */
+export async function extendTrial(tenantId: string, additionalDays: number) {
+  await requireAdminAccess();
+
+  if (additionalDays < 1 || additionalDays > 365) {
+    return { error: 'Days must be between 1 and 365' };
+  }
+
+  const subscription = await prisma.subscription.findUnique({
+    where: { tenantId },
+    select: { trialEndsAt: true },
+  });
+
+  if (!subscription) return { error: 'No subscription found for this tenant' };
+
+  const newTrialEndsAt = new Date(
+    Math.max(subscription.trialEndsAt.getTime(), Date.now()) + additionalDays * 24 * 60 * 60 * 1000,
+  );
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      await tx.subscription.update({
+        where: { tenantId },
+        data: { trialEndsAt: newTrialEndsAt },
+      });
+
+      await tx.appEvent.create({
+        data: {
+          tenantId,
+          eventType: 'trial.extended',
+          properties: {
+            additionalDays,
+            newTrialEndsAt: newTrialEndsAt.toISOString(),
+            previousTrialEndsAt: subscription.trialEndsAt.toISOString(),
+          },
+        },
+      });
+    }, TX_OPTIONS);
+
+    revalidatePath(`/tenants/${tenantId}`);
+    return { ok: true, newTrialEndsAt };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
