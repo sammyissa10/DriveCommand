@@ -1295,7 +1295,10 @@ exports.Prisma.AutomationRunScalarFieldEnum = {
   triggeredBy: 'triggeredBy',
   status: 'status',
   resultJson: 'resultJson',
-  firedAt: 'firedAt'
+  firedAt: 'firedAt',
+  scheduledAt: 'scheduledAt',
+  eventId: 'eventId',
+  errorMessage: 'errorMessage'
 };
 
 exports.Prisma.AppEventScalarFieldEnum = {
@@ -1722,7 +1725,9 @@ exports.AutomationRunStatus = exports.$Enums.AutomationRunStatus = {
   FIRED: 'FIRED',
   SKIPPED_CONDITION: 'SKIPPED_CONDITION',
   SKIPPED_ALREADY_RAN: 'SKIPPED_ALREADY_RAN',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
+  PENDING: 'PENDING',
+  SENT: 'SENT'
 };
 
 exports.Prisma.ModelName = {

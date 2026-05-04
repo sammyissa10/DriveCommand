@@ -874,7 +874,9 @@ export const AutomationRunStatus: {
   FIRED: 'FIRED',
   SKIPPED_CONDITION: 'SKIPPED_CONDITION',
   SKIPPED_ALREADY_RAN: 'SKIPPED_ALREADY_RAN',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
+  PENDING: 'PENDING',
+  SENT: 'SENT'
 };
 
 export type AutomationRunStatus = (typeof AutomationRunStatus)[keyof typeof AutomationRunStatus]
@@ -96540,6 +96542,9 @@ export namespace Prisma {
     triggeredBy: string | null
     status: $Enums.AutomationRunStatus | null
     firedAt: Date | null
+    scheduledAt: Date | null
+    eventId: string | null
+    errorMessage: string | null
   }
 
   export type AutomationRunMaxAggregateOutputType = {
@@ -96550,6 +96555,9 @@ export namespace Prisma {
     triggeredBy: string | null
     status: $Enums.AutomationRunStatus | null
     firedAt: Date | null
+    scheduledAt: Date | null
+    eventId: string | null
+    errorMessage: string | null
   }
 
   export type AutomationRunCountAggregateOutputType = {
@@ -96561,6 +96569,9 @@ export namespace Prisma {
     status: number
     resultJson: number
     firedAt: number
+    scheduledAt: number
+    eventId: number
+    errorMessage: number
     _all: number
   }
 
@@ -96573,6 +96584,9 @@ export namespace Prisma {
     triggeredBy?: true
     status?: true
     firedAt?: true
+    scheduledAt?: true
+    eventId?: true
+    errorMessage?: true
   }
 
   export type AutomationRunMaxAggregateInputType = {
@@ -96583,6 +96597,9 @@ export namespace Prisma {
     triggeredBy?: true
     status?: true
     firedAt?: true
+    scheduledAt?: true
+    eventId?: true
+    errorMessage?: true
   }
 
   export type AutomationRunCountAggregateInputType = {
@@ -96594,6 +96611,9 @@ export namespace Prisma {
     status?: true
     resultJson?: true
     firedAt?: true
+    scheduledAt?: true
+    eventId?: true
+    errorMessage?: true
     _all?: true
   }
 
@@ -96678,6 +96698,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson: JsonValue | null
     firedAt: Date
+    scheduledAt: Date | null
+    eventId: string | null
+    errorMessage: string | null
     _count: AutomationRunCountAggregateOutputType | null
     _min: AutomationRunMinAggregateOutputType | null
     _max: AutomationRunMaxAggregateOutputType | null
@@ -96706,6 +96729,9 @@ export namespace Prisma {
     status?: boolean
     resultJson?: boolean
     firedAt?: boolean
+    scheduledAt?: boolean
+    eventId?: boolean
+    errorMessage?: boolean
     rule?: boolean | AutomationRun$ruleArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["automationRun"]>
@@ -96719,6 +96745,9 @@ export namespace Prisma {
     status?: boolean
     resultJson?: boolean
     firedAt?: boolean
+    scheduledAt?: boolean
+    eventId?: boolean
+    errorMessage?: boolean
     rule?: boolean | AutomationRun$ruleArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["automationRun"]>
@@ -96732,6 +96761,9 @@ export namespace Prisma {
     status?: boolean
     resultJson?: boolean
     firedAt?: boolean
+    scheduledAt?: boolean
+    eventId?: boolean
+    errorMessage?: boolean
     rule?: boolean | AutomationRun$ruleArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["automationRun"]>
@@ -96745,9 +96777,12 @@ export namespace Prisma {
     status?: boolean
     resultJson?: boolean
     firedAt?: boolean
+    scheduledAt?: boolean
+    eventId?: boolean
+    errorMessage?: boolean
   }
 
-  export type AutomationRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ruleId" | "tenantId" | "userId" | "triggeredBy" | "status" | "resultJson" | "firedAt", ExtArgs["result"]["automationRun"]>
+  export type AutomationRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ruleId" | "tenantId" | "userId" | "triggeredBy" | "status" | "resultJson" | "firedAt" | "scheduledAt" | "eventId" | "errorMessage", ExtArgs["result"]["automationRun"]>
   export type AutomationRunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     rule?: boolean | AutomationRun$ruleArgs<ExtArgs>
     tenant?: boolean | TenantDefaultArgs<ExtArgs>
@@ -96776,6 +96811,9 @@ export namespace Prisma {
       status: $Enums.AutomationRunStatus
       resultJson: Prisma.JsonValue | null
       firedAt: Date
+      scheduledAt: Date | null
+      eventId: string | null
+      errorMessage: string | null
     }, ExtArgs["result"]["automationRun"]>
     composites: {}
   }
@@ -97209,6 +97247,9 @@ export namespace Prisma {
     readonly status: FieldRef<"AutomationRun", 'AutomationRunStatus'>
     readonly resultJson: FieldRef<"AutomationRun", 'Json'>
     readonly firedAt: FieldRef<"AutomationRun", 'DateTime'>
+    readonly scheduledAt: FieldRef<"AutomationRun", 'DateTime'>
+    readonly eventId: FieldRef<"AutomationRun", 'String'>
+    readonly errorMessage: FieldRef<"AutomationRun", 'String'>
   }
     
 
@@ -102385,7 +102426,10 @@ export namespace Prisma {
     triggeredBy: 'triggeredBy',
     status: 'status',
     resultJson: 'resultJson',
-    firedAt: 'firedAt'
+    firedAt: 'firedAt',
+    scheduledAt: 'scheduledAt',
+    eventId: 'eventId',
+    errorMessage: 'errorMessage'
   };
 
   export type AutomationRunScalarFieldEnum = (typeof AutomationRunScalarFieldEnum)[keyof typeof AutomationRunScalarFieldEnum]
@@ -110968,6 +111012,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFilter<"AutomationRun"> | $Enums.AutomationRunStatus
     resultJson?: JsonNullableFilter<"AutomationRun">
     firedAt?: DateTimeFilter<"AutomationRun"> | Date | string
+    scheduledAt?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
+    eventId?: UuidNullableFilter<"AutomationRun"> | string | null
+    errorMessage?: StringNullableFilter<"AutomationRun"> | string | null
     rule?: XOR<AutomationRuleNullableScalarRelationFilter, AutomationRuleWhereInput> | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
   }
@@ -110981,6 +111028,9 @@ export namespace Prisma {
     status?: SortOrder
     resultJson?: SortOrderInput | SortOrder
     firedAt?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    eventId?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
     rule?: AutomationRuleOrderByWithRelationInput
     tenant?: TenantOrderByWithRelationInput
   }
@@ -110997,6 +111047,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFilter<"AutomationRun"> | $Enums.AutomationRunStatus
     resultJson?: JsonNullableFilter<"AutomationRun">
     firedAt?: DateTimeFilter<"AutomationRun"> | Date | string
+    scheduledAt?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
+    eventId?: UuidNullableFilter<"AutomationRun"> | string | null
+    errorMessage?: StringNullableFilter<"AutomationRun"> | string | null
     rule?: XOR<AutomationRuleNullableScalarRelationFilter, AutomationRuleWhereInput> | null
     tenant?: XOR<TenantScalarRelationFilter, TenantWhereInput>
   }, "id">
@@ -111010,6 +111063,9 @@ export namespace Prisma {
     status?: SortOrder
     resultJson?: SortOrderInput | SortOrder
     firedAt?: SortOrder
+    scheduledAt?: SortOrderInput | SortOrder
+    eventId?: SortOrderInput | SortOrder
+    errorMessage?: SortOrderInput | SortOrder
     _count?: AutomationRunCountOrderByAggregateInput
     _max?: AutomationRunMaxOrderByAggregateInput
     _min?: AutomationRunMinOrderByAggregateInput
@@ -111027,6 +111083,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusWithAggregatesFilter<"AutomationRun"> | $Enums.AutomationRunStatus
     resultJson?: JsonNullableWithAggregatesFilter<"AutomationRun">
     firedAt?: DateTimeWithAggregatesFilter<"AutomationRun"> | Date | string
+    scheduledAt?: DateTimeNullableWithAggregatesFilter<"AutomationRun"> | Date | string | null
+    eventId?: UuidNullableWithAggregatesFilter<"AutomationRun"> | string | null
+    errorMessage?: StringNullableWithAggregatesFilter<"AutomationRun"> | string | null
   }
 
   export type AppEventWhereInput = {
@@ -119899,6 +119958,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
     rule?: AutomationRuleCreateNestedOneWithoutRunsInput
     tenant: TenantCreateNestedOneWithoutAutomationRunsInput
   }
@@ -119912,6 +119974,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AutomationRunUpdateInput = {
@@ -119921,6 +119986,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     rule?: AutomationRuleUpdateOneWithoutRunsNestedInput
     tenant?: TenantUpdateOneRequiredWithoutAutomationRunsNestedInput
   }
@@ -119934,6 +120002,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AutomationRunCreateManyInput = {
@@ -119945,6 +120016,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AutomationRunUpdateManyMutationInput = {
@@ -119954,6 +120028,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AutomationRunUncheckedUpdateManyInput = {
@@ -119965,6 +120042,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AppEventCreateInput = {
@@ -126395,6 +126475,9 @@ export namespace Prisma {
     status?: SortOrder
     resultJson?: SortOrder
     firedAt?: SortOrder
+    scheduledAt?: SortOrder
+    eventId?: SortOrder
+    errorMessage?: SortOrder
   }
 
   export type AutomationRunMaxOrderByAggregateInput = {
@@ -126405,6 +126488,9 @@ export namespace Prisma {
     triggeredBy?: SortOrder
     status?: SortOrder
     firedAt?: SortOrder
+    scheduledAt?: SortOrder
+    eventId?: SortOrder
+    errorMessage?: SortOrder
   }
 
   export type AutomationRunMinOrderByAggregateInput = {
@@ -126415,6 +126501,9 @@ export namespace Prisma {
     triggeredBy?: SortOrder
     status?: SortOrder
     firedAt?: SortOrder
+    scheduledAt?: SortOrder
+    eventId?: SortOrder
+    errorMessage?: SortOrder
   }
 
   export type EnumAutomationRunStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -139765,6 +139854,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
     rule?: AutomationRuleCreateNestedOneWithoutRunsInput
   }
 
@@ -139776,6 +139868,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AutomationRunCreateOrConnectWithoutTenantInput = {
@@ -141802,6 +141897,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFilter<"AutomationRun"> | $Enums.AutomationRunStatus
     resultJson?: JsonNullableFilter<"AutomationRun">
     firedAt?: DateTimeFilter<"AutomationRun"> | Date | string
+    scheduledAt?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
+    eventId?: UuidNullableFilter<"AutomationRun"> | string | null
+    errorMessage?: StringNullableFilter<"AutomationRun"> | string | null
   }
 
   export type AppEventUpsertWithWhereUniqueWithoutTenantInput = {
@@ -180616,6 +180714,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
     tenant: TenantCreateNestedOneWithoutAutomationRunsInput
   }
 
@@ -180627,6 +180728,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AutomationRunCreateOrConnectWithoutRuleInput = {
@@ -182975,6 +183079,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AppEventCreateManyTenantInput = {
@@ -185737,6 +185844,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     rule?: AutomationRuleUpdateOneWithoutRunsNestedInput
   }
 
@@ -185748,6 +185858,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AutomationRunUncheckedUpdateManyWithoutTenantInput = {
@@ -185758,6 +185871,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AppEventUpdateWithoutTenantInput = {
@@ -194830,6 +194946,9 @@ export namespace Prisma {
     status: $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: Date | string
+    scheduledAt?: Date | string | null
+    eventId?: string | null
+    errorMessage?: string | null
   }
 
   export type AutomationRunUpdateWithoutRuleInput = {
@@ -194839,6 +194958,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
     tenant?: TenantUpdateOneRequiredWithoutAutomationRunsNestedInput
   }
 
@@ -194850,6 +194972,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AutomationRunUncheckedUpdateManyWithoutRuleInput = {
@@ -194860,6 +194985,9 @@ export namespace Prisma {
     status?: EnumAutomationRunStatusFieldUpdateOperationsInput | $Enums.AutomationRunStatus
     resultJson?: NullableJsonNullValueInput | InputJsonValue
     firedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    scheduledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventId?: NullableStringFieldUpdateOperationsInput | string | null
+    errorMessage?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

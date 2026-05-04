@@ -1392,6 +1392,8 @@ enum AutomationRunStatus {
   SKIPPED_CONDITION
   SKIPPED_ALREADY_RAN
   FAILED
+  PENDING
+  SENT
 }
 
 model DriverHOSEntry {
@@ -2297,14 +2299,17 @@ model AutomationRule {
 }
 
 model AutomationRun {
-  id          String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ruleId      String?             @db.Uuid
-  tenantId    String              @db.Uuid
-  userId      String?             @db.Uuid
-  triggeredBy String
-  status      AutomationRunStatus
-  resultJson  Json?
-  firedAt     DateTime            @default(now()) @db.Timestamptz
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ruleId       String?             @db.Uuid
+  tenantId     String              @db.Uuid
+  userId       String?             @db.Uuid
+  triggeredBy  String
+  status       AutomationRunStatus
+  resultJson   Json?
+  firedAt      DateTime            @default(now()) @db.Timestamptz
+  scheduledAt  DateTime?           @db.Timestamptz
+  eventId      String?             @db.Uuid
+  errorMessage String?
 
   rule   AutomationRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
   tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
@@ -2312,6 +2317,8 @@ model AutomationRun {
   @@index([ruleId])
   @@index([tenantId])
   @@index([firedAt])
+  @@index([eventId, ruleId])
+  @@index([status, scheduledAt])
 }
 
 model AppEvent {
