@@ -2,7 +2,8 @@
  * send_email action handler for the automation evaluator.
  *
  * Reads templateKey from the action config, looks up TEMPLATE_REGISTRY,
- * resolves owner context from the DB, renders and sends via gmail-client.ts.
+ * resolves owner context from the DB, renders and sends via resend-client.ts.
+ * Writes a NotificationLog row on success and failure.
  *
  * Called exclusively from evaluator.ts inside a $transaction.
  * The caller (evaluator) handles status update to SENT/FAILED with optimistic locking.
@@ -68,15 +69,53 @@ export async function executeSendEmailAction(
 
   const subject = template.subject(ctx);
   const element = template.buildElement(ctx);
+  const idempotencyKey = `automation:${run.id}`;
 
-  await sendEmail({
-    to: owner.email,
-    subject,
-    react: element,
-    replyTo: process.env.SUPPORT_REPLY_TO ?? process.env.GMAIL_USER,
-  });
+  try {
+    const result = await sendEmail({
+      to: owner.email,
+      subject,
+      react: element,
+      replyTo: process.env.SUPPORT_REPLY_TO ?? 'team@drivecommand.io',
+    });
 
-  console.log(
-    `[send-email] Sent templateKey=${templateKey} to=${owner.email} runId=${run.id}`,
-  );
+    await prisma.notificationLog.upsert({
+      where: { idempotencyKey },
+      create: {
+        tenantId: run.tenantId,
+        idempotencyKey,
+        notificationType: `automation:${templateKey}`,
+        recipientEmail: owner.email,
+        emailSubject: subject,
+        status: 'SENT',
+        externalId: result.id,
+        sentAt: new Date(),
+      },
+      update: {},
+    });
+
+    console.log(
+      `[send-email] Sent templateKey=${templateKey} to=${owner.email} runId=${run.id} externalId=${result.id}`,
+    );
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+
+    await prisma.notificationLog.upsert({
+      where: { idempotencyKey },
+      create: {
+        tenantId: run.tenantId,
+        idempotencyKey,
+        notificationType: `automation:${templateKey}`,
+        recipientEmail: owner.email,
+        emailSubject: subject,
+        status: 'FAILED',
+        externalId: null,
+        errorMessage,
+        failedAt: new Date(),
+      },
+      update: {},
+    });
+
+    throw err;
+  }
 }

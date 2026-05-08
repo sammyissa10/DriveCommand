@@ -3,10 +3,12 @@
  *
  * Environment variables:
  * - RESEND_API_KEY: Resend API key
- * - RESEND_FROM_EMAIL: Sender email address (defaults to testing address)
+ * - RESEND_FROM_EMAIL: Sender email address (defaults to DriveCommand team address)
  */
 
 import { Resend } from 'resend';
+import { render } from '@react-email/render';
+import type { ReactElement } from 'react';
 
 // Lazy-initialized Resend client singleton (only throws when actually used)
 let _resendClient: Resend | null = null;
@@ -24,5 +26,35 @@ export const resend = new Proxy({} as Resend, {
   },
 });
 
-// Sender email address
-export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DriveCommand <onboarding@resend.dev>';
+export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'DriveCommand <team@drivecommand.io>';
+
+export interface SendEmailOptions {
+  to: string | string[];
+  subject: string;
+  react: ReactElement;
+  replyTo?: string;
+}
+
+/**
+ * Send an email using Resend.
+ * Returns { id } — the real Resend message ID.
+ * Throws on Resend API error so callers' catch logic works as expected.
+ */
+export async function sendEmail(options: SendEmailOptions): Promise<{ id: string }> {
+  const html = await render(options.react);
+  const replyTo = options.replyTo ?? 'team@drivecommand.io';
+
+  const { data, error } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: Array.isArray(options.to) ? options.to : [options.to],
+    subject: options.subject,
+    html,
+    replyTo,
+  });
+
+  if (error) {
+    throw new Error(`Resend API error: ${error.message}`);
+  }
+
+  return { id: data!.id };
+}
