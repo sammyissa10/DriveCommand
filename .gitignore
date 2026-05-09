@@ -83,4 +83,4 @@ apps/mobile/google-play-key.json
 /ios/
 .turbo/
 apps/*/.turbo
-packages/*/.turbo/
+packages/*/.turbo/apps/web/scripts/_doc-catalog.json
