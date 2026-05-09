@@ -1,4 +1,5 @@
 export * from './customer'
+export * from './driver-compensation'
 export * from './document'
 export * from './driver'
 export * from './driver-route-join'
