@@ -1,0 +1,75 @@
+---
+slug: load-management
+title: Load Management
+summary: Create, assign, and track loads with pickup/delivery stops, status workflow, and route assignment.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Load Management
+
+Manage your freight loads from creation to delivery with DriveCommand's load management system.
+
+<FeatureVideo url="https://www.youtube.com/watch?v=example" />
+
+## Overview
+
+Load management is the core of your dispatch operations. Each load represents a shipment with:
+
+- **Pickup and delivery stops** with addresses, contacts, and scheduling
+- **Status workflow** tracking from Pending through Delivered
+- **Route assignment** to organize multi-stop trips
+- **Driver and truck assignment** for dispatch
+
+<Callout type="info">
+Loads can exist independently or be grouped into routes for multi-stop planning.
+</Callout>
+
+## Creating a Load
+
+1. Navigate to **Loads** in the sidebar
+2. Click **New Load**
+3. Fill in the required fields:
+   - Customer (from your CRM)
+   - Pickup address and date
+   - Delivery address and date
+   - Rate and reference numbers
+
+<Steps>
+  <Step title="Select Customer">
+    Choose from your existing customers or create a new one inline.
+  </Step>
+  <Step title="Add Pickup Stop">
+    Enter the pickup address, contact name, phone, and scheduled date/time.
+  </Step>
+  <Step title="Add Delivery Stop">
+    Enter the delivery address, contact info, and expected delivery window.
+  </Step>
+  <Step title="Set Rate">
+    Enter the line haul rate. FSC and accessorials can be added later.
+  </Step>
+</Steps>
+
+## Load Status Workflow
+
+Loads progress through these statuses:
+
+| Status | Meaning |
+|--------|---------|
+| Pending | Created but not yet dispatched |
+| Dispatched | Assigned to driver, ready to start |
+| In Transit | Driver has departed pickup |
+| Delivered | Completed and ready for invoicing |
+| Cancelled | Load was cancelled |
+
+<RelatedFeatures slugs={["route-planning", "driver-my-route"]} />
+
+## FAQ
+
+<Accordion title="Can I edit a load after it's dispatched?">
+Yes, you can edit load details until it's marked Delivered. Some fields like pickup address may require notifying the driver.
+</Accordion>
+
+<Accordion title="How do I assign a load to a route?">
+When creating or editing a load, use the Route dropdown to assign it to an existing route or create a new one.
+</Accordion>
