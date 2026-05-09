@@ -1,0 +1,54 @@
+---
+slug: carrier-reports-driver-pay
+title: Driver Pay Report — Technical Reference
+summary: Payroll analytics aggregating PayrollRecord data with miles, loads, bonuses, and deductions by pay period.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Payroll records are tenant-scoped"
+  - "Pay period calculations use date range filters"
+  - "Export format compatible with QuickBooks CSV"
+---
+
+# Driver Pay Report — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Driver Pay Report aggregates payroll data by driver and pay period.
+
+**Portal:** Owner
+**Route:** `/carrier/reports/driver-pay`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getDriverPaySummary", roleGuard: "OWNER | MANAGER", inputSchema: "PayPeriodSchema", returnType: "ActionState<DriverPaySummary[]>" },
+  { name: "getDriverPayDetail", roleGuard: "OWNER | MANAGER", inputSchema: "{ driverId: string, payPeriodSchema }", returnType: "ActionState<PayrollRecord[]>" },
+  { name: "exportPayroll", roleGuard: "OWNER", inputSchema: "PayPeriodSchema", returnType: "ActionState<string>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="PayrollRecord" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "driverId: String",
+  "payPeriodStart: DateTime",
+  "payPeriodEnd: DateTime",
+  "basePay: Decimal",
+  "bonuses: Decimal",
+  "deductions: Decimal",
+  "netPay: Decimal",
+  "totalMiles: Decimal",
+  "loadCount: Int"
+]} />
+
+## Related Features
+
+<FeatureCard slug="payroll" />

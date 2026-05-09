@@ -1,0 +1,92 @@
+---
+slug: carrier-reports-revenue
+title: Revenue Report — Technical Reference
+summary: Revenue analytics aggregating Invoice data by customer, lane, driver, and time period with trend charting.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Revenue calculated from Invoice.total field"
+  - "All queries are tenant-scoped"
+  - "Large date ranges may require pagination"
+---
+
+# Revenue Report — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Revenue Report provides financial analytics aggregated from invoices.
+
+**Portal:** Owner
+**Route:** `/carrier/reports/revenue`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getRevenueByCustomer", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<RevenueByCustomer[]>" },
+  { name: "getRevenueByLane", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<RevenueByLane[]>" },
+  { name: "getRevenueByDriver", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<RevenueByDriver[]>" },
+  { name: "getRevenueTrend", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<TrendData[]>" }
+]} />
+
+### Example Aggregation Query
+
+<CodeBlock language="typescript">
+{`export async function getRevenueByCustomer(
+  dateRange: DateRangeSchema
+): Promise<ActionState<RevenueByCustomer[]>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const results = await prisma.invoice.groupBy({
+    by: ['customerId'],
+    where: {
+      tenantId,
+      createdAt: {
+        gte: dateRange.startDate,
+        lte: dateRange.endDate,
+      },
+    },
+    _sum: { total: true },
+    _count: { id: true },
+  });
+
+  // Enrich with customer names
+  const enriched = await Promise.all(
+    results.map(async (r) => {
+      const customer = await prisma.customer.findUnique({
+        where: { id: r.customerId },
+      });
+      return {
+        customerId: r.customerId,
+        customerName: customer?.companyName ?? 'Unknown',
+        totalRevenue: r._sum.total ?? 0,
+        invoiceCount: r._count.id,
+      };
+    })
+  );
+
+  return { success: true, data: enriched };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Invoice" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "customerId: String?",
+  "total: Decimal",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Related Features
+
+<FeatureCard slug="invoices" />
+<FeatureCard slug="lane-analytics" />

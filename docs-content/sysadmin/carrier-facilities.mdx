@@ -1,0 +1,80 @@
+---
+slug: carrier-facilities
+title: Facility Management — Technical Reference
+summary: Yard, warehouse, and terminal management with geofencing logic and driver check-in tracking via GPS reports.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Geofence calculations use PostGIS ST_Distance"
+  - "Check-in events logged in GpsReport table"
+  - "Facility radius stored in meters"
+---
+
+# Facility Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Facility Management stores physical locations with geofencing capabilities.
+
+**Portal:** Owner
+**Route:** `/carrier/facilities`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getFacilities", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Facility[]>" },
+  { name: "createFacility", roleGuard: "OWNER | MANAGER", inputSchema: "CreateFacilitySchema", returnType: "ActionState<Facility>" },
+  { name: "getFacilityCheckins", roleGuard: "OWNER | MANAGER", inputSchema: "{ facilityId: string }", returnType: "ActionState<CheckinEvent[]>" }
+]} />
+
+### Geofence Check Logic
+
+GPS reports trigger geofence checks on every position update:
+
+<CodeBlock language="typescript">
+{`async function checkGeofenceEntry(gpsReport: GpsReport) {
+  const facilities = await prisma.facility.findMany({
+    where: { tenantId: gpsReport.tenantId },
+  });
+
+  for (const facility of facilities) {
+    const distance = calculateDistance(
+      gpsReport.latitude,
+      gpsReport.longitude,
+      facility.latitude,
+      facility.longitude
+    );
+
+    if (distance <= facility.radiusMeters) {
+      await logCheckinEvent({
+        facilityId: facility.id,
+        truckId: gpsReport.truckId,
+        timestamp: gpsReport.timestamp,
+      });
+    }
+  }
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Facility" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "name: String",
+  "address: String",
+  "latitude: Decimal",
+  "longitude: Decimal",
+  "radiusMeters: Int (default 100)",
+  "facilityType: String (Yard | Terminal | Warehouse | CustomerSite)"
+]} />
+
+## Related Features
+
+<FeatureCard slug="carrier-stops" />

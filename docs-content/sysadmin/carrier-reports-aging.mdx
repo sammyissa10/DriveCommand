@@ -1,0 +1,62 @@
+---
+slug: carrier-reports-aging
+title: AR Aging Report — Technical Reference
+summary: Accounts receivable aging analysis with 30/60/90 day buckets based on Invoice.dueDate calculations.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Aging calculated from Invoice.dueDate field"
+  - "Only unpaid invoices included (status != PAID)"
+  - "Tenant-scoped queries only"
+---
+
+# AR Aging Report — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+AR Aging Report shows overdue invoice totals grouped by aging buckets.
+
+**Portal:** Owner
+**Route:** `/carrier/reports/aging`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getARAgingReport", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<ARAgingData[]>" }
+]} />
+
+### Aging Bucket Logic
+
+<CodeBlock language="typescript">
+{`function categorizeInvoice(invoice: Invoice): AgingBucket {
+  const now = new Date();
+  const daysOverdue = differenceInDays(now, invoice.dueDate);
+
+  if (daysOverdue < 0) return 'CURRENT';
+  if (daysOverdue <= 30) return '1_30_DAYS';
+  if (daysOverdue <= 60) return '31_60_DAYS';
+  if (daysOverdue <= 90) return '61_90_DAYS';
+  return 'OVER_90_DAYS';
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Invoice" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "customerId: String?",
+  "total: Decimal",
+  "dueDate: DateTime (invoice date + payment terms)",
+  "status: InvoiceStatus (DRAFT | SENT | PAID | OVERDUE)"
+]} />
+
+## Related Features
+
+<FeatureCard slug="invoices" />

@@ -1,0 +1,145 @@
+---
+slug: carrier-dashboard
+title: Carrier Dashboard — Technical Reference
+summary: Operations dashboard aggregating KPIs, load status, driver availability, and fleet health with real-time server action data.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Dashboard data uses aggregate queries for performance"
+  - "Role guard: OWNER | MANAGER required"
+---
+
+# Carrier Dashboard — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Carrier Dashboard is the operations command center at `/carrier/dashboard`. It aggregates real-time metrics from across the platform:
+
+- **KPIs** — today's revenue, active loads count, available drivers, compliance alerts
+- **Load status breakdown** — PENDING/IN_TRANSIT/DELIVERED counts
+- **Driver availability** — on-duty/available/off-duty driver counts
+- **Fleet health** — upcoming doc expirations, maintenance alerts, HOS violations
+
+**Portal:** Owner
+**Route:** `/carrier/dashboard`
+**Plan Tier:** Pro+
+**Tech Stack:** Server actions with Prisma aggregates, client-side 60s polling
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getDashboardKPIs", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DashboardKPIs>" },
+  { name: "getLoadStatusBreakdown", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<LoadStatusCounts>" },
+  { name: "getDriverAvailability", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DriverAvailabilityCounts>" },
+  { name: "getFleetHealthAlerts", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<HealthAlert[]>" }
+]} />
+
+### `getDashboardKPIs()`
+
+Returns top-level KPI metrics for the current day.
+
+<CodeBlock language="typescript">
+{`export async function getDashboardKPIs(): Promise<ActionState<DashboardKPIs>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const today = startOfDay(new Date());
+
+  // Aggregate revenue from invoices created today
+  const revenueAgg = await prisma.invoice.aggregate({
+    where: {
+      tenantId,
+      createdAt: { gte: today },
+    },
+    _sum: { total: true },
+  });
+
+  // Active loads count
+  const activeLoadsCount = await prisma.load.count({
+    where: {
+      tenantId,
+      status: { in: ['IN_TRANSIT', 'ASSIGNED'] },
+    },
+  });
+
+  // Available drivers (not on active load)
+  const availableDriversCount = await prisma.driver.count({
+    where: {
+      tenantId,
+      currentLoadId: null,
+    },
+  });
+
+  // Compliance alerts (docs expiring within 30 days)
+  const complianceAlerts = await prisma.document.count({
+    where: {
+      tenantId,
+      expiryDate: {
+        lte: addDays(new Date(), 30),
+        gte: new Date(),
+      },
+    },
+  });
+
+  return {
+    success: true,
+    data: {
+      todayRevenue: revenueAgg._sum.total ?? 0,
+      activeLoads: activeLoadsCount,
+      availableDrivers: availableDriversCount,
+      complianceAlerts,
+    },
+  };
+}`}
+</CodeBlock>
+
+**Performance:** Uses Prisma aggregates for efficient counting. No N+1 queries.
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "status: LoadStatus (PENDING | ASSIGNED | IN_TRANSIT | DELIVERED)",
+  "customerId: String?",
+  "rate: Decimal"
+]} />
+
+<PrismaModelRef model="Driver" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "currentLoadId: String? (null = available)"
+]} />
+
+<PrismaModelRef model="Document" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "expiryDate: DateTime? (used for compliance alert calc)"
+]} />
+
+## Security Considerations
+
+<Callout variant="warning" title="Tenant Scoping">
+All queries include `tenantId` filter. RLS policies enforce tenant isolation at the database level. Dashboard actions do NOT use `bypass_rls`.
+</Callout>
+
+**Role guards:** OWNER and MANAGER roles can view dashboard. DRIVER role cannot access Carrier Dashboard (they have a separate Driver Dashboard).
+
+## Performance Considerations
+
+- Dashboard uses 4 separate server actions (can be parallelized on client)
+- Each query is optimized with indexes on `(tenantId, status)` and `(tenantId, expiryDate)`
+- Client-side polling every 60s (configurable)
+- Consider caching for large fleets (100+ trucks)
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="carrier-fleet-drivers" />

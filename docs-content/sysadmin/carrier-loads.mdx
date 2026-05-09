@@ -1,0 +1,122 @@
+---
+slug: carrier-loads
+title: Carrier Load Management — Technical Reference
+summary: Load lifecycle management from PENDING to DELIVERED with status workflow enforcement and route/driver assignment logic.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 12
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All Load queries are tenant-scoped via RLS"
+  - "Status updates are forward-only (cannot regress)"
+  - "Driver assignment triggers push notification"
+---
+
+# Carrier Load Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Carrier Load Management is the core dispatch subsystem at `/carrier/loads`.
+
+**Portal:** Owner
+**Route:** `/carrier/loads`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getLoads", roleGuard: "OWNER | MANAGER", inputSchema: "LoadFilterSchema", returnType: "ActionState<Load[]>" },
+  { name: "getLoad", roleGuard: "OWNER | MANAGER | DRIVER", inputSchema: "{ loadId: string }", returnType: "ActionState<LoadDetail>" },
+  { name: "createLoad", roleGuard: "OWNER | MANAGER", inputSchema: "CreateLoadSchema", returnType: "ActionState<Load>" },
+  { name: "updateLoadStatus", roleGuard: "OWNER | MANAGER | DRIVER", inputSchema: "UpdateLoadStatusSchema", returnType: "ActionState<Load>" },
+  { name: "assignDriver", roleGuard: "OWNER | MANAGER", inputSchema: "AssignDriverSchema", returnType: "ActionState<Load>" },
+  { name: "cancelLoad", roleGuard: "OWNER", inputSchema: "{ loadId: string }", returnType: "ActionState<void>" }
+]} />
+
+### `updateLoadStatus()`
+
+Advances load status through the workflow. Enforces forward-only progression.
+
+<CodeBlock language="typescript">
+{`export async function updateLoadStatus(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Load>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER, UserRole.DRIVER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = UpdateLoadStatusSchema.parse({
+    loadId: formData.get('loadId'),
+    newStatus: formData.get('newStatus'),
+  });
+
+  const load = await prisma.load.findUnique({
+    where: { id: parsed.loadId, tenantId },
+  });
+
+  if (!load) {
+    return { success: false, error: 'Load not found' };
+  }
+
+  // Enforce forward-only status progression
+  const statusOrder = ['PENDING', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED'];
+  const currentIndex = statusOrder.indexOf(load.status);
+  const newIndex = statusOrder.indexOf(parsed.newStatus);
+
+  if (newIndex <= currentIndex) {
+    return { success: false, error: 'Cannot regress load status' };
+  }
+
+  const updated = await prisma.load.update({
+    where: { id: parsed.loadId },
+    data: {
+      status: parsed.newStatus,
+      updatedAt: new Date(),
+    },
+  });
+
+  return { success: true, data: updated };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "routeId: String? (FK to Route)",
+  "customerId: String? (FK to Customer)",
+  "pickupStopId: String (FK to RouteStop)",
+  "deliveryStopId: String (FK to RouteStop)",
+  "status: LoadStatus (PENDING | ASSIGNED | IN_TRANSIT | DELIVERED)",
+  "rate: Decimal",
+  "weight: Decimal?",
+  "commodity: String?",
+  "bolNumber: String?",
+  "poNumber: String?"
+]} />
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Load created, awaiting route assignment" },
+  { label: "ASSIGNED", description: "Route and driver assigned" },
+  { label: "IN_TRANSIT", description: "Driver picked up freight" },
+  { label: "DELIVERED", description: "Driver delivered freight" }
+]} />
+
+**State transitions:**
+- PENDING → ASSIGNED: Owner assigns to route via `assignDriver()`
+- ASSIGNED → IN_TRANSIT: Driver picks up freight
+- IN_TRANSIT → DELIVERED: Driver completes delivery
+- **No backwards transitions allowed**
+
+## Related Features
+
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-my-load" />

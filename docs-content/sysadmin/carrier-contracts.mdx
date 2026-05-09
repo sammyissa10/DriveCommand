@@ -1,0 +1,80 @@
+---
+slug: carrier-contracts
+title: Contract Management — Technical Reference
+summary: Carrier contract lifecycle with rate tables, renewal tracking, and automated expiration alerts via server actions.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Contract documents stored in Cloudflare R2"
+  - "Rate tables stored as JSON in Contract model"
+  - "Renewal reminders via cron job at /api/cron/send-reminders"
+---
+
+# Contract Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Contract Management handles formal shipper agreements with rate tables and renewal tracking.
+
+**Portal:** Owner
+**Route:** `/carrier/contracts`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getContracts", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Contract[]>" },
+  { name: "getContract", roleGuard: "OWNER | MANAGER", inputSchema: "{ contractId: string }", returnType: "ActionState<Contract>" },
+  { name: "createContract", roleGuard: "OWNER | MANAGER", inputSchema: "CreateContractSchema", returnType: "ActionState<Contract>" },
+  { name: "updateContract", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateContractSchema", returnType: "ActionState<Contract>" },
+  { name: "renewContract", roleGuard: "OWNER | MANAGER", inputSchema: "RenewContractSchema", returnType: "ActionState<Contract>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="Contract" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "customerId: String (FK to Customer)",
+  "effectiveDate: DateTime",
+  "expirationDate: DateTime",
+  "rateTables: Json (array of { origin, destination, rate })",
+  "documentUrl: String? (R2 path to signed PDF)",
+  "status: ContractStatus (ACTIVE | EXPIRED | RENEWED)",
+  "renewedContractId: String? (FK to new contract)"
+]} />
+
+## Cron Jobs
+
+Renewal reminders sent via `/api/cron/send-reminders` daily at 9am UTC:
+
+<CodeBlock language="typescript">
+{`// Check for contracts expiring in 30 days
+const expiringContracts = await prisma.contract.findMany({
+  where: {
+    expirationDate: {
+      gte: new Date(),
+      lte: addDays(new Date(), 30),
+    },
+    status: 'ACTIVE',
+  },
+  include: { customer: true },
+});
+
+for (const contract of expiringContracts) {
+  await sendContractRenewalEmail({
+    customerName: contract.customer.companyName,
+    expirationDate: contract.expirationDate,
+  });
+}`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="carrier-clients" />
+<FeatureCard slug="carrier-templates" />

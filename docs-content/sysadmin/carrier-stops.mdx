@@ -1,0 +1,61 @@
+---
+slug: carrier-stops
+title: Stop Management — Technical Reference
+summary: Route stop CRUD with pickup/delivery details, contact info, BOL/PO tracking, and load linkage via foreign keys.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "RouteStop.loadId FK links stops to loads"
+  - "Load.pickupStopId and deliveryStopId create bidirectional links"
+  - "Stop sequence enforced at route level"
+---
+
+# Stop Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Stop Management provides CRUD for route stops with load linkage.
+
+**Portal:** Owner
+**Route:** `/carrier/stops`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getStops", roleGuard: "OWNER | MANAGER", inputSchema: "{ routeId?: string }", returnType: "ActionState<RouteStop[]>" },
+  { name: "updateStop", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateStopSchema", returnType: "ActionState<RouteStop>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="RouteStop" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "routeId: String (FK to Route)",
+  "loadId: String? (FK to Load)",
+  "sequence: Int (stop order in route)",
+  "address: String",
+  "latitude: Decimal?",
+  "longitude: Decimal?",
+  "contactName: String?",
+  "contactPhone: String?",
+  "bolNumber: String?",
+  "poNumber: String?",
+  "type: StopType (PICKUP | DELIVERY | FUEL | REST)"
+]} />
+
+**Bidirectional load linkage:**
+- `RouteStop.loadId` → points to Load
+- `Load.pickupStopId` → points to RouteStop (pickup)
+- `Load.deliveryStopId` → points to RouteStop (delivery)
+
+## Related Features
+
+<FeatureCard slug="routes" />
+<FeatureCard slug="carrier-loads" />

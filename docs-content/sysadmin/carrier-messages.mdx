@@ -1,0 +1,92 @@
+---
+slug: carrier-messages
+title: Fleet Messaging — Technical Reference
+summary: iMessage-style fleet communication with broadcast and targeted messaging, push notification delivery, and unread tracking.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Messages are tenant-scoped"
+  - "Broadcast messages create one FleetMessage record per recipient"
+  - "Push notifications sent via expo-server-sdk"
+---
+
+# Fleet Messaging — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Fleet Messaging provides real-time communication between owners/managers and drivers.
+
+**Portal:** Owner
+**Route:** `/carrier/messages`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getMessages", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<FleetMessage[]>" },
+  { name: "sendMessage", roleGuard: "OWNER | MANAGER", inputSchema: "SendMessageSchema", returnType: "ActionState<FleetMessage>" },
+  { name: "broadcastMessage", roleGuard: "OWNER | MANAGER", inputSchema: "BroadcastMessageSchema", returnType: "ActionState<void>" }
+]} />
+
+### `sendMessage()`
+
+Sends a targeted message to a specific driver with push notification.
+
+<CodeBlock language="typescript">
+{`export async function sendMessage(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<FleetMessage>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = SendMessageSchema.parse({
+    recipientId: formData.get('recipientId'),
+    message: formData.get('message'),
+    loadId: formData.get('loadId'), // optional
+  });
+
+  const fleetMessage = await prisma.fleetMessage.create({
+    data: {
+      tenantId,
+      senderId: (await getCurrentUser()).id,
+      recipientId: parsed.recipientId,
+      message: parsed.message,
+      loadId: parsed.loadId,
+      isBroadcast: false,
+    },
+  });
+
+  // Send push notification
+  await sendPushToUser(parsed.recipientId, {
+    title: 'New Message',
+    body: parsed.message.substring(0, 100),
+    data: { type: 'fleet_message', messageId: fleetMessage.id },
+  });
+
+  return { success: true, data: fleetMessage };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="FleetMessage" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "senderId: String (FK to User)",
+  "recipientId: String? (FK to User, null if broadcast)",
+  "isBroadcast: Boolean",
+  "message: String (max 500 chars)",
+  "loadId: String? (load-scoped message)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Related Features
+
+<FeatureCard slug="driver-messages" />

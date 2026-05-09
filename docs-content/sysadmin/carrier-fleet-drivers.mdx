@@ -1,0 +1,80 @@
+---
+slug: carrier-fleet-drivers
+title: Carrier Driver Management — Technical Reference
+summary: Driver roster management with compliance tracking, invitation flow, and real-time status indicators.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Driver invitation tokens expire after 7 days"
+  - "Compliance status computed from Document.expiryDate"
+  - "Role guard: OWNER | MANAGER required"
+---
+
+# Carrier Driver Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Carrier Driver Management provides owner-side driver roster views with compliance tracking.
+
+**Portal:** Owner
+**Route:** `/carrier/fleet/drivers`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getDrivers", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DriverWithCompliance[]>" },
+  { name: "getDriver", roleGuard: "OWNER | MANAGER", inputSchema: "{ driverId: string }", returnType: "ActionState<DriverDetail>" },
+  { name: "inviteDriver", roleGuard: "OWNER | MANAGER", inputSchema: "InviteDriverSchema", returnType: "ActionState<DriverInvitation>" },
+  { name: "updateDriver", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateDriverSchema", returnType: "ActionState<Driver>" }
+]} />
+
+### Compliance Status Computation
+
+Compliance dots (green/amber/red) are computed server-side:
+
+<CodeBlock language="typescript">
+{`function computeComplianceStatus(driver: Driver): 'ok' | 'warning' | 'critical' {
+  const docs = driver.documents;
+  const now = new Date();
+  const thirtyDaysOut = addDays(now, 30);
+
+  const expiredDocs = docs.filter(d => d.expiryDate && d.expiryDate < now);
+  const expiringSoon = docs.filter(d =>
+    d.expiryDate && d.expiryDate >= now && d.expiryDate <= thirtyDaysOut
+  );
+
+  if (expiredDocs.length > 0) return 'critical'; // Red
+  if (expiringSoon.length > 0) return 'warning'; // Amber
+  return 'ok'; // Green
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Driver" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "userId: String (FK to User)",
+  "licenseNumber: String?",
+  "currentLoadId: String? (null = available)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+<PrismaModelRef model="User" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "email: String",
+  "name: String",
+  "role: UserRole (OWNER | MANAGER | DRIVER)"
+]} />
+
+## Related Features
+
+<FeatureCard slug="drivers" />
+<FeatureCard slug="driver-documents" />

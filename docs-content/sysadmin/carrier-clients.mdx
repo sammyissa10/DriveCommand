@@ -1,0 +1,119 @@
+---
+slug: carrier-clients
+title: Client Management — Technical Reference
+summary: Shipper and broker relationship management with customer CRUD, load history queries, and revenue tracking via server actions.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All Customer queries are tenant-scoped"
+  - "Revenue calculations aggregate from Invoice table"
+  - "Role guard: OWNER | MANAGER required"
+---
+
+# Client Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Client Management provides CRUD operations for shipper and broker relationships. Key features:
+
+- **Customer CRUD** — create, update, list, delete customer records
+- **Load history** — query all loads per customer
+- **Revenue tracking** — aggregate invoice totals by customer
+- **Payment terms** — Net 30/60/90 configuration
+
+**Portal:** Owner
+**Route:** `/carrier/clients`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getClients", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Customer[]>" },
+  { name: "getClient", roleGuard: "OWNER | MANAGER", inputSchema: "{ customerId: string }", returnType: "ActionState<CustomerDetail>" },
+  { name: "createClient", roleGuard: "OWNER | MANAGER", inputSchema: "CreateCustomerSchema", returnType: "ActionState<Customer>" },
+  { name: "updateClient", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateCustomerSchema", returnType: "ActionState<Customer>" },
+  { name: "deleteClient", roleGuard: "OWNER", inputSchema: "{ customerId: string }", returnType: "ActionState<void>" }
+]} />
+
+### `getClient()`
+
+Returns customer detail with load history and revenue totals.
+
+<CodeBlock language="typescript">
+{`export async function getClient(
+  customerId: string
+): Promise<ActionState<CustomerDetail>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId, tenantId },
+    include: {
+      loads: {
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      },
+    },
+  });
+
+  if (!customer) {
+    return { success: false, error: 'Customer not found' };
+  }
+
+  // Aggregate revenue from invoices
+  const revenueAgg = await prisma.invoice.aggregate({
+    where: { customerId, tenantId },
+    _sum: { total: true },
+  });
+
+  return {
+    success: true,
+    data: {
+      ...customer,
+      totalRevenue: revenueAgg._sum.total ?? 0,
+      loadCount: customer.loads.length,
+    },
+  };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Customer" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "companyName: String",
+  "mcNumber: String? (Motor Carrier number)",
+  "contactName: String?",
+  "contactEmail: String?",
+  "contactPhone: String?",
+  "paymentTerms: String? (Net 30, Net 60, Net 90)",
+  "billingAddress: String?",
+  "notes: String?",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Related models:**
+- `Load` — has `customerId` FK
+- `Invoice` — has `customerId` FK for revenue aggregation
+
+**Indexes:**
+- `(tenantId, companyName)` — for customer list queries
+- `(tenantId, mcNumber)` — for MC number lookup
+
+## Security Considerations
+
+<Callout variant="warning" title="Delete Restrictions">
+Customer deletion is restricted to OWNER role only (not MANAGER). Soft delete is recommended for customers with existing loads or invoices.
+</Callout>
+
+## Related Features
+
+<FeatureCard slug="carrier-contracts" />
+<FeatureCard slug="crm" />

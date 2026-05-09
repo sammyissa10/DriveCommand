@@ -1,0 +1,51 @@
+---
+slug: carrier-templates
+title: Dispatch Templates — Technical Reference
+summary: Reusable dispatch and route templates with JSON-based stop sequences and pre-filled load details.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Templates are tenant-scoped"
+  - "Template JSON schema validated on create/update"
+  - "Templates do not store driver assignments (populated at runtime)"
+---
+
+# Dispatch Templates — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Dispatch Templates store reusable route and load configurations as JSON.
+
+**Portal:** Owner
+**Route:** `/carrier/templates`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getTemplates", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<DispatchTemplate[]>" },
+  { name: "createTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "CreateTemplateSchema", returnType: "ActionState<DispatchTemplate>" },
+  { name: "applyTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "{ templateId: string }", returnType: "ActionState<RouteData>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="DispatchTemplate" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "name: String (user-facing template name)",
+  "stops: Json (array of { address, type, contactName })",
+  "defaultRate: Decimal?",
+  "commodityType: String?",
+  "notes: String?"
+]} />
+
+## Related Features
+
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="routes" />

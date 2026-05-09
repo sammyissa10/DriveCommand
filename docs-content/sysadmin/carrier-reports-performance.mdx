@@ -1,0 +1,84 @@
+---
+slug: carrier-reports-performance
+title: Performance Report — Technical Reference
+summary: Fleet efficiency metrics including on-time delivery rate, truck utilization, cost-per-mile, and driver productivity analytics.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Metrics calculated from Load, Route, and FuelLog tables"
+  - "Cost-per-mile includes fuel + maintenance + payroll"
+  - "Utilization based on available days vs. active days"
+---
+
+# Performance Report — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Performance Report provides operational KPIs for fleet optimization.
+
+**Portal:** Owner
+**Route:** `/carrier/reports/performance`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getOnTimeDeliveryRate", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<number>" },
+  { name: "getTruckUtilization", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<UtilizationData[]>" },
+  { name: "getCostPerMile", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<number>" },
+  { name: "getDriverEfficiency", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<DriverEfficiencyData[]>" }
+]} />
+
+### On-Time Delivery Calculation
+
+<CodeBlock language="typescript">
+{`export async function getOnTimeDeliveryRate(
+  dateRange: DateRangeSchema
+): Promise<ActionState<number>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const loads = await prisma.load.findMany({
+    where: {
+      tenantId,
+      status: 'DELIVERED',
+      deliveredAt: {
+        gte: dateRange.startDate,
+        lte: dateRange.endDate,
+      },
+    },
+    include: { deliveryStop: true },
+  });
+
+  const onTimeCount = loads.filter(load =>
+    load.deliveredAt &&
+    load.deliveryStop?.scheduledTime &&
+    load.deliveredAt <= load.deliveryStop.scheduledTime
+  ).length;
+
+  const rate = loads.length > 0 ? (onTimeCount / loads.length) * 100 : 0;
+
+  return { success: true, data: rate };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "status: LoadStatus",
+  "deliveredAt: DateTime?",
+  "scheduledDeliveryDate: DateTime?"
+]} />
+
+## Related Features
+
+<FeatureCard slug="carrier-dashboard" />
+<FeatureCard slug="fuel-dashboard" />

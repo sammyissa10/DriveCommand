@@ -1,0 +1,79 @@
+---
+slug: carrier-fleet-trucks
+title: Carrier Truck Management — Technical Reference
+summary: Truck fleet management with auto-status badges, document tracking, maintenance schedules, and safety alerts.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All Truck queries are tenant-scoped via RLS"
+  - "Status badges computed from Document + ScheduledService"
+  - "Maintenance events create audit trail in MaintenanceEvent model"
+---
+
+# Carrier Truck Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Carrier Truck Management provides CRUD operations for fleet vehicles with auto-status badges.
+
+**Portal:** Owner
+**Route:** `/carrier/fleet/trucks`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getTrucks", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<TruckWithStatus[]>" },
+  { name: "getTruck", roleGuard: "OWNER | MANAGER", inputSchema: "{ truckId: string }", returnType: "ActionState<TruckDetail>" },
+  { name: "createTruck", roleGuard: "OWNER | MANAGER", inputSchema: "CreateTruckSchema", returnType: "ActionState<Truck>" },
+  { name: "updateTruck", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateTruckSchema", returnType: "ActionState<Truck>" }
+]} />
+
+### Auto-Status Badge Logic
+
+Truck status badges are computed server-side from multiple sources:
+
+<CodeBlock language="typescript">
+{`function computeTruckStatus(truck: Truck): TruckStatus {
+  // Priority 1: Check if actively in use
+  if (truck.currentRouteId) return 'IN_USE';
+
+  // Priority 2: Check for maintenance
+  const activeMaintenance = truck.scheduledServices.find(
+    s => s.status === 'IN_PROGRESS'
+  );
+  if (activeMaintenance) return 'IN_MAINTENANCE';
+
+  // Priority 3: Check for expired docs
+  const expiredDocs = truck.documents.filter(
+    d => d.expiryDate && d.expiryDate < new Date()
+  );
+  if (expiredDocs.length > 0) return 'EXPIRED_DOCS';
+
+  // Default: Ready to use
+  return 'READY_TO_USE';
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Truck" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String",
+  "truckNumber: String",
+  "vin: String?",
+  "make: String?",
+  "model: String?",
+  "year: Int?",
+  "currentRouteId: String? (null = available)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Related Features
+
+<FeatureCard slug="trucks" />
