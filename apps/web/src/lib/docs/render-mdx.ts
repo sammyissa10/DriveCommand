@@ -52,7 +52,7 @@ export async function renderClientDoc(
   // Validate frontmatter
   const validationResult = clientFrontmatterSchema.safeParse(data);
   if (!validationResult.success) {
-    const errors = validationResult.error.errors
+    const errors = validationResult.error.issues
       .map((e) => `${e.path.join('.')}: ${e.message}`)
       .join(', ');
     throw new Error(`Invalid frontmatter in ${slug}: ${errors}`);
@@ -115,7 +115,7 @@ export async function renderSysadminDoc(
   // Validate frontmatter
   const validationResult = sysadminFrontmatterSchema.safeParse(data);
   if (!validationResult.success) {
-    const errors = validationResult.error.errors
+    const errors = validationResult.error.issues
       .map((e) => `${e.path.join('.')}: ${e.message}`)
       .join(', ');
     throw new Error(`Invalid frontmatter in ${slug}: ${errors}`);
