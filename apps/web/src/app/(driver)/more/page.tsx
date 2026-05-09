@@ -22,8 +22,7 @@ const menuItems = [
     bgClass: 'bg-purple-50 dark:bg-purple-950',
   },
   {
-    // TODO: Create a dedicated /documents page when ready
-    href: '/hours',
+    href: '/documents',
     label: 'Documents',
     description: 'View and upload compliance documents',
     icon: FileText,
