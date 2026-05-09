@@ -1,0 +1,104 @@
+---
+slug: expense-categories
+title: Expense Categories — Technical Reference
+summary: Expense categorization subsystem with ExpenseCategory model, default categories, CRUD operations, and expense linking.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Category management requires OWNER or MANAGER role"
+  - "Default categories cannot be deleted"
+---
+
+# Expense Categories — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Expense Categories subsystem provides categorization for fleet expenses. Includes default categories (Fuel, Maintenance, Tolls, etc.) and supports custom category creation.
+
+**Key components:**
+- Server actions in `src/actions/settings/expenses.ts`
+- ExpenseCategory Prisma model
+- Default category seeding
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getExpenseCategories", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<ExpenseCategory[]>" },
+  { name: "createExpenseCategory", roleGuard: "OWNER | MANAGER", inputSchema: "CreateExpenseCategorySchema", returnType: "ActionState<ExpenseCategory>" },
+  { name: "updateExpenseCategory", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateExpenseCategorySchema", returnType: "ActionState<ExpenseCategory>" },
+  { name: "deleteExpenseCategory", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<void>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="ExpenseCategory" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "name: String",
+  "description: String?",
+  "color: String? (hex color code)",
+  "isDefault: Boolean (default categories cannot be deleted)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Default categories:**
+- Fuel, Maintenance, Tolls, Permits, Insurance, Lease Payments, Driver Pay, Office Expenses, Other
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "ExpenseCategory"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Code Examples
+
+### Seeding default categories
+
+<CodeBlock language="typescript">
+{`export async function seedDefaultCategories(tenantId: string) {
+  const defaults = [
+    { name: 'Fuel', color: '#f59e0b' },
+    { name: 'Maintenance', color: '#3b82f6' },
+    { name: 'Tolls', color: '#10b981' },
+    { name: 'Permits', color: '#8b5cf6' },
+    { name: 'Insurance', color: '#ef4444' },
+    { name: 'Lease Payments', color: '#6366f1' },
+    { name: 'Driver Pay', color: '#ec4899' },
+    { name: 'Office Expenses', color: '#14b8a6' },
+    { name: 'Other', color: '#6b7280' },
+  ];
+
+  for (const category of defaults) {
+    await prisma.expenseCategory.create({
+      data: {
+        tenantId,
+        name: category.name,
+        color: category.color,
+        isDefault: true,
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="warning" title="Default Category Protection">
+Default categories have \`isDefault: true\` and cannot be deleted. Only custom categories can be deleted.
+</Callout>
+
+## Related Features
+
+<FeatureCard slug="expense-templates" />

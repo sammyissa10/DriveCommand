@@ -1,0 +1,183 @@
+---
+slug: subscription
+title: Subscription Management — Technical Reference
+summary: Subscription plan management with Tenant model, plan tier enforcement, billing history, and upgrade/downgrade workflows.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Subscription changes require OWNER role"
+  - "Plan tier enforcement via middleware checks"
+  - "Trial expiry handled by cron job"
+---
+
+# Subscription Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Subscription Management subsystem handles plan selection (Starter, Pro, Business, Enterprise), billing history, feature availability enforcement, and trial period management.
+
+**Key components:**
+- Server actions in `src/actions/settings/subscription.ts`
+- Tenant model (subscriptionPlan field)
+- Plan tier middleware checks
+- Trial expiry cron job
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getSubscriptionDetails", roleGuard: "OWNER", inputSchema: "void", returnType: "ActionState<SubscriptionDetails>" },
+  { name: "upgradePlan", roleGuard: "OWNER", inputSchema: "UpgradePlanSchema", returnType: "ActionState<Tenant>" },
+  { name: "downgradePlan", roleGuard: "OWNER", inputSchema: "DowngradePlanSchema", returnType: "ActionState<Tenant>" },
+  { name: "cancelSubscription", roleGuard: "OWNER", inputSchema: "CancelSubscriptionSchema", returnType: "ActionState<void>" }
+]} />
+
+### `upgradePlan()`
+
+Upgrades tenant to a higher plan tier.
+
+<CodeBlock language="typescript">
+{`export async function upgradePlan(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Tenant>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = UpgradePlanSchema.parse({
+    planTier: formData.get('planTier'), // STARTER | PRO | BUSINESS | ENTERPRISE
+  });
+
+  const tenant = await prisma.tenant.update({
+    where: { id: tenantId },
+    data: {
+      subscriptionPlan: parsed.planTier,
+      subscriptionStartDate: new Date(),
+      trialEndsAt: null, // Clear trial if upgrading
+    },
+  });
+
+  return { success: true, data: tenant };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Tenant" fields={[
+  "id: String @id @default(uuid())",
+  "companyName: String",
+  "subscriptionPlan: SubscriptionPlan (FREE | STARTER | PRO | BUSINESS | ENTERPRISE)",
+  "subscriptionStartDate: DateTime?",
+  "subscriptionEndDate: DateTime?",
+  "trialEndsAt: DateTime? (14-day trial for new accounts)",
+  "status: TenantStatus (PENDING | ACTIVE | SUSPENDED)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Plan enum:**
+
+<CodeBlock language="typescript">
+{`enum SubscriptionPlan {
+  FREE = 'FREE',
+  STARTER = 'STARTER',
+  PRO = 'PRO',
+  BUSINESS = 'BUSINESS',
+  ENTERPRISE = 'ENTERPRISE',
+}`}
+</CodeBlock>
+
+## Plan Tier Enforcement
+
+Middleware checks plan tier before allowing access to features.
+
+<CodeBlock language="typescript">
+{`export async function requirePlanTier(minTier: SubscriptionPlan) {
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { subscriptionPlan: true },
+  });
+
+  const tierHierarchy = ['FREE', 'STARTER', 'PRO', 'BUSINESS', 'ENTERPRISE'];
+  const currentTierIndex = tierHierarchy.indexOf(tenant.subscriptionPlan);
+  const requiredTierIndex = tierHierarchy.indexOf(minTier);
+
+  if (currentTierIndex < requiredTierIndex) {
+    throw new Error(\`This feature requires \${minTier} plan or higher\`);
+  }
+}`}
+</CodeBlock>
+
+## Cron Jobs / Background Tasks
+
+### Trial expiry reminder
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/automations
+// Schedule: Daily at 6am UTC
+// Sends reminder 3 days before trial ends
+
+const threeDaysFromNow = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+
+const tenants = await prisma.tenant.findMany({
+  where: {
+    trialEndsAt: {
+      gte: new Date(threeDaysFromNow.setHours(0, 0, 0, 0)),
+      lte: new Date(threeDaysFromNow.setHours(23, 59, 59, 999)),
+    },
+  },
+  include: { users: { where: { role: UserRole.OWNER } } },
+});
+
+for (const tenant of tenants) {
+  await sendTrialExpiryEmail(tenant.users[0].email, tenant.companyName);
+}`}
+</CodeBlock>
+
+## Code Examples
+
+### Checking plan tier in a route
+
+<CodeBlock language="typescript">
+{`export async function generateIFTAReport(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<IFTAReport>> {
+  await requireRole([UserRole.OWNER]);
+  await requirePlanTier(SubscriptionPlan.BUSINESS); // IFTA requires Business plan
+
+  const tenantId = await requireTenantId();
+  // Generate report...
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="warning" title="Plan Downgrade">
+Downgrading does not delete data. Features are disabled but data remains accessible if plan is re-upgraded.
+</Callout>
+
+## Performance Considerations
+
+- Plan tier checks are synchronous (no caching)
+- Consider caching plan tier in session for high-traffic routes
+
+## Troubleshooting
+
+**Issue: Feature not unlocking after upgrade**
+
+**Cause:** Session cache stale.
+
+**Fix:** User must log out and log back in to refresh session.
+
+## Related Features
+
+<FeatureCard slug="team-permissions" />

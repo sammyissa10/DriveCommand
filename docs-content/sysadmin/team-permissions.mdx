@@ -1,0 +1,188 @@
+---
+slug: team-permissions
+title: Team Permissions — Technical Reference
+summary: RBAC subsystem with User model, role-based guards, granular permission checks, and invitation workflow.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "User roles stored in app_metadata (Supabase Auth)"
+  - "Permission checks use requireRole() and requirePermission() guards"
+  - "Owner role cannot be removed if only one exists"
+---
+
+# Team Permissions — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Team Permissions subsystem provides role-based access control (RBAC) with four primary roles: Owner, Manager, Dispatcher, Driver. Supports granular permission configuration and secure invitation workflow.
+
+**Key components:**
+- Server actions in `src/actions/settings/team.ts`
+- User Prisma model
+- Role guards (`requireRole`, `requirePermission`)
+- Invitation flow (DriverInvitation model)
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getTeamMembers", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<User[]>" },
+  { name: "inviteTeamMember", roleGuard: "OWNER", inputSchema: "InviteTeamMemberSchema", returnType: "ActionState<User>" },
+  { name: "updateTeamMember", roleGuard: "OWNER", inputSchema: "UpdateTeamMemberSchema", returnType: "ActionState<User>" },
+  { name: "removeTeamMember", roleGuard: "OWNER", inputSchema: "{ userId: string }", returnType: "ActionState<void>" }
+]} />
+
+### `inviteTeamMember()`
+
+Sends an invitation email with pre-configured permissions.
+
+<CodeBlock language="typescript">
+{`export async function inviteTeamMember(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<User>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = InviteTeamMemberSchema.parse({
+    email: formData.get('email'),
+    name: formData.get('name'),
+    role: formData.get('role'),
+    permissions: JSON.parse(formData.get('permissions') || '[]'),
+  });
+
+  // Create invitation token
+  const token = crypto.randomUUID();
+  await prisma.driverInvitation.create({
+    data: {
+      tenantId,
+      email: parsed.email,
+      role: parsed.role,
+      permissions: parsed.permissions,
+      token,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      invitedBy: 'owner',
+    },
+  });
+
+  // Send invitation email
+  await sendInvitationEmail({
+    email: parsed.email,
+    name: parsed.name,
+    invitationUrl: \`\${process.env.NEXT_PUBLIC_BASE_URL}/accept-invitation?token=\${token}\`,
+  });
+
+  return { success: true, data: { email: parsed.email } };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="User" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "supabaseUserId: String? (Supabase Auth UID)",
+  "email: String @unique",
+  "name: String",
+  "role: UserRole (OWNER | MANAGER | DISPATCHER | DRIVER | SYSADMIN)",
+  "permissions: Json (array of permission strings)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Role enum:**
+
+<CodeBlock language="typescript">
+{`enum UserRole {
+  OWNER = 'OWNER',
+  MANAGER = 'MANAGER',
+  DISPATCHER = 'DISPATCHER',
+  DRIVER = 'DRIVER',
+  SYSADMIN = 'SYSADMIN',
+}`}
+</CodeBlock>
+
+**Permissions JSON structure:**
+
+<CodeBlock language="typescript">
+{`type Permissions = string[]; // e.g., ['loads:create', 'loads:edit', 'invoices:view']
+
+// Example:
+permissions: ['loads:create', 'loads:edit', 'drivers:view', 'invoices:view']`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "User"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Code Examples
+
+### Using role guards
+
+<CodeBlock language="typescript">
+{`export async function createLoad(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Load>> {
+  // Require OWNER, MANAGER, or DISPATCHER role
+  await requireRole([UserRole.OWNER, UserRole.MANAGER, UserRole.DISPATCHER]);
+
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Create load...
+}`}
+</CodeBlock>
+
+### Using permission guards
+
+<CodeBlock language="typescript">
+{`export async function deleteInvoice(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  // Require 'invoices:delete' permission (OWNER only by default)
+  await requirePermission('invoices:delete');
+
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Delete invoice...
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: app_metadata">
+User roles are stored in Supabase Auth \`app_metadata\`, NOT \`user_metadata\`. Always read from \`app_metadata\` to prevent role escalation attacks.
+</Callout>
+
+## Performance Considerations
+
+- Permission checks are synchronous (no caching)
+- For high-traffic routes, consider caching permissions in JWT claims
+
+## Troubleshooting
+
+**Issue: User cannot access feature**
+
+**Cause:** Missing permission or incorrect role.
+
+**Fix:** Check user permissions array. Grant required permission via team settings.
+
+## Related Features
+
+<FeatureCard slug="drivers" />
+<FeatureCard slug="subscription" />

@@ -1,0 +1,181 @@
+---
+slug: expense-templates
+title: Expense Templates — Technical Reference
+summary: Recurring expense template subsystem with ExpenseTemplate model, cron-based expense generation, and category linking.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Template management requires OWNER or MANAGER role"
+  - "Cron job uses bypass_rls for cross-tenant processing"
+---
+
+# Expense Templates — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Expense Templates subsystem automates recurring expense creation. Templates define recurrence schedules (weekly, monthly, etc.) and generate expense records via cron job.
+
+**Key components:**
+- Server actions in `src/actions/settings/expenses.ts`
+- ExpenseTemplate Prisma model
+- Cron job for expense generation (`/api/cron/generate-expenses`)
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getExpenseTemplates", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<ExpenseTemplate[]>" },
+  { name: "createExpenseTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "CreateExpenseTemplateSchema", returnType: "ActionState<ExpenseTemplate>" },
+  { name: "updateExpenseTemplate", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateExpenseTemplateSchema", returnType: "ActionState<ExpenseTemplate>" },
+  { name: "deleteExpenseTemplate", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<void>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="ExpenseTemplate" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "name: String",
+  "categoryId: String (foreign key to ExpenseCategory)",
+  "amount: Decimal",
+  "recurrence: Recurrence (WEEKLY | BIWEEKLY | MONTHLY | QUARTERLY | ANNUALLY)",
+  "startDate: DateTime",
+  "endDate: DateTime? (optional, null = infinite)",
+  "lastGenerated: DateTime? (last expense creation date)",
+  "isPaused: Boolean (paused templates skip generation)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Recurrence enum:**
+
+<CodeBlock language="typescript">
+{`enum Recurrence {
+  WEEKLY = 'WEEKLY',
+  BIWEEKLY = 'BIWEEKLY',
+  MONTHLY = 'MONTHLY',
+  QUARTERLY = 'QUARTERLY',
+  ANNUALLY = 'ANNUALLY',
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "ExpenseTemplate"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Cron Jobs / Background Tasks
+
+### Expense generation
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/generate-expenses
+// Schedule: Daily at midnight
+// Auth: CRON_SECRET header
+
+export async function GET(request: Request) {
+  if (request.headers.get('Authorization') !== \`Bearer \${process.env.CRON_SECRET}\`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const prisma = getPrismaClient(); // bypass_rls
+
+  const templates = await prisma.expenseTemplate.findMany({
+    where: {
+      isPaused: false,
+      startDate: { lte: new Date() },
+      OR: [
+        { endDate: null },
+        { endDate: { gte: new Date() } },
+      ],
+    },
+  });
+
+  for (const template of templates) {
+    const nextGenDate = calculateNextGenDate(template);
+
+    if (nextGenDate <= new Date()) {
+      await prisma.expense.create({
+        data: {
+          tenantId: template.tenantId,
+          categoryId: template.categoryId,
+          amount: template.amount,
+          description: template.name,
+          date: nextGenDate,
+          isRecurring: true,
+        },
+      });
+
+      await prisma.expenseTemplate.update({
+        where: { id: template.id },
+        data: { lastGenerated: nextGenDate },
+      });
+    }
+  }
+
+  return Response.json({ generated: templates.length });
+}`}
+</CodeBlock>
+
+## Code Examples
+
+### Calculating next generation date
+
+<CodeBlock language="typescript">
+{`function calculateNextGenDate(template: ExpenseTemplate): Date {
+  const lastGen = template.lastGenerated || template.startDate;
+
+  switch (template.recurrence) {
+    case Recurrence.WEEKLY:
+      return new Date(lastGen.getTime() + 7 * 24 * 60 * 60 * 1000);
+    case Recurrence.BIWEEKLY:
+      return new Date(lastGen.getTime() + 14 * 24 * 60 * 60 * 1000);
+    case Recurrence.MONTHLY:
+      const nextMonth = new Date(lastGen);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      return nextMonth;
+    case Recurrence.QUARTERLY:
+      const nextQuarter = new Date(lastGen);
+      nextQuarter.setMonth(nextQuarter.getMonth() + 3);
+      return nextQuarter;
+    case Recurrence.ANNUALLY:
+      const nextYear = new Date(lastGen);
+      nextYear.setFullYear(nextYear.getFullYear() + 1);
+      return nextYear;
+  }
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="warning" title="Cron Bypass RLS">
+Expense generation cron job uses \`bypass_rls\` to process all tenants. Ensure CRON_SECRET is secure.
+</Callout>
+
+## Performance Considerations
+
+- Cron job processes all templates daily (scales to 10,000 templates)
+- For large fleets, consider batching expense creation
+
+## Troubleshooting
+
+**Issue: Expenses not generating**
+
+**Cause:** Template is paused, or cron job not running.
+
+**Fix:** Check template \`isPaused\` field and Vercel cron logs.
+
+## Related Features
+
+<FeatureCard slug="expense-categories" />

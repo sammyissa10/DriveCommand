@@ -1,0 +1,254 @@
+---
+slug: payroll
+title: Payroll Management — Technical Reference
+summary: Driver payroll subsystem with server actions for CRUD, PayrollRecord model, base pay calculation, bonus/deduction line items, and PDF payslip generation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Payroll access requires OWNER role only"
+  - "Driver-specific payroll records are not visible to drivers (yet)"
+---
+
+# Payroll Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Payroll subsystem tracks driver compensation with base pay (salary, hourly, or per-mile), bonuses, deductions, and net pay calculation. Supports flexible pay periods (weekly, bi-weekly, monthly) and auto-calculates miles logged from completed loads.
+
+**Key components:**
+- Server actions in `src/actions/payroll.ts`
+- PayrollRecord Prisma model
+- Miles logged auto-calculation from Load model
+- PDF payslip generator
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getPayrollRecords", roleGuard: "OWNER", inputSchema: "void", returnType: "ActionState<PayrollRecord[]>" },
+  { name: "getPayrollRecord", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<PayrollRecord>" },
+  { name: "createPayrollRecord", roleGuard: "OWNER", inputSchema: "CreatePayrollRecordSchema", returnType: "ActionState<PayrollRecord>" },
+  { name: "updatePayrollRecord", roleGuard: "OWNER", inputSchema: "UpdatePayrollRecordSchema", returnType: "ActionState<PayrollRecord>" },
+  { name: "deletePayrollRecord", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<void>" },
+  { name: "generatePayslipPDF", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<{ pdfUrl: string }>" }
+]} />
+
+### `createPayrollRecord()`
+
+Creates a payroll record with auto-calculated miles logged.
+
+<CodeBlock language="typescript">
+{`export async function createPayrollRecord(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<PayrollRecord>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = CreatePayrollRecordSchema.parse({
+    driverId: formData.get('driverId'),
+    payPeriodStart: formData.get('payPeriodStart'),
+    payPeriodEnd: formData.get('payPeriodEnd'),
+    basePay: formData.get('basePay'),
+    bonuses: JSON.parse(formData.get('bonuses') || '[]'),
+    deductions: JSON.parse(formData.get('deductions') || '[]'),
+  });
+
+  // Auto-calculate miles logged from completed loads
+  const loads = await prisma.load.findMany({
+    where: {
+      tenantId,
+      driverId: parsed.driverId,
+      status: LoadStatus.DELIVERED,
+      updatedAt: {
+        gte: new Date(parsed.payPeriodStart),
+        lte: new Date(parsed.payPeriodEnd),
+      },
+    },
+  });
+
+  const milesLogged = loads.reduce((sum, load) => sum + (load.loadedMiles || 0), 0);
+
+  // Calculate totals
+  const totalBonuses = parsed.bonuses.reduce((sum, b) => sum + b.amount, 0);
+  const totalDeductions = parsed.deductions.reduce((sum, d) => sum + d.amount, 0);
+  const grossPay = parsed.basePay + totalBonuses;
+  const netPay = grossPay - totalDeductions;
+
+  const payroll = await prisma.payrollRecord.create({
+    data: {
+      tenantId,
+      driverId: parsed.driverId,
+      payPeriodStart: new Date(parsed.payPeriodStart),
+      payPeriodEnd: new Date(parsed.payPeriodEnd),
+      basePay: parsed.basePay,
+      bonuses: parsed.bonuses,
+      deductions: parsed.deductions,
+      milesLogged,
+      grossPay,
+      netPay,
+    },
+    include: { driver: true },
+  });
+
+  return { success: true, data: payroll };
+}`}
+</CodeBlock>
+
+**Miles logged calculation:** Sums `loadedMiles` from all loads with `status: DELIVERED` and `updatedAt` within the pay period. User can override after creation.
+
+### `generatePayslipPDF()`
+
+Generates a PDF payslip for the driver.
+
+<CodeBlock language="typescript">
+{`export async function generatePayslipPDF(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<{ pdfUrl: string }>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const payrollId = formData.get('id') as string;
+  const payroll = await prisma.payrollRecord.findUnique({
+    where: { id: payrollId, tenantId },
+    include: { driver: { include: { user: true } }, tenant: true },
+  });
+
+  if (!payroll) {
+    return { success: false, error: 'Payroll record not found' };
+  }
+
+  const pdfBuffer = await renderToBuffer(<PayslipPDF payroll={payroll} />);
+  const fileName = \`payslip-\${payroll.driver.user.name}-\${payroll.payPeriodStart.toISOString().split('T')[0]}.pdf\`;
+  const s3Url = await uploadToS3(pdfBuffer, fileName, 'application/pdf');
+
+  return { success: true, data: { pdfUrl: s3Url } };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="PayrollRecord" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "driverId: String (foreign key to Driver)",
+  "payPeriodStart: DateTime",
+  "payPeriodEnd: DateTime",
+  "basePay: Decimal (salary, hourly, or per-mile pay)",
+  "bonuses: Json (array of { description: string, amount: number })",
+  "deductions: Json (array of { description: string, amount: number })",
+  "milesLogged: Int (auto-calculated from loads)",
+  "grossPay: Decimal (basePay + totalBonuses)",
+  "netPay: Decimal (grossPay - totalDeductions)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, driverId)` — for driver payroll history
+- `(tenantId, payPeriodStart, payPeriodEnd)` — for date range queries
+
+**JSON structure for bonuses/deductions:**
+
+<CodeBlock language="typescript">
+{`type BonusOrDeduction = {
+  description: string; // e.g., "Safety bonus", "Fuel advance"
+  amount: number; // Decimal as number
+};
+
+// Stored as JSON array
+bonuses: BonusOrDeduction[];
+deductions: BonusOrDeduction[];`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "PayrollRecord"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Code Examples
+
+### Creating a payroll record with bonuses and deductions
+
+<CodeBlock language="typescript">
+{`const bonuses = [
+  { description: 'Safety bonus', amount: 100 },
+  { description: 'On-time delivery bonus', amount: 50 },
+];
+
+const deductions = [
+  { description: 'Health insurance', amount: 200 },
+  { description: 'Fuel advance', amount: 150 },
+];
+
+const formData = new FormData();
+formData.set('driverId', 'driver-uuid');
+formData.set('payPeriodStart', '2026-05-01');
+formData.set('payPeriodEnd', '2026-05-15');
+formData.set('basePay', '2500');
+formData.set('bonuses', JSON.stringify(bonuses));
+formData.set('deductions', JSON.stringify(deductions));
+
+const result = await createPayrollRecord(null, formData);
+// grossPay = 2500 + 150 = 2650
+// netPay = 2650 - 350 = 2300`}
+</CodeBlock>
+
+### Querying payroll by date range
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all payroll records for Q1 2026
+SELECT * FROM "PayrollRecord"
+WHERE tenant_id = 'xxx'
+  AND pay_period_start >= '2026-01-01'
+  AND pay_period_end <= '2026-03-31'
+ORDER BY pay_period_end DESC;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Owner-Only Access">
+Payroll records are OWNER-only. Managers and dispatchers cannot view payroll. Drivers cannot view their own payroll records (yet).
+</Callout>
+
+**Other security notes:**
+- PDF payslips should not be stored long-term (regenerate on demand)
+- Miles logged can be overridden manually (audit log recommended)
+
+## Related Models
+
+- <PrismaModelRef model="Driver" /> — payroll records belong to drivers
+- <PrismaModelRef model="Load" /> — miles logged calculated from loads
+
+## Performance Considerations
+
+- Miles calculation queries all loads in pay period (can be slow for large fleets)
+- Consider caching miles logged after initial calculation
+- PDF generation takes ~300ms per payslip
+
+## Troubleshooting
+
+**Issue: Miles logged is 0**
+
+**Cause:** No completed loads in pay period, or loads missing `loadedMiles` field.
+
+**Fix:** Verify loads have `status: DELIVERED` and `loadedMiles` populated.
+
+## Related Features
+
+<FeatureCard slug="carrier-reports-driver-pay" />
+<FeatureCard slug="drivers" />

@@ -1,0 +1,231 @@
+---
+slug: compliance-dashboard
+title: Compliance Dashboard — Technical Reference
+summary: Document expiry tracking subsystem with compliance score calculation, automated email reminders via cron, and driver/truck compliance aggregation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Compliance dashboard requires OWNER or MANAGER role"
+  - "Expiry reminders sent via cron job (bypass_rls)"
+---
+
+# Compliance Dashboard — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Compliance Dashboard centralizes document expiry tracking for drivers and trucks. Calculates compliance scores (percentage of valid documents), sends automated email reminders (30/14/7 days before expiry), and provides aggregated compliance metrics.
+
+**Key components:**
+- Server actions in `src/actions/compliance.ts`
+- Document Prisma model (driver + truck documents)
+- Compliance score calculation (valid documents ÷ required documents)
+- Expiry reminder cron job (`/api/cron/send-reminders`)
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getComplianceOverview", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<ComplianceOverview>" },
+  { name: "getDriverCompliance", roleGuard: "OWNER | MANAGER", inputSchema: "{ driverId: string }", returnType: "ActionState<DriverCompliance>" },
+  { name: "getTruckCompliance", roleGuard: "OWNER | MANAGER", inputSchema: "{ truckId: string }", returnType: "ActionState<TruckCompliance>" }
+]} />
+
+### `getComplianceOverview()`
+
+Returns fleet-wide compliance metrics.
+
+<CodeBlock language="typescript">
+{`export async function getComplianceOverview(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<ComplianceOverview>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const drivers = await prisma.driver.findMany({
+    where: { tenantId },
+    include: { documents: true },
+  });
+
+  const trucks = await prisma.truck.findMany({
+    where: { tenantId },
+    include: { documents: true },
+  });
+
+  const driverCompliance = drivers.map(driver => calculateDriverCompliance(driver));
+  const truckCompliance = trucks.map(truck => calculateTruckCompliance(truck));
+
+  const fleetScore = [...driverCompliance, ...truckCompliance].reduce(
+    (sum, c) => sum + c.score, 0
+  ) / (driverCompliance.length + truckCompliance.length);
+
+  const expiringDocs = await prisma.document.findMany({
+    where: {
+      tenantId,
+      expiryDate: {
+        gte: new Date(),
+        lte: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      },
+    },
+  });
+
+  const expiredDocs = await prisma.document.findMany({
+    where: {
+      tenantId,
+      expiryDate: { lt: new Date() },
+    },
+  });
+
+  return {
+    success: true,
+    data: {
+      fleetScore,
+      driversCompliant: driverCompliance.filter(d => d.score === 100).length,
+      trucksCompliant: truckCompliance.filter(t => t.score === 100).length,
+      expiringDocs,
+      expiredDocs,
+    },
+  };
+}`}
+</CodeBlock>
+
+### Compliance score calculation
+
+<CodeBlock language="typescript">
+{`function calculateDriverCompliance(driver: Driver & { documents: Document[] }): DriverCompliance {
+  const requiredDocTypes = ['CDL', 'MEDICAL_CARD'];
+  const validDocs = driver.documents.filter(doc =>
+    requiredDocTypes.includes(doc.documentType) &&
+    doc.expiryDate &&
+    doc.expiryDate > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Valid if > 30 days
+  );
+
+  const score = (validDocs.length / requiredDocTypes.length) * 100;
+
+  return {
+    driverId: driver.id,
+    driverName: driver.user.name,
+    score,
+    status: score === 100 ? 'compliant' : score >= 80 ? 'warning' : 'critical',
+  };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Document" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "driverId: String? (foreign key, null if truck document)",
+  "truckId: String? (foreign key, null if driver document)",
+  "documentType: String (CDL | MEDICAL_CARD | REGISTRATION | INSURANCE | etc.)",
+  "fileUrl: String (R2 storage URL)",
+  "fileName: String",
+  "expiryDate: DateTime?",
+  "uploadedAt: DateTime @default(now())",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, driverId)` — for driver document list
+- `(tenantId, truckId)` — for truck document list
+- `(tenantId, expiryDate)` — for expiry queries
+
+**Required document types:**
+- Drivers: CDL, MEDICAL_CARD
+- Trucks: REGISTRATION, ANNUAL_INSPECTION, INSURANCE
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Document"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Cron Jobs / Background Tasks
+
+### Expiry reminder emails
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/send-reminders
+// Schedule: Daily at 6am UTC
+// Auth: CRON_SECRET header
+
+export async function GET(request: Request) {
+  if (request.headers.get('Authorization') !== \`Bearer \${process.env.CRON_SECRET}\`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const prisma = getPrismaClient(); // bypass_rls for cross-tenant query
+
+  // Find documents expiring in 30, 14, or 7 days
+  const reminders = [30, 14, 7];
+
+  for (const days of reminders) {
+    const targetDate = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+    const docs = await prisma.document.findMany({
+      where: {
+        expiryDate: {
+          gte: new Date(targetDate.setHours(0, 0, 0, 0)),
+          lte: new Date(targetDate.setHours(23, 59, 59, 999)),
+        },
+      },
+      include: { driver: { include: { user: true } }, truck: true, tenant: true },
+    });
+
+    for (const doc of docs) {
+      await sendExpiryReminderEmail(doc, days);
+    }
+  }
+
+  return Response.json({ sent: docs.length });
+}`}
+</CodeBlock>
+
+## Code Examples
+
+### Querying expiring documents
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all documents expiring within 30 days
+SELECT * FROM "Document"
+WHERE tenant_id = 'xxx'
+  AND expiry_date >= NOW()
+  AND expiry_date <= NOW() + INTERVAL '30 days'
+ORDER BY expiry_date ASC;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="warning" title="Cron Bypass RLS">
+The expiry reminder cron job uses \`bypass_rls\` to send emails across all tenants. Ensure CRON_SECRET is stored securely and not exposed in logs.
+</Callout>
+
+## Performance Considerations
+
+- Compliance score calculated on-demand (not cached)
+- For large fleets (100+ drivers/trucks), consider caching scores daily
+
+## Troubleshooting
+
+**Issue: Expiry reminders not sent**
+
+**Cause:** Cron job not running, or CRON_SECRET mismatch.
+
+**Fix:** Check Vercel cron logs. Verify CRON_SECRET in environment variables.
+
+## Related Features
+
+<FeatureCard slug="driver-documents" />
+<FeatureCard slug="trucks" />

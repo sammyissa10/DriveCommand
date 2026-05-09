@@ -1,0 +1,289 @@
+---
+slug: integrations
+title: Third-Party Integrations — Technical Reference
+summary: Integration subsystem with Tenant.integrations JSON field, QuickBooks/Samsara/Motive connectors, and sync workflows.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Integration credentials stored in Tenant.integrations JSON (encrypted at rest)"
+  - "OAuth tokens refreshed automatically"
+  - "Sync failures logged for debugging"
+---
+
+# Third-Party Integrations — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Integrations subsystem connects DriveCommand with third-party services: QuickBooks (accounting), Samsara/Motive (ELD/GPS), factoring companies, and email providers. Uses Tenant.integrations JSON field to store credentials and sync state.
+
+**Key components:**
+- Server actions in `src/actions/settings/integrations.ts`
+- Tenant.integrations JSON field
+- Integration-specific connectors (QuickBooks, Samsara, etc.)
+- Sync cron jobs
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getIntegrations", roleGuard: "OWNER", inputSchema: "void", returnType: "ActionState<Integrations>" },
+  { name: "connectQuickBooks", roleGuard: "OWNER", inputSchema: "{ authCode: string }", returnType: "ActionState<void>" },
+  { name: "connectSamsara", roleGuard: "OWNER", inputSchema: "{ apiKey: string }", returnType: "ActionState<void>" },
+  { name: "disconnectIntegration", roleGuard: "OWNER", inputSchema: "{ provider: string }", returnType: "ActionState<void>" }
+]} />
+
+### `connectQuickBooks()`
+
+Connects QuickBooks via OAuth2.
+
+<CodeBlock language="typescript">
+{`export async function connectQuickBooks(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const authCode = formData.get('authCode') as string;
+
+  // Exchange auth code for access token
+  const tokenResponse = await fetch('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: authCode,
+      redirect_uri: \`\${process.env.NEXT_PUBLIC_BASE_URL}/settings/integrations/quickbooks/callback\`,
+      client_id: process.env.QUICKBOOKS_CLIENT_ID,
+      client_secret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    }),
+  });
+
+  const tokens = await tokenResponse.json();
+
+  // Store tokens in Tenant.integrations
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: {
+      integrations: {
+        quickbooks: {
+          connected: true,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
+          realmId: tokens.realmId,
+        },
+      },
+    },
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Tenant" fields={[
+  "id: String @id @default(uuid())",
+  "companyName: String",
+  "integrations: Json (integration credentials and state)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Integrations JSON structure:**
+
+<CodeBlock language="typescript">
+{`type Integrations = {
+  quickbooks?: {
+    connected: boolean;
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: Date;
+    realmId: string;
+  };
+  samsara?: {
+    connected: boolean;
+    apiKey: string;
+    lastSync: Date;
+  };
+  motive?: {
+    connected: boolean;
+    apiKey: string;
+    lastSync: Date;
+  };
+  smtp?: {
+    connected: boolean;
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    fromName: string;
+    fromEmail: string;
+  };
+};`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Tenant"
+  FOR ALL
+  USING (
+    id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Code Examples
+
+### QuickBooks invoice sync
+
+<CodeBlock language="typescript">
+{`export async function syncInvoiceToQuickBooks(invoice: Invoice) {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: invoice.tenantId },
+    select: { integrations: true },
+  });
+
+  if (!tenant.integrations?.quickbooks?.connected) {
+    throw new Error('QuickBooks not connected');
+  }
+
+  const qb = tenant.integrations.quickbooks;
+
+  const qbInvoice = {
+    Line: invoice.items.map(item => ({
+      Amount: item.amount,
+      Description: item.description,
+      DetailType: 'SalesItemLineDetail',
+    })),
+    CustomerRef: { value: invoice.customer.quickbooksId },
+    DueDate: invoice.dueDate.toISOString().split('T')[0],
+  };
+
+  const response = await fetch(\`https://quickbooks.api.intuit.com/v3/company/\${qb.realmId}/invoice\`, {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${qb.accessToken}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(qbInvoice),
+  });
+
+  if (!response.ok) {
+    throw new Error('QuickBooks sync failed');
+  }
+}`}
+</CodeBlock>
+
+### Samsara GPS import
+
+<CodeBlock language="typescript">
+{`export async function importSamsaraGPS(tenantId: string) {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { integrations: true },
+  });
+
+  const samsara = tenant.integrations?.samsara;
+  if (!samsara?.connected) return;
+
+  const response = await fetch('https://api.samsara.com/fleet/locations', {
+    headers: { 'Authorization': \`Bearer \${samsara.apiKey}\` },
+  });
+
+  const locations = await response.json();
+
+  for (const location of locations.data) {
+    await prisma.gpsReport.create({
+      data: {
+        tenantId,
+        truckId: location.vehicleId,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        timestamp: new Date(location.time),
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+## Cron Jobs / Background Tasks
+
+### QuickBooks token refresh
+
+<CodeBlock language="typescript">
+{`// Cron: /api/cron/refresh-tokens
+// Schedule: Hourly
+// Refreshes expiring QuickBooks tokens
+
+const tenants = await prisma.tenant.findMany({
+  where: {
+    integrations: {
+      path: ['quickbooks', 'expiresAt'],
+      lte: new Date(Date.now() + 60 * 60 * 1000), // Expiring within 1 hour
+    },
+  },
+});
+
+for (const tenant of tenants) {
+  const qb = tenant.integrations.quickbooks;
+
+  const tokenResponse = await fetch('https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer', {
+    method: 'POST',
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: qb.refreshToken,
+      client_id: process.env.QUICKBOOKS_CLIENT_ID,
+      client_secret: process.env.QUICKBOOKS_CLIENT_SECRET,
+    }),
+  });
+
+  const tokens = await tokenResponse.json();
+
+  await prisma.tenant.update({
+    where: { id: tenant.id },
+    data: {
+      integrations: {
+        ...tenant.integrations,
+        quickbooks: {
+          ...qb,
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+          expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
+        },
+      },
+    },
+  });
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Credential Storage">
+Integration credentials (API keys, OAuth tokens) are stored in Tenant.integrations JSON. Ensure database is encrypted at rest. Do NOT log credentials.
+</Callout>
+
+## Performance Considerations
+
+- QuickBooks sync is rate-limited (500 requests/minute)
+- Samsara GPS import runs every 5 minutes (scales to 100 trucks)
+
+## Troubleshooting
+
+**Issue: QuickBooks sync failing**
+
+**Cause:** Expired access token or invalid realmId.
+
+**Fix:** Check token expiry. Trigger manual refresh or reconnect integration.
+
+## Related Features
+
+<FeatureCard slug="invoices" />
+<FeatureCard slug="live-map" />

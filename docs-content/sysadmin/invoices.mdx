@@ -1,0 +1,336 @@
+---
+slug: invoices
+title: Invoicing — Technical Reference
+summary: Trucking-standard invoicing subsystem with server actions for CRUD, Invoice/InvoiceItem models, FSC calculation, and PDF generation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Invoice creation requires OWNER or MANAGER role"
+  - "Invoice PDF generation uses presigned URLs (30-minute expiry)"
+---
+
+# Invoicing — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Invoicing subsystem provides trucking-standard billing with freight-specific fields (BOL/PRO/PO numbers, commodity, weight, pieces, loaded miles), typed line items (linehaul, FSC, detention, etc.), and FSC auto-calculation. Invoices support PDF generation and status workflow (Draft → Sent → Paid).
+
+**Key components:**
+- Server actions in `src/actions/invoices.ts`
+- Invoice + InvoiceItem Prisma models
+- InvoiceItemType and InvoiceItemUnit enums
+- FSC calculation helper (percent-of-linehaul)
+- PDF generator using React PDF
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getInvoices", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Invoice[]>" },
+  { name: "getInvoice", roleGuard: "OWNER | MANAGER", inputSchema: "{ id: string }", returnType: "ActionState<Invoice>" },
+  { name: "createInvoice", roleGuard: "OWNER | MANAGER", inputSchema: "CreateInvoiceSchema", returnType: "ActionState<Invoice>" },
+  { name: "updateInvoice", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateInvoiceSchema", returnType: "ActionState<Invoice>" },
+  { name: "deleteInvoice", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<void>" },
+  { name: "generateInvoicePDF", roleGuard: "OWNER | MANAGER", inputSchema: "{ id: string }", returnType: "ActionState<{ pdfUrl: string }>" }
+]} />
+
+### `createInvoice()`
+
+Creates an invoice with freight details and typed line items.
+
+<CodeBlock language="typescript">
+{`export async function createInvoice(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Invoice>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = CreateInvoiceSchema.parse({
+    customerId: formData.get('customerId'),
+    loadId: formData.get('loadId'),
+    invoiceNumber: formData.get('invoiceNumber'),
+    invoiceDate: formData.get('invoiceDate'),
+    dueDate: formData.get('dueDate'),
+    // Freight fields
+    bolNumber: formData.get('bolNumber'),
+    proNumber: formData.get('proNumber'),
+    poNumber: formData.get('poNumber'),
+    commodity: formData.get('commodity'),
+    weight: formData.get('weight'),
+    pieces: formData.get('pieces'),
+    loadedMiles: formData.get('loadedMiles'),
+    // Line items
+    items: JSON.parse(formData.get('items')),
+  });
+
+  // Calculate FSC for PERCENT items
+  const itemsWithCalculations = parsed.items.map(item => {
+    if (item.itemType === InvoiceItemType.FSC && item.unitType === InvoiceItemUnit.PERCENT) {
+      const linehaul = parsed.items.find(i => i.itemType === InvoiceItemType.LINEHAUL);
+      if (linehaul) {
+        item.amount = linehaul.amount * (item.quantity / 100);
+      }
+    }
+    return item;
+  });
+
+  const invoice = await prisma.invoice.create({
+    data: {
+      tenantId,
+      customerId: parsed.customerId,
+      loadId: parsed.loadId,
+      invoiceNumber: parsed.invoiceNumber,
+      invoiceDate: new Date(parsed.invoiceDate),
+      dueDate: new Date(parsed.dueDate),
+      status: InvoiceStatus.DRAFT,
+      // Freight fields
+      bolNumber: parsed.bolNumber,
+      proNumber: parsed.proNumber,
+      poNumber: parsed.poNumber,
+      commodity: parsed.commodity,
+      weight: parsed.weight,
+      pieces: parsed.pieces,
+      loadedMiles: parsed.loadedMiles,
+      // Totals
+      subtotal: itemsWithCalculations.reduce((sum, item) => sum + item.amount, 0),
+      tax: 0, // Tax calculation not implemented yet
+      total: itemsWithCalculations.reduce((sum, item) => sum + item.amount, 0),
+      items: {
+        create: itemsWithCalculations,
+      },
+    },
+    include: { items: true, customer: true, load: true },
+  });
+
+  return { success: true, data: invoice };
+}`}
+</CodeBlock>
+
+**FSC calculation:** When an item has `itemType: FSC` and `unitType: PERCENT`, the amount is auto-calculated as `linehaul total × (quantity / 100)`. Quantity field stores the FSC percentage (e.g., 25 for 25%).
+
+### `generateInvoicePDF()`
+
+Generates a PDF invoice using React PDF.
+
+<CodeBlock language="typescript">
+{`export async function generateInvoicePDF(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<{ pdfUrl: string }>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const invoiceId = formData.get('id') as string;
+  const invoice = await prisma.invoice.findUnique({
+    where: { id: invoiceId, tenantId },
+    include: { items: true, customer: true, load: true, tenant: true },
+  });
+
+  if (!invoice) {
+    return { success: false, error: 'Invoice not found' };
+  }
+
+  // Generate PDF using @react-pdf/renderer
+  const pdfBuffer = await renderToBuffer(<InvoicePDF invoice={invoice} />);
+
+  // Upload to R2
+  const fileName = \`invoice-\${invoice.invoiceNumber}.pdf\`;
+  const s3Url = await uploadToS3(pdfBuffer, fileName, 'application/pdf');
+
+  return { success: true, data: { pdfUrl: s3Url } };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Invoice" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "customerId: String (foreign key to Customer)",
+  "loadId: String? (optional foreign key to Load)",
+  "invoiceNumber: String @unique (user-defined or auto-generated)",
+  "invoiceDate: DateTime",
+  "dueDate: DateTime",
+  "status: InvoiceStatus (DRAFT | SENT | PAID)",
+  "bolNumber: String? (Bill of Lading)",
+  "proNumber: String? (Progressive number)",
+  "poNumber: String? (Purchase Order)",
+  "commodity: String? (cargo type)",
+  "weight: Int? (pounds)",
+  "pieces: Int? (pallets/cartons)",
+  "loadedMiles: Int? (miles driven with cargo)",
+  "subtotal: Decimal",
+  "tax: Decimal",
+  "total: Decimal",
+  "paidAt: DateTime?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="InvoiceItem" fields={[
+  "id: String @id @default(uuid())",
+  "invoiceId: String (foreign key)",
+  "description: String",
+  "itemType: InvoiceItemType (LINEHAUL | FSC | DETENTION | STOP_OFF | LUMPER | ACCESSORIAL | OTHER)",
+  "quantity: Decimal (e.g., miles, hours, stops, or percentage for FSC)",
+  "unitType: InvoiceItemUnit (PER_MILE | PER_HOUR | PER_STOP | PERCENT | FLAT_RATE | PER_CWT)",
+  "rate: Decimal (price per unit)",
+  "amount: Decimal (quantity × rate, or calculated for PERCENT items)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Indexes:**
+- `(tenantId, customerId)` — for customer invoice list
+- `(tenantId, status)` — for invoice status filtering
+- `(invoiceNumber)` — unique constraint for duplicate prevention
+
+**Enums:**
+
+<CodeBlock language="typescript">
+{`enum InvoiceItemType {
+  LINEHAUL = 'LINEHAUL',
+  FSC = 'FSC',
+  DETENTION = 'DETENTION',
+  STOP_OFF = 'STOP_OFF',
+  LUMPER = 'LUMPER',
+  ACCESSORIAL = 'ACCESSORIAL',
+  OTHER = 'OTHER',
+}
+
+enum InvoiceItemUnit {
+  PER_MILE = 'PER_MILE',
+  PER_HOUR = 'PER_HOUR',
+  PER_STOP = 'PER_STOP',
+  PERCENT = 'PERCENT',
+  FLAT_RATE = 'FLAT_RATE',
+  PER_CWT = 'PER_CWT', // per hundredweight
+}`}
+</CodeBlock>
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "DRAFT", description: "Invoice created, not sent to customer" },
+  { label: "SENT", description: "Invoice delivered to customer (email or PDF)" },
+  { label: "PAID", description: "Payment received, paidAt timestamp recorded" }
+]} />
+
+**State transitions:**
+- DRAFT → SENT: User marks invoice as sent (manual action)
+- SENT → PAID: User marks invoice as paid and enters payment date
+- PAID → SENT: Allowed (if payment was entered incorrectly)
+
+No automatic transitions. All status changes are user-initiated.
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Invoice"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+All invoice queries are tenant-scoped. InvoiceItem inherits tenant scope via `invoiceId` foreign key.
+
+## Code Examples
+
+### Creating an invoice with FSC auto-calculation
+
+<CodeBlock language="typescript">
+{`const linehaul = {
+  description: 'Linehaul freight',
+  itemType: InvoiceItemType.LINEHAUL,
+  quantity: 450, // miles
+  unitType: InvoiceItemUnit.PER_MILE,
+  rate: 2.50,
+  amount: 1125.00, // 450 × $2.50
+};
+
+const fsc = {
+  description: 'Fuel surcharge',
+  itemType: InvoiceItemType.FSC,
+  quantity: 25, // 25%
+  unitType: InvoiceItemUnit.PERCENT,
+  rate: 0, // Rate not used for PERCENT
+  amount: 0, // Will be auto-calculated as 25% of $1,125 = $281.25
+};
+
+const items = [linehaul, fsc];
+// createInvoice will calculate fsc.amount automatically`}
+</CodeBlock>
+
+### Querying invoices by status
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all overdue invoices
+SELECT * FROM "Invoice"
+WHERE tenant_id = 'xxx'
+  AND status = 'SENT'
+  AND due_date < NOW()
+ORDER BY due_date ASC;
+
+-- Find invoices linked to a specific load
+SELECT * FROM "Invoice"
+WHERE tenant_id = 'xxx'
+  AND load_id = 'load-uuid'
+ORDER BY invoice_date DESC;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Role Guards">
+Invoice deletion requires OWNER role only. MANAGER can create/edit but not delete. This prevents accidental deletion of financial records.
+</Callout>
+
+<Callout variant="warning" title="PDF URLs">
+PDF generation uses presigned S3 URLs with 30-minute expiry. Do not store PDF URLs long-term. Regenerate on demand.
+</Callout>
+
+**Other security notes:**
+- Invoice numbers must be unique per tenant (enforced by DB constraint)
+- Load linkage is optional but recommended for audit trail
+- Payment date is stored as `paidAt` for financial reporting accuracy
+
+## Related Models
+
+- <PrismaModelRef model="Customer" /> — invoices are billed to customers
+- <PrismaModelRef model="Load" /> — invoices can be linked to loads for traceability
+- <PrismaModelRef model="InvoiceItem" /> — one-to-many relationship with Invoice
+
+## Performance Considerations
+
+- Invoice list queries are paginated (default 50 per page)
+- Customer invoice totals are calculated on-demand (not cached)
+- PDF generation takes ~500ms per invoice (avoid bulk generation in loops)
+- Use `include: { items: true }` sparingly (adds N+1 query per invoice)
+
+## Troubleshooting
+
+**Issue: FSC not calculating correctly**
+
+**Cause:** Linehaul item not found in items array, or FSC item is not PERCENT unit type.
+
+**Fix:** Ensure linehaul item exists before FSC item in the items array. Verify FSC has `unitType: PERCENT`.
+
+**Issue: Invoice number conflict**
+
+**Cause:** Duplicate invoice number within tenant.
+
+**Fix:** Auto-generate invoice numbers using sequential counter or UUID prefix. Enforce uniqueness in UI validation.
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="crm" />
+<FeatureCard slug="carrier-reports-revenue" />

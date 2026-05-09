@@ -1,0 +1,222 @@
+---
+slug: ifta-reporting
+title: IFTA Reporting — Technical Reference
+summary: IFTA quarterly reporting subsystem with GPS-based state mileage calculation, fuel allocation, and report generation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "IFTA generation requires OWNER role"
+  - "GPS data stored for 2 years for compliance"
+---
+
+# IFTA Reporting — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The IFTA Reporting subsystem generates quarterly fuel tax reports using GPS-based mileage allocation and fuel purchase tracking. Calculates miles driven per state, fuel purchased per state, and net tax owed/credit.
+
+**Key components:**
+- Server actions in `src/actions/ifta.ts`
+- GpsReport + FuelLog Prisma models
+- State mileage calculation (reverse geocoding GPS pings)
+- IFTA tax rate tables (updated quarterly)
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "generateIFTAReport", roleGuard: "OWNER", inputSchema: "GenerateIFTAReportSchema", returnType: "ActionState<IFTAReport>" },
+  { name: "getIFTAReports", roleGuard: "OWNER", inputSchema: "void", returnType: "ActionState<IFTAReport[]>" },
+  { name: "exportIFTAReportPDF", roleGuard: "OWNER", inputSchema: "{ reportId: string }", returnType: "ActionState<{ pdfUrl: string }>" }
+]} />
+
+### `generateIFTAReport()`
+
+Generates an IFTA report for a quarter and truck(s).
+
+<CodeBlock language="typescript">
+{`export async function generateIFTAReport(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<IFTAReport>> {
+  await requireRole([UserRole.OWNER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = GenerateIFTAReportSchema.parse({
+    quarter: formData.get('quarter'), // Q1, Q2, Q3, Q4
+    year: formData.get('year'),
+    truckIds: JSON.parse(formData.get('truckIds')),
+  });
+
+  const { startDate, endDate } = getQuarterDates(parsed.quarter, parsed.year);
+
+  // Fetch GPS reports for selected trucks
+  const gpsReports = await prisma.gpsReport.findMany({
+    where: {
+      tenantId,
+      truckId: { in: parsed.truckIds },
+      timestamp: { gte: startDate, lte: endDate },
+    },
+    orderBy: { timestamp: 'asc' },
+  });
+
+  // Calculate mileage per state using reverse geocoding
+  const mileageByState = await calculateMileageByState(gpsReports);
+
+  // Fetch fuel logs for selected trucks
+  const fuelLogs = await prisma.fuelLog.findMany({
+    where: {
+      tenantId,
+      truckId: { in: parsed.truckIds },
+      date: { gte: startDate, lte: endDate },
+    },
+  });
+
+  // Aggregate fuel purchases by state
+  const fuelByState = aggregateFuelByState(fuelLogs);
+
+  // Calculate tax owed/credit per state
+  const taxRates = await getIFTATaxRates(parsed.quarter, parsed.year);
+  const stateBreakdown = calculateTaxByState(mileageByState, fuelByState, taxRates);
+
+  const report = await prisma.iftaReport.create({
+    data: {
+      tenantId,
+      quarter: parsed.quarter,
+      year: parsed.year,
+      truckIds: parsed.truckIds,
+      stateBreakdown: stateBreakdown,
+      totalMiles: Object.values(mileageByState).reduce((sum, miles) => sum + miles, 0),
+      totalFuel: Object.values(fuelByState).reduce((sum, gal) => sum + gal, 0),
+      netTax: stateBreakdown.reduce((sum, state) => sum + state.taxOwed, 0),
+    },
+  });
+
+  return { success: true, data: report };
+}`}
+</CodeBlock>
+
+### GPS-based mileage calculation
+
+<CodeBlock language="typescript">
+{`async function calculateMileageByState(
+  gpsReports: GpsReport[]
+): Promise<Record<string, number>> {
+  const mileageByState: Record<string, number> = {};
+
+  for (let i = 1; i < gpsReports.length; i++) {
+    const prev = gpsReports[i - 1];
+    const curr = gpsReports[i];
+
+    // Calculate distance between points (haversine formula)
+    const distance = calculateDistance(prev.latitude, prev.longitude, curr.latitude, curr.longitude);
+
+    // Reverse geocode to get state
+    const state = await reverseGeocode(curr.latitude, curr.longitude);
+
+    mileageByState[state] = (mileageByState[state] || 0) + distance;
+  }
+
+  return mileageByState;
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="GpsReport" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "truckId: String (foreign key)",
+  "latitude: Decimal",
+  "longitude: Decimal",
+  "timestamp: DateTime",
+  "speed: Int? (mph)",
+  "heading: Int? (degrees)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+<PrismaModelRef model="FuelLog" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "truckId: String (foreign key)",
+  "gallons: Decimal",
+  "pricePerGallon: Decimal",
+  "totalCost: Decimal",
+  "state: String (2-letter state code)",
+  "date: DateTime",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Indexes:**
+- `(tenantId, truckId, timestamp)` — for GPS report queries
+- `(tenantId, state, date)` — for fuel log state aggregation
+
+## Code Examples
+
+### Aggregating fuel by state
+
+<CodeBlock language="typescript">
+{`function aggregateFuelByState(fuelLogs: FuelLog[]): Record<string, number> {
+  const fuelByState: Record<string, number> = {};
+
+  for (const log of fuelLogs) {
+    fuelByState[log.state] = (fuelByState[log.state] || 0) + log.gallons;
+  }
+
+  return fuelByState;
+}`}
+</CodeBlock>
+
+### Querying GPS data for IFTA quarter
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all GPS pings for Truck #102 in Q1 2026
+SELECT * FROM "GpsReport"
+WHERE tenant_id = 'xxx'
+  AND truck_id = 'truck-uuid'
+  AND timestamp >= '2026-01-01'
+  AND timestamp <= '2026-03-31'
+ORDER BY timestamp ASC;`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "GpsReport"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Security Considerations
+
+<Callout variant="warning" title="GPS Data Retention">
+GPS reports are stored for 2 years to support IFTA compliance. After 2 years, data is automatically deleted via cron job.
+</Callout>
+
+## Performance Considerations
+
+- GPS mileage calculation can process 10,000 pings in ~5 seconds
+- Reverse geocoding is cached (state lookup by lat/lng)
+- IFTA report generation is CPU-intensive (run async for large fleets)
+
+## Troubleshooting
+
+**Issue: Missing mileage for a state**
+
+**Cause:** GPS tracking disabled or poor signal in rural areas.
+
+**Fix:** Manually add mileage from driver logs or ELD reports.
+
+## Related Features
+
+<FeatureCard slug="fuel-dashboard" />
+<FeatureCard slug="live-map" />

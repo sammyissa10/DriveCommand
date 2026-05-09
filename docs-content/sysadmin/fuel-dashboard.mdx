@@ -1,0 +1,226 @@
+---
+slug: fuel-dashboard
+title: Fuel Economy Tracking — Technical Reference
+summary: Fuel tracking subsystem with FuelLog model, MPG auto-calculation, cost-per-mile analytics, and IFTA integration.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All queries are tenant-scoped via RLS"
+  - "Fuel log creation requires OWNER or MANAGER role"
+  - "Drivers can create fuel logs via mobile API"
+---
+
+# Fuel Economy Tracking — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The Fuel Economy Tracking subsystem logs fuel fill-ups per truck, auto-calculates MPG based on odometer changes, tracks cost-per-mile, and feeds data into IFTA quarterly reports.
+
+**Key components:**
+- Server actions in `src/actions/fuel.ts`
+- FuelLog Prisma model
+- MPG calculation (odometer delta ÷ gallons)
+- Cost-per-mile aggregation queries
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getFuelLogs", roleGuard: "OWNER | MANAGER", inputSchema: "{ truckId?: string }", returnType: "ActionState<FuelLog[]>" },
+  { name: "getFuelLog", roleGuard: "OWNER | MANAGER", inputSchema: "{ id: string }", returnType: "ActionState<FuelLog>" },
+  { name: "createFuelLog", roleGuard: "OWNER | MANAGER | DRIVER", inputSchema: "CreateFuelLogSchema", returnType: "ActionState<FuelLog>" },
+  { name: "updateFuelLog", roleGuard: "OWNER | MANAGER", inputSchema: "UpdateFuelLogSchema", returnType: "ActionState<FuelLog>" },
+  { name: "deleteFuelLog", roleGuard: "OWNER", inputSchema: "{ id: string }", returnType: "ActionState<void>" }
+]} />
+
+### `createFuelLog()`
+
+Creates a fuel log entry and auto-calculates MPG.
+
+<CodeBlock language="typescript">
+{`export async function createFuelLog(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<FuelLog>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER, UserRole.DRIVER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const parsed = CreateFuelLogSchema.parse({
+    truckId: formData.get('truckId'),
+    gallons: formData.get('gallons'),
+    pricePerGallon: formData.get('pricePerGallon'),
+    odometerReading: formData.get('odometerReading'),
+    location: formData.get('location'),
+    state: formData.get('state'),
+    date: formData.get('date'),
+  });
+
+  // Find previous fuel log for MPG calculation
+  const previousLog = await prisma.fuelLog.findFirst({
+    where: {
+      tenantId,
+      truckId: parsed.truckId,
+      date: { lt: new Date(parsed.date) },
+    },
+    orderBy: { date: 'desc' },
+  });
+
+  let mpg: number | null = null;
+  if (previousLog && previousLog.odometerReading) {
+    const milesDriven = parsed.odometerReading - previousLog.odometerReading;
+    mpg = milesDriven / parsed.gallons;
+  }
+
+  const totalCost = parsed.gallons * parsed.pricePerGallon;
+
+  const fuelLog = await prisma.fuelLog.create({
+    data: {
+      tenantId,
+      truckId: parsed.truckId,
+      gallons: parsed.gallons,
+      pricePerGallon: parsed.pricePerGallon,
+      totalCost,
+      odometerReading: parsed.odometerReading,
+      location: parsed.location,
+      state: parsed.state,
+      date: new Date(parsed.date),
+      mpg,
+    },
+    include: { truck: true },
+  });
+
+  return { success: true, data: fuelLog };
+}`}
+</CodeBlock>
+
+**MPG calculation:** `(current odometer - previous odometer) ÷ gallons purchased`. First fill-up has `mpg: null`.
+
+## Database Schema
+
+<PrismaModelRef model="FuelLog" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key)",
+  "truckId: String (foreign key to Truck)",
+  "gallons: Decimal (fuel purchased)",
+  "pricePerGallon: Decimal ($/gallon)",
+  "totalCost: Decimal (gallons × pricePerGallon)",
+  "odometerReading: Int (miles)",
+  "location: String (city, state)",
+  "state: String (2-letter state code, used for IFTA)",
+  "date: DateTime",
+  "mpg: Decimal? (auto-calculated, null for first fill-up)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, truckId, date)` — for truck fuel history
+- `(tenantId, state, date)` — for IFTA state-by-state fuel allocation
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "FuelLog"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Code Examples
+
+### Calculating fleet average MPG
+
+<CodeBlock language="typescript">
+{`export async function getFleetAverageMPG(tenantId: string): Promise<number> {
+  const prisma = await getTenantPrisma();
+
+  const logs = await prisma.fuelLog.findMany({
+    where: { tenantId, mpg: { not: null } },
+    select: { mpg: true },
+  });
+
+  const totalMPG = logs.reduce((sum, log) => sum + (log.mpg || 0), 0);
+  return totalMPG / logs.length;
+}`}
+</CodeBlock>
+
+### Querying cost-per-mile for a truck
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Calculate cost-per-mile for Truck #102 in Q1 2026
+SELECT
+  SUM(total_cost) AS total_fuel_cost,
+  MAX(odometer_reading) - MIN(odometer_reading) AS total_miles,
+  SUM(total_cost) / NULLIF(MAX(odometer_reading) - MIN(odometer_reading), 0) AS cost_per_mile
+FROM "FuelLog"
+WHERE tenant_id = 'xxx'
+  AND truck_id = 'truck-uuid'
+  AND date >= '2026-01-01'
+  AND date <= '2026-03-31';`}
+</CodeBlock>
+
+## Mobile API Endpoints
+
+Drivers can log fuel fill-ups via mobile app.
+
+<CodeBlock language="typescript">
+{`// Endpoint: POST /api/mobile/driver/fuel
+// Auth: Bearer token required
+// Body: { truckId, gallons, pricePerGallon, odometerReading, location, state, date }
+
+export async function POST(request: Request) {
+  const user = await validateMobileToken(request);
+  const body = await request.json();
+
+  const fuelLog = await prisma.fuelLog.create({
+    data: {
+      tenantId: user.tenantId,
+      truckId: body.truckId,
+      gallons: body.gallons,
+      pricePerGallon: body.pricePerGallon,
+      totalCost: body.gallons * body.pricePerGallon,
+      odometerReading: body.odometerReading,
+      location: body.location,
+      state: body.state,
+      date: new Date(body.date),
+      mpg: null, // MPG calculated by next fill-up
+    },
+  });
+
+  return Response.json({ fuelLog });
+}`}
+</CodeBlock>
+
+## IFTA Integration
+
+Fuel logs are used in IFTA quarterly reporting:
+
+<FeatureCard slug="ifta-reporting" />
+
+The `state` field allocates fuel purchases to jurisdictions. IFTA report aggregates gallons purchased per state.
+
+## Performance Considerations
+
+- MPG calculation requires one additional query per fuel log (find previous log)
+- Cost-per-mile queries can be slow for large fleets (pre-aggregate monthly)
+- Mobile API creates fuel logs synchronously (no queue)
+
+## Troubleshooting
+
+**Issue: MPG is null for all fill-ups**
+
+**Cause:** Odometer readings not entered, or only one fill-up exists.
+
+**Fix:** Ensure odometer reading is populated on every fill-up. MPG calculated starting from second fill-up.
+
+## Related Features
+
+<FeatureCard slug="ifta-reporting" />
+<FeatureCard slug="profit-predictor" />
