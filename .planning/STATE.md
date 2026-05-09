@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-09 - Completed quick-291: Build Client-Facing Help Center in Owner Portal with Command+K search, MDX rendering, and feedback collection
-Last session: 2026-05-09T06:14:07Z
-Stopped at: Completed quick-291
+Last activity: 2026-05-09 - Completed quick-292: Build SysAdmin Technical Knowledge Base in Admin Portal with feature reference, operations docs, admin search, and drift indicator
+Last session: 2026-05-09T06:40:40Z
+Stopped at: Completed quick-292
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -3696,6 +3696,7 @@ None blocking immediate progress.
 - Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 | Phase quick-290 P01 | 514 | 3 tasks | 26 files |
 - Quick-291 (2026-05-09): Build Client-Facing Help Center in Owner Portal — Command+K fuzzy search with Fuse.js, MDX documentation rendering, plan-tier upgrade banners, Yes/No feedback collection with DocFeedback model — 10 tasks, 15 files, 536s
+- Quick-292 (2026-05-09): Build SysAdmin Technical Knowledge Base in Admin Portal — /admin/docs with feature reference (5-tab detail), operations docs (9 markdown files), Command+K admin search, DocDriftIndicator, 2 sysadmin MDX examples (route-planning, ai-document-reader) — 3 tasks, 17 files, 507s
 
 ## Accumulated Context
 
