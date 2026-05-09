@@ -375,7 +375,7 @@
     "category": "dispatch",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/home"
+    "route": "/home"
   },
   {
     "slug": "driver-my-load",
@@ -384,7 +384,7 @@
     "category": "dispatch",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/my-load"
+    "route": "/my-load"
   },
   {
     "slug": "driver-my-route",
@@ -393,7 +393,7 @@
     "category": "dispatch",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/my-route"
+    "route": "/my-route"
   },
   {
     "slug": "driver-hours",
@@ -402,7 +402,7 @@
     "category": "compliance",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/hours"
+    "route": "/hours"
   },
   {
     "slug": "driver-incidents",
@@ -411,7 +411,7 @@
     "category": "compliance",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/incidents"
+    "route": "/incidents"
   },
   {
     "slug": "driver-messages",
@@ -420,7 +420,7 @@
     "category": "fleet",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/messages"
+    "route": "/messages"
   },
   {
     "slug": "driver-tasks",
@@ -429,7 +429,7 @@
     "category": "workflows",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/tasks"
+    "route": "/tasks"
   },
   {
     "slug": "driver-documents",
@@ -438,7 +438,7 @@
     "category": "compliance",
     "portal": "driver",
     "planTier": "pro",
-    "route": "/driver/documents"
+    "route": "/documents"
   },
   {
     "slug": "support-tickets",

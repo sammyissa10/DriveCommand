@@ -1,58 +1,578 @@
 [
   {
-    "slug": "load-management",
-    "name": "Load Management",
-    "shortDescription": "Create, assign, and track loads with pickup/delivery stops, status workflow, and route assignment.",
+    "slug": "carrier-dashboard",
+    "name": "Carrier Dashboard",
+    "shortDescription": "Operations dashboard with KPIs, load status, driver availability, and fleet health metrics.",
     "category": "dispatch",
     "portal": "owner",
     "planTier": "pro",
-    "route": "/owner/loads",
+    "route": "/carrier/dashboard",
     "type": "feature"
   },
   {
-    "slug": "route-planning",
-    "name": "Route Planning",
-    "shortDescription": "Multi-stop route creation with leg sequencing, continuity warnings, and driver assignment.",
+    "slug": "carrier-clients",
+    "name": "Client Management",
+    "shortDescription": "Manage shippers and brokers with contact info, load history, and revenue tracking.",
+    "category": "crm",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/clients",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-contracts",
+    "name": "Contract Management",
+    "shortDescription": "Create and manage carrier contracts with templates, rate tables, and renewal tracking.",
+    "category": "crm",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/contracts",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-templates",
+    "name": "Dispatch Templates",
+    "shortDescription": "Reusable dispatch and route templates for common lanes and workflows.",
     "category": "dispatch",
     "portal": "owner",
     "planTier": "pro",
-    "route": "/owner/routes",
+    "route": "/carrier/templates",
     "type": "feature"
   },
   {
-    "slug": "driver-my-route",
-    "name": "Driver My Route",
-    "shortDescription": "Driver view of assigned route with loads timeline, truck info, and route-scoped messages.",
+    "slug": "carrier-dispatches",
+    "name": "Dispatch Board",
+    "shortDescription": "Ready-to-dispatch workflow with drag-and-drop assignment, driver availability, and truck status.",
     "category": "dispatch",
-    "portal": "driver",
+    "portal": "owner",
     "planTier": "pro",
-    "route": "/driver/my-route",
+    "route": "/carrier/dispatches",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-loads",
+    "name": "Carrier Load Management",
+    "shortDescription": "Load creation, status workflow, route assignment, and tracking from PENDING to DELIVERED.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/loads",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-messages",
+    "name": "Fleet Messaging",
+    "shortDescription": "iMessage-style fleet communication with broadcast and targeted messaging, unread badges, and push notifications.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/messages",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-fleet-drivers",
+    "name": "Carrier Driver Management",
+    "shortDescription": "Driver list with compliance tracking, document expiry dots, current load status, and invitations.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/fleet/drivers",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-fleet-trucks",
+    "name": "Carrier Truck Management",
+    "shortDescription": "Truck fleet management with status badges, document tracking, maintenance schedules, and safety alerts.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/fleet/trucks",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-facilities",
+    "name": "Facility Management",
+    "shortDescription": "Manage yards, warehouses, and terminals with geofencing and driver check-in tracking.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/facilities",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-stops",
+    "name": "Stop Management",
+    "shortDescription": "Manage route stops with pickup/delivery details, contact info, BOL/PO numbers, and load linkage.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/carrier/stops",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-reports-revenue",
+    "name": "Revenue Report",
+    "shortDescription": "Revenue analytics by customer, lane, driver, and time period with trend charts.",
+    "category": "reporting",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/reports/revenue",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-reports-driver-pay",
+    "name": "Driver Pay Report",
+    "shortDescription": "Driver payroll summary with miles, loads, bonuses, deductions, and pay period totals.",
+    "category": "reporting",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/reports/driver-pay",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-reports-aging",
+    "name": "AR Aging Report",
+    "shortDescription": "Accounts receivable aging by customer with 30/60/90 day buckets and overdue alerts.",
+    "category": "reporting",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/reports/aging",
+    "type": "feature"
+  },
+  {
+    "slug": "carrier-reports-performance",
+    "name": "Performance Report",
+    "shortDescription": "Fleet performance metrics: on-time delivery, utilization, cost-per-mile, and driver efficiency.",
+    "category": "reporting",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/carrier/reports/performance",
+    "type": "feature"
+  },
+  {
+    "slug": "live-map",
+    "name": "Live Fleet Map",
+    "shortDescription": "Real-time GPS tracking with truck status indicators, route polylines, and auto-refresh.",
+    "category": "ai",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/live-map",
+    "type": "feature"
+  },
+  {
+    "slug": "lane-analytics",
+    "name": "Lane Analytics",
+    "shortDescription": "Profitability analysis by origin-destination lane with revenue, expenses, and margin trends.",
+    "category": "ai",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/lane-analytics",
+    "type": "feature"
+  },
+  {
+    "slug": "profit-predictor",
+    "name": "AI Profit Predictor",
+    "shortDescription": "AI-powered load profitability analysis with Accept/Caution/Reject recommendations and historical lane data.",
+    "category": "ai",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/profit-predictor",
+    "type": "feature"
+  },
+  {
+    "slug": "checklists",
+    "name": "Checklists & Workflows",
+    "shortDescription": "Create and manage checklists and workflows for onboarding, inspections, and operational procedures.",
+    "category": "workflows",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/checklists",
+    "type": "feature"
+  },
+  {
+    "slug": "playbook-builder",
+    "name": "Playbook Builder",
+    "shortDescription": "Visual playbook editor with drag-and-drop phases, step templates, and conditional logic.",
+    "category": "workflows",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/checklists/playbooks",
+    "type": "feature"
+  },
+  {
+    "slug": "workflow-automation",
+    "name": "Workflow Automation",
+    "shortDescription": "Trigger-based automation rules to auto-start workflows on load dispatch, driver invite, and truck creation.",
+    "category": "workflows",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/checklists/automation",
+    "type": "feature"
+  },
+  {
+    "slug": "workflow-analytics",
+    "name": "Workflow Analytics",
+    "shortDescription": "Completion metrics, bottleneck detection, and task duration analysis for active workflows.",
+    "category": "workflows",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/checklists/analytics",
     "type": "feature"
   },
   {
     "slug": "ai-document-reader",
     "name": "AI Document Reader",
-    "shortDescription": "Anthropic Claude-powered extraction of structured data from rate confirmations and BOLs.",
+    "shortDescription": "Anthropic Claude-powered extraction of structured data from rate confirmations, BOLs, and load tenders.",
     "category": "ai",
     "portal": "owner",
     "planTier": "business",
-    "route": "/owner/ai-documents",
+    "route": "/ai-documents",
+    "type": "feature"
+  },
+  {
+    "slug": "invoices",
+    "name": "Invoicing",
+    "shortDescription": "Trucking-standard invoicing with freight details, FSC calculation, typed line items, and PDF generation.",
+    "category": "finance",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/invoices",
+    "type": "feature"
+  },
+  {
+    "slug": "payroll",
+    "name": "Payroll Management",
+    "shortDescription": "Driver payroll with base pay, bonuses, deductions, miles logged, and PDF payslip generation.",
+    "category": "finance",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/payroll",
+    "type": "feature"
+  },
+  {
+    "slug": "fuel-dashboard",
+    "name": "Fuel Economy Tracking",
+    "shortDescription": "Fuel fill-up logging with MPG trends, cost-per-mile analysis, and truck-level fuel efficiency.",
+    "category": "finance",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/fuel",
+    "type": "feature"
+  },
+  {
+    "slug": "compliance-dashboard",
+    "name": "Compliance Dashboard",
+    "shortDescription": "Document expiry tracking for trucks and drivers with automated email reminders and compliance scores.",
+    "category": "compliance",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/compliance",
+    "type": "feature"
+  },
+  {
+    "slug": "ifta-reporting",
+    "name": "IFTA Reporting",
+    "shortDescription": "International Fuel Tax Agreement quarterly reporting with GPS-based state mileage and fuel allocation.",
+    "category": "compliance",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/ifta",
+    "type": "feature"
+  },
+  {
+    "slug": "team-permissions",
+    "name": "Team Permissions",
+    "shortDescription": "RBAC team management with granular permissions, manager role configuration, and driver invitations.",
+    "category": "settings",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/settings/team-permissions",
+    "type": "feature"
+  },
+  {
+    "slug": "subscription",
+    "name": "Subscription Management",
+    "shortDescription": "Plan management with tier selection, billing history, and feature availability.",
+    "category": "settings",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/subscription",
+    "type": "feature"
+  },
+  {
+    "slug": "expense-categories",
+    "name": "Expense Categories",
+    "shortDescription": "Configure custom expense categories for fuel, maintenance, tolls, and other operational costs.",
+    "category": "settings",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/settings/expense-categories",
+    "type": "feature"
+  },
+  {
+    "slug": "expense-templates",
+    "name": "Expense Templates",
+    "shortDescription": "Recurring expense templates for predictable costs like insurance, leases, and subscriptions.",
+    "category": "settings",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/settings/expense-templates",
+    "type": "feature"
+  },
+  {
+    "slug": "integrations",
+    "name": "Third-Party Integrations",
+    "shortDescription": "Connect QuickBooks, Samsara, Motive/KeepTruckin, factoring services, and email providers.",
+    "category": "integrations",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/settings/integrations",
+    "type": "feature"
+  },
+  {
+    "slug": "trucks",
+    "name": "Legacy Truck Management",
+    "shortDescription": "Truck management with VIN, make, model, documents, maintenance history, and status badges.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/trucks",
+    "type": "feature"
+  },
+  {
+    "slug": "drivers",
+    "name": "Legacy Driver Management",
+    "shortDescription": "Driver profiles, invitations via email, document tracking, and safety scores.",
+    "category": "fleet",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/drivers",
+    "type": "feature"
+  },
+  {
+    "slug": "routes",
+    "name": "Route Planning",
+    "shortDescription": "Multi-stop route creation with leg sequencing, continuity warnings, and driver assignment.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/routes",
+    "type": "feature"
+  },
+  {
+    "slug": "loads",
+    "name": "Legacy Load Management",
+    "shortDescription": "Load CRUD with status workflow, customer assignment, and tracking token generation.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/loads",
+    "type": "feature"
+  },
+  {
+    "slug": "crm",
+    "name": "Customer Relationship Management",
+    "shortDescription": "Customer and contact management with load history, revenue totals, and interaction logging.",
+    "category": "crm",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/crm",
+    "type": "feature"
+  },
+  {
+    "slug": "safety-analytics",
+    "name": "Safety Analytics",
+    "shortDescription": "Driver safety scoring with harsh braking, speeding events, and safety trend charts.",
+    "category": "compliance",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/safety",
+    "type": "feature"
+  },
+  {
+    "slug": "tags",
+    "name": "Tags & Labels",
+    "shortDescription": "Color-coded labels for organizing trucks and drivers with filtering and grouping.",
+    "category": "settings",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/tags",
+    "type": "feature"
+  },
+  {
+    "slug": "help-center",
+    "name": "Help Center",
+    "shortDescription": "In-app documentation hub with feature guides, video tutorials, and what's new updates.",
+    "category": "support",
+    "portal": "owner",
+    "planTier": "free",
+    "route": "/help",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-dashboard",
+    "name": "Driver Dashboard",
+    "shortDescription": "Driver home screen with active load card, stat chips, alerts, and My Route shortcut.",
+    "category": "dispatch",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/home",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-my-load",
+    "name": "Driver My Load",
+    "shortDescription": "Current load status management with forward-only status advancement and stop timeline.",
+    "category": "dispatch",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/my-load",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-my-route",
+    "name": "Driver My Route",
+    "shortDescription": "Route view with loads timeline, truck info, route-scoped messages, and stop details.",
+    "category": "dispatch",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/my-route",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-hours",
+    "name": "Hours of Service",
+    "shortDescription": "HOS logging with 14h/11h duty clock math, status grid, day bar, and countdown timers.",
+    "category": "compliance",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/hours",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-incidents",
+    "name": "Incident Reporting",
+    "shortDescription": "Incident reporting with photo capture, severity toggle, category selection, and timestamp.",
+    "category": "compliance",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/incidents",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-messages",
+    "name": "Driver Messaging",
+    "shortDescription": "Load-scoped messaging with owner/dispatcher, unread badges, and 30s polling.",
+    "category": "fleet",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/messages",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-tasks",
+    "name": "Driver Workflow Tasks",
+    "shortDescription": "Workflow task completion with checklist progression, step instructions, and photo attachments.",
+    "category": "workflows",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/tasks",
+    "type": "feature"
+  },
+  {
+    "slug": "driver-documents",
+    "name": "Driver Documents",
+    "shortDescription": "Document upload/view with R2 presigned URLs, expiry tracking, and compliance status.",
+    "category": "compliance",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/documents",
     "type": "feature"
   },
   {
     "slug": "tenant-management",
     "name": "Tenant Management",
-    "shortDescription": "SysAdmin view of all tenant accounts with creation, editing, and status controls.",
+    "shortDescription": "Multi-tenant administration with creation, status controls, and owner invitation flow.",
     "category": "admin",
     "portal": "admin",
     "planTier": "enterprise",
-    "route": "/sysadmin/tenants",
+    "route": "/tenants",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-support",
+    "name": "SysAdmin Support Queue",
+    "shortDescription": "Cross-tenant support ticket queue with status filtering, AI suggestions, and reply threads.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/admin-support",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-billing",
+    "name": "SysAdmin Billing",
+    "shortDescription": "DriveCommand-to-tenant invoicing with line items, email delivery, and overdue cron.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/billing",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-plans",
+    "name": "Subscription Plan Management",
+    "shortDescription": "Configure subscription plans with pricing, features, and billing intervals.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/plans",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-promos",
+    "name": "Promotional Code Management",
+    "shortDescription": "Create and manage promo codes with discounts, expiry dates, and usage limits.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/promos",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-automations",
+    "name": "Platform Automation Rules",
+    "shortDescription": "Platform-wide automation rules for trial reminders, engagement nudges, and billing alerts.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/automations",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-docs",
+    "name": "SysAdmin Knowledge Base",
+    "shortDescription": "Technical knowledge base with feature reference, operations docs, and admin search.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/docs",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-dashboard",
+    "name": "Platform Metrics Dashboard",
+    "shortDescription": "Platform health metrics with total tenants, active users, and system status.",
+    "category": "admin",
+    "portal": "admin",
+    "planTier": "enterprise",
+    "route": "/admin-dashboard",
     "type": "feature"
   },
   {
     "slug": "support-tickets",
     "name": "Support Tickets",
-    "shortDescription": "In-app support ticket system with screenshot capture and file attachments.",
+    "shortDescription": "In-app support ticket system with screenshot capture, file attachments, and message threads.",
     "category": "support",
     "portal": "shared",
     "planTier": "free",
@@ -60,9 +580,277 @@
     "type": "feature"
   },
   {
+    "slug": "shipment-tracking",
+    "name": "Public Shipment Tracking",
+    "shortDescription": "Public tracking page accessible via unique token with GPS map, status timeline, and ETA.",
+    "category": "support",
+    "portal": "shared",
+    "planTier": "pro",
+    "route": "/track/[token]",
+    "type": "feature"
+  },
+  {
+    "slug": "admin-automations",
+    "title": "Platform Automation Rules — Technical Reference",
+    "summary": "Platform-wide behavioral email automation with rule types, cron evaluation, deduplication windows, and React Email templates.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-billing",
+    "title": "SysAdmin Billing — Technical Reference",
+    "summary": "DriveCommand-to-tenant invoicing with line items, email delivery, overdue cron, and subscription billing automation.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-dashboard",
+    "title": "Platform Metrics Dashboard — Technical Reference",
+    "summary": "Platform health metrics dashboard with total tenants, active users, system status, and cross-tenant aggregation queries.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-docs",
+    "title": "SysAdmin Knowledge Base — Technical Reference",
+    "summary": "Technical knowledge base system with MDX documentation, admin search, feature registry integration, and sysadmin-specific reference docs.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-plans",
+    "title": "Subscription Plan Management — Technical Reference",
+    "summary": "Configure subscription plans with pricing, features, limits, and billing intervals for tenant subscription management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-promos",
+    "title": "Promotional Code Management — Technical Reference",
+    "summary": "Create and manage promo codes with percentage/fixed discounts, expiry dates, usage limits, and tenant redemption tracking.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "admin-support",
+    "title": "SysAdmin Support Queue — Technical Reference",
+    "summary": "Cross-tenant support ticket queue with status filtering, AI suggestions, and reply threads for platform support management.",
+    "type": "sysadmin-doc"
+  },
+  {
     "slug": "ai-document-reader",
     "title": "AI Document Reader — Technical Reference",
     "summary": "Anthropic Claude-powered extraction of structured data from rate confirmations and BOLs with R2 storage, prompt engineering, and cost management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-clients",
+    "title": "Client Management — Technical Reference",
+    "summary": "Shipper and broker relationship management with customer CRUD, load history queries, and revenue tracking via server actions.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-contracts",
+    "title": "Contract Management — Technical Reference",
+    "summary": "Carrier contract lifecycle with rate tables, renewal tracking, and automated expiration alerts via server actions.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-dashboard",
+    "title": "Carrier Dashboard — Technical Reference",
+    "summary": "Operations dashboard aggregating KPIs, load status, driver availability, and fleet health with real-time server action data.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-dispatches",
+    "title": "Dispatch Board — Technical Reference",
+    "summary": "Ready-to-dispatch workflow with server actions for load-to-route assignment, driver availability computation, and status transition logic.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-facilities",
+    "title": "Facility Management — Technical Reference",
+    "summary": "Yard, warehouse, and terminal management with geofencing logic and driver check-in tracking via GPS reports.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-fleet-drivers",
+    "title": "Carrier Driver Management — Technical Reference",
+    "summary": "Driver roster management with compliance tracking, invitation flow, and real-time status indicators.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-fleet-trucks",
+    "title": "Carrier Truck Management — Technical Reference",
+    "summary": "Truck fleet management with auto-status badges, document tracking, maintenance schedules, and safety alerts.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-loads",
+    "title": "Carrier Load Management — Technical Reference",
+    "summary": "Load lifecycle management from PENDING to DELIVERED with status workflow enforcement and route/driver assignment logic.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-messages",
+    "title": "Fleet Messaging — Technical Reference",
+    "summary": "iMessage-style fleet communication with broadcast and targeted messaging, push notification delivery, and unread tracking.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-reports-aging",
+    "title": "AR Aging Report — Technical Reference",
+    "summary": "Accounts receivable aging analysis with 30/60/90 day buckets based on Invoice.dueDate calculations.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-reports-driver-pay",
+    "title": "Driver Pay Report — Technical Reference",
+    "summary": "Payroll analytics aggregating PayrollRecord data with miles, loads, bonuses, and deductions by pay period.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-reports-performance",
+    "title": "Performance Report — Technical Reference",
+    "summary": "Fleet efficiency metrics including on-time delivery rate, truck utilization, cost-per-mile, and driver productivity analytics.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-reports-revenue",
+    "title": "Revenue Report — Technical Reference",
+    "summary": "Revenue analytics aggregating Invoice data by customer, lane, driver, and time period with trend charting.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-stops",
+    "title": "Stop Management — Technical Reference",
+    "summary": "Route stop CRUD with pickup/delivery details, contact info, BOL/PO tracking, and load linkage via foreign keys.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "carrier-templates",
+    "title": "Dispatch Templates — Technical Reference",
+    "summary": "Reusable dispatch and route templates with JSON-based stop sequences and pre-filled load details.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "checklists",
+    "title": "Checklists & Workflows — Technical Reference",
+    "summary": "Checklist CRUD with ActiveChecklist instance management, task completion flow, and step validation logic.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "compliance-dashboard",
+    "title": "Compliance Dashboard — Technical Reference",
+    "summary": "Document expiry tracking subsystem with compliance score calculation, automated email reminders via cron, and driver/truck compliance aggregation.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "crm",
+    "title": "Customer Relationship Management — Technical Reference",
+    "summary": "Server actions, database schema, and interaction logging for customer and contact management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-dashboard",
+    "title": "Driver Dashboard — Technical Reference",
+    "summary": "Mobile driver home screen with real-time aggregates, active load card, stat chips, and alert system powered by REST API.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-documents",
+    "title": "Driver Documents — Technical Reference",
+    "summary": "Document upload/view with R2 presigned URLs, expiry tracking, compliance status computation, and automated alert system.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-hours",
+    "title": "Hours of Service — Technical Reference",
+    "summary": "HOS logging with 14h/11h duty clock math, status transitions, FMCSA compliance enforcement, and immutable audit trail.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-incidents",
+    "title": "Incident Reporting — Technical Reference",
+    "summary": "Incident reporting with photo capture, severity classification, R2 storage, and fleet manager notifications.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-messages",
+    "title": "Driver Messaging — Technical Reference",
+    "summary": "Load-scoped messaging with 30s polling, push notifications, unread tracking, and MMKV-backed read receipts.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-my-load",
+    "title": "Driver My Load — Technical Reference",
+    "summary": "Load status management with forward-only state machine, stop timeline, and real-time updates via REST API.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-my-route",
+    "title": "Driver My Route — Technical Reference",
+    "summary": "Multi-stop route view with loads timeline, truck details, route-scoped messaging, and stop sequencing.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "driver-tasks",
+    "title": "Driver Workflow Tasks — Technical Reference",
+    "summary": "Workflow task completion with checklist progression, step validation, photo/signature capture, and ActiveChecklist state management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "drivers",
+    "title": "Legacy Driver Management — Technical Reference",
+    "summary": "Server actions, database schema, invitation token flow, and safety score calculation for the legacy driver management subsystem.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "expense-categories",
+    "title": "Expense Categories — Technical Reference",
+    "summary": "Expense categorization subsystem with ExpenseCategory model, default categories, CRUD operations, and expense linking.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "expense-templates",
+    "title": "Expense Templates — Technical Reference",
+    "summary": "Recurring expense template subsystem with ExpenseTemplate model, cron-based expense generation, and category linking.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "fuel-dashboard",
+    "title": "Fuel Economy Tracking — Technical Reference",
+    "summary": "Fuel tracking subsystem with FuelLog model, MPG auto-calculation, cost-per-mile analytics, and IFTA integration.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "help-center",
+    "title": "Help Center — Technical Reference",
+    "summary": "MDX documentation system, search implementation, and content management for the in-app help center.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "ifta-reporting",
+    "title": "IFTA Reporting — Technical Reference",
+    "summary": "IFTA quarterly reporting subsystem with GPS-based state mileage calculation, fuel allocation, and report generation.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "integrations",
+    "title": "Third-Party Integrations — Technical Reference",
+    "summary": "Integration subsystem with Tenant.integrations JSON field, QuickBooks/Samsara/Motive connectors, and sync workflows.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "invoices",
+    "title": "Invoicing — Technical Reference",
+    "summary": "Trucking-standard invoicing subsystem with server actions for CRUD, Invoice/InvoiceItem models, FSC calculation, and PDF generation.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "lane-analytics",
+    "title": "Lane Analytics — Technical Reference",
+    "summary": "Profitability analysis aggregating revenue from Invoice and expenses from FuelLog, PayrollRecord, and Expense tables by lane.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "live-map",
+    "title": "Live Fleet Map — Technical Reference",
+    "summary": "Real-time GPS tracking with Mapbox rendering, status computation from GpsReport table, and 60s polling infrastructure.",
     "type": "sysadmin-doc"
   },
   {
@@ -72,9 +860,99 @@
     "type": "sysadmin-doc"
   },
   {
+    "slug": "loads",
+    "title": "Legacy Load Management — Technical Reference",
+    "summary": "Server actions, database schema, status workflow state machine, and tracking token generation for the legacy load management subsystem.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "payroll",
+    "title": "Payroll Management — Technical Reference",
+    "summary": "Driver payroll subsystem with server actions for CRUD, PayrollRecord model, base pay calculation, bonus/deduction line items, and PDF payslip generation.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "playbook-builder",
+    "title": "Playbook Builder — Technical Reference",
+    "summary": "Visual workflow editor with JSON-based conditional logic, tRPC mutations, and phase/step template system.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "profit-predictor",
+    "title": "AI Profit Predictor — Technical Reference",
+    "summary": "Machine learning load profitability prediction using historical lane data, OSRM distance API, and Anthropic Claude analysis.",
+    "type": "sysadmin-doc"
+  },
+  {
     "slug": "route-planning",
     "title": "Route Planning — Technical Reference",
     "summary": "Multi-stop route creation with leg sequencing, continuity warnings, driver assignment, and RouteStop auto-sync system.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "routes",
+    "title": "Route Planning — Technical Reference",
+    "summary": "Server actions, database schema, leg sequencing logic, and RouteStop continuity validation for multi-stop route management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "safety-analytics",
+    "title": "Safety Analytics — Technical Reference",
+    "summary": "Server actions, database schema, safety score algorithm, and event detection for driver safety tracking.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "shipment-tracking",
+    "title": "Public Shipment Tracking — Technical Reference",
+    "summary": "Public tracking page with unique token-based access, GPS map polling, status timeline, and no-auth load visibility for customers.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "subscription",
+    "title": "Subscription Management — Technical Reference",
+    "summary": "Subscription plan management with Tenant model, plan tier enforcement, billing history, and upgrade/downgrade workflows.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "support-tickets",
+    "title": "Support Tickets — Technical Reference",
+    "summary": "In-app support ticket system with screenshot capture, R2 file attachments, message threading, and status workflow management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "tags",
+    "title": "Tags & Labels — Technical Reference",
+    "summary": "Server actions, database schema, and polymorphic tagging implementation for organizing trucks and drivers.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "team-permissions",
+    "title": "Team Permissions — Technical Reference",
+    "summary": "RBAC subsystem with User model, role-based guards, granular permission checks, and invitation workflow.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "tenant-management",
+    "title": "Tenant Management — Technical Reference",
+    "summary": "Multi-tenant administration with server actions for tenant CRUD, owner invitation flow, and status lifecycle management.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "trucks",
+    "title": "Legacy Truck Management — Technical Reference",
+    "summary": "Server actions, database schema, and auto-status badge computation for the legacy truck management subsystem.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "workflow-analytics",
+    "title": "Workflow Analytics — Technical Reference",
+    "summary": "Workflow completion metrics aggregating ActiveChecklist and Task data with duration analysis and bottleneck detection.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "workflow-automation",
+    "title": "Workflow Automation — Technical Reference",
+    "summary": "Event-driven automation rules with trigger handlers for load dispatch, driver invite, and truck creation events.",
     "type": "sysadmin-doc"
   },
   {
