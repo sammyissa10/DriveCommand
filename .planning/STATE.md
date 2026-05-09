@@ -13,7 +13,7 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-04 - Completed 52-02: Cron route + 4 email templates + TEMPLATE_REGISTRY 6 entries
+Last activity: 2026-05-09 - Completed quick-289: Feature Registry + Doc-Drift CI Check
 Last session: 2026-05-04T00:28:56Z
 Stopped at: Completed 52-02-PLAN.md
 
@@ -991,6 +991,7 @@ Progress: [███████████████████████
 - Quick-281 (2026-04-22): Add tenant settings, user list, password reset, and role change to sysadmin tenant detail — contactEmail+plan schema fields, TenantSettingsForm (contactEmail/timezone/plan), GET /api/admin/tenants/[id]/users, TenantUsersSection (role badges, status dots, actions dropdown), ChangeRoleModal, PATCH /api/admin/users/[id]/role (blocks OWNER + updates Supabase Auth app_metadata), Prisma client regenerated — 3 tasks, 9 files
 - Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
+- Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 
 ## Accumulated Context
 
@@ -1903,6 +1904,7 @@ None blocking immediate progress.
 - Quick-281 (2026-04-22): Add tenant settings, user list, password reset, and role change to sysadmin tenant detail — contactEmail+plan schema fields, TenantSettingsForm (contactEmail/timezone/plan), GET /api/admin/tenants/[id]/users, TenantUsersSection (role badges, status dots, actions dropdown), ChangeRoleModal, PATCH /api/admin/users/[id]/role (blocks OWNER + updates Supabase Auth app_metadata), Prisma client regenerated — 3 tasks, 9 files
 - Quick-283 (2026-04-23): Add voice message recording to all message threads — audioUrl on FleetMessage (migration applied), POST /api/v1/messages/upload-audio (R2 direct upload, tenant-isolated paths), GET /api/v1/messages/[id]/audio-url (fresh signed URLs), VoiceMessageRecorder (idle/recording/preview, 2-min auto-stop, MediaRecorder API), AudioMessageBubble (signed URL fetch + HTML5 player), sendDriverVoiceMessage server action, all 4 threads (MessageThread + DispatchMessages + StopDetailMessages + messaging-panel) updated — 3 tasks, 5 files created, 10 files modified
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
+- Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 
 ## Accumulated Context
 
