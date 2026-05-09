@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run build:search-index && prisma generate && next build",
+    "build": "npm run build:search-index && npm run build:admin-search && prisma generate && next build",
     "build:search-index": "tsx scripts/build-search-index.ts",
+    "build:admin-search": "tsx src/lib/docs/build-admin-search-index.ts",
     "start": "node scripts/migrate.mjs && next start",
     "lint": "next lint",
     "test": "vitest run",

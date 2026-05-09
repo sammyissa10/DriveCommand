@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BookOpen, Cog } from 'lucide-react';
+import { AdminDocSearch } from '@/components/docs/AdminDocSearch';
 
 const operationalDocs = [
   { slug: 'architecture', name: 'Architecture' },
@@ -19,9 +20,15 @@ export default function AdminDocsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-6">
-      {/* Sidebar */}
-      <aside className="w-64 shrink-0">
+    <div>
+      {/* Search bar at top */}
+      <div className="mb-6">
+        <AdminDocSearch />
+      </div>
+
+      <div className="flex gap-6">
+        {/* Sidebar */}
+        <aside className="w-64 shrink-0">
         <nav className="sticky top-6 space-y-6">
           {/* Feature Reference Section */}
           <div>
@@ -71,8 +78,9 @@ export default function AdminDocsLayout({
         </nav>
       </aside>
 
-      {/* Main content */}
-      <div className="flex-1 min-w-0">{children}</div>
+        {/* Main content */}
+        <div className="flex-1 min-w-0">{children}</div>
+      </div>
     </div>
   );
 }
