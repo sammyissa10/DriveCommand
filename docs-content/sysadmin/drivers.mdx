@@ -1,0 +1,277 @@
+---
+slug: drivers
+title: Legacy Driver Management — Technical Reference
+summary: Server actions, database schema, invitation token flow, and safety score calculation for the legacy driver management subsystem.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All driver queries are tenant-scoped via RLS"
+  - "Invitation tokens are cryptographically random with 7-day expiry"
+  - "Driver role can only access their own profile and assigned loads"
+---
+
+# Legacy Driver Management — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on legacy driver management.
+</Callout>
+
+## Overview
+
+The legacy driver management subsystem handles driver profiles, email-based invitation flow, document tracking, safety scoring, and compliance monitoring. Route: `/drivers`.
+
+This is distinct from Carrier Driver Management (`/carrier/fleet/drivers`), which shares the same models but provides enhanced UI features.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/drivers.ts`.
+
+<ApiTable rows={[
+  { name: "inviteDriver", roleGuard: "OWNER | MANAGER", inputSchema: "driverInviteSchema", returnType: "ActionState<DriverInvitation>" },
+  { name: "resendInvitation", roleGuard: "OWNER | MANAGER", inputSchema: "string (driverId)", returnType: "ActionState<void>" },
+  { name: "acceptInvitation", roleGuard: "PUBLIC", inputSchema: "inviteAcceptSchema", returnType: "ActionState<User>" },
+  { name: "updateDriver", roleGuard: "OWNER | MANAGER | DRIVER (own)", inputSchema: "driverUpdateSchema", returnType: "ActionState<Driver>" },
+  { name: "deactivateDriver", roleGuard: "OWNER", inputSchema: "string (driverId)", returnType: "ActionState<void>" },
+  { name: "calculateSafetyScore", roleGuard: "OWNER | MANAGER", inputSchema: "string (driverId)", returnType: "ActionState<number>" }
+]} />
+
+Invitation flow is public (no auth required) but tokens are cryptographically secure with 7-day expiry.
+
+## Database Schema
+
+<PrismaModelRef model="Driver" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "userId: String (foreign key to User, Supabase Auth)",
+  "licenseNumber: String",
+  "licenseState: String",
+  "cdlClass: String (A | B | C)",
+  "medicalCertExpiry: DateTime?",
+  "phone: String",
+  "safetyScore: Decimal? (0-100, calculated)",
+  "isActive: Boolean @default(true)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="DriverInvitation" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "email: String",
+  "firstName: String",
+  "lastName: String",
+  "token: String @unique (cryptographically random)",
+  "expiresAt: DateTime (7 days from creation)",
+  "acceptedAt: DateTime?",
+  "driverId: String? (set when invitation accepted)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Invitation Flow
+
+Driver onboarding uses a secure email-based invitation process:
+
+<ProcessDiagram steps={[
+  { label: "Invite Sent", description: "Owner creates DriverInvitation, email sent with unique token link" },
+  { label: "Driver Clicks Link", description: "Token validated, invitation data loaded" },
+  { label: "Driver Sets Password", description: "Supabase Auth user created, app_metadata.role = 'driver'" },
+  { label: "Profile Complete", description: "Driver record created, invitation marked accepted" }
+]} />
+
+<CodeBlock language="typescript">
+{`// Invite driver
+export async function inviteDriver(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<DriverInvitation>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const validated = driverInviteSchema.parse(Object.fromEntries(formData));
+
+  // Generate cryptographically random token
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+  // Create invitation
+  const invitation = await prisma.driverInvitation.create({
+    data: {
+      tenantId,
+      email: validated.email,
+      firstName: validated.firstName,
+      lastName: validated.lastName,
+      token,
+      expiresAt,
+    },
+  });
+
+  // Send email with invitation link
+  await sendInvitationEmail(invitation);
+
+  return { success: true, data: invitation };
+}`}
+</CodeBlock>
+
+<CodeBlock language="typescript">
+{`// Accept invitation (public endpoint)
+export async function acceptInvitation(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<User>> {
+  const validated = inviteAcceptSchema.parse(Object.fromEntries(formData));
+
+  // Validate token
+  const invitation = await prisma.driverInvitation.findUnique({
+    where: { token: validated.token },
+  });
+
+  if (!invitation || invitation.acceptedAt || invitation.expiresAt < new Date()) {
+    return { success: false, error: 'Invalid or expired invitation' };
+  }
+
+  // Create Supabase Auth user
+  const { data: authUser, error } = await supabase.auth.admin.createUser({
+    email: invitation.email,
+    password: validated.password,
+    email_confirm: true,
+    app_metadata: {
+      role: UserRole.DRIVER,
+      tenantId: invitation.tenantId,
+    },
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  // Create Driver record
+  const driver = await prisma.driver.create({
+    data: {
+      tenantId: invitation.tenantId,
+      userId: authUser.user.id,
+      licenseNumber: validated.licenseNumber,
+      licenseState: validated.licenseState,
+      cdlClass: validated.cdlClass,
+      phone: validated.phone,
+    },
+  });
+
+  // Mark invitation accepted
+  await prisma.driverInvitation.update({
+    where: { id: invitation.id },
+    data: { acceptedAt: new Date(), driverId: driver.id },
+  });
+
+  return { success: true, data: authUser.user };
+}`}
+</CodeBlock>
+
+## Safety Score Calculation
+
+Safety scores range from 0 to 100 and aggregate data from multiple sources:
+
+<ComparisonTable
+  headers={["Data Source", "Weight", "Model"]}
+  rows={[
+    ["Incident reports", "40%", "DriverIncident"],
+    ["Harsh braking events", "25%", "SafetyEvent (type: HARSH_BRAKING)"],
+    ["Speeding violations", "20%", "SafetyEvent (type: SPEEDING)"],
+    ["HOS violations", "15%", "DriverHOSEntry (violations logged)"]
+  ]}
+/>
+
+<CodeBlock language="typescript">
+{`// Calculate safety score
+export async function calculateSafetyScore(driverId: string): Promise<number> {
+  const prisma = await getTenantPrisma();
+
+  // Fetch events from last 90 days
+  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
+  const [incidents, safetyEvents, hosViolations] = await Promise.all([
+    prisma.driverIncident.count({ where: { driverId, createdAt: { gte: since } } }),
+    prisma.safetyEvent.count({ where: { driverId, createdAt: { gte: since } } }),
+    prisma.driverHOSEntry.count({
+      where: { driverId, createdAt: { gte: since }, isViolation: true }
+    }),
+  ]);
+
+  // Weighted deductions
+  let score = 100;
+  score -= incidents * 10; // -10 per incident (40% weight)
+  score -= safetyEvents * 5; // -5 per safety event (25% weight)
+  score -= hosViolations * 3; // -3 per HOS violation (15% weight)
+
+  return Math.max(0, Math.min(100, score));
+}`}
+</CodeBlock>
+
+Safety scores are recalculated in real-time when new events are logged.
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Driver"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+Additional policy for driver self-access:
+
+<RlsPolicyBox name="driver_self_access" policy={`CREATE POLICY driver_self_access ON "Driver"
+  FOR SELECT
+  USING (
+    user_id = auth.uid()
+  );`} />
+
+## Related Models
+
+- <PrismaModelRef model="User" /> — Supabase Auth user, linked via `userId`, `app_metadata.role = 'driver'`
+- <PrismaModelRef model="DriverInvitation" /> — Invitation tokens and acceptance tracking
+- <PrismaModelRef model="Document" /> — CDL, medical certificate, MVR linked via `driverId`
+- <PrismaModelRef model="DriverIncident" /> — Accident and safety incident reports
+- <PrismaModelRef model="SafetyEvent" /> — Harsh braking, speeding, other safety events
+- <PrismaModelRef model="Load" /> — Current and historical load assignments
+
+## Mobile API Endpoints
+
+Drivers access their profile via mobile endpoints:
+
+- `GET /api/mobile/driver/profile` - Get authenticated driver profile
+- `PUT /api/mobile/driver/profile` - Update driver profile (limited fields)
+- `GET /api/mobile/driver/documents` - List driver documents
+
+All endpoints require Bearer token authentication.
+
+## Security Considerations
+
+<Callout variant="danger" title="Invitation Token Expiry">
+Invitation tokens expire after 7 days. After expiry, the token is invalid and a new invitation must be sent. Never extend expiry programmatically.
+</Callout>
+
+<Callout variant="warning" title="Role Claims">
+Driver role is stored in Supabase `app_metadata.role` (NOT `user_metadata`). This is security-critical — user_metadata can be modified by users, app_metadata cannot.
+</Callout>
+
+## Troubleshooting
+
+**Invitation email not received:**
+
+Check spam folder. Verify `SMTP_*` env vars are configured. Check email logs in Nodemailer output.
+
+**Driver can't log in after accepting invitation:**
+
+Verify Supabase Auth user was created with `email_confirm: true`. Check `app_metadata.role = 'driver'` and `app_metadata.tenantId` match.
+
+**Safety score stuck at 0 or 100:**
+
+Recalculate manually via `calculateSafetyScore()` action. Check that SafetyEvent, DriverIncident, and DriverHOSEntry records exist for that driver.
+
+## Related Features
+
+<FeatureCard slug="carrier-fleet-drivers" />
+<FeatureCard slug="safety-analytics" />
+<FeatureCard slug="driver-dashboard" />

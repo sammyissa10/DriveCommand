@@ -1,0 +1,279 @@
+---
+slug: tags
+title: Tags & Labels — Technical Reference
+summary: Server actions, database schema, and polymorphic tagging implementation for organizing trucks and drivers.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All tag queries are tenant-scoped via RLS"
+  - "Tag deletion cascades to all tagged entities"
+  - "Tag colors are client-side only (not validated on server)"
+---
+
+# Tags & Labels — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on tags and labels.
+</Callout>
+
+## Overview
+
+The tagging system provides color-coded labels for organizing trucks and drivers. Tags support polymorphic relationships — a single Tag model can be applied to multiple entity types. Route: `/tags`.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/tags.ts`.
+
+<ApiTable rows={[
+  { name: "createTag", roleGuard: "OWNER | MANAGER", inputSchema: "tagCreateSchema", returnType: "ActionState<Tag>" },
+  { name: "updateTag", roleGuard: "OWNER | MANAGER", inputSchema: "tagUpdateSchema", returnType: "ActionState<Tag>" },
+  { name: "deleteTag", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "applyTagToTruck", roleGuard: "OWNER | MANAGER", inputSchema: "tagId + truckId", returnType: "ActionState<void>" },
+  { name: "applyTagToDriver", roleGuard: "OWNER | MANAGER", inputSchema: "tagId + driverId", returnType: "ActionState<void>" },
+  { name: "removeTagFromTruck", roleGuard: "OWNER | MANAGER", inputSchema: "tagId + truckId", returnType: "ActionState<void>" },
+  { name: "removeTagFromDriver", roleGuard: "OWNER | MANAGER", inputSchema: "tagId + driverId", returnType: "ActionState<void>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="Tag" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "name: String (user-defined label)",
+  "color: String (hex color code, e.g., '#FF5733')",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+## Polymorphic Relationships
+
+Tags use many-to-many join tables for each entity type:
+
+**TruckTag** (join table):
+- `tagId`: Foreign key to Tag
+- `truckId`: Foreign key to Truck
+- Unique constraint on `(tagId, truckId)`
+
+**DriverTag** (join table):
+- `tagId`: Foreign key to Tag
+- `driverId`: Foreign key to Driver
+- Unique constraint on `(tagId, driverId)`
+
+This allows a single tag to be applied to multiple trucks and drivers, and a single entity to have multiple tags.
+
+<CodeBlock language="typescript">
+{`// Apply tag to truck
+export async function applyTagToTruck(
+  tagId: string,
+  truckId: string
+): Promise<ActionState<void>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Verify tag and truck belong to tenant
+  const [tag, truck] = await Promise.all([
+    prisma.tag.findUnique({ where: { id: tagId } }),
+    prisma.truck.findUnique({ where: { id: truckId } }),
+  ]);
+
+  if (!tag || !truck || tag.tenantId !== tenantId || truck.tenantId !== tenantId) {
+    return { success: false, error: 'Tag or truck not found' };
+  }
+
+  // Create join table entry (upsert to handle duplicate attempts)
+  await prisma.truckTag.upsert({
+    where: { tagId_truckId: { tagId, truckId } },
+    create: { tagId, truckId },
+    update: {},
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+## Querying Tagged Entities
+
+Use Prisma's `include` to fetch tags with entities:
+
+<CodeBlock language="typescript">
+{`// Get trucks with tags
+const trucks = await prisma.truck.findMany({
+  where: { tenantId },
+  include: {
+    tags: {
+      include: { tag: true },
+    },
+  },
+});
+
+// Transform to include tag array
+const trucksWithTags = trucks.map((truck) => ({
+  ...truck,
+  tags: truck.tags.map((tt) => tt.tag),
+}));`}
+</CodeBlock>
+
+## Filtering by Tags
+
+Filter entities by tag using join table:
+
+<CodeBlock language="typescript">
+{`// Get all trucks with specific tag
+const trucks = await prisma.truck.findMany({
+  where: {
+    tenantId,
+    tags: {
+      some: { tagId: tagId },
+    },
+  },
+});
+
+// Get all drivers with ANY of multiple tags (OR logic)
+const drivers = await prisma.driver.findMany({
+  where: {
+    tenantId,
+    tags: {
+      some: {
+        tagId: { in: [tagId1, tagId2, tagId3] },
+      },
+    },
+  },
+});`}
+</CodeBlock>
+
+## Tag Deletion Cascade
+
+When a tag is deleted, all join table entries are automatically removed (cascading delete):
+
+<CodeBlock language="typescript">
+{`// Delete tag
+export async function deleteTag(tagId: string): Promise<ActionState<void>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Verify tag belongs to tenant
+  const tag = await prisma.tag.findUnique({ where: { id: tagId } });
+
+  if (!tag || tag.tenantId !== tenantId) {
+    return { success: false, error: 'Tag not found' };
+  }
+
+  // Delete tag (cascades to TruckTag and DriverTag via Prisma schema)
+  await prisma.tag.delete({ where: { id: tagId } });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+Prisma schema must define cascade delete:
+
+<CodeBlock language="prisma">
+{`model TruckTag {
+  tagId   String
+  truckId String
+
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  truck Truck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, truckId])
+}`}
+</CodeBlock>
+
+## Color Validation
+
+The `color` field stores hex color codes. No server-side validation is performed — validation happens client-side via Zod schema:
+
+<CodeBlock language="typescript">
+{`// Client-side validation
+const tagCreateSchema = z.object({
+  name: z.string().min(1).max(50),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/), // Hex color
+});`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Tag"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Related Models
+
+- <PrismaModelRef model="Truck" /> — Tagged via TruckTag join table
+- <PrismaModelRef model="Driver" /> — Tagged via DriverTag join table
+
+## Bulk Operations
+
+Apply tags to multiple entities in a single transaction:
+
+<CodeBlock language="typescript">
+{`// Bulk apply tag to trucks
+export async function bulkApplyTagToTrucks(
+  tagId: string,
+  truckIds: string[]
+): Promise<ActionState<void>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  const creates = truckIds.map((truckId) =>
+    prisma.truckTag.upsert({
+      where: { tagId_truckId: { tagId, truckId } },
+      create: { tagId, truckId },
+      update: {},
+    })
+  );
+
+  await prisma.$transaction(creates);
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+Tag queries with entity filtering can be expensive for large fleets (500+ trucks/drivers). Use indexes on join table columns:
+
+<CodeBlock language="sql">
+{`-- Add indexes to TruckTag join table
+CREATE INDEX idx_truck_tag_tag_id ON "TruckTag"(tag_id);
+CREATE INDEX idx_truck_tag_truck_id ON "TruckTag"(truck_id);
+
+-- Add indexes to DriverTag join table
+CREATE INDEX idx_driver_tag_tag_id ON "DriverTag"(tag_id);
+CREATE INDEX idx_driver_tag_driver_id ON "DriverTag"(driver_id);`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="warning" title="Tag Deletion">
+Deleting a tag removes it from all trucks and drivers immediately. This action cannot be undone. Warn users before deletion.
+</Callout>
+
+## Troubleshooting
+
+**Tag not appearing on entity:**
+
+Check TruckTag or DriverTag join table for entry. Verify both tag and entity belong to same tenant.
+
+**Tag deletion fails:**
+
+Check for foreign key constraints. Ensure Prisma schema defines `onDelete: Cascade` on join table relations.
+
+**Color not displaying correctly:**
+
+Verify color field contains valid hex code (e.g., "#FF5733"). Check client-side CSS rendering.
+
+## Related Features
+
+<FeatureCard slug="trucks" />
+<FeatureCard slug="drivers" />
+<FeatureCard slug="carrier-fleet-trucks" />
+<FeatureCard slug="carrier-fleet-drivers" />

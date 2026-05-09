@@ -1,0 +1,303 @@
+---
+slug: routes
+title: Route Planning — Technical Reference
+summary: Server actions, database schema, leg sequencing logic, and RouteStop continuity validation for multi-stop route management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All route queries are tenant-scoped via RLS"
+  - "Driver role can view routes assigned to them, cannot create/delete"
+  - "RouteStop CRUD validates leg sequencing and continuity"
+---
+
+# Route Planning — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on route planning.
+</Callout>
+
+## Overview
+
+The route planning subsystem manages multi-stop routes with sequential leg ordering, driver/truck assignment, load linkage, and continuity validation. Route: `/routes`.
+
+Routes organize multiple RouteStops into a logical sequence for dispatch. The system validates that pickups occur before their corresponding deliveries and warns on inefficient sequencing.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/routes.ts`.
+
+<ApiTable rows={[
+  { name: "createRoute", roleGuard: "OWNER | MANAGER", inputSchema: "routeCreateSchema", returnType: "ActionState<Route>" },
+  { name: "updateRoute", roleGuard: "OWNER | MANAGER", inputSchema: "routeUpdateSchema", returnType: "ActionState<Route>" },
+  { name: "deleteRoute", roleGuard: "OWNER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "addRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "routeStopCreateSchema", returnType: "ActionState<RouteStop>" },
+  { name: "updateRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "routeStopUpdateSchema", returnType: "ActionState<RouteStop>" },
+  { name: "deleteRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "reorderRouteStops", roleGuard: "OWNER | MANAGER", inputSchema: "stopOrderSchema", returnType: "ActionState<RouteStop[]>" },
+  { name: "validateRouteContinuity", roleGuard: "OWNER | MANAGER", inputSchema: "string (routeId)", returnType: "ActionState<ValidationResult>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="Route" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "routeNumber: String (format: RT-NNNN, unique per tenant)",
+  "name: String (user-friendly identifier)",
+  "status: RouteStatus (PENDING | IN_PROGRESS | COMPLETED | CANCELLED)",
+  "driverId: String? (foreign key to Driver)",
+  "truckId: String? (foreign key to Truck)",
+  "startDate: DateTime",
+  "endDate: DateTime?",
+  "totalDistance: Decimal? (miles, calculated from stops)",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="RouteStop" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "routeId: String (foreign key to Route)",
+  "loadId: String? (foreign key to Load, optional)",
+  "stopType: StopType (PICKUP | DELIVERY)",
+  "sequence: Int (1-based ordering within route)",
+  "address: String (full street address)",
+  "lat: Decimal? (geocoded latitude)",
+  "lng: Decimal? (geocoded longitude)",
+  "contactName: String?",
+  "contactPhone: String?",
+  "bolNumber: String? (Bill of Lading)",
+  "poNumber: String? (Purchase Order)",
+  "scheduledTime: DateTime",
+  "actualArrivalTime: DateTime?",
+  "completedAt: DateTime?",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+## Leg Sequencing Logic
+
+Routes are divided into **legs** — segments between consecutive stops. The `reorderRouteStops` action updates the `sequence` field on all stops and recalculates leg distances.
+
+<ProcessDiagram steps={[
+  { label: "Leg 1", description: "Origin → First Stop (sequence: 1)" },
+  { label: "Leg 2", description: "Stop 1 → Stop 2 (sequence: 2)" },
+  { label: "Leg 3", description: "Stop 2 → Stop 3 (sequence: 3)" },
+  { label: "Leg N", description: "Stop N-1 → Stop N (sequence: N)" }
+]} />
+
+<CodeBlock language="typescript">
+{`// Reorder route stops
+export async function reorderRouteStops(
+  routeId: string,
+  stopIds: string[]
+): Promise<ActionState<RouteStop[]>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  // Update sequence field for each stop
+  const updates = stopIds.map((stopId, index) =>
+    prisma.routeStop.update({
+      where: { id: stopId },
+      data: { sequence: index + 1 },
+    })
+  );
+
+  const stops = await prisma.$transaction(updates);
+
+  // Recalculate total route distance
+  await recalculateRouteDistance(prisma, routeId);
+
+  return { success: true, data: stops };
+}`}
+</CodeBlock>
+
+## Continuity Validation
+
+The `validateRouteContinuity` action checks that pickups occur before their corresponding deliveries. It uses `loadId` to match pickup/delivery pairs.
+
+<CodeBlock language="typescript">
+{`// Validate route continuity
+export async function validateRouteContinuity(
+  routeId: string
+): Promise<ActionState<ValidationResult>> {
+  const prisma = await getTenantPrisma();
+
+  const stops = await prisma.routeStop.findMany({
+    where: { routeId },
+    orderBy: { sequence: 'asc' },
+  });
+
+  const warnings: string[] = [];
+
+  // Group stops by loadId
+  const loadStops = new Map<string, RouteStop[]>();
+  for (const stop of stops) {
+    if (stop.loadId) {
+      if (!loadStops.has(stop.loadId)) {
+        loadStops.set(stop.loadId, []);
+      }
+      loadStops.get(stop.loadId)!.push(stop);
+    }
+  }
+
+  // Check each load's pickup comes before delivery
+  for (const [loadId, loadStopsArray] of loadStops) {
+    const pickup = loadStopsArray.find((s) => s.stopType === StopType.PICKUP);
+    const delivery = loadStopsArray.find((s) => s.stopType === StopType.DELIVERY);
+
+    if (pickup && delivery && pickup.sequence > delivery.sequence) {
+      warnings.push(
+        \`Load \${loadId}: Delivery stop (seq \${delivery.sequence}) comes before pickup (seq \${pickup.sequence})\`
+      );
+    }
+  }
+
+  return {
+    success: true,
+    data: { isValid: warnings.length === 0, warnings },
+  };
+}`}
+</CodeBlock>
+
+Warnings are displayed in the UI as red alerts. Routes with continuity errors can still be saved but cannot be dispatched until resolved.
+
+## Load Linkage
+
+When a load is assigned to a route, the system creates or updates RouteStop records automatically:
+
+1. **Pickup stop**: Created with `stopType: PICKUP`, address from `load.origin`, `loadId` FK
+2. **Delivery stop**: Created with `stopType: DELIVERY`, address from `load.destination`, `loadId` FK
+
+The Load model maintains reverse FKs: `pickupStopId` and `deliveryStopId` for fast lookups.
+
+<CodeBlock language="typescript">
+{`// Sync RouteStops when load is assigned to route
+export async function syncRouteStopsForLoad(
+  prisma: PrismaClient,
+  load: Load
+): Promise<void> {
+  if (!load.routeId) return;
+
+  // Create or update pickup stop
+  const pickupStop = await prisma.routeStop.upsert({
+    where: { id: load.pickupStopId || 'new' },
+    create: {
+      tenantId: load.tenantId,
+      routeId: load.routeId,
+      loadId: load.id,
+      stopType: StopType.PICKUP,
+      address: load.origin,
+      lat: load.pickupLat,
+      lng: load.pickupLng,
+      scheduledTime: load.pickupDate,
+      sequence: 999, // Placeholder, reordered later
+    },
+    update: {
+      address: load.origin,
+      lat: load.pickupLat,
+      lng: load.pickupLng,
+      scheduledTime: load.pickupDate,
+    },
+  });
+
+  // Create or update delivery stop
+  const deliveryStop = await prisma.routeStop.upsert({
+    where: { id: load.deliveryStopId || 'new' },
+    create: {
+      tenantId: load.tenantId,
+      routeId: load.routeId,
+      loadId: load.id,
+      stopType: StopType.DELIVERY,
+      address: load.destination,
+      lat: load.deliveryLat,
+      lng: load.deliveryLng,
+      scheduledTime: load.deliveryDate,
+      sequence: 1000, // Placeholder
+    },
+    update: {
+      address: load.destination,
+      lat: load.deliveryLat,
+      lng: load.deliveryLng,
+      scheduledTime: load.deliveryDate,
+    },
+  });
+
+  // Update load with stop IDs
+  await prisma.load.update({
+    where: { id: load.id },
+    data: {
+      pickupStopId: pickupStop.id,
+      deliveryStopId: deliveryStop.id,
+    },
+  });
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Route"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+Same policy applies to RouteStop table.
+
+## Related Models
+
+- <PrismaModelRef model="RouteStop" /> — Stops belonging to this route
+- <PrismaModelRef model="Load" /> — Loads linked to route via `routeId` FK and RouteStop linkage
+- <PrismaModelRef model="Driver" /> — Assigned driver for this route
+- <PrismaModelRef model="Truck" /> — Assigned truck for this route
+- <PrismaModelRef model="FleetMessage" /> — Route-scoped messages between owner and driver
+
+## Mobile API Endpoints
+
+Drivers access routes via:
+
+- `GET /api/mobile/driver/routes` - List routes assigned to authenticated driver
+- `GET /api/mobile/driver/routes/[id]` - Get route details with stops and loads
+- `POST /api/mobile/driver/routes/[id]/complete-stop` - Mark stop as completed
+
+## Performance Considerations
+
+Route queries with stops can be expensive for routes with 50+ stops. Use pagination:
+
+<CodeBlock language="typescript">
+{`// Paginated route stop query
+const stops = await prisma.routeStop.findMany({
+  where: { routeId },
+  orderBy: { sequence: 'asc' },
+  take: 20,
+  skip: page * 20,
+});`}
+</CodeBlock>
+
+Consider caching route distance calculations in Redis with 15-minute TTL.
+
+## Troubleshooting
+
+**Continuity warnings not clearing:**
+
+Run `validateRouteContinuity()` manually. Check that pickup stops have lower `sequence` than delivery stops for the same `loadId`.
+
+**Stops not appearing in correct order:**
+
+Check `sequence` field on RouteStop records. Call `reorderRouteStops()` to re-sequence.
+
+**Load not linking to route:**
+
+Verify `load.routeId` is set. Call `syncRouteStopsForLoad()` to create missing RouteStop records.
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="driver-my-route" />

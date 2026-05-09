@@ -1,0 +1,274 @@
+---
+slug: crm
+title: Customer Relationship Management — Technical Reference
+summary: Server actions, database schema, and interaction logging for customer and contact management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All CRM queries are tenant-scoped via RLS"
+  - "Customer revenue totals are computed at query time (no cached field)"
+  - "Payment terms are used for invoice generation but not enforced"
+---
+
+# Customer Relationship Management — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on CRM.
+</Callout>
+
+## Overview
+
+The CRM subsystem manages customer companies (shippers, brokers, 3PLs, consignees), contacts within those companies, interaction logging, and revenue analytics. Route: `/crm`.
+
+This is distinct from Carrier Clients (`/carrier/clients`), which shares the same models but provides advanced features like contract management and rate tables.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/crm.ts`.
+
+<ApiTable rows={[
+  { name: "createCustomer", roleGuard: "OWNER | MANAGER", inputSchema: "customerCreateSchema", returnType: "ActionState<Customer>" },
+  { name: "updateCustomer", roleGuard: "OWNER | MANAGER", inputSchema: "customerUpdateSchema", returnType: "ActionState<Customer>" },
+  { name: "deleteCustomer", roleGuard: "OWNER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "createContact", roleGuard: "OWNER | MANAGER", inputSchema: "contactCreateSchema", returnType: "ActionState<Contact>" },
+  { name: "updateContact", roleGuard: "OWNER | MANAGER", inputSchema: "contactUpdateSchema", returnType: "ActionState<Contact>" },
+  { name: "deleteContact", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "logInteraction", roleGuard: "OWNER | MANAGER", inputSchema: "interactionSchema", returnType: "ActionState<CustomerInteraction>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="Customer" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "name: String (company name)",
+  "customerType: CustomerType (SHIPPER | BROKER | 3PL | CONSIGNEE)",
+  "mcNumber: String? (FMCSA MC number)",
+  "dotNumber: String? (DOT number)",
+  "address: String?",
+  "city: String?",
+  "state: String?",
+  "zip: String?",
+  "website: String?",
+  "paymentTerms: String? (e.g., 'Net 30', 'Net 60')",
+  "creditLimit: Decimal?",
+  "factoringPreference: Boolean? (requires factoring)",
+  "isActive: Boolean @default(true)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="Contact" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "customerId: String (foreign key to Customer)",
+  "firstName: String",
+  "lastName: String",
+  "role: String? (e.g., 'Dispatcher', 'Accounts Payable')",
+  "email: String?",
+  "phone: String?",
+  "isPrimary: Boolean @default(false)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="CustomerInteraction" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "customerId: String (foreign key to Customer)",
+  "contactId: String? (foreign key to Contact)",
+  "userId: String (foreign key to User, who logged the interaction)",
+  "interactionType: InteractionType (PHONE_CALL | EMAIL | MEETING | NOTE)",
+  "subject: String (brief summary)",
+  "notes: String (detailed description)",
+  "interactionDate: DateTime",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Revenue Analytics
+
+Customer revenue totals are computed at query time by aggregating Invoice records. No cached revenue field exists on Customer model.
+
+<CodeBlock language="typescript">
+{`// Calculate customer revenue
+export async function getCustomerRevenue(customerId: string) {
+  const prisma = await getTenantPrisma();
+
+  const [allTime, last30Days] = await Promise.all([
+    prisma.invoice.aggregate({
+      where: { customerId },
+      _sum: { total: true },
+    }),
+    prisma.invoice.aggregate({
+      where: {
+        customerId,
+        createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+      },
+      _sum: { total: true },
+    }),
+  ]);
+
+  const loadCount = await prisma.load.count({ where: { customerId } });
+
+  return {
+    totalRevenue: allTime._sum.total || 0,
+    last30DaysRevenue: last30Days._sum.total || 0,
+    totalLoads: loadCount,
+    averageLoadValue: loadCount > 0 ? (allTime._sum.total || 0) / loadCount : 0,
+  };
+}`}
+</CodeBlock>
+
+Revenue queries can be expensive for customers with 1000+ invoices. Consider caching results in Redis with 1-hour TTL.
+
+## Primary Contact Logic
+
+Each customer can have one primary contact. The `isPrimary` flag is used for autocomplete and default selection in load creation forms.
+
+<CodeBlock language="typescript">
+{`// Create primary contact
+export async function createContact(
+  customerId: string,
+  contactData: ContactInput
+): Promise<ActionState<Contact>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // If setting as primary, unset existing primary
+  if (contactData.isPrimary) {
+    await prisma.contact.updateMany({
+      where: { customerId, isPrimary: true },
+      data: { isPrimary: false },
+    });
+  }
+
+  const contact = await prisma.contact.create({
+    data: {
+      tenantId,
+      customerId,
+      ...contactData,
+    },
+  });
+
+  return { success: true, data: contact };
+}`}
+</CodeBlock>
+
+## Interaction Logging
+
+CustomerInteraction records track all communication with customers. Interactions are displayed in reverse chronological order on customer detail pages.
+
+<CodeBlock language="typescript">
+{`// Log customer interaction
+export async function logInteraction(
+  customerId: string,
+  interactionData: InteractionInput
+): Promise<ActionState<CustomerInteraction>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const userId = await getUserId();
+  const prisma = await getTenantPrisma();
+
+  const interaction = await prisma.customerInteraction.create({
+    data: {
+      tenantId,
+      customerId,
+      userId,
+      ...interactionData,
+    },
+  });
+
+  return { success: true, data: interaction };
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Customer"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+Same policy applies to Contact and CustomerInteraction tables.
+
+## Related Models
+
+- <PrismaModelRef model="Load" /> — All loads for this customer (foreign key `customerId`)
+- <PrismaModelRef model="Invoice" /> — All invoices for this customer
+- <PrismaModelRef model="Contract" /> — Carrier contracts (only in Carrier Clients feature)
+- <PrismaModelRef model="Tag" /> — Polymorphic tags for customer organization
+
+## Payment Terms
+
+The `paymentTerms` field (e.g., "Net 30", "Net 60") is used to auto-populate invoice due dates but is NOT enforced by the system. It's a convenience field for invoice generation.
+
+<CodeBlock language="typescript">
+{`// Auto-calculate invoice due date from payment terms
+function calculateDueDate(customer: Customer, invoiceDate: Date): Date {
+  if (!customer.paymentTerms) return invoiceDate;
+
+  const match = customer.paymentTerms.match(/Net (\\d+)/);
+  if (!match) return invoiceDate;
+
+  const days = parseInt(match[1], 10);
+  return new Date(invoiceDate.getTime() + days * 24 * 60 * 60 * 1000);
+}`}
+</CodeBlock>
+
+## Credit Limit
+
+The `creditLimit` field is advisory only. The system does NOT block invoice creation if a customer exceeds their credit limit. It displays a warning in the UI.
+
+## Security Considerations
+
+<Callout variant="warning" title="Customer Deletion">
+Customers cannot be deleted if they have associated Load or Invoice records. Use soft delete (`isActive: false`) instead. Hard deletion requires cascading deletes which can cause data loss.
+</Callout>
+
+<Callout variant="info" title="Contact Email Privacy">
+Contact emails are NOT used for automated communication. They're for display only. All customer emails are sent to tenant owner.
+</Callout>
+
+## Performance Considerations
+
+Customer list queries with revenue aggregation can be slow for tenants with 500+ customers. Use pagination and lazy-load revenue on detail pages:
+
+<CodeBlock language="typescript">
+{`// Paginated customer list (no revenue)
+const customers = await prisma.customer.findMany({
+  where: { tenantId, isActive: true },
+  select: { id: true, name: true, customerType: true, paymentTerms: true },
+  take: 50,
+  orderBy: { name: 'asc' },
+});
+
+// Revenue calculated on-demand when user opens detail page
+const revenue = await getCustomerRevenue(customerId);`}
+</CodeBlock>
+
+## Troubleshooting
+
+**Customer not appearing in load creation dropdown:**
+
+Check `customer.isActive === true`. Inactive customers are hidden from dropdowns.
+
+**Primary contact not showing first:**
+
+Verify `contact.isPrimary === true`. Only one contact per customer can be primary.
+
+**Revenue totals don't match invoices:**
+
+Recalculate revenue manually via `getCustomerRevenue()`. Check that all invoices have correct `customerId` FK.
+
+## Related Features
+
+<FeatureCard slug="carrier-clients" />
+<FeatureCard slug="carrier-contracts" />
+<FeatureCard slug="invoices" />
+<FeatureCard slug="tags" />

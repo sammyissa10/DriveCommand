@@ -1,0 +1,249 @@
+---
+slug: help-center
+title: Help Center — Technical Reference
+summary: MDX documentation system, search implementation, and content management for the in-app help center.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Help content is public (no auth required)"
+  - "Search uses client-side fuzzy matching (no server queries)"
+  - "MDX components are sandboxed to prevent XSS"
+---
+
+# Help Center — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on the help center itself.
+</Callout>
+
+## Overview
+
+The Help Center provides in-app documentation using MDX (Markdown + JSX) files with custom React components. Route: `/help`.
+
+No server actions — all content is statically generated at build time using Next.js static site generation.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "N/A", roleGuard: "N/A", inputSchema: "N/A", returnType: "No server actions (static content only)" }
+]} />
+
+The Help Center has no server actions. All content is read from MDX files at build time.
+
+## Database Schema
+
+<PrismaModelRef model="N/A" fields={[
+  "No database tables — content stored as MDX files in docs-content/ directory"
+]} />
+
+## Architecture
+
+Help content is organized as MDX files in the repository:
+
+```
+docs-content/
+├── client/           # User-facing help articles
+│   ├── trucks.mdx
+│   ├── drivers.mdx
+│   └── ...
+├── sysadmin/         # Technical reference docs
+│   ├── trucks.mdx
+│   ├── drivers.mdx
+│   └── ...
+└── shared/           # Cross-portal docs
+    └── support-tickets.mdx
+```
+
+Each MDX file has frontmatter metadata:
+
+<CodeBlock language="markdown">
+{`---
+slug: feature-slug
+title: Feature Title
+summary: One-sentence summary (max 300 chars)
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+videoUrl: https://www.loom.com/share/... (optional)
+---
+
+# Feature Title
+
+MDX content here...`}
+</CodeBlock>
+
+## Static Site Generation
+
+Next.js reads MDX files at build time and generates static HTML pages:
+
+<CodeBlock language="typescript">
+{`// app/help/[slug]/page.tsx
+import { compileMDX } from 'next-mdx-remote/rsc';
+import fs from 'fs/promises';
+import path from 'path';
+
+export async function generateStaticParams() {
+  const docsDir = path.join(process.cwd(), 'docs-content/client');
+  const files = await fs.readdir(docsDir);
+
+  return files
+    .filter((file) => file.endsWith('.mdx'))
+    .map((file) => ({
+      slug: file.replace(/\\.mdx$/, ''),
+    }));
+}
+
+export default async function HelpPage({ params }: { params: { slug: string } }) {
+  const filePath = path.join(
+    process.cwd(),
+    'docs-content/client',
+    \`\${params.slug}.mdx\`
+  );
+  const source = await fs.readFile(filePath, 'utf8');
+
+  const { content, frontmatter } = await compileMDX({
+    source,
+    options: { parseFrontmatter: true },
+    components: mdxComponents, // Custom React components
+  });
+
+  return (
+    <article>
+      <h1>{frontmatter.title}</h1>
+      {content}
+    </article>
+  );
+}`}
+</CodeBlock>
+
+## Custom MDX Components
+
+The Help Center provides custom React components for rich documentation:
+
+<ComparisonTable
+  headers={["Component", "Purpose", "Example"]}
+  rows={[
+    ["Callout", "Info/warning/tip boxes", "<Callout variant='warning'>Text</Callout>"],
+    ["StepFlow", "Multi-step instructions", "<StepFlow><StepFlow.Step>...</StepFlow.Step></StepFlow>"],
+    ["ProcessDiagram", "State workflows", "<ProcessDiagram steps={[...]} />"],
+    ["Screenshot", "Annotated images", "<Screenshot src='...' hotspots={[...]} />"],
+    ["FeatureCard", "Related article links", "<FeatureCard slug='trucks' />"],
+    ["PlanBadge", "Plan tier indicator", "<PlanBadge tier='pro' />"],
+    ["ApiTable", "Server action docs (sysadmin)", "<ApiTable rows={[...]} />"],
+    ["PrismaModelRef", "Schema reference (sysadmin)", "<PrismaModelRef model='Truck' />"]
+  ]}
+/>
+
+Components are defined in `components/mdx/`:
+
+<CodeBlock language="typescript">
+{`// components/mdx/Callout.tsx
+export function Callout({
+  variant,
+  title,
+  children,
+}: {
+  variant: 'info' | 'warning' | 'tip' | 'success' | 'danger';
+  title?: string;
+  children: React.ReactNode;
+}) {
+  const styles = {
+    info: 'bg-blue-50 border-blue-300',
+    warning: 'bg-yellow-50 border-yellow-300',
+    tip: 'bg-green-50 border-green-300',
+    success: 'bg-emerald-50 border-emerald-300',
+    danger: 'bg-red-50 border-red-300',
+  };
+
+  return (
+    <div className={\`border-l-4 p-4 \${styles[variant]}\`}>
+      {title && <strong>{title}</strong>}
+      {children}
+    </div>
+  );
+}`}
+</CodeBlock>
+
+## Search Implementation
+
+Help Center search uses client-side fuzzy matching with Fuse.js:
+
+<CodeBlock language="typescript">
+{`// components/HelpSearch.tsx
+import Fuse from 'fuse.js';
+import { useEffect, useState } from 'react';
+
+export function HelpSearch() {
+  const [results, setResults] = useState([]);
+
+  // Build search index from all MDX frontmatter
+  const index = new Fuse(articles, {
+    keys: ['title', 'summary', 'content'],
+    threshold: 0.3,
+  });
+
+  function handleSearch(query: string) {
+    const matches = index.search(query);
+    setResults(matches.map((m) => m.item));
+  }
+
+  return <input type="search" onChange={(e) => handleSearch(e.target.value)} />;
+}`}
+</CodeBlock>
+
+Search index is built at build time and shipped with the client bundle. No server queries.
+
+## Content Management Workflow
+
+1. **Add new feature**: Create MDX file in `docs-content/client/` and `docs-content/sysadmin/`
+2. **Update existing doc**: Edit MDX file, update `lastReviewed` date in frontmatter
+3. **Deploy**: Run `npm run build` to regenerate static pages
+
+No database writes or server actions required.
+
+## RLS Policy
+
+No database tables — all content is public and served as static HTML.
+
+## Related Models
+
+None — Help Center does not use database storage.
+
+## Performance Considerations
+
+All help pages are pre-rendered at build time. No server-side rendering or database queries occur on page load.
+
+Search index (all article content) is shipped in client bundle. For 50+ articles, consider:
+
+- Lazy-loading search index on first search
+- Compressing search index with gzip
+- Server-side search with full-text search (Postgres or Algolia)
+
+## Security Considerations
+
+<Callout variant="danger" title="MDX Component Sandboxing">
+MDX components must sanitize user input. Never allow arbitrary HTML or script tags in MDX content. Use `dangerouslySetInnerHTML` only for trusted content.
+</Callout>
+
+<Callout variant="warning" title="Public Access">
+Help Center content is public and does not require authentication. Do not include sensitive information (credentials, API keys, tenant-specific data) in help articles.
+</Callout>
+
+## Troubleshooting
+
+**New MDX file not appearing in help center:**
+
+Run `npm run build` to regenerate static pages. Check that file exists in `docs-content/client/` and has valid frontmatter.
+
+**Search not finding article:**
+
+Verify article slug matches feature registry. Check that `summary` field in frontmatter contains relevant keywords.
+
+**MDX component not rendering:**
+
+Check that component is imported in `mdxComponents` object. Verify component is exported from `components/mdx/index.ts`.
+
+## Related Features
+
+<FeatureCard slug="admin-docs" />
+<FeatureCard slug="support-tickets" />

@@ -1,0 +1,256 @@
+---
+slug: loads
+title: Legacy Load Management — Technical Reference
+summary: Server actions, database schema, status workflow state machine, and tracking token generation for the legacy load management subsystem.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All load queries are tenant-scoped via RLS"
+  - "Driver role can only update status on loads assigned to them"
+  - "Tracking tokens are public but cryptographically secure"
+---
+
+# Legacy Load Management — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on legacy load management.
+</Callout>
+
+## Overview
+
+The legacy load management subsystem provides CRUD operations for individual loads (shipments) with status workflow, customer assignment, and public tracking token generation. Route: `/loads`.
+
+This is distinct from Carrier Load Management (`/carrier/loads`), which shares the same models but provides enhanced UI with 4-tab filtering and route integration.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/loads.ts`.
+
+<ApiTable rows={[
+  { name: "createLoad", roleGuard: "OWNER | MANAGER", inputSchema: "loadCreateSchema", returnType: "ActionState<Load>" },
+  { name: "updateLoad", roleGuard: "OWNER | MANAGER", inputSchema: "loadUpdateSchema", returnType: "ActionState<Load>" },
+  { name: "updateLoadStatus", roleGuard: "DRIVER", inputSchema: "LoadStatus enum", returnType: "ActionState<Load>" },
+  { name: "deleteLoad", roleGuard: "OWNER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "generateTrackingToken", roleGuard: "OWNER | MANAGER", inputSchema: "string (loadId)", returnType: "ActionState<string>" },
+  { name: "cancelLoad", roleGuard: "OWNER | MANAGER", inputSchema: "string (loadId)", returnType: "ActionState<Load>" }
+]} />
+
+## Database Schema
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "loadNumber: String (format: LD-NNNN, unique per tenant)",
+  "status: LoadStatus (PENDING | AT_PICKUP | IN_TRANSIT | DELIVERED | CANCELLED)",
+  "customerId: String (foreign key to Customer)",
+  "origin: String (pickup address)",
+  "destination: String (delivery address)",
+  "pickupLat: Decimal? (geocoded latitude)",
+  "pickupLng: Decimal? (geocoded longitude)",
+  "deliveryLat: Decimal? (geocoded latitude)",
+  "deliveryLng: Decimal? (geocoded longitude)",
+  "pickupDate: DateTime",
+  "deliveryDate: DateTime?",
+  "routeId: String? (foreign key to Route)",
+  "driverId: String? (foreign key to Driver)",
+  "truckId: String? (foreign key to Truck)",
+  "pickupStopId: String? (foreign key to RouteStop)",
+  "deliveryStopId: String? (foreign key to RouteStop)",
+  "bolNumber: String? (Bill of Lading)",
+  "poNumber: String? (Purchase Order)",
+  "commodity: String?",
+  "weight: Decimal?",
+  "pieces: Int?",
+  "rate: Decimal?",
+  "trackingToken: String? @unique (public tracking URL token)",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+## Status Workflow State Machine
+
+Load status follows a strict forward-only progression. Drivers can only advance status, not revert.
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Initial state, awaiting dispatch" },
+  { label: "AT_PICKUP", description: "Driver arrived at pickup location" },
+  { label: "IN_TRANSIT", description: "Load picked up, en route to delivery" },
+  { label: "DELIVERED", description: "Load delivered and confirmed" }
+]} />
+
+<CodeBlock language="typescript">
+{`// Status update validation
+export async function updateLoadStatus(
+  loadId: string,
+  newStatus: LoadStatus
+): Promise<ActionState<Load>> {
+  await requireRole([UserRole.DRIVER]);
+  const driverId = await getDriverId();
+  const prisma = await getTenantPrisma();
+
+  const load = await prisma.load.findUnique({ where: { id: loadId } });
+
+  if (!load) {
+    return { success: false, error: 'Load not found' };
+  }
+
+  // Verify driver assignment
+  if (load.driverId !== driverId) {
+    return { success: false, error: 'Load not assigned to you' };
+  }
+
+  // Validate status transition
+  const validTransitions: Record<LoadStatus, LoadStatus[]> = {
+    [LoadStatus.PENDING]: [LoadStatus.AT_PICKUP],
+    [LoadStatus.AT_PICKUP]: [LoadStatus.IN_TRANSIT],
+    [LoadStatus.IN_TRANSIT]: [LoadStatus.DELIVERED],
+    [LoadStatus.DELIVERED]: [], // Terminal state
+    [LoadStatus.CANCELLED]: [], // Terminal state
+  };
+
+  if (!validTransitions[load.status].includes(newStatus)) {
+    return {
+      success: false,
+      error: \`Cannot transition from \${load.status} to \${newStatus}\`,
+    };
+  }
+
+  // Update status
+  const updated = await prisma.load.update({
+    where: { id: loadId },
+    data: { status: newStatus, updatedAt: new Date() },
+  });
+
+  return { success: true, data: updated };
+}`}
+</CodeBlock>
+
+Owners can revert status using a separate `revertLoadStatus` action (available in Carrier Load Management).
+
+## Tracking Token Generation
+
+Public tracking URLs allow customers to view shipment status without logging in.
+
+<CodeBlock language="typescript">
+{`// Generate tracking token
+export async function generateTrackingToken(
+  loadId: string
+): Promise<ActionState<string>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  // Generate cryptographically random token
+  const token = crypto.randomBytes(32).toString('hex');
+
+  await prisma.load.update({
+    where: { id: loadId },
+    data: { trackingToken: token },
+  });
+
+  // Return public URL
+  const trackingUrl = \`\${process.env.NEXT_PUBLIC_APP_URL}/track/\${token}\`;
+  return { success: true, data: trackingUrl };
+}`}
+</CodeBlock>
+
+Tracking page at `/track/[token]` is public (no auth) and displays:
+
+- Load status and timeline
+- GPS location (if driver has location enabled)
+- ETA to delivery
+- Pickup/delivery addresses
+
+Tracking links remain active for 30 days after delivery.
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Load"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+Additional policy for tracking page (public access by token):
+
+<RlsPolicyBox name="public_tracking_access" policy={`CREATE POLICY public_tracking_access ON "Load"
+  FOR SELECT
+  USING (
+    tracking_token IS NOT NULL
+  );`} />
+
+## Related Models
+
+- <PrismaModelRef model="Customer" /> — Billing customer for this load
+- <PrismaModelRef model="Route" /> — Optional route assignment
+- <PrismaModelRef model="RouteStop" /> — Pickup and delivery stops (auto-created when load assigned to route)
+- <PrismaModelRef model="Driver" /> — Assigned driver
+- <PrismaModelRef model="Truck" /> — Assigned truck
+- <PrismaModelRef model="FleetMessage" /> — Load-scoped messages between owner and driver
+
+## Mobile API Endpoints
+
+Drivers access loads via:
+
+- `GET /api/mobile/driver/loads` - List loads assigned to authenticated driver
+- `GET /api/mobile/driver/loads/[id]` - Get load details
+- `POST /api/mobile/driver/loads/[id]/status` - Update load status
+
+All endpoints require Bearer token authentication.
+
+## Security Considerations
+
+<Callout variant="warning" title="Tracking Token Privacy">
+Tracking tokens are public and accessible by anyone with the URL. Only generate tokens for loads where customer needs visibility. Never expose sensitive cargo details on tracking page.
+</Callout>
+
+<Callout variant="danger" title="Driver Status Update">
+Drivers can only update status on loads assigned to them. The `updateLoadStatus` action verifies `load.driverId === currentUser.driverId` before allowing the update.
+</Callout>
+
+## Performance Considerations
+
+Load queries with customer, driver, truck, and route joins can be expensive. Use selective field inclusion:
+
+<CodeBlock language="typescript">
+{`// Optimized load query
+const loads = await prisma.load.findMany({
+  where: { tenantId },
+  select: {
+    id: true,
+    loadNumber: true,
+    status: true,
+    origin: true,
+    destination: true,
+    customer: { select: { name: true } },
+    driver: { select: { userId: { select: { email: true } } } },
+  },
+  take: 50,
+  orderBy: { createdAt: 'desc' },
+});`}
+</CodeBlock>
+
+## Troubleshooting
+
+**Driver can't update load status:**
+
+Verify `load.driverId` matches authenticated driver's ID. Check that status transition is valid per state machine.
+
+**Tracking page shows 404:**
+
+Verify `load.trackingToken` is set. Check that token in URL matches database exactly (case-sensitive).
+
+**Load stuck in IN_TRANSIT:**
+
+Check if driver has internet connectivity. Status updates queue in mobile app offline and sync on reconnect.
+
+## Related Features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="shipment-tracking" />

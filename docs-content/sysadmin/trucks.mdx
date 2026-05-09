@@ -1,0 +1,199 @@
+---
+slug: trucks
+title: Legacy Truck Management — Technical Reference
+summary: Server actions, database schema, and auto-status badge computation for the legacy truck management subsystem.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All truck queries are tenant-scoped via RLS"
+  - "Document expiry checks run via cron with bypass_rls"
+  - "Status badge computation is read-only, derived from related models"
+---
+
+# Legacy Truck Management — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on legacy truck management.
+</Callout>
+
+## Overview
+
+The legacy truck management subsystem provides CRUD operations for fleet vehicles, document tracking, maintenance scheduling, and automated status badge computation. Route: `/trucks`.
+
+This is distinct from the newer Carrier Truck Management feature (`/carrier/fleet/trucks`), which shares the same database models but provides an enhanced UI.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/trucks.ts`.
+
+<ApiTable rows={[
+  { name: "createTruck", roleGuard: "OWNER | MANAGER", inputSchema: "truckCreateSchema", returnType: "ActionState<Truck>" },
+  { name: "updateTruck", roleGuard: "OWNER | MANAGER", inputSchema: "truckUpdateSchema", returnType: "ActionState<Truck>" },
+  { name: "deleteTruck", roleGuard: "OWNER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "markTruckInMaintenance", roleGuard: "OWNER | MANAGER", inputSchema: "maintenanceSchema", returnType: "ActionState<Truck>" },
+  { name: "markTruckAvailable", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<Truck>" }
+]} />
+
+All actions enforce tenant isolation via `getTenantPrisma()` and use `requireRole()` for RBAC.
+
+## Database Schema
+
+<PrismaModelRef model="Truck" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "unitNumber: String (unique per tenant, e.g., 'T-101')",
+  "vin: String (17 characters, unique)",
+  "make: String (e.g., 'Freightliner', 'Volvo')",
+  "model: String (e.g., 'Cascadia', 'VNL 760')",
+  "year: Int",
+  "licensePlate: String?",
+  "licensePlateState: String?",
+  "fuelType: String? (DIESEL | GAS | ELECTRIC | HYBRID)",
+  "currentOdometer: Int? (miles)",
+  "purchaseDate: DateTime?",
+  "purchaseCost: Decimal?",
+  "isActive: Boolean @default(true)",
+  "maintenanceStatus: String? (AVAILABLE | IN_MAINTENANCE)",
+  "maintenanceNotes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+## Auto-Status Badge Computation
+
+Truck status badges are computed dynamically based on business rules. The `getTruckStatus()` utility function runs these checks:
+
+<ProcessDiagram steps={[
+  { label: "Expired Docs", description: "One or more Document records with expiryDate < now()" },
+  { label: "In Maintenance", description: "maintenanceStatus === 'IN_MAINTENANCE'" },
+  { label: "In Use", description: "Assigned to an active Route (route.status !== 'COMPLETED')" },
+  { label: "Ready to Use", description: "None of the above conditions match" }
+]} />
+
+Status badge computation is deterministic and happens at query time. No status field is persisted in the Truck table.
+
+<CodeBlock language="typescript">
+{`// Status badge computation
+export function getTruckStatus(truck: TruckWithRelations): TruckStatus {
+  // Check document expiry
+  const hasExpiredDocs = truck.documents.some(
+    (doc) => new Date(doc.expiryDate) < new Date()
+  );
+  if (hasExpiredDocs) return TruckStatus.EXPIRED_DOCS;
+
+  // Check maintenance flag
+  if (truck.maintenanceStatus === 'IN_MAINTENANCE') {
+    return TruckStatus.IN_MAINTENANCE;
+  }
+
+  // Check active route assignment
+  const activeRoute = truck.routes.find(
+    (route) => route.status !== RouteStatus.COMPLETED
+  );
+  if (activeRoute) return TruckStatus.IN_USE;
+
+  // Default: available
+  return TruckStatus.READY_TO_USE;
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "Truck"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Related Models
+
+- <PrismaModelRef model="Document" /> — Compliance documents (Registration, Insurance, Annual Inspection) linked via `truckId`
+- <PrismaModelRef model="ScheduledService" /> — Preventive maintenance schedules (oil change, tire rotation, DOT inspection)
+- <PrismaModelRef model="Route" /> — Active routes determine "In Use" status
+- <PrismaModelRef model="Tag" /> — Polymorphic tagging for organization
+
+## Document Tracking
+
+Each truck requires three core Document types: REGISTRATION, INSURANCE, ANNUAL_INSPECTION. Document expiry checks run via cron job at `/api/cron/send-reminders`:
+
+- **30 days before expiry**: Yellow warning email sent to tenant owner
+- **7 days before expiry**: Red alert email sent to tenant owner
+- **After expiry**: Truck status badge changes to EXPIRED_DOCS
+
+Documents are stored in Cloudflare R2 with presigned URL access.
+
+<CodeBlock language="typescript">
+{`// Upload truck document
+export async function uploadTruckDocument(
+  truckId: string,
+  file: File,
+  documentType: DocumentType,
+  expiryDate: Date
+) {
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  // Upload to R2
+  const fileKey = await uploadToR2(file, tenantId);
+
+  // Create document record
+  const document = await prisma.document.create({
+    data: {
+      tenantId,
+      truckId,
+      type: documentType,
+      fileName: file.name,
+      fileKey,
+      expiryDate,
+    },
+  });
+
+  return document;
+}`}
+</CodeBlock>
+
+## Scheduled Maintenance
+
+ScheduledService model tracks preventive maintenance:
+
+- **Date-based**: Service due on specific date
+- **Mileage-based**: Service due at odometer reading
+
+When a scheduled service comes due, the cron job automatically sets `maintenanceStatus = 'IN_MAINTENANCE'` and sends notification to tenant owner.
+
+## Security Considerations
+
+<Callout variant="danger" title="Document Access">
+Presigned URLs for truck documents expire after 1 hour. Never expose permanent R2 URLs in client-facing code.
+</Callout>
+
+<Callout variant="warning" title="VIN Uniqueness">
+VIN field has a unique constraint across the entire platform (not just per tenant) to prevent fraud. Duplicate VIN attempts will fail with database error.
+</Callout>
+
+## Performance Considerations
+
+Status badge computation requires joining Document, Route, and ScheduledService tables. For large fleets (500+ trucks), consider:
+
+- Caching computed statuses in Redis with 5-minute TTL
+- Using database indexes on `tenantId + isActive` for active truck queries
+- Paginating truck lists at 50 items per page
+
+## Troubleshooting
+
+**Truck stuck in "In Maintenance" status:**
+
+Check `truck.maintenanceStatus` field. If still set to `IN_MAINTENANCE`, call `markTruckAvailable()` action to reset.
+
+**Status badge showing "Expired Docs" incorrectly:**
+
+Query `Document` table for that truck and verify expiry dates. Check that cron job `/api/cron/send-reminders` is running daily.
+
+## Related Features
+
+<FeatureCard slug="carrier-fleet-trucks" />
+<FeatureCard slug="compliance-dashboard" />

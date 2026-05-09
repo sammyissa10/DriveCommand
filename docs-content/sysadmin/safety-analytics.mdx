@@ -1,0 +1,298 @@
+---
+slug: safety-analytics
+title: Safety Analytics — Technical Reference
+summary: Server actions, database schema, safety score algorithm, and event detection for driver safety tracking.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All safety queries are tenant-scoped via RLS"
+  - "GPS-based event detection runs via cron with bypass_rls"
+  - "Safety scores are computed in real-time, not cached"
+---
+
+# Safety Analytics — Technical Reference
+
+<Callout variant="warning">
+This documentation is for internal engineering use. For user-facing documentation, see the client Help Center article on safety analytics.
+</Callout>
+
+## Overview
+
+The safety analytics subsystem tracks driver safety events (harsh braking, speeding, incidents), calculates safety scores, and provides trend analytics. Route: `/safety`.
+
+Safety data comes from three sources: GPS tracking, ELD integrations (Samsara, Motive), and driver-reported incidents.
+
+## Server Actions
+
+Server actions are located in `apps/web/src/actions/safety.ts`.
+
+<ApiTable rows={[
+  { name: "getFleetSafetyScore", roleGuard: "OWNER | MANAGER", inputSchema: "dateRangeSchema", returnType: "ActionState<number>" },
+  { name: "getDriverSafetyScore", roleGuard: "OWNER | MANAGER", inputSchema: "driverId + dateRange", returnType: "ActionState<number>" },
+  { name: "getSafetyEvents", roleGuard: "OWNER | MANAGER", inputSchema: "filterSchema", returnType: "ActionState<SafetyEvent[]>" },
+  { name: "getSafetyTrends", roleGuard: "OWNER | MANAGER", inputSchema: "dateRangeSchema", returnType: "ActionState<TrendData>" },
+  { name: "logSafetyEvent", roleGuard: "SYSTEM", inputSchema: "safetyEventSchema", returnType: "ActionState<SafetyEvent>" }
+]} />
+
+`logSafetyEvent` is SYSTEM role only — called by cron jobs and ELD webhooks, not user-facing code.
+
+## Database Schema
+
+<PrismaModelRef model="SafetyEvent" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "driverId: String (foreign key to Driver)",
+  "truckId: String? (foreign key to Truck)",
+  "eventType: SafetyEventType (HARSH_BRAKING | SPEEDING | SHARP_TURN | DISTRACTED_DRIVING)",
+  "severity: EventSeverity (LOW | MEDIUM | HIGH)",
+  "speedBefore: Decimal? (mph)",
+  "speedAfter: Decimal? (mph)",
+  "speedLimit: Decimal? (mph, for speeding events)",
+  "lat: Decimal?",
+  "lng: Decimal?",
+  "address: String? (reverse geocoded)",
+  "source: EventSource (GPS | ELD_SAMSARA | ELD_MOTIVE | MANUAL)",
+  "metadata: Json? (source-specific data)",
+  "occurredAt: DateTime",
+  "createdAt: DateTime @default(now())"
+]} />
+
+## Safety Score Algorithm
+
+Safety scores range from 0 to 100 and are calculated from events in the last 90 days.
+
+<ComparisonTable
+  headers={["Event Type", "Weight", "Deduction per Event"]}
+  rows={[
+    ["Incident reports", "40%", "-10 points (High/Critical severity)"],
+    ["Harsh braking", "25%", "-5 points (Medium severity)"],
+    ["Speeding violations", "20%", "-3 points (10+ mph over)"],
+    ["HOS violations", "15%", "-3 points (per violation)"]
+  ]}
+/>
+
+<CodeBlock language="typescript">
+{`// Calculate driver safety score
+export async function calculateDriverSafetyScore(
+  driverId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<number> {
+  const prisma = await getTenantPrisma();
+
+  // Fetch events in date range
+  const [incidents, safetyEvents, hosViolations] = await Promise.all([
+    prisma.driverIncident.findMany({
+      where: {
+        driverId,
+        createdAt: { gte: startDate, lte: endDate },
+        severity: { in: [IncidentSeverity.HIGH, IncidentSeverity.CRITICAL] },
+      },
+    }),
+    prisma.safetyEvent.findMany({
+      where: {
+        driverId,
+        occurredAt: { gte: startDate, lte: endDate },
+      },
+    }),
+    prisma.driverHOSEntry.count({
+      where: {
+        driverId,
+        createdAt: { gte: startDate, lte: endDate },
+        isViolation: true,
+      },
+    }),
+  ]);
+
+  // Apply weighted deductions
+  let score = 100;
+
+  // Incidents: -10 per incident (40% weight)
+  score -= incidents.length * 10;
+
+  // Safety events: -5 for harsh braking, -3 for speeding (25% + 20% weight)
+  for (const event of safetyEvents) {
+    if (event.eventType === SafetyEventType.HARSH_BRAKING) {
+      score -= 5;
+    } else if (event.eventType === SafetyEventType.SPEEDING) {
+      score -= 3;
+    }
+  }
+
+  // HOS violations: -3 per violation (15% weight)
+  score -= hosViolations * 3;
+
+  return Math.max(0, Math.min(100, score));
+}`}
+</CodeBlock>
+
+Fleet safety score is the average of all active driver scores.
+
+## Harsh Braking Detection
+
+Harsh braking events are detected via GPS speed delta analysis in the cron job `/api/cron/geofencing`:
+
+<CodeBlock language="typescript">
+{`// Detect harsh braking from GPS reports
+export async function detectHarshBraking(driverId: string) {
+  const prisma = await getPrismaClient(); // bypass_rls for cron
+
+  // Get last two GPS reports
+  const reports = await prisma.gpsReport.findMany({
+    where: { driverId },
+    orderBy: { createdAt: 'desc' },
+    take: 2,
+  });
+
+  if (reports.length < 2) return;
+
+  const [current, previous] = reports;
+
+  // Calculate deceleration (mph per second)
+  const timeDelta = (current.createdAt.getTime() - previous.createdAt.getTime()) / 1000;
+  const speedDelta = previous.speed - current.speed;
+  const deceleration = speedDelta / timeDelta;
+
+  // Harsh braking threshold: 8+ mph per second
+  if (deceleration >= 8) {
+    await prisma.safetyEvent.create({
+      data: {
+        tenantId: current.tenantId,
+        driverId,
+        truckId: current.truckId,
+        eventType: SafetyEventType.HARSH_BRAKING,
+        severity: EventSeverity.MEDIUM,
+        speedBefore: previous.speed,
+        speedAfter: current.speed,
+        lat: current.lat,
+        lng: current.lng,
+        source: EventSource.GPS,
+        occurredAt: current.createdAt,
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+## Speeding Detection
+
+Speeding events are detected by comparing GPS speed against posted speed limits:
+
+<CodeBlock language="typescript">
+{`// Detect speeding from GPS reports
+export async function detectSpeeding(gpsReport: GpsReport) {
+  const prisma = await getPrismaClient(); // bypass_rls for cron
+
+  // Fetch speed limit for location (external API or database)
+  const speedLimit = await getSpeedLimit(gpsReport.lat, gpsReport.lng);
+
+  if (!speedLimit) return; // Unknown speed limit
+
+  const overage = gpsReport.speed - speedLimit;
+
+  // Log event if 10+ mph over limit
+  if (overage >= 10) {
+    const severity = overage >= 20 ? EventSeverity.HIGH : EventSeverity.MEDIUM;
+
+    await prisma.safetyEvent.create({
+      data: {
+        tenantId: gpsReport.tenantId,
+        driverId: gpsReport.driverId,
+        truckId: gpsReport.truckId,
+        eventType: SafetyEventType.SPEEDING,
+        severity,
+        speedBefore: gpsReport.speed,
+        speedLimit,
+        lat: gpsReport.lat,
+        lng: gpsReport.lng,
+        source: EventSource.GPS,
+        occurredAt: gpsReport.createdAt,
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+## ELD Integration
+
+ELD providers (Samsara, Motive) send webhook events for harsh braking, speeding, and other safety violations. Webhook handlers parse event data and create SafetyEvent records.
+
+<CodeBlock language="typescript">
+{`// Webhook handler for Samsara events
+export async function handleSamsaraWebhook(req: Request) {
+  const payload = await req.json();
+
+  if (payload.eventType === 'harshBraking') {
+    await prisma.safetyEvent.create({
+      data: {
+        tenantId: payload.tenantId,
+        driverId: payload.driverId,
+        truckId: payload.vehicleId,
+        eventType: SafetyEventType.HARSH_BRAKING,
+        severity: EventSeverity.MEDIUM,
+        lat: payload.location.lat,
+        lng: payload.location.lng,
+        source: EventSource.ELD_SAMSARA,
+        metadata: payload,
+        occurredAt: new Date(payload.timestamp),
+      },
+    });
+  }
+
+  return new Response('OK', { status: 200 });
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "SafetyEvent"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+## Related Models
+
+- <PrismaModelRef model="Driver" /> — Driver associated with safety event
+- <PrismaModelRef model="Truck" /> — Truck involved in event (if known)
+- <PrismaModelRef model="DriverIncident" /> — Driver-reported incidents (accidents, near-misses)
+- <PrismaModelRef model="DriverHOSEntry" /> — HOS violations feed into safety score
+- <PrismaModelRef model="GpsReport" /> — GPS data source for event detection
+
+## Performance Considerations
+
+Safety score calculation requires aggregating events across 90 days. For fleets with 100+ drivers, consider:
+
+- Caching scores in Redis with 15-minute TTL
+- Pre-calculating scores nightly via cron
+- Paginating event lists at 100 items per page
+
+## Security Considerations
+
+<Callout variant="danger" title="Cron Job Access">
+Event detection cron jobs use `bypass_rls` to access data across all tenants. Always set explicit `tenantId` context before creating SafetyEvent records.
+</Callout>
+
+## Troubleshooting
+
+**Harsh braking events not being logged:**
+
+Check that GPS reports are being received with valid speed data. Verify cron job `/api/cron/geofencing` is running every 5 minutes.
+
+**Safety score stuck at 100:**
+
+Verify SafetyEvent, DriverIncident, and DriverHOSEntry records exist for that driver. Recalculate manually via `calculateDriverSafetyScore()`.
+
+**Speeding events showing incorrectly:**
+
+Verify speed limit data is accurate for that location. Check GPS speed accuracy (some devices report inaccurate speeds in tunnels or urban canyons).
+
+## Related Features
+
+<FeatureCard slug="drivers" />
+<FeatureCard slug="driver-incidents" />
+<FeatureCard slug="live-map" />
