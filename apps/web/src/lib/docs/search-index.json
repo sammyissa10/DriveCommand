@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "load-management",
+    "name": "Load Management",
+    "shortDescription": "Create, assign, and track loads with pickup/delivery stops, status workflow, and route assignment.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/owner/loads"
+  },
+  {
+    "slug": "route-planning",
+    "name": "Route Planning",
+    "shortDescription": "Multi-stop route creation with leg sequencing, continuity warnings, and driver assignment.",
+    "category": "dispatch",
+    "portal": "owner",
+    "planTier": "pro",
+    "route": "/owner/routes"
+  },
+  {
+    "slug": "driver-my-route",
+    "name": "Driver My Route",
+    "shortDescription": "Driver view of assigned route with loads timeline, truck info, and route-scoped messages.",
+    "category": "dispatch",
+    "portal": "driver",
+    "planTier": "pro",
+    "route": "/driver/my-route"
+  },
+  {
+    "slug": "ai-document-reader",
+    "name": "AI Document Reader",
+    "shortDescription": "Anthropic Claude-powered extraction of structured data from rate confirmations and BOLs.",
+    "category": "ai",
+    "portal": "owner",
+    "planTier": "business",
+    "route": "/owner/ai-documents"
+  },
+  {
+    "slug": "support-tickets",
+    "name": "Support Tickets",
+    "shortDescription": "In-app support ticket system with screenshot capture and file attachments.",
+    "category": "support",
+    "portal": "shared",
+    "planTier": "free",
+    "route": "/support"
+  }
+]
