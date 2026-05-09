@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Package, ChevronRight } from 'lucide-react';
 import { LoadStatusBadge } from './load-status-badge';
 import { formatAddress } from '@/lib/utils/format-address';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 interface LoadItem {
   id: string;
   loadNumber: string;
+  isSample?: boolean;
   customer: { companyName: string };
   origin: string;
   destination: string;
@@ -113,12 +115,15 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                       onDoubleClick={() => router.push(`/loads/${load.id}`)}
                     >
                       <td className="px-4 py-3">
-                        <Link
-                          href={`/loads/${load.id}`}
-                          className="font-medium text-primary hover:underline"
-                        >
-                          {load.loadNumber}
-                        </Link>
+                        <span className="inline-flex items-center">
+                          <Link
+                            href={`/loads/${load.id}`}
+                            className="font-medium text-primary hover:underline"
+                          >
+                            {load.loadNumber}
+                          </Link>
+                          {load.isSample && <SamplePill />}
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-foreground">{load.customer.companyName}</td>
                       <td className="px-4 py-3 text-muted-foreground">
@@ -156,6 +161,7 @@ export function LoadList({ loads }: { loads: LoadItem[] }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-foreground">{load.loadNumber}</span>
+                    {load.isSample && <SamplePill />}
                     <LoadStatusBadge status={load.status} />
                   </div>
                   <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">

@@ -5,12 +5,12 @@
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { IntegrationProvider, IntegrationCategory } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 /**
  * List all TenantIntegration rows for the tenant.
@@ -19,7 +19,6 @@ import { revalidatePath } from 'next/cache';
  */
 export async function listIntegrations() {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
   return prisma.tenantIntegration.findMany({
@@ -41,7 +40,6 @@ export async function toggleIntegration(
   enabled: boolean
 ) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
@@ -64,7 +62,7 @@ export async function toggleIntegration(
     revalidatePath('/settings/integrations');
     return { success: true };
   } catch (error) {
-    console.error('Failed to toggle integration:', error);
+    logger.error('Failed to toggle integration:', error);
     return { error: 'Failed to update integration. Please try again.' };
   }
 }
@@ -120,7 +118,7 @@ export async function saveIntegrationConfig(
     revalidatePath('/settings/integrations');
     return { success: true };
   } catch (error) {
-    console.error('Failed to save integration config:', error);
+    logger.error('Failed to save integration config:', error);
     return { error: 'Failed to save configuration. Please try again.' };
   }
 }

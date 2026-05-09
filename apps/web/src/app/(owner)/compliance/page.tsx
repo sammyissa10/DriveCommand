@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getComplianceDashboard } from '@/app/(owner)/actions/compliance';
 import { ComplianceSummaryCards } from '@/components/compliance/compliance-summary-cards';

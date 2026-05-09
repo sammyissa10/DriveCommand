@@ -87,6 +87,15 @@ export interface RouteStop {
   arrivedAt: string | null
   departedAt: string | null
   notes: string | null
+  lat: number | null   // from RouteStop.lat in DB (nullable Decimal → number | null in JSON)
+  lng: number | null   // from RouteStop.lng in DB (nullable Decimal → number | null in JSON)
+}
+
+export interface DirectionsResult {
+  /** GeoJSON [lng, lat] coordinate pairs — feed directly to Mapbox ShapeSource */
+  polyline: [number, number][] | null
+  distanceMiles: number | null
+  durationSeconds: number | null
 }
 
 export interface LoadDetail {
@@ -115,12 +124,41 @@ export interface FleetMessage {
   createdAt: string
 }
 
+export interface DriverRouteTruck {
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+}
+
+export interface DriverRouteLoad {
+  id: string
+  loadNumber: string
+  origin: string
+  destination: string
+  status: string
+  sequence: number | null
+}
+
+export interface DriverRoute {
+  id: string
+  name: string | null
+  origin: string
+  destination: string
+  status: string
+  scheduledDate: string
+  completedAt: string | null
+  loads: DriverRouteLoad[]
+  truck: DriverRouteTruck
+}
+
 export const driverApi = {
   getDashboard: (token: string) =>
     apiRequest<DashboardData>('/api/mobile/driver/dashboard', { token }),
 
   getLoads: (token: string, status: 'active' | 'history') =>
-    apiRequest<LoadSummary[]>(`/api/mobile/driver/loads?status=${status}`, { token }),
+    apiRequest<{ loads: LoadSummary[] }>(`/api/mobile/driver/loads?status=${status}`, { token }).then((r) => r.loads),
 
   getLoad: (token: string, id: string) =>
     apiRequest<LoadDetail>(`/api/mobile/driver/loads/${id}`, { token }),
@@ -163,7 +201,7 @@ export const driverApi = {
 
   // Messaging
   getMessages: (token: string) =>
-    apiRequest<FleetMessage[]>('/api/mobile/driver/messages', { token }),
+    apiRequest<{ messages: FleetMessage[] }>('/api/mobile/driver/messages', { token }).then((r) => r.messages),
 
   sendMessage: (token: string, body: string, loadId?: string) =>
     apiRequest<FleetMessage>('/api/mobile/driver/messages', {
@@ -219,4 +257,47 @@ export const driverApi = {
       `/api/mobile/driver/loads/${id}/rate-confirmation`,
       { token }
     ),
+
+  // Route
+  getMyRoute: (token: string) =>
+    apiRequest<{ route: DriverRoute | null }>('/api/mobile/driver/route', { token }),
+
+  getRouteMessages: (token: string, routeId: string) =>
+    apiRequest<FleetMessage[]>(
+      `/api/mobile/driver/messages/route-thread?routeId=${encodeURIComponent(routeId)}`,
+      { token }
+    ),
+
+  sendRouteMessage: (token: string, routeId: string, body: string) =>
+    apiRequest<FleetMessage>('/api/mobile/driver/messages/route-thread', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ routeId, body }),
+    }),
+
+  // Directions — OSRM multi-stop polyline proxy
+  getDirections: (token: string, stops: { lat: number; lng: number }[]) =>
+    apiRequest<DirectionsResult>('/api/geocoding/directions', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ stops }),
+    }),
+
+  // Support tickets — shared across driver and owner portals
+  createSupportTicket: (
+    token: string,
+    data: {
+      category: 'BILLING' | 'BUG' | 'FEATURE' | 'GENERAL'
+      priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT'
+      title: string
+      description: string
+      fromPage: string
+      screenshotKey?: string
+    }
+  ) =>
+    apiRequest<{ ticketNumber: string }>('/api/mobile/support/ticket', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(data),
+    }),
 }

@@ -8,7 +8,7 @@ import {
   Platform,
   RefreshControl,
 } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { MessageSquare, Send } from 'lucide-react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useEffect, useRef, useState, useCallback } from 'react'
@@ -18,59 +18,14 @@ import { driverApi, type FleetMessage } from '@drivecommand/api-client'
 import { kvStorage } from '../../lib/storage'
 import { MessageSkeleton } from '../../components/skeletons/MessageSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
+import { MessageBubble } from '../../components/driver/MessageBubble'
+import { useThemeColors } from '../../constants/tokens'
 
 const POLL_INTERVAL_MS = 30_000
 const LAST_READ_KEY = 'messages_last_read_at'
 
-function formatTime(iso: string): string {
-  const date = new Date(iso)
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function getRoleLabel(senderRole: string): string {
-  switch (senderRole.toUpperCase()) {
-    case 'DRIVER':
-      return 'You'
-    case 'OWNER':
-      return 'Owner'
-    case 'MANAGER':
-      return 'Manager'
-    case 'DISPATCHER':
-      return 'Dispatcher'
-    default:
-      return senderRole
-  }
-}
-
-interface MessageBubbleProps {
-  message: FleetMessage
-}
-
-function MessageBubble({ message }: MessageBubbleProps) {
-  const isDriver = message.senderRole.toUpperCase() === 'DRIVER'
-
-  return (
-    <View className={`mb-3 px-4 ${isDriver ? 'items-end' : 'items-start'}`}>
-      <Text className="text-xs text-slate-400 mb-1">
-        {getRoleLabel(message.senderRole)}
-      </Text>
-      <View
-        className={`max-w-[80%] px-4 py-3 ${
-          isDriver
-            ? 'bg-sky-600 rounded-2xl rounded-br-sm'
-            : 'bg-slate-700 rounded-2xl rounded-bl-sm'
-        }`}
-      >
-        <Text className="text-white text-sm leading-5">{message.body}</Text>
-      </View>
-      <Text className="text-xs text-slate-500 mt-1">
-        {formatTime(message.createdAt)}
-      </Text>
-    </View>
-  )
-}
-
 export default function DriverMessages() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const [messages, setMessages] = useState<FleetMessage[]>([])
   const [inputText, setInputText] = useState('')
@@ -78,7 +33,7 @@ export default function DriverMessages() {
   const [refreshing, setRefreshing] = useState(false)
   const [sending, setSending] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
-  const flatListRef = useRef<FlashList<FleetMessage>>(null)
+  const flatListRef = useRef<FlashListRef<FleetMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const markAllRead = useCallback(async () => {
@@ -169,11 +124,11 @@ export default function DriverMessages() {
   const isEmpty = messages.length === 0
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       {/* Header */}
       <View className="px-4 pt-4 pb-3">
-        <Text className="text-2xl font-bold text-white">Messages</Text>
+        <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Messages</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -192,11 +147,11 @@ export default function DriverMessages() {
         ) : isEmpty ? (
           /* Empty state */
           <View className="flex-1 items-center justify-center px-8">
-            <MessageSquare color="#334155" size={52} />
-            <Text className="text-white text-lg font-semibold mt-4 text-center">
+            <MessageSquare color={c.surfaceElevated} size={52} />
+            <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               No messages yet
             </Text>
-            <Text className="text-slate-500 text-sm mt-2 text-center">
+            <Text className="text-sm mt-2 text-center" style={{ color: c.textTertiary }}>
               Messages from your dispatcher will appear here.
             </Text>
           </View>
@@ -206,14 +161,14 @@ export default function DriverMessages() {
             ref={flatListRef}
             data={messages}
             keyExtractor={(item) => item.id}
-            estimatedItemSize={60}
+
             renderItem={({ item }) => <MessageBubble message={item} />}
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={handleRefresh}
-                tintColor="#94a3b8"
+                tintColor={c.textSecondary}
               />
             }
             onContentSizeChange={() => {
@@ -225,16 +180,20 @@ export default function DriverMessages() {
         {/* Subtle fetch error */}
         {fetchError && !loading && (
           <View className="px-4 py-2">
-            <Text className="text-slate-500 text-xs text-center">{fetchError}</Text>
+            <Text className="text-xs text-center" style={{ color: c.textTertiary }}>{fetchError}</Text>
           </View>
         )}
 
         {/* Input area */}
-        <View className="px-4 py-3 border-t border-slate-800 flex-row items-end gap-2">
+        <View
+          className="px-4 py-3 flex-row items-end gap-2"
+          style={{ borderTopWidth: 1, borderTopColor: c.border }}
+        >
           <TextInput
-            className="flex-1 bg-slate-800 text-white rounded-xl px-4 py-3 text-sm"
+            className="flex-1 rounded-xl px-4 py-3 text-sm"
+            style={{ backgroundColor: c.surfaceCard, color: c.textPrimary }}
             placeholder="Type a message..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor={c.textMuted}
             value={inputText}
             onChangeText={setInputText}
             multiline
@@ -245,13 +204,12 @@ export default function DriverMessages() {
             onPress={handleSend}
             disabled={!inputText.trim() || sending}
             hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-            className={`rounded-xl p-3 ${
-              inputText.trim() && !sending ? 'bg-sky-500' : 'bg-slate-700'
-            }`}
+            className="rounded-xl p-3"
+            style={{ backgroundColor: inputText.trim() && !sending ? c.brand : c.surfaceElevated }}
           >
             <Send
               size={20}
-              color={inputText.trim() && !sending ? '#ffffff' : '#475569'}
+              color={inputText.trim() && !sending ? '#ffffff' : c.textMuted}
             />
           </TouchableOpacity>
         </View>

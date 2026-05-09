@@ -16,7 +16,7 @@ import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sd
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3Client, getBucketName } from './s3-client';
 
-export type DocumentCategory = 'trucks' | 'routes' | 'drivers' | 'support';
+export type DocumentCategory = 'trucks' | 'routes' | 'drivers' | 'support' | 'messages' | 'inspections';
 
 /**
  * Generate presigned upload URL for direct-to-S3 upload.

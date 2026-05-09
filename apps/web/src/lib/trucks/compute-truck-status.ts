@@ -34,6 +34,7 @@ export interface TruckWithRelations {
   vin: string;
   licensePlate: string;
   odometer: number;
+  isSample?: boolean;
   inMaintenance?: boolean;
   documentMetadata?: unknown;
   tenantId: string;

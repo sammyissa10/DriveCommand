@@ -1,10 +1,12 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState } from 'react';
 import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
 
 interface DriverFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     firstName?: string;
     lastName?: string;
@@ -36,6 +38,7 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
   // Force form remount on success to reset uncontrolled inputs
   const formKey = state?.success ? Date.now() : 'form';
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form key={formKey} action={formAction} className="max-w-2xl space-y-5">
       {/* Success message */}
@@ -71,8 +74,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             className={inputClass}
             required
           />
-          {state?.error?.email && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.email}</p>
+          {fieldErrors?.email && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.email}</p>
           )}
         </div>
       )}
@@ -91,8 +94,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             required
             onChange={(e) => setFirstName(e.target.value)}
           />
-          {state?.error?.firstName && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.firstName}</p>
+          {fieldErrors?.firstName && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.firstName}</p>
           )}
         </div>
         <div>
@@ -107,8 +110,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             required
             onChange={(e) => setLastName(e.target.value)}
           />
-          {state?.error?.lastName && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.lastName}</p>
+          {fieldErrors?.lastName && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.lastName}</p>
           )}
         </div>
       </div>
@@ -128,8 +131,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
           className={inputClass}
           onChange={(e) => setMiddleName(e.target.value)}
         />
-        {state?.error?.middleName && (
-          <p className="mt-1.5 text-sm text-red-600">{state.error.middleName}</p>
+        {fieldErrors?.middleName && (
+          <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.middleName}</p>
         )}
       </div>
 
@@ -157,8 +160,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.dateOfBirth && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.dateOfBirth}</p>
+          {fieldErrors?.dateOfBirth && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.dateOfBirth}</p>
           )}
         </div>
         <div>
@@ -174,8 +177,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.phoneNumber && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.phoneNumber}</p>
+          {fieldErrors?.phoneNumber && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.phoneNumber}</p>
           )}
         </div>
       </div>
@@ -194,8 +197,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
           placeholder="Start typing an address..."
           className={inputClass}
         />
-        {state?.error?.address && (
-          <p className="mt-1.5 text-sm text-red-600">{state.error.address}</p>
+        {fieldErrors?.address && (
+          <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.address}</p>
         )}
       </div>
 
@@ -216,8 +219,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             className={`${inputClass} uppercase font-mono`}
           />
           <p className="mt-1.5 text-xs text-muted-foreground">5-20 characters, alphanumeric</p>
-          {state?.error?.licenseNumber && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.licenseNumber}</p>
+          {fieldErrors?.licenseNumber && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.licenseNumber}</p>
           )}
         </div>
         <div>
@@ -233,8 +236,8 @@ export function DriverForm({ action, initialData, submitLabel, mode }: DriverFor
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.licenseExpirationDate && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.licenseExpirationDate}</p>
+          {fieldErrors?.licenseExpirationDate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.licenseExpirationDate}</p>
           )}
         </div>
       </div>

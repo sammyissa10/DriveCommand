@@ -20,6 +20,7 @@ import {
   ArrowRight,
   User,
 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface VehicleDetailsSheetProps {
   truckId: string;
@@ -68,6 +69,7 @@ export default function VehicleDetailsSheet({
 }: VehicleDetailsSheetProps) {
   const [diagnostics, setDiagnostics] = useState<DiagnosticsData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -77,15 +79,17 @@ export default function VehicleDetailsSheet({
       if (!open || !truckId) return;
 
       setLoading(true);
+      setError(false);
       try {
         const data = await getVehicleDiagnostics(truckId);
         if (mounted) {
-          setDiagnostics(data as DiagnosticsData);
+          setDiagnostics(data as DiagnosticsData | null);
         }
-      } catch (error) {
-        console.error('Failed to fetch diagnostics:', error);
+      } catch (err) {
+        logger.error('Failed to fetch diagnostics:', err);
         if (mounted) {
           setDiagnostics(null);
+          setError(true);
         }
       } finally {
         if (mounted) {
@@ -138,9 +142,15 @@ export default function VehicleDetailsSheet({
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
         {loading && !diagnostics ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading vehicle data...</p>
-          </div>
+          <>
+            <SheetHeader className="sr-only">
+              <SheetTitle>Vehicle Details</SheetTitle>
+              <SheetDescription>Loading vehicle diagnostics</SheetDescription>
+            </SheetHeader>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-muted-foreground">Loading vehicle data...</p>
+            </div>
+          </>
         ) : diagnostics ? (
           <>
             <SheetHeader>
@@ -325,9 +335,17 @@ export default function VehicleDetailsSheet({
             </div>
           </>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">No data available</p>
-          </div>
+          <>
+            <SheetHeader className="sr-only">
+              <SheetTitle>Vehicle Details</SheetTitle>
+              <SheetDescription>Vehicle diagnostics panel</SheetDescription>
+            </SheetHeader>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-muted-foreground">
+                {error ? 'Failed to load vehicle data' : 'No data available'}
+              </p>
+            </div>
+          </>
         )}
       </SheetContent>
     </Sheet>

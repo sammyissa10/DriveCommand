@@ -6,12 +6,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
+
+const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
 export async function POST(req: NextRequest) {
   let step = 'init';
@@ -22,12 +26,23 @@ export async function POST(req: NextRequest) {
     step = 'require-tenant';
     const tenantId = await requireTenantId();
 
+    step = 'rate-limit';
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
+
     step = 'parse-body';
     const body = await req.json();
     const { entityType, entityId, fileName, contentType, sizeBytes } = body;
 
     if (!entityType || !entityId || !fileName || !contentType || !sizeBytes) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (!ALLOWED_TYPES.includes(contentType)) {
+      return NextResponse.json(
+        { error: 'Content type not allowed. Allowed: PDF, JPEG, PNG.' },
+        { status: 400 }
+      );
     }
 
     if (sizeBytes > MAX_FILE_SIZE) {
@@ -55,9 +70,9 @@ export async function POST(req: NextRequest) {
     step = 'done';
     return NextResponse.json({ uploadUrl, s3Key, fileId, fileName, contentType, sizeBytes, entityType, entityId });
   } catch (error) {
-    console.error(`[request-upload-url] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[request-upload-url] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
-      { error: `[request-url:${step}] ${error instanceof Error ? error.message : String(error)}` },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

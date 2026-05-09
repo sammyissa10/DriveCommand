@@ -18,6 +18,19 @@ const nextConfig: NextConfig = {
           { key: 'X-Accel-Buffering', value: 'no' },
         ],
       },
+      {
+        // HTTP security headers applied to all responses.
+        // No Content-Security-Policy here — managed separately to avoid
+        // conflicts with Next.js inline scripts and Sentry injection.
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+        ],
+      },
     ];
   },
 };

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { updateLoad } from '@/app/(owner)/actions/loads';
+import { listRoutes } from '@/app/(owner)/actions/routes';
 import { LoadForm } from '@/components/loads/load-form';
 
 export default async function EditLoadPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,8 +17,9 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
   let drivers: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let trucks: any[] = [];
+  let routes: Array<{ id: string; name: string | null; origin: string; destination: string; scheduledDate: string }> = [];
   try {
-    [load, customers, drivers, trucks] = await Promise.all([
+    [load, customers, drivers, trucks, routes] = await Promise.all([
       prisma.load.findUnique({ where: { id } }),
       prisma.customer.findMany({
         where: { status: 'ACTIVE' },
@@ -34,6 +36,9 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
         select: { id: true, year: true, make: true, model: true, licensePlate: true },
         orderBy: [{ year: 'desc' }, { make: 'asc' }],
       }),
+      listRoutes().then((rs) =>
+        rs.map((r) => ({ id: r.id, name: r.name, origin: r.origin, destination: r.destination, scheduledDate: r.scheduledDate.toISOString() }))
+      ).catch(() => []),
     ]);
   } catch {
     notFound();
@@ -71,11 +76,13 @@ export default async function EditLoadPage({ params }: { params: Promise<{ id: s
         customers={customers}
         drivers={drivers}
         trucks={trucks}
+        routes={routes}
         submitLabel="Save Changes"
         initialData={{
           customerId: load.customerId,
           driverId: load.driverId,
           truckId: load.truckId,
+          routeId: load.routeId,
           origin: load.origin,
           destination: load.destination,
           pickupDate: pickupDateStr,

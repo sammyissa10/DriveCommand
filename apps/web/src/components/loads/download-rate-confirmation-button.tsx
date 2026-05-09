@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { FileDown, Loader2 } from 'lucide-react';
 import { generateRateConfirmationPDF } from '@/app/(owner)/actions/rate-confirmation';
+import { logger } from '@/lib/logger';
 
 interface DownloadRateConfirmationButtonProps {
   loadId: string;
@@ -34,7 +35,7 @@ export function DownloadRateConfirmationButton({ loadId }: DownloadRateConfirmat
       document.body.removeChild(anchor);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to generate rate confirmation PDF:', error);
+      logger.error('Failed to generate rate confirmation PDF:', error);
       alert('Failed to generate PDF. Please try again.');
     } finally {
       setIsGenerating(false);

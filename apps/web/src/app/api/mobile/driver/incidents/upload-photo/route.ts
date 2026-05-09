@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/mobile/driver/incidents/upload-photo
@@ -21,6 +23,9 @@ export async function POST(req: NextRequest) {
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId } = auth;
 
@@ -78,7 +83,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (err) {
-    console.error('[mobile/driver/incidents/upload-photo] error:', err);
+    logger.error('[mobile/driver/incidents/upload-photo] error:', err);
     return NextResponse.json({ error: 'Failed to generate upload URL' }, { status: 500 });
   }
 }

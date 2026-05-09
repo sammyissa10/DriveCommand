@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import type { HOSStatus, HOSEntry, HOSData } from '@drivecommand/types';
+import { NextRequest, NextResponse } from 'next/server'
+import { withMobileAuth } from '@/lib/api/with-mobile-auth'
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
+import type { HOSStatus, HOSEntry, HOSData } from '@drivecommand/types'
 
-const VALID_STATUSES: HOSStatus[] = ['OFF_DUTY', 'SLEEPER_BERTH', 'DRIVING', 'ON_DUTY'];
+const VALID_STATUSES: HOSStatus[] = ['OFF_DUTY', 'SLEEPER_BERTH', 'DRIVING', 'ON_DUTY']
 
 /**
  * GET /api/mobile/driver/hos
@@ -13,26 +13,27 @@ const VALID_STATUSES: HOSStatus[] = ['OFF_DUTY', 'SLEEPER_BERTH', 'DRIVING', 'ON
  *
  * Requires: Authorization: Bearer <token>
  */
-export async function GET(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const GET = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { driverId, tenantId } = auth
 
-  if (!auth.driverId) {
-    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
-  }
-
-  const { driverId, tenantId } = auth;
-
-  try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+     */
     const data = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       // Today's UTC boundaries
-      const now = new Date();
-      const startOfDay = new Date(now);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-      const endOfDay = new Date(now);
-      endOfDay.setUTCHours(23, 59, 59, 999);
+      const now = new Date()
+      const startOfDay = new Date(now)
+      startOfDay.setUTCHours(0, 0, 0, 0)
+      const endOfDay = new Date(now)
+      endOfDay.setUTCHours(23, 59, 59, 999)
 
       // Fetch entries: today's entries OR the currently open entry (started before today)
       const rawEntries = await tx.driverHOSEntry.findMany({
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
           ],
         },
         orderBy: { startTime: 'asc' },
-      });
+      })
 
       // Map Prisma records to HOSEntry shape
       const todayEntries: HOSEntry[] = rawEntries.map((e) => ({
@@ -59,52 +60,52 @@ export async function GET(req: NextRequest) {
         notes: e.notes ?? null,
         createdAt: e.createdAt.toISOString(),
         updatedAt: e.updatedAt.toISOString(),
-      }));
+      }))
 
       // Determine current status from the open entry (endTime IS NULL)
-      const openEntry = todayEntries.find((e) => e.endTime == null);
-      const currentStatus: HOSStatus = openEntry ? openEntry.status : 'OFF_DUTY';
+      const openEntry = todayEntries.find((e) => e.endTime == null)
+      const currentStatus: HOSStatus = openEntry ? openEntry.status : 'OFF_DUTY'
       const currentStatusSince: string = openEntry
         ? openEntry.startTime
-        : startOfDay.toISOString();
+        : startOfDay.toISOString()
 
       // timeInCurrentStatus: seconds since currentStatusSince
-      const currentStatusSinceMs = new Date(currentStatusSince).getTime();
-      const timeInCurrentStatus = Math.floor((now.getTime() - currentStatusSinceMs) / 1000);
+      const currentStatusSinceMs = new Date(currentStatusSince).getTime()
+      const timeInCurrentStatus = Math.floor((now.getTime() - currentStatusSinceMs) / 1000)
 
       // Clock calculations — only count entries that started today
       const todayOnlyEntries = rawEntries.filter(
         (e) => e.startTime >= startOfDay && e.startTime <= endOfDay
-      );
+      )
 
-      let drivingMinutesToday = 0;
-      let onDutyMinutesToday = 0;
+      let drivingMinutesToday = 0
+      let onDutyMinutesToday = 0
 
       for (const entry of todayOnlyEntries) {
-        const entryStart = entry.startTime.getTime();
-        const entryEnd = entry.endTime ? entry.endTime.getTime() : now.getTime();
-        const durationMinutes = (entryEnd - entryStart) / 1000 / 60;
+        const entryStart = entry.startTime.getTime()
+        const entryEnd = entry.endTime ? entry.endTime.getTime() : now.getTime()
+        const durationMinutes = (entryEnd - entryStart) / 1000 / 60
 
         if (entry.status === 'DRIVING') {
-          drivingMinutesToday += durationMinutes;
-          onDutyMinutesToday += durationMinutes;
+          drivingMinutesToday += durationMinutes
+          onDutyMinutesToday += durationMinutes
         } else if (entry.status === 'ON_DUTY') {
-          onDutyMinutesToday += durationMinutes;
+          onDutyMinutesToday += durationMinutes
         }
       }
 
       // 14-hour window starts from the first non-OFF_DUTY/non-SLEEPER_BERTH entry of the day
       const firstDutyEntry = todayOnlyEntries.find(
         (e) => e.status !== 'OFF_DUTY' && e.status !== 'SLEEPER_BERTH'
-      );
-      let hoursUntil14Limit = 14;
+      )
+      let hoursUntil14Limit = 14
       if (firstDutyEntry) {
-        const windowStartMs = firstDutyEntry.startTime.getTime();
-        const windowElapsedHours = (now.getTime() - windowStartMs) / 1000 / 3600;
-        hoursUntil14Limit = Math.max(0, 14 - windowElapsedHours);
+        const windowStartMs = firstDutyEntry.startTime.getTime()
+        const windowElapsedHours = (now.getTime() - windowStartMs) / 1000 / 3600
+        hoursUntil14Limit = Math.max(0, 14 - windowElapsedHours)
       }
 
-      const hoursUntil11DriveLimit = Math.max(0, 11 - drivingMinutesToday / 60);
+      const hoursUntil11DriveLimit = Math.max(0, 11 - drivingMinutesToday / 60)
 
       const hosData: HOSData = {
         currentStatus,
@@ -115,17 +116,15 @@ export async function GET(req: NextRequest) {
         onDutyMinutesToday,
         hoursUntil14Limit,
         hoursUntil11DriveLimit,
-      };
+      }
 
-      return hosData;
-    }, TX_OPTIONS);
+      return hosData
+    }, TX_OPTIONS)
 
-    return NextResponse.json(data);
-  } catch (err) {
-    console.error('[mobile/driver/hos GET] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    return NextResponse.json(data)
+  },
+  { allowedRoles: ['DRIVER'] }
+)
 
 /**
  * POST /api/mobile/driver/hos
@@ -138,63 +137,65 @@ export async function GET(req: NextRequest) {
  *
  * Requires: Authorization: Bearer <token>
  */
-export async function POST(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const POST = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { tenantId } = auth
+    // withMobileAuth guarantees driverId is set for DRIVER role
+    const driverId = auth.driverId as string
 
-  if (!auth.driverId) {
-    return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
-  }
+    let body: { status?: unknown; notes?: unknown }
+    try {
+      body = await req.json()
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
 
-  const { driverId, tenantId } = auth;
+    const { status, notes } = body
 
-  let body: { status?: unknown; notes?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
+    // Validate status
+    if (!status || !VALID_STATUSES.includes(status as HOSStatus)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
+        { status: 400 }
+      )
+    }
 
-  const { status, notes } = body;
+    const requestedStatus = status as HOSStatus
+    const notesStr = typeof notes === 'string' ? notes : undefined
 
-  // Validate status
-  if (!status || !VALID_STATUSES.includes(status as HOSStatus)) {
-    return NextResponse.json(
-      { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
-      { status: 400 }
-    );
-  }
-
-  const requestedStatus = status as HOSStatus;
-  const notesStr = typeof notes === 'string' ? notes : undefined;
-
-  try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+     */
     const newEntry = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       // Find the current open entry
       const openEntry = await tx.driverHOSEntry.findFirst({
         where: { driverId, tenantId, endTime: null },
         orderBy: { startTime: 'desc' },
-      });
+      })
 
       // Guard against duplicate status
       if (openEntry && openEntry.status === requestedStatus) {
-        return null; // signal duplicate
+        return null // signal duplicate
       }
 
-      const now = new Date();
+      const now = new Date()
 
       // Close the open entry if one exists
       if (openEntry) {
         await tx.driverHOSEntry.update({
           where: { id: openEntry.id },
           data: { endTime: now },
-        });
+        })
       }
 
       // Create new entry
-      const created = await tx.driverHOSEntry.create({
+      return tx.driverHOSEntry.create({
         data: {
           tenantId,
           driverId,
@@ -202,14 +203,12 @@ export async function POST(req: NextRequest) {
           startTime: now,
           notes: notesStr,
         },
-      });
-
-      return created;
-    }, TX_OPTIONS);
+      })
+    }, TX_OPTIONS)
 
     // Duplicate status — return 400 outside transaction
     if (newEntry === null) {
-      return NextResponse.json({ error: 'Already in this status' }, { status: 400 });
+      return NextResponse.json({ error: 'Already in this status' }, { status: 400 })
     }
 
     const entry: HOSEntry = {
@@ -223,11 +222,9 @@ export async function POST(req: NextRequest) {
       notes: newEntry.notes ?? null,
       createdAt: newEntry.createdAt.toISOString(),
       updatedAt: newEntry.updatedAt.toISOString(),
-    };
+    }
 
-    return NextResponse.json({ entry }, { status: 201 });
-  } catch (err) {
-    console.error('[mobile/driver/hos POST] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    return NextResponse.json({ entry }, { status: 201 })
+  },
+  { allowedRoles: ['DRIVER'] }
+)

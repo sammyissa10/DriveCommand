@@ -6,18 +6,16 @@
  */
 
 import { unstable_cache } from 'next/cache';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 import { prisma as globalPrisma } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { calculateNextDue } from '@/lib/utils/maintenance-utils';
 import { revalidatePath } from 'next/cache';
 
 // ─── Auth helper ──────────────────────────────────────────────
-// Validates role and extracts tenantId in a single getSession() call,
-// reducing session decrypts from 2 (requireRole + requireTenantId) to 1.
+// Validates role and extracts tenantId in a single Supabase session read.
 
 async function getAuthContext(): Promise<{ tenantId: string }> {
   const session = await getSession();
@@ -66,7 +64,6 @@ const _fetchUpcomingMaintenance = unstable_cache(
   async (tenantId: string): Promise<UpcomingMaintenanceItem[]> => {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
-    // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     const schedules = await db.scheduledService.findMany({
       where: { isCompleted: false },
       include: {
@@ -132,7 +129,6 @@ const _fetchExpiringDocuments = unstable_cache(
   async (tenantId: string): Promise<ExpiringDocumentItem[]> => {
     const db = globalPrisma.$extends(withTenantRLS(tenantId));
 
-    // @ts-ignore - Prisma 7 withTenantRLS extension type inference issue
     const trucks = await db.truck.findMany({
       select: {
         id: true,
@@ -209,7 +205,7 @@ const _fetchExpiringDocuments = unstable_cache(
  * Get upcoming maintenance for dashboard.
  * Results cached per tenant for 60 seconds via unstable_cache.
  * Requires OWNER or MANAGER role.
- * Auth enforced via getAuthContext() — single session decrypt (down from 2).
+ * Auth enforced via getAuthContext() — single Supabase session read.
  */
 export async function getUpcomingMaintenance(): Promise<UpcomingMaintenanceItem[]> {
   const { tenantId } = await getAuthContext();
@@ -220,7 +216,7 @@ export async function getUpcomingMaintenance(): Promise<UpcomingMaintenanceItem[
  * Get expiring documents for dashboard.
  * Results cached per tenant for 60 seconds via unstable_cache.
  * Requires OWNER or MANAGER role.
- * Auth enforced via getAuthContext() — single session decrypt (down from 2).
+ * Auth enforced via getAuthContext() — single Supabase session read.
  */
 export async function getExpiringDocuments(): Promise<ExpiringDocumentItem[]> {
   const { tenantId } = await getAuthContext();

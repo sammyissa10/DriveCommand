@@ -1,8 +1,7 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole, requirePermission } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import Anthropic from '@anthropic-ai/sdk';
 import { validateFileType, MAX_FILE_SIZE } from '@/lib/storage/validate';
 
@@ -69,7 +68,7 @@ export async function analyzeDocument(formData: FormData): Promise<AnalyzeDocume
   try {
     // 1. Auth check — FIRST before any data access
     await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewAIDocuments');
+  await requirePermission('aiDocuments');
 
     // 2. Extract file
     const file = formData.get('file') as File;

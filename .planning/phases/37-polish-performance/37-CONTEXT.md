@@ -1,84 +1,77 @@
 # Phase 37: Polish + Performance - Context
 
-**Gathered:** 2026-03-21
-**Status:** Ready for planning
+**Gathered:** 2026-03-27 (updated after mobile audit)
+**Status:** Ready for planning (Plans 01–03 complete, Plans 04+ use this)
 
 <domain>
 ## Phase Boundary
 
-Full design and performance pass across both driver and owner portals. Audit touch targets, replace remaining FlatLists with FlashList, add React Native Reanimated transitions and haptic feedback, implement dark mode via NativeWind, add skeleton loaders to all loading states, and verify correct behavior on both iOS and Android physical devices. No new features — only quality and feel.
+Full design and performance pass across both driver and owner portals. No new features — only quality, consistency, and completing what's already stubbed. Covers: design system standardization (NativeWind everywhere), form validation and error states, accessibility basics, skeleton loaders on remaining screens, and stub screen cleanup.
+
+**Note:** Plans 01–03 shipped: touch targets (48px), FlashList migration, skeleton loaders (driver portal), Reanimated animations, haptics, dark mode, ripple effects, tab labels, thumb-friendly sizing. Plans 04+ cover the remaining audit findings.
 
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
-### Touch targets
-- Minimum 48×48pt on all interactive elements (Apple HIG standard)
-- Audit every Button, Pressable, tab bar item, list item, and form control
-- Fix any element below 48px by adding padding (not changing visual size necessarily)
+### Plans 01–03 (already shipped — preserved for reference)
+- Touch targets: minimum 48×48pt enforced across all interactive elements
+- FlashList: every FlatList/ScrollView-with-list replaced
+- Skeleton loaders: shimmer animation (Reanimated, 800ms cycle, 0.3→1→0.3 opacity) on all driver portal screens
+- Animations: FadeIn on screen mount, spring BottomSheet, no animation on tab switch
+- Haptics: Light on tab press, Success/Error on form submit, Medium on status update, Warning on destructive action, Light on pull-to-refresh
+- Dark mode: dark-first default, NativeWind dark: variants, system light mode supported
+- Android: ripple on all Pressables; iOS: safe area verified
 
-### Animation library
-- React Native Reanimated v3 (already included with Expo SDK 52)
-- FadeIn on screen mount (not slide — cleaner for tab navigation)
-- SlideInRight for stack navigation (push screens)
-- No animation on tab switch (native tab behavior is instant — don't fight it)
-- LayoutAnimation for list item additions/removals
+### Design standardization (Plans 04+)
+- NativeWind everywhere — full migration from inline StyleSheet across all screens
+- Typography: Tailwind utilities only (text-sm, text-base, font-semibold, text-slate-900, etc.) — no hardcoded fontSize/fontWeight
+- Spacing: Claude's discretion — pick a consistent scale (standard screen padding, card gap, section spacing) and apply everywhere
+- Loading states: skeletons everywhere — no ActivityIndicator spinners on any data-fetching screen; every screen gets a content-shaped skeleton
 
-### Haptic feedback events
-- Tab press: Haptics.impactAsync(Light)
-- Form submit success: Haptics.notificationAsync(Success)
-- Form submit error: Haptics.notificationAsync(Error)
-- Status update confirmation: Haptics.impactAsync(Medium)
-- Destructive action (cancel load, delete): Haptics.notificationAsync(Warning)
-- Pull-to-refresh trigger point: Haptics.impactAsync(Light)
+### Form validation & errors
+- Validation triggers on submit only (not real-time, not on blur)
+- Inline field errors: red text below the field (text-red-500) + field border turns red
+- Coverage: all forms — Create Load, Create Incident, HOS Status Update, Login, Fleet Message, Add Document
+- API error handling: toast notification + keep form open and populated so user can fix and retry
 
-### Skeleton loaders
-- Animated shimmer (using Reanimated loop animation on opacity 0.3→1→0.3)
-- Replace ActivityIndicator spinners on all data-fetching screens
-- Each screen gets its own skeleton that matches the real content shape
-- Duration: 800ms per cycle
-
-### FlashList audit
-- Replace every FlatList, ScrollView with list content, and map()-rendered lists with FlashList
-- Set estimatedItemSize accurately per list (measure actual rendered height)
-
-### Dark mode
-- App is dark-first by default (dark theme is the primary)
-- System light mode support: NativeWind dark: variants already provide this
-- Verify: status bar style, keyboard appearance, modal backgrounds
-- Light mode: bg-white cards, text-slate-900 body, border-slate-200
-
-### Platform-specific polish
-- iOS: use SF Symbols via expo-symbols where appropriate (optional, nice-to-have)
-- Android: ripple effect on all Pressable components (TouchableNativeFeedback pattern)
-- Safe area: verify notch/Dynamic Island on iPhone 16 Pro and punch-hole on Android
+### Accessibility
+- Scope: basics only — accessibilityLabel + accessibilityRole on interactive elements
+- All icon-only buttons get descriptive accessibilityLabel (FAB → "Add document", back → "Go back", filter → "Filter loads", etc.)
+- Data elements get meaningful labels: KPI cards, status chips, stat displays read as full context (e.g., "12 active loads this month" not just "12")
+- No full VoiceOver/TalkBack audit required — just label coverage pass
 
 ### Claude's Discretion
-- Exact shimmer animation implementation
-- Whether to add spring animations to bottom sheet open/close
-- Specific Reanimated entering/exiting animations for each screen type
+- Exact Tailwind spacing scale values (screen padding, card gap, section spacing)
+- Which screens still need skeleton variants built (audit the remaining owner portal screens)
+- accessibilityHint usage where helpful but not required
+- Order of screen migrations within each plan
 
 </decisions>
 
 <specifics>
 ## Specific Ideas
 
-- The app should feel as native as possible — no web-like transitions, no janky animations
-- Haptics are important for the driver experience — truck drivers wearing gloves need tactile feedback to know their tap registered
+- The design standardization is primarily an owner portal problem — driver portal is more consistent already
+- "The app should feel as native as possible" — this was the original direction and still holds
+- Haptics are especially important for the driver portal (truck drivers wearing gloves)
+- The audit graded backend connectivity A — this phase is purely frontend/UX work
 
 </specifics>
 
 <deferred>
 ## Deferred Ideas
 
+- Stub screens (Live Map, AI Documents, Incident Detail) — user did not select this area; treat as future phase or separate quick task
+- Full VoiceOver/TalkBack testing and focus-order audit — future accessibility phase
 - Custom fonts beyond Poppins headings — future polish
-- Micro-animations on individual data points (counter animations) — future polish
-- Gesture-based navigation (swipe back on Android) — already handled by React Navigation default
+- Micro-animations on data points (counter animations) — future polish
+- Gesture-based navigation (swipe back on Android) — already handled by React Navigation
 
 </deferred>
 
 ---
 
 *Phase: 37-polish-performance*
-*Context gathered: 2026-03-21*
+*Context gathered: 2026-03-27 (replanned after mobile audit)*

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
-import { isSystemAdmin } from "@/lib/auth/server";
+import { getSession, isSystemAdmin } from "@/lib/auth/supabase";
 import { UserMenu } from "@/components/navigation/user-menu";
 import { AppLogo, DriveCommandWordmark } from "@/components/navigation/app-logo";
 import Link from "next/link";
@@ -54,6 +53,18 @@ export default async function AdminLayout({
                 className="text-white hover:text-gray-300 font-medium"
               >
                 Billing
+              </Link>
+              <Link
+                href="/plans"
+                className="text-white hover:text-gray-300 font-medium"
+              >
+                Plans
+              </Link>
+              <Link
+                href="/promos"
+                className="text-white hover:text-gray-300 font-medium"
+              >
+                Promos
               </Link>
             </nav>
           </div>

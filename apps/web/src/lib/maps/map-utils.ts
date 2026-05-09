@@ -1,36 +1,56 @@
 import { point } from '@turf/helpers';
 import bbox from '@turf/bbox';
+import { VehicleStatus } from './vehicle-status';
+
+export interface VehicleDispatch {
+  routeName: string;
+  loadCount: number;
+  nextStopAddress: string | null;
+}
 
 export interface VehicleLocation {
   id: string;
   truckId: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   speed: number | null;
   heading: number | null;
-  timestamp: Date;
+  timestamp: Date | null;
   truck: {
     make: string;
     model: string;
     licensePlate: string;
+    year: number;
+    vin: string;
   };
+  driver: {
+    name: string;
+  } | null;
+  status: VehicleStatus;
+  dispatch: VehicleDispatch | null;
 }
 
 /**
  * Calculate map bounds from vehicle positions
+ * Skips vehicles with null lat/lng (no GPS data)
  * @param vehicles Array of vehicle locations
  * @returns Leaflet bounds format [[minLat, minLng], [maxLat, maxLng]] or null if empty
  */
 export function calculateBounds(
   vehicles: VehicleLocation[]
 ): [[number, number], [number, number]] | null {
-  if (vehicles.length === 0) {
+  // Filter out vehicles with no GPS data
+  const locatedVehicles = vehicles.filter(
+    (v) => v.latitude !== null && v.longitude !== null
+  );
+
+  if (locatedVehicles.length === 0) {
     return null;
   }
 
   // Create GeoJSON points from vehicle positions
-  const points = vehicles.map(v =>
-    point([v.longitude, v.latitude])
+  const points = locatedVehicles.map((v) =>
+    point([v.longitude as number, v.latitude as number])
   );
 
   // Create feature collection manually (no need for turf.featureCollection helper)

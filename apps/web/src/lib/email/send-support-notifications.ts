@@ -2,6 +2,7 @@ import { sendEmail } from '@/lib/email/gmail-client';
 import { SupportTicketCreatedEmail } from '@/emails/support-ticket-created';
 import { SupportTicketReplyToAdminEmail } from '@/emails/support-ticket-reply-to-admin';
 import React from 'react';
+import { logger } from '@/lib/logger';
 
 // The DriveCommand team inbox — falls back to GMAIL_USER if not set
 function getSupportRecipient(): string {
@@ -51,7 +52,7 @@ export interface OwnerReplyNotificationParams {
 export async function sendNewTicketNotification(params: NewTicketNotificationParams): Promise<void> {
   const to = getSupportRecipient();
   if (!to) {
-    console.warn('[sendNewTicketNotification] No support email recipient configured (DRIVECOMMAND_SUPPORT_EMAIL or GMAIL_USER)');
+    logger.warn('[sendNewTicketNotification] No support email recipient configured (DRIVECOMMAND_SUPPORT_EMAIL or GMAIL_USER)');
     return;
   }
 
@@ -83,12 +84,7 @@ export interface AdminReplyNotificationParams {
  */
 export async function sendAdminReplyNotification(params: AdminReplyNotificationParams): Promise<void> {
   if (!isDeliverableEmail(params.ownerEmail)) {
-    console.warn(
-      '[sendAdminReplyNotification] Skipping email to undeliverable address:',
-      params.ownerEmail,
-      'for ticket',
-      params.ticketNumber,
-    );
+    logger.warn('[sendAdminReplyNotification] Skipping email to undeliverable address', { email: params.ownerEmail, ticketNumber: params.ticketNumber });
     return;
   }
 
@@ -106,7 +102,7 @@ export async function sendAdminReplyNotification(params: AdminReplyNotificationP
 export async function sendOwnerReplyNotification(params: OwnerReplyNotificationParams): Promise<void> {
   const to = getSupportRecipient();
   if (!to) {
-    console.warn('[sendOwnerReplyNotification] No support email recipient configured (DRIVECOMMAND_SUPPORT_EMAIL or GMAIL_USER)');
+    logger.warn('[sendOwnerReplyNotification] No support email recipient configured (DRIVECOMMAND_SUPPORT_EMAIL or GMAIL_USER)');
     return;
   }
 

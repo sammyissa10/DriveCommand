@@ -1,13 +1,11 @@
 import React, { useCallback, useState } from 'react'
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
-  ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -16,6 +14,9 @@ import { AlertTriangle, ChevronLeft, ChevronRight, FileText } from 'lucide-react
 import { useAuthContext } from '../../../../context/AuthContext'
 import { ownerApi, type InvoicesResponse, type InvoiceSummary } from '@drivecommand/api-client'
 import { AnimatedScreen } from '../../../../components/ui/AnimatedScreen'
+import { PageSpeedDial } from '../../../../components/ui/PageSpeedDial'
+import { InvoiceRowSkeleton } from '../../../../components/skeletons/InvoiceRowSkeleton'
+import { useThemeColors } from '../../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -60,64 +61,55 @@ function getStatusLabel(status: string): string {
 // ---------------------------------------------------------------------------
 
 function InvoiceRow({ invoice, onPress }: { invoice: InvoiceSummary; onPress: () => void }) {
+  const c = useThemeColors()
   const statusColor = getStatusColor(invoice.status)
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.7}
-      style={{
-        marginHorizontal: 16,
-        marginBottom: 10,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#334155',
-        backgroundColor: '#1e293b',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-      }}
+      className="mx-4 mb-3 rounded-xl px-4 py-3.5 active:opacity-75"
+      style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
     >
       {/* Top row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+      <View className="flex-row items-center mb-2">
         <Text
-          style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 15, flex: 1 }}
+          className="font-bold text-[15px] flex-1"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           #{invoice.invoiceNumber}
         </Text>
         <View
-          style={{
-            paddingHorizontal: 10,
-            paddingVertical: 4,
-            borderRadius: 20,
-            backgroundColor: statusColor + '22',
-            marginRight: 8,
-          }}
+          className="px-2.5 py-1 rounded-[20px] mr-2"
+          style={{ backgroundColor: statusColor + '22' }}
         >
-          <Text style={{ color: statusColor, fontSize: 12, fontWeight: '600' }}>
+          <Text
+            className="text-xs font-semibold"
+            style={{ color: statusColor }}
+          >
             {getStatusLabel(invoice.status)}
           </Text>
         </View>
-        <ChevronRight color="#475569" size={16} />
+        <ChevronRight color={c.textTertiary} size={16} />
       </View>
 
       {/* Bottom row */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ flex: 1, minWidth: 0 }}>
-          <Text style={{ color: '#94a3b8', fontSize: 13 }} numberOfLines={1}>
+      <View className="flex-row items-center">
+        <View className="flex-1 min-w-0">
+          <Text className="text-[13px]" style={{ color: c.textSecondary }} numberOfLines={1}>
             {invoice.customerName}
           </Text>
           {invoice.dueDate && (
-            <Text style={{ color: '#64748b', fontSize: 12, marginTop: 2 }}>
+            <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>
               Due {formatDate(invoice.dueDate)}
             </Text>
           )}
         </View>
-        <Text style={{ color: '#f1f5f9', fontWeight: '700', fontSize: 16, marginLeft: 12 }}>
+        <Text className="font-bold text-base ml-3" style={{ color: c.textPrimary }}>
           ${invoice.totalAmount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
         </Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -138,27 +130,29 @@ function StatCard({
   active?: boolean
   onPress?: () => void
 }) {
+  const c = useThemeColors()
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={onPress ? 0.7 : 1}
+      className="flex-1 rounded-xl border p-3.5 items-center active:opacity-75"
       style={{
-        flex: 1,
-        backgroundColor: active ? '#1e3a5f' : '#1e293b',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: active ? '#38bdf8' : '#334155',
-        padding: 14,
-        alignItems: 'center',
+        backgroundColor: active ? c.brandDark + '40' : c.surfaceCard,
+        borderColor: active ? c.brand : c.border,
       }}
     >
-      <Text style={{ color: valueColor ?? '#f1f5f9', fontSize: 18, fontWeight: '700' }}>
+      <Text
+        className="text-lg font-bold"
+        style={{ color: valueColor ?? c.textPrimary }}
+      >
         {value}
       </Text>
-      <Text style={{ color: active ? '#38bdf8' : '#64748b', fontSize: 12, marginTop: 2, textAlign: 'center' }}>
+      <Text
+        className="text-xs mt-0.5 text-center"
+        style={{ color: active ? c.brand : c.textTertiary }}
+      >
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -178,6 +172,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 ]
 
 export default function InvoicesScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const router = useRouter()
   const [activeFilter, setActiveFilter] = useState<FilterKey>('ALL')
@@ -195,177 +190,160 @@ export default function InvoicesScreen() {
     ? (data?.invoices ?? [])
     : (data?.invoices ?? []).filter((inv) => inv.status === activeFilter)
 
+  const renderInvoice = useCallback(({ item: inv }: { item: InvoiceSummary }) => (
+    <InvoiceRow
+      invoice={inv}
+      onPress={() => router.push(`/(owner)/more/invoices/${inv.id}` as any)}
+    />
+  ), [router])
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#0f172a' }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         {/* Header */}
         <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            borderBottomWidth: 1,
-            borderBottomColor: '#334155',
-          }}
+          className="flex-row items-center px-4 py-3.5"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
         >
-          <Pressable onPress={() => router.back()} style={{ marginRight: 12 }} hitSlop={8}>
-            <ChevronLeft color="#f1f5f9" size={24} />
+          <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            onPress={() => router.back()}
+            className="mr-3"
+            hitSlop={8}
+          >
+            <ChevronLeft color={c.textPrimary} size={24} />
           </Pressable>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: '#f1f5f9' }}>Invoices</Text>
+          <Text className="text-lg font-bold" style={{ color: c.textPrimary }}>Invoices</Text>
         </View>
 
         {isLoading ? (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator color="#38bdf8" size="large" />
+          <View className="pt-3">
+            <InvoiceRowSkeleton />
+            <InvoiceRowSkeleton />
+            <InvoiceRowSkeleton />
           </View>
         ) : isError ? (
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 24,
-            }}
-          >
+          <View className="flex-1 items-center justify-center px-6">
             <AlertTriangle color="#f87171" size={40} />
-            <Text
-              style={{
-                color: '#f1f5f9',
-                fontSize: 17,
-                fontWeight: '600',
-                marginTop: 16,
-                textAlign: 'center',
-              }}
-            >
+            <Text className="text-[17px] font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
               Failed to load invoices
             </Text>
-            <Text style={{ color: '#64748b', fontSize: 14, marginTop: 6, textAlign: 'center' }}>
+            <Text className="text-sm mt-1.5 text-center" style={{ color: c.textTertiary }}>
               {error instanceof Error ? error.message : 'An unexpected error occurred'}
             </Text>
             <Pressable
               onPress={() => refetch()}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#0ea5e9',
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 10,
-              }}
+              className="mt-5 px-6 py-3 rounded-[10px]"
+              style={{ backgroundColor: c.brand }}
             >
-              <Text style={{ color: '#fff', fontWeight: '600' }}>Retry</Text>
+              <Text className="text-white font-semibold">Retry</Text>
             </Pressable>
           </View>
         ) : (
-          <ScrollView
+          <FlashList
+            data={filteredInvoices}
+            renderItem={renderInvoice}
+            keyExtractor={(inv) => inv.id}
+
             refreshControl={
               <RefreshControl
                 refreshing={isRefetching}
                 onRefresh={onRefresh}
-                tintColor="#38bdf8"
-                colors={['#38bdf8']}
+                tintColor={c.brand}
+                colors={[c.brand]}
               />
             }
             contentContainerStyle={{ paddingBottom: 32 }}
-          >
-            {/* Stats grid 2x2 */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-              <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
-                <StatCard
-                  value={data?.stats.total ?? 0}
-                  label="Total"
-                  active={activeFilter === 'ALL'}
-                  onPress={() => setActiveFilter('ALL')}
-                />
-                <StatCard
-                  value={data?.stats.draft ?? 0}
-                  label="Draft"
-                  valueColor={activeFilter === 'DRAFT' ? undefined : '#64748b'}
-                  active={activeFilter === 'DRAFT'}
-                  onPress={() => setActiveFilter('DRAFT')}
-                />
+            ListHeaderComponent={
+              <View>
+                {/* Stats grid 2x2 */}
+                <View className="px-4 pt-4 pb-2">
+                  <View className="flex-row gap-3 mb-3">
+                    <StatCard
+                      value={data?.stats.total ?? 0}
+                      label="Total"
+                      active={activeFilter === 'ALL'}
+                      onPress={() => setActiveFilter('ALL')}
+                    />
+                    <StatCard
+                      value={data?.stats.draft ?? 0}
+                      label="Draft"
+                      valueColor={activeFilter === 'DRAFT' ? undefined : '#64748b'}
+                      active={activeFilter === 'DRAFT'}
+                      onPress={() => setActiveFilter('DRAFT')}
+                    />
+                  </View>
+                  <View className="flex-row gap-3">
+                    <StatCard
+                      value={formatCurrency(data?.stats.outstandingAmount ?? 0)}
+                      label="Outstanding"
+                      valueColor={activeFilter === 'OVERDUE' ? undefined : '#f59e0b'}
+                      active={activeFilter === 'OVERDUE'}
+                      onPress={() => setActiveFilter('OVERDUE')}
+                    />
+                    <StatCard
+                      value={formatCurrency(data?.stats.paidAmount ?? 0)}
+                      label="Paid"
+                      valueColor={activeFilter === 'PAID' ? undefined : '#22c55e'}
+                      active={activeFilter === 'PAID'}
+                      onPress={() => setActiveFilter('PAID')}
+                    />
+                  </View>
+                </View>
+
+                {/* Filter chips — flat row, evenly distributed */}
+                <View className="flex-row px-4 pt-3 pb-1 gap-1.5">
+                  {FILTERS.map((f) => {
+                    const active = activeFilter === f.key
+                    return (
+                      <Pressable
+                        key={f.key}
+                        onPress={() => setActiveFilter(f.key)}
+                        className="flex-1 py-[7px] rounded-[20px] border items-center active:opacity-75"
+                        style={{
+                          backgroundColor: active ? c.brand : c.surfaceCard,
+                          borderColor: active ? c.brand : c.border,
+                        }}
+                      >
+                        <Text
+                          className="text-[11px] font-semibold"
+                          style={{ color: active ? '#0f172a' : c.textSecondary }}
+                        >
+                          {f.label}
+                        </Text>
+                      </Pressable>
+                    )
+                  })}
+                </View>
+
+                {/* Invoices section header */}
+                <View className="px-4 pt-3.5 pb-2.5">
+                  <Text className="text-xs font-semibold tracking-[0.5px] uppercase" style={{ color: c.textSecondary }}>
+                    {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
+                    {' '}
+                    <Text style={{ color: c.textTertiary }}>({filteredInvoices.length})</Text>
+                  </Text>
+                </View>
               </View>
-              <View style={{ flexDirection: 'row', gap: 12 }}>
-                <StatCard
-                  value={formatCurrency(data?.stats.outstandingAmount ?? 0)}
-                  label="Outstanding"
-                  valueColor={activeFilter === 'OVERDUE' ? undefined : '#f59e0b'}
-                  active={activeFilter === 'OVERDUE'}
-                  onPress={() => setActiveFilter('OVERDUE')}
-                />
-                <StatCard
-                  value={formatCurrency(data?.stats.paidAmount ?? 0)}
-                  label="Paid"
-                  valueColor={activeFilter === 'PAID' ? undefined : '#22c55e'}
-                  active={activeFilter === 'PAID'}
-                  onPress={() => setActiveFilter('PAID')}
-                />
-              </View>
-            </View>
-
-            {/* Filter chips — flat row, evenly distributed */}
-            <View style={{ flexDirection: 'row', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, gap: 6 }}>
-              {FILTERS.map((f) => {
-                const active = activeFilter === f.key
-                return (
-                  <TouchableOpacity
-                    key={f.key}
-                    onPress={() => setActiveFilter(f.key)}
-                    style={{
-                      flex: 1,
-                      paddingVertical: 7,
-                      borderRadius: 20,
-                      backgroundColor: active ? '#38bdf8' : '#1e293b',
-                      borderWidth: 1,
-                      borderColor: active ? '#38bdf8' : '#334155',
-                      alignItems: 'center',
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={{ color: active ? '#0f172a' : '#94a3b8', fontSize: 11, fontWeight: '600' }}>
-                      {f.label}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              })}
-            </View>
-
-            {/* Invoices section header */}
-            <View style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 10 }}>
-              <Text style={{ color: '#94a3b8', fontSize: 12, fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase' }}>
-                {activeFilter === 'ALL' ? 'Recent Invoices' : `${FILTERS.find(f => f.key === activeFilter)?.label} Invoices`}
-                {' '}
-                <Text style={{ color: '#475569' }}>({filteredInvoices.length})</Text>
-              </Text>
-            </View>
-
-            {filteredInvoices.length === 0 ? (
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 24,
-                  paddingTop: 40,
-                }}
-              >
-                <FileText color="#334155" size={48} />
-                <Text
-                  style={{ color: '#64748b', fontSize: 15, marginTop: 12, textAlign: 'center' }}
-                >
+            }
+            ListEmptyComponent={
+              <View className="items-center justify-center px-6 pt-10">
+                <FileText color={c.border} size={48} />
+                <Text className="text-[15px] mt-3 text-center" style={{ color: c.textTertiary }}>
                   {activeFilter === 'ALL' ? 'No invoices yet' : `No ${FILTERS.find(f => f.key === activeFilter)?.label.toLowerCase()} invoices`}
                 </Text>
               </View>
-            ) : (
-              filteredInvoices.map((inv) => (
-                <InvoiceRow
-                  key={inv.id}
-                  invoice={inv}
-                  onPress={() => router.push(`/(owner)/more/invoices/${inv.id}` as any)}
-                />
-              ))
-            )}
-          </ScrollView>
+            }
+          />
         )}
+
+        <PageSpeedDial
+          primaryLabel="New Invoice"
+          primaryIcon={FileText}
+          primaryColor="#fbbf24"
+          onPrimaryPress={() => router.push('/(owner)/more/invoices/new' as never)}
+        />
       </AnimatedScreen>
     </SafeAreaView>
   )

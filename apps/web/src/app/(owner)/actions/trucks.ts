@@ -1,11 +1,32 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+import { Prisma } from '@/generated/prisma';
+
 /**
  * Server actions for truck CRUD operations.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
+
+/**
+ * Null-safe FormData string extraction helpers.
+ * FormData.get() returns string | File | null. The `as string` cast is a lie —
+ * it passes null through, which Zod z.string() rejects with "expected string, received null".
+ */
+function formString(fd: FormData, key: string): string {
+  const val = fd.get(key);
+  return typeof val === 'string' ? val : '';
+}
+
+function formStringOrUndefined(fd: FormData, key: string): string | undefined {
+  const val = fd.get(key);
+  if (typeof val !== 'string' || val === '') return undefined;
+  return val;
+}
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import {
@@ -15,30 +36,32 @@ import {
 } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 /**
  * Create a new truck.
  * Requires OWNER or MANAGER role.
  */
-export async function createTruck(prevState: any, formData: FormData) {
+export async function createTruck(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Parse FormData fields — pass raw strings; Zod preprocess handles conversion
+  // Parse FormData fields using null-safe helpers.
+  // formData.get() returns string | File | null — casting `as string` is unsafe.
   const rawData = {
-    make: formData.get('make') as string,
-    model: formData.get('model') as string,
-    year: formData.get('year') as string,
-    vin: formData.get('vin') as string,
-    licensePlate: formData.get('licensePlate') as string,
-    odometer: formData.get('odometer') as string,
+    make: formString(formData, 'make'),
+    model: formString(formData, 'model'),
+    year: formString(formData, 'year'),
+    vin: formString(formData, 'vin'),
+    licensePlate: formString(formData, 'licensePlate'),
+    odometer: formString(formData, 'odometer'),
   };
 
   // Build documentMetadata if any document fields are provided
-  const registrationNumber = formData.get('registrationNumber') as string;
-  const registrationExpiry = formData.get('registrationExpiry') as string;
-  const insuranceNumber = formData.get('insuranceNumber') as string;
-  const insuranceExpiry = formData.get('insuranceExpiry') as string;
+  const registrationNumber = formStringOrUndefined(formData, 'registrationNumber');
+  const registrationExpiry = formStringOrUndefined(formData, 'registrationExpiry');
+  const insuranceNumber = formStringOrUndefined(formData, 'insuranceNumber');
+  const insuranceExpiry = formStringOrUndefined(formData, 'insuranceExpiry');
 
   let documentMetadata: DocumentMetadata | undefined;
   if (registrationNumber || registrationExpiry || insuranceNumber || insuranceExpiry) {
@@ -62,18 +85,20 @@ export async function createTruck(prevState: any, formData: FormData) {
       values: {
         make: rawData.make,
         model: rawData.model,
-        year: formData.get('year') as string,
+        year: rawData.year,
         vin: rawData.vin,
         licensePlate: rawData.licensePlate,
-        odometer: formData.get('odometer') as string,
-        registrationNumber: registrationNumber || '',
-        registrationExpiry: registrationExpiry || '',
-        insuranceNumber: insuranceNumber || '',
-        insuranceExpiry: insuranceExpiry || '',
+        odometer: rawData.odometer,
+        registrationNumber: registrationNumber ?? '',
+        registrationExpiry: registrationExpiry ?? '',
+        insuranceNumber: insuranceNumber ?? '',
+        insuranceExpiry: insuranceExpiry ?? '',
       },
     };
   }
 
+  // SECURITY: tenantId sourced exclusively from session middleware (x-tenant-id header).
+  // Never accepted from client payload. getTenantPrisma() applies RLS scoping.
   // Get tenant ID and create truck via tenant-scoped Prisma client
   let truckId: string;
   try {
@@ -88,17 +113,34 @@ export async function createTruck(prevState: any, formData: FormData) {
         updatedById: userId,
       },
     });
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    try {
+      await fireEvent({
+        event: 'ON_VEHICLE_CREATE',
+        entityData: { ...truck, id: truck.id },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[createTruck] fireEvent failed', { truckId: truck.id, err });
+    }
     truckId = truck.id;
-  } catch (error: any) {
+
+    // Activation tracker — fire outside main try/catch, never propagates
+    try {
+      await recordActivationEvent(tenantId, 'first_real_truck');
+    } catch (err) {
+      console.error('[createTruck] activation tracker failed', err);
+    }
+  } catch (error: unknown) {
     // Handle Prisma unique constraint violation (P2002) for VIN
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       const target = error?.meta?.target;
       if (Array.isArray(target) && target.includes('vin')) {
         return { error: { vin: ['A truck with this VIN already exists'] } };
       }
       return { error: 'A truck with these details already exists. Please check for duplicates.' };
     }
-    console.error('Failed to create truck:', error);
+    logger.error('Failed to create truck:', error);
     return { error: 'Failed to create truck. Please try again.' };
   }
 
@@ -112,33 +154,34 @@ export async function createTruck(prevState: any, formData: FormData) {
  * Update an existing truck.
  * Requires OWNER or MANAGER role.
  */
-export async function updateTruck(id: string, prevState: any, formData: FormData) {
+export async function updateTruck(id: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
-  // Parse FormData fields
+  // Parse FormData fields using null-safe helpers.
+  // formData.get() returns string | File | null — casting `as string` is unsafe.
   const rawData: any = {};
 
-  const make = formData.get('make') as string;
+  const make = formStringOrUndefined(formData, 'make');
   if (make) rawData.make = make;
 
-  const model = formData.get('model') as string;
+  const model = formStringOrUndefined(formData, 'model');
   if (model) rawData.model = model;
 
-  const year = formData.get('year') as string;
+  const year = formStringOrUndefined(formData, 'year');
   if (year) rawData.year = year;
 
-  const licensePlate = formData.get('licensePlate') as string;
+  const licensePlate = formStringOrUndefined(formData, 'licensePlate');
   if (licensePlate) rawData.licensePlate = licensePlate;
 
-  const odometer = formData.get('odometer') as string;
+  const odometer = formStringOrUndefined(formData, 'odometer');
   if (odometer) rawData.odometer = odometer;
 
   // Build documentMetadata if any document fields are provided
-  const registrationNumber = formData.get('registrationNumber') as string;
-  const registrationExpiry = formData.get('registrationExpiry') as string;
-  const insuranceNumber = formData.get('insuranceNumber') as string;
-  const insuranceExpiry = formData.get('insuranceExpiry') as string;
+  const registrationNumber = formStringOrUndefined(formData, 'registrationNumber');
+  const registrationExpiry = formStringOrUndefined(formData, 'registrationExpiry');
+  const insuranceNumber = formStringOrUndefined(formData, 'insuranceNumber');
+  const insuranceExpiry = formStringOrUndefined(formData, 'insuranceExpiry');
 
   if (registrationNumber || registrationExpiry || insuranceNumber || insuranceExpiry) {
     rawData.documentMetadata = {
@@ -156,15 +199,15 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
     return {
       error: result.error.flatten().fieldErrors,
       values: {
-        make: make || '',
-        model: formData.get('model') as string || '',
-        year: year || '',
-        licensePlate: licensePlate || '',
-        odometer: odometer || '',
-        registrationNumber: registrationNumber || '',
-        registrationExpiry: registrationExpiry || '',
-        insuranceNumber: insuranceNumber || '',
-        insuranceExpiry: insuranceExpiry || '',
+        make: make ?? '',
+        model: model ?? '',
+        year: year ?? '',
+        licensePlate: licensePlate ?? '',
+        odometer: odometer ?? '',
+        registrationNumber: registrationNumber ?? '',
+        registrationExpiry: registrationExpiry ?? '',
+        insuranceNumber: insuranceNumber ?? '',
+        insuranceExpiry: insuranceExpiry ?? '',
       },
     };
   }
@@ -179,8 +222,8 @@ export async function updateTruck(id: string, prevState: any, formData: FormData
       data: { ...result.data, updatedById: userId },
     });
     updatedTruckId = truck.id;
-  } catch (error: any) {
-    console.error('Failed to update truck:', error);
+  } catch (error: unknown) {
+    logger.error('Failed to update truck:', error);
     return { error: 'Failed to update truck. Please try again.' };
   }
 

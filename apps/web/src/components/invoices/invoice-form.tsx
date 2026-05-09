@@ -1,7 +1,11 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState, useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { InvoiceItemsEditor } from './invoice-items-editor';
+import type { InvoiceItemType, InvoiceItemUnit } from '@drivecommand/validation';
 
 interface Customer {
   id: string;
@@ -16,7 +20,7 @@ interface Load {
 }
 
 interface InvoiceFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     customerId?: string | null;
     routeId?: string | null;
@@ -26,11 +30,20 @@ interface InvoiceFormProps {
     issueDate?: Date;
     dueDate?: Date;
     notes?: string | null;
+    bolNumber?: string | null;
+    proNumber?: string | null;
+    poNumber?: string | null;
+    commodity?: string | null;
+    weightLbs?: number | null;
+    pieces?: number | null;
+    loadedMiles?: number | string | null;
     items?: Array<{
       description: string;
       quantity: any;
       unitPrice: any;
       amount?: any;
+      itemType?: string;
+      unitType?: string;
     }>;
   };
   customers?: Customer[];
@@ -66,11 +79,25 @@ export function InvoiceForm({
   const [selectedCustomerId, setSelectedCustomerId] = useState(initialData?.customerId || '');
   const [selectedLoadId, setSelectedLoadId] = useState(loadId || '');
 
+  // Freight details state
+  const hasInitialFreightData = !!(
+    initialData?.bolNumber ||
+    initialData?.proNumber ||
+    initialData?.poNumber ||
+    initialData?.commodity ||
+    initialData?.weightLbs ||
+    initialData?.pieces ||
+    initialData?.loadedMiles
+  );
+  const [freightOpen, setFreightOpen] = useState(hasInitialFreightData);
+  const [loadedMiles, setLoadedMiles] = useState(Number(initialData?.loadedMiles) || 0);
+
   const customerLoads = loads?.filter((l) => l.customerId === selectedCustomerId) ?? [];
 
   const taxAmount = subtotal * taxPercent / 100;
   const total = subtotal + taxAmount;
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
       {/* loadId — hidden, controlled by load picker or pre-filled from load page */}
@@ -119,8 +146,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.invoiceNumber && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.invoiceNumber}</p>
+            {fieldErrors?.invoiceNumber && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.invoiceNumber}</p>
             )}
           </div>
           <div>
@@ -157,8 +184,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.issueDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.issueDate}</p>
+            {fieldErrors?.issueDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.issueDate}</p>
             )}
           </div>
           <div>
@@ -174,8 +201,8 @@ export function InvoiceForm({
               className={inputClass}
               required
             />
-            {state?.error?.dueDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.dueDate}</p>
+            {fieldErrors?.dueDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.dueDate}</p>
             )}
           </div>
         </div>
@@ -238,17 +265,139 @@ export function InvoiceForm({
         </div>
       )}
 
+      {/* Freight Details (collapsible) */}
+      <div className="space-y-4 border-t border-border pt-6">
+        <button
+          type="button"
+          onClick={() => setFreightOpen((prev) => !prev)}
+          className="flex w-full items-center justify-between text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Freight Details
+          <ChevronDown
+            className={`h-4 w-4 transition-transform duration-200 ${freightOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {freightOpen && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <label htmlFor="bolNumber" className={labelClass}>
+                BOL #
+              </label>
+              <input
+                type="text"
+                id="bolNumber"
+                name="bolNumber"
+                defaultValue={initialData?.bolNumber || ''}
+                placeholder="Bill of Lading #"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="proNumber" className={labelClass}>
+                PRO #
+              </label>
+              <input
+                type="text"
+                id="proNumber"
+                name="proNumber"
+                defaultValue={initialData?.proNumber || ''}
+                placeholder="PRO / tracking #"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="poNumber" className={labelClass}>
+                PO #
+              </label>
+              <input
+                type="text"
+                id="poNumber"
+                name="poNumber"
+                defaultValue={initialData?.poNumber || ''}
+                placeholder="Purchase order #"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="commodity" className={labelClass}>
+                Commodity
+              </label>
+              <input
+                type="text"
+                id="commodity"
+                name="commodity"
+                defaultValue={initialData?.commodity || ''}
+                placeholder="e.g. Dry goods, Produce"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="weightLbs" className={labelClass}>
+                Weight (lbs)
+              </label>
+              <input
+                type="number"
+                id="weightLbs"
+                name="weightLbs"
+                defaultValue={initialData?.weightLbs ?? ''}
+                min="0"
+                step="1"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="pieces" className={labelClass}>
+                Pieces
+              </label>
+              <input
+                type="number"
+                id="pieces"
+                name="pieces"
+                defaultValue={initialData?.pieces ?? ''}
+                min="0"
+                step="1"
+                disabled={isPending}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="loadedMiles" className={labelClass}>
+                Loaded Miles
+              </label>
+              <input
+                type="number"
+                id="loadedMiles"
+                name="loadedMiles"
+                value={loadedMiles || ''}
+                min="0"
+                step="0.01"
+                disabled={isPending}
+                onChange={(e) => setLoadedMiles(Number(e.target.value) || 0)}
+                className={inputClass}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Line Items */}
       <div className="space-y-4 border-t border-border pt-6">
         <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
           Line Items
         </h3>
-        {state?.error?.items && (
-          <p className="text-sm text-red-600">{state.error.items}</p>
+        {fieldErrors?.items && (
+          <p className="text-sm text-red-600">{fieldErrors?.items}</p>
         )}
         <InvoiceItemsEditor
           initialItems={initialData?.items}
           onSubtotalChange={setSubtotal}
+          loadedMiles={loadedMiles}
         />
       </div>
 
@@ -273,8 +422,8 @@ export function InvoiceForm({
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.tax && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.tax}</p>
+            {fieldErrors?.tax && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.tax}</p>
             )}
           </div>
           <div className="space-y-1 text-right">

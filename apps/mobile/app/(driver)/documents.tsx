@@ -25,6 +25,7 @@ import { DocumentUploadSheet } from '../../components/driver/DocumentUploadSheet
 import { DocumentRowSkeleton } from '../../components/skeletons/DocumentRowSkeleton'
 import { AnimatedScreen } from '../../components/ui/AnimatedScreen'
 import { haptic } from '../../lib/haptics'
+import { useThemeColors } from '../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -96,32 +97,37 @@ interface DocumentRowProps {
 }
 
 function DocumentRow({ document, onPress }: DocumentRowProps) {
+  const c = useThemeColors()
   const badge = getStatusBadge(document.status)
 
   return (
     <Pressable
       onPress={onPress}
       android_ripple={Platform.OS === 'android' ? { color: 'rgba(255,255,255,0.1)', borderless: false } : undefined}
-      className="bg-slate-800 border-b border-slate-700 px-4 py-4 active:bg-slate-700/80 flex-row items-center"
-      style={{ minHeight: 72 }}
+      className="px-4 py-4 active:opacity-80 flex-row items-center"
+      style={{ minHeight: 72, backgroundColor: c.surfaceCard, borderBottomWidth: 1, borderBottomColor: c.border }}
     >
       {/* Left: Type icon */}
-      <View className="w-10 h-10 rounded-xl bg-slate-700 items-center justify-center mr-3 flex-shrink-0">
+      <View
+        className="w-10 h-10 rounded-xl items-center justify-center mr-3 flex-shrink-0"
+        style={{ backgroundColor: c.surfaceElevated }}
+      >
         {getTypeIcon(document.documentType)}
       </View>
 
       {/* Center: Name + expiry */}
       <View className="flex-1 min-w-0 mr-3">
         <Text
-          className="text-white font-semibold text-sm"
+          className="font-semibold text-sm"
+          style={{ color: c.textPrimary }}
           numberOfLines={1}
         >
           {document.fileName}
         </Text>
-        <Text className="text-slate-400 text-xs mt-0.5">
+        <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }}>
           {getDocumentTypeLabel(document.documentType)}
         </Text>
-        <Text className="text-slate-500 text-xs mt-0.5">
+        <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>
           {document.expiryDate ? `Expires ${formatDate(document.expiryDate)}` : 'No expiry date'}
         </Text>
       </View>
@@ -137,6 +143,7 @@ function DocumentRow({ document, onPress }: DocumentRowProps) {
 // ---------------------------------------------------------------------------
 
 export default function DriverDocuments() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
 
@@ -166,10 +173,13 @@ export default function DriverDocuments() {
   // Loading state — show skeleton instead of spinner
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
-        <View className="px-4 pt-4 pb-3 border-b border-slate-800">
-          <View style={{ width: 120, height: 24, backgroundColor: '#334155', borderRadius: 6, marginBottom: 6 }} />
-          <View style={{ width: 80, height: 14, backgroundColor: '#1e293b', borderRadius: 4 }} />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
+        <View
+          className="px-4 pt-4 pb-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
+          <View style={{ width: 120, height: 24, backgroundColor: c.surfaceElevated, borderRadius: 6, marginBottom: 6 }} />
+          <View style={{ width: 80, height: 14, backgroundColor: c.surfaceCard, borderRadius: 4 }} />
         </View>
         <DocumentRowSkeleton />
         <DocumentRowSkeleton />
@@ -183,25 +193,29 @@ export default function DriverDocuments() {
   // Error state
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6" edges={['bottom', 'left', 'right']}>
+      <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
         <Text className="text-red-400 text-lg font-semibold text-center">Failed to load documents</Text>
         <Pressable
           onPress={() => refetch()}
-          className="mt-5 bg-sky-600 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-5 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.brand }}
         >
-          <Text className="text-white font-semibold">Retry</Text>
+          <Text className="font-semibold" style={{ color: '#ffffff' }}>Retry</Text>
         </Pressable>
       </SafeAreaView>
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       {/* Header */}
-      <View className="px-4 pt-4 pb-3 border-b border-slate-800">
-        <Text className="text-2xl font-bold text-white">Documents</Text>
-        <Text className="text-slate-400 text-sm mt-0.5">
+      <View
+        className="px-4 pt-4 pb-3"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
+        <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Documents</Text>
+        <Text className="text-sm mt-0.5" style={{ color: c.textSecondary }}>
           {documents.length} {documents.length === 1 ? 'document' : 'documents'}
         </Text>
       </View>
@@ -209,24 +223,25 @@ export default function DriverDocuments() {
       {/* List */}
       {documents.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <FileText color="#334155" size={52} />
-          <Text className="text-white text-lg font-semibold mt-4 text-center">No documents yet</Text>
-          <Text className="text-slate-500 text-sm mt-2 text-center">
+          <FileText color={c.surfaceElevated} size={52} />
+          <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>No documents yet</Text>
+          <Text className="text-sm mt-2 text-center" style={{ color: c.textTertiary }}>
             Your licenses, medical cards, and uploaded files will appear here.
           </Text>
           <Pressable
             onPress={() => setShowUpload(true)}
-            className="mt-5 bg-sky-600 px-6 py-3 rounded-lg active:opacity-80 flex-row items-center gap-2"
+            className="mt-5 px-6 py-3 rounded-lg active:opacity-80 flex-row items-center gap-2"
+            style={{ backgroundColor: c.brand }}
           >
             <Plus color="#ffffff" size={16} />
-            <Text className="text-white font-semibold">Upload Document</Text>
+            <Text className="font-semibold" style={{ color: '#ffffff' }}>Upload Document</Text>
           </Pressable>
         </View>
       ) : (
         <FlashList
           data={documents}
           keyExtractor={(item) => item.id}
-          estimatedItemSize={64}
+
           renderItem={({ item }) => (
             <DocumentRow
               document={item}
@@ -237,8 +252,8 @@ export default function DriverDocuments() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={onRefresh}
-              tintColor="#0ea5e9"
-              colors={['#0ea5e9']}
+              tintColor={c.brand}
+              colors={[c.brand]}
             />
           }
           contentContainerStyle={{ paddingBottom: 100 }}
@@ -248,6 +263,8 @@ export default function DriverDocuments() {
       {/* FAB */}
       {documents.length > 0 && (
         <Pressable
+          accessibilityLabel="Add document"
+          accessibilityRole="button"
           onPress={() => setShowUpload(true)}
           style={{
             position: 'absolute',
@@ -256,7 +273,7 @@ export default function DriverDocuments() {
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: '#0ea5e9',
+            backgroundColor: c.brand,
             alignItems: 'center',
             justifyContent: 'center',
             elevation: 8,

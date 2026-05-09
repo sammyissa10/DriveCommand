@@ -5,7 +5,7 @@
  * These functions take raw Prisma client (not tenant-scoped) since NotificationLog has no RLS.
  */
 
-import { NotificationStatus } from '@/generated/prisma';
+import { PrismaClient, NotificationStatus } from '@/generated/prisma';
 
 /**
  * Generate idempotency key for notification.
@@ -25,10 +25,9 @@ export function generateIdempotencyKey(
  * Check if notification was already sent with this idempotency key.
  */
 export async function wasNotificationAlreadySent(
-  prisma: any,
+  prisma: PrismaClient,
   idempotencyKey: string
 ): Promise<boolean> {
-  // @ts-ignore - Prisma 7 type issue
   const existing = await prisma.notificationLog.findUnique({
     where: { idempotencyKey },
     select: { status: true },
@@ -42,7 +41,7 @@ export async function wasNotificationAlreadySent(
  * Returns the notification log ID.
  */
 export async function recordNotification(
-  prisma: any,
+  prisma: PrismaClient,
   data: {
     tenantId: string;
     idempotencyKey: string;
@@ -53,7 +52,6 @@ export async function recordNotification(
     emailSubject: string;
   }
 ): Promise<string> {
-  // @ts-ignore - Prisma 7 type issue
   const log = await prisma.notificationLog.create({
     data: {
       tenantId: data.tenantId,
@@ -75,11 +73,10 @@ export async function recordNotification(
  * Mark notification as SENT with timestamp and external ID.
  */
 export async function markNotificationSent(
-  prisma: any,
+  prisma: PrismaClient,
   logId: string,
   externalId: string
 ): Promise<void> {
-  // @ts-ignore - Prisma 7 type issue
   await prisma.notificationLog.update({
     where: { id: logId },
     data: {
@@ -94,11 +91,10 @@ export async function markNotificationSent(
  * Mark notification as FAILED with error message and increment retry count.
  */
 export async function markNotificationFailed(
-  prisma: any,
+  prisma: PrismaClient,
   logId: string,
   errorMessage: string
 ): Promise<void> {
-  // @ts-ignore - Prisma 7 type issue
   await prisma.notificationLog.update({
     where: { id: logId },
     data: {

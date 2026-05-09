@@ -1,11 +1,12 @@
 'use server';
 
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
 import { prisma } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { Decimal } from 'decimal.js';
 import { z } from 'zod';
 import { sendSysAdminInvoice } from '@/lib/email/send-sysadmin-invoice';
+import { logger } from '@/lib/logger';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -372,7 +373,7 @@ export async function sendInvoiceAction(
         return { success: true, emailWarning: result.warning };
       }
     } catch (emailError: unknown) {
-      console.error('[sendInvoiceAction] Email delivery failed:', emailError);
+      logger.error('[sendInvoiceAction] Email delivery failed:', emailError);
       const message = emailError instanceof Error ? emailError.message : String(emailError);
       revalidatePath('/billing');
       return { success: true, emailWarning: 'Invoice marked as SENT but email delivery failed: ' + message };

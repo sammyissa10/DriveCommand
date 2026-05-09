@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@/lib/supabase/middleware';
 import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions';
+import { validateOrigin } from '@/lib/security/csrf';
 
 /**
  * Next.js middleware that resolves tenant context from the Supabase session
@@ -14,17 +15,51 @@ import { PERMISSION_GATED_PATHS, UserPermissions } from '@/lib/auth/permissions'
  * 5. Authenticated users with tenantId get x-tenant-id header injected
  */
 
+/**
+ * PUBLIC API ROUTES — Intentionally unauthenticated
+ *
+ * These paths bypass authentication in middleware. Each has a specific reason:
+ *
+ * Authentication flows (pre-auth by nature):
+ *   /sign-in, /sign-up, /accept-invitation — login/registration pages
+ *   /api/auth/login — POST login endpoint
+ *   /api/auth/logout — POST logout endpoint
+ *   /api/auth/accept-invitation — GET/POST invitation acceptance (pre-auth)
+ *   /api/auth/callback — Supabase OAuth/email confirmation callback
+ *
+ * Infrastructure:
+ *   /api/health — Uptime monitor health check (no sensitive data, no DB calls)
+ *   /api/warmup — Cold-start warmup (no sensitive data)
+ *   /api/webhooks — Inbound webhooks (Stripe, etc.) — verified by signature, not session
+ *
+ * Public-facing:
+ *   /track — Public shipment tracking page (token-gated, not session-gated)
+ *
+ * Static assets:
+ *   /_next/static, /_next/image, /favicon.ico, /favicon.png, /site.webmanifest
+ *
+ * NOTE: /api/geocoding/autocomplete is NOT listed here — it requires authentication
+ * (session or mobile Bearer token) enforced at the route handler level.
+ * NOTE: /api/cron/* routes are protected by CRON_SECRET verification in each handler.
+ * NOTE: /api/mobile/* routes use Bearer token auth, not middleware session cookies.
+ *       Middleware passes them through (line ~91), and each handler calls validateMobileToken().
+ */
 const PUBLIC_PATHS = [
   '/sign-in',
   '/sign-up',
+  '/forgot-password',
+  '/reset-password',
   '/accept-invitation',
   '/api/auth/login',
   '/api/auth/logout',
   '/api/auth/accept-invitation',
   '/api/auth/callback',
+  '/api/health',
   '/api/warmup',
   '/api/webhooks',
   '/track',
+  '/onboarding/welcome',
+  '/api/email-confirm',
   '/_next/static',
   '/_next/image',
   '/favicon.ico',
@@ -32,7 +67,7 @@ const PUBLIC_PATHS = [
   '/site.webmanifest',
 ];
 
-// Paths that belong to the owner portal — drivers navigating here get redirected to /my-route
+// Paths that belong to the owner portal — drivers navigating here get redirected to /home
 const OWNER_PATHS = [
   '/dashboard',
   '/trucks',
@@ -53,7 +88,11 @@ const OWNER_PATHS = [
   '/safety',
   '/tags',
   '/subscription',
+  '/carrier',
 ];
+
+// Owner-only pages — MANAGER is always blocked, redirect to /carrier/dashboard
+const OWNER_ONLY_PATHS = ['/settings/team-permissions', '/subscription'];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((path) => pathname.startsWith(path));
@@ -65,6 +104,18 @@ export default async function middleware(request: NextRequest) {
   // Allow public paths without auth
   if (isPublicPath(pathname)) {
     return NextResponse.next();
+  }
+
+  // CSRF: validate Origin header on state-changing requests
+  // Skip for mobile API routes (Bearer token auth, not cookies) and GPS/webhook routes
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)) {
+    const isMobileRoute = pathname.startsWith('/api/mobile/') || pathname.startsWith('/api/gps/');
+    const isWebhookOrCron = pathname.startsWith('/api/webhooks') || pathname.startsWith('/api/cron/');
+    if (!isMobileRoute && !isWebhookOrCron) {
+      if (!validateOrigin(request)) {
+        return new NextResponse('Forbidden', { status: 403 });
+      }
+    }
   }
 
   // Create Supabase middleware client — also refreshes session cookies
@@ -83,10 +134,13 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  const meta = user.user_metadata || {};
+  // Security claims come from app_metadata (admin-only, tamper-proof).
+  // Display fields (firstName, lastName) live in user_metadata — not needed here.
+  const appMeta = user.app_metadata || {};
 
   // User is authenticated but has no tenant assigned
-  if (!meta.tenantId) {
+  // System admins have no tenantId by design — skip onboarding redirect for them
+  if (!appMeta.tenantId && !appMeta.isSystemAdmin) {
     const isOnboardingPath = pathname.startsWith('/onboarding');
     const isApiPath = pathname.startsWith('/api');
 
@@ -98,8 +152,8 @@ export default async function middleware(request: NextRequest) {
   }
 
   // System admin guard: restrict to admin portal paths only
-  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/unauthorized', '/onboarding', '/api'];
-  if (meta.isSystemAdmin) {
+  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/plans', '/promos', '/unauthorized', '/onboarding', '/api', '/automations'];
+  if (appMeta.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {
       return NextResponse.redirect(new URL('/admin-support', request.url));
@@ -107,26 +161,37 @@ export default async function middleware(request: NextRequest) {
   }
 
   // Driver guard: redirect DRIVER role away from owner-only paths
-  if (meta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL('/my-route', request.url));
+  if (appMeta.role === 'DRIVER' && OWNER_PATHS.some((p) => pathname.startsWith(p))) {
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // MANAGER permission guard: check granular permissions for gated paths
-  if (meta.role === 'MANAGER') {
-    const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
-      pathname.startsWith(g.path)
-    );
-    if (gatedRoute) {
-      const permissions = (meta.permissions ?? {}) as UserPermissions;
-      if (!permissions[gatedRoute.permission]) {
-        return NextResponse.redirect(new URL('/unauthorized', request.url));
+  // MANAGER permission guard
+  if (appMeta.role === 'MANAGER') {
+    // Owner-only pages — always blocked for MANAGER regardless of permissions
+    if (OWNER_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
+      return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
+    }
+
+    const permissions = (appMeta.permissions ?? {}) as UserPermissions;
+
+    // Full Access: skip all granular permission checks for MANAGER
+    if (!permissions.fullAccess) {
+      // Granular permission check for carrier ops and other gated routes
+      const gatedRoute = PERMISSION_GATED_PATHS.find((g) =>
+        pathname.startsWith(g.path)
+      );
+      if (gatedRoute) {
+        // Default-all-true: only block if explicitly set to false
+        if (permissions[gatedRoute.permission] === false) {
+          return NextResponse.redirect(new URL('/carrier/dashboard', request.url));
+        }
       }
     }
   }
 
   // Inject tenant ID into request headers for downstream consumers
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-tenant-id', meta.tenantId);
+  requestHeaders.set('x-tenant-id', appMeta.tenantId);
 
   // Build final response: preserve Supabase session cookies + inject tenant header
   const finalResponse = NextResponse.next({

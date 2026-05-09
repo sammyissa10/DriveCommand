@@ -1,15 +1,19 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { Navigation } from 'lucide-react';
-import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
+import type { ActionState } from '@drivecommand/types';
+
+import { useActionState, useState, useEffect } from 'react';
+import { Navigation, Loader2 } from 'lucide-react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
 
 interface LoadFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     customerId?: string;
     driverId?: string | null;
     truckId?: string | null;
+    routeId?: string | null;
     origin?: string;
     destination?: string;
     pickupDate?: string;
@@ -23,6 +27,7 @@ interface LoadFormProps {
   customers: Array<{ id: string; companyName: string }>;
   drivers?: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks?: Array<{ id: string; year: number; make: string; model: string; licensePlate: string }>;
+  routes?: Array<{ id: string; name: string | null; origin: string; destination: string; scheduledDate: string }>;
 }
 
 const inputClass =
@@ -31,16 +36,50 @@ const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 
 interface Coords { lat: number; lng: number }
 
-export function LoadForm({ action, initialData, submitLabel, customers, drivers = [], trucks = [] }: LoadFormProps) {
+export function LoadForm({ action, initialData, submitLabel, customers, drivers = [], trucks = [], routes = [] }: LoadFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [selectedRouteId, setSelectedRouteId] = useState<string>(initialData?.routeId || '');
+  const [pickupDateVal, setPickupDateVal] = useState<string>(initialData?.pickupDate || '');
+  const [deliveryDateVal, setDeliveryDateVal] = useState<string>(initialData?.deliveryDate || '');
+  const [distance, setDistance] = useState<number | null>(null);
+  const [distanceLoading, setDistanceLoading] = useState(false);
 
-  const distance =
-    originCoords && destCoords
-      ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
-      : null;
+  // Compute date mismatch warning (informational only — does not block submission)
+  const selectedRoute = routes.find((r) => r.id === selectedRouteId);
+  let dateWarning: string | null = null;
+  if (selectedRoute && pickupDateVal) {
+    const routeDate = selectedRoute.scheduledDate.slice(0, 10);
+    const mismatches: string[] = [];
+    if (pickupDateVal !== routeDate) mismatches.push(`pickup date (${pickupDateVal})`);
+    if (deliveryDateVal && deliveryDateVal !== routeDate) mismatches.push(`delivery date (${deliveryDateVal})`);
+    if (mismatches.length > 0) {
+      dateWarning = `Warning: ${mismatches.join(' and ')} ${mismatches.length === 1 ? 'does' : 'do'} not match the route scheduled date (${routeDate}). The load can still be saved.`;
+    }
+  }
 
+  // Fetch road distance via OSRM when both coordinates are available
+  useEffect(() => {
+    if (!originCoords || !destCoords) {
+      setDistance(null);
+      return;
+    }
+    let cancelled = false;
+    setDistanceLoading(true);
+    setDistance(null);
+    getOSRMDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      .then((miles) => {
+        if (cancelled) return;
+        setDistance(miles);
+      })
+      .finally(() => {
+        if (!cancelled) setDistanceLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [originCoords, destCoords]);
+
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {state?.error && typeof state.error === 'string' && (
@@ -79,8 +118,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               </option>
             ))}
           </select>
-          {state?.error?.customerId && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.customerId}</p>
+          {fieldErrors?.customerId && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.customerId}</p>
           )}
         </div>
 
@@ -124,6 +163,33 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
           </select>
         </div>
 
+        <div>
+          <label htmlFor="routeId" className={labelClass}>
+            Route <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </label>
+          <select
+            id="routeId"
+            name="routeId"
+            value={selectedRouteId}
+            onChange={(e) => setSelectedRouteId(e.target.value)}
+            disabled={isPending}
+            className={inputClass}
+          >
+            <option value="">No route assigned</option>
+            {routes.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name || `${r.origin} \u2192 ${r.destination}`}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {dateWarning && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40 px-4 py-2.5">
+            <p className="text-sm text-amber-700 dark:text-amber-300">{dateWarning}</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="origin" className={labelClass}>
@@ -141,8 +207,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             />
             <input type="hidden" name="pickupLat" value={originCoords ? String(originCoords.lat) : ''} />
             <input type="hidden" name="pickupLng" value={originCoords ? String(originCoords.lng) : ''} />
-            {state?.error?.origin && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
+            {fieldErrors?.origin && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
             )}
           </div>
           <div>
@@ -161,20 +227,33 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             />
             <input type="hidden" name="deliveryLat" value={destCoords ? String(destCoords.lat) : ''} />
             <input type="hidden" name="deliveryLng" value={destCoords ? String(destCoords.lng) : ''} />
-            {state?.error?.destination && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
+            {fieldErrors?.destination && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
             )}
           </div>
         </div>
 
-        {/* Distance badge — shown once both locations are geocoded */}
-        {distance !== null && (
+        {/* Hidden distanceMiles — submitted with form when OSRM distance is available */}
+        <input
+          type="hidden"
+          name="distanceMiles"
+          value={distance !== null ? String(Math.round(distance)) : ''}
+        />
+
+        {/* Distance badge — shown while loading or once both locations are geocoded */}
+        {distanceLoading && (
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
+            <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0 animate-spin" />
+            <span className="text-sm text-blue-600 dark:text-blue-400">Calculating road distance...</span>
+          </div>
+        )}
+        {!distanceLoading && distance !== null && (
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
             <Navigation className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
               Estimated distance: <strong>{Math.round(distance).toLocaleString()} miles</strong>
             </span>
-            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">straight-line est.</span>
+            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">road distance</span>
           </div>
         )}
 
@@ -226,13 +305,14 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               type="date"
               id="pickupDate"
               name="pickupDate"
-              defaultValue={initialData?.pickupDate || ''}
+              value={pickupDateVal}
+              onChange={(e) => setPickupDateVal(e.target.value)}
               disabled={isPending}
               className={inputClass}
               required
             />
-            {state?.error?.pickupDate && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.pickupDate}</p>
+            {fieldErrors?.pickupDate && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.pickupDate}</p>
             )}
           </div>
           <div>
@@ -243,7 +323,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
               type="date"
               id="deliveryDate"
               name="deliveryDate"
-              defaultValue={initialData?.deliveryDate || ''}
+              value={deliveryDateVal}
+              onChange={(e) => setDeliveryDateVal(e.target.value)}
               disabled={isPending}
               className={inputClass}
             />
@@ -273,8 +354,8 @@ export function LoadForm({ action, initialData, submitLabel, customers, drivers 
             placeholder="$0.00"
             required
           />
-          {state?.error?.rate && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.rate}</p>
+          {fieldErrors?.rate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.rate}</p>
           )}
         </div>
       </div>

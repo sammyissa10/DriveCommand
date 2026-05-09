@@ -1,5 +1,7 @@
 import { IncidentReportForm } from '@/components/driver/incident-report-form';
 
+export const dynamic = 'force-dynamic';
+
 export default function DriverIncidentsPage() {
   return (
     <div className="space-y-4 lg:space-y-6">

@@ -1,7 +1,9 @@
 import React from 'react'
-import { ScrollView, useColorScheme, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
+import { useColorScheme } from 'nativewind'
+import { useThemeColors, spacing } from '../../constants/tokens'
 
 interface ScreenWrapperProps {
   children: React.ReactNode
@@ -12,21 +14,21 @@ interface ScreenWrapperProps {
 export function ScreenWrapper({
   children,
   scrollable = false,
-  className = '',
 }: ScreenWrapperProps) {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme !== 'light'
-
-  const bgClass = isDark ? 'bg-slate-900' : 'bg-white'
-  const innerClass = `flex-1 px-4 py-4 ${className}`
+  const { colorScheme } = useColorScheme()
+  const c = useThemeColors()
 
   if (scrollable) {
     return (
-      <SafeAreaView className={`flex-1 ${bgClass}`}>
-        <StatusBar style={isDark ? 'light' : 'dark'} />
+      <SafeAreaView style={{ flex: 1, backgroundColor: c.background }}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 16 }}
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            flexGrow: 1,
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.lg,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -37,9 +39,11 @@ export function ScreenWrapper({
   }
 
   return (
-    <SafeAreaView className={`flex-1 ${bgClass}`}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
-      <View className={innerClass}>{children}</View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: c.background }}>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <View style={{ flex: 1, paddingHorizontal: spacing.lg, paddingVertical: spacing.lg }}>
+        {children}
+      </View>
     </SafeAreaView>
   )
 }

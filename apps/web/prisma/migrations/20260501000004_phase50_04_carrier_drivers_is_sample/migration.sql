@@ -1,0 +1,1 @@
+ALTER TABLE carrier_drivers ADD COLUMN IF NOT EXISTS is_sample BOOLEAN NOT NULL DEFAULT false;

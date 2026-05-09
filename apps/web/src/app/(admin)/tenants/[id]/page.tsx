@@ -6,8 +6,17 @@ import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TenantStatusControls } from './tenant-status-controls';
 import { TenantEditForm } from './tenant-edit-form';
+import { TenantSettingsForm } from './tenant-settings-form';
+import { TenantUsersSection } from './tenant-users-section';
 import { OwnerEmailForm } from './owner-email-form';
 import { ResendInvitationButton } from './resend-invitation-button';
+import { CopyTenantIdButton } from './copy-tenant-id-button';
+import { ResetPasswordButton } from './reset-password-button';
+import { logger } from '@/lib/logger';
+import { prisma } from '@/lib/db/prisma';
+import { AutomationRunsSection } from './automation-runs-section';
+import { ActivationProgressSection } from './activation-progress-section';
+import { ExtendTrialButton } from './extend-trial-button';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -36,12 +45,17 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
   try {
     tenant = await getTenantById(id);
   } catch (err: any) {
-    console.error('[TenantDetailPage] getTenantById error:', err);
+    logger.error('[TenantDetailPage] getTenantById error:', err);
     fetchError = err.message || 'Failed to load tenant';
   }
 
+  let subscription: { trialEndsAt: Date } | null = null;
   if (!fetchError && tenant) {
     billingHistory = await getSysAdminInvoices({ tenantId: id }).catch(() => []);
+    subscription = await prisma.subscription.findUnique({
+      where: { tenantId: id },
+      select: { trialEndsAt: true },
+    }).catch(() => null);
   }
 
   if (fetchError || !tenant) {
@@ -105,6 +119,15 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
               initialSlug={tenant.slug ?? ''}
             />
 
+            {/* Tenant ID */}
+            <div className="border-t pt-4">
+              <p className="text-gray-500 text-sm">Tenant ID <span className="text-gray-400">(read-only)</span></p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="font-mono text-sm text-gray-900">{tenant.id}</span>
+                <CopyTenantIdButton tenantId={tenant.id} />
+              </div>
+            </div>
+
             {/* Read-only metadata */}
             <div className="grid grid-cols-2 gap-4 text-sm border-t pt-4">
               <div>
@@ -140,6 +163,10 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
                   <OwnerEmailForm
                     userId={tenant.ownerUser.id}
                     currentEmail={tenant.ownerUser.email}
+                  />
+                  <ResetPasswordButton
+                    email={tenant.ownerUser.email}
+                    userName={`${tenant.ownerUser.firstName} ${tenant.ownerUser.lastName}`}
                   />
                 </div>
               ) : tenant.pendingOwnerInvitation ? (
@@ -206,6 +233,53 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
           </CardContent>
         </Card>
       </div>
+
+      {/* Tenant Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold">Tenant Settings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TenantSettingsForm
+            tenantId={tenant.id}
+            initialContactEmail={tenant.contactEmail ?? null}
+            initialTimezone={tenant.timezone}
+            initialPlan={tenant.plan}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Users */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold">Users</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TenantUsersSection tenantId={tenant.id} />
+        </CardContent>
+      </Card>
+
+      {/* Extend Trial */}
+      {subscription && (
+        <div className="flex items-center justify-between rounded-md border border-gray-200 bg-white px-4 py-3">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Trial</p>
+            <p className="text-xs text-gray-500">
+              Ends {new Date(subscription.trialEndsAt).toLocaleDateString()}
+            </p>
+          </div>
+          <ExtendTrialButton
+            tenantId={tenant.id}
+            currentTrialEndsAt={subscription.trialEndsAt.toISOString()}
+          />
+        </div>
+      )}
+
+      {/* Activation Progress */}
+      <ActivationProgressSection tenantId={tenant.id} />
+
+      {/* Automation Runs */}
+      <AutomationRunsSection tenantId={tenant.id} />
 
       {/* Billing History */}
       <Card>

@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { getSession } from "@/lib/auth/session";
-import { getRole } from "@/lib/auth/server";
+import { getSession, getRole } from "@/lib/auth/supabase";
 import { UserRole } from "@/lib/auth/roles";
 import { OwnerShell } from "@/components/navigation/owner-shell";
 import { SupportBadge } from "@/components/navigation/support-badge";
 import { prisma } from "@/lib/db/prisma";
+import { TRPCReactProvider } from "@/trpc/Provider";
 
 // All owner-portal pages require auth — force dynamic rendering so Next.js
 // never attempts static pre-rendering (which has no session context).
@@ -25,7 +25,7 @@ export default async function OwnerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Run auth checks in parallel — both are fast JWT decrypts, no DB calls
+  // Run auth checks in parallel — both read from the Supabase session, no DB calls
   const [session, role] = await Promise.all([getSession(), getRole()]);
 
   if (!session) {
@@ -48,8 +48,10 @@ export default async function OwnerLayout({
   }
 
   return (
-    <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
-      {children}
-    </OwnerShell>
+    <TRPCReactProvider>
+      <OwnerShell tenantName={tenantName} supportBadge={<Suspense fallback={null}><SupportBadge /></Suspense>}>
+        {children}
+      </OwnerShell>
+    </TRPCReactProvider>
   );
 }

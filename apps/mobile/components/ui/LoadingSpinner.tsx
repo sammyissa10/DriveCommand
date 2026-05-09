@@ -1,5 +1,6 @@
 import React from 'react'
 import { ActivityIndicator, View } from 'react-native'
+import { useThemeColors } from '../../constants/tokens'
 
 interface LoadingSpinnerProps {
   fullScreen?: boolean
@@ -10,19 +11,22 @@ interface LoadingSpinnerProps {
 export function LoadingSpinner({
   fullScreen = false,
   size = 'large',
-  color = '#0ea5e9',
+  color,
 }: LoadingSpinnerProps) {
+  const c = useThemeColors()
+  const spinnerColor = color ?? c.brand
+
   if (fullScreen) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-900">
-        <ActivityIndicator size={size} color={color} />
+      <View className="flex-1 items-center justify-center" style={{ backgroundColor: c.background }}>
+        <ActivityIndicator size={size} color={spinnerColor} />
       </View>
     )
   }
 
   return (
     <View className="items-center justify-center p-4">
-      <ActivityIndicator size={size} color={color} />
+      <ActivityIndicator size={size} color={spinnerColor} />
     </View>
   )
 }

@@ -1,8 +1,10 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+import { Prisma } from '@/generated/prisma';
 import {
   UserPermissions,
   DEFAULT_MANAGER_PERMISSIONS,
@@ -10,6 +12,8 @@ import {
 } from '@/lib/auth/permissions';
 import { revalidatePath } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export interface TeamMember {
   id: string;
@@ -17,6 +21,7 @@ export interface TeamMember {
   firstName: string | null;
   lastName: string | null;
   permissions: UserPermissions;
+  updatedAt: string;
 }
 
 /**
@@ -39,6 +44,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
       firstName: true,
       lastName: true,
       permissions: true,
+      updatedAt: true,
     },
     orderBy: [{ firstName: 'asc' }, { email: 'asc' }],
   });
@@ -49,6 +55,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
     firstName: user.firstName,
     lastName: user.lastName,
     permissions: getPermissions({ role: 'MANAGER', permissions: user.permissions }),
+    updatedAt: user.updatedAt.toISOString(),
   }));
 }
 
@@ -73,7 +80,7 @@ export async function updateUserPermissions(
       tenantId,
       role: UserRole.MANAGER,
     },
-    select: { id: true },
+    select: { id: true, email: true },
   });
 
   if (!targetUser) {
@@ -82,8 +89,24 @@ export async function updateUserPermissions(
 
   await prisma.user.update({
     where: { id: userId },
-    data: { permissions: permissions as any },
+    data: { permissions: permissions as unknown as Prisma.JsonObject },
   });
+
+  // Sync permissions to Supabase app_metadata so middleware can read them
+  // Middleware reads from appMeta.permissions (Supabase session), not the DB directly
+  try {
+    const adminClient = createAdminClient();
+    const { data: { users: supaUsers } } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
+    const supaUser = supaUsers.find((u) => u.email === targetUser.email);
+    if (supaUser) {
+      await adminClient.auth.admin.updateUserById(supaUser.id, {
+        app_metadata: { ...supaUser.app_metadata, permissions },
+      });
+    }
+  } catch (err) {
+    logger.error('[updateUserPermissions] Failed to sync permissions to Supabase app_metadata:', err);
+    // Non-fatal: DB is source of truth; Supabase sync is for middleware perf
+  }
 
   revalidatePath('/settings/team-permissions');
 
@@ -142,13 +165,13 @@ export async function inviteTeamMember(data: {
       lastName: data.lastName.trim(),
       fullName: `${data.firstName.trim()} ${data.lastName.trim()}`,
       role: UserRole.MANAGER,
-      permissions: data.permissions as any,
+      permissions: data.permissions as unknown as Prisma.JsonObject,
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       status: 'PENDING',
     },
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = getAppBaseUrl();
   const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
   try {
@@ -162,7 +185,7 @@ export async function inviteTeamMember(data: {
       }),
     });
   } catch (err) {
-    console.error('[inviteTeamMember] email failed:', err);
+    logger.error('[inviteTeamMember] email failed:', err);
     // Invitation exists — email can be resent. Don't fail the action.
   }
 

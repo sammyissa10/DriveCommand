@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
 import { LifeBuoy, X, Paperclip, Camera, Loader2 } from 'lucide-react';
@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
+import { logger } from '@/lib/logger';
 
 const TICKET_CATEGORIES = [
   { value: 'BILLING', label: 'Billing' },
@@ -54,6 +55,225 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+// ─── Draggable FAB ────────────────────────────────────────────────────────────
+
+const FAB_SIZE = 48;             // h-12 w-12
+const FAB_MARGIN = 24;           // distance from edges (desktop)
+const FAB_MARGIN_BOTTOM_MOBILE = 80; // clears mobile bottom-nav bar (~h-16)
+const FAB_DRAG_THRESHOLD = 5;    // px before a press becomes a drag
+const FAB_LS_KEY = 'support-fab-corner';
+
+type FabCorner = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+
+const FAB_VALID_CORNERS: FabCorner[] = [
+  'bottom-left', 'bottom-right', 'top-left', 'top-right',
+];
+
+function fabNearestCorner(btnLeft: number, btnTop: number): FabCorner {
+  const cx = btnLeft + FAB_SIZE / 2;
+  const cy = btnTop + FAB_SIZE / 2;
+  const isLeft = cx < window.innerWidth / 2;
+  const isTop = cy < window.innerHeight / 2;
+  if (isTop && isLeft) return 'top-left';
+  if (isTop && !isLeft) return 'top-right';
+  if (!isTop && isLeft) return 'bottom-left';
+  return 'bottom-right';
+}
+
+function fabCornerToPos(corner: FabCorner): { x: number; y: number } {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  // Use a larger bottom margin on mobile to clear the bottom navigation bar.
+  const bm = w < 1024 ? FAB_MARGIN_BOTTOM_MOBILE : FAB_MARGIN;
+  switch (corner) {
+    case 'top-left':     return { x: FAB_MARGIN, y: FAB_MARGIN };
+    case 'top-right':    return { x: w - FAB_SIZE - FAB_MARGIN, y: FAB_MARGIN };
+    case 'bottom-left':  return { x: FAB_MARGIN, y: h - FAB_SIZE - bm };
+    case 'bottom-right': return { x: w - FAB_SIZE - FAB_MARGIN, y: h - FAB_SIZE - bm };
+  }
+}
+
+interface SupportFABProps {
+  onOpen: () => void;
+}
+
+/**
+ * Floating action button that can be dragged to any corner of the screen.
+ * Uses direct DOM manipulation during drag to avoid React re-renders.
+ * Position is persisted in localStorage.
+ */
+function SupportFAB({ onOpen }: SupportFABProps) {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  // Stored in a ref so drag handlers always read the current corner without
+  // needing a React state cycle.
+  const cornerRef = useRef<FabCorner>('bottom-left');
+
+  // Tracks the active drag gesture.
+  const dragStateRef = useRef<{
+    startPointerX: number;
+    startPointerY: number;
+    startBtnX: number;
+    startBtnY: number;
+    hasDragged: boolean;
+  } | null>(null);
+
+  // After a drag ends the browser may still fire a synthetic `click` event.
+  // We suppress exactly one click to avoid opening the modal.
+  const suppressNextClickRef = useRef(false);
+
+  // ── Mount: position from localStorage ──────────────────────────────────────
+  useEffect(() => {
+    const saved = localStorage.getItem(FAB_LS_KEY) as FabCorner | null;
+    const corner: FabCorner =
+      saved && FAB_VALID_CORNERS.includes(saved) ? saved : 'bottom-left';
+    cornerRef.current = corner;
+    const pos = fabCornerToPos(corner);
+    const btn = btnRef.current;
+    if (btn) {
+      btn.style.left = `${pos.x}px`;
+      btn.style.top = `${pos.y}px`;
+      btn.style.visibility = 'visible';
+    }
+  }, []);
+
+  // ── Re-snap when the viewport is resized ───────────────────────────────────
+  useEffect(() => {
+    function onResize() {
+      const pos = fabCornerToPos(cornerRef.current);
+      const btn = btnRef.current;
+      if (btn) {
+        btn.style.transition = 'none';
+        btn.style.left = `${pos.x}px`;
+        btn.style.top = `${pos.y}px`;
+      }
+    }
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // ── Pointer handlers ────────────────────────────────────────────────────────
+
+  function handlePointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    // Only handle left-click on mouse; accept all touch/pen events.
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    // Capture so we receive pointermove/up even outside the element.
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const btn = btnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    dragStateRef.current = {
+      startPointerX: e.clientX,
+      startPointerY: e.clientY,
+      startBtnX: rect.left,
+      startBtnY: rect.top,
+      hasDragged: false,
+    };
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    const ds = dragStateRef.current;
+    if (!ds) return;
+    const btn = btnRef.current;
+    if (!btn) return;
+
+    const dx = e.clientX - ds.startPointerX;
+    const dy = e.clientY - ds.startPointerY;
+
+    // Ignore tiny movements so a tap doesn't accidentally become a drag.
+    if (!ds.hasDragged && Math.hypot(dx, dy) < FAB_DRAG_THRESHOLD) return;
+
+    if (!ds.hasDragged) {
+      ds.hasDragged = true;
+      btn.style.cursor = 'grabbing';
+    }
+
+    // Constrain to the visible viewport.
+    const maxX = window.innerWidth - FAB_SIZE;
+    const maxY = window.innerHeight - FAB_SIZE;
+    const newX = Math.max(0, Math.min(maxX, ds.startBtnX + dx));
+    const newY = Math.max(0, Math.min(maxY, ds.startBtnY + dy));
+
+    // Disable CSS transition so movement is instant during drag.
+    btn.style.transition = 'none';
+    btn.style.left = `${newX}px`;
+    btn.style.top = `${newY}px`;
+  }
+
+  function handlePointerUp() {
+    const ds = dragStateRef.current;
+    if (!ds) return;
+    dragStateRef.current = null;
+
+    const btn = btnRef.current;
+    if (!btn) return;
+    btn.style.cursor = '';
+
+    if (!ds.hasDragged) {
+      // Short press — let the natural `click` event open the modal.
+      return;
+    }
+
+    // ── Snap to nearest corner ──────────────────────────────────────────────
+    const rect = btn.getBoundingClientRect();
+    const corner = fabNearestCorner(rect.left, rect.top);
+    cornerRef.current = corner;
+    try { localStorage.setItem(FAB_LS_KEY, corner); } catch { /* ignore quota errors */ }
+
+    const pos = fabCornerToPos(corner);
+    btn.style.transition = 'left 200ms ease-out, top 200ms ease-out';
+    btn.style.left = `${pos.x}px`;
+    btn.style.top = `${pos.y}px`;
+
+    // After a real drag, the browser sometimes fires a residual `click` event.
+    // Suppress exactly one to prevent accidentally opening the modal.
+    suppressNextClickRef.current = true;
+  }
+
+  function handlePointerCancel() {
+    if (!dragStateRef.current) return;
+    dragStateRef.current = null;
+    const btn = btnRef.current;
+    if (!btn) return;
+    btn.style.cursor = '';
+    // Snap back to the last committed corner.
+    const pos = fabCornerToPos(cornerRef.current);
+    btn.style.transition = 'left 200ms ease-out, top 200ms ease-out';
+    btn.style.left = `${pos.x}px`;
+    btn.style.top = `${pos.y}px`;
+  }
+
+  function handleClick() {
+    if (suppressNextClickRef.current) {
+      suppressNextClickRef.current = false;
+      return;
+    }
+    onOpen();
+  }
+
+  return (
+    <button
+      ref={btnRef}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onClick={handleClick}
+      // `visibility: hidden` until the useEffect positions it (avoids flash at 0,0).
+      // `touchAction: none` prevents the browser hijacking the gesture for scroll.
+      // React won't reset these inline styles on re-render because the `style` prop
+      // object values are unchanged across renders, so React skips the DOM update.
+      style={{ top: 0, left: 0, visibility: 'hidden', touchAction: 'none' }}
+      className="fixed z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 select-none cursor-grab"
+      aria-label="Open support"
+      title="Get support"
+    >
+      <LifeBuoy className="h-5 w-5" />
+    </button>
+  );
+}
+
+// ─── SupportTicketModal ───────────────────────────────────────────────────────
 
 export function SupportTicketModal() {
   const { user } = useAuth();
@@ -159,7 +379,7 @@ export function SupportTicketModal() {
         );
       });
     } catch (err) {
-      console.error('[SupportTicketModal] Screenshot capture failed:', err);
+      logger.error('[SupportTicketModal] Screenshot capture failed:', err);
       toast.error('Screenshot capture failed — you can still submit without one.');
     } finally {
       setCapturing(false);
@@ -242,10 +462,10 @@ export function SupportTicketModal() {
         if ('s3Key' in result) {
           screenshotS3Key = result.s3Key;
         } else {
-          console.error('[SupportTicketModal] Screenshot upload failed:', result.error);
+          logger.error('[SupportTicketModal] Screenshot upload failed:', result.error);
         }
       } catch (err) {
-        console.error('[SupportTicketModal] Screenshot upload error:', err);
+        logger.error('[SupportTicketModal] Screenshot upload error:', err);
       }
       setUploading(false);
     }
@@ -281,15 +501,8 @@ export function SupportTicketModal() {
 
   return (
     <>
-      {/* Fixed support button — bottom-right */}
-      <button
-        onClick={() => setShowConfirmDialog(true)}
-        className="fixed bottom-20 lg:bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-        aria-label="Open support"
-        title="Get support"
-      >
-        <LifeBuoy className="h-5 w-5" />
-      </button>
+      {/* Draggable support FAB */}
+      <SupportFAB onOpen={() => setShowConfirmDialog(true)} />
 
       {/* Screenshot confirmation dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>

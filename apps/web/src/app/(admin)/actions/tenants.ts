@@ -1,12 +1,17 @@
 'use server';
 
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
-import { prisma } from '@/lib/db/prisma';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { Prisma } from '@/generated/prisma';
+import { requireAuth, isSystemAdmin } from '@/lib/auth/supabase';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { sendOwnerInvitation } from '@/lib/email/send-owner-invitation';
 import { sendEmail } from '@/lib/email/gmail-client';
 import React from 'react';
+import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { seedStarterPlaybooks } from '@/server/services/workflows/seedStarterPlaybooks';
 
 async function requireAdminAccess() {
   await requireAuth();
@@ -98,6 +103,19 @@ export async function createTenant(formData: FormData) {
       },
     });
 
+    // Seed starter playbooks for the new tenant (non-fatal — idempotent, can be re-run)
+    try {
+      await seedStarterPlaybooks(tenant.id);
+      logger.info(`Seeded starter playbooks for new tenant ${tenant.name} (${tenant.id})`);
+    } catch (seedError: unknown) {
+      // Seeding failure is NON-FATAL — tenant creation succeeded. Log and continue so the
+      // invitation email still sends. An admin can re-run seed-starter-playbooks.ts later (idempotent).
+      logger.error('Failed to seed starter playbooks for new tenant:', {
+        tenantId: tenant.id,
+        error: seedError instanceof Error ? seedError.message : String(seedError),
+      });
+    }
+
     // Create owner invitation (7 days expiry)
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
@@ -117,7 +135,7 @@ export async function createTenant(formData: FormData) {
     revalidatePath('/tenants');
 
     // Send owner invitation email (non-blocking — warning if fails)
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppBaseUrl();
     const acceptUrl = `${appUrl}/accept-invitation?id=${invitation.id}`;
 
     try {
@@ -133,7 +151,7 @@ export async function createTenant(formData: FormData) {
         }),
       });
     } catch (emailError: any) {
-      console.error('Failed to send owner invitation email:', emailError);
+      logger.error('Failed to send owner invitation email:', emailError);
       return {
         success: true,
         emailWarning: `Tenant created but invitation email could not be sent to ${validation.data.ownerEmail}. Please check your email configuration and resend manually.`,
@@ -141,9 +159,9 @@ export async function createTenant(formData: FormData) {
     }
 
     return { success: true, tenant };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check for unique constraint violation on slug
-    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('slug')) {
       return {
         success: false,
         error: 'A tenant with this slug already exists',
@@ -159,6 +177,7 @@ export async function createTenant(formData: FormData) {
 
 /**
  * Suspend a tenant (set isActive to false).
+ * Also bans all tenant users in Supabase Auth and invalidates their sessions.
  */
 export async function suspendTenant(tenantId: string) {
   await requireAdminAccess();
@@ -172,6 +191,24 @@ export async function suspendTenant(tenantId: string) {
     data: { isActive: false },
   });
 
+  // Ban all tenant users in Supabase Auth and invalidate their sessions
+  const tenantUsers = await prisma.user.findMany({
+    where: { tenantId },
+    select: { id: true },
+  });
+
+  const supabaseAdmin = createAdminClient();
+  await Promise.allSettled(
+    tenantUsers.map(async (user) => {
+      try {
+        await supabaseAdmin.auth.admin.updateUserById(user.id, { ban_duration: '87600h' });
+        await supabaseAdmin.auth.admin.signOut(user.id, 'global');
+      } catch (err) {
+        logger.error('[suspendTenant] Supabase ban/signOut failed for user:' + user.id, err);
+      }
+    })
+  );
+
   revalidatePath('/tenants');
 
   return { success: true };
@@ -179,6 +216,7 @@ export async function suspendTenant(tenantId: string) {
 
 /**
  * Reactivate a suspended tenant (set isActive to true).
+ * Also lifts the Supabase Auth ban for all tenant users.
  */
 export async function reactivateTenant(tenantId: string) {
   await requireAdminAccess();
@@ -191,6 +229,23 @@ export async function reactivateTenant(tenantId: string) {
     where: { id: tenantId },
     data: { isActive: true },
   });
+
+  // Lift the Supabase Auth ban for all tenant users
+  const tenantUsers = await prisma.user.findMany({
+    where: { tenantId },
+    select: { id: true },
+  });
+
+  const supabaseAdmin = createAdminClient();
+  await Promise.allSettled(
+    tenantUsers.map(async (user) => {
+      try {
+        await supabaseAdmin.auth.admin.updateUserById(user.id, { ban_duration: 'none' });
+      } catch (err) {
+        logger.error('[reactivateTenant] Supabase unban failed for user:' + user.id, err);
+      }
+    })
+  );
 
   revalidatePath('/tenants');
 
@@ -240,6 +295,9 @@ export async function getTenantById(tenantId: string) {
       id: true,
       name: true,
       slug: true,
+      timezone: true,
+      contactEmail: true,
+      plan: true,
       isActive: true,
       createdAt: true,
       updatedAt: true,
@@ -309,7 +367,7 @@ export async function resendOwnerInvitation(tenantId: string) {
       data: { status: 'PENDING', expiresAt },
     });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = getAppBaseUrl();
     const acceptUrl = `${appUrl}/accept-invitation?id=${invitation.id}`;
 
     try {
@@ -325,7 +383,7 @@ export async function resendOwnerInvitation(tenantId: string) {
         }),
       });
     } catch (emailError: any) {
-      console.error('[resendOwnerInvitation] email send failed:', emailError);
+      logger.error('[resendOwnerInvitation] email send failed:', emailError);
       revalidatePath('/tenants/' + tenantId);
       return {
         success: true,
@@ -335,7 +393,7 @@ export async function resendOwnerInvitation(tenantId: string) {
 
     revalidatePath('/tenants/' + tenantId);
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return { success: false, error: 'Failed to resend invitation. Please try again.' };
   }
 }
@@ -372,8 +430,8 @@ export async function updateTenant(
     revalidatePath('/tenants');
 
     return { success: true };
-  } catch (error: any) {
-    if (error.code === 'P2002' && error.meta?.target?.includes('slug')) {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('slug')) {
       return { success: false, error: 'A tenant with this slug already exists' };
     }
     return { success: false, error: 'Failed to update tenant. Please try again.' };
@@ -427,15 +485,104 @@ export async function updateOwnerEmail(
         ),
       });
     } catch (emailError) {
-      console.error('[updateOwnerEmail] notification email failed:', emailError);
+      logger.error('[updateOwnerEmail] notification email failed:', emailError);
     }
 
     return { success: true };
-  } catch (error: any) {
-    if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002' && Array.isArray(error.meta?.target) && (error.meta.target as string[]).includes('email')) {
       return { success: false, error: 'This email is already in use by another account' };
     }
     return { success: false, error: 'Failed to update email. Please try again.' };
+  }
+}
+
+/**
+ * Update tenant settings: contactEmail, timezone, plan.
+ */
+export async function updateTenantSettings(
+  tenantId: string,
+  data: { contactEmail?: string; timezone: string; plan: string }
+): Promise<{ success: boolean; error?: string }> {
+  await requireAdminAccess();
+
+  const schema = z.object({
+    contactEmail: z.string().email('Must be a valid email address').optional().or(z.literal('')),
+    timezone: z.string().min(1, 'Timezone is required'),
+    plan: z.enum(['starter', 'pro', 'enterprise'] as const),
+  });
+
+  const validation = schema.safeParse(data);
+  if (!validation.success) {
+    return { success: false, error: validation.error.issues[0].message };
+  }
+
+  try {
+    await prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        contactEmail: validation.data.contactEmail || null,
+        timezone: validation.data.timezone,
+        plan: validation.data.plan,
+      },
+    });
+
+    revalidatePath(`/tenants/${tenantId}`);
+
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Failed to update settings. Please try again.' };
+  }
+}
+
+/**
+ * Extend a tenant's trial by N days.
+ * Updates Subscription.trialEndsAt and writes a trial.extended AppEvent.
+ */
+export async function extendTrial(tenantId: string, additionalDays: number) {
+  await requireAdminAccess();
+
+  if (additionalDays < 1 || additionalDays > 365) {
+    return { error: 'Days must be between 1 and 365' };
+  }
+
+  const subscription = await prisma.subscription.findUnique({
+    where: { tenantId },
+    select: { trialEndsAt: true },
+  });
+
+  if (!subscription) return { error: 'No subscription found for this tenant' };
+
+  const newTrialEndsAt = new Date(
+    Math.max(subscription.trialEndsAt.getTime(), Date.now()) + additionalDays * 24 * 60 * 60 * 1000,
+  );
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      await tx.subscription.update({
+        where: { tenantId },
+        data: { trialEndsAt: newTrialEndsAt },
+      });
+
+      await tx.appEvent.create({
+        data: {
+          tenantId,
+          eventType: 'trial.extended',
+          properties: {
+            additionalDays,
+            newTrialEndsAt: newTrialEndsAt.toISOString(),
+            previousTrialEndsAt: subscription.trialEndsAt.toISOString(),
+          },
+        },
+      });
+    }, TX_OPTIONS);
+
+    revalidatePath(`/tenants/${tenantId}`);
+    return { ok: true, newTrialEndsAt };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
@@ -458,9 +605,9 @@ export async function deleteTenant(tenantId: string) {
     revalidatePath('/tenants');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check for foreign key constraint violation
-    if (error.code === 'P2003') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
       return {
         success: false,
         error: 'Cannot delete tenant with associated users, trucks, or routes. Please remove them first.',

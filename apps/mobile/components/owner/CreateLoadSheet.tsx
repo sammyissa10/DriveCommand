@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message'
 import { BottomSheet } from '../ui/BottomSheet'
 import { ownerApi, type CustomerOption, type DriverOption } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
+import { AddressInput } from './AddressInput'
 
 interface CreateLoadSheetProps {
   visible: boolean
@@ -29,6 +30,10 @@ interface FormState {
   rate: string
   driverId: string
   driverName: string
+  originLat: number | null
+  originLng: number | null
+  destLat: number | null
+  destLng: number | null
 }
 
 const EMPTY_FORM: FormState = {
@@ -40,6 +45,10 @@ const EMPTY_FORM: FormState = {
   rate: '',
   driverId: '',
   driverName: '',
+  originLat: null,
+  originLng: null,
+  destLat: null,
+  destLng: null,
 }
 
 // Simple date formatter for display
@@ -206,7 +215,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
           {/* 1. Customer */}
           <View className="mb-4">
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Customer <Text className="text-red-400">*</Text>
+              Customer <Text className="text-red-500">*</Text>
             </Text>
             <Pressable
               onPress={() => setCustomerPickerOpen(true)}
@@ -223,47 +232,47 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               <ChevronDown color="#64748b" size={16} />
             </Pressable>
             {errors.customerId && (
-              <Text className="text-red-400 text-xs mt-1">{errors.customerId}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.customerId}</Text>
             )}
           </View>
 
           {/* 2. Origin */}
-          <View className="mb-4">
+          <View className="mb-4" style={{ zIndex: 20 }}>
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Origin <Text className="text-red-400">*</Text>
+              Origin <Text className="text-red-500">*</Text>
             </Text>
-            <TextInput
+            <AddressInput
               value={form.origin}
               onChangeText={(v) => setField('origin', v)}
+              onAddressSelect={(result) => {
+                setField('origin', result.formatted_address)
+                setForm((prev) => ({ ...prev, originLat: result.latitude, originLng: result.longitude }))
+              }}
               placeholder="e.g. Chicago, IL"
-              placeholderTextColor="#64748b"
-              className={`bg-slate-700 border ${
-                errors.origin ? 'border-red-500' : 'border-slate-600'
-              } rounded-xl px-4 py-3 text-white text-sm`}
-              autoCorrect={false}
+              error={errors.origin}
             />
             {errors.origin && (
-              <Text className="text-red-400 text-xs mt-1">{errors.origin}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.origin}</Text>
             )}
           </View>
 
           {/* 3. Destination */}
-          <View className="mb-4">
+          <View className="mb-4" style={{ zIndex: 10 }}>
             <Text className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-1.5">
-              Destination <Text className="text-red-400">*</Text>
+              Destination <Text className="text-red-500">*</Text>
             </Text>
-            <TextInput
+            <AddressInput
               value={form.destination}
               onChangeText={(v) => setField('destination', v)}
+              onAddressSelect={(result) => {
+                setField('destination', result.formatted_address)
+                setForm((prev) => ({ ...prev, destLat: result.latitude, destLng: result.longitude }))
+              }}
               placeholder="e.g. Dallas, TX"
-              placeholderTextColor="#64748b"
-              className={`bg-slate-700 border ${
-                errors.destination ? 'border-red-500' : 'border-slate-600'
-              } rounded-xl px-4 py-3 text-white text-sm`}
-              autoCorrect={false}
+              error={errors.destination}
             />
             {errors.destination && (
-              <Text className="text-red-400 text-xs mt-1">{errors.destination}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.destination}</Text>
             )}
           </View>
 
@@ -284,7 +293,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               } rounded-xl px-4 py-3 text-white text-sm`}
             />
             {errors.pickupDate && (
-              <Text className="text-red-400 text-xs mt-1">{errors.pickupDate}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.pickupDate}</Text>
             )}
           </View>
 
@@ -307,7 +316,7 @@ export function CreateLoadSheet({ visible, onClose, onCreated }: CreateLoadSheet
               />
             </View>
             {errors.rate && (
-              <Text className="text-red-400 text-xs mt-1">{errors.rate}</Text>
+              <Text className="text-red-500 text-xs mt-1">{errors.rate}</Text>
             )}
           </View>
 

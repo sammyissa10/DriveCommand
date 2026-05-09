@@ -3,8 +3,7 @@
  * Finds truck documents (registration, insurance) expiring within 14 days.
  */
 
-import { prisma } from '../db/prisma';
-import { withTenantRLS } from '../db/extensions/tenant-rls';
+import { createTenantClient } from '../db/tenant-client';
 
 export interface ExpiringDocumentItem {
   truckId: string;
@@ -12,14 +11,6 @@ export interface ExpiringDocumentItem {
   documentType: 'Registration' | 'Insurance';
   expiryDate: Date;
   daysUntilExpiry: number;
-}
-
-/**
- * Helper to create a tenant-scoped Prisma client for cron context.
- */
-function getTenantPrismaForCron(tenantId: string) {
-  // @ts-ignore - Prisma 7 type issue with extended client
-  return prisma.$extends(withTenantRLS(tenantId));
 }
 
 /**
@@ -40,11 +31,10 @@ interface DocumentMetadata {
 export async function findExpiringDocuments(
   tenantId: string
 ): Promise<ExpiringDocumentItem[]> {
-  const tenantPrisma = getTenantPrismaForCron(tenantId);
+  const db = createTenantClient(tenantId);
 
   // Fetch all trucks with document metadata
-  // @ts-ignore - Extended client type inference
-  const trucks = await tenantPrisma.truck.findMany({
+  const trucks = await db.truck.findMany({
     select: {
       id: true,
       make: true,

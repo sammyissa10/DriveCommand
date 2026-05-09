@@ -1,16 +1,19 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for expense CRUD operations.
  * All actions enforce OWNER/MANAGER/DRIVER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { expenseCreateSchema, expenseUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -19,7 +22,7 @@ const Decimal = Prisma.Decimal;
  * Requires OWNER or MANAGER role.
  * Validates route exists and is not COMPLETED before creating.
  */
-export async function createExpense(prevState: any, formData: FormData) {
+export async function createExpense(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -90,7 +93,7 @@ export async function createExpense(prevState: any, formData: FormData) {
       },
     });
   } catch (error) {
-    console.error('Failed to create expense:', error);
+    logger.error('Failed to create expense:', error);
     return { error: 'Failed to create expense. Please try again.' };
   }
 
@@ -106,7 +109,7 @@ export async function createExpense(prevState: any, formData: FormData) {
  * Requires OWNER or MANAGER role.
  * Validates route is not COMPLETED and expense is not soft-deleted.
  */
-export async function updateExpense(expenseId: string, prevState: any, formData: FormData) {
+export async function updateExpense(expenseId: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -202,7 +205,7 @@ export async function updateExpense(expenseId: string, prevState: any, formData:
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to update expense:', error);
+    logger.error('Failed to update expense:', error);
     return { error: 'Failed to update expense. Please try again.' };
   }
 }
@@ -258,7 +261,7 @@ export async function deleteExpense(expenseId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete expense:', error);
+    logger.error('Failed to delete expense:', error);
     return { error: 'Failed to delete expense. Please try again.' };
   }
 }

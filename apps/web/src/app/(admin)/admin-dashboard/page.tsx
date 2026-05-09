@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Building2, Truck, TrendingUp, LifeBuoy, Receipt } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSystemMetrics } from '@/app/(admin)/actions/tenants';
+import { logger } from '@/lib/logger';
 
 export default async function AdminDashboardPage() {
   let metrics = {
@@ -16,7 +17,7 @@ export default async function AdminDashboardPage() {
   try {
     metrics = await getSystemMetrics();
   } catch (err) {
-    console.error('[AdminDashboardPage] getSystemMetrics error:', err);
+    logger.error('[AdminDashboardPage] getSystemMetrics error:', err);
   }
 
   const metricCards = [

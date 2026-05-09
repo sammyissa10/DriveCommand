@@ -1,11 +1,14 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
-import { getCurrentUser } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { after } from 'next/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendOwnerReplyNotification } from '@/lib/email/send-fleet-message-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { logger } from '@/lib/logger';
 
 export type FleetMessageWithSender = {
   id: string;
@@ -108,7 +111,7 @@ export async function getLoadMessages(loadId: string): Promise<FleetMessageWithS
 /**
  * Send a reply from the owner/manager to a driver on a load.
  */
-export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
+export async function sendOwnerLoadReply(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const loadId = formData.get('loadId') as string;
@@ -144,16 +147,15 @@ export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
     },
   });
 
-  // Fire-and-forget: push notification to driver
+  // Push notification to driver via after() — survives serverless context freezing
   if (load.driverId) {
-    const senderName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
-
-    // Push notification — best-effort, never blocks the action
-    void sendPushToUser(load.driverId, {
-      title: `New message from ${senderName}`,
-      body: message.trim().slice(0, 100),
-      data: { screen: 'messages' },
-    });
+    after(() =>
+      sendPushToUser(load.driverId!, {
+        title: 'New Message from Dispatcher',
+        body: message.trim().slice(0, 100),
+        data: { type: 'fleet_message', messageId: 'load-reply' },
+      })
+    );
   }
 
   return { success: true };
@@ -162,7 +164,7 @@ export async function sendOwnerLoadReply(prevState: any, formData: FormData) {
 /**
  * Send a reply from the owner/manager to a driver on a route.
  */
-export async function sendOwnerReply(prevState: any, formData: FormData) {
+export async function sendOwnerReply(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const routeId = formData.get('routeId') as string;
@@ -210,15 +212,17 @@ export async function sendOwnerReply(prevState: any, formData: FormData) {
         routeName: route.name ?? undefined,
       });
     } catch (emailError) {
-      console.error('[sendOwnerReply] driver notification email failed:', emailError);
+      logger.error('[sendOwnerReply] driver notification email failed:', emailError);
     }
 
-    // Push notification — best-effort, never blocks the action
-    void sendPushToUser(route.driverId, {
-      title: `New message from ${senderName}`,
-      body: message.trim().slice(0, 100),
-      data: { screen: 'messages' },
-    });
+    // Push notification via after() — survives serverless context freezing
+    after(() =>
+      sendPushToUser(route.driverId!, {
+        title: 'New Message from Dispatcher',
+        body: message.trim().slice(0, 100),
+        data: { type: 'fleet_message', messageId: 'route-reply' },
+      })
+    );
   }
 
   return { success: true };

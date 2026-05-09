@@ -7,6 +7,7 @@
  */
 
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -142,7 +143,7 @@ export async function syncSamsaraLocations(
       unmatched.push(
         `${vehicle.name || 'Unknown'} (VIN: ${vehicle.vin})`
       );
-      console.warn(
+      logger.warn(
         `[Samsara Sync] Unmatched vehicle: ${vehicle.name} (VIN: ${vehicle.vin})`
       );
       continue;
@@ -166,7 +167,6 @@ export async function syncSamsaraLocations(
   if (gpsRecords.length > 0) {
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
-      // @ts-ignore - Prisma 7 extension type issue
       await tx.gPSLocation.createMany({ data: gpsRecords });
     }, TX_OPTIONS);
   }

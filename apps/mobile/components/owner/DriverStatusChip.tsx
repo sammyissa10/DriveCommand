@@ -60,13 +60,16 @@ export const DriverStatusChip = memo(function DriverStatusChip({
   return (
     <View
       style={{
-        backgroundColor: '#1e293b',
-        borderWidth: 1,
-        borderColor: '#334155',
+        backgroundColor: '#162032',
         borderRadius: 10,
         padding: 10,
         gap: 8,
         alignItems: 'center',
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 2,
       }}
     >
       {/* Avatar with status dot */}
@@ -98,7 +101,7 @@ export const DriverStatusChip = memo(function DriverStatusChip({
             borderRadius: 5,
             backgroundColor: statusColor,
             borderWidth: 1.5,
-            borderColor: '#1e293b',
+            borderColor: '#162032',
           }}
         />
       </View>

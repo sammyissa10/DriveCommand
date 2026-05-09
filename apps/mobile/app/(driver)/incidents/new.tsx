@@ -22,6 +22,7 @@ import { SeverityToggle } from '../../../components/driver/SeverityToggle'
 import { IncidentPhotoCapture } from '../../../components/driver/IncidentPhotoCapture'
 import { uploadPhotoToS3 } from '../../../lib/upload'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { useThemeColors } from '../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Category data
@@ -46,6 +47,7 @@ const CATEGORIES: CategoryOption[] = [
 // ---------------------------------------------------------------------------
 
 export default function NewIncidentScreen() {
+  const c = useThemeColors()
   const router = useRouter()
   const { token } = useAuthContext()
 
@@ -176,7 +178,7 @@ export default function NewIncidentScreen() {
   // Helpers
   // ---------------------------------------------------------------------------
 
-  const selectedCategory = CATEGORIES.find((c) => c.key === category)
+  const selectedCategory = CATEGORIES.find((cat) => cat.key === category)
 
   function locationText() {
     if (locationStatus === 'getting') return 'Getting location...'
@@ -192,7 +194,7 @@ export default function NewIncidentScreen() {
   // ---------------------------------------------------------------------------
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       <KeyboardAvoidingView
         className="flex-1"
@@ -211,33 +213,38 @@ export default function NewIncidentScreen() {
               className="mr-3 p-2 active:opacity-60"
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <ChevronLeft color="#94a3b8" size={24} />
+              <ChevronLeft color={c.textSecondary} size={24} />
             </Pressable>
             <View>
-              <Text className="text-2xl font-bold text-white">Report Incident</Text>
-              <Text className="text-slate-400 text-sm mt-0.5">Submit a safety or compliance report</Text>
+              <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Report Incident</Text>
+              <Text className="text-sm mt-0.5" style={{ color: c.textSecondary }}>Submit a safety or compliance report</Text>
             </View>
           </View>
 
           {/* Category */}
           <View className="mb-5">
-            <Text className="text-slate-300 font-semibold text-sm mb-2">
+            <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
               Category <Text className="text-red-400">*</Text>
             </Text>
             <Pressable
               onPress={() => setCategoryModalVisible(true)}
-              className="flex-row items-center justify-between bg-slate-800 border border-slate-600 rounded-xl px-4 py-3.5 active:opacity-80"
+              className="flex-row items-center justify-between rounded-xl px-4 py-3.5 active:opacity-80"
+              style={{
+                backgroundColor: c.surfaceInput,
+                borderWidth: 1,
+                borderColor: errors.category ? '#ef4444' : c.border,
+              }}
             >
               {selectedCategory ? (
                 <View className="flex-row items-center gap-2">
                   {selectedCategory.icon}
-                  <Text className="text-white text-base">{selectedCategory.label}</Text>
+                  <Text className="text-base" style={{ color: c.textPrimary }}>{selectedCategory.label}</Text>
                 </View>
               ) : (
-                <Text className="text-slate-500 text-base">Select a category...</Text>
+                <Text className="text-base" style={{ color: c.textMuted }}>Select a category...</Text>
               )}
               <ChevronLeft
-                color="#64748b"
+                color={c.textTertiary}
                 size={18}
                 style={{ transform: [{ rotate: '-90deg' }] }}
               />
@@ -249,7 +256,7 @@ export default function NewIncidentScreen() {
 
           {/* Severity */}
           <View className="mb-5">
-            <Text className="text-slate-300 font-semibold text-sm mb-2">
+            <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
               Severity <Text className="text-red-400">*</Text>
             </Text>
             <SeverityToggle value={severity} onChange={setSeverity} />
@@ -260,7 +267,7 @@ export default function NewIncidentScreen() {
 
           {/* Description */}
           <View className="mb-5">
-            <Text className="text-slate-300 font-semibold text-sm mb-2">
+            <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>
               Description <Text className="text-red-400">*</Text>
             </Text>
             <TextInput
@@ -270,9 +277,16 @@ export default function NewIncidentScreen() {
               numberOfLines={4}
               maxLength={500}
               placeholder="Describe the incident..."
-              placeholderTextColor="#64748b"
-              className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white text-base"
-              style={{ minHeight: 100, textAlignVertical: 'top' }}
+              placeholderTextColor={c.textMuted}
+              className="rounded-xl px-4 py-3 text-base"
+              style={{
+                minHeight: 100,
+                textAlignVertical: 'top',
+                backgroundColor: c.surfaceInput,
+                borderWidth: 1,
+                borderColor: errors.description ? '#ef4444' : c.border,
+                color: c.textPrimary,
+              }}
             />
             <View className="flex-row justify-between mt-1">
               <View>
@@ -280,20 +294,20 @@ export default function NewIncidentScreen() {
                   <Text className="text-red-500 text-xs">{errors.description}</Text>
                 ) : null}
               </View>
-              <Text className="text-slate-500 text-xs">{description.length}/500</Text>
+              <Text className="text-xs" style={{ color: c.textTertiary }}>{description.length}/500</Text>
             </View>
           </View>
 
           {/* Location */}
           <View className="mb-5">
-            <Text className="text-slate-300 font-semibold text-sm mb-2">Location</Text>
-            <View className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3.5">
+            <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>Location</Text>
+            <View
+              className="rounded-xl px-4 py-3.5"
+              style={{ backgroundColor: c.surfaceInput, borderWidth: 1, borderColor: c.border }}
+            >
               <Text
-                className={
-                  locationStatus === 'available'
-                    ? 'text-slate-300 text-sm'
-                    : 'text-slate-500 text-sm italic'
-                }
+                className="text-sm"
+                style={{ color: locationStatus === 'available' ? c.textSecondary : c.textTertiary }}
               >
                 {locationText()}
               </Text>
@@ -302,7 +316,7 @@ export default function NewIncidentScreen() {
 
           {/* Photo */}
           <View className="mb-8">
-            <Text className="text-slate-300 font-semibold text-sm mb-2">Photo</Text>
+            <Text className="font-semibold text-sm mb-2" style={{ color: c.textSecondary }}>Photo</Text>
             <IncidentPhotoCapture
               photoUri={photoUri}
               onPhotoSelected={setPhotoUri}
@@ -314,17 +328,16 @@ export default function NewIncidentScreen() {
           <Pressable
             onPress={handleSubmit}
             disabled={isSubmitting}
-            className={`rounded-xl items-center justify-center py-4 ${
-              isSubmitting ? 'bg-sky-800' : 'bg-sky-600 active:bg-sky-700'
-            }`}
+            className="rounded-xl items-center justify-center py-4 active:opacity-80"
+            style={{ backgroundColor: isSubmitting ? c.brandDark : c.brand }}
           >
             {isSubmitting ? (
               <View className="flex-row items-center gap-2">
                 <ActivityIndicator color="#ffffff" size="small" />
-                <Text className="text-white font-bold text-base">{submitLabel}</Text>
+                <Text className="font-bold text-base" style={{ color: '#ffffff' }}>{submitLabel}</Text>
               </View>
             ) : (
-              <Text className="text-white font-bold text-base">{submitLabel}</Text>
+              <Text className="font-bold text-base" style={{ color: '#ffffff' }}>{submitLabel}</Text>
             )}
           </Pressable>
         </ScrollView>
@@ -341,11 +354,14 @@ export default function NewIncidentScreen() {
           className="flex-1 bg-black/60"
           onPress={() => setCategoryModalVisible(false)}
         />
-        <View className="bg-slate-800 rounded-t-3xl px-6 pt-6 pb-10 border-t border-slate-700">
+        <View
+          className="rounded-t-3xl px-6 pt-6 pb-10"
+          style={{ backgroundColor: c.surfaceCard, borderTopWidth: 1, borderTopColor: c.border }}
+        >
           {/* Handle */}
-          <View className="self-center w-12 h-1 bg-slate-600 rounded-full mb-6" />
+          <View className="self-center w-12 h-1 rounded-full mb-6" style={{ backgroundColor: c.border }} />
 
-          <Text className="text-xl font-bold text-white mb-4">Select Category</Text>
+          <Text className="text-xl font-bold mb-4" style={{ color: c.textPrimary }}>Select Category</Text>
 
           <View className="gap-1">
             {CATEGORIES.map((opt) => (
@@ -356,15 +372,13 @@ export default function NewIncidentScreen() {
                   setErrors((prev) => ({ ...prev, category: '' }))
                   setCategoryModalVisible(false)
                 }}
-                className={`flex-row items-center gap-3 px-4 py-4 rounded-xl active:bg-slate-700/50 ${
-                  category === opt.key ? 'bg-slate-700' : ''
-                }`}
+                className="flex-row items-center gap-3 px-4 py-4 rounded-xl active:opacity-80"
+                style={category === opt.key ? { backgroundColor: c.surfaceElevated } : undefined}
               >
                 {opt.icon}
                 <Text
-                  className={`text-base font-medium ${
-                    category === opt.key ? 'text-white' : 'text-slate-300'
-                  }`}
+                  className="text-base font-medium"
+                  style={{ color: category === opt.key ? c.textPrimary : c.textSecondary }}
                 >
                   {opt.label}
                 </Text>

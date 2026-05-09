@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { createLoad } from '@/app/(owner)/actions/loads';
+import { listRoutes } from '@/app/(owner)/actions/routes';
 import { LoadForm } from '@/components/loads/load-form';
 
 export default async function NewLoadPage() {
@@ -12,8 +13,9 @@ export default async function NewLoadPage() {
   let drivers: any[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let trucks: any[] = [];
+  let routes: Array<{ id: string; name: string | null; origin: string; destination: string; scheduledDate: string }> = [];
   try {
-    [customers, drivers, trucks] = await Promise.all([
+    [customers, drivers, trucks, routes] = await Promise.all([
       prisma.customer.findMany({
         where: { status: 'ACTIVE' },
         select: { id: true, companyName: true },
@@ -29,6 +31,9 @@ export default async function NewLoadPage() {
         select: { id: true, year: true, make: true, model: true, licensePlate: true },
         orderBy: [{ year: 'desc' }, { make: 'asc' }],
       }),
+      listRoutes().then((rs) =>
+        rs.map((r) => ({ id: r.id, name: r.name, origin: r.origin, destination: r.destination, scheduledDate: r.scheduledDate.toISOString() }))
+      ).catch(() => []),
     ]);
   } catch {
     // DB failure — render form with empty lists
@@ -43,7 +48,7 @@ export default async function NewLoadPage() {
         <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create Load</h1>
         <p className="mt-1 text-muted-foreground">Add a new load to your board</p>
       </div>
-      <LoadForm action={createLoad} customers={customers} drivers={drivers} trucks={trucks} submitLabel="Create Load" />
+      <LoadForm action={createLoad} customers={customers} drivers={drivers} trucks={trucks} routes={routes} submitLabel="Create Load" />
     </div>
   );
 }

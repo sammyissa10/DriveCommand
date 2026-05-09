@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import { sendOwnerLoadReply, getLoadMessages } from '@/app/(owner)/actions/fleet-messages';
 import type { FleetMessageWithSender } from '@/app/(owner)/actions/fleet-messages';
+import { logger } from '@/lib/logger';
 
 interface LoadMessagesSectionProps {
   loadId: string;
@@ -37,7 +38,7 @@ export function LoadMessagesSection({ loadId, driverId, initialMessages }: LoadM
       const data = await getLoadMessages(loadId);
       setMessages(data);
     } catch (err) {
-      console.error('[LoadMessagesSection] Failed to fetch messages:', err);
+      logger.error('[LoadMessagesSection] Failed to fetch messages:', err);
     }
   };
 

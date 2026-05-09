@@ -54,7 +54,13 @@ async function main() {
     email: 'demo@drivecommand.com',
     password: 'demo1234',
     email_confirm: true,
-    user_metadata: DEMO_METADATA,
+    user_metadata: { firstName: DEMO_METADATA.firstName, lastName: DEMO_METADATA.lastName },
+    app_metadata: {
+      role: DEMO_METADATA.role,
+      tenantId: DEMO_METADATA.tenantId,
+      isSystemAdmin: DEMO_METADATA.isSystemAdmin,
+      permissions: DEMO_METADATA.permissions,
+    },
   });
 
   if (error) {
@@ -64,7 +70,13 @@ async function main() {
         DEMO_USER_ID,
         {
           password: 'demo1234',
-          user_metadata: DEMO_METADATA,
+          user_metadata: { firstName: DEMO_METADATA.firstName, lastName: DEMO_METADATA.lastName },
+          app_metadata: {
+            role: DEMO_METADATA.role,
+            tenantId: DEMO_METADATA.tenantId,
+            isSystemAdmin: DEMO_METADATA.isSystemAdmin,
+            permissions: DEMO_METADATA.permissions,
+          },
         }
       );
       if (updateError) {

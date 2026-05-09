@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { publicLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * Public tracking API — no authentication required.
@@ -7,9 +8,14 @@ import { prisma } from '@/lib/db/prisma';
  * Does NOT expose financial data (rate, tenantId, customerId, notes).
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  // Rate limit by IP to prevent token enumeration attacks
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const rateLimited = await applyRateLimit(publicLimiter, ip);
+  if (rateLimited) return rateLimited;
+
   const { token } = await params;
 
   // Look up load by tracking token — no RLS, no tenant context

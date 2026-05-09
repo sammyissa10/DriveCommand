@@ -43,23 +43,29 @@ npx prisma generate
 
 ## Schema Overview — Models
 
-The schema has 29 models covering all platform features.
+The schema has 37 models covering all platform features.
 
 | Model | Purpose | Key Fields |
 |---|---|---|
 | `Tenant` | Fleet operator account | `id`, `name`, `slug`, `isActive`, `profitMarginThreshold` |
 | `User` | Owner, Manager, or Driver | `id`, `tenantId`, `email`, `passwordHash`, `role`, `isSystemAdmin`, `isActive` |
-| `Truck` | Vehicle in the fleet | `id`, `tenantId`, `make`, `model`, `year`, `vin`, `licensePlate`, `odometer`, `documentMetadata` (JSONB) |
+| `Truck` | Vehicle in the fleet | `id`, `tenantId`, `make`, `model`, `year`, `vin`, `licensePlate`, `odometer`, `documentMetadata` (JSONB), `createdById?` |
 | `DriverInvitation` | Email invite for new drivers or owners | `id`, `tenantId`, `email`, `role` (defaults DRIVER), `status` (PENDING/ACCEPTED/EXPIRED/CANCELLED), `expiresAt` |
-| `Route` | Assigned trip with driver + truck | `id`, `tenantId`, `driverId`, `truckId`, `origin`, `destination`, `status` (PLANNED/IN_PROGRESS/COMPLETED), `version` (optimistic locking) |
+| `Route` | Assigned trip with driver + truck | `id`, `tenantId`, `driverId`, `truckId`, `origin`, `destination`, `status` (PLANNED/IN_PROGRESS/COMPLETED), `version` (optimistic locking), `createdById?` |
 | `RouteStop` | Multi-stop waypoints on a route | `id`, `routeId`, `tenantId`, `position` (1-based), `type` (PICKUP/DELIVERY), `status` (PENDING/ARRIVED/DEPARTED), `geofenceHit` |
+| `RouteDriver` | Co-driver assignment on a route | `id`, `routeId`, `driverId`, `role` (default "co-driver") |
+| `DriverRouteJoin` | Driver-route payment assignment | `id`, `tenantId`, `routeId`, `driverId`, `isMainDriver`, `paymentMethod`, `fixedAmount?`, `hourlyRate?`, `perMileRate?` |
 | `Document` | Uploaded file metadata | `id`, `tenantId`, `truckId?`, `routeId?`, `driverId?`, `s3Key`, `documentType?`, `expiryDate?` |
 | `MaintenanceEvent` | Completed service record | `id`, `tenantId`, `truckId`, `serviceType`, `serviceDate`, `odometerAtService`, `cost` |
 | `ScheduledService` | Upcoming service by interval | `id`, `tenantId`, `truckId`, `intervalDays?`, `intervalMiles?`, `isCompleted` |
 | `GPSLocation` | Truck GPS ping | `id`, `tenantId`, `truckId`, `latitude`, `longitude`, `speed`, `timestamp` |
 | `SafetyEvent` | Harsh driving event from ELD/telematics | `id`, `tenantId`, `truckId`, `driverId?`, `eventType`, `severity`, `gForce?`, `speed?`, `timestamp` |
+| `DriverHOSEntry` | Driver hours-of-service log entry | `id`, `tenantId`, `driverId`, `status` (OFF_DUTY/SLEEPER_BERTH/DRIVING/ON_DUTY), `startTime`, `endTime?`, `notes?` |
+| `DriverIncident` | Driver-reported incident | `id`, `tenantId`, `driverId`, `category`, `severity`, `description`, `latitude?`, `longitude?`, `photoS3Key?`, `reportedAt` |
+| `FleetMessage` | In-app messaging between drivers and owners | `id`, `tenantId`, `routeId?`, `loadId?`, `senderId`, `senderRole`, `body`, `recipientId?`, `isBroadcast` |
 | `FuelRecord` | Fuel fill-up record | `id`, `tenantId`, `truckId`, `fuelType`, `quantity`, `totalCost?`, `odometer`, `timestamp` |
 | `NotificationLog` | Email send audit log | `id`, `tenantId`, `idempotencyKey` (unique), `notificationType`, `status` (PENDING/SENT/FAILED) |
+| `PushToken` | Mobile push notification token | `id`, `userId`, `token`, `platform` (ios/android) |
 | `Tag` | Color label for trucks/drivers | `id`, `tenantId`, `name`, `color` |
 | `TagAssignment` | Tag applied to a Truck or User | `id`, `tenantId`, `tagId`, `truckId?`, `userId?` |
 | `ExpenseCategory` | Named expense bucket | `id`, `tenantId`, `name`, `isSystemDefault` |
@@ -69,10 +75,12 @@ The schema has 29 models covering all platform features.
 | `RoutePayment` | Revenue received for a route (soft delete) | `id`, `tenantId`, `routeId`, `amount`, `status` (PENDING/PAID), `paidAt?` |
 | `Customer` | CRM contact / shipper | `id`, `tenantId`, `companyName`, `priority`, `status`, `totalRevenue`, `emailNotifications` |
 | `CustomerInteraction` | CRM activity log | `id`, `tenantId`, `customerId`, `type`, `subject`, `isAutomated` |
-| `Invoice` | Invoice to a customer | `id`, `tenantId`, `customerId?`, `invoiceNumber`, `amount`, `status` (DRAFT/SENT/PAID/OVERDUE/CANCELLED) |
+| `Invoice` | Invoice to a customer | `id`, `tenantId`, `customerId?`, `routeId?`, `loadId?`, `invoiceNumber`, `amount`, `status` (DRAFT/SENT/PAID/OVERDUE/CANCELLED), `createdById?` |
 | `InvoiceItem` | Line item on an invoice | `id`, `invoiceId`, `tenantId`, `description`, `quantity`, `unitPrice`, `amount` |
-| `PayrollRecord` | Driver pay period record | `id`, `tenantId`, `driverId`, `periodStart`, `periodEnd`, `totalPay`, `status` (DRAFT/APPROVED/PAID) |
-| `Load` | Dispatched load/shipment | `id`, `tenantId`, `loadNumber`, `customerId`, `routeId?`, `status` (PENDING→DISPATCHED→PICKED_UP→IN_TRANSIT→DELIVERED→INVOICED), `trackingToken?` |
+| `SysAdminInvoice` | Invoice from DriveCommand to a tenant | `id`, `tenantId`, `invoiceNumber` (unique), `status` (DRAFT/SENT/PAID/OVERDUE/CANCELLED), `issueDate`, `dueDate`, `subtotal`, `total`, `isRecurring` |
+| `SysAdminInvoiceItem` | Line item on a SysAdmin invoice | `id`, `invoiceId`, `chargeType?`, `description`, `quantity`, `unitPrice`, `amount` |
+| `PayrollRecord` | Driver pay period record | `id`, `tenantId`, `driverId`, `periodStart`, `periodEnd`, `totalPay`, `status` (DRAFT/APPROVED/PAID), `createdById?` |
+| `Load` | Dispatched load/shipment | `id`, `tenantId`, `loadNumber`, `customerId`, `routeId?`, `status` (PENDING→DISPATCHED→PICKED_UP→IN_TRANSIT→DELIVERED→INVOICED), `trackingToken?`, `createdById?` |
 | `TenantIntegration` | Third-party integration config | `id`, `tenantId`, `provider`, `category`, `enabled`, `configJson` (JSONB) |
 | `SupportTicket` | Help ticket from tenant owner or driver | `id`, `ticketNumber` (unique, TKT-NNNN), `tenantId`, `category`, `priority`, `status` |
 | `TicketMessage` | Message thread on a support ticket | `id`, `ticketId`, `senderType` (OWNER/ADMIN), `body` |
@@ -101,8 +109,8 @@ All tenant-scoped tables have RLS enabled in Supabase. The enforcement pattern:
 3. All subsequent Prisma queries on the connection run through the RLS filter automatically. An explicit `WHERE tenantId = ?` is still included in most queries as defense-in-depth, but RLS ensures that even if a query omits the filter, no cross-tenant data leaks.
 
 **Tables without RLS:**
-- `SupportTicket` and `TicketMessage` — sysadmin needs cross-tenant visibility
-- Tenant-scoped queries on these tables use explicit `WHERE tenantId = ?` in server actions
+- `SupportTicket` and `TicketMessage` — sysadmin needs cross-tenant visibility; tenant-scoped queries use explicit `WHERE tenantId = ?` in server actions
+- `PushToken` — keyed by `userId` (not `tenantId`); no RLS policy; access controlled at the application layer by matching the authenticated user's ID
 
 ---
 

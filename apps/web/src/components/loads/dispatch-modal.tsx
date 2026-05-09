@@ -1,11 +1,13 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useState, useEffect, useActionState } from 'react';
 import { X, Truck } from 'lucide-react';
 
 interface DispatchModalProps {
   loadId: string;
-  dispatchAction: (prevState: any, formData: FormData) => Promise<any>;
+  dispatchAction: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   drivers: Array<{ id: string; firstName: string | null; lastName: string | null }>;
   trucks: Array<{ id: string; make: string; model: string; licensePlate: string }>;
   routes?: Array<{ id: string; name: string | null; origin: string; destination: string }>;
@@ -31,6 +33,7 @@ export function DispatchModal({ loadId, dispatchAction, drivers, trucks, routes 
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <>
       <button
@@ -86,8 +89,8 @@ export function DispatchModal({ loadId, dispatchAction, drivers, trucks, routes 
                     </option>
                   ))}
                 </select>
-                {state?.error?.driverId && (
-                  <p className="mt-1.5 text-sm text-red-600">{state.error.driverId}</p>
+                {fieldErrors?.driverId && (
+                  <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.driverId}</p>
                 )}
               </div>
 
@@ -109,8 +112,8 @@ export function DispatchModal({ loadId, dispatchAction, drivers, trucks, routes 
                     </option>
                   ))}
                 </select>
-                {state?.error?.truckId && (
-                  <p className="mt-1.5 text-sm text-red-600">{state.error.truckId}</p>
+                {fieldErrors?.truckId && (
+                  <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.truckId}</p>
                 )}
               </div>
 

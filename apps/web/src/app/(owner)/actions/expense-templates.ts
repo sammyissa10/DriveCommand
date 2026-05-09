@@ -1,18 +1,20 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for expense template management.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
 import { templateCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/generated/prisma';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -21,10 +23,9 @@ const Decimal = Prisma.Decimal;
  * Requires OWNER or MANAGER role.
  * Uses a transaction to create template and items atomically.
  */
-export async function createTemplate(prevState: any, formData: FormData) {
+export async function createTemplate(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const name = formData.get('name') as string;
@@ -81,11 +82,11 @@ export async function createTemplate(prevState: any, formData: FormData) {
         })),
       });
     }, TX_OPTIONS);
-  } catch (error: any) {
-    console.error('Failed to create template:', error);
+  } catch (error: unknown) {
+    logger.error('Failed to create template:', error);
 
     // Check for unique constraint violation (duplicate name)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: {
           name: ['A template with this name already exists'],
@@ -110,7 +111,6 @@ export async function createTemplate(prevState: any, formData: FormData) {
 export async function deleteTemplate(templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 
@@ -126,7 +126,7 @@ export async function deleteTemplate(templateId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete template:', error);
+    logger.error('Failed to delete template:', error);
     return { error: 'Failed to delete template. Please try again.' };
   }
 }
@@ -172,7 +172,6 @@ export async function listTemplates() {
 export async function applyTemplate(routeId: string, templateId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const tenantId = await requireTenantId();
   const prisma = await getTenantPrisma();
@@ -229,10 +228,10 @@ export async function applyTemplate(routeId: string, templateId: string) {
       success: true,
       count: result.count,
     };
-  } catch (error: any) {
-    console.error('Failed to apply template:', error);
+  } catch (error: unknown) {
+    logger.error('Failed to apply template:', error);
 
-    if (error.message === 'Template not found') {
+    if (error instanceof Error && error.message === 'Template not found') {
       return {
         error: 'Template not found',
       };

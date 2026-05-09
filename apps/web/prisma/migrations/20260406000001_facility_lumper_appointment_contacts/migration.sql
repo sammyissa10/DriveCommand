@@ -1,0 +1,4 @@
+ALTER TABLE "facilities"
+  ADD COLUMN "lumper_required" BOOLEAN NOT NULL DEFAULT FALSE,
+  ADD COLUMN "appointment_required" BOOLEAN NOT NULL DEFAULT FALSE,
+  ADD COLUMN "contacts" JSONB NOT NULL DEFAULT '[]';

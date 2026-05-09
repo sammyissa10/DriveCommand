@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { User } from '@supabase/supabase-js';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { logger } from '@/lib/logger';
+
+// Cache getUser() results for 5 minutes to avoid Supabase Auth 429 rate limits.
+// Key: cookie header string, Value: { user, expiry }
+const sessionCache = new Map<string, { user: User | null; expiry: number }>();
+const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
  * GET /api/auth/me
@@ -13,42 +20,95 @@ import { createAdminClient } from '@/lib/supabase/admin';
  * Returns 401 if no valid session exists.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('Authorization');
-  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  try {
+    const authHeader = req.headers.get('Authorization');
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-  if (bearerToken) {
-    // Mobile: validate Supabase access token
-    const admin = createAdminClient();
-    const { data: { user }, error } = await admin.auth.getUser(bearerToken);
-    if (error || !user) {
+    if (bearerToken) {
+      // Mobile: validate Supabase access token
+      const admin = createAdminClient();
+      const { data: { user }, error } = await admin.auth.getUser(bearerToken);
+      if (error || !user) {
+        return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+      }
+
+      // Security claims from app_metadata; display fields from user_metadata
+      const appMeta = user.app_metadata || {};
+      const userMeta = user.user_metadata || {};
+
+      if (!appMeta.role || !appMeta.tenantId) {
+        logger.warn('GET /api/auth/me (bearer): incomplete app_metadata', {
+          userId: user.id,
+          hasRole: Boolean(appMeta.role),
+          hasTenantId: Boolean(appMeta.tenantId),
+        });
+        return NextResponse.json(
+          { error: 'Account setup incomplete. Please contact support.' },
+          { status: 403 }
+        );
+      }
+
+      const name = [userMeta.firstName, userMeta.lastName].filter(Boolean).join(' ') || user.email;
+      return NextResponse.json({
+        id: user.id,
+        email: user.email,
+        name,
+        role: appMeta.role,
+        tenantId: appMeta.tenantId,
+        companyName: appMeta.companyName || '',
+      });
+    }
+
+    // Web: cookie-based session (with cache to prevent Supabase Auth 429 rate limits)
+    const cacheKey = req.headers.get('cookie') || '';
+    const cachedSession = sessionCache.get(cacheKey);
+    let user: User | null | undefined;
+    if (cachedSession && Date.now() < cachedSession.expiry) {
+      user = cachedSession.user;
+    } else {
+      const supabase = await createSupabaseServerClient();
+      const { data: { user: fetchedUser } } = await supabase.auth.getUser();
+      user = fetchedUser ?? null;
+      sessionCache.set(cacheKey, { user, expiry: Date.now() + SESSION_CACHE_TTL });
+      // Prune expired entries when cache grows large
+      if (sessionCache.size > 100) {
+        for (const [k, v] of sessionCache) {
+          if (Date.now() >= v.expiry) sessionCache.delete(k);
+        }
+      }
+    }
+    if (!user) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
-    const meta = user.user_metadata || {};
-    const name = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || user.email;
-    return NextResponse.json({
-      id: user.id,
-      email: user.email,
-      name,
-      role: meta.role,
-      tenantId: meta.tenantId,
-      companyName: meta.companyName || '',
-    });
-  }
 
-  // Web: cookie-based session
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+    // Security claims from app_metadata; display fields from user_metadata
+    const appMeta = user.app_metadata || {};
+    const userMeta = user.user_metadata || {};
+
+    // Non-sysadmin users must have role + tenantId — missing means incomplete provisioning
+    if (!appMeta.isSystemAdmin && (!appMeta.role || !appMeta.tenantId)) {
+      logger.warn('GET /api/auth/me (cookie): incomplete app_metadata', {
+        userId: user.id,
+        hasRole: Boolean(appMeta.role),
+        hasTenantId: Boolean(appMeta.tenantId),
+      });
+      return NextResponse.json(
+        { error: 'Account setup incomplete. Please contact support.' },
+        { status: 403 }
+      );
+    }
+
+    return NextResponse.json({
+      userId: user.id,
+      email: user.email,
+      role: appMeta.role,
+      tenantId: appMeta.tenantId,
+      firstName: userMeta.firstName,
+      lastName: userMeta.lastName,
+      permissions: appMeta.permissions,
+    });
+  } catch (error) {
+    logger.error('GET /api/auth/me error', error);
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
-  const meta = user.user_metadata || {};
-  return NextResponse.json({
-    userId: user.id,
-    email: user.email,
-    role: meta.role,
-    tenantId: meta.tenantId,
-    firstName: meta.firstName,
-    lastName: meta.lastName,
-    permissions: meta.permissions,
-  });
 }

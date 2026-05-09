@@ -56,12 +56,26 @@ export const DashboardLoadCard = memo(function DashboardLoadCard({
   return (
     <View style={{
       borderRadius: 16,
-      borderWidth: 1,
-      borderColor: isActive ? '#0ea5e966' : '#334155',
-      backgroundColor: '#1e293b',
+      backgroundColor: '#162032',
       marginBottom: 12,
       overflow: 'hidden',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3,
+      elevation: 3,
     }}>
+      {isActive && (
+        <View style={{
+          position: 'absolute',
+          left: 0,
+          top: 10,
+          bottom: 10,
+          width: 3,
+          borderRadius: 2,
+          backgroundColor: '#38bdf8',
+        }} />
+      )}
       <Pressable
         onPress={() => { haptic.light(); onPress() }}
         android_ripple={{ color: 'rgba(14,165,233,0.08)', borderless: false }}

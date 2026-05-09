@@ -2,7 +2,7 @@
 
 import { addDays, subDays } from 'date-fns';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { documentMetadataSchema } from '@drivecommand/validation';
 

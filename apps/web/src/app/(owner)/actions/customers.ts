@@ -1,20 +1,22 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types';
+import { Prisma } from '@/generated/prisma';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { customerCreateSchema, customerUpdateSchema, interactionCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth/session';
+import { logger } from '@/lib/logger';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 /**
  * Create a new customer.
  */
-export async function createCustomer(prevState: any, formData: FormData) {
+export async function createCustomer(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -56,9 +58,33 @@ export async function createCustomer(prevState: any, formData: FormData) {
         tenantId,
       },
     });
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    try {
+      await fireEvent({
+        event: 'ON_PARTNER_CREATE',
+        entityData: { ...customer, id: customer.id },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[createCustomer] fireEvent failed', { customerId: customer.id, err });
+    }
     createdId = customer.id;
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+
+    // Activation tracker — fire outside main try/catch, never propagates
+    try {
+      await recordActivationEvent(tenantId, 'first_real_client');
+    } catch (err) {
+      console.error('[createCustomer] activation tracker failed', err);
+    }
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      logger.error('[CC-CODE]', error.code);
+      logger.error('[CC-MSG]', error.message.slice(0, 300));
+      logger.error('[CC-META]', JSON.stringify(error.meta ?? {}));
+    } else {
+      logger.error('[CC-ERR]', error);
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { companyName: ['A customer with this name already exists'] } };
     }
     return { error: 'Failed to create customer. Please try again.' };
@@ -71,9 +97,8 @@ export async function createCustomer(prevState: any, formData: FormData) {
 /**
  * Update a customer.
  */
-export async function updateCustomer(id: string, prevState: any, formData: FormData) {
+export async function updateCustomer(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     companyName: formData.get('companyName') as string,
@@ -112,11 +137,11 @@ export async function updateCustomer(id: string, prevState: any, formData: FormD
         notes: result.data.notes || null,
       },
     });
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { companyName: ['A customer with this name already exists'] } };
     }
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Customer not found.' };
     }
     return { error: 'Failed to update customer. Please try again.' };
@@ -131,14 +156,13 @@ export async function updateCustomer(id: string, prevState: any, formData: FormD
  */
 export async function deleteCustomer(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const prisma = await getTenantPrisma();
 
   try {
     await prisma.customer.delete({ where: { id } });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Customer not found.' };
     }
     return { error: 'Failed to delete customer.' };
@@ -151,9 +175,8 @@ export async function deleteCustomer(id: string) {
 /**
  * Add an interaction to a customer.
  */
-export async function addInteraction(prevState: any, formData: FormData) {
+export async function addInteraction(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewCRM');
 
   const rawData = {
     customerId: formData.get('customerId') as string,
@@ -180,7 +203,7 @@ export async function addInteraction(prevState: any, formData: FormData) {
         createdBy: session?.userId || null,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return { error: 'Failed to add interaction. Please try again.' };
   }
 

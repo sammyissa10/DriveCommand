@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { logger } from '@/lib/logger';
+import { applyRateLimit, authLimiter } from '@/lib/rate-limit';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 if (!process.env.NEXT_PUBLIC_APP_URL) {
-  console.warn(
+  logger.warn(
     '[accept-invitation] NEXT_PUBLIC_APP_URL is not set. Invitation links will use http://localhost:3000. Set this env var in production.'
   );
 }
@@ -26,6 +29,15 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  /**
+   * @bypass_rls reason: pre-auth
+   * WHY: An unauthenticated user arriving via an invitation link needs to look up the
+   *      invitation record to pre-populate the sign-up form. No session exists yet,
+   *      so RLS would block this read entirely.
+   * SCOPE: Reads a single DriverInvitation row by primary key (invitation ID from URL).
+   * SAFETY: Returns only non-sensitive fields (email, firstName) to the client.
+   *         The invitation ID is a UUID — not guessable by brute force.
+   */
   const invitation = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
     return tx.driverInvitation.findUnique({
@@ -68,6 +80,11 @@ export async function GET(req: NextRequest) {
  * marks the invitation as ACCEPTED, signs the user in, and returns redirect URL.
  */
 export async function POST(req: NextRequest) {
+  // Rate limiting: prevent brute-force invitation acceptance attempts
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  const rateLimited = await applyRateLimit(authLimiter, `accept-inv:${ip}`);
+  if (rateLimited) return rateLimited;
+
   try {
     const body = await req.json();
     const { invitationId, password } = body as {
@@ -90,6 +107,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: No session exists at this point — the user is in the process of accepting
+     *      an invitation (creating their account). RLS requires a session context.
+     * SCOPE: Reads a single DriverInvitation by invitationId (UUID from request body).
+     * SAFETY: invitationId is validated as a UUID. The invitation must be PENDING.
+     */
     // Look up invitation bypassing RLS (no session yet)
     const invitation = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -119,6 +143,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: Checking for email uniqueness before creating the user — still no session.
+     * SCOPE: Read-only check on User.email within a specific tenantId.
+     * SAFETY: Only uses email + tenantId from the verified invitation record.
+     */
     // Check for existing user with same email in the tenant
     const existingUser = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -146,24 +176,36 @@ export async function POST(req: NextRequest) {
       email: userEmail,
       password,
       email_confirm: true,
+      // Display fields: user-editable, safe in user_metadata
       user_metadata: {
-        role: userRole,
-        tenantId: invitation.tenantId,
         firstName: invitation.firstName,
         lastName: invitation.lastName,
+      },
+      // Security claims: admin-only, tamper-proof via app_metadata (not writable by end users)
+      app_metadata: {
+        role: userRole,
+        tenantId: invitation.tenantId,
         isSystemAdmin: false,
         permissions: userRole === 'MANAGER' ? (invitation.permissions ?? null) : null,
       },
     });
 
     if (authError || !authData.user) {
-      console.error('Supabase Auth user creation failed:', authError);
+      logger.error('Supabase Auth user creation failed:', authError);
       return NextResponse.json(
         { error: 'An error occurred while creating your account. Please try again.' },
         { status: 500 }
       );
     }
 
+    /**
+     * @bypass_rls reason: pre-auth
+     * WHY: Creating the User record and updating the invitation — still no active
+     *      session (the user hasn't signed in yet, we're creating their account).
+     *      These writes must happen before the first sign-in.
+     * SCOPE: Creates one User record + updates one DriverInvitation record.
+     * SAFETY: All field values come from the verified invitation record, not raw user input.
+     */
     // Create Prisma User record using the Supabase Auth user ID
     const user = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
@@ -192,21 +234,42 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Link carrier_drivers record to the newly created user
+      await tx.carrierDriver.updateMany({
+        where: {
+          orgId: invitation.tenantId,
+          email: userEmail,
+          userId: null, // Only link records that have no user yet
+        },
+        data: {
+          userId: newUser.id,
+        },
+      });
+
       return newUser;
     }, TX_OPTIONS);
+
+    // Activation tracker: fire for real drivers (invitation flow always creates real users)
+    if (userRole === 'DRIVER') {
+      try {
+        await recordActivationEvent(invitation.tenantId, 'first_real_driver');
+      } catch (err) {
+        console.error('[accept-invitation] activation tracker failed', err);
+      }
+    }
 
     // Sign the user in — Supabase sets session cookies via @supabase/ssr
     const supabase = await createSupabaseServerClient();
     await supabase.auth.signInWithPassword({ email: userEmail, password });
 
-    const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/dashboard' : '/my-route';
+    const redirectUrl = user.role === 'OWNER' || user.role === 'MANAGER' ? '/carrier/dashboard' : '/home';
 
     return NextResponse.json({
       success: true,
       redirectUrl,
     });
-  } catch (error: any) {
-    console.error('Accept invitation error:', error);
+  } catch (error: unknown) {
+    logger.error('Accept invitation error:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating your account. Please try again.' },
       { status: 500 }

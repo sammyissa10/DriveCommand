@@ -23,6 +23,7 @@ import { StatusUpdateButton } from '../../../components/driver/StatusUpdateButto
 import { LoadStatusTimeline } from '../../../components/driver/LoadStatusTimeline'
 import { Skeleton } from '../../../components/ui/Skeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { useThemeColors } from '../../../constants/tokens'
 
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'muted'
 
@@ -70,12 +71,13 @@ interface InfoFieldProps {
 }
 
 function InfoField({ label, value }: InfoFieldProps) {
+  const c = useThemeColors()
   return (
     <View className="mb-3">
-      <Text className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-0.5">
+      <Text className="text-xs font-medium uppercase tracking-wide mb-0.5" style={{ color: c.textTertiary }}>
         {label}
       </Text>
-      <Text className="text-sm text-white" numberOfLines={2}>
+      <Text className="text-sm" style={{ color: c.textPrimary }} numberOfLines={2}>
         {value}
       </Text>
     </View>
@@ -83,6 +85,7 @@ function InfoField({ label, value }: InfoFieldProps) {
 }
 
 export default function LoadDetailScreen() {
+  const c = useThemeColors()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { token } = useAuthContext()
@@ -130,9 +133,12 @@ export default function LoadDetailScreen() {
   // Loading state — skeleton
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
         {/* Header skeleton */}
-        <View className="flex-row items-center px-4 py-3 border-b border-slate-800 gap-3">
+        <View
+          className="flex-row items-center px-4 py-3 gap-3"
+          style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Skeleton width={28} height={28} borderRadius={6} />
           <Skeleton width={160} height={18} />
           <Skeleton width={64} height={22} borderRadius={10} style={{ marginLeft: 'auto' }} />
@@ -150,19 +156,20 @@ export default function LoadDetailScreen() {
   // Error state
   if (isError || !load) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900 items-center justify-center px-6" edges={['bottom', 'left', 'right']}>
+      <SafeAreaView className="flex-1 items-center justify-center px-6" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
         <AlertTriangle color="#f87171" size={40} />
-        <Text className="text-white text-lg font-semibold mt-4 text-center">
+        <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
           Failed to load details
         </Text>
-        <Text className="text-slate-400 text-sm mt-2 text-center">
+        <Text className="text-sm mt-2 text-center" style={{ color: c.textSecondary }}>
           {error instanceof Error ? error.message : 'Load not found'}
         </Text>
         <Pressable
           onPress={() => router.back()}
-          className="mt-6 bg-slate-700 px-6 py-3 rounded-lg active:opacity-80"
+          className="mt-6 px-6 py-3 rounded-lg active:opacity-80"
+          style={{ backgroundColor: c.surfaceElevated }}
         >
-          <Text className="text-white font-semibold">Go Back</Text>
+          <Text className="font-semibold" style={{ color: c.textPrimary }}>Go Back</Text>
         </Pressable>
       </SafeAreaView>
     )
@@ -175,18 +182,21 @@ export default function LoadDetailScreen() {
     ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(load.status)
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-slate-800">
+      <View
+        className="flex-row items-center px-4 py-3"
+        style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
+      >
         <Pressable
           onPress={() => router.back()}
-          className="mr-3 p-1.5 rounded-lg active:bg-slate-700"
+          className="mr-3 p-1.5 rounded-lg active:opacity-80"
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <ArrowLeft color="#94a3b8" size={22} />
+          <ArrowLeft color={c.textSecondary} size={22} />
         </Pressable>
-        <Text className="flex-1 text-lg font-bold text-white" numberOfLines={1}>
+        <Text className="flex-1 text-lg font-bold" style={{ color: c.textPrimary }} numberOfLines={1}>
           Load #{load.loadNumber}
         </Text>
         <Badge label={badge.label} variant={badge.variant} />
@@ -200,8 +210,8 @@ export default function LoadDetailScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={onRefresh}
-            tintColor="#0ea5e9"
-            colors={['#0ea5e9']}
+            tintColor={c.brand}
+            colors={[c.brand]}
           />
         }
         contentContainerStyle={{
@@ -214,8 +224,11 @@ export default function LoadDetailScreen() {
         <LoadStatusTimeline status={load.status} />
 
         {/* Route Info Card */}
-        <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-          <Text className="text-white font-semibold text-base mb-3">Route Info</Text>
+        <View
+          className="rounded-xl p-4 mb-4"
+          style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+        >
+          <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Route Info</Text>
           <View className="flex-row flex-wrap">
             <View className="w-1/2">
               <InfoField label="Origin" value={load.origin} />
@@ -242,14 +255,15 @@ export default function LoadDetailScreen() {
             <Pressable
               onPress={handleRateConfirmation}
               disabled={isDownloadingPDF}
-              className="flex-row items-center justify-center border border-slate-600 rounded-lg py-3 mt-3 active:bg-slate-700/50"
+              className="flex-row items-center justify-center rounded-lg py-3 mt-3 active:opacity-80"
+              style={{ borderWidth: 1, borderColor: c.border }}
             >
               {isDownloadingPDF ? (
-                <ActivityIndicator size="small" color="#94a3b8" />
+                <ActivityIndicator size="small" color={c.textSecondary} />
               ) : (
                 <>
-                  <FileText color="#94a3b8" size={16} style={{ marginRight: 8 }} />
-                  <Text className="text-slate-300 font-medium text-sm">Rate Confirmation PDF</Text>
+                  <FileText color={c.textSecondary} size={16} style={{ marginRight: 8 }} />
+                  <Text className="font-medium text-sm" style={{ color: c.textSecondary }}>Rate Confirmation PDF</Text>
                 </>
               )}
             </Pressable>
@@ -258,10 +272,13 @@ export default function LoadDetailScreen() {
 
         {/* Stop Timeline */}
         {load.stops.length > 0 && (
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
             <View className="flex-row items-center mb-4">
-              <Package color="#64748b" size={16} style={{ marginRight: 8 }} />
-              <Text className="text-white font-semibold text-base">
+              <Package color={c.textTertiary} size={16} style={{ marginRight: 8 }} />
+              <Text className="font-semibold text-base" style={{ color: c.textPrimary }}>
                 Route Stops ({load.stops.length})
               </Text>
             </View>
@@ -277,8 +294,11 @@ export default function LoadDetailScreen() {
 
         {/* Assigned Truck */}
         {load.truck && (
-          <View className="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4">
-            <Text className="text-white font-semibold text-base mb-3">Assigned Truck</Text>
+          <View
+            className="rounded-xl p-4 mb-4"
+            style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+          >
+            <Text className="font-semibold text-base mb-3" style={{ color: c.textPrimary }}>Assigned Truck</Text>
             <View className="flex-row flex-wrap">
               <View className="w-1/2">
                 <InfoField
@@ -297,8 +317,8 @@ export default function LoadDetailScreen() {
       {/* Sticky status update button */}
       {hasStatusButton && (
         <View
-          className="px-4 pt-3 bg-slate-900 border-t border-slate-800"
-          style={{ paddingBottom: insets.bottom + 12 }}
+          className="px-4 pt-3"
+          style={{ backgroundColor: c.background, borderTopWidth: 1, borderTopColor: c.border, paddingBottom: insets.bottom + 12 }}
         >
           <StatusUpdateButton load={load} onStatusUpdated={onStatusUpdated} />
         </View>

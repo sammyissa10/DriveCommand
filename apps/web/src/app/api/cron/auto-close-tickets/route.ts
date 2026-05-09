@@ -5,6 +5,7 @@
  */
 import { NextRequest } from 'next/server';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,6 +40,15 @@ export async function GET(request: NextRequest) {
 
     const ticketIds = tickets.map((t) => t.id);
 
+    /**
+     * @bypass_rls reason: system-operation
+     * WHY: Cron job that closes stale support tickets across all tenants.
+     *      No user session context — authenticated only by CRON_SECRET header.
+     * SCOPE: Updates SupportTicket.status to CLOSED for specific ticket IDs
+     *        identified in the raw query above.
+     * SAFETY: Gated by CRON_SECRET header check at the top of this handler.
+     *         Ticket IDs come from the preceding raw SQL query, not user input.
+     */
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       await tx.supportTicket.updateMany({
@@ -47,10 +57,10 @@ export async function GET(request: NextRequest) {
       });
     }, TX_OPTIONS);
 
-    console.log(`[CRON] auto-close-tickets: Closed ${tickets.length} ticket(s):`, tickets.map(t => t.ticketNumber));
+    logger.info(`[CRON] auto-close-tickets: Closed ${tickets.length} ticket(s)`, { ticketNumbers: tickets.map(t => t.ticketNumber) });
     return Response.json({ success: true, closed: tickets.length, ticketNumbers: tickets.map(t => t.ticketNumber) });
   } catch (error) {
-    console.error('[CRON] auto-close-tickets: error:', error);
+    logger.error('[CRON] auto-close-tickets: error:', error);
     return Response.json({ success: false, error: String(error) }, { status: 500 });
   }
 }

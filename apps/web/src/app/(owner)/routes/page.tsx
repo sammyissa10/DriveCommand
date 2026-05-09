@@ -8,12 +8,13 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { listRoutes, deleteRoute } from '@/app/(owner)/actions/routes';
 import { RouteListWrapper } from './route-list-wrapper';
+import { logger } from '@/lib/logger';
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
 async function RouteListSection() {
   const routes = await listRoutes().catch((e) => {
-    console.error('[routes] listRoutes failed:', e);
+    logger.error('[routes] listRoutes failed:', e);
     return [];
   });
   return <RouteListWrapper initialRoutes={routes} deleteAction={deleteRoute} />;

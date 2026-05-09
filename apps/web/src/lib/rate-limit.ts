@@ -6,7 +6,14 @@ import { NextResponse } from 'next/server';
 function createRedis(): Redis | null {
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) return null;
+  if (!url || !token) {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn(
+        '[rate-limit] WARNING: Upstash Redis is not configured — rate limiting is DISABLED in production. Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN.'
+      );
+    }
+    return null;
+  }
   return new Redis({ url, token });
 }
 
@@ -37,6 +44,19 @@ export const gpsLimiter = redis
   : null;
 
 /**
+ * Geocoding limiter: 30 requests per minute per user (or IP fallback).
+ * Applied to POST /api/geocoding/autocomplete.
+ * Generous for autocomplete but prevents abuse of the Nominatim proxy.
+ */
+export const geocodingLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, '1 m'),
+      prefix: 'rl:geo',
+    })
+  : null;
+
+/**
  * Mobile API limiter: 60 requests per minute per user.
  * Applied to /api/mobile/* routes.
  */
@@ -45,6 +65,32 @@ export const mobileLimiter = redis
       redis,
       limiter: Ratelimit.fixedWindow(60, '1 m'),
       prefix: 'rl:mobile',
+    })
+  : null;
+
+/**
+ * Public endpoint limiter: 30 requests per minute per IP.
+ * Applied to unauthenticated public pages (e.g. /api/track/[token]).
+ * Prevents token enumeration attacks.
+ */
+export const publicLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, '1 m'),
+      prefix: 'rl:public',
+    })
+  : null;
+
+/**
+ * Upload limiter: 20 requests per minute per user/tenant.
+ * Applied to document upload URL generation and file upload routes.
+ * Prevents storage abuse.
+ */
+export const uploadLimiter = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, '1 m'),
+      prefix: 'rl:upload',
     })
   : null;
 

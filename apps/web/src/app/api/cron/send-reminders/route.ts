@@ -16,6 +16,7 @@
  */
 
 import { NextRequest } from 'next/server';
+import { getAppBaseUrl } from '@/lib/app-url';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { withTenantRLS } from '@/lib/db/extensions/tenant-rls';
 import { findUpcomingMaintenance } from '@/lib/notifications/check-upcoming-maintenance';
@@ -26,11 +27,10 @@ import { sendDocumentExpiryReminder } from '@/lib/email/send-document-expiry-rem
 import { sendDriverDocumentExpiryReminder, formatDocumentType } from '@/lib/email/send-driver-document-expiry-reminder';
 import {
   generateIdempotencyKey,
-  wasNotificationAlreadySent,
   recordNotification,
   markNotificationSent,
-  markNotificationFailed,
 } from '@/lib/notifications/notification-deduplication';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic'; // CRITICAL: Prevent Next.js caching
 
@@ -41,33 +41,39 @@ interface NotificationStats {
 }
 
 export async function GET(request: NextRequest) {
-  console.log('[CRON] send-reminders: Starting daily reminder processing');
+  logger.info('[CRON] send-reminders: Starting daily reminder processing');
 
   // 1. Verify CRON_SECRET
   const authHeader = request.headers.get('authorization');
   const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
 
   if (authHeader !== expectedAuth) {
-    console.error('[CRON] send-reminders: Unauthorized request');
+    logger.error('[CRON] send-reminders: Unauthorized request');
     return new Response('Unauthorized', { status: 401 });
   }
 
+  /**
+   * @bypass_rls reason: system-operation
+   * WHY: This cron job runs cross-tenant to send document expiry reminders for ALL
+   *      active tenants. It has no user context to scope RLS policies to a single tenant.
+   * SCOPE: Reads Tenant.id and Tenant.name for all active tenants, then queries
+   *        compliance documents per tenant in separate transactions.
+   * SAFETY: Gated by CRON_SECRET header check above — only callable by Vercel Cron.
+   */
   // 2. Get all active tenants (bypass RLS - system operation)
   let tenants: Array<{ id: string; name: string }>;
   try {
-    tenants = await prisma.$transaction(async (tx) => {
-      // @ts-ignore - Prisma 7 type issue
+    tenants = await prisma.$transaction(async (tx: any) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-      // @ts-ignore - Prisma 7 type issue
       return tx.tenant.findMany({
         where: { isActive: true },
         select: { id: true, name: true },
       });
     }, TX_OPTIONS);
 
-    console.log(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
+    logger.info(`[CRON] send-reminders: Found ${tenants.length} active tenant(s)`);
   } catch (error) {
-    console.error('[CRON] send-reminders: Failed to fetch tenants:', error);
+    logger.error('[CRON] send-reminders: Failed to fetch tenants:', error);
     return Response.json(
       { success: false, error: 'Failed to fetch tenants' },
       { status: 500 }
@@ -80,51 +86,73 @@ export async function GET(request: NextRequest) {
   const driverDocumentStats: NotificationStats = { sent: 0, skipped: 0, failed: 0 };
 
   for (const tenant of tenants) {
-    console.log(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
+    logger.info(`[CRON] send-reminders: Processing tenant ${tenant.name} (${tenant.id})`);
 
     try {
       // Get tenant-scoped Prisma client
-      // @ts-ignore - Prisma 7 type issue
-      const tenantPrisma = prisma.$extends(withTenantRLS(tenant.id));
+      const tenantPrisma: any = prisma.$extends(withTenantRLS(tenant.id));
 
       // Find OWNER-role users (notification recipients)
-      // @ts-ignore - Extended client type inference
       const owners = await tenantPrisma.user.findMany({
         where: { role: 'OWNER', isActive: true },
         select: { email: true },
       });
 
       if (owners.length === 0) {
-        console.log(`[CRON] send-reminders: No active owners found for tenant ${tenant.name}, skipping`);
+        logger.info(`[CRON] send-reminders: No active owners found for tenant ${tenant.name}, skipping`);
         continue;
       }
 
-      console.log(`[CRON] send-reminders: Found ${owners.length} owner(s) for tenant ${tenant.name}`);
+      logger.info(`[CRON] send-reminders: Found ${owners.length} owner(s) for tenant ${tenant.name}`);
+
+      const today = new Date();
+
+      // Fetch all reminder data in parallel
+      const [upcomingMaintenance, expiringDocuments, expiringDriverDocuments] = await Promise.all([
+        findUpcomingMaintenance(tenant.id),
+        findExpiringDocuments(tenant.id),
+        findExpiringDriverDocuments(tenant.id),
+      ]);
+
+      logger.info(`[CRON] send-reminders: Found ${upcomingMaintenance.length} upcoming maintenance item(s)`);
+      logger.info(`[CRON] send-reminders: Found ${expiringDocuments.length} expiring document(s)`);
+      logger.info(`[CRON] send-reminders: Found ${expiringDriverDocuments.length} expiring driver document(s)`);
+
+      // Build all idempotency keys upfront and batch-check them in one query
+      const maintenanceKeys = upcomingMaintenance.map((item) =>
+        generateIdempotencyKey('maintenance-reminder', item.scheduledServiceId, today)
+      );
+      const documentKeys = expiringDocuments.map((item) =>
+        generateIdempotencyKey('document-expiry', `${item.truckId}-${item.documentType}`, today)
+      );
+      const driverDocKeys = expiringDriverDocuments.map((item) =>
+        generateIdempotencyKey('driver-document-expiry', item.documentId, today)
+      );
+
+      const allKeys = [...maintenanceKeys, ...documentKeys, ...driverDocKeys];
+
+      // Single batch query for all already-sent keys
+      const alreadySentLogs = allKeys.length > 0
+        ? await prisma.notificationLog.findMany({
+            where: { idempotencyKey: { in: allKeys }, status: 'SENT' },
+            select: { idempotencyKey: true },
+          })
+        : [];
+      const alreadySentSet = new Set(alreadySentLogs.map((l) => l.idempotencyKey));
 
       // Process maintenance reminders
-      const upcomingMaintenance = await findUpcomingMaintenance(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${upcomingMaintenance.length} upcoming maintenance item(s)`);
+      for (let i = 0; i < upcomingMaintenance.length; i++) {
+        const item = upcomingMaintenance[i];
+        const idempotencyKey = maintenanceKeys[i];
 
-      for (const item of upcomingMaintenance) {
-        const today = new Date();
-        const idempotencyKey = generateIdempotencyKey(
-          'maintenance-reminder',
-          item.scheduledServiceId,
-          today
-        );
-
-        // Check if already sent today
-        const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
-        if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate maintenance reminder for ${item.truckName}`);
+        if (alreadySentSet.has(idempotencyKey)) {
+          logger.info(`[CRON] send-reminders: Skipping duplicate maintenance reminder for ${item.truckName}`);
           maintenanceStats.skipped++;
           continue;
         }
 
-        // Send to all owners
         for (const owner of owners) {
           try {
-            // Record notification as PENDING
             const logId = await recordNotification(prisma, {
               tenantId: tenant.id,
               idempotencyKey,
@@ -135,56 +163,47 @@ export async function GET(request: NextRequest) {
               emailSubject: `Maintenance Due: ${item.serviceType} - ${item.truckName}`,
             });
 
-            // Send email
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/trucks/${item.truckId}/maintenance`;
-            const result = await sendMaintenanceReminder(owner.email, {
-              truckName: item.truckName,
-              serviceType: item.serviceType,
-              dueDate: item.nextDueDate?.toLocaleDateString() || 'N/A',
-              dueMileage: item.nextDueMileage,
-              currentMileage: item.currentMileage,
-              milesRemaining: item.nextDueMileage
-                ? item.nextDueMileage - item.currentMileage
-                : null,
-              dashboardUrl,
-            });
+            const dashboardUrl = `${getAppBaseUrl()}/trucks/${item.truckId}/maintenance`;
+            const result = await Promise.race([
+              sendMaintenanceReminder(owner.email, {
+                truckName: item.truckName,
+                serviceType: item.serviceType,
+                dueDate: item.nextDueDate?.toLocaleDateString() || 'N/A',
+                dueMileage: item.nextDueMileage,
+                currentMileage: item.currentMileage,
+                milesRemaining: item.nextDueMileage
+                  ? item.nextDueMileage - item.currentMileage
+                  : null,
+                dashboardUrl,
+              }),
+              new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error('Email send timeout')), 10_000)
+              ),
+            ]);
 
-            // Mark as SENT
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent maintenance reminder to ${owner.email} for ${item.truckName}`);
+            logger.info(`[CRON] send-reminders: Sent maintenance reminder to ${owner.email} for ${item.truckName}`);
             maintenanceStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send maintenance reminder to ${owner.email}:`, error);
-            // Mark as FAILED (if logId was created)
+            logger.error(`[CRON] send-reminders: Failed to send maintenance reminder to ${owner.email}:`, error);
             maintenanceStats.failed++;
           }
         }
       }
 
       // Process document expiry reminders
-      const expiringDocuments = await findExpiringDocuments(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${expiringDocuments.length} expiring document(s)`);
+      for (let i = 0; i < expiringDocuments.length; i++) {
+        const item = expiringDocuments[i];
+        const idempotencyKey = documentKeys[i];
 
-      for (const item of expiringDocuments) {
-        const today = new Date();
-        const idempotencyKey = generateIdempotencyKey(
-          'document-expiry',
-          `${item.truckId}-${item.documentType}`,
-          today
-        );
-
-        // Check if already sent today
-        const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
-        if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate document reminder for ${item.truckName} ${item.documentType}`);
+        if (alreadySentSet.has(idempotencyKey)) {
+          logger.info(`[CRON] send-reminders: Skipping duplicate document reminder for ${item.truckName} ${item.documentType}`);
           documentStats.skipped++;
           continue;
         }
 
-        // Send to all owners
         for (const owner of owners) {
           try {
-            // Record notification as PENDING
             const logId = await recordNotification(prisma, {
               tenantId: tenant.id,
               idempotencyKey,
@@ -195,48 +214,41 @@ export async function GET(request: NextRequest) {
               emailSubject: `Document Expiring: ${item.documentType} - ${item.truckName}`,
             });
 
-            // Send email
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/trucks/${item.truckId}`;
-            const result = await sendDocumentExpiryReminder(owner.email, {
-              truckName: item.truckName,
-              documentType: item.documentType,
-              expiryDate: item.expiryDate.toLocaleDateString(),
-              daysUntilExpiry: item.daysUntilExpiry,
-              dashboardUrl,
-            });
+            const dashboardUrl = `${getAppBaseUrl()}/trucks/${item.truckId}`;
+            const result = await Promise.race([
+              sendDocumentExpiryReminder(owner.email, {
+                truckName: item.truckName,
+                documentType: item.documentType,
+                expiryDate: item.expiryDate.toLocaleDateString(),
+                daysUntilExpiry: item.daysUntilExpiry,
+                dashboardUrl,
+              }),
+              new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error('Email send timeout')), 10_000)
+              ),
+            ]);
 
-            // Mark as SENT
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent document reminder to ${owner.email} for ${item.truckName}`);
+            logger.info(`[CRON] send-reminders: Sent document reminder to ${owner.email} for ${item.truckName}`);
             documentStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send document reminder to ${owner.email}:`, error);
+            logger.error(`[CRON] send-reminders: Failed to send document reminder to ${owner.email}:`, error);
             documentStats.failed++;
           }
         }
       }
 
       // Process driver document expiry reminders
-      const expiringDriverDocuments = await findExpiringDriverDocuments(tenant.id);
-      console.log(`[CRON] send-reminders: Found ${expiringDriverDocuments.length} expiring driver document(s)`);
+      for (let i = 0; i < expiringDriverDocuments.length; i++) {
+        const item = expiringDriverDocuments[i];
+        const idempotencyKey = driverDocKeys[i];
 
-      for (const item of expiringDriverDocuments) {
-        const today = new Date();
-        const idempotencyKey = generateIdempotencyKey(
-          'driver-document-expiry',
-          item.documentId,
-          today
-        );
-
-        // Check if already sent today
-        const alreadySent = await wasNotificationAlreadySent(prisma, idempotencyKey);
-        if (alreadySent) {
-          console.log(`[CRON] send-reminders: Skipping duplicate driver doc reminder for ${item.driverName} ${item.documentType}`);
+        if (alreadySentSet.has(idempotencyKey)) {
+          logger.info(`[CRON] send-reminders: Skipping duplicate driver doc reminder for ${item.driverName} ${item.documentType}`);
           driverDocumentStats.skipped++;
           continue;
         }
 
-        // Send to all owners
         for (const owner of owners) {
           try {
             const logId = await recordNotification(prisma, {
@@ -249,26 +261,31 @@ export async function GET(request: NextRequest) {
               emailSubject: `Document Expiring: ${formatDocumentType(item.documentType)} - ${item.driverName}`,
             });
 
-            const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/drivers/${item.driverId}`;
-            const result = await sendDriverDocumentExpiryReminder(owner.email, {
-              driverName: item.driverName,
-              documentType: formatDocumentType(item.documentType),
-              expiryDate: item.expiryDate.toLocaleDateString(),
-              daysUntilExpiry: item.daysUntilExpiry,
-              dashboardUrl,
-            });
+            const dashboardUrl = `${getAppBaseUrl()}/drivers/${item.driverId}`;
+            const result = await Promise.race([
+              sendDriverDocumentExpiryReminder(owner.email, {
+                driverName: item.driverName,
+                documentType: formatDocumentType(item.documentType),
+                expiryDate: item.expiryDate.toLocaleDateString(),
+                daysUntilExpiry: item.daysUntilExpiry,
+                dashboardUrl,
+              }),
+              new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error('Email send timeout')), 10_000)
+              ),
+            ]);
 
             await markNotificationSent(prisma, logId, result.id);
-            console.log(`[CRON] send-reminders: Sent driver doc reminder to ${owner.email} for ${item.driverName}`);
+            logger.info(`[CRON] send-reminders: Sent driver doc reminder to ${owner.email} for ${item.driverName}`);
             driverDocumentStats.sent++;
           } catch (error) {
-            console.error(`[CRON] send-reminders: Failed to send driver doc reminder to ${owner.email}:`, error);
+            logger.error(`[CRON] send-reminders: Failed to send driver doc reminder to ${owner.email}:`, error);
             driverDocumentStats.failed++;
           }
         }
       }
     } catch (error) {
-      console.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
+      logger.error(`[CRON] send-reminders: Failed to process tenant ${tenant.name}:`, error);
       // Continue with next tenant
       continue;
     }
@@ -283,6 +300,6 @@ export async function GET(request: NextRequest) {
     driverDocuments: driverDocumentStats,
   };
 
-  console.log('[CRON] send-reminders: Completed', summary);
+  logger.info('[CRON] send-reminders: Completed', summary);
   return Response.json(summary);
 }

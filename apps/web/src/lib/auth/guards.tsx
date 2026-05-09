@@ -91,8 +91,10 @@ export function PermissionGuard({
   }
 
   // MANAGER: check the specific permission
+  // Default-all-true: if no permissions set, or permission not explicitly false, show children
   if (user.role === UserRole.MANAGER) {
-    if (user.permissions?.[permission]) {
+    if (!user.permissions) return <>{children}</>;
+    if (user.permissions[permission] !== false) {
       return <>{children}</>;
     }
     return <>{fallback}</>;

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { listDriverDocuments } from '@/app/(owner)/actions/driver-documents';
 import { DriverDocumentUpload } from '@/components/documents/driver-document-upload';
 import { DriverDocumentList } from '@/components/documents/driver-document-list';
+import { logger } from '@/lib/logger';
 
 interface DriverDocument {
   id: string;
@@ -37,7 +38,7 @@ export function DriverDocumentsSection({
       const updated = await listDriverDocuments(driverId);
       setDocuments(updated);
     } catch (error) {
-      console.error('Failed to refresh documents:', error);
+      logger.error('Failed to refresh documents:', error);
     }
   };
 

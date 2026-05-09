@@ -7,13 +7,21 @@ import { PrismaClient } from '../../src/generated/prisma/client';
  * RLS is a PostgreSQL feature - mocking it defeats the purpose.
  *
  * Setup requirements:
- * 1. PostgreSQL database running
+ * 1. PostgreSQL database running (DATABASE_URL must be set)
  * 2. Database migrations applied (npx prisma migrate deploy)
  * 3. RLS policies created (see migration files)
+ *
+ * When DATABASE_URL is not set, all exports are no-ops so the test file
+ * can be imported without crashing (describe.skip handles the rest).
  */
 
-// @ts-ignore - Prisma 7 type issue with constructor
-const prisma = new PrismaClient();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let prisma: any = null;
+
+if (process.env.DATABASE_URL) {
+  // @ts-ignore - Prisma 7 type issue with constructor
+  prisma = new PrismaClient();
+}
 
 /**
  * Create a test tenant with bypass_rls flag.

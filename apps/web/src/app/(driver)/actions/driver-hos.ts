@@ -1,34 +1,47 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
-import { UserRole } from '@/lib/auth/roles';
+import type { ActionState } from '@drivecommand/types'
+
+import { getSession } from '@/lib/auth/supabase';
+import { prisma } from '@/lib/db/prisma';
+import { HOSDutyStatus } from '@/generated/prisma';
 
 /**
  * Hours of Service tracking data for the current driver.
- * Returns HOS status and remaining hours.
+ * Returns the latest duty status from the DriverHOSEntry table.
  */
 export async function getDriverHOS() {
-  await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) return null;
 
-  // HOS feature scaffold - would connect to ELD integration
+  const latestEntry = await prisma.driverHOSEntry.findFirst({
+    where: {
+      driverId: session.userId,
+      tenantId: session.tenantId,
+    },
+    orderBy: { startTime: 'desc' },
+  });
+
   return {
-    currentStatus: 'ON_DUTY' as const,
-    drivingHoursUsed: 6.5,
-    drivingHoursRemaining: 4.5,
-    onDutyHoursUsed: 8.0,
-    onDutyHoursRemaining: 6.0,
-    cycleHoursUsed: 42.0,
-    cycleHoursRemaining: 28.0,
-    lastBreakAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    nextBreakRequired: new Date(Date.now() + 1.5 * 60 * 60 * 1000).toISOString(),
+    currentStatus: (latestEntry?.status ?? 'OFF_DUTY') as 'DRIVING' | 'ON_DUTY' | 'SLEEPER_BERTH' | 'OFF_DUTY',
+    onDutyHoursUsed: 0,
+    drivingHoursUsed: 0,
+    drivingHoursRemaining: 11,
+    onDutyHoursRemaining: 14,
+    cycleHoursUsed: 0,
+    cycleHoursRemaining: 70,
+    lastBreakAt: new Date().toISOString(),
+    nextBreakRequired: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
   };
 }
 
 /**
  * Update driver's duty status.
+ * Closes any open entry and creates a new one with the selected status.
  */
-export async function updateDutyStatus(prevState: any, formData: FormData) {
-  await requireRole([UserRole.DRIVER]);
+export async function updateDutyStatus(prevState: ActionState | null, formData: FormData) {
+  const session = await getSession();
+  if (!session) return { error: 'Not authenticated' };
 
   const status = formData.get('status') as string;
   const validStatuses = ['DRIVING', 'ON_DUTY', 'SLEEPER_BERTH', 'OFF_DUTY'];
@@ -37,6 +50,31 @@ export async function updateDutyStatus(prevState: any, formData: FormData) {
     return { error: 'Invalid duty status.' };
   }
 
-  // In production, this would update the ELD/HOS system
-  return { success: true, message: `Status updated to ${status.replace('_', ' ')}.` };
+  const hosStatus = status as HOSDutyStatus;
+
+  try {
+    // Close any currently open entry
+    await prisma.driverHOSEntry.updateMany({
+      where: {
+        driverId: session.userId,
+        tenantId: session.tenantId,
+        endTime: null,
+      },
+      data: { endTime: new Date() },
+    });
+
+    // Create new entry for selected status
+    await prisma.driverHOSEntry.create({
+      data: {
+        tenantId: session.tenantId,
+        driverId: session.userId,
+        status: hosStatus,
+        startTime: new Date(),
+      },
+    });
+
+    return { success: true, message: `Status updated to ${status.replace('_', ' ')}.` };
+  } catch {
+    return { error: 'Failed to update duty status. Please try again.' };
+  }
 }

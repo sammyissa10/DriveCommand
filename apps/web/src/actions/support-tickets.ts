@@ -1,17 +1,16 @@
 'use server';
 
-import { requireAuth, isSystemAdmin } from '@/lib/auth/server';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { requireAuth, isSystemAdmin, getSession } from '@/lib/auth/supabase';
 import { requireTenantId } from '@/lib/context/tenant-context';
-import { getSession } from '@/lib/auth/session';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { generateDownloadUrl } from '@/lib/storage/presigned';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { SupportTicketStatus, SupportTicketCategory, SupportTicketPriority } from '@/generated/prisma';
 import { sendNewTicketNotification, sendOwnerReplyNotification, sendAdminReplyNotification } from '@/lib/email/send-support-notifications';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { nanoid } from 'nanoid';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { logger } from '@/lib/logger';
 // ─── Validation schemas ──────────────────────────────────────
 
 const createTicketSchema = z.object({
@@ -62,16 +61,20 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
     }
 
     const fileId = nanoid();
+    const bucket = process.env.S3_BUCKET || 'driver-documents';
     const s3Key = `tenant-${tenantId}/support/${fileId}-screenshot.png`;
     const body = Buffer.from(await file.arrayBuffer());
 
-    await s3Client.send(new PutObjectCommand({
-      Bucket: getBucketName(),
-      Key: s3Key,
-      Body: body,
-      ContentType: 'image/png',
-      ContentLength: file.size,
-    }));
+    const supabase = createAdminClient();
+    const { error } = await supabase.storage.from(bucket).upload(s3Key, body, {
+      contentType: 'image/png',
+      upsert: false,
+    });
+
+    if (error) {
+      logger.error('[uploadSupportScreenshot] Supabase upload failed:', error);
+      return { error: 'Failed to upload screenshot' };
+    }
 
     return { s3Key };
   } catch (error) {
@@ -82,7 +85,15 @@ export async function uploadSupportScreenshot(formData: FormData): Promise<{ s3K
 // ─── Helper to generate ticket number ──────────────────────
 
 async function generateTicketNumber(): Promise<string> {
-  // Use bypass_rls transaction to query across tenants for uniqueness
+  /**
+   * @bypass_rls reason: cross-tenant
+   * WHY: Ticket numbers (TKT-NNNN) must be globally unique across all tenants.
+   *      Checking the latest ticket number requires querying the SupportTicket table
+   *      across all tenants to find the highest sequential number.
+   * SCOPE: Read-only query on SupportTicket.ticketNumber — no tenant data accessed.
+   * SAFETY: Returns only the ticketNumber field (select: { ticketNumber: true }),
+   *         no sensitive tenant data is exposed.
+   */
   const result = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
     // Find latest ticket number
@@ -140,12 +151,20 @@ export async function createSupportTicket(data: {
   }
 
   const { category, priority, title, description, fromPage, platform, attachmentUrl, attachmentKey, screenshotKey } = validation.data;
-  const tenantId = session.tenantId;
+  const tenantId = session.tenantId || null;
 
   try {
     const ticketNumber = await generateTicketNumber();
 
-    // Insert using bypass_rls (no RLS on SupportTicket)
+    /**
+     * @bypass_rls reason: cross-tenant
+     * WHY: SupportTickets span tenants — a ticket may be submitted by a user in any
+     *      tenant, and system admins need to see all tickets across all tenants.
+     *      RLS would prevent inserting a ticket that references a different tenant context.
+     * SCOPE: Writes a single SupportTicket record for the authenticated user's session.
+     * SAFETY: Gated by requireAuth() above — only runs for authenticated users.
+     *         tenantId is derived from the verified session cookie, not from user input.
+     */
     await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       await tx.supportTicket.create({
@@ -175,15 +194,15 @@ export async function createSupportTicket(data: {
         priority: validation.data.priority,
         submitterEmail: session.email,
         tenantId: tenantId ?? '',
-        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+        ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
-      console.error('[createSupportTicket] team notification email failed:', emailError);
+      logger.error('[createSupportTicket] team notification email failed:', emailError);
     }
 
     return { success: true, ticketNumber };
   } catch (error) {
-    console.error('[createSupportTicket] error:', error);
+    logger.error('[createSupportTicket] error:', error);
     return { success: false, error: 'Failed to create ticket. Please try again.' };
   }
 }
@@ -256,31 +275,41 @@ export async function getAllTickets(filters?: {
   if (tickets.length === 0) return [];
 
   const userIds = [...new Set(tickets.map((t) => t.submittedBy))];
-  const tenantIds = [...new Set(tickets.map((t) => t.tenantId))];
+  const tenantIds = [...new Set(tickets.map((t) => t.tenantId).filter(Boolean))] as string[];
 
   type RawUser = { id: string; email: string; firstName: string | null; lastName: string | null };
   type RawTenant = { id: string; name: string };
+  type RawAuthUser = { id: string; email: string; raw_user_meta_data: { firstName?: string; lastName?: string } };
 
-  const [users, tenants] = await Promise.all([
+  const [users, tenants, authUsers] = await Promise.all([
     prisma.$queryRaw<RawUser[]>`
       SELECT id, email, "firstName", "lastName" FROM "User" WHERE id = ANY(${userIds}::uuid[])
     `,
-    prisma.$queryRaw<RawTenant[]>`
-      SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])
+    tenantIds.length > 0
+      ? prisma.$queryRaw<RawTenant[]>`SELECT id, name FROM "Tenant" WHERE id = ANY(${tenantIds}::uuid[])`
+      : Promise.resolve([] as RawTenant[]),
+    prisma.$queryRaw<RawAuthUser[]>`
+      SELECT id, email, raw_user_meta_data FROM auth.users WHERE id = ANY(${userIds}::uuid[])
     `,
   ]);
 
   const userMap = new Map(users.map((u) => [u.id, u]));
   const tenantMap = new Map(tenants.map((t) => [t.id, t]));
+  const authUserMap = new Map(authUsers.map((u) => [u.id, u]));
 
   return tickets.map((ticket) => {
     const user = userMap.get(ticket.submittedBy);
-    const tenant = tenantMap.get(ticket.tenantId);
+    const authUser = authUserMap.get(ticket.submittedBy);
+    const tenant = ticket.tenantId ? tenantMap.get(ticket.tenantId) : null;
+    const meta = authUser?.raw_user_meta_data ?? {};
+    const nameFromAuth = [meta.firstName, meta.lastName].filter(Boolean).join(' ') || authUser?.email;
     return {
       ...ticket,
-      submitterEmail: user?.email ?? 'Unknown',
-      submitterName: user ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email : 'Unknown',
-      tenantName: tenant?.name ?? 'Unknown',
+      submitterEmail: user?.email ?? authUser?.email ?? 'Unknown',
+      submitterName: user
+        ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email
+        : nameFromAuth ?? 'Unknown',
+      tenantName: tenant?.name ?? (ticket.tenantId ? 'Unknown' : 'DriveCommand (Admin)'),
     };
   });
 }
@@ -324,7 +353,7 @@ export async function updateTicketStatus(
 
     return { success: true };
   } catch (error) {
-    console.error('[updateTicketStatus] error:', error);
+    logger.error('[updateTicketStatus] error:', error);
     return { success: false, error: 'Failed to update ticket status.' };
   }
 }
@@ -409,15 +438,15 @@ export async function addOwnerReply(
         title: ticketTitle,
         body: trimmedBody,
         submitterEmail: session.email,
-        ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin-support`,
+        ticketUrl: `${getAppBaseUrl()}/admin-support`,
       });
     } catch (emailError) {
-      console.error('[addOwnerReply] team notification email failed:', emailError);
+      logger.error('[addOwnerReply] team notification email failed:', emailError);
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[addOwnerReply] error:', error);
+    logger.error('[addOwnerReply] error:', error);
     return { success: false, error: 'Failed to submit reply. Please try again.' };
   }
 }
@@ -486,18 +515,18 @@ export async function addAdminReply(
           title: ticketTitle,
           body: trimmedBody,
           ownerEmail,
-          ticketUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/support/${ticketId}`,
+          ticketUrl: `${getAppBaseUrl()}/support/${ticketId}`,
         });
       } catch (emailError) {
-        console.error('[addAdminReply] owner notification email failed:', emailError);
+        logger.error('[addAdminReply] owner notification email failed:', emailError);
       }
     } else {
-      console.warn('[addAdminReply] No email found for ticket submitter, skipping notification for ticket:', ticketNumber);
+      logger.warn('[addAdminReply] No email found for ticket submitter, skipping notification', { ticketNumber });
     }
 
     return { success: true };
   } catch (error) {
-    console.error('[addAdminReply] error:', error);
+    logger.error('[addAdminReply] error:', error);
     return { success: false, error: 'Failed to submit reply.' };
   }
 }
@@ -552,12 +581,13 @@ export async function getUnreadAdminReplyCount(): Promise<number> {
 }
 
 /**
- * Generate a presigned download URL for a support ticket attachment.
- * Any authenticated user can request a download URL (auth gate only — no tenant check needed
- * since s3Key is scoped to the tenant prefix by the upload route).
+ * Returns a URL to view a support ticket screenshot or attachment.
+ * Uses the admin proxy route (/api/admin/support/screenshot) which fetches
+ * the file server-side from Supabase Storage — no signed URL quirks,
+ * no CORS issues, works with any Supabase key format.
  */
 export async function getAttachmentDownloadUrl(s3Key: string): Promise<string> {
   await requireAuth();
-  return generateDownloadUrl(s3Key);
+  return `/api/admin/support/screenshot?key=${encodeURIComponent(s3Key)}`;
 }
 

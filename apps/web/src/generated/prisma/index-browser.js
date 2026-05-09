@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.4.0
- * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+ * Prisma Client JS version: 7.6.0
+ * Query Engine version: 75cbdc1eb7150937890ad5465d861175c6624711
  */
 Prisma.prismaVersion = {
-  client: "7.4.0",
-  engine: "ab56fe763f921d033a6c195e7ddeb3e255bdbb57"
+  client: "7.6.0",
+  engine: "75cbdc1eb7150937890ad5465d861175c6624711"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -125,10 +125,18 @@ exports.Prisma.TenantScalarFieldEnum = {
   name: 'name',
   slug: 'slug',
   timezone: 'timezone',
+  contactEmail: 'contactEmail',
+  plan: 'plan',
   isActive: 'isActive',
   profitMarginThreshold: 'profitMarginThreshold',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  fleetSizeBucket: 'fleetSizeBucket',
+  status: 'status',
+  manualTrial: 'manualTrial',
+  emailConfirmedAt: 'emailConfirmedAt',
+  sampleDataSeeded: 'sampleDataSeeded',
+  provisioningPhase: 'provisioningPhase'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -143,8 +151,10 @@ exports.Prisma.UserScalarFieldEnum = {
   licenseNumber: 'licenseNumber',
   isActive: 'isActive',
   permissions: 'permissions',
+  isDispatchReady: 'isDispatchReady',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.TruckScalarFieldEnum = {
@@ -158,11 +168,13 @@ exports.Prisma.TruckScalarFieldEnum = {
   odometer: 'odometer',
   inMaintenance: 'inMaintenance',
   documentMetadata: 'documentMetadata',
+  isDispatchReady: 'isDispatchReady',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  archivedAt: 'archivedAt'
+  archivedAt: 'archivedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.DriverInvitationScalarFieldEnum = {
@@ -293,6 +305,7 @@ exports.Prisma.GPSLocationScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
   truckId: 'truckId',
+  carrierTruckId: 'carrierTruckId',
   latitude: 'latitude',
   longitude: 'longitude',
   speed: 'speed',
@@ -428,7 +441,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   totalRevenue: 'totalRevenue',
   lastLoadDate: 'lastLoadDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  isSample: 'isSample'
 };
 
 exports.Prisma.CustomerInteractionScalarFieldEnum = {
@@ -458,6 +472,13 @@ exports.Prisma.InvoiceScalarFieldEnum = {
   dueDate: 'dueDate',
   paidDate: 'paidDate',
   notes: 'notes',
+  bolNumber: 'bolNumber',
+  proNumber: 'proNumber',
+  poNumber: 'poNumber',
+  commodity: 'commodity',
+  weightLbs: 'weightLbs',
+  pieces: 'pieces',
+  loadedMiles: 'loadedMiles',
   createdById: 'createdById',
   updatedById: 'updatedById',
   createdAt: 'createdAt',
@@ -470,6 +491,8 @@ exports.Prisma.InvoiceItemScalarFieldEnum = {
   invoiceId: 'invoiceId',
   tenantId: 'tenantId',
   description: 'description',
+  itemType: 'itemType',
+  unitType: 'unitType',
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   amount: 'amount'
@@ -532,6 +555,7 @@ exports.Prisma.LoadScalarFieldEnum = {
   loadNumber: 'loadNumber',
   customerId: 'customerId',
   routeId: 'routeId',
+  sequence: 'sequence',
   driverId: 'driverId',
   truckId: 'truckId',
   origin: 'origin',
@@ -553,7 +577,10 @@ exports.Prisma.LoadScalarFieldEnum = {
   updatedById: 'updatedById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  archivedAt: 'archivedAt'
+  archivedAt: 'archivedAt',
+  pickupStopId: 'pickupStopId',
+  deliveryStopId: 'deliveryStopId',
+  isSample: 'isSample'
 };
 
 exports.Prisma.TenantIntegrationScalarFieldEnum = {
@@ -601,6 +628,7 @@ exports.Prisma.RouteStopScalarFieldEnum = {
   id: 'id',
   routeId: 'routeId',
   tenantId: 'tenantId',
+  loadId: 'loadId',
   position: 'position',
   type: 'type',
   address: 'address',
@@ -610,6 +638,10 @@ exports.Prisma.RouteStopScalarFieldEnum = {
   arrivedAt: 'arrivedAt',
   departedAt: 'departedAt',
   notes: 'notes',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  bolNumber: 'bolNumber',
+  poNumber: 'poNumber',
   status: 'status',
   geofenceHit: 'geofenceHit',
   createdAt: 'createdAt',
@@ -637,12 +669,16 @@ exports.Prisma.FleetMessageScalarFieldEnum = {
   tenantId: 'tenantId',
   routeId: 'routeId',
   loadId: 'loadId',
+  dispatchId: 'dispatchId',
   senderId: 'senderId',
   senderRole: 'senderRole',
   body: 'body',
   recipientId: 'recipientId',
   isBroadcast: 'isBroadcast',
-  createdAt: 'createdAt'
+  readAt: 'readAt',
+  createdAt: 'createdAt',
+  stopId: 'stopId',
+  audioUrl: 'audioUrl'
 };
 
 exports.Prisma.PushTokenScalarFieldEnum = {
@@ -682,6 +718,833 @@ exports.Prisma.DriverIncidentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CarrierClientScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  name: 'name',
+  dbaName: 'dbaName',
+  mcNumber: 'mcNumber',
+  dotNumber: 'dotNumber',
+  taxId: 'taxId',
+  primaryContact: 'primaryContact',
+  email: 'email',
+  phone: 'phone',
+  website: 'website',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  city: 'city',
+  state: 'state',
+  zip: 'zip',
+  country: 'country',
+  status: 'status',
+  isSample: 'isSample',
+  portalAccess: 'portalAccess',
+  portalEmail: 'portalEmail',
+  paymentTerms: 'paymentTerms',
+  creditLimit: 'creditLimit',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierContractScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  clientId: 'clientId',
+  contractNumber: 'contractNumber',
+  contractName: 'contractName',
+  contractType: 'contractType',
+  effectiveDate: 'effectiveDate',
+  expirationDate: 'expirationDate',
+  rateType: 'rateType',
+  baseRate: 'baseRate',
+  fuelSurchargeMethod: 'fuelSurchargeMethod',
+  fuelSurchargeRate: 'fuelSurchargeRate',
+  detentionFreeMinutes: 'detentionFreeMinutes',
+  detentionRatePerHour: 'detentionRatePerHour',
+  tonuRate: 'tonuRate',
+  layoverRatePerDay: 'layoverRatePerDay',
+  paymentTermsOverride: 'paymentTermsOverride',
+  autoRenew: 'autoRenew',
+  status: 'status',
+  notes: 'notes',
+  defaultFreeTimeMinutes: 'defaultFreeTimeMinutes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierFacilityScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  name: 'name',
+  facilityType: 'facilityType',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  city: 'city',
+  state: 'state',
+  zip: 'zip',
+  country: 'country',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  contactEmail: 'contactEmail',
+  lumperRequired: 'lumperRequired',
+  appointmentRequired: 'appointmentRequired',
+  contacts: 'contacts',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierDriverScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  userId: 'userId',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  cdlNumber: 'cdlNumber',
+  cdlState: 'cdlState',
+  cdlClass: 'cdlClass',
+  cdlExpiry: 'cdlExpiry',
+  homeTerminalId: 'homeTerminalId',
+  payModel: 'payModel',
+  payRate: 'payRate',
+  payPeriod: 'payPeriod',
+  status: 'status',
+  isSample: 'isSample',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierTruckScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  vehicleId: 'vehicleId',
+  displayName: 'displayName',
+  unitNumber: 'unitNumber',
+  year: 'year',
+  make: 'make',
+  model: 'model',
+  vin: 'vin',
+  truckType: 'truckType',
+  payloadCapacityLbs: 'payloadCapacityLbs',
+  grossWeightLbs: 'grossWeightLbs',
+  licensePlate: 'licensePlate',
+  licenseState: 'licenseState',
+  licenseExpiry: 'licenseExpiry',
+  registrationExpiry: 'registrationExpiry',
+  insuranceExpiry: 'insuranceExpiry',
+  currentOdometerMiles: 'currentOdometerMiles',
+  lastOdometerDate: 'lastOdometerDate',
+  status: 'status',
+  isSample: 'isSample',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RouteTemplateScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  templateName: 'templateName',
+  clientId: 'clientId',
+  contractId: 'contractId',
+  scheduleType: 'scheduleType',
+  recurrenceRule: 'recurrenceRule',
+  recurrenceTimezone: 'recurrenceTimezone',
+  scheduledDepartureTime: 'scheduledDepartureTime',
+  equipmentType: 'equipmentType',
+  tempMinF: 'tempMinF',
+  tempMaxF: 'tempMaxF',
+  maxWeightLbs: 'maxWeightLbs',
+  commodityDescription: 'commodityDescription',
+  estimatedMiles: 'estimatedMiles',
+  defaultDriverId: 'defaultDriverId',
+  defaultTruckId: 'defaultTruckId',
+  autoGenerateDaysAhead: 'autoGenerateDaysAhead',
+  active: 'active',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RouteTemplateStopScalarFieldEnum = {
+  id: 'id',
+  routeTemplateId: 'routeTemplateId',
+  sequenceOrder: 'sequenceOrder',
+  stopType: 'stopType',
+  facilityId: 'facilityId',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  apptWindowStartOffsetMin: 'apptWindowStartOffsetMin',
+  apptWindowEndOffsetMin: 'apptWindowEndOffsetMin',
+  expectedDwellMinutes: 'expectedDwellMinutes',
+  commodityDescription: 'commodityDescription',
+  bolRequired: 'bolRequired',
+  podRequired: 'podRequired',
+  specialInstructions: 'specialInstructions',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CarrierDispatchScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  routeTemplateId: 'routeTemplateId',
+  primaryDriverId: 'primaryDriverId',
+  coDriverId: 'coDriverId',
+  truckId: 'truckId',
+  trailerId: 'trailerId',
+  dispatcherId: 'dispatcherId',
+  scheduledDeparture: 'scheduledDeparture',
+  actualDeparture: 'actualDeparture',
+  scheduledArrival: 'scheduledArrival',
+  actualArrival: 'actualArrival',
+  status: 'status',
+  relayHandoffStopId: 'relayHandoffStopId',
+  plannedMiles: 'plannedMiles',
+  actualMiles: 'actualMiles',
+  hosCycle: 'hosCycle',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierLoadScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  dispatchId: 'dispatchId',
+  contractId: 'contractId',
+  clientId: 'clientId',
+  loadType: 'loadType',
+  referenceNumber: 'referenceNumber',
+  bolNumber: 'bolNumber',
+  proNumber: 'proNumber',
+  poNumber: 'poNumber',
+  commodityDescription: 'commodityDescription',
+  commodityWeightLbs: 'commodityWeightLbs',
+  commodityPieces: 'commodityPieces',
+  commodityPallets: 'commodityPallets',
+  hazmat: 'hazmat',
+  hazmatClass: 'hazmatClass',
+  rateType: 'rateType',
+  rateAmount: 'rateAmount',
+  currency: 'currency',
+  brokerFlag: 'brokerFlag',
+  carrierCost: 'carrierCost',
+  fuelSurcharge: 'fuelSurcharge',
+  detentionAmount: 'detentionAmount',
+  otherCharges: 'otherCharges',
+  totalRevenue: 'totalRevenue',
+  status: 'status',
+  isSample: 'isSample',
+  specialInstructions: 'specialInstructions',
+  notes: 'notes',
+  pendingStopsJson: 'pendingStopsJson',
+  totalMiles: 'totalMiles',
+  loadedMiles: 'loadedMiles',
+  mileageSource: 'mileageSource',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierStopScalarFieldEnum = {
+  id: 'id',
+  dispatchId: 'dispatchId',
+  loadId: 'loadId',
+  sequenceOrder: 'sequenceOrder',
+  stopType: 'stopType',
+  facilityId: 'facilityId',
+  clientId: 'clientId',
+  appointmentStart: 'appointmentStart',
+  appointmentEnd: 'appointmentEnd',
+  arrivedAt: 'arrivedAt',
+  departedAt: 'departedAt',
+  status: 'status',
+  skipReason: 'skipReason',
+  commodityDescription: 'commodityDescription',
+  pieces: 'pieces',
+  weightLbs: 'weightLbs',
+  bolNumber: 'bolNumber',
+  podNumber: 'podNumber',
+  sealNumber: 'sealNumber',
+  bolRequired: 'bolRequired',
+  podRequired: 'podRequired',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  specialInstructions: 'specialInstructions',
+  notes: 'notes',
+  freeTimeMinutes: 'freeTimeMinutes',
+  workState: 'workState',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CarrierDocumentScalarFieldEnum = {
+  id: 'id',
+  parentType: 'parentType',
+  parentId: 'parentId',
+  stopId: 'stopId',
+  clientId: 'clientId',
+  documentTypeId: 'documentTypeId',
+  loadId: 'loadId',
+  dispatchId: 'dispatchId',
+  contractId: 'contractId',
+  documentType: 'documentType',
+  fileUrl: 'fileUrl',
+  filename: 'filename',
+  fileSizeBytes: 'fileSizeBytes',
+  uploadedBy: 'uploadedBy',
+  verified: 'verified',
+  verifiedBy: 'verifiedBy',
+  verifiedAt: 'verifiedAt',
+  notes: 'notes',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CarrierDocumentTypeScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  name: 'name',
+  slug: 'slug',
+  isDefault: 'isDefault',
+  isActive: 'isActive',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CarrierExpenseScalarFieldEnum = {
+  id: 'id',
+  dispatchId: 'dispatchId',
+  loadId: 'loadId',
+  stopId: 'stopId',
+  clientId: 'clientId',
+  expenseType: 'expenseType',
+  amount: 'amount',
+  currency: 'currency',
+  paidBy: 'paidBy',
+  driverId: 'driverId',
+  receiptDocumentId: 'receiptDocumentId',
+  submittedAt: 'submittedAt',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  reimbursable: 'reimbursable',
+  notes: 'notes',
+  orgId: 'orgId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.DriverPayRecordScalarFieldEnum = {
+  id: 'id',
+  driverId: 'driverId',
+  dispatchId: 'dispatchId',
+  loadId: 'loadId',
+  clientId: 'clientId',
+  payModel: 'payModel',
+  loadedMiles: 'loadedMiles',
+  emptyMiles: 'emptyMiles',
+  loadedRate: 'loadedRate',
+  emptyRate: 'emptyRate',
+  hoursWorked: 'hoursWorked',
+  hourlyRate: 'hourlyRate',
+  grossRevenue: 'grossRevenue',
+  percentageApplied: 'percentageApplied',
+  flatAmount: 'flatAmount',
+  basePay: 'basePay',
+  bonuses: 'bonuses',
+  tips: 'tips',
+  deductions: 'deductions',
+  reimbursements: 'reimbursements',
+  netPay: 'netPay',
+  payPeriodStart: 'payPeriodStart',
+  payPeriodEnd: 'payPeriodEnd',
+  status: 'status',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  notes: 'notes',
+  orgId: 'orgId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CarrierCatalogMetaScalarFieldEnum = {
+  id: 'id',
+  enumGroup: 'enumGroup',
+  enumValue: 'enumValue',
+  displayLabel: 'displayLabel',
+  sortOrder: 'sortOrder',
+  active: 'active'
+};
+
+exports.Prisma.InAppNotificationScalarFieldEnum = {
+  id: 'id',
+  orgId: 'orgId',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  read: 'read',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.StepTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  stepType: 'stepType',
+  assigneeRole: 'assigneeRole',
+  defaultConfig: 'defaultConfig',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  description: 'description',
+  entityType: 'entityType',
+  category: 'category',
+  playbookPhase: 'playbookPhase',
+  isActive: 'isActive',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookStepScalarFieldEnum = {
+  id: 'id',
+  playbookId: 'playbookId',
+  stepTemplateId: 'stepTemplateId',
+  sequence: 'sequence',
+  playbookPhase: 'playbookPhase',
+  overrideConfig: 'overrideConfig',
+  isRequired: 'isRequired',
+  isDispatchBlocker: 'isDispatchBlocker',
+  dueDaysFromStart: 'dueDaysFromStart',
+  dueWithinHours: 'dueWithinHours',
+  overdueRecipient: 'overdueRecipient',
+  dueBeforeDispatch: 'dueBeforeDispatch',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookInstanceScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  playbookId: 'playbookId',
+  playbookSnapshot: 'playbookSnapshot',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  status: 'status',
+  completionPercent: 'completionPercent',
+  isDispatchReady: 'isDispatchReady',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  dueDate: 'dueDate',
+  triggeredBy: 'triggeredBy',
+  triggeredEvent: 'triggeredEvent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StepInstanceScalarFieldEnum = {
+  id: 'id',
+  playbookInstanceId: 'playbookInstanceId',
+  stepTemplateId: 'stepTemplateId',
+  stepSnapshot: 'stepSnapshot',
+  status: 'status',
+  assigneeRole: 'assigneeRole',
+  assignedUserId: 'assignedUserId',
+  completedByUserId: 'completedByUserId',
+  completedAt: 'completedAt',
+  result: 'result',
+  skipReason: 'skipReason',
+  skippedByUserId: 'skippedByUserId',
+  dueDate: 'dueDate',
+  isOverdue: 'isOverdue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PlaybookNotificationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  playbookInstanceId: 'playbookInstanceId',
+  stepInstanceId: 'stepInstanceId',
+  notificationType: 'notificationType',
+  channel: 'channel',
+  recipientUserId: 'recipientUserId',
+  message: 'message',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PlaybookTriggerScalarFieldEnum = {
+  id: 'id',
+  playbookId: 'playbookId',
+  tenantId: 'tenantId',
+  triggerEvent: 'triggerEvent',
+  conditions: 'conditions',
+  recurringConfig: 'recurringConfig',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DispatchOverrideAuditScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  dispatchId: 'dispatchId',
+  userId: 'userId',
+  reason: 'reason',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PlanScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  defaultTrialDays: 'defaultTrialDays',
+  monthlyPriceCents: 'monthlyPriceCents',
+  yearlyPriceCents: 'yearlyPriceCents',
+  maxTrucks: 'maxTrucks',
+  maxUsers: 'maxUsers',
+  storageGbLimit: 'storageGbLimit',
+  isActive: 'isActive',
+  sortOrder: 'sortOrder',
+  stripeProductId: 'stripeProductId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PromoScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  bonusTrialDays: 'bonusTrialDays',
+  discountPct: 'discountPct',
+  activeFrom: 'activeFrom',
+  activeTo: 'activeTo',
+  maxRedemptions: 'maxRedemptions',
+  redemptionCount: 'redemptionCount',
+  isActive: 'isActive',
+  stripeCouponId: 'stripeCouponId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  planId: 'planId',
+  promoId: 'promoId',
+  status: 'status',
+  trialEndsAt: 'trialEndsAt',
+  manualExtensionUntil: 'manualExtensionUntil',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivationProgressScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  accountCreatedAt: 'accountCreatedAt',
+  firstRealTruckAt: 'firstRealTruckAt',
+  firstRealDriverAt: 'firstRealDriverAt',
+  firstRealClientAt: 'firstRealClientAt',
+  firstRealLoadCreatedAt: 'firstRealLoadCreatedAt',
+  firstLoadInTransitAt: 'firstLoadInTransitAt',
+  firstLoadDeliveredAt: 'firstLoadDeliveredAt',
+  completionPct: 'completionPct',
+  isActivated: 'isActivated',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationRuleScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  triggerEvent: 'triggerEvent',
+  conditionsJson: 'conditionsJson',
+  actionsJson: 'actionsJson',
+  scope: 'scope',
+  tenantId: 'tenantId',
+  isActive: 'isActive',
+  runOncePerTenant: 'runOncePerTenant',
+  delaySeconds: 'delaySeconds',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AutomationRunScalarFieldEnum = {
+  id: 'id',
+  ruleId: 'ruleId',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  triggeredBy: 'triggeredBy',
+  status: 'status',
+  resultJson: 'resultJson',
+  firedAt: 'firedAt',
+  scheduledAt: 'scheduledAt',
+  eventId: 'eventId',
+  errorMessage: 'errorMessage'
+};
+
+exports.Prisma.AppEventScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  eventType: 'eventType',
+  properties: 'properties',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TenantMetricsDailyScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  date: 'date',
+  dauCount: 'dauCount',
+  sessionCount: 'sessionCount',
+  keyActionCount: 'keyActionCount',
+  storageBytes: 'storageBytes',
+  seatsUsed: 'seatsUsed',
+  loadsCreated: 'loadsCreated',
+  loadsInTransit: 'loadsInTransit'
+};
+
+exports.Prisma.TenantHealthScoreScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  score: 'score',
+  topFactorsJson: 'topFactorsJson',
+  computedAt: 'computedAt'
+};
+
+exports.Prisma.DriverCompensationTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  employmentType: 'employmentType',
+  payType: 'payType',
+  baseRate: 'baseRate',
+  rateUnit: 'rateUnit',
+  loadedMilesOnly: 'loadedMilesOnly',
+  fuelSurchargeRate: 'fuelSurchargeRate',
+  perDiemEnabled: 'perDiemEnabled',
+  perDiemRate: 'perDiemRate',
+  overtimeEligible: 'overtimeEligible',
+  overtimeThresholdHours: 'overtimeThresholdHours',
+  overtimeMultiplier: 'overtimeMultiplier',
+  dailyOvertimeThreshold: 'dailyOvertimeThreshold',
+  weeklyEarningGoal: 'weeklyEarningGoal',
+  currency: 'currency',
+  effectiveFrom: 'effectiveFrom',
+  effectiveTo: 'effectiveTo',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.LoadDriverAssignmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  loadId: 'loadId',
+  driverId: 'driverId',
+  driverRole: 'driverRole',
+  templateId: 'templateId',
+  payType: 'payType',
+  baseRate: 'baseRate',
+  rateUnit: 'rateUnit',
+  loadedMilesOnly: 'loadedMilesOnly',
+  fuelSurchargeRate: 'fuelSurchargeRate',
+  splitPercentage: 'splitPercentage',
+  perDiemEnabled: 'perDiemEnabled',
+  perDiemRate: 'perDiemRate',
+  overrideReason: 'overrideReason',
+  estimatedMiles: 'estimatedMiles',
+  actualMiles: 'actualMiles',
+  mileageSource: 'mileageSource',
+  mileageSourceReference: 'mileageSourceReference',
+  estimatedHours: 'estimatedHours',
+  actualHours: 'actualHours',
+  loadRevenue: 'loadRevenue',
+  payStatus: 'payStatus',
+  settlementId: 'settlementId',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  paidAt: 'paidAt',
+  currency: 'currency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.LoadPayComponentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  assignmentId: 'assignmentId',
+  loadId: 'loadId',
+  driverId: 'driverId',
+  stopId: 'stopId',
+  componentType: 'componentType',
+  category: 'category',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  rate: 'rate',
+  multiplier: 'multiplier',
+  grossAmount: 'grossAmount',
+  isTaxable: 'isTaxable',
+  isReimbursement: 'isReimbursement',
+  originalComponentId: 'originalComponentId',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  enteredBy: 'enteredBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverBonusScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  bonusType: 'bonusType',
+  amount: 'amount',
+  description: 'description',
+  triggerDate: 'triggerDate',
+  scheduledPayDate: 'scheduledPayDate',
+  paidAt: 'paidAt',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
+  parentBonusId: 'parentBonusId',
+  referredDriverId: 'referredDriverId',
+  settlementId: 'settlementId',
+  isTaxable: 'isTaxable',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverDeductionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  deductionType: 'deductionType',
+  schedule: 'schedule',
+  amountPerPeriod: 'amountPerPeriod',
+  totalAmount: 'totalAmount',
+  amountCollected: 'amountCollected',
+  maxPercentageOfNet: 'maxPercentageOfNet',
+  startsOn: 'startsOn',
+  endsOn: 'endsOn',
+  paused: 'paused',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverSettlementScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  status: 'status',
+  grossTaxable: 'grossTaxable',
+  grossNonTaxable: 'grossNonTaxable',
+  totalDeductions: 'totalDeductions',
+  netPay: 'netPay',
+  finalizedBy: 'finalizedBy',
+  finalizedAt: 'finalizedAt',
+  paidAt: 'paidAt',
+  settlementReference: 'settlementReference',
+  pdfUrl: 'pdfUrl',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.PayComponentAttachmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  componentId: 'componentId',
+  assignmentId: 'assignmentId',
+  storageKey: 'storageKey',
+  filename: 'filename',
+  contentType: 'contentType',
+  sizeBytes: 'sizeBytes',
+  uploadedBy: 'uploadedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverDisputeScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  issueCategory: 'issueCategory',
+  driverMessage: 'driverMessage',
+  status: 'status',
+  assignedTo: 'assignedTo',
+  resolutionMessage: 'resolutionMessage',
+  resolvedAt: 'resolvedAt',
+  linkedCorrectionId: 'linkedCorrectionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverPayAuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  action: 'action',
+  previousValue: 'previousValue',
+  newValue: 'newValue',
+  actorId: 'actorId',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -689,6 +1552,10 @@ exports.Prisma.SortOrder = {
 
 exports.Prisma.NullableJsonNullValueInput = {
   DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
   JsonNull: Prisma.JsonNull
 };
 
@@ -707,6 +1574,26 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.FleetSizeBucket = exports.$Enums.FleetSizeBucket = {
+  OWNER_OPERATOR: 'OWNER_OPERATOR',
+  SMALL: 'SMALL',
+  MEDIUM: 'MEDIUM',
+  LARGE: 'LARGE'
+};
+
+exports.TenantStatus = exports.$Enums.TenantStatus = {
+  TRIAL: 'TRIAL',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  SUSPENDED: 'SUSPENDED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ProvisioningPhase = exports.$Enums.ProvisioningPhase = {
+  MINIMAL: 'MINIMAL',
+  HYDRATED: 'HYDRATED'
+};
+
 exports.UserRole = exports.$Enums.UserRole = {
   OWNER: 'OWNER',
   MANAGER: 'MANAGER',
@@ -799,6 +1686,28 @@ exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
   PAID: 'PAID',
   OVERDUE: 'OVERDUE',
   CANCELLED: 'CANCELLED'
+};
+
+exports.InvoiceItemType = exports.$Enums.InvoiceItemType = {
+  LINEHAUL: 'LINEHAUL',
+  FUEL_SURCHARGE: 'FUEL_SURCHARGE',
+  DETENTION: 'DETENTION',
+  STOP_OFF: 'STOP_OFF',
+  LAYOVER: 'LAYOVER',
+  TONU: 'TONU',
+  LUMPER: 'LUMPER',
+  ACCESSORIAL: 'ACCESSORIAL',
+  TAX: 'TAX',
+  OTHER: 'OTHER'
+};
+
+exports.InvoiceItemUnit = exports.$Enums.InvoiceItemUnit = {
+  FLAT: 'FLAT',
+  PER_MILE: 'PER_MILE',
+  PER_CWT: 'PER_CWT',
+  PER_PIECE: 'PER_PIECE',
+  PER_HOUR: 'PER_HOUR',
+  PERCENT: 'PERCENT'
 };
 
 exports.SysAdminInvoiceStatus = exports.$Enums.SysAdminInvoiceStatus = {
@@ -907,6 +1816,287 @@ exports.IncidentSeverity = exports.$Enums.IncidentSeverity = {
   HIGH: 'HIGH'
 };
 
+exports.MileageSource = exports.$Enums.MileageSource = {
+  PCMILER: 'PCMILER',
+  GOOGLE: 'GOOGLE',
+  ELD: 'ELD',
+  MANUAL: 'MANUAL',
+  RAND_MCNALLY: 'RAND_MCNALLY'
+};
+
+exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
+  dispatch_assigned: 'dispatch_assigned',
+  load_delivered: 'load_delivered',
+  pay_record_ready: 'pay_record_ready',
+  invoice_generated: 'invoice_generated',
+  compliance_alert: 'compliance_alert',
+  stop_completed: 'stop_completed',
+  needs_assignment: 'needs_assignment',
+  dispatch_generated: 'dispatch_generated',
+  fleet_message: 'fleet_message'
+};
+
+exports.StepType = exports.$Enums.StepType = {
+  DOCUMENT_UPLOAD: 'DOCUMENT_UPLOAD',
+  FORM_FILL: 'FORM_FILL',
+  INSPECTION_ITEM: 'INSPECTION_ITEM',
+  SIGNATURE: 'SIGNATURE',
+  TRAINING_ACK: 'TRAINING_ACK',
+  APPROVAL: 'APPROVAL',
+  THIRD_PARTY: 'THIRD_PARTY',
+  CUSTOM_NOTE: 'CUSTOM_NOTE'
+};
+
+exports.AssigneeRole = exports.$Enums.AssigneeRole = {
+  DRIVER: 'DRIVER',
+  DISPATCHER: 'DISPATCHER',
+  MECHANIC: 'MECHANIC',
+  SAFETY_MANAGER: 'SAFETY_MANAGER',
+  THIRD_PARTY: 'THIRD_PARTY'
+};
+
+exports.PlaybookEntityType = exports.$Enums.PlaybookEntityType = {
+  DRIVER: 'DRIVER',
+  VEHICLE: 'VEHICLE',
+  PARTNER: 'PARTNER',
+  DISPATCH: 'DISPATCH',
+  OTHER: 'OTHER'
+};
+
+exports.PlaybookCategory = exports.$Enums.PlaybookCategory = {
+  ONBOARDING: 'ONBOARDING',
+  SAFETY: 'SAFETY',
+  OPERATIONS: 'OPERATIONS',
+  COMPLIANCE: 'COMPLIANCE',
+  PARTNER: 'PARTNER',
+  CUSTOM: 'CUSTOM',
+  VEHICLE_INSPECTION: 'VEHICLE_INSPECTION'
+};
+
+exports.PhaseType = exports.$Enums.PhaseType = {
+  PRE_START: 'PRE_START',
+  DAY_1: 'DAY_1',
+  WEEK_1: 'WEEK_1',
+  ONGOING: 'ONGOING',
+  NONE: 'NONE'
+};
+
+exports.OverdueRecipient = exports.$Enums.OverdueRecipient = {
+  DRIVER: 'DRIVER',
+  OWNER: 'OWNER',
+  BOTH: 'BOTH'
+};
+
+exports.InstanceStatus = exports.$Enums.InstanceStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  BLOCKED: 'BLOCKED'
+};
+
+exports.TriggerEvent = exports.$Enums.TriggerEvent = {
+  ON_DRIVER_CREATE: 'ON_DRIVER_CREATE',
+  ON_VEHICLE_CREATE: 'ON_VEHICLE_CREATE',
+  ON_DISPATCH_CREATE: 'ON_DISPATCH_CREATE',
+  ON_DISPATCH_DEPART: 'ON_DISPATCH_DEPART',
+  ON_DISPATCH_DELIVER: 'ON_DISPATCH_DELIVER',
+  ON_PARTNER_CREATE: 'ON_PARTNER_CREATE',
+  MANUAL_ONLY: 'MANUAL_ONLY',
+  RECURRING: 'RECURRING'
+};
+
+exports.StepStatus = exports.$Enums.StepStatus = {
+  NOT_STARTED: 'NOT_STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETE: 'COMPLETE',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+exports.NotifType = exports.$Enums.NotifType = {
+  STEP_ASSIGNED: 'STEP_ASSIGNED',
+  STEP_OVERDUE: 'STEP_OVERDUE',
+  INSTANCE_BLOCKED: 'INSTANCE_BLOCKED',
+  DISPATCH_READY: 'DISPATCH_READY',
+  STEP_FAILED: 'STEP_FAILED',
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED',
+  DAILY_DIGEST: 'DAILY_DIGEST'
+};
+
+exports.NotifChannel = exports.$Enums.NotifChannel = {
+  PUSH: 'PUSH',
+  SMS: 'SMS',
+  IN_APP: 'IN_APP',
+  EMAIL: 'EMAIL'
+};
+
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED',
+  SUSPENDED: 'SUSPENDED'
+};
+
+exports.AutomationScope = exports.$Enums.AutomationScope = {
+  SYSTEM: 'SYSTEM',
+  TENANT: 'TENANT'
+};
+
+exports.AutomationRunStatus = exports.$Enums.AutomationRunStatus = {
+  FIRED: 'FIRED',
+  SKIPPED_CONDITION: 'SKIPPED_CONDITION',
+  SKIPPED_ALREADY_RAN: 'SKIPPED_ALREADY_RAN',
+  FAILED: 'FAILED',
+  PENDING: 'PENDING',
+  SENT: 'SENT'
+};
+
+exports.EmploymentType = exports.$Enums.EmploymentType = {
+  W2_EMPLOYEE: 'W2_EMPLOYEE',
+  OWNER_OPERATOR_1099: 'OWNER_OPERATOR_1099',
+  LEASE_OPERATOR: 'LEASE_OPERATOR'
+};
+
+exports.DriverPayType = exports.$Enums.DriverPayType = {
+  CPM: 'CPM',
+  HOURLY: 'HOURLY',
+  FLAT_PER_LOAD: 'FLAT_PER_LOAD',
+  PERCENTAGE: 'PERCENTAGE',
+  DAILY: 'DAILY',
+  SALARY: 'SALARY'
+};
+
+exports.RateUnit = exports.$Enums.RateUnit = {
+  PER_MILE: 'PER_MILE',
+  PER_HOUR: 'PER_HOUR',
+  PER_LOAD: 'PER_LOAD',
+  PERCENTAGE: 'PERCENTAGE',
+  PER_DAY: 'PER_DAY',
+  ANNUAL: 'ANNUAL'
+};
+
+exports.DriverRole = exports.$Enums.DriverRole = {
+  MAIN_DRIVER: 'MAIN_DRIVER',
+  CO_DRIVER: 'CO_DRIVER'
+};
+
+exports.DriverAssignmentStatus = exports.$Enums.DriverAssignmentStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  PAID: 'PAID',
+  DISPUTED: 'DISPUTED',
+  CORRECTED: 'CORRECTED'
+};
+
+exports.PayComponentType = exports.$Enums.PayComponentType = {
+  BASE_PAY_MILEAGE: 'BASE_PAY_MILEAGE',
+  BASE_PAY_HOURLY: 'BASE_PAY_HOURLY',
+  BASE_PAY_FLAT: 'BASE_PAY_FLAT',
+  BASE_PAY_PERCENTAGE: 'BASE_PAY_PERCENTAGE',
+  BASE_PAY_DAILY: 'BASE_PAY_DAILY',
+  FUEL_SURCHARGE: 'FUEL_SURCHARGE',
+  OVERTIME: 'OVERTIME',
+  HAZMAT_PREMIUM: 'HAZMAT_PREMIUM',
+  HOLIDAY_PREMIUM: 'HOLIDAY_PREMIUM',
+  LOAD_COMPLETION_BONUS: 'LOAD_COMPLETION_BONUS',
+  FUEL_EFFICIENCY_BONUS: 'FUEL_EFFICIENCY_BONUS',
+  DETENTION: 'DETENTION',
+  LAYOVER: 'LAYOVER',
+  TONU: 'TONU',
+  STOP_OFF: 'STOP_OFF',
+  TARP: 'TARP',
+  BREAKDOWN: 'BREAKDOWN',
+  PER_DIEM: 'PER_DIEM',
+  LUMPER_REIMBURSEMENT: 'LUMPER_REIMBURSEMENT',
+  SCALE_REIMBURSEMENT: 'SCALE_REIMBURSEMENT',
+  FUEL_REIMBURSEMENT: 'FUEL_REIMBURSEMENT',
+  ADVANCE_REPAYMENT: 'ADVANCE_REPAYMENT',
+  ESCROW_CONTRIBUTION: 'ESCROW_CONTRIBUTION',
+  FUEL_CARD_DEBT: 'FUEL_CARD_DEBT',
+  CARGO_CLAIM: 'CARGO_CLAIM',
+  EQUIPMENT_DAMAGE: 'EQUIPMENT_DAMAGE',
+  GARNISHMENT: 'GARNISHMENT',
+  CHILD_SUPPORT: 'CHILD_SUPPORT',
+  ADJUSTMENT_POSITIVE: 'ADJUSTMENT_POSITIVE',
+  ADJUSTMENT_NEGATIVE: 'ADJUSTMENT_NEGATIVE'
+};
+
+exports.PayComponentCategory = exports.$Enums.PayComponentCategory = {
+  EARNING: 'EARNING',
+  BONUS: 'BONUS',
+  ACCESSORIAL: 'ACCESSORIAL',
+  ALLOWANCE: 'ALLOWANCE',
+  REIMBURSEMENT: 'REIMBURSEMENT',
+  DEDUCTION: 'DEDUCTION',
+  ADJUSTMENT: 'ADJUSTMENT'
+};
+
+exports.PayComponentUnit = exports.$Enums.PayComponentUnit = {
+  MILES: 'MILES',
+  HOURS: 'HOURS',
+  STOPS: 'STOPS',
+  DAYS: 'DAYS',
+  FLAT: 'FLAT',
+  PERCENTAGE: 'PERCENTAGE'
+};
+
+exports.BonusType = exports.$Enums.BonusType = {
+  SIGN_ON: 'SIGN_ON',
+  RETENTION: 'RETENTION',
+  SAFETY: 'SAFETY',
+  FUEL_EFFICIENCY: 'FUEL_EFFICIENCY',
+  REFERRAL: 'REFERRAL',
+  PERFORMANCE: 'PERFORMANCE',
+  OTHER: 'OTHER'
+};
+
+exports.DeductionType = exports.$Enums.DeductionType = {
+  ADVANCE: 'ADVANCE',
+  ESCROW: 'ESCROW',
+  GARNISHMENT: 'GARNISHMENT',
+  CHILD_SUPPORT: 'CHILD_SUPPORT',
+  EQUIPMENT_LEASE: 'EQUIPMENT_LEASE',
+  INSURANCE: 'INSURANCE',
+  OTHER: 'OTHER'
+};
+
+exports.DeductionSchedule = exports.$Enums.DeductionSchedule = {
+  ONE_TIME: 'ONE_TIME',
+  EVERY_SETTLEMENT: 'EVERY_SETTLEMENT',
+  FIXED_INSTALLMENTS: 'FIXED_INSTALLMENTS'
+};
+
+exports.DriverSettlementStatus = exports.$Enums.DriverSettlementStatus = {
+  DRAFT: 'DRAFT',
+  FINALIZED: 'FINALIZED',
+  PAID: 'PAID',
+  VOIDED: 'VOIDED'
+};
+
+exports.DisputeTargetType = exports.$Enums.DisputeTargetType = {
+  LOAD_PAY: 'LOAD_PAY',
+  SETTLEMENT: 'SETTLEMENT',
+  COMPONENT: 'COMPONENT'
+};
+
+exports.DisputeIssueCategory = exports.$Enums.DisputeIssueCategory = {
+  WRONG_AMOUNT: 'WRONG_AMOUNT',
+  MISSING_PAY: 'MISSING_PAY',
+  WRONG_MILES: 'WRONG_MILES',
+  MISSING_RECEIPT: 'MISSING_RECEIPT',
+  OTHER: 'OTHER'
+};
+
+exports.DisputeStatus = exports.$Enums.DisputeStatus = {
+  OPEN: 'OPEN',
+  IN_REVIEW: 'IN_REVIEW',
+  RESOLVED_PAID: 'RESOLVED_PAID',
+  RESOLVED_NO_CHANGE: 'RESOLVED_NO_CHANGE',
+  CLOSED: 'CLOSED'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -944,7 +2134,49 @@ exports.Prisma.ModelName = {
   FleetMessage: 'FleetMessage',
   PushToken: 'PushToken',
   DriverHOSEntry: 'DriverHOSEntry',
-  DriverIncident: 'DriverIncident'
+  DriverIncident: 'DriverIncident',
+  CarrierClient: 'CarrierClient',
+  CarrierContract: 'CarrierContract',
+  CarrierFacility: 'CarrierFacility',
+  CarrierDriver: 'CarrierDriver',
+  CarrierTruck: 'CarrierTruck',
+  RouteTemplate: 'RouteTemplate',
+  RouteTemplateStop: 'RouteTemplateStop',
+  CarrierDispatch: 'CarrierDispatch',
+  CarrierLoad: 'CarrierLoad',
+  CarrierStop: 'CarrierStop',
+  CarrierDocument: 'CarrierDocument',
+  CarrierDocumentType: 'CarrierDocumentType',
+  CarrierExpense: 'CarrierExpense',
+  DriverPayRecord: 'DriverPayRecord',
+  CarrierCatalogMeta: 'CarrierCatalogMeta',
+  InAppNotification: 'InAppNotification',
+  StepTemplate: 'StepTemplate',
+  Playbook: 'Playbook',
+  PlaybookStep: 'PlaybookStep',
+  PlaybookInstance: 'PlaybookInstance',
+  StepInstance: 'StepInstance',
+  PlaybookNotification: 'PlaybookNotification',
+  PlaybookTrigger: 'PlaybookTrigger',
+  DispatchOverrideAudit: 'DispatchOverrideAudit',
+  Plan: 'Plan',
+  Promo: 'Promo',
+  Subscription: 'Subscription',
+  ActivationProgress: 'ActivationProgress',
+  AutomationRule: 'AutomationRule',
+  AutomationRun: 'AutomationRun',
+  AppEvent: 'AppEvent',
+  TenantMetricsDaily: 'TenantMetricsDaily',
+  TenantHealthScore: 'TenantHealthScore',
+  DriverCompensationTemplate: 'DriverCompensationTemplate',
+  LoadDriverAssignment: 'LoadDriverAssignment',
+  LoadPayComponent: 'LoadPayComponent',
+  DriverBonus: 'DriverBonus',
+  DriverDeduction: 'DriverDeduction',
+  DriverSettlement: 'DriverSettlement',
+  PayComponentAttachment: 'PayComponentAttachment',
+  DriverDispute: 'DriverDispute',
+  DriverPayAuditLog: 'DriverPayAuditLog'
 };
 
 /**

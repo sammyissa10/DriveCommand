@@ -1,6 +1,7 @@
 'use client';
 
-import { Marker, Popup } from 'react-leaflet';
+import { memo, useMemo } from 'react';
+import { Marker } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import { getVehicleStatus, STATUS_COLORS } from '@/lib/maps/vehicle-status';
 import { VehicleLocation } from '@/lib/maps/map-utils';
@@ -10,13 +11,17 @@ interface VehicleMarkerProps {
   onClick: () => void;
 }
 
-export default function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) {
-  // Calculate status (note: timestamp comes serialized, must wrap in Date)
-  const status = getVehicleStatus(vehicle.speed, new Date(vehicle.timestamp));
+function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) {
+  // Calculate status — must be before any conditional returns (rules of hooks)
+  const status = vehicle.status !== 'no-location'
+    ? vehicle.status
+    : getVehicleStatus(vehicle.speed, vehicle.timestamp ? new Date(vehicle.timestamp) : null);
+
   const colors = STATUS_COLORS[status];
 
-  // Create DivIcon with truck SVG
-  const icon = divIcon({
+  // Memoize the divIcon so Leaflet does not remount the marker DOM on every poll refresh.
+  // Dependencies are the values that actually affect the icon's visual output.
+  const icon = useMemo(() => divIcon({
     html: `
       <div class="relative">
         <div class="w-10 h-10 rounded-full ${colors.bg} border-2 ${colors.border} flex items-center justify-center shadow-lg">
@@ -51,36 +56,31 @@ export default function VehicleMarker({ vehicle, onClick }: VehicleMarkerProps) 
     className: 'vehicle-marker-icon',
     iconSize: [40, 56],
     iconAnchor: [20, 20],
-    popupAnchor: [0, -20],
-  });
+  }), [
+    vehicle.latitude,
+    vehicle.longitude,
+    vehicle.heading,
+    vehicle.truck.licensePlate,
+    vehicle.speed,
+    vehicle.timestamp,
+    vehicle.status,
+    colors.bg,
+    colors.border,
+  ]);
+
+  // Guard for missing GPS data — placed AFTER hooks to satisfy rules of hooks
+  if (vehicle.latitude === null || vehicle.longitude === null) {
+    return null;
+  }
 
   return (
     <Marker
       position={[vehicle.latitude, vehicle.longitude]}
       icon={icon}
       eventHandlers={{ click: onClick }}
-    >
-      <Popup>
-        <div className="space-y-2">
-          <div className="font-semibold">
-            {vehicle.truck.make} {vehicle.truck.model}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {vehicle.truck.licensePlate}
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`inline-block w-3 h-3 rounded-full ${colors.bg}`}
-            />
-            <span className="text-sm capitalize">{status}</span>
-          </div>
-          {vehicle.speed !== null && (
-            <div className="text-sm">
-              Speed: {vehicle.speed.toFixed(1)} mph
-            </div>
-          )}
-        </div>
-      </Popup>
-    </Marker>
+    />
   );
 }
+
+// Wrap in React.memo so React skips re-rendering when vehicle data has not changed between polls
+export default memo(VehicleMarker);

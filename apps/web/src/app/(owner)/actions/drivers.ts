@@ -1,23 +1,29 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types';
+
 /**
  * Server actions for driver management operations.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { driverInviteSchema, driverUpdateSchema } from '@drivecommand/validation';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { logger } from '@/lib/logger';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { fireEvent } from '@/server/services/workflows/fireEvent';
 
 /**
  * Invite a new driver.
  * Creates a DriverInvitation record in the database with PENDING status.
  * Requires OWNER or MANAGER role.
  */
-export async function inviteDriver(prevState: any, formData: FormData) {
+export async function inviteDriver(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -99,6 +105,24 @@ export async function inviteDriver(prevState: any, formData: FormData) {
         status: 'PENDING',
       },
     });
+    // Post-commit automation — runs outside the main transaction scope per spec Section 6.5
+    // Note: DriverInvitation has no driverType field, so entityData includes only id + email.
+    // CDL/NON_CDL/OWNER_OP recipe conditions will not match without driverType — this is a known
+    // limitation documented in research Open Question 1. The ON_DRIVER_CREATE event fires; only
+    // the blanket (no-condition) triggers will activate until driverType is added to invitation flow.
+    try {
+      await fireEvent({
+        event: 'ON_DRIVER_CREATE',
+        entityData: {
+          id: invitation.id, // DriverInvitation.id — entity the checklist will attach to
+          email: invitation.email,
+        },
+        tenantId,
+      });
+    } catch (err) {
+      logger.error('[inviteDriver] fireEvent failed', { invitationId: invitation.id, err });
+      // Do not throw — the invitation is already created successfully
+    }
 
     // Fetch tenant name for the invitation email
     let organizationName = 'your fleet';
@@ -113,7 +137,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
     }
 
     // Send invitation email (failure does NOT roll back the invitation record)
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = getAppBaseUrl();
     const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
     let emailSent = false;
@@ -131,7 +155,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       });
       emailSent = true;
     } catch (emailError) {
-      console.error('Failed to send invitation email:', emailError);
+      logger.error('Failed to send invitation email:', emailError);
       // Invitation record exists; email can be resent later
     }
 
@@ -151,7 +175,7 @@ export async function inviteDriver(prevState: any, formData: FormData) {
       message: `Invitation sent to ${email}`,
     };
   } catch (error) {
-    console.error('Failed to create driver invitation:', error);
+    logger.error('Failed to create driver invitation:', error);
     return {
       error: 'Failed to create invitation. Please try again.',
     };
@@ -197,7 +221,7 @@ export async function getDriver(id: string) {
  * Update an existing driver.
  * Requires OWNER or MANAGER role.
  */
-export async function updateDriver(id: string, prevState: any, formData: FormData) {
+export async function updateDriver(id: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -250,7 +274,7 @@ export async function updateDriver(id: string, prevState: any, formData: FormDat
 
 /**
  * Deactivate a driver (soft delete).
- * Sets isActive=false.
+ * Sets isActive=false and bans the user in Supabase Auth.
  * Requires OWNER or MANAGER role.
  */
 export async function deactivateDriver(id: string) {
@@ -264,6 +288,15 @@ export async function deactivateDriver(id: string) {
     data: { isActive: false },
   });
 
+  // Ban in Supabase Auth and invalidate existing sessions
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: '87600h' });
+    await supabaseAdmin.auth.admin.signOut(id, 'global');
+  } catch (err) {
+    logger.error('[deactivateDriver] Supabase ban failed for user:' + id, err);
+  }
+
   // Revalidate
   revalidatePath('/drivers');
   revalidateTag('dashboard-metrics', 'max');
@@ -273,7 +306,7 @@ export async function deactivateDriver(id: string) {
 
 /**
  * Reactivate a driver.
- * Sets isActive=true.
+ * Sets isActive=true and lifts the Supabase Auth ban.
  * Requires OWNER or MANAGER role.
  */
 export async function reactivateDriver(id: string) {
@@ -286,6 +319,14 @@ export async function reactivateDriver(id: string) {
     where: { id },
     data: { isActive: true },
   });
+
+  // Lift the Supabase Auth ban
+  try {
+    const supabaseAdmin = createAdminClient();
+    await supabaseAdmin.auth.admin.updateUserById(id, { ban_duration: 'none' });
+  } catch (err) {
+    logger.error('[reactivateDriver] Supabase unban failed for user:' + id, err);
+  }
 
   // Revalidate
   revalidatePath('/drivers');

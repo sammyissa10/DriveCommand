@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { ChevronDown, ChevronUp, Paperclip, Loader2, Camera } from 'lucide-react';
 import { updateTicketStatus, addAdminReply, getTicketMessages, getAttachmentDownloadUrl } from '@/actions/support-tickets';
@@ -21,6 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { logger } from '@/lib/logger';
 
 function getCategoryBadgeClass(category: string) {
   switch (category) {
@@ -143,7 +145,7 @@ function TicketRow({ ticket }: TicketRowProps) {
       getAttachmentDownloadUrl(ticket.screenshotKey)
         .then((url) => setScreenshotUrl(url))
         .catch((err) => {
-          console.error('[TicketRow] Failed to load screenshot URL:', err);
+          logger.error('[TicketRow] Failed to load screenshot URL:', err);
           // Don't show error toast — just don't display the screenshot
         })
         .finally(() => setScreenshotLoading(false));
@@ -323,7 +325,7 @@ function TicketRow({ ticket }: TicketRowProps) {
                         <DialogHeader>
                           <DialogTitle>Screenshot — {ticket.ticketNumber}</DialogTitle>
                         </DialogHeader>
-                        <img src={screenshotUrl} alt="Full page screenshot" className="w-full rounded-md" />
+                        <Image src={screenshotUrl} alt="Full page screenshot" width={800} height={600} className="w-full rounded-md" unoptimized />
                       </DialogContent>
                     </Dialog>
                   </>

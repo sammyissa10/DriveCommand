@@ -8,27 +8,48 @@ export default async function PayrollPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let records: any[] = [];
+  let totalCount = 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let statusCounts: any[] = [];
   try {
-    records = await prisma.payrollRecord.findMany({
-      where: { archivedAt: null },
-      orderBy: { periodStart: 'desc' },
-      include: {
-        driver: {
-          select: { id: true, firstName: true, lastName: true, email: true },
+    [records, totalCount, statusCounts] = await Promise.all([
+      prisma.payrollRecord.findMany({
+        where: { archivedAt: null },
+        orderBy: { periodStart: 'desc' },
+        take: 50,
+        include: {
+          driver: {
+            select: { id: true, firstName: true, lastName: true, email: true },
+          },
         },
-      },
-    });
+      }),
+      prisma.payrollRecord.count({ where: { archivedAt: null } }),
+      prisma.payrollRecord.groupBy({
+        by: ['status'],
+        where: { archivedAt: null },
+        _count: true,
+        _sum: { totalPay: true },
+      }),
+    ]);
   } catch {
     // DB failure — render empty list
   }
 
+  // Derive stats from aggregate groupBy results (accurate across all records, not just the 50 shown)
+  let draft = 0;
+  let approved = 0;
+  let totalPaid = 0;
+  for (const g of statusCounts) {
+    if (g.status === 'DRAFT') draft = g._count;
+    if (g.status === 'APPROVED') approved = g._count;
+    if (g.status === 'PAID') totalPaid = Number(g._sum?.totalPay ?? 0);
+  }
+
   const stats = {
-    total: records.length,
-    draft: records.filter((r: any) => r.status === 'DRAFT').length,
-    approved: records.filter((r: any) => r.status === 'APPROVED').length,
-    totalPaid: records
-      .filter((r: any) => r.status === 'PAID')
-      .reduce((sum: number, r: any) => sum + Number(r.totalPay), 0),
+    total: totalCount,
+    draft,
+    approved,
+    totalPaid,
   };
 
   return (
@@ -37,7 +58,7 @@ export default async function PayrollPage() {
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Payroll</h1>
           <p className="mt-1 text-muted-foreground">
-            {stats.total} record{stats.total !== 1 ? 's' : ''}
+            Showing {records.length} of {stats.total} record{stats.total !== 1 ? 's' : ''}
             {stats.approved > 0 ? ` \u00b7 ${stats.approved} pending approval` : ''}
           </p>
         </div>

@@ -10,11 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
-import { useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft, Megaphone, MessageSquare, PenSquare, Send } from 'lucide-react-native'
+import { ChevronLeft, MapPin, Megaphone, MessageSquare, Package, PenSquare, Send } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import {
   ownerApi,
@@ -28,6 +28,7 @@ import RecipientSelector, {
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
 import { MessageSkeleton } from '../../../components/skeletons/MessageSkeleton'
+import { useThemeColors } from '../../../constants/tokens'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,22 +76,32 @@ interface ConversationRowProps {
 }
 
 function ConversationRow({ conversation, onPress }: ConversationRowProps) {
+  const c = useThemeColors()
+  const isLoad = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('load:')
+  const isRoute = typeof conversation.recipientId === 'string' && conversation.recipientId.startsWith('route:')
+
+  let avatarBg: string = c.surfaceElevated
+  if (conversation.isBroadcast) avatarBg = c.brand
+  else if (isLoad) avatarBg = '#059669'
+  else if (isRoute) avatarBg = '#d97706'
+
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.75}
-      className="flex-row items-center px-4 py-3 border-b border-slate-800"
+      className="flex-row items-center px-4 py-3"
+      style={{ borderBottomWidth: 1, borderBottomColor: c.border }}
     >
       {/* Avatar */}
-      <View
-        className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
-          conversation.isBroadcast ? 'bg-sky-600' : 'bg-slate-700'
-        }`}
-      >
+      <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: avatarBg }}>
         {conversation.isBroadcast ? (
           <Megaphone size={18} color="#ffffff" />
+        ) : isLoad ? (
+          <Package size={18} color="#ffffff" />
+        ) : isRoute ? (
+          <MapPin size={18} color="#ffffff" />
         ) : (
-          <Text className="text-white text-xs font-bold">
+          <Text className="text-xs font-bold" style={{ color: '#ffffff' }}>
             {getInitials(conversation.recipientName)}
           </Text>
         )}
@@ -98,16 +109,16 @@ function ConversationRow({ conversation, onPress }: ConversationRowProps) {
 
       {/* Content */}
       <View className="flex-1 min-w-0">
-        <Text className="text-sm font-semibold text-white" numberOfLines={1}>
+        <Text className="text-sm font-semibold" style={{ color: c.textPrimary }} numberOfLines={1}>
           {conversation.recipientName}
         </Text>
-        <Text className="text-xs text-slate-400 mt-0.5" numberOfLines={1}>
+        <Text className="text-xs mt-0.5" style={{ color: c.textSecondary }} numberOfLines={1}>
           {conversation.lastMessage}
         </Text>
       </View>
 
       {/* Timestamp */}
-      <Text className="text-xs text-slate-500 ml-2 flex-shrink-0">
+      <Text className="text-xs ml-2 flex-shrink-0" style={{ color: c.textTertiary }}>
         {timeAgo(conversation.lastMessageAt)}
       </Text>
     </TouchableOpacity>
@@ -123,21 +134,23 @@ interface MessageBubbleProps {
 }
 
 function MessageBubble({ message }: MessageBubbleProps) {
+  const c = useThemeColors()
   const isOwner = message.senderRole.toUpperCase() === 'OWNER'
 
   return (
     <View className={`mb-3 px-4 ${isOwner ? 'items-end' : 'items-start'}`}>
-      <Text className="text-xs text-slate-400 mb-1">{message.senderName}</Text>
+      <Text className="text-xs mb-1" style={{ color: c.textSecondary }}>{message.senderName}</Text>
       <View
         className={`max-w-[80%] px-4 py-3 ${
           isOwner
             ? 'bg-sky-600 rounded-2xl rounded-br-sm'
-            : 'bg-slate-700 rounded-2xl rounded-bl-sm'
+            : 'rounded-2xl rounded-bl-sm'
         }`}
+        style={!isOwner ? { backgroundColor: c.surfaceElevated } : undefined}
       >
-        <Text className="text-white text-sm leading-5">{message.body}</Text>
+        <Text className="text-sm leading-5" style={{ color: '#ffffff' }}>{message.body}</Text>
       </View>
-      <Text className="text-xs text-slate-500 mt-1">{formatTime(message.createdAt)}</Text>
+      <Text className="text-xs mt-1" style={{ color: c.textTertiary }}>{formatTime(message.createdAt)}</Text>
     </View>
   )
 }
@@ -147,16 +160,19 @@ function MessageBubble({ message }: MessageBubbleProps) {
 // ---------------------------------------------------------------------------
 
 export default function OwnerFleetScreen() {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const { driverId } = useLocalSearchParams<{ driverId?: string }>()
 
   const [activeConversation, setActiveConversation] = useState<ActiveConversation | null>(null)
   const [selectorVisible, setSelectorVisible] = useState(false)
   const [inputText, setInputText] = useState('')
   const [threadMessages, setThreadMessages] = useState<ConversationMessage[]>([])
+  const [threadLoading, setThreadLoading] = useState(false)
 
-  const flatListRef = useRef<FlashList<ConversationMessage>>(null)
+  const flatListRef = useRef<FlashListRef<ConversationMessage>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const didPreSelect = useRef(false)
 
@@ -207,11 +223,14 @@ export default function OwnerFleetScreen() {
 
   const fetchThread = useCallback(async () => {
     if (!token || !activeConversation) return
+    setThreadLoading(true)
     try {
       const data = await ownerApi.getConversationThread(token, activeConversation.recipientId)
       setThreadMessages(data.messages)
     } catch {
       // Silent background refresh failure
+    } finally {
+      setThreadLoading(false)
     }
   }, [token, activeConversation])
 
@@ -227,6 +246,7 @@ export default function OwnerFleetScreen() {
   useEffect(() => {
     if (activeConversation) {
       setThreadMessages([])
+      setThreadLoading(true)
       fetchThread()
     }
   }, [activeConversation?.recipientId]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -309,17 +329,31 @@ export default function OwnerFleetScreen() {
 
   if (!activeConversation) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['top']}>
         <AnimatedScreen>
           {/* Header */}
           <View className="flex-row items-center justify-between px-4 pt-3 pb-4">
-            <Text className="text-2xl font-bold text-white">Messages</Text>
+            <View className="flex-row items-center gap-2">
+              <TouchableOpacity
+                accessibilityLabel="Go back"
+                accessibilityRole="button"
+                onPress={() => router.back()}
+                hitSlop={8}
+                className="mr-1"
+              >
+                <ChevronLeft size={24} color={c.textSecondary} />
+              </TouchableOpacity>
+              <Text className="text-2xl font-bold" style={{ color: c.textPrimary }}>Messages</Text>
+            </View>
             <TouchableOpacity
+              accessibilityLabel="Compose message"
+              accessibilityRole="button"
               onPress={() => setSelectorVisible(true)}
-              className="w-9 h-9 items-center justify-center rounded-xl bg-slate-800"
+              className="w-9 h-9 items-center justify-center rounded-xl"
+              style={{ backgroundColor: c.surfaceCard }}
               hitSlop={8}
             >
-              <PenSquare size={18} color="#38bdf8" />
+              <PenSquare size={18} color={c.brand} />
             </TouchableOpacity>
           </View>
 
@@ -333,11 +367,11 @@ export default function OwnerFleetScreen() {
             </View>
           ) : conversations.length === 0 ? (
             <View className="flex-1 items-center justify-center px-8">
-              <MessageSquare color="#334155" size={52} />
-              <Text className="text-white text-lg font-semibold mt-4 text-center">
+              <MessageSquare color={c.surfaceElevated} size={52} />
+              <Text className="text-lg font-semibold mt-4 text-center" style={{ color: c.textPrimary }}>
                 No conversations yet
               </Text>
-              <Text className="text-slate-500 text-sm mt-2 text-center">
+              <Text className="text-sm mt-2 text-center" style={{ color: c.textTertiary }}>
                 Tap the compose button to start messaging
               </Text>
             </View>
@@ -347,14 +381,14 @@ export default function OwnerFleetScreen() {
               keyExtractor={(item) =>
                 item.isBroadcast ? 'broadcast' : (item.recipientId ?? 'unknown')
               }
-              estimatedItemSize={68}
+
               showsVerticalScrollIndicator={false}
               refreshControl={
                 <RefreshControl
                   refreshing={convsRefetching}
                   onRefresh={refetchConvs}
-                  tintColor="#38bdf8"
-                  colors={['#38bdf8']}
+                  tintColor={c.brand}
+                  colors={[c.brand]}
                 />
               }
               renderItem={({ item }) => (
@@ -390,21 +424,25 @@ export default function OwnerFleetScreen() {
   // ---------------------------------------------------------------------------
 
   const canSend = inputText.trim().length > 0 && !isSending
-  const isThreadLoading = threadMessages.length === 0
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900" edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['top']}>
       <AnimatedScreen>
         {/* Header bar */}
-        <View className="flex-row items-center bg-slate-900 border-b border-slate-800 py-3 px-4">
+        <View
+          className="flex-row items-center py-3 px-4"
+          style={{ backgroundColor: c.background, borderBottomWidth: 1, borderBottomColor: c.border }}
+        >
           <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
             onPress={() => setActiveConversation(null)}
             className="mr-2 p-1"
             hitSlop={8}
           >
-            <ChevronLeft size={24} color="#94a3b8" />
+            <ChevronLeft size={24} color={c.textSecondary} />
           </Pressable>
-          <Text className="flex-1 text-lg font-semibold text-white text-center mr-8" numberOfLines={1}>
+          <Text className="flex-1 text-lg font-semibold text-center mr-8" style={{ color: c.textPrimary }} numberOfLines={1}>
             {activeConversation.recipientName}
           </Text>
         </View>
@@ -414,7 +452,7 @@ export default function OwnerFleetScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
           {/* Loading state */}
-          {isThreadLoading ? (
+          {threadLoading ? (
             <View className="flex-1 pt-2">
               <MessageSkeleton isDriver={false} />
               <MessageSkeleton isDriver={true} />
@@ -423,8 +461,8 @@ export default function OwnerFleetScreen() {
             </View>
           ) : threadMessages.length === 0 ? (
             <View className="flex-1 items-center justify-center px-8">
-              <MessageSquare color="#334155" size={44} />
-              <Text className="text-slate-500 text-sm mt-3 text-center">
+              <MessageSquare color={c.surfaceElevated} size={44} />
+              <Text className="text-sm mt-3 text-center" style={{ color: c.textTertiary }}>
                 No messages yet. Say hello!
               </Text>
             </View>
@@ -433,7 +471,7 @@ export default function OwnerFleetScreen() {
               ref={flatListRef}
               data={threadMessages}
               keyExtractor={(item) => item.id}
-              estimatedItemSize={70}
+
               renderItem={({ item }) => <MessageBubble message={item} />}
               contentContainerStyle={{ paddingTop: 12, paddingBottom: 8 }}
               onContentSizeChange={() => {
@@ -443,11 +481,15 @@ export default function OwnerFleetScreen() {
           )}
 
           {/* Input bar */}
-          <View className="px-4 py-3 border-t border-slate-800 flex-row items-end gap-2">
+          <View
+            className="px-4 py-3 flex-row items-end gap-2"
+            style={{ borderTopWidth: 1, borderTopColor: c.border }}
+          >
             <TextInput
-              className="flex-1 bg-slate-800 text-white rounded-xl px-4 py-3 text-sm"
+              className="flex-1 rounded-xl px-4 py-3 text-sm"
+              style={{ backgroundColor: c.surfaceCard, color: c.textPrimary }}
               placeholder="Type a message..."
-              placeholderTextColor="#64748b"
+              placeholderTextColor={c.textMuted}
               value={inputText}
               onChangeText={setInputText}
               multiline
@@ -455,12 +497,15 @@ export default function OwnerFleetScreen() {
               returnKeyType="default"
             />
             <TouchableOpacity
+              accessibilityLabel="Send message"
+              accessibilityRole="button"
               onPress={handleSend}
               disabled={!canSend}
               hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-              className={`rounded-xl p-3 ${canSend ? 'bg-sky-500' : 'bg-slate-700'}`}
+              className="rounded-xl p-3"
+              style={{ backgroundColor: canSend ? c.brand : c.surfaceElevated }}
             >
-              <Send size={20} color={canSend ? '#ffffff' : '#475569'} />
+              <Send size={20} color={canSend ? '#ffffff' : c.textMuted} />
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>

@@ -1,59 +1,147 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId, tenantRawQuery } from '@/lib/context/tenant-context';
 import { VehicleLocation } from '@/lib/maps/map-utils';
+import { getVehicleStatus } from '@/lib/maps/vehicle-status';
+
+// ─── Typed SQL result row interfaces ─────────────────────────────────────────
+
+interface TruckGPSRow {
+  truckId: string;
+  make: string;
+  model: string;
+  year: number;
+  vin: string;
+  licensePlate: string;
+  gpsId: string | null;
+  latitude: unknown;
+  longitude: unknown;
+  speed: number | null;
+  heading: number | null;
+  timestamp: Date | null;
+}
+
+interface DriverRow {
+  truckId: string;
+  firstName: string;
+  lastName: string;
+}
 
 /**
- * Get the latest GPS location for each vehicle in the fleet
- * Uses DISTINCT ON to fetch only the most recent position per truck
- * Optionally filters by tag
+ * Get the latest GPS location for each vehicle in the fleet (enriched with driver + status)
+ * Includes trucks with no GPS data (they appear with null lat/lng and 'no-location' status)
+ * Used for SSR initial render of the live map page.
  */
-export async function getLatestVehicleLocations(tagId?: string): Promise<VehicleLocation[]> {
+export async function getLatestVehicleLocations(): Promise<VehicleLocation[]> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const tenantId = await requireTenantId();
 
   // Use tenantRawQuery to ensure RLS context is set for raw SQL
-  const results = await tenantRawQuery((tx) =>
-    tagId
-      ? tx.$queryRaw`
-          SELECT DISTINCT ON (gps."truckId")
-            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-            t.make, t.model, t."licensePlate"
-          FROM "GPSLocation" gps
-          INNER JOIN "Truck" t ON gps."truckId" = t.id
-          INNER JOIN "TagAssignment" ta ON ta."truckId" = t.id AND ta."tagId" = ${tagId}::uuid
-          WHERE gps."tenantId" = ${tenantId}::uuid
-          ORDER BY gps."truckId", gps.timestamp DESC
-        `
-      : tx.$queryRaw`
-          SELECT DISTINCT ON (gps."truckId")
-            gps.id, gps."truckId", gps.latitude, gps.longitude, gps.speed, gps.heading, gps.timestamp,
-            t.make, t.model, t."licensePlate"
-          FROM "GPSLocation" gps
-          INNER JOIN "Truck" t ON gps."truckId" = t.id
-          WHERE gps."tenantId" = ${tenantId}::uuid
-          ORDER BY gps."truckId", gps.timestamp DESC
-        `
-  );
+  const truckRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT
+        t.id AS "truckId",
+        t.make,
+        t.model,
+        t.year,
+        t.vin,
+        t."licensePlate",
+        gps.id AS "gpsId",
+        gps.latitude,
+        gps.longitude,
+        gps.speed,
+        gps.heading,
+        gps.timestamp
+      FROM "Truck" t
+      LEFT JOIN LATERAL (
+        SELECT g.id, g.latitude, g.longitude, g.speed, g.heading, g.timestamp
+        FROM "GPSLocation" g
+        WHERE g."truckId" = t.id
+        ORDER BY g.timestamp DESC
+        LIMIT 1
+      ) gps ON TRUE
+      WHERE t."tenantId" = ${tenantId}::uuid
+        AND t."archivedAt" IS NULL
+      ORDER BY t."licensePlate" ASC
+    `
+  )) as TruckGPSRow[];
 
-  // Map results and convert Decimal lat/lng to Number
-  return (results as any[]).map((row) => ({
-    id: row.id,
-    truckId: row.truckId,
-    latitude: Number(row.latitude),
-    longitude: Number(row.longitude),
-    speed: row.speed ? Number(row.speed) : null,
-    heading: row.heading ? Number(row.heading) : null,
-    timestamp: row.timestamp,
-    truck: {
-      make: row.make,
-      model: row.model,
-      licensePlate: row.licensePlate,
-    },
-  }));
+  if (truckRows.length === 0) return [];
+
+  const truckIds = truckRows.map((r: TruckGPSRow) => r.truckId);
+
+  // Find drivers from active routes
+  const routeDriverRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT r."truckId", u."firstName", u."lastName"
+      FROM "Route" r
+      JOIN "User" u ON r."driverId" = u.id
+      WHERE r."tenantId" = ${tenantId}::uuid
+        AND r.status = 'IN_PROGRESS'
+        AND r."truckId" = ANY(${truckIds}::uuid[])
+    `
+  )) as DriverRow[];
+
+  const driverMap = new Map<string, string>();
+  for (const row of routeDriverRows) {
+    driverMap.set(row.truckId, `${row.firstName} ${row.lastName}`);
+  }
+
+  // For trucks without an active route, check active loads
+  const truckIdsNeedingLoadDriver = truckIds.filter((id: string) => !driverMap.has(id));
+  if (truckIdsNeedingLoadDriver.length > 0) {
+    const loadDriverRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT l."truckId", u."firstName", u."lastName"
+        FROM "Load" l
+        JOIN "User" u ON l."driverId" = u.id
+        WHERE l."tenantId" = ${tenantId}::uuid
+          AND l.status IN ('DISPATCHED', 'PICKED_UP', 'IN_TRANSIT')
+          AND l."truckId" = ANY(${truckIdsNeedingLoadDriver}::uuid[])
+        ORDER BY l."pickupDate" DESC
+      `
+    )) as DriverRow[];
+    for (const row of loadDriverRows) {
+      if (!driverMap.has(row.truckId)) {
+        driverMap.set(row.truckId, `${row.firstName} ${row.lastName}`);
+      }
+    }
+  }
+
+  // Map rows to enriched VehicleLocation
+  return truckRows.map((row: TruckGPSRow) => {
+    const lat = row.latitude != null ? Number(row.latitude) : null;
+    const lng = row.longitude != null ? Number(row.longitude) : null;
+    const spd = row.speed != null ? Number(row.speed) : null;
+    const hdg = row.heading != null ? Number(row.heading) : null;
+    const ts = row.timestamp ?? null;
+    const driverName = driverMap.get(row.truckId) ?? null;
+
+    const status = getVehicleStatus(spd, ts ? new Date(ts) : null);
+
+    return {
+      id: row.gpsId ?? row.truckId,
+      truckId: row.truckId,
+      latitude: lat,
+      longitude: lng,
+      speed: spd,
+      heading: hdg,
+      timestamp: ts,
+      truck: {
+        make: row.make,
+        model: row.model,
+        licensePlate: row.licensePlate,
+        year: row.year,
+        vin: row.vin,
+      },
+      driver: driverName ? { name: driverName } : null,
+      status,
+      dispatch: null,
+    };
+  });
 }
 
 /**
@@ -69,7 +157,6 @@ export async function getVehicleRouteHistory(
   const db = await getTenantPrisma();
   const cutoffTime = new Date(Date.now() - hoursBack * 60 * 60 * 1000);
 
-  // @ts-ignore - Prisma 7 extension type issue
   const locations = await db.gPSLocation.findMany({
     where: {
       truckId,
@@ -96,17 +183,24 @@ export async function getVehicleRouteHistory(
 /**
  * Get comprehensive diagnostics for a vehicle
  * Returns truck info, latest GPS location, latest fuel record, engine state, and estimated fuel level
+ * Returns null if the truck is not found or the truckId is invalid.
  */
 export async function getVehicleDiagnostics(truckId: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
+  // Validate truckId — reject empty strings and non-UUID values early
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!truckId || !UUID_RE.test(truckId)) {
+    return null;
+  }
+
+  const tenantId = await requireTenantId();
   const db = await getTenantPrisma();
 
   // Fetch truck data, latest GPS, latest fuel, and active load in parallel
   const [truck, latestGPS, latestFuel, activeLoad] = await Promise.all([
-    // @ts-ignore - Prisma 7 extension type issue
     db.truck.findUnique({
-      where: { id: truckId },
+      where: { id: truckId, tenantId },
       select: {
         make: true,
         model: true,
@@ -115,9 +209,8 @@ export async function getVehicleDiagnostics(truckId: string) {
         odometer: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.gPSLocation.findFirst({
-      where: { truckId },
+      where: { truckId, tenantId },
       orderBy: { timestamp: 'desc' },
       select: {
         latitude: true,
@@ -127,9 +220,8 @@ export async function getVehicleDiagnostics(truckId: string) {
         timestamp: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.fuelRecord.findFirst({
-      where: { truckId },
+      where: { truckId, tenantId },
       orderBy: { timestamp: 'desc' },
       select: {
         quantity: true,
@@ -137,10 +229,10 @@ export async function getVehicleDiagnostics(truckId: string) {
         odometer: true,
       },
     }),
-    // @ts-ignore - Prisma 7 extension type issue
     db.load.findFirst({
       where: {
         truckId,
+        tenantId,
         status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT'] },
       },
       orderBy: { pickupDate: 'desc' },
@@ -163,7 +255,8 @@ export async function getVehicleDiagnostics(truckId: string) {
   ]);
 
   if (!truck) {
-    throw new Error('Truck not found');
+    // Fallback: try carrier_trucks table
+    return getCarrierTruckDiagnostics(truckId, tenantId, db);
   }
 
   // Derive engine state from speed
@@ -222,6 +315,142 @@ export async function getVehicleDiagnostics(truckId: string) {
           driverName: activeLoad.driver
             ? `${activeLoad.driver.firstName} ${activeLoad.driver.lastName}`
             : null,
+        }
+      : null,
+  };
+}
+
+// ─── Carrier truck diagnostics fallback ──────────────────────────────────────
+
+interface CarrierTruckDBRow {
+  unit_number: string;
+  make: string | null;
+  model: string | null;
+  year: number | null;
+  license_plate: string | null;
+  vin: string | null;
+}
+
+interface CarrierDispatchDBRow {
+  id: string;
+  notes: string | null;
+  status: string;
+  scheduled_departure: Date | null;
+  planned_miles: number | null;
+}
+
+interface CarrierDriverDBRow {
+  firstName: string;
+  lastName: string;
+}
+
+/**
+ * Diagnostics fallback for carrier_trucks (not in Prisma's Truck model).
+ * Returns the same shape as getVehicleDiagnostics so vehicle-details-sheet.tsx works unchanged.
+ */
+async function getCarrierTruckDiagnostics(
+  truckId: string,
+  tenantId: string,
+  db: Awaited<ReturnType<typeof getTenantPrisma>>
+) {
+  const DISPATCH_NUM_RE = /\[DISPATCH_NUMBER=([^\]]+)\]/;
+
+  // 1. Query carrier_trucks table
+  const carrierTruckRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT ct.unit_number, ct.make, ct.model, ct.year, ct.license_plate, ct.vin
+      FROM carrier_trucks ct
+      WHERE ct.id = ${truckId}::uuid AND ct.org_id = ${tenantId}::uuid
+    `
+  )) as CarrierTruckDBRow[];
+
+  if (!carrierTruckRows.length) return null;
+  const ct = carrierTruckRows[0];
+
+  // 2. Latest GPS location for this carrier truck
+  const latestGPS = await db.gPSLocation.findFirst({
+    where: { carrierTruckId: truckId },
+    orderBy: { timestamp: 'desc' },
+    select: { latitude: true, longitude: true, speed: true, heading: true, timestamp: true },
+  });
+
+  // 3. Active dispatch
+  const dispatchRows = (await tenantRawQuery((tx) =>
+    tx.$queryRaw`
+      SELECT d.id, d.notes, d.status, d.scheduled_departure, d.planned_miles
+      FROM dispatches d
+      WHERE d.truck_id = ${truckId}::uuid
+        AND d.org_id = ${tenantId}::uuid
+        AND d.status IN ('planned', 'in_progress')
+      ORDER BY d.scheduled_departure DESC
+      LIMIT 1
+    `
+  )) as CarrierDispatchDBRow[];
+
+  const dispatch = dispatchRows[0] ?? null;
+  const dispatchId = dispatch?.id ?? null;
+  const dispatchNumber = dispatch?.notes
+    ? (DISPATCH_NUM_RE.exec(dispatch.notes)?.[1] ?? 'Dispatch')
+    : 'Dispatch';
+
+  // 4. Assigned driver (if dispatch exists)
+  let driverName: string | null = null;
+  if (dispatchId) {
+    const driverRows = (await tenantRawQuery((tx) =>
+      tx.$queryRaw`
+        SELECT u."firstName", u."lastName"
+        FROM dispatches d
+        JOIN carrier_drivers cd ON d.primary_driver_id = cd.id
+        JOIN "User" u ON cd.user_id = u.id
+        WHERE d.id = ${dispatchId}::uuid
+      `
+    )) as CarrierDriverDBRow[];
+
+    if (driverRows.length) {
+      driverName = `${driverRows[0].firstName} ${driverRows[0].lastName}`;
+    }
+  }
+
+  // 5. Derive engine state from GPS speed
+  let engineState: 'running' | 'idle' | 'off' = 'off';
+  if (latestGPS && latestGPS.speed !== null) {
+    if (latestGPS.speed > 5) {
+      engineState = 'running';
+    } else if (latestGPS.speed > 0) {
+      engineState = 'idle';
+    }
+  }
+
+  return {
+    truck: {
+      make: ct.make ?? 'Unknown',
+      model: ct.model ?? '',
+      year: ct.year ?? 0,
+      licensePlate: ct.license_plate ?? ct.unit_number,
+      odometer: 0, // carrier_trucks does not track odometer
+    },
+    latestGPS: latestGPS
+      ? {
+          latitude: Number(latestGPS.latitude),
+          longitude: Number(latestGPS.longitude),
+          speed: latestGPS.speed,
+          heading: latestGPS.heading,
+          timestamp: latestGPS.timestamp,
+        }
+      : null,
+    latestFuel: null,
+    engineState,
+    estimatedFuelLevel: 50, // No fuel data for carrier trucks
+    activeLoad: dispatch
+      ? {
+          id: dispatch.id,
+          loadNumber: dispatchNumber,
+          origin: 'Dispatch',
+          destination: dispatch.status,
+          status: dispatch.status,
+          pickupDate: dispatch.scheduled_departure ?? new Date(),
+          deliveryDate: null,
+          driverName,
         }
       : null,
   };

@@ -6,12 +6,15 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/auth/server';
+import { requireAuth } from '@/lib/auth/supabase';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 const SUPPORT_MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
 
 export async function POST(req: NextRequest) {
   let step = 'init';
@@ -22,6 +25,10 @@ export async function POST(req: NextRequest) {
     step = 'require-tenant';
     const tenantId = await requireTenantId();
 
+    step = 'rate-limit';
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
+
     step = 'parse-body';
     const body = await req.json();
     const { fileName, contentType, sizeBytes } = body;
@@ -30,10 +37,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields: fileName, contentType, sizeBytes' }, { status: 400 });
     }
 
-    // Validate content type: must be image/* or application/pdf
-    if (!contentType.startsWith('image/') && contentType !== 'application/pdf') {
+    // Validate content type: explicit allowlist to block SVG (XSS) and other exotic types
+    if (!ALLOWED_TYPES.includes(contentType)) {
       return NextResponse.json(
-        { error: 'Only images and PDFs are accepted' },
+        { error: 'Only JPEG, PNG, and PDF files are accepted.' },
         { status: 400 }
       );
     }
@@ -63,9 +70,9 @@ export async function POST(req: NextRequest) {
     step = 'done';
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (error) {
-    console.error(`[support/upload-attachment] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[support/upload-attachment] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
-      { error: `[upload-attachment:${step}] ${error instanceof Error ? error.message : String(error)}` },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

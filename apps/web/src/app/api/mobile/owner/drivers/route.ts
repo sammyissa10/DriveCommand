@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
-import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { NextRequest, NextResponse } from 'next/server'
+import { withMobileAuth } from '@/lib/api/with-mobile-auth'
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma'
 
 /**
  * Compute compliance status from a driver's documents.
@@ -9,18 +9,18 @@ import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
  * - OK (green): all documents valid or no expiry date
  */
 function computeComplianceStatus(documents: Array<{ expiryDate: Date | null }>): 'ok' | 'warning' | 'critical' {
-  const now = new Date();
-  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const now = new Date()
+  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
-  let hasWarning = false;
+  let hasWarning = false
 
   for (const doc of documents) {
-    if (!doc.expiryDate) continue;
-    if (doc.expiryDate < now) return 'critical';
-    if (doc.expiryDate < thirtyDaysFromNow) hasWarning = true;
+    if (!doc.expiryDate) continue
+    if (doc.expiryDate < now) return 'critical'
+    if (doc.expiryDate < thirtyDaysFromNow) hasWarning = true
   }
 
-  return hasWarning ? 'warning' : 'ok';
+  return hasWarning ? 'warning' : 'ok'
 }
 
 /**
@@ -40,19 +40,19 @@ function computeComplianceStatus(documents: Array<{ expiryDate: Date | null }>):
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
-export async function GET(req: NextRequest) {
-  const auth = await validateMobileToken(req);
-  if (!auth) return unauthorizedResponse();
+export const GET = withMobileAuth(
+  async (req: NextRequest, { auth }) => {
+    const { tenantId } = auth
 
-  if (auth.role !== 'OWNER') {
-    return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
-  }
-
-  const { tenantId } = auth;
-
-  try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     * SAFETY: Gated by withMobileAuth() above. tenantId and userId come from the verified JWT.
+     */
     const drivers = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`
 
       return tx.user.findMany({
         where: { tenantId, role: 'DRIVER', isActive: true },
@@ -84,33 +84,33 @@ export async function GET(req: NextRequest) {
           },
         },
         orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }],
-      });
-    }, TX_OPTIONS);
+      })
+    }, TX_OPTIONS)
 
-    const now = new Date();
-    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const now = new Date()
+    const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
 
     const result = drivers.map((driver) => {
-      const name = [driver.firstName, driver.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
-      const currentLoadNumber = driver.driverLoads[0]?.loadNumber ?? null;
-      const hosStatus = driver.hosEntries[0]?.status ?? null;
+      const name = [driver.firstName, driver.lastName].filter(Boolean).join(' ') || 'Unknown Driver'
+      const currentLoadNumber = driver.driverLoads[0]?.loadNumber ?? null
+      const hosStatus = driver.hosEntries[0]?.status ?? null
 
       // Compute compliance counts
-      let expiredDocCount = 0;
-      let expiringDocCount = 0;
+      let expiredDocCount = 0
+      let expiringDocCount = 0
       for (const doc of driver.driverDocuments) {
-        if (!doc.expiryDate) continue;
-        if (doc.expiryDate < now) expiredDocCount++;
-        else if (doc.expiryDate < thirtyDaysFromNow) expiringDocCount++;
+        if (!doc.expiryDate) continue
+        if (doc.expiryDate < now) expiredDocCount++
+        else if (doc.expiryDate < thirtyDaysFromNow) expiringDocCount++
       }
 
-      const complianceStatus = computeComplianceStatus(driver.driverDocuments);
+      const complianceStatus = computeComplianceStatus(driver.driverDocuments)
 
       // Status: on duty if HOS is active OR if driver has an active load
       const status =
         hosStatus === 'DRIVING' || hosStatus === 'ON_DUTY' || currentLoadNumber !== null
           ? 'on_duty'
-          : 'off_duty';
+          : 'off_duty'
 
       return {
         id: driver.id,
@@ -123,12 +123,10 @@ export async function GET(req: NextRequest) {
         complianceStatus,
         expiringDocCount,
         expiredDocCount,
-      };
-    });
+      }
+    })
 
-    return NextResponse.json(result);
-  } catch (err) {
-    console.error('[mobile/owner/drivers GET] error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+    return NextResponse.json(result)
+  },
+  { allowedRoles: ['OWNER'] }
+)

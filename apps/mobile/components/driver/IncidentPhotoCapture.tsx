@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import {
   ActionSheetIOS,
   Alert,
-  Image,
   Modal,
   Platform,
   Pressable,
   Text,
   View,
 } from 'react-native'
+import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { Camera, X } from 'lucide-react-native'
 
@@ -87,7 +87,8 @@ export function IncidentPhotoCapture({
             borderRadius: 8,
             backgroundColor: '#1e293b',
           }}
-          resizeMode="cover"
+          contentFit="cover"
+          cachePolicy="memory-disk"
         />
         <Pressable
           onPress={onPhotoRemoved}

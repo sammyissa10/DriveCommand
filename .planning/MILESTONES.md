@@ -81,3 +81,21 @@ See: [.planning/milestones/v5.0-mobile-ROADMAP.md] for full architecture, scope,
 
 ---
 
+## v4.0 Carrier Operations (Shipped: 2026-04-05)
+
+**Phases completed:** 5 build phases + 11 quick tasks (161-181)
+
+**Key accomplishments:**
+- Client and contract management with 6 rate types (flat, per-mile, per-hour, per-ton, per-unit, percentage)
+- Route templates with iCal RRULE recurrence for automated scheduling
+- Auto-dispatch generation (generate forward N days from templates)
+- Multi-stop dispatch execution with ordered stop timeline
+- BOL/POD document enforcement (API returns 422 on missing POD)
+- Carrier load revenue calculation supporting all 6 rate types
+- Driver pay record generation supporting 5 pay models (flat, per-mile, percentage, per-stop, hourly)
+- Carrier compliance alerts for expiring documents and certifications
+- Mobile driver carrier app (dispatches, stops, documents)
+- Integration and security test suites with multi-tenancy and financial integrity coverage
+
+---
+

@@ -1,3 +1,13 @@
+// Server action state — flexible to support both field-level errors and string error messages
+export type ActionState = {
+  error?: Record<string, string[] | undefined> | string
+  success?: boolean
+  message?: string
+  warning?: string
+  data?: unknown
+  values?: Record<string, unknown>
+}
+
 // User roles
 export type UserRole = 'OWNER' | 'DRIVER'
 
@@ -191,6 +201,14 @@ export interface GPSLocation {
   altitude?: number | null
   timestamp: string
   status: 'MOVING' | 'IDLE' | 'OFFLINE'
+}
+
+// Geocoding
+export interface AddressResult {
+  formatted_address: string
+  latitude: number
+  longitude: number
+  place_id: string // Nominatim's place_id as string
 }
 
 // Dashboard

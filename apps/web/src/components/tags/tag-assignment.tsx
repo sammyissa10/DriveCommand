@@ -18,6 +18,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Plus, X, Loader2 } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 type Tag = {
   id: string;
@@ -133,7 +134,7 @@ export function TagAssignment({ tags, trucks, drivers }: TagAssignmentProps) {
       router.refresh();
       setOpenPopover(null);
     } catch (err) {
-      console.error('Failed to assign tag:', err);
+      logger.error('Failed to assign tag:', err);
     } finally {
       setIsAssigning(null);
     }
@@ -145,7 +146,7 @@ export function TagAssignment({ tags, trucks, drivers }: TagAssignmentProps) {
       await unassignTag(assignmentId);
       router.refresh();
     } catch (err) {
-      console.error('Failed to unassign tag:', err);
+      logger.error('Failed to unassign tag:', err);
     } finally {
       setIsUnassigning(null);
     }

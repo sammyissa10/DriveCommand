@@ -4,6 +4,7 @@ import { useActionState, useState, useEffect, useRef } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import { sendOwnerReply, getRouteMessages } from '@/app/(owner)/actions/fleet-messages';
 import type { FleetMessageWithSender } from '@/app/(owner)/actions/fleet-messages';
+import { logger } from '@/lib/logger';
 
 interface RouteMessagesSectionProps {
   routeId: string;
@@ -36,7 +37,7 @@ export function RouteMessagesSection({ routeId, initialMessages }: RouteMessages
       const data = await getRouteMessages(routeId);
       setMessages(data);
     } catch (err) {
-      console.error('[RouteMessagesSection] Failed to fetch messages:', err);
+      logger.error('[RouteMessagesSection] Failed to fetch messages:', err);
     }
   };
 

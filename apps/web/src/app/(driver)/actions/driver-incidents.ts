@@ -1,12 +1,14 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 
 /**
  * Submit an incident report from the driver.
  */
-export async function submitIncidentReport(prevState: any, formData: FormData) {
+export async function submitIncidentReport(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const type = formData.get('type') as string;

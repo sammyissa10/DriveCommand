@@ -5,17 +5,23 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole, getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
 import { documentCreateSchema } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
   try {
     await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
     const tenantId = await requireTenantId();
+
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
+
     const user = await getCurrentUser();
 
     if (!user) {
@@ -61,9 +67,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('[complete-upload] CAUGHT ERROR:', error instanceof Error ? error.stack : String(error));
+    logger.error('[complete-upload] CAUGHT ERROR:', error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
-      { error: `[complete-upload] ${error instanceof Error ? error.message : String(error)}` },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

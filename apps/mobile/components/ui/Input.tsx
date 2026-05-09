@@ -1,5 +1,6 @@
 import React from 'react'
-import { KeyboardTypeOptions, ReturnKeyTypeOptions, Text, TextInput, View } from 'react-native'
+import { KeyboardTypeOptions, Platform, ReturnKeyTypeOptions, StyleSheet, Text, TextInput, View } from 'react-native'
+import { colors, radii, spacing, typography } from '../../constants/tokens'
 
 interface InputProps {
   label?: string
@@ -29,28 +30,59 @@ export function Input({
   blurOnSubmit,
 }: InputProps) {
   return (
-    <View className="mb-4">
+    <View style={styles.container}>
       {label && (
-        <Text className="text-slate-300 text-sm font-medium mb-1.5">{label}</Text>
+        <Text style={styles.label}>{label}</Text>
       )}
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#64748b"
+        placeholderTextColor={colors.textTertiary}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoFocus={autoFocus}
         returnKeyType={returnKeyType}
         onSubmitEditing={onSubmitEditing}
         blurOnSubmit={blurOnSubmit}
-        className={`h-12 bg-slate-800 border rounded-xl px-4 text-white text-base ${
-          error ? 'border-red-500' : 'border-slate-600'
-        }`}
+        clearButtonMode={Platform.select({ ios: 'while-editing', android: 'never' })}
+        style={[styles.input, error ? styles.inputError : styles.inputNormal]}
       />
       {error && (
-        <Text className="text-red-400 text-xs mt-1">{error}</Text>
+        <Text style={styles.errorText}>{error}</Text>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: spacing.lg,
+  },
+  label: {
+    ...typography.footnote,
+    color: colors.textSecondary,
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  input: {
+    height: 48,
+    backgroundColor: colors.surfaceInput,
+    borderRadius: radii.md,
+    borderWidth: 1,
+    paddingHorizontal: spacing.lg,
+    ...typography.body,
+    color: colors.textPrimary,
+  },
+  inputNormal: {
+    borderColor: colors.border,
+  },
+  inputError: {
+    borderColor: colors.danger,
+  },
+  errorText: {
+    ...typography.caption1,
+    color: colors.danger,
+    marginTop: 4,
+  },
+})

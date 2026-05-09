@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { documentMetadataSchema } from '@drivecommand/validation';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/mobile/owner/compliance
@@ -21,18 +23,40 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
   const { tenantId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const result = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
       const now = new Date();
       const thirtyDaysOut = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
+      const docWhere = { tenantId, driverId: { not: null }, expiryDate: { not: null } };
+      const [totalDocs] = await Promise.all([
+        tx.document.count({ where: docWhere }),
+      ]);
+
       // 1. Driver documents with expiry dates
       const driverDocs = await tx.document.findMany({
-        where: { tenantId, driverId: { not: null }, expiryDate: { not: null } },
+        where: docWhere,
+        take: limit,
+        skip: (page - 1) * limit,
         select: {
           id: true,
           driverId: true,
@@ -144,12 +168,21 @@ export async function GET(req: NextRequest) {
         totalTrucksTracked: trackedTruckIds.size,
       };
 
-      return { summary, alerts };
+      return {
+        summary,
+        alerts,
+        pagination: {
+          page,
+          limit,
+          total: totalDocs,
+          totalPages: Math.ceil(totalDocs / limit),
+        },
+      };
     }, TX_OPTIONS);
 
     return NextResponse.json(result);
   } catch (err) {
-    console.error('[mobile/owner/compliance] error:', err);
+    logger.error('[mobile/owner/compliance] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

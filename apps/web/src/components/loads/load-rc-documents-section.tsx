@@ -9,6 +9,7 @@ import { useState, useTransition } from 'react';
 import { Upload, FileText, Trash2, Eye, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { uploadLoadDocument, listLoadDocuments, deleteLoadDocument } from '@/app/(owner)/actions/load-documents';
 import { getDownloadUrl } from '@/app/(owner)/actions/documents';
+import { logger } from '@/lib/logger';
 
 interface LoadDocument {
   id: string;
@@ -47,7 +48,7 @@ export function LoadRCDocumentsSection({ loadId, initialDocuments }: LoadRCDocum
       const updated = await listLoadDocuments(loadId);
       setDocuments(updated);
     } catch (error) {
-      console.error('Failed to refresh documents:', error);
+      logger.error('Failed to refresh documents:', error);
     }
   };
 

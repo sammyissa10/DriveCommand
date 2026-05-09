@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * Compute document expiry status.
@@ -55,10 +57,21 @@ export async function GET(
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
   const { tenantId } = auth;
   const { id: driverId } = await params;
 
   try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const driver = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
@@ -180,7 +193,115 @@ export async function GET(
       })),
     });
   } catch (err) {
-    console.error('[mobile/owner/drivers/[id] GET] error:', err);
+    logger.error('[mobile/owner/drivers/[id] GET] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+/**
+ * PATCH /api/mobile/owner/drivers/[id]
+ *
+ * Updates editable fields on a driver (User with role DRIVER).
+ * Accepts: { firstName?, lastName?, licenseNumber? }
+ *
+ * Requires: Authorization: Bearer <token> (role must be OWNER)
+ */
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const auth = await validateMobileToken(req);
+  if (!auth) return unauthorizedResponse();
+
+  if (auth.role !== 'OWNER') {
+    return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
+  }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
+  const { tenantId } = auth;
+  const { id: driverId } = await params;
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const { firstName, lastName, licenseNumber } = body as Record<string, unknown>;
+
+  // At least one field must be provided
+  const hasFirstName = firstName !== undefined;
+  const hasLastName = lastName !== undefined;
+  const hasLicenseNumber = licenseNumber !== undefined;
+
+  if (!hasFirstName && !hasLastName && !hasLicenseNumber) {
+    return NextResponse.json({ error: 'At least one field must be provided' }, { status: 400 });
+  }
+
+  // Validate field values
+  if (hasFirstName && (typeof firstName !== 'string' || firstName.trim().length === 0)) {
+    return NextResponse.json({ error: 'firstName must be a non-empty string' }, { status: 400 });
+  }
+  if (hasLastName && (typeof lastName !== 'string' || lastName.trim().length === 0)) {
+    return NextResponse.json({ error: 'lastName must be a non-empty string' }, { status: 400 });
+  }
+  if (hasLicenseNumber && licenseNumber !== null && typeof licenseNumber !== 'string') {
+    return NextResponse.json({ error: 'licenseNumber must be a string or null' }, { status: 400 });
+  }
+
+  const updateData: { firstName?: string; lastName?: string; licenseNumber?: string | null } = {};
+  if (hasFirstName) updateData.firstName = (firstName as string).trim();
+  if (hasLastName) updateData.lastName = (lastName as string).trim();
+  if (hasLicenseNumber) updateData.licenseNumber = licenseNumber === null ? null : (licenseNumber as string).trim() || null;
+
+  try {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
+    const updatedDriver = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+      // Verify the driver exists and belongs to this tenant
+      const existing = await tx.user.findFirst({
+        where: { id: driverId, tenantId, role: 'DRIVER' },
+        select: { id: true },
+      });
+      if (!existing) return null;
+
+      return tx.user.update({
+        where: { id: driverId },
+        data: updateData,
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          licenseNumber: true,
+        },
+      });
+    }, TX_OPTIONS);
+
+    if (!updatedDriver) {
+      return NextResponse.json({ error: 'Driver not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      driver: {
+        id: updatedDriver.id,
+        firstName: updatedDriver.firstName,
+        lastName: updatedDriver.lastName,
+        licenseNumber: updatedDriver.licenseNumber,
+      },
+    });
+  } catch (err) {
+    logger.error('[mobile/owner/drivers/[id] PATCH] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

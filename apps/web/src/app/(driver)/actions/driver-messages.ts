@@ -1,15 +1,18 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
-import { getCurrentUser } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { getTenantPrisma } from '@/lib/context/tenant-context';
 import { UserRole } from '@/lib/auth/roles';
 import { sendDriverMessageNotification } from '@/lib/email/send-fleet-message-notifications';
+import { createMessageNotification } from '@/lib/carrier/in-app-notifications';
+import { logger } from '@/lib/logger';
 
 /**
  * Get messages for the current driver.
- * Returns all FleetMessages the driver is involved in — across loads, routes, and unscoped.
- * Ordered chronologically. Never blocks on route/load assignment.
+ * Returns all FleetMessages the driver is involved in — direct messages, broadcasts.
+ * Ordered chronologically.
  */
 export async function getDriverMessages() {
   await requireRole([UserRole.DRIVER]);
@@ -19,42 +22,43 @@ export async function getDriverMessages() {
 
   const prisma = await getTenantPrisma();
 
-  // Collect all load IDs assigned to this driver
-  const driverLoads = await prisma.load.findMany({
-    where: { driverId: user.id },
-    select: { id: true },
-  });
-  const loadIds = driverLoads.map((l) => l.id);
-
-  // Collect all route IDs assigned to this driver (legacy route-scoped messages)
-  const driverRoutes = await prisma.route.findMany({
-    where: { driverId: user.id },
-    select: { id: true },
-  });
-  const routeIds = driverRoutes.map((r) => r.id);
-
   const messages = await prisma.fleetMessage.findMany({
     where: {
+      tenantId: user.tenantId,
       OR: [
-        // Messages on loads assigned to this driver
-        ...(loadIds.length > 0 ? [{ loadId: { in: loadIds } }] : []),
-        // Legacy unscoped messages sent by this driver
-        { loadId: null, routeId: null, senderId: user.id },
-        // Legacy route-scoped messages for this driver
-        ...(routeIds.length > 0 ? [{ routeId: { in: routeIds } }] : []),
+        // Direct messages to/from this driver
+        { senderId: user.id },
+        { recipientId: user.id },
+        // Broadcast messages for this tenant
+        { isBroadcast: true },
       ],
     },
     orderBy: { createdAt: 'asc' },
   });
 
-  return messages;
+  // Mark messages addressed to driver as read
+  const unreadIds = messages
+    .filter((m) => !m.readAt && m.recipientId === user.id)
+    .map((m) => m.id);
+
+  if (unreadIds.length > 0) {
+    await prisma.fleetMessage.updateMany({
+      where: { id: { in: unreadIds } },
+      data: { readAt: new Date() },
+    });
+  }
+
+  return messages.map((m) => ({
+    ...m,
+    isOwn: m.senderId === user.id,
+  }));
 }
 
 /**
- * Send a message from the driver to dispatch.
- * Not scoped to any route or load — any authenticated driver can send at any time.
+ * Send a message from the driver to the owner/dispatcher.
+ * Automatically sets recipientId to the tenant owner and dispatchId to the active dispatch.
  */
-export async function sendDriverMessage(prevState: any, formData: FormData) {
+export async function sendDriverMessage(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.DRIVER]);
 
   const message = formData.get('message') as string;
@@ -69,26 +73,154 @@ export async function sendDriverMessage(prevState: any, formData: FormData) {
 
   const prisma = await getTenantPrisma();
 
+  // Find the tenant owner to set as recipient
+  const owner = await prisma.user.findFirst({
+    where: { tenantId: user.tenantId, role: 'OWNER' },
+    select: { id: true },
+  });
+
+  // Find this driver's CarrierDriver record
+  const carrierDriver = await prisma.carrierDriver.findFirst({
+    where: { userId: user.id, orgId: user.tenantId },
+    select: { id: true },
+  });
+
+  // Find the active dispatch for this driver (planned or in_progress, most recent)
+  let activeDispatchId: string | undefined = undefined;
+  if (carrierDriver) {
+    const activeDispatch = await prisma.carrierDispatch.findFirst({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: user.tenantId,
+        status: { in: ['planned', 'in_progress'] },
+      },
+      orderBy: { scheduledDeparture: 'desc' },
+      select: { id: true },
+    });
+    activeDispatchId = activeDispatch?.id;
+  }
+
+  const audioUrlField = formData.get('audioUrl') as string | null;
+
   await prisma.fleetMessage.create({
     data: {
       tenantId: user.tenantId,
       senderId: user.id,
       senderRole: 'DRIVER',
       body: message.trim(),
+      recipientId: owner?.id ?? null,
+      dispatchId: activeDispatchId ?? null,
+      ...(audioUrlField ? { audioUrl: audioUrlField } : {}),
     },
   });
 
-  // Fire-and-forget: notify owner
+  const driverName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+  // Fire-and-forget: email + in-app notification to owner
   try {
     await sendDriverMessageNotification({
-      driverName: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email,
+      driverName,
       messageBody: message.trim(),
       tenantId: user.tenantId,
       routeName: undefined,
     });
   } catch (emailError) {
-    console.error('[sendDriverMessage] owner notification email failed:', emailError);
+    logger.error('[sendDriverMessage] owner notification email failed:', emailError);
+  }
+
+  if (owner?.id) {
+    createMessageNotification({
+      orgId: user.tenantId,
+      recipientUserId: owner.id,
+      senderName: driverName,
+      messagePreview: message.trim(),
+      dispatchId: activeDispatchId ?? null,
+    }).catch((err) => logger.error('[sendDriverMessage] in-app notification failed:', err));
   }
 
   return { success: true, message: 'Message sent.' };
+}
+
+/**
+ * Send a voice message from the driver.
+ * Creates a FleetMessage with body "Voice message" and the given audioUrl (R2 key).
+ */
+export async function sendDriverVoiceMessage(audioUrl: string): Promise<ActionState> {
+  await requireRole([UserRole.DRIVER]);
+
+  if (!audioUrl || !audioUrl.trim()) {
+    return { error: 'audioUrl is required.' };
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: 'Authentication required.' };
+  }
+
+  const prisma = await getTenantPrisma();
+
+  // Find the tenant owner to set as recipient
+  const owner = await prisma.user.findFirst({
+    where: { tenantId: user.tenantId, role: 'OWNER' },
+    select: { id: true },
+  });
+
+  // Find this driver's CarrierDriver record
+  const carrierDriver = await prisma.carrierDriver.findFirst({
+    where: { userId: user.id, orgId: user.tenantId },
+    select: { id: true },
+  });
+
+  // Find the active dispatch for this driver
+  let activeDispatchId: string | undefined = undefined;
+  if (carrierDriver) {
+    const activeDispatch = await prisma.carrierDispatch.findFirst({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: user.tenantId,
+        status: { in: ['planned', 'in_progress'] },
+      },
+      orderBy: { scheduledDeparture: 'desc' },
+      select: { id: true },
+    });
+    activeDispatchId = activeDispatch?.id;
+  }
+
+  await prisma.fleetMessage.create({
+    data: {
+      tenantId: user.tenantId,
+      senderId: user.id,
+      senderRole: 'DRIVER',
+      body: 'Voice message',
+      recipientId: owner?.id ?? null,
+      dispatchId: activeDispatchId ?? null,
+      audioUrl: audioUrl.trim(),
+    },
+  });
+
+  const driverName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.email;
+
+  // Fire-and-forget: email + in-app notification to owner
+  try {
+    await sendDriverMessageNotification({
+      driverName,
+      messageBody: 'Voice message',
+      tenantId: user.tenantId,
+      routeName: undefined,
+    });
+  } catch (emailError) {
+    logger.error('[sendDriverVoiceMessage] owner notification email failed:', emailError);
+  }
+
+  if (owner?.id) {
+    createMessageNotification({
+      orgId: user.tenantId,
+      recipientUserId: owner.id,
+      senderName: driverName,
+      messagePreview: 'Voice message',
+      dispatchId: activeDispatchId ?? null,
+    }).catch((err) => logger.error('[sendDriverVoiceMessage] in-app notification failed:', err));
+  }
+
+  return { success: true, message: 'Voice message sent.' };
 }

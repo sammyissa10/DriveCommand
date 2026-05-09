@@ -1,4 +1,4 @@
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getIFTAReport, generateIFTACSV } from '@/app/(owner)/actions/ifta';
 import { IFTAQuarterSelector } from '@/components/ifta/ifta-quarter-selector';

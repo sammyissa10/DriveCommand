@@ -17,6 +17,26 @@
     {
       "path": "/api/cron/mark-overdue-invoices",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/carrier-auto-dispatch",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/carrier-compliance-alerts",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/workflow-notifications",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/workflow-digest",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/automations",
+      "schedule": "0 0 * * *"
     }
   ]
 }

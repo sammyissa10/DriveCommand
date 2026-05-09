@@ -1,13 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { sendPushToUser } from '@/lib/notifications/send-push';
+import { sendPushToUser, sendPushToOrg } from '@/lib/notifications/send-push';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/mobile/owner/fleet/messages
  *
  * Returns conversations grouped by recipient, each with the last message preview
- * and timestamp. Captures both sent and received messages for the owner.
+ * and timestamp. Captures both sent and received messages for the owner, plus
+ * load-scoped and route-scoped messages (loadId/routeId set, recipientId null).
  *
  * Requires: Authorization: Bearer <token> (role must be OWNER)
  */
@@ -19,37 +22,66 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
   const { tenantId, userId } = auth;
 
+  const { searchParams } = new URL(req.url);
+  const cursor = searchParams.get('cursor') ?? undefined;
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
+
   try {
-    const messages = await prisma.$transaction(async (tx) => {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
+    const { messages, nextCursor } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      return tx.fleetMessage.findMany({
+      const rawMessages = await tx.fleetMessage.findMany({
         where: {
           tenantId,
           OR: [
             { senderId: userId },
             { recipientId: userId },
             { isBroadcast: true },
+            { loadId: { not: null } },
+            { routeId: { not: null } },
           ],
         },
-        orderBy: { createdAt: 'asc' },
+        ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+        take: limit + 1,
+        orderBy: { createdAt: 'desc' },
         select: {
           id: true,
           senderId: true,
           recipientId: true,
+          loadId: true,
+          routeId: true,
           body: true,
           isBroadcast: true,
           createdAt: true,
         },
       });
+
+      let nextCursor: string | null = null;
+      if (rawMessages.length > limit) {
+        rawMessages.pop();
+        nextCursor = rawMessages[rawMessages.length - 1]?.id ?? null;
+      }
+
+      return { messages: rawMessages, nextCursor };
     }, TX_OPTIONS);
 
     // Collect all participant IDs that need name resolution
     const participantIds = new Set<string>();
     for (const m of messages) {
-      if (!m.isBroadcast) {
+      if (!m.isBroadcast && !m.loadId && !m.routeId) {
         if (m.senderId && m.senderId !== userId) participantIds.add(m.senderId);
         if (m.recipientId && m.recipientId !== userId) participantIds.add(m.recipientId);
       }
@@ -60,14 +92,49 @@ export async function GET(req: NextRequest) {
       const users = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
         return tx.user.findMany({
-          where: { id: { in: Array.from(participantIds) } },
-          select: { id: true, firstName: true, lastName: true },
+          where: { id: { in: Array.from(participantIds) }, tenantId },
+          select: { id: true, firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
 
       for (const u of users) {
-        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
+        const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
         nameMap.set(u.id, name);
+      }
+    }
+
+    // Collect unique loadIds and routeIds for name resolution
+    const loadIds = [...new Set(messages.filter((m) => m.loadId).map((m) => m.loadId as string))];
+    const routeIds = [...new Set(messages.filter((m) => m.routeId).map((m) => m.routeId as string))];
+
+    const loadNameMap = new Map<string, string>();
+    const routeNameMap = new Map<string, string>();
+
+    if (loadIds.length > 0) {
+      const loads = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.load.findMany({
+          where: { id: { in: loadIds }, tenantId },
+          select: { id: true, loadNumber: true },
+        });
+      }, TX_OPTIONS);
+
+      for (const l of loads) {
+        loadNameMap.set(l.id, `Load #${l.loadNumber}`);
+      }
+    }
+
+    if (routeIds.length > 0) {
+      const routes = await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+        return tx.route.findMany({
+          where: { id: { in: routeIds }, tenantId },
+          select: { id: true, name: true, origin: true, destination: true },
+        });
+      }, TX_OPTIONS);
+
+      for (const r of routes) {
+        routeNameMap.set(r.id, r.name || `Route: ${r.origin} → ${r.destination}`);
       }
     }
 
@@ -93,12 +160,24 @@ export async function GET(req: NextRequest) {
         recipientId = null;
         recipientName = 'All Drivers';
         isBroadcast = true;
+      } else if (m.loadId && !m.recipientId) {
+        // Load-scoped message: group by load
+        key = `load:${m.loadId}`;
+        recipientId = `load:${m.loadId}`;
+        recipientName = loadNameMap.get(m.loadId) ?? 'Load Thread';
+        isBroadcast = false;
+      } else if (m.routeId && !m.recipientId) {
+        // Route-scoped message: group by route
+        key = `route:${m.routeId}`;
+        recipientId = `route:${m.routeId}`;
+        recipientName = routeNameMap.get(m.routeId) ?? 'Route Thread';
+        isBroadcast = false;
       } else {
-        // The "other" participant
+        // The "other" participant (direct message, possibly with loadId/routeId set)
         const otherId = m.senderId === userId ? m.recipientId : m.senderId;
         key = otherId ?? 'unknown';
         recipientId = otherId ?? null;
-        recipientName = otherId ? (nameMap.get(otherId) ?? 'Unknown Driver') : 'Unknown Driver';
+        recipientName = otherId ? (nameMap.get(otherId) ?? 'Driver') : 'Driver';
         isBroadcast = false;
       }
 
@@ -131,9 +210,9 @@ export async function GET(req: NextRequest) {
       unreadCount: 0,
     }));
 
-    return NextResponse.json({ conversations: result });
+    return NextResponse.json({ conversations: result, nextCursor });
   } catch (err) {
-    console.error('[mobile/owner/fleet/messages GET] error:', err);
+    logger.error('[mobile/owner/fleet/messages GET] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -158,6 +237,9 @@ export async function POST(req: NextRequest) {
   if (auth.role !== 'OWNER') {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId, userId } = auth;
 
@@ -219,35 +301,35 @@ export async function POST(req: NextRequest) {
     if (!isBroadcast && recipientId) {
       const recipient = await prisma.$transaction(async (tx) => {
         await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        return tx.user.findUnique({
-          where: { id: recipientId },
-          select: { firstName: true, lastName: true },
+        return tx.user.findFirst({
+          where: { id: recipientId, tenantId },
+          select: { firstName: true, lastName: true, email: true },
         });
       }, TX_OPTIONS);
       if (recipient) {
-        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || 'Unknown Driver';
+        recipientName = [recipient.firstName, recipient.lastName].filter(Boolean).join(' ') || recipient.email || 'Driver';
       }
     }
 
-    // Send push notifications — fire and forget
-    const pushTitle = 'Fleet Message';
-    const pushBody = messageBody.slice(0, 100);
+    // Send push notifications via after() to survive serverless context freezing
+    const pushBodyText = messageBody.slice(0, 100);
 
     if (isBroadcast) {
-      // Fetch all active drivers in tenant then send push to each
-      const drivers = await prisma.$transaction(async (tx) => {
-        await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
-        return tx.user.findMany({
-          where: { tenantId, role: 'DRIVER', isActive: true },
-          select: { id: true },
-        });
-      }, TX_OPTIONS);
-
-      for (const driver of drivers) {
-        void sendPushToUser(driver.id, { title: pushTitle, body: pushBody });
-      }
+      after(() =>
+        sendPushToOrg(tenantId, {
+          title: 'New Message from Dispatcher',
+          body: pushBodyText,
+          data: { type: 'fleet_message', messageId: created.id },
+        }, { role: 'DRIVER' })
+      );
     } else if (recipientId) {
-      void sendPushToUser(recipientId, { title: pushTitle, body: pushBody });
+      after(() =>
+        sendPushToUser(recipientId, {
+          title: 'New Message from Dispatcher',
+          body: pushBodyText,
+          data: { type: 'fleet_message', messageId: created.id },
+        })
+      );
     }
 
     const message = {
@@ -260,7 +342,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message }, { status: 201 });
   } catch (err) {
-    console.error('[mobile/owner/fleet/messages POST] error:', err);
+    logger.error('[mobile/owner/fleet/messages POST] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

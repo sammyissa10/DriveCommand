@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Polyline } from 'react-leaflet';
 import { getVehicleRouteHistory } from '@/app/(owner)/live-map/actions';
+import { logger } from '@/lib/logger';
 
 interface RouteHistoryLayerProps {
   truckId: string;
@@ -88,7 +89,7 @@ export default function RouteHistoryLayer({ truckId }: RouteHistoryLayerProps) {
           setPoints(history);
         }
       } catch (error) {
-        console.error('Failed to fetch route history:', error);
+        logger.error('Failed to fetch route history:', error);
         if (mounted) {
           setPoints([]);
         }

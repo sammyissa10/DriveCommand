@@ -1,6 +1,8 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';
@@ -9,6 +11,7 @@ import {
   paymentCreateSchema,
   paymentUpdateSchema,
 } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -16,7 +19,7 @@ const Decimal = Prisma.Decimal;
  * Create a new payment for a route.
  * OWNER/MANAGER only.
  */
-export async function createPayment(prevState: any, formData: FormData) {
+export async function createPayment(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -87,7 +90,7 @@ export async function createPayment(prevState: any, formData: FormData) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error creating payment:', error);
+    logger.error('Error creating payment:', error);
     return { error: 'Failed to create payment' };
   }
 }
@@ -98,7 +101,7 @@ export async function createPayment(prevState: any, formData: FormData) {
  */
 export async function updatePayment(
   paymentId: string,
-  prevState: any,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -175,7 +178,7 @@ export async function updatePayment(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating payment:', error);
+    logger.error('Error updating payment:', error);
     return { error: 'Failed to update payment' };
   }
 }
@@ -216,7 +219,7 @@ export async function deletePayment(paymentId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error deleting payment:', error);
+    logger.error('Error deleting payment:', error);
     return { error: 'Failed to delete payment' };
   }
 }
@@ -240,7 +243,7 @@ export async function listPayments(routeId: string) {
 
     return payments;
   } catch (error) {
-    console.error('Error listing payments:', error);
+    logger.error('Error listing payments:', error);
     return [];
   }
 }

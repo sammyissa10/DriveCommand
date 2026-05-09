@@ -103,16 +103,36 @@ enum RouteStopStatus {
   DEPARTED
 }
 
+enum InAppNotificationType {
+  dispatch_assigned
+  load_delivered
+  pay_record_ready
+  invoice_generated
+  compliance_alert
+  stop_completed
+  needs_assignment
+  dispatch_generated
+  fleet_message
+}
+
 // Models
 model Tenant {
-  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                  String
-  slug                  String?  @unique
-  timezone              String   @default("UTC")
-  isActive              Boolean  @default(true)
-  profitMarginThreshold Decimal  @default(10) @db.Decimal(5, 2)
-  createdAt             DateTime @default(now()) @db.Timestamptz
-  updatedAt             DateTime @updatedAt @db.Timestamptz
+  slug                  String            @unique
+  timezone              String            @default("UTC")
+  contactEmail          String?
+  plan                  String            @default("starter")
+  isActive              Boolean           @default(true)
+  profitMarginThreshold Decimal           @default(10) @db.Decimal(5, 2)
+  createdAt             DateTime          @default(now()) @db.Timestamptz
+  updatedAt             DateTime          @updatedAt @db.Timestamptz
+  fleetSizeBucket       FleetSizeBucket   @default(OWNER_OPERATOR)
+  status                TenantStatus      @default(ACTIVE)
+  manualTrial           Boolean           @default(false)
+  emailConfirmedAt      DateTime?         @db.Timestamptz
+  sampleDataSeeded      Boolean           @default(false)
+  provisioningPhase     ProvisioningPhase @default(MINIMAL)
 
   users                User[]
   trucks               Truck[]
@@ -144,22 +164,66 @@ model Tenant {
   driverRouteJoins     DriverRouteJoin[]
   driverHOSEntries     DriverHOSEntry[]
   driverIncidents      DriverIncident[]
+
+  // Carrier Operations reverse relations
+  carrierClients       CarrierClient[]
+  carrierContracts     CarrierContract[]
+  carrierFacilities    CarrierFacility[]
+  carrierDrivers       CarrierDriver[]
+  carrierTrucks        CarrierTruck[]
+  routeTemplates       RouteTemplate[]
+  carrierDispatches    CarrierDispatch[]
+  carrierLoads         CarrierLoad[]
+  carrierExpenses      CarrierExpense[]
+  driverPayRecords     DriverPayRecord[]
+  inAppNotifications   InAppNotification[]
+  carrierDocumentTypes CarrierDocumentType[]
+
+  // Workflow Engine reverse relations
+  stepTemplates          StepTemplate[]
+  playbooks              Playbook[]
+  playbookInstances      PlaybookInstance[]
+  playbookNotifications  PlaybookNotification[]
+  playbookTriggers       PlaybookTrigger[]
+  dispatchOverrideAudits DispatchOverrideAudit[]
+
+  // Phase 47 reverse relations
+  subscription       Subscription?
+  activationProgress ActivationProgress?
+  automationRules    AutomationRule[]
+  automationRuns     AutomationRun[]
+  appEvents          AppEvent[]
+  tenantMetrics      TenantMetricsDaily[]
+  tenantHealthScore  TenantHealthScore?
+
+  // Driver Pay reverse relations
+  driverCompTemplates     DriverCompensationTemplate[]
+  loadDriverAssignments   LoadDriverAssignment[]
+  loadPayComponents       LoadPayComponent[]
+  driverBonuses           DriverBonus[]
+  driverDeductions        DriverDeduction[]
+  driverSettlements       DriverSettlement[]
+  payComponentAttachments PayComponentAttachment[]
+  driverDisputes          DriverDispute[]
+  driverPayAuditLogs      DriverPayAuditLog[]
 }
 
 model User {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String   @db.Uuid
-  email         String
-  passwordHash  String?
-  role          UserRole
-  isSystemAdmin Boolean  @default(false)
-  firstName     String?
-  lastName      String?
-  licenseNumber String?
-  isActive      Boolean  @default(true)
-  permissions   Json?
-  createdAt     DateTime @default(now()) @db.Timestamptz
-  updatedAt     DateTime @updatedAt @db.Timestamptz
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String   @db.Uuid
+  email           String
+  passwordHash    String?
+  role            UserRole
+  isSystemAdmin   Boolean  @default(false)
+  firstName       String?
+  lastName        String?
+  licenseNumber   String?
+  isActive        Boolean  @default(true)
+  permissions     Json?
+  isDispatchReady Boolean  @default(false)
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+  isSample        Boolean  @default(false)
 
   tenant            Tenant            @relation(fields: [tenantId], references: [id])
   assignedRoutes    Route[]
@@ -185,9 +249,19 @@ model User {
   incidents         DriverIncident[]  @relation(name: "DriverIncidents")
   pushTokens        PushToken[]
 
+  // Carrier Operations reverse relations
+  carrierDriverProfile CarrierDriver?      @relation(name: "CarrierDriverUser")
+  dispatchedRuns       CarrierDispatch[]   @relation(name: "CarrierDispatcher")
+  uploadedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocUploader")
+  verifiedCarrierDocs  CarrierDocument[]   @relation(name: "CarrierDocVerifier")
+  approvedExpenses     CarrierExpense[]    @relation(name: "CarrierExpenseApprover")
+  approvedPayRecords   DriverPayRecord[]   @relation(name: "DriverPayApprover")
+  inAppNotifications   InAppNotification[]
+
   @@unique([email, tenantId])
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, role, isActive])
 }
 
 model Truck {
@@ -201,11 +275,13 @@ model Truck {
   odometer         Int // Whole miles only (federal requirement)
   inMaintenance    Boolean   @default(false)
   documentMetadata Json? // JSONB: registration number, insurance expiry, etc.
+  isDispatchReady  Boolean   @default(false)
   createdById      String?   @db.Uuid
   updatedById      String?   @db.Uuid
   createdAt        DateTime  @default(now()) @db.Timestamptz
   updatedAt        DateTime  @updatedAt @db.Timestamptz
   archivedAt       DateTime? @db.Timestamptz
+  isSample         Boolean   @default(false)
 
   tenant            Tenant             @relation(fields: [tenantId], references: [id])
   createdBy         User?              @relation(name: "TruckCreatedBy", fields: [createdById], references: [id])
@@ -251,6 +327,7 @@ model DriverInvitation {
 
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, status])
 }
 
 model Route {
@@ -295,6 +372,7 @@ model Route {
   @@index([scheduledDate])
   @@index([status])
   @@index([archivedAt])
+  @@index([tenantId, driverId, scheduledDate])
 }
 
 model RouteDriver {
@@ -346,6 +424,7 @@ model Document {
   @@index([loadId])
   @@index([expiryDate])
   @@index([uploadedBy])
+  @@index([tenantId, driverId])
 }
 
 model MaintenanceEvent {
@@ -419,25 +498,29 @@ model NotificationLog {
 }
 
 model GPSLocation {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @db.Uuid
-  truckId   String   @db.Uuid
-  latitude  Decimal  @db.Decimal(10, 8)
-  longitude Decimal  @db.Decimal(11, 8)
-  speed     Int?
-  heading   Int?
-  altitude  Int?
-  accuracy  Decimal? @db.Decimal(6, 2)
-  timestamp DateTime @db.Timestamptz
-  createdAt DateTime @default(now()) @db.Timestamptz
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @db.Uuid
+  truckId        String?  @db.Uuid
+  carrierTruckId String?  @db.Uuid
+  latitude       Decimal  @db.Decimal(10, 8)
+  longitude      Decimal  @db.Decimal(11, 8)
+  speed          Int?
+  heading        Int?
+  altitude       Int?
+  accuracy       Decimal? @db.Decimal(6, 2)
+  timestamp      DateTime @db.Timestamptz
+  createdAt      DateTime @default(now()) @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id])
-  truck  Truck  @relation(fields: [truckId], references: [id])
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  truck        Truck?        @relation(fields: [truckId], references: [id])
+  carrierTruck CarrierTruck? @relation(fields: [carrierTruckId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([truckId])
   @@index([timestamp])
   @@index([tenantId, timestamp])
+  @@index([carrierTruckId])
+  @@index([carrierTruckId, timestamp])
 }
 
 model SafetyEvent {
@@ -669,6 +752,7 @@ model Customer {
   lastLoadDate       DateTime?        @db.Timestamptz
   createdAt          DateTime         @default(now()) @db.Timestamptz
   updatedAt          DateTime         @updatedAt @db.Timestamptz
+  isSample           Boolean          @default(false)
 
   tenant       Tenant                @relation(fields: [tenantId], references: [id])
   interactions CustomerInteraction[]
@@ -718,6 +802,28 @@ enum InvoiceStatus {
   CANCELLED
 }
 
+enum InvoiceItemType {
+  LINEHAUL
+  FUEL_SURCHARGE
+  DETENTION
+  STOP_OFF
+  LAYOVER
+  TONU
+  LUMPER
+  ACCESSORIAL
+  TAX
+  OTHER
+}
+
+enum InvoiceItemUnit {
+  FLAT
+  PER_MILE
+  PER_CWT
+  PER_PIECE
+  PER_HOUR
+  PERCENT
+}
+
 model Invoice {
   id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String        @db.Uuid
@@ -733,6 +839,13 @@ model Invoice {
   dueDate       DateTime      @db.Timestamptz
   paidDate      DateTime?     @db.Timestamptz
   notes         String?
+  bolNumber     String?
+  proNumber     String?
+  poNumber      String?
+  commodity     String?
+  weightLbs     Int?
+  pieces        Int?
+  loadedMiles   Decimal?      @db.Decimal(10, 2)
   createdById   String?       @db.Uuid
   updatedById   String?       @db.Uuid
   createdAt     DateTime      @default(now()) @db.Timestamptz
@@ -751,16 +864,19 @@ model Invoice {
   @@index([dueDate])
   @@index([loadId])
   @@index([archivedAt])
+  @@index([tenantId, status])
 }
 
 model InvoiceItem {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  invoiceId   String  @db.Uuid
-  tenantId    String  @db.Uuid
+  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoiceId   String          @db.Uuid
+  tenantId    String          @db.Uuid
   description String
-  quantity    Decimal @db.Decimal(10, 2)
-  unitPrice   Decimal @db.Decimal(10, 2)
-  amount      Decimal @db.Decimal(12, 2)
+  itemType    InvoiceItemType @default(OTHER)
+  unitType    InvoiceItemUnit @default(FLAT)
+  quantity    Decimal         @db.Decimal(10, 2)
+  unitPrice   Decimal         @db.Decimal(10, 2)
+  amount      Decimal         @db.Decimal(12, 2)
 
   invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   tenant  Tenant  @relation(fields: [tenantId], references: [id])
@@ -866,44 +982,51 @@ model PayrollRecord {
 // ─── Load / Dispatch Models ──────────────────────────────────
 
 model Load {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId      String     @db.Uuid
-  loadNumber    String
-  customerId    String     @db.Uuid
-  routeId       String?    @db.Uuid
-  driverId      String?    @db.Uuid
-  truckId       String?    @db.Uuid
-  origin        String
-  destination   String
-  pickupDate    DateTime   @db.Timestamptz
-  deliveryDate  DateTime?  @db.Timestamptz
-  weight        Int?
-  commodity     String?
-  rate          Decimal    @db.Decimal(12, 2)
-  status        LoadStatus @default(PENDING)
-  notes         String?
-  pickupLat     Decimal?   @db.Decimal(10, 8) // Geocoded from origin address
-  pickupLng     Decimal?   @db.Decimal(11, 8)
-  deliveryLat   Decimal?   @db.Decimal(10, 8) // Geocoded from destination address
-  deliveryLng   Decimal?   @db.Decimal(11, 8)
-  geofenceFlags Json? // JSONB: tracks which alerts have fired
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String     @db.Uuid
+  loadNumber     String
+  customerId     String     @db.Uuid
+  routeId        String?    @db.Uuid
+  sequence       Int?
+  driverId       String?    @db.Uuid
+  truckId        String?    @db.Uuid
+  origin         String
+  destination    String
+  pickupDate     DateTime   @db.Timestamptz
+  deliveryDate   DateTime?  @db.Timestamptz
+  weight         Int?
+  commodity      String?
+  rate           Decimal    @db.Decimal(12, 2)
+  status         LoadStatus @default(PENDING)
+  notes          String?
+  pickupLat      Decimal?   @db.Decimal(10, 8) // Geocoded from origin address
+  pickupLng      Decimal?   @db.Decimal(11, 8)
+  deliveryLat    Decimal?   @db.Decimal(10, 8) // Geocoded from destination address
+  deliveryLng    Decimal?   @db.Decimal(11, 8)
+  geofenceFlags  Json? // JSONB: tracks which alerts have fired
   // shape: { pickupAlerted: boolean, deliveryAlerted: boolean }
-  trackingToken String?    @unique // Public token for customer shipment tracking
-  createdById   String?    @db.Uuid
-  updatedById   String?    @db.Uuid
-  createdAt     DateTime   @default(now()) @db.Timestamptz
-  updatedAt     DateTime   @updatedAt @db.Timestamptz
-  archivedAt    DateTime?  @db.Timestamptz
+  trackingToken  String?    @unique // Public token for customer shipment tracking
+  createdById    String?    @db.Uuid
+  updatedById    String?    @db.Uuid
+  createdAt      DateTime   @default(now()) @db.Timestamptz
+  updatedAt      DateTime   @updatedAt @db.Timestamptz
+  archivedAt     DateTime?  @db.Timestamptz
+  pickupStopId   String?    @db.Uuid // FK → RouteStop (set when load is assigned to a route)
+  deliveryStopId String?    @db.Uuid // FK → RouteStop
+  isSample       Boolean    @default(false)
 
-  tenant    Tenant     @relation(fields: [tenantId], references: [id])
-  customer  Customer   @relation(fields: [customerId], references: [id])
-  route     Route?     @relation(fields: [routeId], references: [id])
-  driver    User?      @relation(name: "DriverLoads", fields: [driverId], references: [id])
-  truck     Truck?     @relation(fields: [truckId], references: [id])
-  createdBy User?      @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
-  updatedBy User?      @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
-  invoices  Invoice[]
-  documents Document[]
+  tenant       Tenant      @relation(fields: [tenantId], references: [id])
+  customer     Customer    @relation(fields: [customerId], references: [id])
+  route        Route?      @relation(fields: [routeId], references: [id])
+  driver       User?       @relation(name: "DriverLoads", fields: [driverId], references: [id])
+  truck        Truck?      @relation(fields: [truckId], references: [id])
+  createdBy    User?       @relation(name: "LoadCreatedBy", fields: [createdById], references: [id])
+  updatedBy    User?       @relation(name: "LoadUpdatedBy", fields: [updatedById], references: [id])
+  invoices     Invoice[]
+  documents    Document[]
+  routeStops   RouteStop[] @relation(name: "RouteStopLoad")
+  pickupStop   RouteStop?  @relation(name: "LoadPickupStop", fields: [pickupStopId], references: [id])
+  deliveryStop RouteStop?  @relation(name: "LoadDeliveryStop", fields: [deliveryStopId], references: [id])
 
   @@unique([tenantId, loadNumber])
   @@index([tenantId])
@@ -914,6 +1037,8 @@ model Load {
   @@index([pickupDate])
   @@index([trackingToken])
   @@index([archivedAt])
+  @@index([routeId, sequence])
+  @@index([tenantId, status, archivedAt])
 }
 
 // ─── Integration Models ──────────────────────────────────────
@@ -966,7 +1091,7 @@ enum TicketMessageSenderType {
 model SupportTicket {
   id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   ticketNumber  String                @unique
-  tenantId      String                @db.Uuid
+  tenantId      String?               @db.Uuid
   submittedBy   String                @db.Uuid
   fromPage      String
   category      SupportTicketCategory @default(GENERAL)
@@ -1004,28 +1129,37 @@ model TicketMessage {
 // ─── Multi-Stop Route Models ─────────────────────────────────
 
 model RouteStop {
-  id          String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  routeId     String          @db.Uuid
-  tenantId    String          @db.Uuid
-  position    Int // 1-based ordering
-  type        RouteStopType
-  address     String
-  lat         Decimal?        @db.Decimal(10, 8)
-  lng         Decimal?        @db.Decimal(11, 8)
-  scheduledAt DateTime?       @db.Timestamptz
-  arrivedAt   DateTime?       @db.Timestamptz
-  departedAt  DateTime?       @db.Timestamptz
-  notes       String?
-  status      RouteStopStatus @default(PENDING)
-  geofenceHit Boolean         @default(false)
-  createdAt   DateTime        @default(now()) @db.Timestamptz
-  updatedAt   DateTime        @updatedAt @db.Timestamptz
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId      String          @db.Uuid
+  tenantId     String          @db.Uuid
+  loadId       String?         @db.Uuid // Links stop to the load it serves (nullable: fuel/weigh stops have no load)
+  position     Int // 1-based ordering
+  type         RouteStopType
+  address      String
+  lat          Decimal?        @db.Decimal(10, 8)
+  lng          Decimal?        @db.Decimal(11, 8)
+  scheduledAt  DateTime?       @db.Timestamptz
+  arrivedAt    DateTime?       @db.Timestamptz
+  departedAt   DateTime?       @db.Timestamptz
+  notes        String?
+  contactName  String? // Shipper/receiver contact at this stop
+  contactPhone String?
+  bolNumber    String? // Bill of Lading number for this stop's load
+  poNumber     String? // Customer PO number
+  status       RouteStopStatus @default(PENDING)
+  geofenceHit  Boolean         @default(false)
+  createdAt    DateTime        @default(now()) @db.Timestamptz
+  updatedAt    DateTime        @updatedAt @db.Timestamptz
 
-  route  Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id])
+  route            Route  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  tenant           Tenant @relation(fields: [tenantId], references: [id])
+  load             Load?  @relation(name: "RouteStopLoad", fields: [loadId], references: [id])
+  pickupForLoads   Load[] @relation(name: "LoadPickupStop")
+  deliveryForLoads Load[] @relation(name: "LoadDeliveryStop")
 
   @@index([routeId])
   @@index([tenantId])
+  @@index([loadId])
   @@index([routeId, position])
   @@index([status])
 }
@@ -1066,22 +1200,34 @@ model DriverRouteJoin {
 // ─── Fleet Messaging Models ──────────────────────────────────
 
 model FleetMessage {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId    String   @db.Uuid
-  routeId     String?  @db.Uuid
-  loadId      String?  @db.Uuid
-  senderId    String   @db.Uuid
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String    @db.Uuid
+  routeId     String?   @db.Uuid
+  loadId      String?   @db.Uuid
+  dispatchId  String?   @db.Uuid
+  senderId    String    @db.Uuid
   senderRole  String
   body        String
-  recipientId String?  @db.Uuid
-  isBroadcast Boolean  @default(false)
-  createdAt   DateTime @default(now()) @db.Timestamptz
+  recipientId String?   @db.Uuid
+  isBroadcast Boolean   @default(false)
+  readAt      DateTime? @db.Timestamptz
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+
+  stopId   String? @map("stop_id") @db.Uuid
+  audioUrl String? @map("audio_url")
+
+  dispatch CarrierDispatch? @relation(fields: [dispatchId], references: [id], onDelete: SetNull)
+  stop     CarrierStop?     @relation(fields: [stopId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([routeId])
   @@index([loadId])
+  @@index([dispatchId])
+  @@index([stopId])
+  @@index([recipientId])
   @@index([createdAt])
   @@index([senderId])
+  @@index([tenantId, createdAt])
 }
 
 // ─── Push Token Models ───────────────────────────────────────
@@ -1120,6 +1266,300 @@ enum IncidentSeverity {
   LOW
   MEDIUM
   HIGH
+}
+
+// Workflow Engine Enums
+enum PlaybookEntityType {
+  DRIVER
+  VEHICLE
+  PARTNER
+  DISPATCH
+  OTHER
+}
+
+enum PlaybookCategory {
+  ONBOARDING
+  SAFETY
+  OPERATIONS
+  COMPLIANCE
+  PARTNER
+  CUSTOM
+  VEHICLE_INSPECTION
+}
+
+enum InstanceStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  BLOCKED
+}
+
+enum StepStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETE
+  FAILED
+  SKIPPED
+}
+
+enum NotifType {
+  STEP_ASSIGNED
+  STEP_OVERDUE
+  INSTANCE_BLOCKED
+  DISPATCH_READY
+  STEP_FAILED
+  APPROVAL_NEEDED
+  DAILY_DIGEST
+}
+
+enum OverdueRecipient {
+  DRIVER
+  OWNER
+  BOTH
+}
+
+enum NotifChannel {
+  PUSH
+  SMS
+  IN_APP
+  EMAIL
+}
+
+enum PhaseType {
+  PRE_START
+  DAY_1
+  WEEK_1
+  ONGOING
+  NONE
+}
+
+enum StepType {
+  DOCUMENT_UPLOAD
+  FORM_FILL
+  INSPECTION_ITEM
+  SIGNATURE
+  TRAINING_ACK
+  APPROVAL
+  THIRD_PARTY
+  CUSTOM_NOTE
+}
+
+enum AssigneeRole {
+  DRIVER
+  DISPATCHER
+  MECHANIC
+  SAFETY_MANAGER
+  THIRD_PARTY
+}
+
+enum TriggerEvent {
+  ON_DRIVER_CREATE
+  ON_VEHICLE_CREATE
+  ON_DISPATCH_CREATE
+  ON_DISPATCH_DEPART
+  ON_DISPATCH_DELIVER
+  ON_PARTNER_CREATE
+  MANUAL_ONLY
+  RECURRING
+}
+
+// ─── Phase 47 Enums ───────────────────────────────────────────────────────────
+
+enum FleetSizeBucket {
+  OWNER_OPERATOR
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum TenantStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+  CANCELLED
+}
+
+enum ProvisioningPhase {
+  MINIMAL
+  HYDRATED
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  SUSPENDED
+}
+
+enum AutomationScope {
+  SYSTEM
+  TENANT
+}
+
+enum AutomationRunStatus {
+  FIRED
+  SKIPPED_CONDITION
+  SKIPPED_ALREADY_RAN
+  FAILED
+  PENDING
+  SENT
+}
+
+// ─── Driver Pay Enums ─────────────────────────────────────────────────────────
+
+enum EmploymentType {
+  W2_EMPLOYEE
+  OWNER_OPERATOR_1099
+  LEASE_OPERATOR
+}
+
+enum DriverPayType {
+  CPM
+  HOURLY
+  FLAT_PER_LOAD
+  PERCENTAGE
+  DAILY
+  SALARY
+}
+
+enum RateUnit {
+  PER_MILE
+  PER_HOUR
+  PER_LOAD
+  PERCENTAGE
+  PER_DAY
+  ANNUAL
+}
+
+enum DriverRole {
+  MAIN_DRIVER
+  CO_DRIVER
+}
+
+enum MileageSource {
+  PCMILER
+  GOOGLE
+  ELD
+  MANUAL
+  RAND_MCNALLY
+}
+
+enum DriverAssignmentStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PAID
+  DISPUTED
+  CORRECTED
+}
+
+enum PayComponentType {
+  BASE_PAY_MILEAGE
+  BASE_PAY_HOURLY
+  BASE_PAY_FLAT
+  BASE_PAY_PERCENTAGE
+  BASE_PAY_DAILY
+  FUEL_SURCHARGE
+  OVERTIME
+  HAZMAT_PREMIUM
+  HOLIDAY_PREMIUM
+  LOAD_COMPLETION_BONUS
+  FUEL_EFFICIENCY_BONUS
+  DETENTION
+  LAYOVER
+  TONU
+  STOP_OFF
+  TARP
+  BREAKDOWN
+  PER_DIEM
+  LUMPER_REIMBURSEMENT
+  SCALE_REIMBURSEMENT
+  FUEL_REIMBURSEMENT
+  ADVANCE_REPAYMENT
+  ESCROW_CONTRIBUTION
+  FUEL_CARD_DEBT
+  CARGO_CLAIM
+  EQUIPMENT_DAMAGE
+  GARNISHMENT
+  CHILD_SUPPORT
+  ADJUSTMENT_POSITIVE
+  ADJUSTMENT_NEGATIVE
+}
+
+enum PayComponentCategory {
+  EARNING
+  BONUS
+  ACCESSORIAL
+  ALLOWANCE
+  REIMBURSEMENT
+  DEDUCTION
+  ADJUSTMENT
+}
+
+enum PayComponentUnit {
+  MILES
+  HOURS
+  STOPS
+  DAYS
+  FLAT
+  PERCENTAGE
+}
+
+enum BonusType {
+  SIGN_ON
+  RETENTION
+  SAFETY
+  FUEL_EFFICIENCY
+  REFERRAL
+  PERFORMANCE
+  OTHER
+}
+
+enum DeductionType {
+  ADVANCE
+  ESCROW
+  GARNISHMENT
+  CHILD_SUPPORT
+  EQUIPMENT_LEASE
+  INSURANCE
+  OTHER
+}
+
+enum DeductionSchedule {
+  ONE_TIME
+  EVERY_SETTLEMENT
+  FIXED_INSTALLMENTS
+}
+
+enum DriverSettlementStatus {
+  DRAFT
+  FINALIZED
+  PAID
+  VOIDED
+}
+
+enum DisputeTargetType {
+  LOAD_PAY
+  SETTLEMENT
+  COMPONENT
+}
+
+enum DisputeIssueCategory {
+  WRONG_AMOUNT
+  MISSING_PAY
+  WRONG_MILES
+  MISSING_RECEIPT
+  OTHER
+}
+
+enum DisputeStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED_PAID
+  RESOLVED_NO_CHANGE
+  CLOSED
 }
 
 model DriverHOSEntry {
@@ -1165,4 +1605,1271 @@ model DriverIncident {
   @@index([tenantId, reportedAt])
   @@index([category])
   @@index([severity])
+}
+
+// ─── Carrier Operations Models ───────────────────────────────────────────────
+// All carrier models use orgId (maps to org_id in SQL) for tenant scoping.
+// Model names are prefixed to avoid conflicts with existing models
+// (Load, Document, Truck already exist in this schema).
+
+model CarrierClient {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId          String   @map("org_id") @db.Uuid
+  name           String
+  dbaName        String?  @map("dba_name")
+  mcNumber       String?  @map("mc_number")
+  dotNumber      String?  @map("dot_number")
+  taxId          String?  @map("tax_id")
+  primaryContact String?  @map("primary_contact")
+  email          String?
+  phone          String?
+  website        String?
+  addressLine1   String?  @map("address_line1")
+  addressLine2   String?  @map("address_line2")
+  city           String?
+  state          String?
+  zip            String?
+  country        String   @default("US")
+  status         String   @default("active")
+  isSample       Boolean  @default(false) @map("is_sample")
+  portalAccess   Boolean  @default(false) @map("portal_access")
+  portalEmail    String?  @map("portal_email")
+  paymentTerms   Int      @default(30) @map("payment_terms")
+  creditLimit    Decimal? @map("credit_limit") @db.Decimal(12, 2)
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant           Tenant            @relation(fields: [orgId], references: [id])
+  contracts        CarrierContract[]
+  routeTemplates   RouteTemplate[]
+  stops            CarrierStop[]
+  carrierDocuments CarrierDocument[]
+  expenses         CarrierExpense[]
+  driverPayRecords DriverPayRecord[]
+  carrierLoads     CarrierLoad[]
+
+  @@index([orgId])
+  @@index([status])
+  @@map("clients")
+}
+
+model CarrierContract {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                  String    @map("org_id") @db.Uuid
+  clientId               String    @map("client_id") @db.Uuid
+  contractNumber         String    @unique @map("contract_number")
+  contractName           String?   @map("contract_name")
+  contractType           String    @default("spot") @map("contract_type")
+  effectiveDate          DateTime? @map("effective_date") @db.Date
+  expirationDate         DateTime? @map("expiration_date") @db.Date
+  rateType               String    @default("per_mile") @map("rate_type")
+  baseRate               Decimal?  @map("base_rate") @db.Decimal(10, 4)
+  fuelSurchargeMethod    String    @default("none") @map("fuel_surcharge_method")
+  fuelSurchargeRate      Decimal?  @map("fuel_surcharge_rate") @db.Decimal(6, 4)
+  detentionFreeMinutes   Int       @default(120) @map("detention_free_minutes")
+  detentionRatePerHour   Decimal?  @map("detention_rate_per_hour") @db.Decimal(10, 2)
+  tonuRate               Decimal?  @map("tonu_rate") @db.Decimal(10, 2)
+  layoverRatePerDay      Decimal?  @map("layover_rate_per_day") @db.Decimal(10, 2)
+  paymentTermsOverride   String?   @map("payment_terms_override")
+  autoRenew              Boolean   @default(false) @map("auto_renew")
+  status                 String    @default("active")
+  notes                  String?
+  // Driver Pay additions (Phase 1)
+  defaultFreeTimeMinutes Int?      @map("default_free_time_minutes")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant            @relation(fields: [orgId], references: [id])
+  client         CarrierClient     @relation(fields: [clientId], references: [id])
+  routeTemplates RouteTemplate[]
+  carrierLoads   CarrierLoad[]
+  documents      CarrierDocument[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([orgId])
+  @@map("contracts")
+}
+
+model CarrierFacility {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId               String   @map("org_id") @db.Uuid
+  name                String
+  facilityType        String   @default("terminal") @map("facility_type")
+  addressLine1        String?  @map("address_line1")
+  addressLine2        String?  @map("address_line2")
+  city                String?
+  state               String?
+  zip                 String?
+  country             String   @default("US")
+  latitude            Float?
+  longitude           Float?
+  contactName         String?  @map("contact_name")
+  contactPhone        String?  @map("contact_phone")
+  contactEmail        String?  @map("contact_email")
+  lumperRequired      Boolean  @default(false) @map("lumper_required")
+  appointmentRequired Boolean  @default(false) @map("appointment_required")
+  contacts            Json     @default("[]")
+  notes               String?
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant             Tenant              @relation(fields: [orgId], references: [id])
+  carrierDrivers     CarrierDriver[]
+  routeTemplateStops RouteTemplateStop[]
+  stops              CarrierStop[]
+
+  @@index([orgId])
+  @@index([facilityType])
+  @@map("facilities")
+}
+
+model CarrierDriver {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId          String    @map("org_id") @db.Uuid
+  userId         String?   @unique @map("user_id") @db.Uuid
+  firstName      String    @map("first_name")
+  lastName       String    @map("last_name")
+  email          String?
+  phone          String?
+  cdlNumber      String?   @map("cdl_number")
+  cdlState       String?   @map("cdl_state")
+  cdlClass       String?   @map("cdl_class")
+  cdlExpiry      DateTime? @map("cdl_expiry") @db.Date
+  homeTerminalId String?   @map("home_terminal_id") @db.Uuid
+  payModel       String    @default("per_mile") @map("pay_model")
+  payRate        Decimal?  @map("pay_rate") @db.Decimal(10, 4)
+  payPeriod      String    @default("weekly") @map("pay_period")
+  status         String    @default("active")
+  isSample       Boolean   @default(false) @map("is_sample")
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant                Tenant            @relation(fields: [orgId], references: [id])
+  user                  User?             @relation(name: "CarrierDriverUser", fields: [userId], references: [id])
+  homeTerminal          CarrierFacility?  @relation(fields: [homeTerminalId], references: [id])
+  primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryDriver")
+  coDispatches          CarrierDispatch[] @relation(name: "CoDriver")
+  expenses              CarrierExpense[]
+  driverPayRecords      DriverPayRecord[]
+  defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultDriver")
+
+  // Driver Pay reverse relations
+  compensationTemplates DriverCompensationTemplate[]
+  loadAssignments       LoadDriverAssignment[]
+  driverBonuses         DriverBonus[]
+  referredBonuses       DriverBonus[]                @relation("BonusReferredDriver")
+  driverDeductions      DriverDeduction[]
+  driverSettlements     DriverSettlement[]
+  driverDisputes        DriverDispute[]
+
+  @@index([orgId])
+  @@index([status])
+  @@map("carrier_drivers")
+}
+
+model CarrierTruck {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                String    @map("org_id") @db.Uuid
+  vehicleId            String    @unique @map("vehicle_id") @db.VarChar(50)
+  displayName          String?   @map("display_name") @db.VarChar(200)
+  unitNumber           String    @map("unit_number")
+  year                 Int?
+  make                 String?
+  model                String?
+  vin                  String?
+  truckType            String    @default("semi") @map("truck_type")
+  payloadCapacityLbs   Int?      @map("payload_capacity_lbs")
+  grossWeightLbs       Int?      @map("gross_weight_lbs")
+  licensePlate         String?   @map("license_plate")
+  licenseState         String?   @map("license_state")
+  licenseExpiry        DateTime? @map("license_expiry") @db.Date
+  registrationExpiry   DateTime? @map("registration_expiry") @db.Date
+  insuranceExpiry      DateTime? @map("insurance_expiry") @db.Date
+  currentOdometerMiles Int?      @map("current_odometer_miles")
+  lastOdometerDate     DateTime? @map("last_odometer_date") @db.Date
+  status               String    @default("active")
+  isSample             Boolean   @default(false) @map("is_sample")
+  notes                String?
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant                Tenant            @relation(fields: [orgId], references: [id])
+  primaryDispatches     CarrierDispatch[] @relation(name: "PrimaryTruck")
+  trailerDispatches     CarrierDispatch[] @relation(name: "TrailerTruck")
+  defaultRouteTemplates RouteTemplate[]   @relation(name: "DefaultTruck")
+  gpsLocations          GPSLocation[]
+
+  @@index([orgId])
+  @@index([status])
+  @@map("carrier_trucks")
+}
+
+model RouteTemplate {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                  String   @map("org_id") @db.Uuid
+  templateName           String   @map("template_name")
+  clientId               String   @map("client_id") @db.Uuid
+  contractId             String?  @map("contract_id") @db.Uuid
+  scheduleType           String   @map("schedule_type")
+  recurrenceRule         String?  @map("recurrence_rule")
+  recurrenceTimezone     String   @default("America/Chicago") @map("recurrence_timezone")
+  scheduledDepartureTime String?  @map("scheduled_departure_time")
+  equipmentType          String   @map("equipment_type")
+  tempMinF               Int?     @map("temp_min_f")
+  tempMaxF               Int?     @map("temp_max_f")
+  maxWeightLbs           Int?     @map("max_weight_lbs")
+  commodityDescription   String?  @map("commodity_description")
+  estimatedMiles         Int?     @map("estimated_miles")
+  defaultDriverId        String?  @map("default_driver_id") @db.Uuid
+  defaultTruckId         String?  @map("default_truck_id") @db.Uuid
+  autoGenerateDaysAhead  Int      @default(7) @map("auto_generate_days_ahead")
+  active                 Boolean  @default(true)
+  notes                  String?
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant              @relation(fields: [orgId], references: [id])
+  client        CarrierClient       @relation(fields: [clientId], references: [id])
+  contract      CarrierContract?    @relation(fields: [contractId], references: [id])
+  defaultDriver CarrierDriver?      @relation(name: "DefaultDriver", fields: [defaultDriverId], references: [id])
+  defaultTruck  CarrierTruck?       @relation(name: "DefaultTruck", fields: [defaultTruckId], references: [id])
+  stops         RouteTemplateStop[]
+  dispatches    CarrierDispatch[]
+
+  @@index([clientId])
+  @@index([contractId])
+  @@index([active])
+  @@index([orgId])
+  @@map("route_templates")
+}
+
+model RouteTemplateStop {
+  id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeTemplateId          String   @map("route_template_id") @db.Uuid
+  sequenceOrder            Int      @map("sequence_order")
+  stopType                 String   @map("stop_type")
+  facilityId               String   @map("facility_id") @db.Uuid
+  contactName              String?  @map("contact_name")
+  contactPhone             String?  @map("contact_phone")
+  apptWindowStartOffsetMin Int?     @map("appt_window_start_offset_min")
+  apptWindowEndOffsetMin   Int?     @map("appt_window_end_offset_min")
+  expectedDwellMinutes     Int?     @map("expected_dwell_minutes")
+  commodityDescription     String?  @map("commodity_description")
+  bolRequired              Boolean  @default(true) @map("bol_required")
+  podRequired              Boolean  @default(true) @map("pod_required")
+  specialInstructions      String?  @map("special_instructions")
+  createdAt                DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  routeTemplate RouteTemplate   @relation(fields: [routeTemplateId], references: [id], onDelete: Cascade)
+  facility      CarrierFacility @relation(fields: [facilityId], references: [id])
+
+  @@unique([routeTemplateId, sequenceOrder])
+  @@index([routeTemplateId])
+  @@map("route_template_stops")
+}
+
+model CarrierDispatch {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId              String    @map("org_id") @db.Uuid
+  routeTemplateId    String?   @map("route_template_id") @db.Uuid
+  primaryDriverId    String    @map("primary_driver_id") @db.Uuid
+  coDriverId         String?   @map("co_driver_id") @db.Uuid
+  truckId            String    @map("truck_id") @db.Uuid
+  trailerId          String?   @map("trailer_id") @db.Uuid
+  dispatcherId       String?   @map("dispatcher_id") @db.Uuid
+  scheduledDeparture DateTime  @map("scheduled_departure") @db.Timestamptz
+  actualDeparture    DateTime? @map("actual_departure") @db.Timestamptz
+  scheduledArrival   DateTime? @map("scheduled_arrival") @db.Timestamptz
+  actualArrival      DateTime? @map("actual_arrival") @db.Timestamptz
+  status             String    @default("planned")
+  // relay_handoff_stop_id is a plain UUID — NO FK (intentional: avoids circular reference dispatches→stops→dispatches)
+  relayHandoffStopId String?   @map("relay_handoff_stop_id") @db.Uuid
+  plannedMiles       Decimal?  @map("planned_miles") @db.Decimal(10, 2)
+  actualMiles        Decimal?  @map("actual_miles") @db.Decimal(10, 2)
+  hosCycle           String    @default("us_70") @map("hos_cycle")
+  notes              String?
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant           Tenant            @relation(fields: [orgId], references: [id])
+  routeTemplate    RouteTemplate?    @relation(fields: [routeTemplateId], references: [id])
+  primaryDriver    CarrierDriver     @relation(name: "PrimaryDriver", fields: [primaryDriverId], references: [id])
+  coDriver         CarrierDriver?    @relation(name: "CoDriver", fields: [coDriverId], references: [id])
+  truck            CarrierTruck      @relation(name: "PrimaryTruck", fields: [truckId], references: [id])
+  trailer          CarrierTruck?     @relation(name: "TrailerTruck", fields: [trailerId], references: [id])
+  dispatcher       User?             @relation(name: "CarrierDispatcher", fields: [dispatcherId], references: [id])
+  stops            CarrierStop[]
+  carrierLoads     CarrierLoad[]
+  expenses         CarrierExpense[]
+  driverPayRecords DriverPayRecord[]
+  messages         FleetMessage[]
+  documents        CarrierDocument[]
+
+  @@index([primaryDriverId])
+  @@index([truckId])
+  @@index([status])
+  @@index([scheduledDeparture])
+  @@index([orgId])
+  @@map("dispatches")
+}
+
+model CarrierLoad {
+  id                   String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId                String         @map("org_id") @db.Uuid
+  dispatchId           String?        @map("dispatch_id") @db.Uuid
+  contractId           String?        @map("contract_id") @db.Uuid
+  clientId             String         @map("client_id") @db.Uuid
+  loadType             String         @default("ftl") @map("load_type")
+  referenceNumber      String?        @map("reference_number")
+  bolNumber            String?        @map("bol_number")
+  proNumber            String?        @map("pro_number")
+  poNumber             String?        @map("po_number")
+  commodityDescription String?        @map("commodity_description")
+  commodityWeightLbs   Decimal?       @map("commodity_weight_lbs") @db.Decimal(10, 2)
+  commodityPieces      Int?           @map("commodity_pieces")
+  commodityPallets     Int?           @map("commodity_pallets")
+  hazmat               Boolean        @default(false)
+  hazmatClass          String?        @map("hazmat_class")
+  rateType             String         @default("flat") @map("rate_type")
+  rateAmount           Decimal?       @map("rate_amount") @db.Decimal(12, 2)
+  currency             String         @default("USD")
+  brokerFlag           Boolean        @default(false) @map("broker_flag")
+  carrierCost          Decimal?       @map("carrier_cost") @db.Decimal(12, 2)
+  fuelSurcharge        Decimal?       @map("fuel_surcharge") @db.Decimal(12, 2)
+  detentionAmount      Decimal?       @map("detention_amount") @db.Decimal(12, 2)
+  otherCharges         Decimal?       @map("other_charges") @db.Decimal(12, 2)
+  totalRevenue         Decimal?       @map("total_revenue") @db.Decimal(12, 2)
+  status               String         @default("pending")
+  isSample             Boolean        @default(false) @map("is_sample")
+  specialInstructions  String?        @map("special_instructions")
+  notes                String?
+  pendingStopsJson     String?        @map("pending_stops_json") @db.Text
+  // Driver Pay additions (Phase 1)
+  totalMiles           Decimal?       @map("total_miles") @db.Decimal(10, 2)
+  loadedMiles          Decimal?       @map("loaded_miles") @db.Decimal(10, 2)
+  mileageSource        MileageSource? @map("mileage_source")
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant           Tenant            @relation(fields: [orgId], references: [id])
+  dispatch         CarrierDispatch?  @relation(fields: [dispatchId], references: [id])
+  contract         CarrierContract?  @relation(fields: [contractId], references: [id])
+  client           CarrierClient     @relation(fields: [clientId], references: [id])
+  stops            CarrierStop[]
+  expenses         CarrierExpense[]
+  driverPayRecords DriverPayRecord[]
+  documents        CarrierDocument[]
+
+  // Driver Pay reverse relations
+  driverAssignments LoadDriverAssignment[]
+  payComponents     LoadPayComponent[]
+
+  @@index([clientId])
+  @@index([dispatchId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([orgId])
+  @@map("loads")
+}
+
+model CarrierStop {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dispatchId           String    @map("dispatch_id") @db.Uuid
+  loadId               String?   @map("load_id") @db.Uuid
+  sequenceOrder        Int       @map("sequence_order")
+  stopType             String    @map("stop_type")
+  facilityId           String    @map("facility_id") @db.Uuid
+  clientId             String?   @map("client_id") @db.Uuid
+  appointmentStart     DateTime? @map("appointment_start") @db.Timestamptz
+  appointmentEnd       DateTime? @map("appointment_end") @db.Timestamptz
+  arrivedAt            DateTime? @map("arrived_at") @db.Timestamptz
+  departedAt           DateTime? @map("departed_at") @db.Timestamptz
+  status               String    @default("pending")
+  skipReason           String?   @map("skip_reason")
+  commodityDescription String?   @map("commodity_description")
+  pieces               Int?
+  weightLbs            Decimal?  @map("weight_lbs") @db.Decimal(10, 2)
+  bolNumber            String?   @map("bol_number")
+  podNumber            String?   @map("pod_number")
+  sealNumber           String?   @map("seal_number")
+  bolRequired          Boolean   @default(true)
+  podRequired          Boolean   @default(true)
+  contactName          String?   @map("contact_name")
+  contactPhone         String?   @map("contact_phone")
+  specialInstructions  String?   @map("special_instructions")
+  notes                String?
+  // Driver Pay additions (Phase 1)
+  freeTimeMinutes      Int       @default(120) @map("free_time_minutes")
+  workState            String?   @map("work_state") @db.VarChar(2)
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  dispatch  CarrierDispatch   @relation(fields: [dispatchId], references: [id])
+  load      CarrierLoad?      @relation(fields: [loadId], references: [id])
+  facility  CarrierFacility   @relation(fields: [facilityId], references: [id])
+  client    CarrierClient?    @relation(fields: [clientId], references: [id])
+  documents CarrierDocument[]
+  expenses  CarrierExpense[]
+  messages  FleetMessage[]
+
+  @@unique([dispatchId, sequenceOrder])
+  @@index([dispatchId])
+  @@index([loadId])
+  @@index([clientId])
+  @@index([status])
+  @@index([dispatchId, sequenceOrder])
+  @@map("stops")
+}
+
+model CarrierDocument {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  parentType     String    @map("parent_type")
+  parentId       String    @map("parent_id") @db.Uuid
+  stopId         String?   @map("stop_id") @db.Uuid
+  clientId       String?   @map("client_id") @db.Uuid
+  documentTypeId String?   @map("document_type_id") @db.Uuid
+  loadId         String?   @map("load_id") @db.Uuid
+  dispatchId     String?   @map("dispatch_id") @db.Uuid
+  contractId     String?   @map("contract_id") @db.Uuid
+  documentType   String    @map("document_type")
+  fileUrl        String    @map("file_url")
+  filename       String
+  fileSizeBytes  Int?      @map("file_size_bytes")
+  uploadedBy     String    @map("uploaded_by") @db.Uuid
+  verified       Boolean   @default(false)
+  verifiedBy     String?   @map("verified_by") @db.Uuid
+  verifiedAt     DateTime? @map("verified_at") @db.Timestamptz
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  uploader        User                 @relation(name: "CarrierDocUploader", fields: [uploadedBy], references: [id])
+  verifier        User?                @relation(name: "CarrierDocVerifier", fields: [verifiedBy], references: [id])
+  stop            CarrierStop?         @relation(fields: [stopId], references: [id])
+  client          CarrierClient?       @relation(fields: [clientId], references: [id])
+  documentTypeRef CarrierDocumentType? @relation(fields: [documentTypeId], references: [id])
+  load            CarrierLoad?         @relation(fields: [loadId], references: [id])
+  dispatch        CarrierDispatch?     @relation(fields: [dispatchId], references: [id])
+  contract        CarrierContract?     @relation(fields: [contractId], references: [id])
+  expenses        CarrierExpense[]
+
+  @@index([parentType, parentId])
+  @@index([stopId])
+  @@index([clientId])
+  @@index([documentTypeId])
+  @@index([loadId])
+  @@index([dispatchId])
+  @@index([contractId])
+  @@map("carrier_documents")
+}
+
+model CarrierDocumentType {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId     String   @map("org_id") @db.Uuid
+  name      String
+  slug      String
+  isDefault Boolean  @default(false) @map("is_default")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant    Tenant            @relation(fields: [orgId], references: [id])
+  documents CarrierDocument[]
+
+  @@unique([orgId, slug])
+  @@index([orgId])
+  @@map("carrier_document_types")
+}
+
+model CarrierExpense {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dispatchId        String?   @map("dispatch_id") @db.Uuid
+  loadId            String?   @map("load_id") @db.Uuid
+  stopId            String?   @map("stop_id") @db.Uuid
+  clientId          String?   @map("client_id") @db.Uuid
+  expenseType       String    @map("expense_type")
+  amount            Decimal   @db.Decimal(10, 2)
+  currency          String    @default("USD")
+  paidBy            String    @map("paid_by")
+  driverId          String?   @map("driver_id") @db.Uuid
+  receiptDocumentId String?   @map("receipt_document_id") @db.Uuid
+  submittedAt       DateTime? @map("submitted_at") @db.Timestamptz
+  approvedBy        String?   @map("approved_by") @db.Uuid
+  approvedAt        DateTime? @map("approved_at") @db.Timestamptz
+  reimbursable      Boolean   @default(true)
+  notes             String?
+  orgId             String    @map("org_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant          Tenant           @relation(fields: [orgId], references: [id])
+  dispatch        CarrierDispatch? @relation(fields: [dispatchId], references: [id])
+  load            CarrierLoad?     @relation(fields: [loadId], references: [id])
+  stop            CarrierStop?     @relation(fields: [stopId], references: [id])
+  client          CarrierClient?   @relation(fields: [clientId], references: [id])
+  driver          CarrierDriver?   @relation(fields: [driverId], references: [id])
+  receiptDocument CarrierDocument? @relation(fields: [receiptDocumentId], references: [id])
+  approver        User?            @relation(name: "CarrierExpenseApprover", fields: [approvedBy], references: [id])
+
+  @@index([dispatchId])
+  @@index([loadId])
+  @@index([driverId])
+  @@index([clientId])
+  @@index([orgId])
+  @@map("carrier_expenses")
+}
+
+model DriverPayRecord {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  driverId          String    @map("driver_id") @db.Uuid
+  dispatchId        String?   @map("dispatch_id") @db.Uuid
+  loadId            String?   @map("load_id") @db.Uuid
+  clientId          String?   @map("client_id") @db.Uuid
+  payModel          String    @map("pay_model")
+  loadedMiles       Int?      @map("loaded_miles")
+  emptyMiles        Int?      @map("empty_miles")
+  loadedRate        Decimal?  @map("loaded_rate") @db.Decimal(8, 4)
+  emptyRate         Decimal?  @map("empty_rate") @db.Decimal(8, 4)
+  hoursWorked       Decimal?  @map("hours_worked") @db.Decimal(6, 2)
+  hourlyRate        Decimal?  @map("hourly_rate") @db.Decimal(8, 2)
+  grossRevenue      Decimal?  @map("gross_revenue") @db.Decimal(12, 2)
+  percentageApplied Decimal?  @map("percentage_applied") @db.Decimal(5, 4)
+  flatAmount        Decimal?  @map("flat_amount") @db.Decimal(10, 2)
+  basePay           Decimal   @default(0) @map("base_pay") @db.Decimal(10, 2)
+  bonuses           Decimal   @default(0)
+  tips              Decimal   @default(0)
+  deductions        Decimal   @default(0)
+  reimbursements    Decimal   @default(0)
+  netPay            Decimal   @default(0) @map("net_pay") @db.Decimal(10, 2)
+  payPeriodStart    DateTime? @map("pay_period_start") @db.Date
+  payPeriodEnd      DateTime? @map("pay_period_end") @db.Date
+  status            String    @default("pending")
+  approvedBy        String?   @map("approved_by") @db.Uuid
+  approvedAt        DateTime? @map("approved_at") @db.Timestamptz
+  notes             String?
+  orgId             String    @map("org_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant           @relation(fields: [orgId], references: [id])
+  driver   CarrierDriver    @relation(fields: [driverId], references: [id])
+  dispatch CarrierDispatch? @relation(fields: [dispatchId], references: [id])
+  load     CarrierLoad?     @relation(fields: [loadId], references: [id])
+  client   CarrierClient?   @relation(fields: [clientId], references: [id])
+  approver User?            @relation(name: "DriverPayApprover", fields: [approvedBy], references: [id])
+
+  @@index([driverId])
+  @@index([dispatchId])
+  @@index([status])
+  @@index([payPeriodStart])
+  @@map("driver_pay_records")
+}
+
+model CarrierCatalogMeta {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  enumGroup    String  @map("enum_group")
+  enumValue    String  @map("enum_value")
+  displayLabel String  @map("display_label")
+  sortOrder    Int     @default(0) @map("sort_order")
+  active       Boolean @default(true)
+
+  @@unique([enumGroup, enumValue])
+  @@map("carrier_catalog_meta")
+}
+
+model InAppNotification {
+  id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orgId      String                @map("org_id") @db.Uuid
+  userId     String?               @map("user_id") @db.Uuid
+  type       InAppNotificationType
+  title      String                @db.VarChar(200)
+  message    String
+  entityType String                @map("entity_type") @db.VarChar(50)
+  entityId   String                @map("entity_id") @db.Uuid
+  read       Boolean               @default(false)
+  createdAt  DateTime              @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [orgId], references: [id])
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@index([orgId, read, createdAt(sort: Desc)])
+  @@index([orgId, createdAt(sort: Desc)])
+  @@map("in_app_notifications")
+}
+
+// Workflow Engine Models
+
+model StepTemplate {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String       @db.Uuid
+  name          String       @db.VarChar(200)
+  description   String?
+  stepType      StepType
+  assigneeRole  AssigneeRole
+  defaultConfig Json         @default("{}")
+  isActive      Boolean      @default(true)
+  deletedAt     DateTime?    @db.Timestamptz
+  createdAt     DateTime     @default(now()) @db.Timestamptz
+  updatedAt     DateTime     @updatedAt @db.Timestamptz
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbookSteps PlaybookStep[]
+  stepInstances StepInstance[]
+
+  @@index([tenantId, isActive])
+  @@index([tenantId, stepType])
+}
+
+model Playbook {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String             @db.Uuid
+  name          String             @db.VarChar(200)
+  description   String?
+  entityType    PlaybookEntityType
+  category      PlaybookCategory
+  playbookPhase PhaseType          @default(NONE)
+  isActive      Boolean            @default(true)
+  deletedAt     DateTime?          @db.Timestamptz
+  createdAt     DateTime           @default(now()) @db.Timestamptz
+  updatedAt     DateTime           @updatedAt @db.Timestamptz
+
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  steps     PlaybookStep[]
+  instances PlaybookInstance[]
+  triggers  PlaybookTrigger[]
+
+  @@index([tenantId, isActive])
+  @@index([tenantId, entityType])
+}
+
+model PlaybookStep {
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookId        String           @db.Uuid
+  stepTemplateId    String           @db.Uuid
+  sequence          Int
+  playbookPhase     PhaseType        @default(NONE)
+  overrideConfig    Json             @default("{}")
+  isRequired        Boolean          @default(true)
+  isDispatchBlocker Boolean          @default(false)
+  dueDaysFromStart  Int?
+  dueWithinHours    Int? // SLA in hours (e.g. 24). If null, cron skips this step.
+  overdueRecipient  OverdueRecipient @default(OWNER) // Who gets the overdue push notification
+  dueBeforeDispatch Boolean          @default(false)
+  createdAt         DateTime         @default(now()) @db.Timestamptz
+  updatedAt         DateTime         @updatedAt @db.Timestamptz
+
+  playbook     Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  stepTemplate StepTemplate @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
+
+  @@unique([playbookId, sequence])
+  @@index([playbookId])
+  @@index([stepTemplateId])
+}
+
+model PlaybookInstance {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String             @db.Uuid
+  playbookId        String             @db.Uuid
+  playbookSnapshot  Json
+  entityType        PlaybookEntityType
+  entityId          String             @db.Uuid
+  status            InstanceStatus     @default(NOT_STARTED)
+  completionPercent Float              @default(0)
+  isDispatchReady   Boolean            @default(false)
+  startedAt         DateTime?          @db.Timestamptz
+  completedAt       DateTime?          @db.Timestamptz
+  dueDate           DateTime?          @db.Timestamptz
+  triggeredBy       String? // 'manual' | 'trigger' — null for legacy rows
+  triggeredEvent    TriggerEvent? // Set when triggeredBy='trigger', e.g. ON_DRIVER_CREATE
+  createdAt         DateTime           @default(now()) @db.Timestamptz
+  updatedAt         DateTime           @updatedAt @db.Timestamptz
+
+  tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbook      Playbook               @relation(fields: [playbookId], references: [id], onDelete: Restrict)
+  stepInstances StepInstance[]
+  notifications PlaybookNotification[]
+
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, status])
+  @@index([tenantId, isDispatchReady])
+  @@index([tenantId, triggeredBy, createdAt(sort: Desc)])
+}
+
+model StepInstance {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookInstanceId String       @db.Uuid
+  stepTemplateId     String?      @db.Uuid
+  stepSnapshot       Json
+  status             StepStatus   @default(NOT_STARTED)
+  assigneeRole       AssigneeRole
+  assignedUserId     String?      @db.Uuid
+  completedByUserId  String?      @db.Uuid
+  completedAt        DateTime?    @db.Timestamptz
+  result             Json?
+  skipReason         String?
+  skippedByUserId    String?      @db.Uuid
+  dueDate            DateTime?    @db.Timestamptz
+  isOverdue          Boolean      @default(false)
+  createdAt          DateTime     @default(now()) @db.Timestamptz
+  updatedAt          DateTime     @updatedAt @db.Timestamptz
+
+  playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
+  stepTemplate     StepTemplate?    @relation(fields: [stepTemplateId], references: [id], onDelete: Restrict)
+
+  @@index([playbookInstanceId])
+  @@index([assignedUserId, status])
+  @@index([playbookInstanceId, status])
+}
+
+model PlaybookNotification {
+  id                 String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String       @db.Uuid
+  playbookInstanceId String       @db.Uuid
+  stepInstanceId     String?      @db.Uuid
+  notificationType   NotifType
+  channel            NotifChannel
+  recipientUserId    String       @db.Uuid
+  message            String
+  sentAt             DateTime?    @db.Timestamptz
+  deliveredAt        DateTime?    @db.Timestamptz
+  createdAt          DateTime     @default(now()) @db.Timestamptz
+
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  playbookInstance PlaybookInstance @relation(fields: [playbookInstanceId], references: [id], onDelete: Cascade)
+
+  @@index([playbookInstanceId])
+  @@index([recipientUserId])
+}
+
+// ─── Phase 45 Automation Models ──────────────────────────────────────────────
+
+model PlaybookTrigger {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  playbookId      String       @db.Uuid
+  playbook        Playbook     @relation(fields: [playbookId], references: [id], onDelete: Cascade)
+  tenantId        String       @db.Uuid
+  tenant          Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  triggerEvent    TriggerEvent
+  conditions      Json? // { driverType: "CDL" } — flat key-value only per spec Section 6.5
+  recurringConfig Json? // { frequency:"daily", daysOfWeek:[1..5], time:"07:00" } — reserved, not used in Phase 45
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now()) @db.Timestamptz
+  updatedAt       DateTime     @updatedAt @db.Timestamptz
+
+  @@index([tenantId, triggerEvent])
+  @@index([playbookId])
+}
+
+model DispatchOverrideAudit {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dispatchId String   @db.Uuid // CarrierDispatch.id — no FK because CarrierDispatch lives in a different module
+  userId     String   @db.Uuid // Admin user who approved the override
+  reason     String
+  entityType String // "DRIVER" or "VEHICLE"
+  entityId   String   @db.Uuid
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  @@index([tenantId])
+  @@index([dispatchId])
+}
+
+// ─── Phase 47 Models ──────────────────────────────────────────────────────────
+
+model Plan {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key               String   @unique
+  name              String
+  description       String?
+  defaultTrialDays  Int      @default(14)
+  monthlyPriceCents Int
+  yearlyPriceCents  Int?
+  maxTrucks         Int?
+  maxUsers          Int?
+  storageGbLimit    Int?
+  isActive          Boolean  @default(true)
+  sortOrder         Int      @default(0)
+  stripeProductId   String?
+  createdAt         DateTime @default(now()) @db.Timestamptz
+  updatedAt         DateTime @updatedAt @db.Timestamptz
+
+  subscriptions Subscription[]
+
+  @@index([isActive])
+}
+
+model Promo {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code            String   @unique
+  description     String?
+  bonusTrialDays  Int      @default(0)
+  discountPct     Int?
+  activeFrom      DateTime @db.Timestamptz
+  activeTo        DateTime @db.Timestamptz
+  maxRedemptions  Int?
+  redemptionCount Int      @default(0)
+  isActive        Boolean  @default(true)
+  stripeCouponId  String?
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+
+  subscriptions Subscription[]
+
+  @@index([isActive])
+}
+
+model Subscription {
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId             String             @unique @db.Uuid
+  planId               String             @db.Uuid
+  promoId              String?            @db.Uuid
+  status               SubscriptionStatus @default(TRIALING)
+  trialEndsAt          DateTime           @db.Timestamptz
+  manualExtensionUntil DateTime?          @db.Timestamptz
+  currentPeriodStart   DateTime?          @db.Timestamptz
+  currentPeriodEnd     DateTime?          @db.Timestamptz
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now()) @db.Timestamptz
+  updatedAt            DateTime           @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan   Plan   @relation(fields: [planId], references: [id])
+  promo  Promo? @relation(fields: [promoId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([trialEndsAt])
+}
+
+model ActivationProgress {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String    @unique @db.Uuid
+  accountCreatedAt       DateTime  @default(now()) @db.Timestamptz
+  firstRealTruckAt       DateTime? @db.Timestamptz
+  firstRealDriverAt      DateTime? @db.Timestamptz
+  firstRealClientAt      DateTime? @db.Timestamptz
+  firstRealLoadCreatedAt DateTime? @db.Timestamptz
+  firstLoadInTransitAt   DateTime? @db.Timestamptz
+  firstLoadDeliveredAt   DateTime? @db.Timestamptz
+  completionPct          Int       @default(20)
+  isActivated            Boolean   @default(false)
+  createdAt              DateTime  @default(now()) @db.Timestamptz
+  updatedAt              DateTime  @updatedAt @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([isActivated])
+}
+
+model AutomationRule {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key              String          @unique
+  name             String
+  description      String?
+  triggerEvent     String
+  conditionsJson   Json            @default("{}")
+  actionsJson      Json
+  scope            AutomationScope @default(SYSTEM)
+  tenantId         String?         @db.Uuid
+  isActive         Boolean         @default(true)
+  runOncePerTenant Boolean         @default(true)
+  delaySeconds     Int             @default(0)
+  createdAt        DateTime        @default(now()) @db.Timestamptz
+  updatedAt        DateTime        @updatedAt @db.Timestamptz
+
+  tenant Tenant?         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  runs   AutomationRun[]
+
+  @@index([triggerEvent, isActive])
+  @@index([tenantId])
+}
+
+model AutomationRun {
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ruleId       String?             @db.Uuid
+  tenantId     String              @db.Uuid
+  userId       String?             @db.Uuid
+  triggeredBy  String
+  status       AutomationRunStatus
+  resultJson   Json?
+  firedAt      DateTime            @default(now()) @db.Timestamptz
+  scheduledAt  DateTime?           @db.Timestamptz
+  eventId      String?             @db.Uuid
+  errorMessage String?
+
+  rule   AutomationRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  tenant Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([ruleId])
+  @@index([tenantId])
+  @@index([firedAt])
+  @@index([eventId, ruleId])
+  @@index([status, scheduledAt])
+}
+
+model AppEvent {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @db.Uuid
+  userId     String?  @db.Uuid
+  eventType  String
+  properties Json     @default("{}")
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([userId, createdAt])
+}
+
+model TenantMetricsDaily {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @db.Uuid
+  date           DateTime @db.Date
+  dauCount       Int      @default(0)
+  sessionCount   Int      @default(0)
+  keyActionCount Int      @default(0)
+  storageBytes   BigInt   @default(0)
+  seatsUsed      Int      @default(0)
+  loadsCreated   Int      @default(0)
+  loadsInTransit Int      @default(0)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
+  @@index([date])
+}
+
+model TenantHealthScore {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String   @unique @db.Uuid
+  score          Int
+  topFactorsJson Json
+  computedAt     DateTime @default(now()) @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([score])
+}
+
+// ─── Driver Pay Models (Phase 1) ─────────────────────────────────────────────
+
+model DriverCompensationTemplate {
+  id                     String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String         @map("tenant_id") @db.Uuid
+  driverId               String         @map("driver_id") @db.Uuid
+  employmentType         EmploymentType @map("employment_type")
+  payType                DriverPayType  @map("pay_type")
+  baseRate               Decimal        @map("base_rate") @db.Decimal(10, 4)
+  rateUnit               RateUnit       @map("rate_unit")
+  loadedMilesOnly        Boolean        @map("loaded_miles_only")
+  fuelSurchargeRate      Decimal?       @map("fuel_surcharge_rate") @db.Decimal(10, 4)
+  perDiemEnabled         Boolean        @map("per_diem_enabled")
+  perDiemRate            Decimal?       @map("per_diem_rate") @db.Decimal(8, 2)
+  overtimeEligible       Boolean        @map("overtime_eligible")
+  overtimeThresholdHours Decimal?       @map("overtime_threshold_hours") @db.Decimal(5, 2)
+  overtimeMultiplier     Decimal?       @map("overtime_multiplier") @db.Decimal(4, 2)
+  dailyOvertimeThreshold Decimal?       @map("daily_overtime_threshold") @db.Decimal(4, 2)
+  weeklyEarningGoal      Decimal?       @map("weekly_earning_goal") @db.Decimal(10, 2)
+  currency               String         @default("USD") @map("currency") @db.VarChar(3)
+  effectiveFrom          DateTime       @map("effective_from") @db.Date
+  effectiveTo            DateTime?      @map("effective_to") @db.Date
+  notes                  String?
+  // Standard tenant columns
+  createdAt              DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy              String         @map("created_by") @db.Uuid
+  deletedAt              DateTime?      @map("deleted_at") @db.Timestamptz(6)
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver      CarrierDriver          @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  assignments LoadDriverAssignment[]
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@map("driver_compensation_templates")
+}
+
+model LoadDriverAssignment {
+  id                     String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId               String                 @map("tenant_id") @db.Uuid
+  loadId                 String                 @map("load_id") @db.Uuid
+  driverId               String                 @map("driver_id") @db.Uuid
+  driverRole             DriverRole             @map("driver_role")
+  templateId             String?                @map("template_id") @db.Uuid
+  payType                DriverPayType          @map("pay_type")
+  baseRate               Decimal                @map("base_rate") @db.Decimal(10, 4)
+  rateUnit               RateUnit               @map("rate_unit")
+  loadedMilesOnly        Boolean                @map("loaded_miles_only")
+  fuelSurchargeRate      Decimal?               @map("fuel_surcharge_rate") @db.Decimal(10, 4)
+  splitPercentage        Decimal?               @map("split_percentage") @db.Decimal(5, 2)
+  perDiemEnabled         Boolean                @map("per_diem_enabled")
+  perDiemRate            Decimal?               @map("per_diem_rate") @db.Decimal(8, 2)
+  overrideReason         String?                @map("override_reason")
+  estimatedMiles         Decimal?               @map("estimated_miles") @db.Decimal(10, 2)
+  actualMiles            Decimal?               @map("actual_miles") @db.Decimal(10, 2)
+  mileageSource          MileageSource?         @map("mileage_source")
+  mileageSourceReference String?                @map("mileage_source_reference") @db.VarChar(255)
+  estimatedHours         Decimal?               @map("estimated_hours") @db.Decimal(8, 2)
+  actualHours            Decimal?               @map("actual_hours") @db.Decimal(8, 2)
+  loadRevenue            Decimal?               @map("load_revenue") @db.Decimal(12, 2)
+  payStatus              DriverAssignmentStatus @default(DRAFT) @map("pay_status")
+  settlementId           String?                @map("settlement_id") @db.Uuid
+  approvedBy             String?                @map("approved_by") @db.Uuid
+  approvedAt             DateTime?              @map("approved_at") @db.Timestamptz(6)
+  paidAt                 DateTime?              @map("paid_at") @db.Timestamptz(6)
+  currency               String                 @default("USD") @map("currency") @db.VarChar(3)
+  // Standard tenant columns
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy              String                 @map("created_by") @db.Uuid
+  deletedAt              DateTime?              @map("deleted_at") @db.Timestamptz(6)
+
+  tenant        Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  load          CarrierLoad                 @relation(fields: [loadId], references: [id], onDelete: Restrict)
+  driver        CarrierDriver               @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  template      DriverCompensationTemplate? @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  settlement    DriverSettlement?           @relation(fields: [settlementId], references: [id], onDelete: Restrict)
+  payComponents LoadPayComponent[]
+  attachments   PayComponentAttachment[]
+
+  @@unique([loadId, driverId])
+  @@index([tenantId])
+  @@index([loadId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@index([settlementId])
+  @@map("load_driver_assignments")
+}
+
+model LoadPayComponent {
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String               @map("tenant_id") @db.Uuid
+  assignmentId        String               @map("assignment_id") @db.Uuid
+  loadId              String               @map("load_id") @db.Uuid
+  driverId            String               @map("driver_id") @db.Uuid
+  stopId              String?              @map("stop_id") @db.Uuid
+  componentType       PayComponentType     @map("component_type")
+  category            PayComponentCategory
+  description         String               @db.VarChar(255)
+  quantity            Decimal              @db.Decimal(10, 4)
+  unit                PayComponentUnit
+  rate                Decimal              @db.Decimal(10, 4)
+  multiplier          Decimal              @default(1.0) @db.Decimal(5, 2)
+  grossAmount         Decimal              @map("gross_amount") @db.Decimal(12, 2)
+  isTaxable           Boolean              @map("is_taxable")
+  isReimbursement     Boolean              @map("is_reimbursement")
+  originalComponentId String?              @map("original_component_id") @db.Uuid
+  visibleToDriver     Boolean              @default(true) @map("visible_to_driver")
+  notes               String?
+  enteredBy           String               @map("entered_by") @db.Uuid
+  // Standard tenant columns
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy           String               @map("created_by") @db.Uuid
+  deletedAt           DateTime?            @map("deleted_at") @db.Timestamptz(6)
+
+  tenant      Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  assignment  LoadDriverAssignment     @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+  load        CarrierLoad              @relation(fields: [loadId], references: [id], onDelete: Restrict)
+  original    LoadPayComponent?        @relation("ComponentCorrection", fields: [originalComponentId], references: [id], onDelete: Restrict)
+  corrections LoadPayComponent[]       @relation("ComponentCorrection")
+  attachments PayComponentAttachment[]
+  disputes    DriverDispute[]
+
+  @@index([tenantId])
+  @@index([assignmentId])
+  @@index([loadId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@map("load_pay_components")
+}
+
+model DriverBonus {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String    @map("tenant_id") @db.Uuid
+  driverId          String    @map("driver_id") @db.Uuid
+  bonusType         BonusType @map("bonus_type")
+  amount            Decimal   @db.Decimal(12, 2)
+  description       String    @db.VarChar(255)
+  triggerDate       DateTime  @map("trigger_date") @db.Date
+  scheduledPayDate  DateTime? @map("scheduled_pay_date") @db.Date
+  paidAt            DateTime? @map("paid_at") @db.Timestamptz(6)
+  installmentNumber Int?      @map("installment_number")
+  totalInstallments Int?      @map("total_installments")
+  parentBonusId     String?   @map("parent_bonus_id") @db.Uuid
+  referredDriverId  String?   @map("referred_driver_id") @db.Uuid
+  settlementId      String?   @map("settlement_id") @db.Uuid
+  isTaxable         Boolean   @map("is_taxable")
+  visibleToDriver   Boolean   @default(true) @map("visible_to_driver")
+  notes             String?
+  // Standard tenant columns
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy         String    @map("created_by") @db.Uuid
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver         CarrierDriver     @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  referredDriver CarrierDriver?    @relation("BonusReferredDriver", fields: [referredDriverId], references: [id], onDelete: Restrict)
+  settlement     DriverSettlement? @relation(fields: [settlementId], references: [id], onDelete: Restrict)
+  parentBonus    DriverBonus?      @relation("BonusInstallment", fields: [parentBonusId], references: [id], onDelete: Restrict)
+  childBonuses   DriverBonus[]     @relation("BonusInstallment")
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@index([settlementId])
+  @@map("driver_bonuses")
+}
+
+model DriverDeduction {
+  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String            @map("tenant_id") @db.Uuid
+  driverId           String            @map("driver_id") @db.Uuid
+  deductionType      DeductionType     @map("deduction_type")
+  schedule           DeductionSchedule
+  amountPerPeriod    Decimal           @map("amount_per_period") @db.Decimal(12, 2)
+  totalAmount        Decimal?          @map("total_amount") @db.Decimal(12, 2)
+  amountCollected    Decimal           @default(0) @map("amount_collected") @db.Decimal(12, 2)
+  maxPercentageOfNet Decimal?          @map("max_percentage_of_net") @db.Decimal(5, 2)
+  startsOn           DateTime          @map("starts_on") @db.Date
+  endsOn             DateTime?         @map("ends_on") @db.Date
+  paused             Boolean           @default(false)
+  visibleToDriver    Boolean           @default(true) @map("visible_to_driver")
+  notes              String?
+  // Standard tenant columns
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy          String            @map("created_by") @db.Uuid
+  deletedAt          DateTime?         @map("deleted_at") @db.Timestamptz(6)
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver CarrierDriver @relation(fields: [driverId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@map("driver_deductions")
+}
+
+model DriverSettlement {
+  id                  String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String                 @map("tenant_id") @db.Uuid
+  driverId            String                 @map("driver_id") @db.Uuid
+  periodStart         DateTime               @map("period_start") @db.Date
+  periodEnd           DateTime               @map("period_end") @db.Date
+  status              DriverSettlementStatus @default(DRAFT)
+  grossTaxable        Decimal                @map("gross_taxable") @db.Decimal(12, 2)
+  grossNonTaxable     Decimal                @map("gross_non_taxable") @db.Decimal(12, 2)
+  totalDeductions     Decimal                @map("total_deductions") @db.Decimal(12, 2)
+  netPay              Decimal                @map("net_pay") @db.Decimal(12, 2)
+  finalizedBy         String?                @map("finalized_by") @db.Uuid
+  finalizedAt         DateTime?              @map("finalized_at") @db.Timestamptz(6)
+  paidAt              DateTime?              @map("paid_at") @db.Timestamptz(6)
+  settlementReference String?                @map("settlement_reference") @db.VarChar(100)
+  pdfUrl              String?                @map("pdf_url") @db.VarChar(500)
+  notes               String?
+  // Standard tenant columns
+  createdAt           DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy           String                 @map("created_by") @db.Uuid
+  deletedAt           DateTime?              @map("deleted_at") @db.Timestamptz(6)
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver      CarrierDriver          @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  assignments LoadDriverAssignment[]
+  bonuses     DriverBonus[]
+
+  @@unique([driverId, periodStart, periodEnd])
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@index([tenantId, periodStart])
+  @@map("driver_settlements")
+}
+
+model PayComponentAttachment {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String    @map("tenant_id") @db.Uuid
+  componentId  String    @map("component_id") @db.Uuid
+  assignmentId String    @map("assignment_id") @db.Uuid
+  storageKey   String    @map("storage_key")
+  filename     String    @db.VarChar(255)
+  contentType  String?   @map("content_type") @db.VarChar(100)
+  sizeBytes    Int?      @map("size_bytes")
+  uploadedBy   String    @map("uploaded_by") @db.Uuid
+  // Standard tenant columns
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy    String    @map("created_by") @db.Uuid
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  tenant     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  component  LoadPayComponent     @relation(fields: [componentId], references: [id], onDelete: Restrict)
+  assignment LoadDriverAssignment @relation(fields: [assignmentId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([componentId])
+  @@index([assignmentId])
+  @@map("pay_component_attachments")
+}
+
+model DriverDispute {
+  id                 String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId           String               @map("tenant_id") @db.Uuid
+  driverId           String               @map("driver_id") @db.Uuid
+  targetType         DisputeTargetType    @map("target_type")
+  targetId           String               @map("target_id") @db.Uuid
+  issueCategory      DisputeIssueCategory @map("issue_category")
+  driverMessage      String               @map("driver_message")
+  status             DisputeStatus        @default(OPEN)
+  assignedTo         String?              @map("assigned_to") @db.Uuid
+  resolutionMessage  String?              @map("resolution_message")
+  resolvedAt         DateTime?            @map("resolved_at") @db.Timestamptz(6)
+  linkedCorrectionId String?              @map("linked_correction_id") @db.Uuid
+  // Standard tenant columns
+  createdAt          DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy          String               @map("created_by") @db.Uuid
+  deletedAt          DateTime?            @map("deleted_at") @db.Timestamptz(6)
+
+  tenant           Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  driver           CarrierDriver     @relation(fields: [driverId], references: [id], onDelete: Restrict)
+  linkedCorrection LoadPayComponent? @relation(fields: [linkedCorrectionId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([driverId])
+  @@index([tenantId, driverId])
+  @@index([targetId])
+  @@map("driver_disputes")
+}
+
+model DriverPayAuditLog {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId      String   @map("tenant_id") @db.Uuid
+  entityType    String   @map("entity_type") @db.VarChar(100)
+  entityId      String   @map("entity_id") @db.Uuid
+  action        String   @db.VarChar(100)
+  previousValue Json?    @map("previous_value")
+  newValue      Json?    @map("new_value")
+  actorId       String?  @map("actor_id") @db.Uuid
+  ipAddress     String?  @map("ip_address") @db.VarChar(45)
+  // Standard tenant columns (createdBy = actorId by convention for audit logs)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdBy     String   @map("created_by") @db.Uuid
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([entityType, entityId])
+  @@index([tenantId, entityType, entityId])
+  @@index([tenantId, createdAt])
+  @@map("driver_pay_audit_logs")
 }

@@ -8,15 +8,42 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { listTrucks, deleteTruck } from '@/app/(owner)/actions/trucks';
 import { TruckListWrapper } from './truck-list-wrapper';
+import { logger } from '@/lib/logger';
+import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 
 // ─── Async data section ───────────────────────────────────────────────────────
 
 async function TruckListSection() {
-  const trucks = await listTrucks().catch((e) => {
-    console.error('[trucks] listTrucks failed:', e);
-    return [];
-  });
-  return <TruckListWrapper initialTrucks={trucks} deleteAction={deleteTruck} />;
+  const [trucks, tenantId] = await Promise.all([
+    listTrucks().catch((e) => {
+      logger.error('[trucks] listTrucks failed:', e);
+      return [];
+    }),
+    requireTenantId().catch(() => ''),
+  ]);
+
+  const hasSampleRecords = trucks.some((t) => t.isSample);
+
+  let sampleDataSeeded = false;
+  if (hasSampleRecords && tenantId) {
+    try {
+      const prismaClient = await getTenantPrisma();
+      const tenant = await prismaClient.tenant.findFirst({ select: { sampleDataSeeded: true } });
+      sampleDataSeeded = tenant?.sampleDataSeeded ?? false;
+    } catch {
+      // Non-critical — banner is hidden by default
+    }
+  }
+
+  return (
+    <>
+      {sampleDataSeeded && hasSampleRecords && tenantId && (
+        <SampleDataBanner tenantId={tenantId} />
+      )}
+      <TruckListWrapper initialTrucks={trucks} deleteAction={deleteTruck} />
+    </>
+  );
 }
 
 // ─── Skeleton fallback ────────────────────────────────────────────────────────

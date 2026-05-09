@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
+import { PrismaClient } from '../../generated/prisma/client';
 import { prisma, TX_OPTIONS } from '../db/prisma';
-import { withTenantRLS } from '../db/extensions/tenant-rls';
+import { createTenantClient } from '../db/tenant-client';
 
 /**
  * Extract tenant ID from request headers.
@@ -26,12 +27,13 @@ export async function requireTenantId(): Promise<string> {
 /**
  * Get a tenant-scoped Prisma client for the current request.
  * This client automatically applies RLS filtering to all queries.
+ * Returns a fully typed PrismaClient (see tenant-client.ts for type safety rationale).
  *
  * Use this in API routes and server actions to ensure queries are scoped to the current tenant.
  */
-export async function getTenantPrisma() {
+export async function getTenantPrisma(): Promise<PrismaClient> {
   const tenantId = await requireTenantId();
-  return prisma.$extends(withTenantRLS(tenantId));
+  return createTenantClient(tenantId);
 }
 
 /**

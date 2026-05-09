@@ -27,7 +27,7 @@ export default function TagsError({
             Try again
           </button>
           <Link
-            href="/dashboard"
+            href="/carrier/dashboard"
             className="px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-muted transition-colors"
           >
             Back to Dashboard

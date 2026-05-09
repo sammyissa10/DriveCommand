@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
-import { LoadStatus } from '@/generated/prisma';
+import { LoadStatus, Prisma } from '@/generated/prisma';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
+import { geocodeLoadAddresses } from '@/lib/geo/geocode';
+import { createRouteStopsForLoad } from '@/lib/route-stops/sync-route-stops';
+
+const Decimal = Prisma.Decimal;
 
 /**
  * GET /api/mobile/owner/loads?status=all|active|pending|delivered
@@ -25,10 +31,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
   const { tenantId } = auth;
 
   const { searchParams } = new URL(req.url);
   const statusParam = searchParams.get('status') ?? 'active';
+
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '50', 10) || 50));
 
   let statusFilter: LoadStatus[] | undefined;
   if (statusParam === 'active') {
@@ -41,22 +53,39 @@ export async function GET(req: NextRequest) {
   // 'all' → no filter (statusFilter remains undefined)
 
   try {
-    const loads = await prisma.$transaction(async (tx) => {
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
+    const { loads, total } = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-      return tx.load.findMany({
-        where: {
-          tenantId,
-          ...(statusFilter ? { status: { in: statusFilter } } : {}),
-          archivedAt: null,
-        },
-        include: {
-          customer: { select: { id: true, companyName: true } },
-          truck: { select: { id: true, make: true, model: true, licensePlate: true } },
-          driver: { select: { id: true, firstName: true, lastName: true } },
-        },
-        orderBy: { updatedAt: 'desc' },
-      });
+      const where = {
+        tenantId,
+        ...(statusFilter ? { status: { in: statusFilter } } : {}),
+        archivedAt: null,
+      };
+
+      const [items, count] = await Promise.all([
+        tx.load.findMany({
+          where,
+          include: {
+            customer: { select: { id: true, companyName: true } },
+            truck: { select: { id: true, make: true, model: true, licensePlate: true } },
+            driver: { select: { id: true, firstName: true, lastName: true } },
+          },
+          orderBy: { updatedAt: 'desc' },
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+        tx.load.count({ where }),
+      ]);
+
+      return { loads: items, total: count };
     }, TX_OPTIONS);
 
     // Normalize driver name from firstName/lastName fields
@@ -72,9 +101,17 @@ export async function GET(req: NextRequest) {
         : null,
     }));
 
-    return NextResponse.json(loadsWithDriverName);
+    return NextResponse.json({
+      loads: loadsWithDriverName,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
-    console.error('[mobile/owner/loads] error:', err);
+    logger.error('[mobile/owner/loads] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -105,6 +142,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
 
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
+
   const { tenantId } = auth;
 
   let body: {
@@ -115,6 +155,7 @@ export async function POST(req: NextRequest) {
     pickupDate?: string;
     rate?: number;
     driverId?: string;
+    routeId?: string;
   };
 
   try {
@@ -123,7 +164,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { customerId, customerName, origin, destination, pickupDate, rate, driverId } = body;
+  const { customerId, customerName, origin, destination, pickupDate, rate, driverId, routeId } = body;
 
   if (!origin || !destination) {
     return NextResponse.json(
@@ -131,6 +172,13 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
+
+  // Geocode origin and destination BEFORE opening the DB transaction
+  // (network calls must not be placed inside DB transactions)
+  const { pickupLat, pickupLng, deliveryLat, deliveryLng } = await geocodeLoadAddresses(
+    origin,
+    destination
+  );
 
   try {
     const load = await prisma.$transaction(async (tx) => {
@@ -163,6 +211,17 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      // Validate routeId belongs to tenant if provided
+      if (routeId) {
+        const route = await tx.route.findFirst({
+          where: { id: routeId, tenantId, archivedAt: null },
+          select: { id: true },
+        });
+        if (!route) {
+          throw new Error('Route not found');
+        }
+      }
+
       // Generate load number
       const latestLoad = await tx.load.findFirst({
         where: { tenantId },
@@ -179,7 +238,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      return tx.load.create({
+      const createdLoad = await tx.load.create({
         data: {
           tenantId,
           loadNumber,
@@ -190,6 +249,11 @@ export async function POST(req: NextRequest) {
           rate: rate ?? 0,
           status: 'PENDING',
           driverId: driverId ?? null,
+          routeId: routeId ?? null,
+          pickupLat: pickupLat != null ? new Decimal(pickupLat) : null,
+          pickupLng: pickupLng != null ? new Decimal(pickupLng) : null,
+          deliveryLat: deliveryLat != null ? new Decimal(deliveryLat) : null,
+          deliveryLng: deliveryLng != null ? new Decimal(deliveryLng) : null,
         },
         include: {
           customer: { select: { id: true, companyName: true } },
@@ -197,6 +261,17 @@ export async function POST(req: NextRequest) {
           driver: { select: { id: true, firstName: true, lastName: true } },
         },
       });
+
+      // If load is being created directly on a route, auto-create RouteStops
+      if (routeId) {
+        await createRouteStopsForLoad(tx, {
+          routeId,
+          tenantId,
+          load: createdLoad,
+        });
+      }
+
+      return createdLoad;
     }, TX_OPTIONS);
 
     // Normalize driver name
@@ -214,8 +289,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ load: normalized }, { status: 201 });
   } catch (err) {
-    console.error('[mobile/owner/loads POST] error:', err);
-    const message = err instanceof Error ? err.message : 'Internal server error';
-    return NextResponse.json({ error: message }, { status: 500 });
+    logger.error('[mobile/owner/loads POST] error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

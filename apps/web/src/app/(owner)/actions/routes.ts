@@ -1,16 +1,20 @@
 'use server';
 
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for route CRUD operations.
  * All actions enforce OWNER/MANAGER/DRIVER role authorization before any data access.
  */
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { routeCreateSchema, routeUpdateSchema, routeStopSchema } from '@drivecommand/validation';
+import { Prisma, RouteStatus } from '@/generated/prisma';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 /**
  * Valid status transitions for route state machine.
@@ -27,7 +31,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists before creating.
  */
-export async function createRoute(prevState: any, formData: FormData) {
+export async function createRoute(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -58,7 +62,7 @@ export async function createRoute(prevState: any, formData: FormData) {
   const { origin, destination, scheduledDate, driverId, truckId, notes } = result.data;
 
   // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
-  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string; lat?: string; lng?: string }> = [];
   let si = 0;
   while (formData.get(`stops_${si}_address`)) {
     stopInputs.push({
@@ -66,6 +70,8 @@ export async function createRoute(prevState: any, formData: FormData) {
       address: formData.get(`stops_${si}_address`) as string,
       scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
       notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+      lat: (formData.get(`stops_${si}_lat`) as string) || undefined,
+      lng: (formData.get(`stops_${si}_lng`) as string) || undefined,
     });
     si++;
   }
@@ -102,6 +108,31 @@ export async function createRoute(prevState: any, formData: FormData) {
       return {
         error: {
           driverId: ['Selected user is not a driver'],
+        },
+      };
+    }
+
+    // Check for driver scheduling conflict on the same date
+    const scheduledDay = new Date(scheduledDate);
+    scheduledDay.setUTCHours(0, 0, 0, 0);
+    const nextDay = new Date(scheduledDay);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+    const conflictingRoute = await prisma.route.findFirst({
+      where: {
+        driverId,
+        status: { not: 'COMPLETED' },
+        archivedAt: null,
+        scheduledDate: { gte: scheduledDay, lt: nextDay },
+      },
+      select: { id: true, name: true, origin: true, destination: true },
+    });
+
+    if (conflictingRoute) {
+      const label = conflictingRoute.name || `${conflictingRoute.origin} -> ${conflictingRoute.destination}`;
+      return {
+        error: {
+          driverId: [`Driver already has a route on this date: "${label}"`],
         },
       };
     }
@@ -143,6 +174,8 @@ export async function createRoute(prevState: any, formData: FormData) {
             address: stop.address,
             scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
             notes: stop.notes || null,
+            lat: stop.lat ? parseFloat(stop.lat) : null,
+            lng: stop.lng ? parseFloat(stop.lng) : null,
           })),
         },
       },
@@ -165,7 +198,7 @@ export async function createRoute(prevState: any, formData: FormData) {
       }
     }
   } catch (error) {
-    console.error('Failed to create route:', error);
+    logger.error('Failed to create route:', error);
     return { error: 'Failed to create route. Please try again.' };
   }
 
@@ -180,7 +213,7 @@ export async function createRoute(prevState: any, formData: FormData) {
  * Requires OWNER or MANAGER role.
  * Validates driver is active and truck exists if either is updated.
  */
-export async function updateRoute(id: string, prevState: any, formData: FormData) {
+export async function updateRoute(id: string, prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
@@ -216,7 +249,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   // Parse stops from flat FormData fields (stops_0_address, stops_0_type, etc.)
   // Use hidden field stops_submitted=true to distinguish "no stops section" from "stops cleared"
   const stopsSubmitted = formData.get('stops_submitted') === 'true';
-  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string }> = [];
+  const stopInputs: Array<{ type: string; address: string; scheduledAt?: string; notes?: string; lat?: string; lng?: string }> = [];
   let si = 0;
   while (formData.get(`stops_${si}_address`)) {
     stopInputs.push({
@@ -224,6 +257,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
       address: formData.get(`stops_${si}_address`) as string,
       scheduledAt: (formData.get(`stops_${si}_scheduledAt`) as string) || undefined,
       notes: (formData.get(`stops_${si}_notes`) as string) || undefined,
+      lat: (formData.get(`stops_${si}_lat`) as string) || undefined,
+      lng: (formData.get(`stops_${si}_lng`) as string) || undefined,
     });
     si++;
   }
@@ -253,6 +288,12 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
   let updatedRouteId: string;
 
   try {
+    // Fetch existing route to resolve effective driverId and scheduledDate for conflict check
+    const existingRoute = await prisma.route.findUnique({
+      where: { id },
+      select: { driverId: true, scheduledDate: true },
+    });
+
     // Validate driver if provided
     if (result.data.driverId) {
       const driver = await prisma.user.findUnique({
@@ -273,6 +314,39 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
             driverId: ['Selected user is not a driver'],
           },
         };
+      }
+    }
+
+    // Check for driver scheduling conflict when driverId or scheduledDate is being changed
+    if (result.data.driverId || result.data.scheduledDate) {
+      const effectiveDriverId = result.data.driverId || existingRoute?.driverId;
+      const effectiveScheduledDate = result.data.scheduledDate || existingRoute?.scheduledDate?.toISOString();
+
+      if (effectiveDriverId && effectiveScheduledDate) {
+        const scheduledDay = new Date(effectiveScheduledDate);
+        scheduledDay.setUTCHours(0, 0, 0, 0);
+        const nextDay = new Date(scheduledDay);
+        nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+        const conflictingRoute = await prisma.route.findFirst({
+          where: {
+            driverId: effectiveDriverId,
+            status: { not: 'COMPLETED' },
+            archivedAt: null,
+            scheduledDate: { gte: scheduledDay, lt: nextDay },
+            id: { not: id },
+          },
+          select: { id: true, name: true, origin: true, destination: true },
+        });
+
+        if (conflictingRoute) {
+          const label = conflictingRoute.name || `${conflictingRoute.origin} -> ${conflictingRoute.destination}`;
+          return {
+            error: {
+              driverId: [`Driver already has a route on this date: "${label}"`],
+            },
+          };
+        }
       }
     }
 
@@ -321,9 +395,9 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
           },
         });
         updatedRouteId = route.id;
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Prisma P2025 = Record to update not found (version mismatch)
-        if (error?.code === 'P2025') {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
           return {
             error: 'This route was modified by another user. Please refresh the page and try again.',
           };
@@ -355,6 +429,8 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
             address: stop.address,
             scheduledAt: stop.scheduledAt ? new Date(stop.scheduledAt) : null,
             notes: stop.notes || null,
+            lat: stop.lat ? parseFloat(stop.lat) : null,
+            lng: stop.lng ? parseFloat(stop.lng) : null,
           })),
         });
       }
@@ -378,7 +454,7 @@ export async function updateRoute(id: string, prevState: any, formData: FormData
       }
     }
   } catch (error) {
-    console.error('Failed to update route:', error);
+    logger.error('Failed to update route:', error);
     return { error: 'Failed to update route. Please try again.' };
   }
 
@@ -419,7 +495,7 @@ export async function updateRouteStatus(routeId: string, newStatus: string) {
 
   // Build update data
   const updateData: any = {
-    status: newStatus as any,
+    status: newStatus as RouteStatus,
   };
 
   // Set completedAt when transitioning to COMPLETED
@@ -575,7 +651,7 @@ export async function updateRouteCoDrivers(routeId: string, coDriverIds: string[
         : []),
     ]);
   } catch (error) {
-    console.error('Failed to update co-drivers:', error);
+    logger.error('Failed to update co-drivers:', error);
     return { error: 'Failed to update co-drivers. Please try again.' };
   }
 

@@ -3,15 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import { listDrivers } from '@/app/(owner)/actions/drivers';
 import { listTrucks } from '@/app/(owner)/actions/trucks';
 import { NewRouteClient } from './new-route-client';
+import { logger } from '@/lib/logger';
 
 export default async function NewRoutePage() {
   const [allDrivers, trucks] = await Promise.all([
     listDrivers().catch((err) => {
-      console.error('Failed to load drivers for route form:', err);
+      logger.error('Failed to load drivers for route form:', err);
       return [] as any[];
     }),
     listTrucks().catch((err) => {
-      console.error('Failed to load trucks for route form:', err);
+      logger.error('Failed to load trucks for route form:', err);
       return [] as any[];
     }),
   ]);

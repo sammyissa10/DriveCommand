@@ -3,9 +3,12 @@ import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
 import { useQueryClient } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 import { driverApi, type LoadDetail } from '@drivecommand/api-client'
 import { useAuthContext } from '../../context/AuthContext'
 import { callOrQueue } from '../../lib/api-with-queue'
+import { useThemeColors } from '../../constants/tokens'
+import { openNavigation } from '../../lib/navigation'
 
 interface NextAction {
   label: string
@@ -52,8 +55,10 @@ interface StatusUpdateButtonProps {
 }
 
 export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButtonProps) {
+  const c = useThemeColors()
   const { token } = useAuthContext()
   const queryClient = useQueryClient()
+  const router = useRouter()
   const [modalVisible, setModalVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [revertModalVisible, setRevertModalVisible] = useState(false)
@@ -96,6 +101,19 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
           queryClient.invalidateQueries({ queryKey: ['driver-dashboard'] }),
         ])
         onStatusUpdated()
+
+        // EN_ROUTE: switch to Map tab and open navigation app simultaneously
+        if (action!.nextStatus === 'EN_ROUTE') {
+          const nextStop = load.stops?.find(s => s.status !== 'DEPARTED')
+          router.navigate('/(driver)/map' as never)
+          if (nextStop) {
+            openNavigation(
+              nextStop.lat != null && nextStop.lng != null
+                ? { lat: Number(nextStop.lat), lng: Number(nextStop.lng), address: nextStop.address }
+                : { address: nextStop.address }
+            )
+          }
+        }
       }
     } catch (err) {
       // Error path: close modal + toast + re-enable button
@@ -190,20 +208,23 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
         />
 
         {/* Bottom card */}
-        <View className="bg-slate-800 rounded-t-3xl px-6 pt-6 pb-10 border-t border-slate-700">
+        <View
+          className="rounded-t-3xl px-6 pt-6 pb-10"
+          style={{ backgroundColor: c.surfaceCard, borderTopWidth: 1, borderTopColor: c.border }}
+        >
           {/* Handle */}
-          <View className="self-center w-12 h-1 bg-slate-600 rounded-full mb-6" />
+          <View className="self-center w-12 h-1 rounded-full mb-6" style={{ backgroundColor: c.border }} />
 
           {/* Title */}
-          <Text className="text-xl font-bold text-white mb-2">
+          <Text className="text-xl font-bold mb-2" style={{ color: c.textPrimary }}>
             Confirm: {action?.label}
           </Text>
 
           {/* Load summary */}
-          <Text className="text-slate-400 text-base mb-1">
+          <Text className="text-base mb-1" style={{ color: c.textSecondary }}>
             Load #{load.loadNumber}
           </Text>
-          <Text className="text-slate-500 text-sm mb-8">
+          <Text className="text-sm mb-8" style={{ color: c.textTertiary }}>
             {load.origin} {'->'} {load.destination}
           </Text>
 
@@ -211,10 +232,11 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
           <View className="flex-row gap-3">
             <Pressable
               onPress={() => !isLoading && setModalVisible(false)}
-              className="flex-1 border border-slate-600 rounded-xl py-4 items-center active:bg-slate-700/50"
+              className="flex-1 rounded-xl py-4 items-center active:opacity-75"
+              style={{ borderWidth: 1, borderColor: c.border }}
               disabled={isLoading}
             >
-              <Text className="text-slate-300 font-semibold text-base">Cancel</Text>
+              <Text className="font-semibold text-base" style={{ color: c.textSecondary }}>Cancel</Text>
             </Pressable>
 
             <Pressable
@@ -246,17 +268,20 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
         />
 
         {/* Bottom card */}
-        <View className="bg-slate-800 rounded-t-3xl px-6 pt-6 pb-10 border-t border-slate-700">
+        <View
+          className="rounded-t-3xl px-6 pt-6 pb-10"
+          style={{ backgroundColor: c.surfaceCard, borderTopWidth: 1, borderTopColor: c.border }}
+        >
           {/* Handle */}
-          <View className="self-center w-12 h-1 bg-slate-600 rounded-full mb-6" />
+          <View className="self-center w-12 h-1 rounded-full mb-6" style={{ backgroundColor: c.border }} />
 
           {/* Title */}
-          <Text className="text-xl font-bold text-white mb-2">
+          <Text className="text-xl font-bold mb-2" style={{ color: c.textPrimary }}>
             Confirm: {revertAction?.label}
           </Text>
 
           {/* Warning */}
-          <Text className="text-slate-400 text-base mb-1">
+          <Text className="text-base mb-1" style={{ color: c.textSecondary }}>
             Load #{load.loadNumber}
           </Text>
           <Text className="text-amber-400/80 text-sm mb-8">
@@ -267,10 +292,11 @@ export function StatusUpdateButton({ load, onStatusUpdated }: StatusUpdateButton
           <View className="flex-row gap-3">
             <Pressable
               onPress={() => !isReverting && setRevertModalVisible(false)}
-              className="flex-1 border border-slate-600 rounded-xl py-4 items-center active:bg-slate-700/50"
+              className="flex-1 rounded-xl py-4 items-center active:opacity-75"
+              style={{ borderWidth: 1, borderColor: c.border }}
               disabled={isReverting}
             >
-              <Text className="text-slate-300 font-semibold text-base">Cancel</Text>
+              <Text className="font-semibold text-base" style={{ color: c.textSecondary }}>Cancel</Text>
             </Pressable>
 
             <Pressable

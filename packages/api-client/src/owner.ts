@@ -74,6 +74,39 @@ export interface OwnerLoadDetail {
   createdAt: string
 }
 
+export interface TruckDetail {
+  id: string
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+  odometer: number
+  inMaintenance: boolean
+  status: string
+  documentMetadata: {
+    registrationNumber?: string
+    registrationExpiry?: string
+    insuranceNumber?: string
+    insuranceExpiry?: string
+  } | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateTruckPayload {
+  make: string
+  model: string
+  year: number
+  vin: string
+  licensePlate: string
+  odometer: number
+  registrationNumber?: string
+  registrationExpiry?: string
+  insuranceNumber?: string
+  insuranceExpiry?: string
+}
+
 export interface TruckOption {
   id: string
   make: string
@@ -266,6 +299,56 @@ export interface InvoiceDetail {
 // CRM
 // ---------------------------------------------------------------------------
 
+export interface CrmContactDetail {
+  id: string
+  companyName: string
+  contactName: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  city: string | null
+  state: string | null
+  zipCode: string | null
+  priority: string
+  status: string
+  notes: string | null
+  emailNotifications: boolean
+  totalLoads: number
+  totalRevenue: number
+  lastLoadDate: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UpdateCrmContactPayload {
+  companyName?: string
+  contactName?: string
+  email?: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  priority?: string
+  status?: string
+  notes?: string
+  emailNotifications?: boolean
+}
+
+export interface CreateCustomerPayload {
+  companyName: string
+  contactName?: string
+  email?: string
+  phone?: string
+}
+
+export interface CreateInvoicePayload {
+  customerId?: string
+  description: string
+  amount: number
+  dueDate?: string
+}
+
 export interface CRMStats {
   total: number
   active: number
@@ -290,6 +373,33 @@ export interface CRMResponse {
 // Payroll
 // ---------------------------------------------------------------------------
 
+export interface PayrollRecordDetail {
+  id: string
+  status: string
+  periodStart: string
+  periodEnd: string
+  basePay: number
+  bonuses: number
+  deductions: number
+  totalPay: number
+  milesLogged: number
+  loadsCompleted: number
+  notes: string | null
+  paidAt: string | null
+  driverName: string
+  createdAt: string
+}
+
+export interface CreatePayrollPayload {
+  driverId: string
+  periodStart: string
+  periodEnd: string
+  basePay: number
+  deductions?: number
+  bonuses?: number
+  notes?: string
+}
+
 export interface PayrollStats {
   total: number
   draft: number
@@ -309,6 +419,56 @@ export interface PayrollRecordSummary {
 export interface PayrollResponse {
   stats: PayrollStats
   records: PayrollRecordSummary[]
+}
+
+// ---------------------------------------------------------------------------
+// Profit Predictor
+// ---------------------------------------------------------------------------
+
+export interface PredictProfitPayload {
+  origin: string
+  destination: string
+  distanceMiles: number
+  offeredRate: number
+}
+
+export interface PredictProfitResult {
+  predictedExpenses: string
+  predictedProfit: string
+  predictedMarginPercent: number
+  costPerMileUsed: string
+  dataSource: 'lane' | 'fleet' | 'none'
+  laneRouteCount: number | null
+  offeredRate: string
+  distanceMiles: number
+  recommendation: 'accept' | 'caution' | 'reject'
+}
+
+// ---------------------------------------------------------------------------
+// Fuel Log
+// ---------------------------------------------------------------------------
+
+export interface FuelEntry {
+  id: string
+  truckId: string
+  truckName: string
+  licensePlate: string
+  quantity: string
+  unitCost: string | null
+  totalCost: string | null
+  odometer: number
+  location: string | null
+  timestamp: string
+  fuelType: string
+}
+
+export interface CreateFuelEntryPayload {
+  truckId: string
+  quantity: number
+  unitCost: number
+  odometer: number
+  location?: string
+  timestamp?: string
 }
 
 // ---------------------------------------------------------------------------
@@ -334,6 +494,83 @@ export interface ComplianceResponse {
   alerts: ComplianceAlert[]
 }
 
+// ---------------------------------------------------------------------------
+// Maintenance
+// ---------------------------------------------------------------------------
+
+export interface MaintenanceEventSummary {
+  id: string
+  serviceType: string
+  serviceDate: string
+  odometerAtService: number
+  cost: string | null
+  provider: string | null
+  notes: string | null
+  createdAt: string
+}
+
+export interface LogMaintenancePayload {
+  serviceType: string
+  serviceDate: string
+  odometerAtService: number
+  cost?: number | null
+  provider?: string | null
+  notes?: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Scheduled Service
+// ---------------------------------------------------------------------------
+
+export interface ScheduledServiceSummary {
+  id: string
+  serviceType: string
+  dueDate: string | null
+  dueMileage: number | null
+  status: 'overdue' | 'due_soon' | 'ok'
+  notes: string | null
+  createdAt: string
+}
+
+export interface ScheduledServiceWithTruck extends ScheduledServiceSummary {
+  truck: { id: string; make: string; model: string; licensePlate: string; odometer: number }
+}
+
+export interface CreateScheduledServicePayload {
+  serviceType: string
+  dueDate?: string
+  dueMileage?: number
+  notes?: string
+}
+
+export interface CompleteScheduledServicePayload {
+  serviceId: string
+  actualDate?: string
+  actualOdometer?: number
+}
+
+// ---------------------------------------------------------------------------
+// Safety
+// ---------------------------------------------------------------------------
+
+export interface SafetyAlert {
+  severity: 'high' | 'medium' | 'low'
+  category: 'DOCUMENT' | 'MAINTENANCE' | 'INCIDENT'
+  description: string
+  affectedEntity: string
+  date: string
+}
+
+export interface SafetyAlertsResponse {
+  alerts: SafetyAlert[]
+  summary: {
+    highCount: number
+    mediumCount: number
+    lowCount: number
+    totalCount: number
+  }
+}
+
 export interface SendFleetMessagePayload {
   recipientId?: string
   body: string
@@ -356,6 +593,71 @@ export interface UpdateLoadPayload {
   notes?: string
 }
 
+export interface UpdateDriverPayload {
+  firstName?: string
+  lastName?: string
+  licenseNumber?: string | null
+}
+
+export interface OwnerRouteSummary {
+  id: string
+  name: string | null
+  status: string
+  origin: string
+  destination: string
+  scheduledDate: string
+  driver: { id: string; name: string }
+  truck: { id: string; make: string; model: string; licensePlate: string }
+  _count: { loads: number; stops: number }
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OwnerRouteDetail {
+  id: string
+  name: string | null
+  status: string
+  origin: string
+  destination: string
+  scheduledDate: string
+  notes: string | null
+  driver: { id: string; name: string }
+  truck: { id: string; make: string; model: string; licensePlate: string }
+  stops: RouteStop[]
+  loads: Array<{ id: string; loadNumber: string; status: string; origin: string; destination: string; rate: number | null }>
+  createdAt: string
+}
+
+export interface CreateRoutePayload {
+  name: string
+  driverId: string
+  truckId: string
+  scheduledDate?: string
+  stops: Array<{
+    address: string
+    type: 'PICKUP' | 'DELIVERY'
+    scheduledAt?: string
+    notes?: string
+  }>
+}
+
+export interface UpdateRoutePayload {
+  name?: string
+  status?: string
+  scheduledDate?: string
+  driverId?: string
+  truckId?: string
+}
+
+export interface UpdateTruckPayload {
+  make?: string
+  model?: string
+  year?: number
+  licensePlate?: string
+  vin?: string
+  odometer?: number
+}
+
 // ---------------------------------------------------------------------------
 // API client
 // ---------------------------------------------------------------------------
@@ -365,7 +667,7 @@ export const ownerApi = {
     apiRequest<OwnerDashboardData>('/api/mobile/owner/dashboard', { token }),
 
   getLoads: (token: string, status: 'all' | 'active' | 'pending' | 'delivered') =>
-    apiRequest<OwnerLoadSummary[]>(`/api/mobile/owner/loads?status=${status}`, { token }),
+    apiRequest<{ loads: OwnerLoadSummary[] }>(`/api/mobile/owner/loads?status=${status}`, { token }).then((r) => r.loads),
 
   createLoad: (token: string, payload: CreateLoadPayload) =>
     apiRequest<{ load: OwnerLoadSummary }>('/api/mobile/owner/loads', {
@@ -395,10 +697,33 @@ export const ownerApi = {
     ),
 
   getTrucks: (token: string) =>
-    apiRequest<TruckOption[]>('/api/mobile/owner/trucks', { token }),
+    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks', { token }).then((r) => r.trucks),
+
+  getTruck: (token: string, id: string) =>
+    apiRequest<TruckDetail>(`/api/mobile/owner/trucks/${id}`, { token }),
+
+  updateTruck: (token: string, id: string, payload: UpdateTruckPayload) =>
+    apiRequest<{ success: boolean; truck: { id: string; make: string; model: string; year: number; licensePlate: string; vin: string; odometer: number } }>(
+      `/api/mobile/owner/trucks/${id}`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
+
+  createTruck: (token: string, payload: CreateTruckPayload) =>
+    apiRequest<{ truck: { id: string } }>('/api/mobile/owner/trucks', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getCustomers: (token: string) =>
     apiRequest<CustomerOption[]>('/api/mobile/owner/customers', { token }),
+
+  createCustomer: (token: string, payload: CreateCustomerPayload) =>
+    apiRequest<{ customer: { id: string; companyName: string } }>('/api/mobile/owner/customers', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getActiveDrivers: (token: string) =>
     apiRequest<DriverOption[]>('/api/mobile/owner/drivers/active', { token }),
@@ -411,6 +736,12 @@ export const ownerApi = {
 
   getDriverDetail: (token: string, id: string) =>
     apiRequest<OwnerDriverDetail>(`/api/mobile/owner/drivers/${id}`, { token }),
+
+  updateDriver: (token: string, id: string, payload: UpdateDriverPayload) =>
+    apiRequest<{ success: boolean; driver: { id: string; firstName: string; lastName: string; licenseNumber: string | null } }>(
+      `/api/mobile/owner/drivers/${id}`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
 
   getMapVehicles: (token: string) =>
     apiRequest<{ vehicles: MapVehicle[] }>('/api/mobile/owner/map/vehicles', { token }),
@@ -450,11 +781,38 @@ export const ownerApi = {
   getInvoice: (token: string, id: string) =>
     apiRequest<InvoiceDetail>(`/api/mobile/owner/invoices/${id}`, { token }),
 
+  createInvoice: (token: string, payload: CreateInvoicePayload) =>
+    apiRequest<{ invoice: { id: string; invoiceNumber: string } }>('/api/mobile/owner/invoices', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
   getCRM: (token: string) =>
     apiRequest<CRMResponse>('/api/mobile/owner/crm', { token }),
 
+  getCrmContact: (token: string, id: string) =>
+    apiRequest<CrmContactDetail>(`/api/mobile/owner/crm/${id}`, { token }),
+
+  updateCrmContact: (token: string, id: string, payload: UpdateCrmContactPayload) =>
+    apiRequest<CrmContactDetail>(`/api/mobile/owner/crm/${id}`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
   getPayroll: (token: string) =>
     apiRequest<PayrollResponse>('/api/mobile/owner/payroll', { token }),
+
+  getPayrollRecord: (token: string, id: string) =>
+    apiRequest<PayrollRecordDetail>(`/api/mobile/owner/payroll/${id}`, { token }),
+
+  createPayrollRecord: (token: string, payload: CreatePayrollPayload) =>
+    apiRequest<{ record: { id: string; driverName: string } }>('/api/mobile/owner/payroll', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
 
   getCompliance: (token: string) =>
     apiRequest<ComplianceResponse>('/api/mobile/owner/compliance', { token }),
@@ -464,4 +822,81 @@ export const ownerApi = {
       '/api/mobile/owner/drivers/invite',
       { method: 'POST', token, body: JSON.stringify(payload) }
     ),
+
+  getRoutes: (token: string, status: 'all' | 'planned' | 'active' | 'completed') =>
+    apiRequest<{ routes: OwnerRouteSummary[] }>(`/api/mobile/owner/routes?status=${status}`, { token }).then((r) => r.routes),
+
+  createRoute: (token: string, payload: CreateRoutePayload) =>
+    apiRequest<{ route: { id: string; name: string; status: string } }>('/api/mobile/owner/routes', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getRoute: (token: string, id: string) =>
+    apiRequest<OwnerRouteDetail>(`/api/mobile/owner/routes/${id}`, { token }),
+
+  updateRoute: (token: string, id: string, payload: UpdateRoutePayload) =>
+    apiRequest<{ route: OwnerRouteDetail }>(`/api/mobile/owner/routes/${id}`, {
+      method: 'PATCH',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getTruckOptions: (token: string) =>
+    apiRequest<{ trucks: TruckOption[] }>('/api/mobile/owner/trucks', { token }).then((r) => r.trucks),
+
+  predictProfit: (token: string, payload: PredictProfitPayload) =>
+    apiRequest<PredictProfitResult>('/api/mobile/owner/profit-predictor', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getFuelLog: (token: string) =>
+    apiRequest<{ entries: FuelEntry[] }>('/api/mobile/owner/fuel', { token }),
+
+  createFuelEntry: (token: string, payload: CreateFuelEntryPayload) =>
+    apiRequest<{ entry: FuelEntry }>('/api/mobile/owner/fuel', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getTruckMaintenance: (token: string, truckId: string) =>
+    apiRequest<MaintenanceEventSummary[]>(`/api/mobile/owner/trucks/${truckId}/maintenance`, { token }),
+
+  logMaintenanceEvent: (token: string, truckId: string, payload: LogMaintenancePayload) =>
+    apiRequest<{ success: boolean; event: MaintenanceEventSummary }>(`/api/mobile/owner/trucks/${truckId}/maintenance`, {
+      method: 'POST',
+      token,
+      body: JSON.stringify(payload),
+    }),
+
+  getSafetyAlerts: (token: string) =>
+    apiRequest<SafetyAlertsResponse>('/api/mobile/owner/safety', { token }),
+
+  getScheduledServices: (token: string, truckId: string) =>
+    apiRequest<{ services: ScheduledServiceSummary[] }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { token }
+    ).then((r) => r.services),
+
+  createScheduledService: (token: string, truckId: string, payload: CreateScheduledServicePayload) =>
+    apiRequest<{ service: { id: string; serviceType: string } }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { method: 'POST', token, body: JSON.stringify(payload) }
+    ),
+
+  completeScheduledService: (token: string, truckId: string, payload: CompleteScheduledServicePayload) =>
+    apiRequest<{ success: boolean }>(
+      `/api/mobile/owner/trucks/${truckId}/scheduled-service`,
+      { method: 'PATCH', token, body: JSON.stringify(payload) }
+    ),
+
+  getAllScheduledServices: (token: string) =>
+    apiRequest<{ services: ScheduledServiceWithTruck[] }>(
+      '/api/mobile/owner/maintenance',
+      { token }
+    ).then((r) => r.services),
 }

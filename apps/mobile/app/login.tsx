@@ -2,13 +2,12 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   ImageBackground,
-  StyleSheet,
 } from 'react-native'
 import { useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
@@ -54,39 +53,56 @@ export default function LoginScreen() {
   return (
     <ImageBackground
       source={require('../assets/images/login-bg.jpeg')}
-      style={styles.bg}
+      style={{ flex: 1 }}
       resizeMode="cover"
     >
       {/* Dark overlay — matches web's bg-black/40 */}
-      <View style={styles.overlay} />
+      <View className="absolute inset-0 bg-black/40" />
 
       <KeyboardAvoidingView
-        style={styles.flex}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 24,
+            paddingVertical: 48,
+          }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {/* Logo / brand */}
-          <View style={styles.brand}>
+          <View className="items-center mb-7 gap-3">
             <DCLogo iconSize={64} variant="light" showWordmark={false} />
-            <Text style={styles.wordmark}>
-              <Text style={styles.wordmarkBold}>D</Text>
-              <Text style={styles.wordmarkRegular}>riveCommand</Text>
+            <Text className="text-white">
+              <Text style={{ fontFamily: 'Poppins-ExtraBold', fontSize: 28, color: '#ffffff' }}>D</Text>
+              <Text style={{ fontFamily: 'Poppins-SemiBold', fontSize: 28, color: '#ffffff' }}>riveCommand</Text>
             </Text>
           </View>
 
           {/* Form card — white, matching web */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Sign in to your account</Text>
+          <View
+            className="w-full max-w-[400px] bg-white rounded-2xl p-6 gap-4"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.25,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            <Text className="text-[17px] font-semibold text-gray-900 mb-1">
+              Sign in to your account
+            </Text>
 
             {/* Email */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Email</Text>
+            <View className="gap-1.5">
+              <Text className="text-[13px] font-medium text-gray-700">Email</Text>
               <TextInput
-                style={styles.input}
+                className="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900"
                 placeholder="you@example.com"
                 placeholderTextColor="#9ca3af"
                 keyboardType="email-address"
@@ -102,11 +118,11 @@ export default function LoginScreen() {
             </View>
 
             {/* Password */}
-            <View style={styles.field}>
-              <Text style={styles.label}>Password</Text>
+            <View className="gap-1.5">
+              <Text className="text-[13px] font-medium text-gray-700">Password</Text>
               <TextInput
                 ref={passwordRef}
-                style={styles.input}
+                className="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900"
                 placeholder="••••••••"
                 placeholderTextColor="#9ca3af"
                 secureTextEntry
@@ -120,28 +136,27 @@ export default function LoginScreen() {
 
             {/* Error */}
             {error && (
-              <View style={styles.errorBox}>
-                <Text style={styles.errorText}>{error}</Text>
+              <View className="bg-red-500/10 border border-red-500/25 rounded-lg px-3 py-2.5">
+                <Text className="text-red-600 text-[13px]">{error}</Text>
               </View>
             )}
 
             {/* Submit */}
-            <TouchableOpacity
-              style={[styles.btn, isLoading && styles.btnDisabled]}
+            <Pressable
+              className={`bg-sky-500 rounded-lg py-3 items-center mt-1 active:opacity-80${isLoading ? ' opacity-60' : ''}`}
               onPress={handleSubmit}
               disabled={isLoading}
-              activeOpacity={0.85}
             >
               {isLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.btnText}>Sign in</Text>
+                <Text className="text-white text-sm font-semibold">Sign in</Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Footer */}
-          <Text style={styles.footer}>
+          <Text className="text-white/50 text-xs text-center mt-6">
             Contact your administrator to reset your password
           </Text>
         </ScrollView>
@@ -149,111 +164,3 @@ export default function LoginScreen() {
     </ImageBackground>
   )
 }
-
-const styles = StyleSheet.create({
-  bg: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.42)',
-  },
-  flex: {
-    flex: 1,
-  },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-  },
-  brand: {
-    alignItems: 'center',
-    marginBottom: 28,
-    gap: 12,
-  },
-  wordmark: {
-    color: '#ffffff',
-  },
-  wordmarkBold: {
-    fontFamily: 'Poppins-ExtraBold',
-    fontSize: 28,
-    color: '#ffffff',
-  },
-  wordmarkRegular: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 28,
-    color: '#ffffff',
-  },
-  card: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 24,
-    gap: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  field: {
-    gap: 6,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  input: {
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: '#111827',
-  },
-  errorBox: {
-    backgroundColor: 'rgba(239,68,68,0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.25)',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-  },
-  errorText: {
-    color: '#dc2626',
-    fontSize: 13,
-  },
-  btn: {
-    backgroundColor: '#0ea5e9',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  btnDisabled: {
-    opacity: 0.6,
-  },
-  btnText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  footer: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 24,
-  },
-})

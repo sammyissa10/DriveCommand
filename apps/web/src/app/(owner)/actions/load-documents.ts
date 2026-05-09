@@ -5,7 +5,7 @@
  * Handles rate confirmation uploads stored server-side directly to R2.
  */
 
-import { requireRole, getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';

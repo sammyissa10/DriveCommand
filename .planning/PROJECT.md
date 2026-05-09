@@ -55,6 +55,19 @@ Logistics owners can manage their entire operation — trucks, drivers, routes, 
 - ✓ Driver document expiry tracking with color-coded status badges — v3.0
 - ✓ Automated expiry notifications at 30/60/90 day milestones via cron — v3.0
 
+<!-- Shipped and confirmed in v4.0 -->
+
+- ✓ Client and contract management with 6 rate types (flat, per-mile, per-hour, per-ton, per-unit, percentage) — v4.0
+- ✓ Route templates with iCal RRULE recurrence for automated scheduling — v4.0
+- ✓ Auto-dispatch generation (generate forward N days from templates) — v4.0
+- ✓ Multi-stop dispatch execution with ordered stop timeline — v4.0
+- ✓ BOL/POD document enforcement (API returns 422 on missing POD) — v4.0
+- ✓ Carrier load revenue calculation supporting all 6 rate types — v4.0
+- ✓ Driver pay record generation supporting 5 pay models — v4.0
+- ✓ Carrier compliance alerts for expiring documents — v4.0
+- ✓ Mobile carrier driver app (dispatches, stops, documents) — v4.0
+- ✓ Multi-tenancy and financial integrity test coverage — v4.0
+
 ### Active
 
 (None — start next milestone to define new requirements)
@@ -122,4 +135,4 @@ Logistics owners can manage their entire operation — trucks, drivers, routes, 
 | Milestone-based expiry notifications | 30/60/90 day intervals prevent notification fatigue vs daily alerts | ✓ Good — clean idempotency |
 
 ---
-*Last updated: 2026-02-17 after v3.0 milestone completed (Route Finance & Driver Documents)*
+*Last updated: 2026-04-05 after v4.0 milestone completed (Carrier Operations)*

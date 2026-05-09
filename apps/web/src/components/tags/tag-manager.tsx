@@ -24,6 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { logger } from '@/lib/logger';
 
 type Tag = {
   id: string;
@@ -86,7 +87,7 @@ export function TagManager({ tags }: TagManagerProps) {
       await deleteTag(tagId);
       router.refresh();
     } catch (err) {
-      console.error('Failed to delete tag:', err);
+      logger.error('Failed to delete tag:', err);
     } finally {
       setIsDeletingId(null);
       setDeleteConfirmId(null);

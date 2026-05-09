@@ -1,7 +1,17 @@
-import { useEffect, useState, Fragment, useCallback } from 'react'
+import React, { useEffect, useState, Fragment, useCallback } from 'react'
 import { View, Text, StyleSheet, AppState } from 'react-native'
 import { Tabs } from 'expo-router'
-import { House, Truck, Clock, MessageSquare, FileText } from 'lucide-react-native'
+import Mapbox from '@rnmapbox/maps'
+import Constants from 'expo-constants'
+
+// Initialize Mapbox token before any MapView renders.
+// Token is read from EXPO_PUBLIC_MAPBOX_TOKEN (dev) or app.json extra.mapboxToken (build).
+Mapbox.setAccessToken(
+  process.env.EXPO_PUBLIC_MAPBOX_TOKEN ??
+  (Constants.expoConfig?.extra?.mapboxToken as string | undefined) ??
+  ''
+)
+import { House, Truck, MessageSquare, Navigation, Grid2X2, CheckSquare } from 'lucide-react-native'
 import { useAuthContext } from '../../context/AuthContext'
 import { driverApi } from '@drivecommand/api-client'
 import { useBackgroundGPS } from '../../hooks/useBackgroundGPS'
@@ -10,25 +20,29 @@ import { kvStorage } from '../../lib/storage'
 import { NotificationPermissionModal, shouldShowNotificationModal } from '../../components/shared/NotificationPermissionModal'
 import { SyncStatusBar } from '../../components/shared/SyncStatusBar'
 import { AppHeader } from '../../components/shared/AppHeader'
+import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
+import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
+import { useThemeColors, shadows, tabBar } from '../../constants/tokens'
 import type { HOSStatus } from '@drivecommand/types'
 
 const LAST_READ_KEY = 'messages_last_read_at'
 const UNREAD_POLL_INTERVAL_MS = 30_000
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3000'
 
 /**
  * Small colored dot indicating background GPS status.
  * Positioned as a custom tab bar icon badge overlay.
  */
 function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission' | 'off' }) {
-  const color = {
-    active: '#22c55e',       // green — tracking
-    paused: '#94a3b8',       // grey — user paused
+  const dotColor = {
+    active: '#22c55e',        // green — tracking
+    paused: '#94a3b8',        // grey — user paused
     'no-permission': '#ef4444', // red — permission denied
-    off: '#94a3b8',          // grey — not started
+    off: '#94a3b8',           // grey — not started
   }[status]
 
-  return <View style={[styles.gpsDot, { backgroundColor: color }]} />
+  return <View style={[styles.gpsDot, { backgroundColor: dotColor }]} />
 }
 
 /**
@@ -36,8 +50,8 @@ function GPSStatusDot({ status }: { status: 'active' | 'paused' | 'no-permission
  */
 function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: number }) {
   return (
-    <View style={styles.iconWrapper}>
-      <MessageSquare color={color} size={24} />
+    <>
+      <MessageSquare color={color} size={tabBar.iconSize} />
       {unreadCount > 0 && (
         <View style={styles.unreadBadge}>
           <Text style={styles.unreadBadgeText}>
@@ -45,15 +59,29 @@ function MessageTabIcon({ color, unreadCount }: { color: string; unreadCount: nu
           </Text>
         </View>
       )}
+    </>
+  )
+}
+
+/**
+ * Wrapper that renders a colored pill indicator above the icon when the tab is active.
+ */
+function TabIcon({ focused, children }: { focused: boolean; children: React.ReactNode }) {
+  return (
+    <View style={styles.tabIconWrap}>
+      <View style={[styles.activeBar, focused && styles.activeBarVisible]} />
+      <View style={styles.iconWrapper}>{children}</View>
     </View>
   )
 }
 
 export default function DriverLayout() {
   const { token } = useAuthContext()
+  const c = useThemeColors()
   const [hosStatus, setHOSStatus] = useState<HOSStatus | undefined>(undefined)
   const [showNotifModal, setShowNotifModal] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [openTaskCount, setOpenTaskCount] = useState(0)
   const [hasActiveLoad, setHasActiveLoad] = useState(false)
 
   // Show notification permission modal on first login
@@ -104,21 +132,40 @@ export default function DriverLayout() {
     fetchUnreadCount()
   }, [fetchUnreadCount])
 
+  // Fetch open task count — best-effort, used for Tasks tab badge
+  const fetchTaskCount = useCallback(async () => {
+    if (!token) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/mobile/driver/tasks`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      setOpenTaskCount(data.stepInstances?.length ?? 0)
+    } catch {
+      // Best-effort — don't disrupt navigation if this fails
+    }
+  }, [token])
+
+  useEffect(() => {
+    fetchTaskCount()
+  }, [fetchTaskCount])
+
   // Poll unread count every 30s
   useEffect(() => {
     const timer = setInterval(fetchUnreadCount, UNREAD_POLL_INTERVAL_MS)
     return () => clearInterval(timer)
   }, [fetchUnreadCount])
 
-  // Refresh unread count when app comes back to foreground
+  // Refresh unread count and task count when app comes back to foreground
   useEffect(() => {
     const sub = AppState.addEventListener('change', (nextState) => {
       if (nextState === 'active') {
         fetchUnreadCount()
+        fetchTaskCount()
       }
     })
     return () => sub.remove()
-  }, [fetchUnreadCount])
+  }, [fetchUnreadCount, fetchTaskCount])
 
   const { gpsStatus } = useBackgroundGPS(hosStatus, hasActiveLoad)
   const { isOnline, isSyncing, pendingCount, failedCount, retryFailed } = useOfflineSync()
@@ -135,85 +182,136 @@ export default function DriverLayout() {
         failedCount={failedCount}
         onRetryFailed={retryFailed}
       />
+      <SupportTicketProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: true,
-          tabBarLabelStyle: {
-            fontSize: 10,
-            fontWeight: '500',
-            marginTop: 2,
-            marginBottom: 0,
-          },
           tabBarStyle: {
-            backgroundColor: '#1e293b',
-            borderTopColor: '#334155',
-            height: 72,
-            paddingBottom: 10,
-            paddingTop: 6,
+            backgroundColor: c.tabBarBg,
+            borderTopColor: c.tabBarBorder,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            height: tabBar.height,
+            paddingTop: 0,
+            paddingBottom: 8,
+            ...shadows.tabBar,
           },
           tabBarItemStyle: {
             flex: 1,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
             paddingHorizontal: 0,
+            minHeight: 48,
           },
-          tabBarActiveTintColor: '#0ea5e9',
-          tabBarInactiveTintColor: '#64748b',
+          tabBarActiveTintColor: c.tabActive,
+          tabBarInactiveTintColor: c.tabInactive,
+          tabBarLabelStyle: {
+            fontSize: tabBar.labelSize,
+            fontWeight: '500',
+            marginTop: 2,
+            marginBottom: 0,
+          },
         }}
       >
+        {/* Tab 1: Dashboard — center of gravity, has GPSStatusDot */}
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarLabel: 'Dashboard',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <House color={color} size={tabBar.iconSize} />
+                <GPSStatusDot status={gpsStatus} />
+              </TabIcon>
+            ),
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+
+        {/* Tab 2: Loads */}
         <Tabs.Screen
           name="loads"
           options={{
             tabBarLabel: 'Loads',
-            tabBarIcon: ({ color }) => <Truck color={color} size={24} />,
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Truck color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
             tabBarButtonTestID: 'tab-loads',
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+
+        {/* Tab 3: Map — NEW */}
         <Tabs.Screen
-          name="hos"
+          name="map"
           options={{
-            tabBarLabel: 'HOS',
-            tabBarIcon: ({ color }) => <Clock color={color} size={24} />,
-          }}
-          listeners={{ tabPress: () => haptic.light() }}
-        />
-        {/* Home/Dashboard — center tab */}
-        <Tabs.Screen
-          name="index"
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color }) => (
-              <View style={styles.iconWrapper}>
-                <House color={color} size={24} />
-                {/* GPS status dot overlaid on the home tab icon */}
-                <GPSStatusDot status={gpsStatus} />
-              </View>
+            tabBarLabel: 'Map',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Navigation color={color} size={tabBar.iconSize} />
+              </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+
+        {/* Tab 4: Messages */}
         <Tabs.Screen
           name="messages"
           options={{
             tabBarLabel: 'Messages',
-            tabBarIcon: ({ color }) => (
-              <MessageTabIcon color={color} unreadCount={unreadCount} />
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <MessageTabIcon color={color} unreadCount={unreadCount} />
+              </TabIcon>
             ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
+
+        {/* Tab 5: Tasks */}
         <Tabs.Screen
-          name="documents"
+          name="tasks"
           options={{
-            tabBarLabel: 'Docs',
-            tabBarIcon: ({ color }) => <FileText color={color} size={24} />,
+            tabBarLabel: 'Tasks',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <CheckSquare color={color} size={tabBar.iconSize} />
+                {openTaskCount > 0 && (
+                  <View style={styles.unreadBadge}>
+                    <Text style={styles.unreadBadgeText}>
+                      {openTaskCount > 99 ? '99+' : String(openTaskCount)}
+                    </Text>
+                  </View>
+                )}
+              </TabIcon>
+            ),
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
-        {/* Hidden routes — href: null removes from tab bar entirely with no gap */}
+
+        {/* Tab 6: More */}
+        <Tabs.Screen
+          name="more"
+          options={{
+            tabBarLabel: 'More',
+            tabBarIcon: ({ color, focused }) => (
+              <TabIcon focused={focused}>
+                <Grid2X2 color={color} size={tabBar.iconSize} />
+              </TabIcon>
+            ),
+          }}
+          listeners={{ tabPress: () => haptic.light() }}
+        />
+
+        {/* Hidden routes — removed from tab bar */}
+        <Tabs.Screen name="hos" options={{ href: null }} />
+        <Tabs.Screen name="documents" options={{ href: null }} />
         <Tabs.Screen name="incidents" options={{ href: null }} />
+        <Tabs.Screen name="carrier" options={{ href: null }} />
+        <Tabs.Screen name="tasks/[id]" options={{ href: null }} />
       </Tabs>
 
       {/* Notification permission modal — shown on first login */}
@@ -221,11 +319,30 @@ export default function DriverLayout() {
         visible={showNotifModal}
         onDismiss={() => setShowNotifModal(false)}
       />
+
+      {/* Support ticket FAB — persistent on all driver screens */}
+      <SupportTicketFAB />
+      </SupportTicketProvider>
     </Fragment>
   )
 }
 
 const styles = StyleSheet.create({
+  tabIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 4,
+    gap: 6,
+  },
+  activeBar: {
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'transparent',
+  },
+  activeBarVisible: {
+    backgroundColor: '#0ea5e9',
+  },
   iconWrapper: {
     position: 'relative',
     alignItems: 'center',
@@ -239,7 +356,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#1e293b',
+    borderColor: 'transparent',
   },
   unreadBadge: {
     position: 'absolute',

@@ -9,7 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole, getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getCurrentUser } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { requireTenantId } from '@/lib/context/tenant-context';
 import { DocumentRepository } from '@/lib/db/repositories/document.repository';
@@ -18,6 +18,8 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client, getBucketName } from '@/lib/storage/s3-client';
 import { MAX_FILE_SIZE } from '@/lib/storage/validate';
 import { nanoid } from 'nanoid';
+import { logger } from '@/lib/logger';
+import { uploadLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
@@ -29,6 +31,10 @@ export async function POST(req: NextRequest) {
 
     step = 'require-tenant';
     const tenantId = await requireTenantId();
+
+    step = 'rate-limit';
+    const rateLimited = await applyRateLimit(uploadLimiter, tenantId);
+    if (rateLimited) return rateLimited;
 
     step = 'get-user';
     const user = await getCurrentUser();
@@ -123,9 +129,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(`[upload] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
+    logger.error(`[upload] CAUGHT ERROR at step=${step}:`, error instanceof Error ? error.stack : String(error));
     return NextResponse.json(
-      { error: `[upload:${step}] ${error instanceof Error ? error.message : String(error)}` },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

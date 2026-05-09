@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
 import { sendDriverInvitation } from '@/lib/email/send-driver-invitation';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { getAppBaseUrl } from '@/lib/app-url';
+import { logger } from '@/lib/logger';
 
 /**
  * POST /api/mobile/owner/drivers/invite
@@ -20,6 +23,9 @@ export async function POST(req: NextRequest) {
   if (auth.role !== 'OWNER') {
     return NextResponse.json({ error: 'Forbidden — owner role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId } = auth;
 
@@ -48,6 +54,14 @@ export async function POST(req: NextRequest) {
 
   try {
     // Check for existing user with same email in tenant
+    /**
+     * @bypass_rls reason: mobile-api
+     * WHY: Mobile Bearer token auth — see bypass_rls pattern documentation in
+     *      apps/web/src/lib/auth/mobile-auth.ts for the full explanation.
+     * SCOPE: Accesses only data belonging to the authenticated user's tenant.
+     *        Driver endpoints additionally filter by driverId (= auth.userId for DRIVER role).
+     * SAFETY: Gated by validateMobileToken() above. tenantId and userId come from the verified JWT.
+     */
     const existingUser = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
       return tx.user.findFirst({ where: { email: normalizedEmail, tenantId } });
@@ -99,7 +113,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Send invitation email
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = getAppBaseUrl();
     const acceptUrl = `${baseUrl}/accept-invitation?id=${invitation.id}`;
 
     let emailSent = false;
@@ -117,7 +131,7 @@ export async function POST(req: NextRequest) {
       });
       emailSent = true;
     } catch (emailError) {
-      console.error('[mobile/invite] Email send failed:', emailError);
+      logger.error('[mobile/invite] Email send failed:', emailError);
     }
 
     return NextResponse.json({
@@ -129,7 +143,7 @@ export async function POST(req: NextRequest) {
         : `Invitation created for ${normalizedEmail} but the email could not be sent`,
     });
   } catch (err) {
-    console.error('[mobile/owner/drivers/invite] error:', err);
+    logger.error('[mobile/owner/drivers/invite] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

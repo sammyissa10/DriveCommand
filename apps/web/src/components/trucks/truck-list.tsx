@@ -14,6 +14,7 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
+import { SamplePill } from '@/components/onboarding/sample-pill';
 
 const variantClasses = {
   blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -43,7 +44,12 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
     {
       accessorKey: 'make',
       header: 'Make',
-      cell: (info) => <span className="font-medium text-foreground">{info.getValue() as string}</span>,
+      cell: (info) => (
+        <span className="inline-flex items-center">
+          <span className="font-medium text-foreground">{info.getValue() as string}</span>
+          {info.row.original.isSample && <SamplePill />}
+        </span>
+      ),
     },
     {
       accessorKey: 'model',
@@ -263,6 +269,7 @@ export function TruckList({ trucks, onDelete }: TruckListProps) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-medium text-sm text-foreground">{truck.year} {truck.make} {truck.model}</span>
+                  {truck.isSample && <SamplePill />}
                 </div>
                 <div className="mt-1 flex items-center gap-2 flex-wrap">
                   <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">

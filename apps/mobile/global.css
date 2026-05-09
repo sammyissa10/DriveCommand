@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-bg: 255 255 255;
+  --color-surface-card: 241 245 249;
+  --color-surface-elevated: 226 232 240;
+  --color-surface-input: 248 250 252;
+  --color-border: 203 213 225;
+  --color-border-light: 226 232 240;
+  --color-text-primary: 15 23 42;
+  --color-text-secondary: 100 116 139;
+  --color-text-tertiary: 148 163 184;
+  --color-tab-bar-bg: 255 255 255;
+  --color-tab-bar-border: 226 232 240;
+}
+
+.dark {
+  --color-bg: 15 23 42;
+  --color-surface-card: 30 41 59;
+  --color-surface-elevated: 36 48 70;
+  --color-surface-input: 26 37 56;
+  --color-border: 45 61 83;
+  --color-border-light: 30 41 59;
+  --color-text-primary: 241 245 249;
+  --color-text-secondary: 148 163 184;
+  --color-text-tertiary: 100 116 139;
+  --color-tab-bar-bg: 12 21 36;
+  --color-tab-bar-border: 30 41 59;
+}

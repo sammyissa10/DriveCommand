@@ -1,25 +1,23 @@
-import Link from "next/link";
-import { Users } from "lucide-react";
+import { SignUpForm } from '../sign-up-form';
 
-export default function SignUpPage() {
+export const metadata = { title: 'Create your account — DriveCommand' };
+
+export default function SignUpPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ promo?: string }>;
+}) {
   return (
-    <div className="w-full max-w-sm rounded-xl border border-border bg-card shadow-sm p-6 text-center space-y-4">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
-        <Users className="h-6 w-6 text-muted-foreground" />
-      </div>
-      <div>
-        <h2 className="text-lg font-semibold text-foreground">Account Access</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Driver and manager accounts are provisioned by your fleet administrator.
-          Please contact your administrator to get access.
+    <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-sm p-8 space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+          Start your free trial
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          No credit card required. 14-day trial included.
         </p>
       </div>
-      <Link
-        href="/sign-in"
-        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-      >
-        Back to sign in
-      </Link>
+      <SignUpForm searchParams={searchParams} />
     </div>
   );
 }

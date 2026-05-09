@@ -81,3 +81,6 @@ apps/mobile/google-play-key.json
 # prevent accidental root-level expo prebuild output
 /android/
 /ios/
+.turbo/
+apps/*/.turbo
+packages/*/.turbo/

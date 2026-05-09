@@ -1,197 +1,290 @@
 'use server';
 
 /**
- * Driver-scoped route server actions.
- * All actions enforce DRIVER role check and filter data by authenticated user's ID.
- * CRITICAL SECURITY: No action accepts driverId or routeId as input — identity resolved from getCurrentUser().
+ * Driver-scoped route server actions — Carrier Ops edition.
+ * All actions enforce DRIVER role check and resolve driver identity via
+ * carrierDriver.userId = session.userId (NOT from URL/params).
+ *
+ * CRITICAL SECURITY: No action accepts driverId as input. Identity is
+ * resolved server-side from the session cookie.
  */
 
-import { requireRole, getCurrentUser } from '@/lib/auth/server';
+import { requireRole, getSession } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { prisma, TX_OPTIONS } from '@/lib/db/prisma';
+import { transitionDispatchStatus } from '@/lib/carrier/dispatches';
+import { arriveStop, completeStop } from '@/lib/carrier/stop-completion';
 import { revalidatePath } from 'next/cache';
 
+// ---------------------------------------------------------------------------
+// getMyActiveDispatch
+// ---------------------------------------------------------------------------
+
 /**
- * Get the route assigned to the authenticated driver.
- * Returns the driver's active route (PLANNED or IN_PROGRESS status) with truck, driver, and document details.
- * Returns null if no active route assignment exists.
+ * Get the active CarrierDispatch assigned to the authenticated driver.
+ * Returns the earliest planned or in_progress dispatch, or null if none.
  *
- * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
+ * SECURITY: Filters by carrierDriver.userId = session.userId AND orgId = session.tenantId.
  */
-export async function getMyAssignedRoute() {
-  // CRITICAL: Auth check FIRST before any data access
+export async function getMyActiveDispatch() {
   await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
 
-  // Get current user from database
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error('User not found');
-  }
+  /**
+   * @bypass_rls reason: driver-server-action
+   * WHY: Server actions use Supabase session auth, not the RLS-scoped tenant
+   *      connection. The Carrier Ops tables (dispatches, stops, facilities, etc.)
+   *      require bypass_rls for server-side reads in this auth context.
+   * SCOPE: Reads only dispatches where carrierDriver.userId = session.userId
+   *        AND orgId = session.tenantId. Double-scoped.
+   * SAFETY: Gated by requireRole([DRIVER]) + getSession() above.
+   */
 
-  // Get tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-  // Query route assigned to this driver (filter by user.id in WHERE clause)
-  const route = await prisma.route.findFirst({
-    where: {
-      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
-      status: { in: ['PLANNED', 'IN_PROGRESS'] },
-    },
-    include: {
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
+
+    if (!carrierDriver) return null;
+
+    const dispatchInclude = {
       truck: {
-        select: {
-          id: true,
-          make: true,
-          model: true,
-          year: true,
-          vin: true,
-          licensePlate: true,
-          odometer: true,
-          documentMetadata: true,
+        select: { id: true, unitNumber: true, displayName: true, year: true, make: true, model: true },
+      },
+      stops: {
+        orderBy: { sequenceOrder: 'asc' as const },
+        include: {
+          facility: {
+            select: { id: true, name: true, city: true, state: true, latitude: true, longitude: true, addressLine1: true },
+          },
+          documents: {
+            select: { id: true, documentType: true, filename: true, createdAt: true },
+            orderBy: { createdAt: 'desc' as const },
+          },
         },
       },
-      driver: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          licenseNumber: true,
+      carrierLoads: {
+        include: {
+          client: { select: { id: true, name: true } },
         },
       },
-      documents: true,
-      stops: { orderBy: { position: 'asc' } },
-      loads: {
-        where: { status: { in: ['DISPATCHED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] } },
-        select: { id: true, loadNumber: true, origin: true, destination: true, status: true },
-        orderBy: { pickupDate: 'asc' },
-      },
-    },
-    orderBy: {
-      scheduledDate: 'asc', // Earliest active route first
-    },
-  });
+    };
 
-  return route;
+    // Prioritize in_progress dispatches over planned
+    let dispatch = await tx.carrierDispatch.findFirst({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: session.tenantId,
+        status: 'in_progress',
+      },
+      orderBy: { actualDeparture: 'desc' },
+      include: dispatchInclude,
+    });
+
+    if (!dispatch) {
+      dispatch = await tx.carrierDispatch.findFirst({
+        where: {
+          primaryDriverId: carrierDriver.id,
+          orgId: session.tenantId,
+          status: 'planned',
+        },
+        orderBy: { scheduledDeparture: 'asc' },
+        include: dispatchInclude,
+      });
+    }
+
+    const firstDeliveryStop = dispatch
+      ? dispatch.stops.find((s) => s.stopType === 'delivery' && s.status === 'pending') ?? null
+      : null;
+
+    return dispatch ? { ...dispatch, firstDeliveryStop } : null;
+  }, TX_OPTIONS);
 }
 
-/**
- * Get a lightweight summary of the route assigned to the authenticated driver.
- * Returns only fields needed for cross-reference info card: id, name, origin, destination, status.
- * Returns null if no active route assignment exists.
- *
- * SECURITY: Filters by driverId = user.id from database user record (NEVER from URL/params).
- */
-export async function getMyAssignedRouteSummary() {
-  // CRITICAL: Auth check FIRST before any data access
-  await requireRole([UserRole.DRIVER]);
+// ---------------------------------------------------------------------------
+// getMyDispatchHistory
+// ---------------------------------------------------------------------------
 
-  // Get current user from database
-  const user = await getCurrentUser();
-  if (!user) {
-    throw new Error('User not found');
+/**
+ * Get completed dispatches for the authenticated driver (last 10).
+ * SECURITY: Filters by carrierDriver.userId = session.userId AND orgId = session.tenantId.
+ */
+export async function getMyDispatchHistory() {
+  await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
+
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
+
+    if (!carrierDriver) return [];
+
+    return tx.carrierDispatch.findMany({
+      where: {
+        primaryDriverId: carrierDriver.id,
+        orgId: session.tenantId,
+        status: 'completed',
+      },
+      orderBy: { actualDeparture: 'desc' },
+      take: 20,
+      include: {
+        truck: {
+          select: { id: true, unitNumber: true, displayName: true },
+        },
+        stops: {
+          orderBy: { sequenceOrder: 'asc' },
+          include: {
+            facility: {
+              select: { id: true, name: true, city: true, state: true },
+            },
+            documents: {
+              select: { id: true, documentType: true, filename: true, createdAt: true },
+              orderBy: { createdAt: 'desc' as const },
+            },
+          },
+        },
+        carrierLoads: {
+          include: { client: { select: { id: true, name: true } } },
+        },
+      },
+    });
+  }, TX_OPTIONS);
+}
+
+// ---------------------------------------------------------------------------
+// startTrip
+// ---------------------------------------------------------------------------
+
+/**
+ * Transition the dispatch from 'planned' to 'in_progress'.
+ * Verifies the dispatch belongs to the authenticated driver before delegating.
+ *
+ * SECURITY: Verifies dispatch.primaryDriverId = carrierDriver.id AND orgId = session.tenantId.
+ */
+export async function startTrip(dispatchId: string) {
+  await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
+
+  // Verify ownership before calling the lib function
+  const owned = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
+
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
+    if (!carrierDriver) return false;
+
+    const dispatch = await tx.carrierDispatch.findFirst({
+      where: {
+        id: dispatchId,
+        primaryDriverId: carrierDriver.id,
+        orgId: session.tenantId,
+      },
+    });
+    return !!dispatch;
+  }, TX_OPTIONS);
+
+  if (!owned) {
+    return { error: 'Dispatch not found or not assigned to you' };
   }
 
-  // Get tenant-scoped Prisma client
-  const prisma = await getTenantPrisma();
-
-  // Query route assigned to this driver — select only summary fields
-  const route = await prisma.route.findFirst({
-    where: {
-      driverId: user.id, // CRITICAL: user.id from database, NOT from parameters
-      status: { in: ['PLANNED', 'IN_PROGRESS'] },
-    },
-    select: {
-      id: true,
-      name: true,
-      origin: true,
-      destination: true,
-      status: true,
-    },
-    orderBy: {
-      scheduledDate: 'asc', // Earliest active route first
-    },
-  });
-
-  return route;
+  const result = await transitionDispatchStatus(session.tenantId, dispatchId, 'in_progress');
+  revalidatePath('/my-route');
+  return result;
 }
 
+// ---------------------------------------------------------------------------
+// arriveAtStop
+// ---------------------------------------------------------------------------
+
 /**
- * Mark a route stop as DEPARTED (manual only — geofence exit does NOT trigger this).
- * Stop must be in ARRIVED status and belong to the authenticated driver's active route.
- * SECURITY: Validates stop ownership via route.driverId = user.id.
+ * Mark a CarrierStop as 'arrived'.
+ * Verifies the stop's dispatch belongs to the authenticated driver.
+ *
+ * SECURITY: Verifies stop.dispatch.primaryDriverId = carrierDriver.id AND orgId matches.
  */
-export async function markStopDeparted(stopId: string) {
+export async function arriveAtStop(stopId: string) {
   await requireRole([UserRole.DRIVER]);
-  const user = await getCurrentUser();
-  if (!user) throw new Error('User not found');
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
 
-  const prisma = await getTenantPrisma();
+  const owned = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-  // Verify the stop belongs to the driver's route
-  const stop = await prisma.routeStop.findFirst({
-    where: {
-      id: stopId,
-      route: {
-        driverId: user.id,
-        status: { in: ['PLANNED', 'IN_PROGRESS'] },
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
+    if (!carrierDriver) return false;
+
+    const stop = await tx.carrierStop.findFirst({
+      where: {
+        id: stopId,
+        dispatch: {
+          primaryDriverId: carrierDriver.id,
+          orgId: session.tenantId,
+        },
       },
-    },
-  });
+    });
+    return !!stop;
+  }, TX_OPTIONS);
 
-  if (!stop) {
+  if (!owned) {
     return { error: 'Stop not found or not assigned to you' };
   }
 
-  if (stop.status !== 'ARRIVED') {
-    return { error: 'Stop must be in ARRIVED status to mark as departed' };
-  }
-
-  await prisma.routeStop.update({
-    where: { id: stopId },
-    data: {
-      status: 'DEPARTED',
-      departedAt: new Date(),
-    },
-  });
-
+  const result = await arriveStop(session.tenantId, stopId);
   revalidatePath('/my-route');
-  return { success: true };
+  return result;
 }
 
+// ---------------------------------------------------------------------------
+// completeCurrentStop
+// ---------------------------------------------------------------------------
+
 /**
- * Get all completed routes assigned to the authenticated driver.
- * Returns COMPLETED routes ordered most-recent-first.
- * SECURITY: Filters by driverId = user.id from DB (NEVER from params).
+ * Mark a CarrierStop as 'completed'.
+ * Verifies the stop's dispatch belongs to the authenticated driver.
+ *
+ * SECURITY: Verifies stop.dispatch.primaryDriverId = carrierDriver.id AND orgId matches.
  */
-export async function getMyCompletedRoutes() {
+export async function completeCurrentStop(stopId: string) {
   await requireRole([UserRole.DRIVER]);
+  const session = await getSession();
+  if (!session) throw new Error('Unauthorized');
 
-  const user = await getCurrentUser();
-  if (!user) throw new Error('User not found');
+  const owned = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', TRUE)`;
 
-  const prisma = await getTenantPrisma();
+    const carrierDriver = await tx.carrierDriver.findFirst({
+      where: { userId: session.userId, orgId: session.tenantId },
+    });
+    if (!carrierDriver) return false;
 
-  return prisma.route.findMany({
-    where: {
-      driverId: user.id,
-      status: 'COMPLETED',
-      archivedAt: null,
-    },
-    include: {
-      truck: {
-        select: { id: true, year: true, make: true, model: true, licensePlate: true },
+    const stop = await tx.carrierStop.findFirst({
+      where: {
+        id: stopId,
+        dispatch: {
+          primaryDriverId: carrierDriver.id,
+          orgId: session.tenantId,
+        },
       },
-      stops: { orderBy: { position: 'asc' } },
-      loads: {
-        where: { status: { in: ['DELIVERED', 'INVOICED'] } },
-        select: { id: true, loadNumber: true, origin: true, destination: true, status: true },
-        orderBy: { pickupDate: 'asc' },
-      },
-    },
-    orderBy: [
-      { completedAt: 'desc' },
-      { scheduledDate: 'desc' },
-    ],
-  });
+    });
+    return !!stop;
+  }, TX_OPTIONS);
+
+  if (!owned) {
+    return { error: 'Stop not found or not assigned to you' };
+  }
+
+  const result = await completeStop(session.tenantId, stopId, { bypassDocumentCheck: true });
+  revalidatePath('/my-route');
+  return result;
 }

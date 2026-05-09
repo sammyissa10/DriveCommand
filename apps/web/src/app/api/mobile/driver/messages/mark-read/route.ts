@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/mobile/driver/messages/mark-read
@@ -17,6 +18,9 @@ export async function POST(req: NextRequest) {
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   // Read state is tracked client-side; server acknowledges successfully
   return NextResponse.json({ success: true });

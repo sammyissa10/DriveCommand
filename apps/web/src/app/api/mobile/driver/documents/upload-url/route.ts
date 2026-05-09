@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateMobileToken, unauthorizedResponse } from '@/lib/auth/mobile-auth';
 import { generateUploadUrl } from '@/lib/storage/presigned';
 import { nanoid } from 'nanoid';
+import { mobileLimiter, applyRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 const ALLOWED_CONTENT_TYPES: Record<string, boolean> = {
   'application/pdf': true,
@@ -29,6 +31,9 @@ export async function POST(req: NextRequest) {
   if (!auth.driverId) {
     return NextResponse.json({ error: 'Forbidden — driver role required' }, { status: 403 });
   }
+
+  const limited = await applyRateLimit(mobileLimiter, auth.userId);
+  if (limited) return limited;
 
   const { tenantId } = auth;
 
@@ -79,7 +84,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ uploadUrl, s3Key });
   } catch (err) {
-    console.error('[mobile/driver/documents/upload-url POST] error:', err);
+    logger.error('[mobile/driver/documents/upload-url POST] error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,14 +1,17 @@
 'use server';
 
-import { requireRole } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { revalidatePath } from 'next/cache';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, DriverPaymentMethod } from '@/generated/prisma';
 import {
   driverRouteJoinCreateSchema,
   driverRouteJoinUpdateSchema,
 } from '@drivecommand/validation';
+import { logger } from '@/lib/logger';
 
 const Decimal = Prisma.Decimal;
 
@@ -38,7 +41,7 @@ export async function listDriverRouteJoinsByRoute(routeId: string) {
 
     return joins;
   } catch (error) {
-    console.error('Error listing driver route joins by route:', error);
+    logger.error('Error listing driver route joins by route:', error);
     return [];
   }
 }
@@ -71,7 +74,7 @@ export async function listDriverRouteJoinsByDriver(driverId: string) {
 
     return joins;
   } catch (error) {
-    console.error('Error listing driver route joins by driver:', error);
+    logger.error('Error listing driver route joins by driver:', error);
     return [];
   }
 }
@@ -80,7 +83,7 @@ export async function listDriverRouteJoinsByDriver(driverId: string) {
  * Create a new DriverRouteJoin entry.
  * OWNER/MANAGER only.
  */
-export async function createDriverRouteJoin(prevState: any, formData: FormData) {
+export async function createDriverRouteJoin(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
   const tenantId = await requireTenantId();
@@ -137,7 +140,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
         routeId,
         driverId,
         isMainDriver,
-        paymentMethod: paymentMethod as any,
+        paymentMethod: paymentMethod as DriverPaymentMethod,
         fixedAmount,
         hourlyRate,
         numberOfHours,
@@ -150,12 +153,12 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
     revalidatePath(`/drivers/${driverId}`);
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Unique constraint violation: driver already assigned to this route
-    if (error?.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: 'This driver is already assigned to this route' };
     }
-    console.error('Error creating driver route join:', error);
+    logger.error('Error creating driver route join:', error);
     return { error: 'Failed to create driver assignment' };
   }
 }
@@ -166,7 +169,7 @@ export async function createDriverRouteJoin(prevState: any, formData: FormData) 
  */
 export async function updateDriverRouteJoin(
   joinId: string,
-  prevState: any,
+  prevState: ActionState | null,
   formData: FormData
 ) {
   // CRITICAL: Auth check FIRST before any data access
@@ -239,7 +242,7 @@ export async function updateDriverRouteJoin(
           isMainDriver: result.data.isMainDriver,
         }),
         ...(paymentMethod !== undefined && {
-          paymentMethod: paymentMethod as any,
+          paymentMethod: paymentMethod as DriverPaymentMethod,
         }),
         ...monetaryFields,
       },
@@ -250,7 +253,7 @@ export async function updateDriverRouteJoin(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating driver route join:', error);
+    logger.error('Error updating driver route join:', error);
     return { error: 'Failed to update driver assignment' };
   }
 }
@@ -281,7 +284,7 @@ export async function listDriverPrimaryRoutes(driverId: string) {
 
     return routes;
   } catch (error) {
-    console.error('Error listing driver primary routes:', error);
+    logger.error('Error listing driver primary routes:', error);
     return [];
   }
 }
@@ -315,7 +318,7 @@ export async function deleteDriverRouteJoin(joinId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error deleting driver route join:', error);
+    logger.error('Error deleting driver route join:', error);
     return { error: 'Failed to delete driver assignment' };
   }
 }

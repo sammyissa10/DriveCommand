@@ -1,29 +1,20 @@
 ---
 phase: 37-polish-performance
-verified: 2026-03-25T17:22:50Z
-status: gaps_found
-score: 6/8 must-haves verified
-gaps:
-  - truth: Every data-fetching screen shows a skeleton loader on initial load
-    status: partial
-    reason: Owner fleet history panel shows ActivityIndicator instead of MessageSkeleton during messagesLoading. All other 11 screens are fully skeleton-covered.
-    artifacts:
-      - path: apps/mobile/app/(owner)/fleet.tsx
-        issue: lines 320-323 messagesLoading conditional renders ActivityIndicator not MessageSkeleton
-    missing:
-      - Replace ActivityIndicator in fleet.tsx history panel with 4x MessageSkeleton (same pattern as driver messages.tsx lines 187-190)
-  - truth: AnimatedScreen FadeIn transition applied to all tab and stack screens
-    status: partial
-    reason: Owner map.tsx tab screen is missing AnimatedScreen wrap. Plan 02 listed map as one of 5 owner tab screens. 13 of 14 expected screens covered.
-    artifacts:
-      - path: apps/mobile/app/(owner)/map.tsx
-        issue: No AnimatedScreen import or usage
-    missing:
-      - Wrap map.tsx rendered content in AnimatedScreen (same pattern as other owner tab screens)
+verified: 2026-03-27T23:26:13Z
+status: human_needed
+score: 8/8 must-haves verified
+re_verification:
+  previous_status: gaps_found
+  previous_score: 6/8
+  gaps_closed:
+    - Every data-fetching screen shows a skeleton loader -- fleet.tsx now uses 4x MessageSkeleton at convsLoading guard lines 329-335
+    - AnimatedScreen FadeIn applied to all tab and stack screens -- map.tsx now imports and wraps content in AnimatedScreen line 5 line 9
+  gaps_remaining: []
+  regressions: []
 human_verification:
   - test: Verify 48px touch targets on physical device
     expected: All interactive elements respond to one-finger tap without precision aiming
-    why_human: Touch target compliance requires physical device testing; only a real finger on glass confirms comfort
+    why_human: Touch target compliance requires physical device testing
   - test: Haptic feedback fires on all documented events
     expected: Light buzz on tab presses; success on completions; error on API failures
     why_human: Haptics are silently swallowed on emulator; physical device required
@@ -42,9 +33,9 @@ human_verification:
 
 **Phase Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
 
-**Verified:** 2026-03-25T17:22:50Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-03-27T23:26:13Z
+**Status:** human_needed
+**Re-verification:** Yes -- after gap closure (previous: gaps_found 6/8, now: human_needed 8/8)
 
 ---
 
@@ -55,15 +46,15 @@ human_verification:
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
 | 1 | FlatList replaced with FlashList on all list screens | VERIFIED | grep FlatList returns 0 matches in app/; 6 screen files use FlashList with estimatedItemSize |
-| 2 | Every data-fetching screen shows skeleton on initial load | PARTIAL | 11/12 screens covered; fleet.tsx history panel still uses ActivityIndicator |
-| 3 | AnimatedScreen FadeIn applied to all tab and stack screens | PARTIAL | 13/14 screens; owner map.tsx missing AnimatedScreen wrap |
-| 4 | Haptic feedback wired on all state-changing actions | VERIFIED | lib/haptics.ts substantive; wired in both _layout.tsx tab presses and 7 action screens |
+| 2 | Every data-fetching screen shows skeleton on initial load | VERIFIED | 12/12 screens covered; fleet.tsx now uses 4x MessageSkeleton at convsLoading guard (lines 329-335) |
+| 3 | AnimatedScreen FadeIn applied to all tab and stack screens | VERIFIED | 24 screens import AnimatedScreen including map.tsx (line 5, wrapped at line 9) |
+| 4 | Haptic feedback wired on all state-changing actions | VERIFIED | lib/haptics.ts substantive; 42 haptic call sites across app screens |
 | 5 | System dark mode detection via useColorScheme | VERIFIED | ScreenWrapper.tsx uses useColorScheme() and switches bg-slate-900/bg-white and StatusBar style dynamically |
 | 6 | BottomSheet uses Reanimated spring animation | VERIFIED | BottomSheet.tsx uses SlideInDown.springify().damping(18).stiffness(200) and FadeIn backdrop |
 | 7 | 48px touch targets on all interactive elements | VERIFIED | LoadCard minHeight:96 paddingVertical:14; tab bars height:72; avatar 40x40; filter pills py-3; hitSlop on icon buttons |
 | 8 | React.memo on high-frequency list items | VERIFIED | LoadCard, KPICard, DriverStatusChip all export memo()-wrapped components |
 
-**Score:** 6/8 truths verified (2 partial)
+**Score:** 8/8 truths verified
 
 ---
 
@@ -97,10 +88,10 @@ human_verification:
 | (owner)/drivers/index.tsx | DriverCardSkeleton x5 | isLoading guard | WIRED | Lines 238-249 |
 | (driver)/messages.tsx | MessageSkeleton x4 | isLoading guard | WIRED | Lines 187-190 |
 | (driver)/documents.tsx | DocumentRowSkeleton x5 | isLoading guard | WIRED | Lines 167-178 |
-| (owner)/fleet.tsx | MessageSkeleton | messagesLoading guard | NOT WIRED | ActivityIndicator at line 322 instead |
+| (owner)/more/fleet.tsx | MessageSkeleton x4 | convsLoading guard | WIRED | Lines 329-335; ActivityIndicator removed |
 | (driver)/_layout.tsx | haptic.light() | Tabs.Screen listeners tabPress | WIRED | All 5 driver tabs |
 | (owner)/_layout.tsx | haptic.light() | Tabs.Screen listeners tabPress | WIRED | All 5 owner tabs |
-| (owner)/map.tsx | AnimatedScreen | JSX content wrap | NOT WIRED | No import or usage |
+| (owner)/map.tsx | AnimatedScreen | JSX content wrap | WIRED | Import line 5; wraps SafeAreaView at line 9 |
 
 ---
 
@@ -108,8 +99,8 @@ human_verification:
 
 | Plan | Goal | Status | Gap |
 |------|------|--------|-----|
-| 37-01 | Touch targets, FlashList, Skeleton loaders | PARTIAL | Fleet history panel uses ActivityIndicator |
-| 37-02 | Animations, Haptics, Dark mode | PARTIAL | map.tsx missing AnimatedScreen |
+| 37-01 | Touch targets, FlashList, Skeleton loaders | SATISFIED | No gaps remaining |
+| 37-02 | Animations, Haptics, Dark mode | SATISFIED | map.tsx now has AnimatedScreen |
 | 37-03 | Thumb-friendliness, navigation clarity | SATISFIED | All 8 tasks complete and verified |
 
 ---
@@ -154,17 +145,19 @@ None. No TODO/FIXME/PLACEHOLDER comments in any new or modified files. No empty 
 
 ---
 
-## Gaps Summary
+## Re-Verification Summary
 
-Two minor gaps prevent a full pass on automated verification.
+Both gaps from the initial verification (2026-03-25) have been closed.
 
-**Gap 1 — Fleet history panel skeleton (fleet.tsx line 322).** When the owner opens the History tab in fleet messaging, the messagesLoading state still renders ActivityIndicator instead of MessageSkeleton components. Every other data-fetching screen was converted (11/12). Fix: replace ActivityIndicator conditional with 4x MessageSkeleton isDriver=false — same pattern as driver messages.tsx lines 187-190.
+**Gap 1 -- Fleet history panel skeleton (CLOSED).** apps/mobile/app/(owner)/more/fleet.tsx now imports MessageSkeleton (line 30) and renders 4x MessageSkeleton isDriver=false inside the convsLoading conditional (lines 329-335). The ActivityIndicator is gone from this path. A second MessageSkeleton block at lines 423-426 covers the message thread loading state.
 
-**Gap 2 — Map screen FadeIn transition (map.tsx).** The owner Live Map tab screen has no AnimatedScreen wrap. Plan 37-02 explicitly listed map as one of the five owner tab screens to receive FadeIn. 13 of 14 expected screens are covered. Fix: add an AnimatedScreen import and wrap the map content View — same pattern as fleet.tsx. The existing ActivityIndicator loading overlay on map is unaffected since AnimatedScreen only wraps the outer container.
+**Gap 2 -- Map screen FadeIn transition (CLOSED).** apps/mobile/app/(owner)/map.tsx now imports AnimatedScreen from ../../components/ui/AnimatedScreen (line 5) and wraps the entire SafeAreaView content inside AnimatedScreen (lines 9 and 19). The screen now receives the same FadeIn.duration(200) transition as all other tab screens.
 
-Both gaps are low-severity. The phase core objectives are fully achieved: FlatList is gone (0 remaining), haptics are wired across all state-changing actions, dark/light mode detection is implemented, skeleton loaders cover 11 data-fetching screens, tab labels aid discoverability, touch target compliance is enforced across both portals, and Reanimated spring animations are applied to all bottom sheets.
+No regressions detected. FlatList count remains 0. AnimatedScreen is now present in 24 screen files. Haptic wiring count is 42 call sites. ScreenWrapper dark mode detection unchanged.
+
+All automated checks pass. Phase goal is achieved pending human device testing for haptics, light mode, touch target comfort, spring feel, and skeleton shape matching.
 
 ---
 
-_Verified: 2026-03-25T17:22:50Z_
+_Verified: 2026-03-27T23:26:13Z_
 _Verifier: Claude (gsd-verifier)_

@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/supabase";
 import { redirect } from "next/navigation";
 import { Truck } from "lucide-react";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
 
   // Tenant is ready - redirect to appropriate portal based on role
   if (session.tenantId) {
-    redirect(session.role === 'DRIVER' ? '/my-route' : '/dashboard');
+    redirect(session.role === 'DRIVER' ? '/home' : '/carrier/dashboard');
   }
 
   // No tenant assigned - show message

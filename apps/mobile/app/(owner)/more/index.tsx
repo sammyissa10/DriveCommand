@@ -1,27 +1,33 @@
 import React from 'react'
 import {
+  Pressable,
   ScrollView,
-  StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import {
+  AlertTriangle,
   ChevronRight,
   MessageSquare,
   FileText,
+  Navigation,
   Users,
   DollarSign,
   Sparkles,
+  TrendingUp,
   Truck,
   ShieldCheck,
+  Droplets,
   Shield,
   CreditCard,
+  Palette,
+  Wrench,
 } from 'lucide-react-native'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
 import { haptic } from '../../../lib/haptics'
+import { useThemeColors } from '../../../constants/tokens'
 
 type LucideIcon = React.ComponentType<{ color: string; size: number }>
 
@@ -57,6 +63,14 @@ const SECTIONS: MoreSection[] = [
     header: 'FLEET',
     rows: [
       {
+        label: 'Routes',
+        subtitle: 'Planned & active routes',
+        Icon: Navigation,
+        iconBg: 'rgba(14,165,233,0.15)',
+        iconColor: '#0ea5e9',
+        route: '/(owner)/routes',
+      },
+      {
         label: 'Trucks',
         subtitle: 'Vehicle management',
         Icon: Truck,
@@ -65,12 +79,36 @@ const SECTIONS: MoreSection[] = [
         route: '/(owner)/more/trucks',
       },
       {
+        label: 'Maintenance',
+        subtitle: 'Service scheduling',
+        Icon: Wrench,
+        iconBg: 'rgba(245,158,11,0.15)',
+        iconColor: '#f59e0b',
+        route: '/(owner)/more/maintenance',
+      },
+      {
         label: 'Compliance',
         subtitle: 'Docs & expiry',
         Icon: ShieldCheck,
         iconBg: 'rgba(6,182,212,0.15)',
         iconColor: '#06b6d4',
         route: '/(owner)/more/compliance',
+      },
+      {
+        label: 'Fuel Log',
+        subtitle: 'Fill-ups & costs',
+        Icon: Droplets,
+        iconBg: 'rgba(251,146,60,0.15)',
+        iconColor: '#fb923c',
+        route: '/(owner)/more/fuel',
+      },
+      {
+        label: 'Safety',
+        subtitle: 'Alerts & incidents',
+        Icon: AlertTriangle,
+        iconBg: 'rgba(239,68,68,0.15)',
+        iconColor: '#ef4444',
+        route: '/(owner)/more/safety',
       },
     ],
   },
@@ -109,11 +147,27 @@ const SECTIONS: MoreSection[] = [
         iconColor: '#ec4899',
         route: '/(owner)/more/ai-documents',
       },
+      {
+        label: 'Profit Predictor',
+        subtitle: 'Load profitability',
+        Icon: TrendingUp,
+        iconBg: 'rgba(16,185,129,0.15)',
+        iconColor: '#10b981',
+        route: '/(owner)/more/profit-predictor',
+      },
     ],
   },
   {
     header: 'SETTINGS',
     rows: [
+      {
+        label: 'Appearance',
+        subtitle: 'Light, dark, or system theme',
+        Icon: Palette,
+        iconBg: 'rgba(14,165,233,0.15)',
+        iconColor: '#0ea5e9',
+        route: '/(owner)/more/settings/appearance',
+      },
       {
         label: 'Team Permissions',
         subtitle: 'Roles & access',
@@ -135,47 +189,58 @@ const SECTIONS: MoreSection[] = [
 ]
 
 export default function MoreScreen() {
+  const c = useThemeColors()
   const router = useRouter()
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: c.background }} edges={['bottom', 'left', 'right']}>
       <AnimatedScreen>
         <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20 }}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.pageHeader}>
-            <Text style={styles.pageTitle}>More</Text>
-            <Text style={styles.pageSubtitle}>Features & settings</Text>
+          <View className="mb-5">
+            <Text className="text-2xl font-extrabold" style={{ color: c.textPrimary }}>More</Text>
+            <Text className="text-[13px] mt-0.5" style={{ color: c.textTertiary }}>Features & settings</Text>
           </View>
 
           {SECTIONS.map((section, sectionIndex) => (
-            <View key={section.header} style={sectionIndex > 0 ? styles.sectionGap : undefined}>
-              <Text style={styles.sectionHeader}>{section.header}</Text>
-              <View style={styles.card}>
+            <View key={section.header} className={sectionIndex > 0 ? 'mt-6' : ''}>
+              <Text
+                className="text-[11px] font-semibold tracking-widest uppercase mb-2"
+                style={{ color: c.textTertiary }}
+              >
+                {section.header}
+              </Text>
+              <View
+                className="rounded-xl overflow-hidden"
+                style={{ backgroundColor: c.surfaceCard, borderWidth: 1, borderColor: c.border }}
+              >
                 {section.rows.map((row, rowIndex) => (
                   <View key={row.route}>
-                    <TouchableOpacity
-                      style={styles.row}
+                    <Pressable
+                      className="flex-row items-center px-3.5 py-3.5 active:opacity-75"
                       onPress={() => {
                         haptic.light()
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         router.push(row.route as any)
                       }}
-                      activeOpacity={0.7}
                     >
-                      <View style={[styles.iconWrap, { backgroundColor: row.iconBg }]}>
+                      <View
+                        className="w-10 h-10 rounded-[10px] items-center justify-center mr-3.5 shrink-0"
+                        style={{ backgroundColor: row.iconBg }}
+                      >
                         <row.Icon color={row.iconColor} size={20} />
                       </View>
-                      <View style={styles.rowText}>
-                        <Text style={styles.rowLabel}>{row.label}</Text>
-                        <Text style={styles.rowSubtitle}>{row.subtitle}</Text>
+                      <View className="flex-1">
+                        <Text className="text-[15px] font-semibold" style={{ color: c.textPrimary }}>{row.label}</Text>
+                        <Text className="text-xs mt-0.5" style={{ color: c.textTertiary }}>{row.subtitle}</Text>
                       </View>
-                      <ChevronRight color="#475569" size={18} />
-                    </TouchableOpacity>
+                      <ChevronRight color={c.textTertiary} size={18} />
+                    </Pressable>
                     {rowIndex < section.rows.length - 1 && (
-                      <View style={styles.separator} />
+                      <View className="h-px ml-[68px]" style={{ backgroundColor: c.border }} />
                     )}
                   </View>
                 ))}
@@ -183,90 +248,9 @@ export default function MoreScreen() {
             </View>
           ))}
 
-          <View style={styles.bottomPad} />
+          <View className="h-8" />
         </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>
   )
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: '#0f172a',
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-  },
-  pageHeader: {
-    marginBottom: 20,
-  },
-  pageTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#f1f5f9',
-  },
-  pageSubtitle: {
-    fontSize: 13,
-    color: '#64748b',
-    marginTop: 2,
-  },
-  sectionGap: {
-    marginTop: 24,
-  },
-  sectionHeader: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#64748b',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#334155',
-    overflow: 'hidden',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-  },
-  iconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-    flexShrink: 0,
-  },
-  rowText: {
-    flex: 1,
-  },
-  rowLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#f1f5f9',
-  },
-  rowSubtitle: {
-    fontSize: 12,
-    color: '#64748b',
-    marginTop: 1,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: '#334155',
-    marginLeft: 68,
-  },
-  bottomPad: {
-    height: 32,
-  },
-})

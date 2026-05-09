@@ -1,12 +1,13 @@
 'use server';
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { TX_OPTIONS } from '@/lib/db/prisma';
 import { invoiceCreateSchema, invoiceUpdateSchema } from '@drivecommand/validation';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, InvoiceStatus } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -15,12 +16,11 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new invoice with line items.
  */
-export async function createInvoice(prevState: any, formData: FormData) {
+export async function createInvoice(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   // Parse items from JSON hidden field
-  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number }> = [];
+  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
   try {
     const itemsJson = formData.get('itemsJson') as string;
     parsedItems = JSON.parse(itemsJson || '[]');
@@ -38,6 +38,13 @@ export async function createInvoice(prevState: any, formData: FormData) {
     issueDate: formData.get('issueDate') as string,
     dueDate: formData.get('dueDate') as string,
     notes: (formData.get('notes') as string) || '',
+    bolNumber: (formData.get('bolNumber') as string) || '',
+    proNumber: (formData.get('proNumber') as string) || '',
+    poNumber: (formData.get('poNumber') as string) || '',
+    commodity: (formData.get('commodity') as string) || '',
+    weightLbs: formData.get('weightLbs') as string,
+    pieces: formData.get('pieces') as string,
+    loadedMiles: formData.get('loadedMiles') as string,
     items: parsedItems,
   };
 
@@ -54,7 +61,9 @@ export async function createInvoice(prevState: any, formData: FormData) {
   const itemsWithAmounts = result.data.items.map((item) => {
     const qty = new Decimal(item.quantity);
     const price = new Decimal(item.unitPrice);
-    const amount = qty.mul(price);
+    const amount = item.unitType === 'PERCENT'
+      ? qty.div(100).mul(price)
+      : qty.mul(price);
     return { ...item, amount };
   });
 
@@ -78,11 +87,18 @@ export async function createInvoice(prevState: any, formData: FormData) {
         amount: subtotal,
         tax,
         totalAmount,
-        status: result.data.status as any,
+        status: result.data.status as InvoiceStatus,
         issueDate: new Date(result.data.issueDate),
         dueDate: new Date(result.data.dueDate),
         paidDate: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
+        bolNumber: (formData.get('bolNumber') as string) || null,
+        proNumber: (formData.get('proNumber') as string) || null,
+        poNumber: (formData.get('poNumber') as string) || null,
+        commodity: (formData.get('commodity') as string) || null,
+        weightLbs: formData.get('weightLbs') ? parseInt(formData.get('weightLbs') as string) || null : null,
+        pieces: formData.get('pieces') ? parseInt(formData.get('pieces') as string) || null : null,
+        loadedMiles: formData.get('loadedMiles') ? new Decimal(formData.get('loadedMiles') as string) : null,
         createdById: userId,
         updatedById: userId,
         items: {
@@ -92,13 +108,15 @@ export async function createInvoice(prevState: any, formData: FormData) {
             quantity: new Decimal(item.quantity),
             unitPrice: new Decimal(item.unitPrice),
             amount: item.amount,
+            itemType: (item.itemType as any) || 'OTHER',
+            unitType: (item.unitType as any) || 'FLAT',
           })),
         },
       },
     });
     createdId = invoice.id;
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
     return { error: 'Failed to create invoice. Please try again.' };
@@ -112,11 +130,10 @@ export async function createInvoice(prevState: any, formData: FormData) {
 /**
  * Update an existing invoice.
  */
-export async function updateInvoice(id: string, prevState: any, formData: FormData) {
+export async function updateInvoice(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
-  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number }> = [];
+  let parsedItems: Array<{ description: string; quantity: number; unitPrice: number; itemType?: string; unitType?: string }> = [];
   try {
     const itemsJson = formData.get('itemsJson') as string;
     parsedItems = JSON.parse(itemsJson || '[]');
@@ -127,12 +144,20 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
   const rawData = {
     customerId: (formData.get('customerId') as string) || '',
     routeId: (formData.get('routeId') as string) || '',
+    loadId: (formData.get('loadId') as string) || '',
     invoiceNumber: formData.get('invoiceNumber') as string,
     tax: formData.get('tax') as string,
     status: (formData.get('status') as string) || 'DRAFT',
     issueDate: formData.get('issueDate') as string,
     dueDate: formData.get('dueDate') as string,
     notes: (formData.get('notes') as string) || '',
+    bolNumber: (formData.get('bolNumber') as string) || '',
+    proNumber: (formData.get('proNumber') as string) || '',
+    poNumber: (formData.get('poNumber') as string) || '',
+    commodity: (formData.get('commodity') as string) || '',
+    weightLbs: formData.get('weightLbs') as string,
+    pieces: formData.get('pieces') as string,
+    loadedMiles: formData.get('loadedMiles') as string,
     items: parsedItems,
   };
 
@@ -148,7 +173,9 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
   const itemsWithAmounts = result.data.items.map((item) => {
     const qty = new Decimal(item.quantity);
     const price = new Decimal(item.unitPrice);
-    const amount = qty.mul(price);
+    const amount = item.unitType === 'PERCENT'
+      ? qty.div(100).mul(price)
+      : qty.mul(price);
     return { ...item, amount };
   });
 
@@ -169,15 +196,23 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
         data: {
           customerId: result.data.customerId || null,
           routeId: result.data.routeId || null,
+          loadId: result.data.loadId || null,
           invoiceNumber: result.data.invoiceNumber,
           amount: subtotal,
           tax,
           totalAmount,
-          status: result.data.status as any,
+          status: result.data.status as InvoiceStatus,
           issueDate: new Date(result.data.issueDate),
           dueDate: new Date(result.data.dueDate),
           paidDate: result.data.status === 'PAID' ? new Date() : null,
           notes: result.data.notes || null,
+          bolNumber: (formData.get('bolNumber') as string) || null,
+          proNumber: (formData.get('proNumber') as string) || null,
+          poNumber: (formData.get('poNumber') as string) || null,
+          commodity: (formData.get('commodity') as string) || null,
+          weightLbs: formData.get('weightLbs') ? parseInt(formData.get('weightLbs') as string) || null : null,
+          pieces: formData.get('pieces') ? parseInt(formData.get('pieces') as string) || null : null,
+          loadedMiles: formData.get('loadedMiles') ? new Decimal(formData.get('loadedMiles') as string) : null,
           updatedById: userId,
           items: {
             create: itemsWithAmounts.map((item) => ({
@@ -186,16 +221,18 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
               quantity: new Decimal(item.quantity),
               unitPrice: new Decimal(item.unitPrice),
               amount: item.amount,
+              itemType: (item.itemType as any) || 'OTHER',
+              unitType: (item.unitType as any) || 'FLAT',
             })),
           },
         },
       });
     }, TX_OPTIONS);
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return { error: { invoiceNumber: ['An invoice with this number already exists'] } };
     }
-    if (error?.code === 'P2025') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to update invoice. Please try again.' };
@@ -210,7 +247,6 @@ export async function updateInvoice(id: string, prevState: any, formData: FormDa
  */
 export async function markInvoicePaid(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   const prisma = await getTenantPrisma();
 
@@ -225,12 +261,12 @@ export async function markInvoicePaid(id: string) {
     await prisma.invoice.update({
       where: { id },
       data: {
-        status: 'PAID' as any,
+        status: InvoiceStatus.PAID,
         paidDate: new Date(),
       },
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to mark invoice as paid.' };
@@ -245,7 +281,6 @@ export async function markInvoicePaid(id: string) {
  */
 export async function deleteInvoice(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewInvoices');
 
   const prisma = await getTenantPrisma();
 
@@ -259,8 +294,8 @@ export async function deleteInvoice(id: string) {
       return { error: 'Only draft invoices can be archived.' };
     }
     await prisma.invoice.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Invoice not found.' };
     }
     return { error: 'Failed to archive invoice.' };

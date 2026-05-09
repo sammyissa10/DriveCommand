@@ -80,6 +80,22 @@ try {
   }
 
   console.log(ranCount > 0 ? `Migrations complete (${ranCount} applied)` : 'Database up to date');
+
+  // Seed starter playbooks for all existing active tenants (idempotent)
+  try {
+    const { spawnSync } = await import('child_process');
+    const scriptPath = join(process.cwd(), 'scripts', 'seed-starter-playbooks.ts');
+    const result = spawnSync('npx', ['tsx', scriptPath], {
+      stdio: 'inherit',
+      shell: true,
+      env: process.env,
+    });
+    if (result.status !== 0) {
+      console.warn('Starter playbook seeding returned non-zero exit code — continuing.');
+    }
+  } catch (e) {
+    console.warn('Starter playbook seeding skipped:', e.message);
+  }
 } catch (e) {
   const isConnectError = e.code === 'ENETUNREACH' || e.code === 'ECONNREFUSED' || e.code === 'ETIMEDOUT' || e.message?.includes('connect');
   if (isConnectError) {

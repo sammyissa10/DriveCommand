@@ -8,6 +8,28 @@ import { TruckDocumentsSection } from './truck-documents-section';
 import { TruckRoutesHistory } from './truck-routes-history';
 import { computeTruckStatus, type TruckWithRelations } from '@/lib/trucks/compute-truck-status';
 import { MaintenanceToggleButton } from '@/components/trucks/maintenance-toggle-button';
+import { logger } from '@/lib/logger';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
+
+function StatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    NOT_STARTED: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    IN_PROGRESS: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+    COMPLETED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    BLOCKED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  }
+  const labels: Record<string, string> = {
+    NOT_STARTED: 'Not Started',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+    BLOCKED: 'Blocked',
+  }
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] ?? 'bg-gray-100 text-gray-700'}`}>
+      {labels[status] ?? status}
+    </span>
+  )
+}
 
 interface TruckDetailPageProps {
   params: Promise<{ id: string }>;
@@ -26,7 +48,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   try {
     documents = await listDocuments('truck', id);
   } catch (error) {
-    console.error('Failed to load truck documents:', error);
+    logger.error('Failed to load truck documents:', error);
   }
 
   // Fetch routes for this truck (non-blocking - page renders even if this fails)
@@ -34,7 +56,21 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
   try {
     truckRoutes = await listTruckRoutes(id);
   } catch (error) {
-    console.error('Failed to load truck routes:', error);
+    logger.error('Failed to load truck routes:', error);
+  }
+
+  // Fetch checklists for this truck (non-blocking)
+  let truckInstances: any[] = [];
+  try {
+    const tenantId = await requireTenantId();
+    const prisma = await getTenantPrisma();
+    truckInstances = await prisma.playbookInstance.findMany({
+      where: { entityType: 'VEHICLE', entityId: id, tenantId },
+      orderBy: { createdAt: 'desc' },
+      include: { stepInstances: { select: { id: true, status: true } } },
+    });
+  } catch (error) {
+    logger.error('Failed to load truck checklists:', error);
   }
 
   // Parse and validate document metadata
@@ -88,7 +124,7 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
           Back to Trucks
         </Link>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {truck.year} {truck.make} {truck.model}
             </h1>
@@ -98,6 +134,17 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
             >
               {truckStatus}
             </span>
+            {truckInstances.length > 0 && (
+              (truck as any).isDispatchReady ? (
+                <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Dispatch Ready
+                </span>
+              ) : (
+                <span className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 px-2 py-0.5 rounded-full text-xs font-medium">
+                  Not Dispatch Ready
+                </span>
+              )
+            )}
           </div>
           <div className="flex flex-wrap gap-2">
             <MaintenanceToggleButton
@@ -216,6 +263,40 @@ export default async function TruckDetailPage({ params }: TruckDetailPageProps) 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-card-foreground mb-4">Routes History</h2>
         <TruckRoutesHistory routes={truckRoutes} />
+      </div>
+
+      {/* Checklists */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-card-foreground mb-4">Checklists</h2>
+        {truckInstances.length === 0 ? (
+          <p className="text-muted-foreground text-sm">No checklists started for this truck yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {truckInstances.map((instance: any) => {
+              const snap = instance.playbookSnapshot as { name?: string }
+              const completed = instance.stepInstances.filter(
+                (s: any) => s.status === 'COMPLETE' || s.status === 'SKIPPED'
+              ).length
+              const total = instance.stepInstances.length
+              return (
+                <a
+                  key={instance.id}
+                  href={`/checklists/instances/${instance.id}`}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent transition-colors"
+                >
+                  <div>
+                    <p className="font-medium text-sm">{snap.name ?? 'Checklist'}</p>
+                    <p className="text-xs text-muted-foreground">{completed}/{total} tasks complete</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={instance.status} />
+                    <span className="text-xs text-muted-foreground">{Math.round(instance.completionPercent)}%</span>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Audit Trail */}

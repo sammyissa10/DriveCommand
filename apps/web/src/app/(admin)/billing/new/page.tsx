@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAllTenants } from '@/app/(admin)/actions/tenants';
 import { NewInvoiceForm } from './new-invoice-form';
+import { logger } from '@/lib/logger';
 
 export default async function NewInvoicePage({
   searchParams,
@@ -15,7 +16,7 @@ export default async function NewInvoicePage({
     const all = await getAllTenants();
     tenants = all.map((t) => ({ id: t.id, name: t.name }));
   } catch (err) {
-    console.error('[NewInvoicePage] getAllTenants error:', err);
+    logger.error('[NewInvoicePage] getAllTenants error:', err);
   }
 
   return (

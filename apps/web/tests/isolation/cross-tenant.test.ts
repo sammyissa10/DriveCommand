@@ -8,6 +8,12 @@ import {
   disconnectPrisma,
 } from './setup';
 
+// These tests require a real PostgreSQL database with RLS policies applied.
+// They are skipped automatically when DATABASE_URL is not set (local dev without DB).
+// Run against staging/CI where DATABASE_URL is configured to verify tenant isolation.
+const hasDatabase = !!process.env.DATABASE_URL;
+const describeWithDb = hasDatabase ? describe : describe.skip;
+
 /**
  * Cross-Tenant Isolation Tests
  *
@@ -26,7 +32,7 @@ import {
  * 4. Cross-tenant update attempts fail (record not found)
  * 5. Cross-tenant delete attempts fail (record not found)
  */
-describe('Cross-Tenant Isolation (RLS)', () => {
+describeWithDb('Cross-Tenant Isolation (RLS)', () => {
   let tenantAId: string;
   let tenantBId: string;
   let userAId: string;

@@ -1,10 +1,12 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState } from 'react';
 import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
 
 interface CustomerFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     companyName?: string;
     contactName?: string;
@@ -29,6 +31,7 @@ const labelClass = 'block text-sm font-medium text-foreground mb-1.5';
 export function CustomerForm({ action, initialData, submitLabel }: CustomerFormProps) {
   const [state, formAction, isPending] = useActionState(action, null);
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {state?.error && typeof state.error === 'string' && (
@@ -56,8 +59,8 @@ export function CustomerForm({ action, initialData, submitLabel }: CustomerFormP
             className={inputClass}
             required
           />
-          {state?.error?.companyName && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.companyName}</p>
+          {fieldErrors?.companyName && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.companyName}</p>
           )}
         </div>
 
@@ -131,8 +134,8 @@ export function CustomerForm({ action, initialData, submitLabel }: CustomerFormP
               disabled={isPending}
               className={inputClass}
             />
-            {state?.error?.email && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.email}</p>
+            {fieldErrors?.email && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.email}</p>
             )}
           </div>
           <div>

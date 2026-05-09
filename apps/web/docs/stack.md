@@ -189,7 +189,7 @@ PDF generation runs in a Server Action (`.tsx` extension required for JSX syntax
 
 | Package | Version | Purpose |
 |---|---|---|
-| `bcryptjs` | `^3.0.3` | Password hashing for owner/driver login |
+| `bcryptjs` | `^3.0.3` | Password hashing (legacy — passwords now managed by Supabase Auth) |
 | `date-fns` | `^4.1.0` | Date formatting and calculations (e.g. document expiry diffs) |
 | `nanoid` | `^5.1.6` | Short unique ID generation (email IDs, tracking tokens) |
 | `sonner` | `^2.0.7` | Toast notification system — `<Toaster />` in root layout |
@@ -198,3 +198,45 @@ PDF generation runs in a Server Action (`.tsx` extension required for JSX syntax
 | `pg` | `^8.18.0` | PostgreSQL driver used by Prisma adapter |
 | `dotenv` | `^17.3.1` | Environment variable loading in scripts |
 | `@faker-js/faker` | `^10.3.0` | (dev) Fake data generation for seed scripts |
+
+---
+
+## 14. Shared Packages (Monorepo)
+
+DriveCommand is a Turborepo monorepo. The web app depends on shared packages from `packages/`:
+
+| Package | Version | Purpose |
+|---|---|---|
+| `@drivecommand/types` | `*` | Shared TypeScript interfaces for API payloads and domain objects |
+| `@drivecommand/validation` | `*` | Shared Zod schemas used by web server actions and mobile API client |
+| `@drivecommand/api-client` | `*` | Typed HTTP client consumed by mobile app to call web API routes |
+
+The `*` version resolves to the local workspace package via npm workspaces.
+
+---
+
+## 15. Rate Limiting
+
+**Version:** `@upstash/ratelimit@^2.0.8` · `@upstash/redis@^1.37.0`
+
+Rate limiting is applied to mobile API endpoints (`src/app/api/mobile/`) to prevent abuse. Uses Upstash Redis for a serverless-compatible sliding-window rate limiter.
+
+- **Required env vars:** `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
+
+---
+
+## 16. Push Notifications
+
+**Version:** `expo-server-sdk@^6.1.0`
+
+Used server-side to send push notifications to mobile devices via the Expo Push Notification API. The `PushToken` model stores device tokens. Notifications are sent from web API routes or server actions when dispatch events occur.
+
+---
+
+## 17. Error Monitoring
+
+**Version:** `@sentry/nextjs@^10.46.0`
+
+Sentry is configured for error tracking and performance monitoring on the web app. Initialization is in `sentry.client.config.ts`, `sentry.server.config.ts`, and `sentry.edge.config.ts`.
+
+- **Required env var:** `SENTRY_DSN` (optional — app runs without it, but errors won't be reported to Sentry)

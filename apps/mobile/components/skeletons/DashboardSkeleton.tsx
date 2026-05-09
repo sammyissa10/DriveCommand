@@ -12,7 +12,7 @@ import { LoadCardSkeleton } from './LoadCardSkeleton'
 export function DashboardSkeleton() {
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: '#0f172a' }}
+      style={{ flex: 1, backgroundColor: '#080f1a' }}
       edges={['bottom', 'left', 'right']}
     >
       <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
@@ -33,7 +33,7 @@ export function DashboardSkeleton() {
         </View>
 
         {/* Divider */}
-        <View style={{ height: 1, backgroundColor: '#1e293b', marginBottom: 16 }} />
+        <View style={{ height: 1, backgroundColor: '#162032', marginBottom: 16 }} />
 
         {/* Section title */}
         <Skeleton width={100} height={16} style={{ marginBottom: 12 }} />
@@ -52,9 +52,8 @@ function KPICardSkeleton() {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#1e293b',
-        borderWidth: 1,
-        borderColor: '#334155',
+        backgroundColor: '#162032',
+        borderWidth: 0,
         borderRadius: 12,
         padding: 14,
         gap: 8,

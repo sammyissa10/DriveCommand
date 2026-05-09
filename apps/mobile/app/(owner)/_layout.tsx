@@ -1,40 +1,46 @@
 import { Fragment } from 'react'
+import { StyleSheet } from 'react-native'
 import { Tabs } from 'expo-router'
 import { LayoutDashboard, Map, Package, Users, Grid2X2 } from 'lucide-react-native'
 import { AppHeader } from '../../components/shared/AppHeader'
+import { SupportTicketFAB } from '../../components/shared/SupportTicketFAB'
+import { SupportTicketProvider } from '../../context/SupportTicketContext'
 import { haptic } from '../../lib/haptics'
+import { useThemeColors, shadows, tabBar } from '../../constants/tokens'
 
 export default function OwnerLayout() {
+  const c = useThemeColors()
   return (
     <Fragment>
       <AppHeader />
+      <SupportTicketProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarShowLabel: true,
           tabBarLabelStyle: {
-            fontSize: 10,
+            fontSize: tabBar.labelSize,
             fontWeight: '500',
             marginTop: 2,
             marginBottom: 0,
           },
           tabBarStyle: {
-            backgroundColor: '#1e293b',
-            borderTopColor: '#334155',
-            height: 72,
-            paddingBottom: 10,
+            backgroundColor: c.tabBarBg,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: c.tabBarBorder,
+            height: tabBar.height,
             paddingTop: 6,
+            ...shadows.tabBar,
           },
-          tabBarActiveTintColor: '#38bdf8',
-          tabBarInactiveTintColor: '#3d5068',
-          tabBarActiveBackgroundColor: 'rgba(56,189,248,0.12)',
+          tabBarActiveTintColor: c.tabActive,
+          tabBarInactiveTintColor: c.tabInactive,
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             tabBarLabel: 'Dashboard',
-            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={24} />,
+            tabBarIcon: ({ color }) => <LayoutDashboard color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -42,7 +48,7 @@ export default function OwnerLayout() {
           name="map"
           options={{
             tabBarLabel: 'Live Map',
-            tabBarIcon: ({ color }) => <Map color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Map color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -50,15 +56,22 @@ export default function OwnerLayout() {
           name="loads"
           options={{
             tabBarLabel: 'Loads',
-            tabBarIcon: ({ color }) => <Package color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Package color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
+        />
+        <Tabs.Screen
+          name="routes"
+          options={{
+            tabBarButton: () => null,
+            tabBarItemStyle: { display: 'none', width: 0 },
+          }}
         />
         <Tabs.Screen
           name="drivers"
           options={{
             tabBarLabel: 'Drivers',
-            tabBarIcon: ({ color }) => <Users color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Users color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
@@ -66,11 +79,15 @@ export default function OwnerLayout() {
           name="more"
           options={{
             tabBarLabel: 'More',
-            tabBarIcon: ({ color }) => <Grid2X2 color={color} size={24} />,
+            tabBarIcon: ({ color }) => <Grid2X2 color={color} size={tabBar.iconSize} />,
           }}
           listeners={{ tabPress: () => haptic.light() }}
         />
       </Tabs>
+
+      {/* Support ticket FAB — persistent on all owner screens (hidden on dashboard) */}
+      <SupportTicketFAB />
+      </SupportTicketProvider>
     </Fragment>
   )
 }

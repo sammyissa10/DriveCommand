@@ -1,11 +1,12 @@
 'use server';
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { payrollCreateSchema, payrollUpdateSchema } from '@drivecommand/validation';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, PayrollStatus } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -14,9 +15,8 @@ const Decimal = Prisma.Decimal;
 /**
  * Create a new payroll record.
  */
-export async function createPayrollRecord(prevState: any, formData: FormData) {
+export async function createPayrollRecord(prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -61,7 +61,7 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
         totalPay,
         milesLogged: result.data.milesLogged,
         loadsCompleted: result.data.loadsCompleted,
-        status: result.data.status as any,
+        status: result.data.status as PayrollStatus,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
         createdById: userId,
@@ -69,8 +69,8 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
       },
     });
     createdId = record.id;
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Driver not found.' };
     }
     return { error: 'Failed to create payroll record. Please try again.' };
@@ -83,9 +83,8 @@ export async function createPayrollRecord(prevState: any, formData: FormData) {
 /**
  * Update an existing payroll record.
  */
-export async function updatePayrollRecord(id: string, prevState: any, formData: FormData) {
+export async function updatePayrollRecord(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const rawData = {
     driverId: formData.get('driverId') as string,
@@ -126,14 +125,14 @@ export async function updatePayrollRecord(id: string, prevState: any, formData: 
         totalPay,
         milesLogged: result.data.milesLogged,
         loadsCompleted: result.data.loadsCompleted,
-        status: result.data.status as any,
+        status: result.data.status as PayrollStatus,
         paidAt: result.data.status === 'PAID' ? new Date() : null,
         notes: result.data.notes || null,
         updatedById: userId,
       },
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
     return { error: 'Failed to update payroll record. Please try again.' };
@@ -153,7 +152,6 @@ export async function getDriverPayPeriodStats(
   periodEnd: string,
 ): Promise<{ loadsCompleted: number; milesLogged: number } | { error: string }> {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   if (!driverId || !periodStart || !periodEnd) {
     return { error: 'Missing required fields.' };
@@ -195,7 +193,6 @@ export async function getDriverPayPeriodStats(
  */
 export async function deletePayrollRecord(id: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewPayroll');
 
   const prisma = await getTenantPrisma();
 
@@ -208,8 +205,8 @@ export async function deletePayrollRecord(id: string) {
       return { error: 'Only draft payroll records can be archived.' };
     }
     await prisma.payrollRecord.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Payroll record not found.' };
     }
     return { error: 'Failed to archive payroll record.' };

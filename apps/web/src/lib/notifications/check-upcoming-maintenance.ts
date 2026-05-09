@@ -3,8 +3,7 @@
  * Finds scheduled services due within 7 days or 500 miles.
  */
 
-import { prisma } from '../db/prisma';
-import { withTenantRLS } from '../db/extensions/tenant-rls';
+import { createTenantClient } from '../db/tenant-client';
 import { calculateNextDue } from '../utils/maintenance-utils';
 
 export interface UpcomingMaintenanceItem {
@@ -17,14 +16,7 @@ export interface UpcomingMaintenanceItem {
   currentMileage: number;
 }
 
-/**
- * Helper to create a tenant-scoped Prisma client for cron context.
- * Unlike getTenantPrisma(), this doesn't rely on headers() which is unavailable in cron.
- */
-function getTenantPrismaForCron(tenantId: string) {
-  // @ts-ignore - Prisma 7 type issue with extended client
-  return prisma.$extends(withTenantRLS(tenantId));
-}
+// getTenantPrismaForCron removed — use createTenantClient() directly (see tenant-client.ts)
 
 /**
  * Find scheduled services that are due within 7 days or 500 miles.
@@ -33,11 +25,10 @@ function getTenantPrismaForCron(tenantId: string) {
 export async function findUpcomingMaintenance(
   tenantId: string
 ): Promise<UpcomingMaintenanceItem[]> {
-  const tenantPrisma = getTenantPrismaForCron(tenantId);
+  const db = createTenantClient(tenantId);
 
   // Query all incomplete scheduled services with truck data
-  // @ts-ignore - Extended client type inference
-  const scheduledServices = await tenantPrisma.scheduledService.findMany({
+  const scheduledServices = await db.scheduledService.findMany({
     where: {
       isCompleted: false,
     },

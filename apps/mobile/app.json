@@ -16,10 +16,9 @@
       "policy": "appVersion"
     },
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
-      "resizeMode": "cover",
+      "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
     "ios": {
@@ -29,7 +28,8 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "DriveCommand uses your location to track deliveries and report your position to dispatchers.",
         "NSLocationWhenInUseUsageDescription": "DriveCommand uses your location to track deliveries.",
         "NSCameraUsageDescription": "DriveCommand uses the camera to photograph delivery documents and incident evidence.",
-        "NSPhotoLibraryUsageDescription": "DriveCommand accesses your photo library to attach images to incident reports."
+        "NSPhotoLibraryUsageDescription": "DriveCommand accesses your photo library to attach images to incident reports.",
+        "LSApplicationQueriesSchemes": ["comgooglemaps", "waze", "maps"]
       },
       "backgroundModes": [
         "location",
@@ -61,11 +61,7 @@
         "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
       "predictiveBackGestureEnabled": false,
-      "config": {
-        "googleMaps": {
-          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
-        }
-      }
+      "config": {}
     },
     "web": {
       "bundler": "metro",
@@ -75,9 +71,9 @@
     "plugins": [
       "expo-router",
       [
-        "react-native-maps",
+        "@rnmapbox/maps",
         {
-          "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+          "RNMapboxMapsDownloadToken": "MAPBOX_SECRET_TOKEN_PLACEHOLDER"
         }
       ],
       "expo-camera",
@@ -96,6 +92,12 @@
         }
       ],
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "DriveCommand needs photo access to attach screenshots to support tickets."
+        }
+      ],
       "expo-sharing",
       "expo-secure-store",
       "@sentry/react-native"
@@ -107,7 +109,8 @@
       "router": {},
       "eas": {
         "projectId": "010aaae1-a5ad-455a-bb42-a1d6637e4cf7"
-      }
+      },
+      "mapboxToken": "MAPBOX_PUBLIC_TOKEN_PLACEHOLDER"
     },
     "owner": "onesquad-drivecommand"
   }

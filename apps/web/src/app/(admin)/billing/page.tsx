@@ -5,6 +5,7 @@ import { getSysAdminInvoices } from '@/app/(admin)/actions/sysadmin-invoices';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Decimal } from 'decimal.js';
 import { MarkOverdueButton } from './mark-overdue-button';
+import { logger } from '@/lib/logger';
 
 function getStatusBadgeClasses(status: string): string {
   switch (status) {
@@ -30,7 +31,7 @@ export default async function BillingPage() {
   try {
     invoices = await getSysAdminInvoices();
   } catch (err: unknown) {
-    console.error('[BillingPage] getSysAdminInvoices error:', err);
+    logger.error('[BillingPage] getSysAdminInvoices error:', err);
     fetchError = err instanceof Error ? err.message : 'Failed to load invoices';
   }
 

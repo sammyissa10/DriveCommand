@@ -198,3 +198,7 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* Hide scrollbar for scroll-snap carousels */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

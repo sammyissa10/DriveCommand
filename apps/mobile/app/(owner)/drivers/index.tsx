@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Pressable,
   RefreshControl,
@@ -6,15 +6,16 @@ import {
   Text,
   View,
 } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { FlashList } from '@shopify/flash-list'
-import { AlertTriangle, Users } from 'lucide-react-native'
+import { AlertTriangle, UserPlus, Users } from 'lucide-react-native'
 import { useAuthContext } from '../../../context/AuthContext'
 import { ownerApi, type OwnerDriverSummary } from '@drivecommand/api-client'
 import { DriverCardSkeleton } from '../../../components/skeletons/DriverCardSkeleton'
 import { AnimatedScreen } from '../../../components/ui/AnimatedScreen'
+import { PageSpeedDial } from '../../../components/ui/PageSpeedDial'
 import { haptic } from '../../../lib/haptics'
 
 // ---------------------------------------------------------------------------
@@ -151,7 +152,15 @@ function DriverRow({ driver, onPress }: DriverRowProps) {
 export default function OwnerDriversScreen() {
   const { token } = useAuthContext()
   const router = useRouter()
+  const { driverId } = useLocalSearchParams<{ driverId?: string }>()
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
+
+  useEffect(() => {
+    if (driverId) {
+      router.setParams({ driverId: undefined })
+      router.push(`/(owner)/drivers/${driverId}` as any)
+    }
+  }, [driverId])
 
   const { data, isLoading, isError, error, refetch, isRefetching } = useQuery<OwnerDriverSummary[]>({
     queryKey: ['owner-drivers'],
@@ -281,7 +290,7 @@ export default function OwnerDriversScreen() {
           ) : (
             <FlashList
               data={filtered}
-              estimatedItemSize={68}
+
               refreshControl={
                 <RefreshControl
                   refreshing={isRefetching}
@@ -296,6 +305,13 @@ export default function OwnerDriversScreen() {
             />
           )}
         </View>
+
+        <PageSpeedDial
+          primaryLabel="Invite Driver"
+          primaryIcon={UserPlus}
+          primaryColor="#a78bfa"
+          onPrimaryPress={() => router.push('/(owner)/drivers/invite' as any)}
+        />
       </AnimatedScreen>
     </SafeAreaView>
   )

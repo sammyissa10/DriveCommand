@@ -1,9 +1,11 @@
 'use client';
 
+import type { ActionState } from '@drivecommand/types';
+
 import { useActionState } from 'react';
 
 interface MaintenanceEventFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   currentOdometer: number;
   submitLabel: string;
 }
@@ -14,6 +16,7 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
   // Get today's date in YYYY-MM-DD format for max attribute
   const today = new Date().toISOString().split('T')[0];
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-4">
       {/* General error message */}
@@ -37,8 +40,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        {state?.error?.serviceType && (
-          <p className="mt-1 text-sm text-red-600">{state.error.serviceType}</p>
+        {fieldErrors?.serviceType && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.serviceType}</p>
         )}
       </div>
 
@@ -57,8 +60,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
           required
         />
-        {state?.error?.serviceDate && (
-          <p className="mt-1 text-sm text-red-600">{state.error.serviceDate}</p>
+        {fieldErrors?.serviceDate && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.serviceDate}</p>
         )}
       </div>
 
@@ -79,8 +82,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           required
         />
         <p className="mt-1 text-xs text-muted-foreground">Current odometer: {currentOdometer.toLocaleString()} miles</p>
-        {state?.error?.odometerAtService && (
-          <p className="mt-1 text-sm text-red-600">{state.error.odometerAtService}</p>
+        {fieldErrors?.odometerAtService && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.odometerAtService}</p>
         )}
       </div>
 
@@ -99,8 +102,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.cost && (
-          <p className="mt-1 text-sm text-red-600">{state.error.cost}</p>
+        {fieldErrors?.cost && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.cost}</p>
         )}
       </div>
 
@@ -117,8 +120,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.provider && (
-          <p className="mt-1 text-sm text-red-600">{state.error.provider}</p>
+        {fieldErrors?.provider && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.provider}</p>
         )}
       </div>
 
@@ -134,8 +137,8 @@ export function MaintenanceEventForm({ action, currentOdometer, submitLabel }: M
           disabled={isPending}
           className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary disabled:opacity-50 transition-colors"
         />
-        {state?.error?.notes && (
-          <p className="mt-1 text-sm text-red-600">{state.error.notes}</p>
+        {fieldErrors?.notes && (
+          <p className="mt-1 text-sm text-red-600">{fieldErrors?.notes}</p>
         )}
       </div>
 

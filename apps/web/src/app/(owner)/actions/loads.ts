@@ -1,14 +1,22 @@
 'use server';
 
-import { requireRole, requireAuth } from '@/lib/auth/server';
+import type { ActionState } from '@drivecommand/types'
+
+import { requireRole, requireAuth } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { loadCreateSchema, loadUpdateSchema, dispatchLoadSchema } from '@drivecommand/validation';
-import { Prisma } from '@/generated/prisma';
+import { Prisma, LoadStatus } from '@/generated/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { sendLoadStatusEmail } from '@/lib/email/customer-notifications';
 import { sendPushToUser } from '@/lib/notifications/send-push';
+import { logger } from '@/lib/logger';
+import {
+  createRouteStopsForLoad,
+  deleteRouteStopsForLoad,
+} from '@/lib/route-stops/sync-route-stops';
+import { recordActivationEvent } from '@/lib/onboarding/activation-tracker';
 
 const Decimal = Prisma.Decimal;
 
@@ -83,7 +91,7 @@ async function sendNotificationAndLogInteraction(
     });
   } catch (error) {
     // Log but do NOT throw — email failure should not block load status change
-    console.error('Failed to send customer notification:', error);
+    logger.error('Failed to send customer notification:', error);
   }
 }
 
@@ -115,11 +123,12 @@ async function generateLoadNumber(prisma: any, tenantId: string): Promise<string
 /**
  * Create a new load.
  */
-export async function createLoad(prevState: any, formData: FormData) {
+export async function createLoad(prevState: ActionState | null, formData: FormData) {
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
     truckId: (formData.get('truckId') as string) || '',
+    routeId: (formData.get('routeId') as string) || '',
     origin: formData.get('origin') as string,
     destination: formData.get('destination') as string,
     pickupDate: formData.get('pickupDate') as string,
@@ -150,33 +159,49 @@ export async function createLoad(prevState: any, formData: FormData) {
 
     const loadNumber = await generateLoadNumber(prisma, tenantId);
 
-    const load = await prisma.load.create({
-      data: {
-        tenantId,
-        loadNumber,
-        customerId: result.data.customerId,
-        driverId: result.data.driverId || null,
-        truckId: result.data.truckId || null,
-        origin: result.data.origin,
-        destination: result.data.destination,
-        pickupDate: new Date(result.data.pickupDate),
-        deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
-        weight: result.data.weight || null,
-        commodity: result.data.commodity || null,
-        rate: new Decimal(result.data.rate),
-        notes: result.data.notes || null,
-        pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : null,
-        pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : null,
-        deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : null,
-        deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : null,
-        createdById: userId,
-        updatedById: userId,
-      },
+    const loadRouteId = result.data.routeId || null;
+
+    const load = await prisma.$transaction(async (tx) => {
+      const createdLoad = await tx.load.create({
+        data: {
+          tenantId,
+          loadNumber,
+          customerId: result.data.customerId,
+          driverId: result.data.driverId || null,
+          truckId: result.data.truckId || null,
+          routeId: loadRouteId,
+          origin: result.data.origin,
+          destination: result.data.destination,
+          pickupDate: new Date(result.data.pickupDate),
+          deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
+          weight: result.data.weight || null,
+          commodity: result.data.commodity || null,
+          rate: new Decimal(result.data.rate),
+          notes: result.data.notes || null,
+          pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : null,
+          pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : null,
+          deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : null,
+          deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : null,
+          createdById: userId,
+          updatedById: userId,
+        },
+      });
+
+      // If load is being assigned to a route on creation, auto-create RouteStops
+      if (loadRouteId) {
+        await createRouteStopsForLoad(tx, {
+          routeId: loadRouteId,
+          tenantId,
+          load: createdLoad,
+        });
+      }
+
+      return createdLoad;
     });
 
     createdId = load.id;
-  } catch (error: any) {
-    const msg = error?.message || '';
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : '';
     // Surface the real error so it's visible in the form
     return { error: msg || 'Failed to create load. Please try again.' };
   }
@@ -188,13 +213,14 @@ export async function createLoad(prevState: any, formData: FormData) {
 /**
  * Update an existing load.
  */
-export async function updateLoad(id: string, prevState: any, formData: FormData) {
+export async function updateLoad(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
     customerId: formData.get('customerId') as string,
     driverId: (formData.get('driverId') as string) || '',
     truckId: (formData.get('truckId') as string) || '',
+    routeId: (formData.get('routeId') as string) || '',
     origin: formData.get('origin') as string,
     destination: formData.get('destination') as string,
     pickupDate: formData.get('pickupDate') as string,
@@ -212,36 +238,93 @@ export async function updateLoad(id: string, prevState: any, formData: FormData)
 
   const userId = await requireAuth();
   const prisma = await getTenantPrisma();
+  const tenantId = await requireTenantId();
 
   const pickupLat = parseFloat(formData.get('pickupLat') as string);
   const pickupLng = parseFloat(formData.get('pickupLng') as string);
   const deliveryLat = parseFloat(formData.get('deliveryLat') as string);
   const deliveryLng = parseFloat(formData.get('deliveryLng') as string);
 
+  // Fetch current routeId before updating to detect route transitions
+  const existingLoad = await prisma.load.findUnique({
+    where: { id },
+    select: {
+      routeId: true,
+      origin: true,
+      destination: true,
+      pickupLat: true,
+      pickupLng: true,
+      deliveryLat: true,
+      deliveryLng: true,
+    },
+  });
+
+  if (!existingLoad) {
+    return { error: 'Load not found.' };
+  }
+
+  const newRouteId = result.data.routeId || null;
+  const oldRouteId = existingLoad.routeId;
+  const originChanged = result.data.origin !== existingLoad.origin;
+  const destinationChanged = result.data.destination !== existingLoad.destination;
+  const addressChanged = originChanged || destinationChanged;
+
   try {
-    await prisma.load.update({
-      where: { id },
-      data: {
-        customerId: result.data.customerId,
-        driverId: result.data.driverId || null,
-        truckId: result.data.truckId || null,
+    await prisma.$transaction(async (tx) => {
+      const updatedLoad = await tx.load.update({
+        where: { id },
+        data: {
+          customerId: result.data.customerId,
+          driverId: result.data.driverId || null,
+          truckId: result.data.truckId || null,
+          routeId: newRouteId,
+          origin: result.data.origin,
+          destination: result.data.destination,
+          pickupDate: new Date(result.data.pickupDate),
+          deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
+          weight: result.data.weight || null,
+          commodity: result.data.commodity || null,
+          rate: new Decimal(result.data.rate),
+          notes: result.data.notes || null,
+          ...(!isNaN(pickupLat) && { pickupLat: new Decimal(pickupLat) }),
+          ...(!isNaN(pickupLng) && { pickupLng: new Decimal(pickupLng) }),
+          ...(!isNaN(deliveryLat) && { deliveryLat: new Decimal(deliveryLat) }),
+          ...(!isNaN(deliveryLng) && { deliveryLng: new Decimal(deliveryLng) }),
+          updatedById: userId,
+        },
+      });
+
+      // Build a load snapshot for RouteStop sync (use form-provided coords when valid)
+      const loadForSync = {
+        id,
         origin: result.data.origin,
         destination: result.data.destination,
-        pickupDate: new Date(result.data.pickupDate),
-        deliveryDate: result.data.deliveryDate ? new Date(result.data.deliveryDate) : null,
-        weight: result.data.weight || null,
-        commodity: result.data.commodity || null,
-        rate: new Decimal(result.data.rate),
-        notes: result.data.notes || null,
-        ...(!isNaN(pickupLat) && { pickupLat: new Decimal(pickupLat) }),
-        ...(!isNaN(pickupLng) && { pickupLng: new Decimal(pickupLng) }),
-        ...(!isNaN(deliveryLat) && { deliveryLat: new Decimal(deliveryLat) }),
-        ...(!isNaN(deliveryLng) && { deliveryLng: new Decimal(deliveryLng) }),
-        updatedById: userId,
-      },
+        pickupLat: !isNaN(pickupLat) ? new Decimal(pickupLat) : updatedLoad.pickupLat,
+        pickupLng: !isNaN(pickupLng) ? new Decimal(pickupLng) : updatedLoad.pickupLng,
+        deliveryLat: !isNaN(deliveryLat) ? new Decimal(deliveryLat) : updatedLoad.deliveryLat,
+        deliveryLng: !isNaN(deliveryLng) ? new Decimal(deliveryLng) : updatedLoad.deliveryLng,
+      };
+
+      const routeBeingSet = newRouteId && !oldRouteId;
+      const routeBeingCleared = !newRouteId && oldRouteId;
+      const routeBeingChanged = newRouteId && oldRouteId && newRouteId !== oldRouteId;
+      const addressChangedWithRoute = addressChanged && newRouteId && newRouteId === oldRouteId;
+
+      if (routeBeingSet && newRouteId) {
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (routeBeingCleared && oldRouteId) {
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+      } else if (routeBeingChanged && newRouteId && oldRouteId) {
+        await deleteRouteStopsForLoad(tx, { routeId: oldRouteId, loadId: id });
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      } else if (addressChangedWithRoute && newRouteId) {
+        // Address changed while staying on same route: rebuild stops with new coords
+        await deleteRouteStopsForLoad(tx, { routeId: newRouteId, loadId: id });
+        await createRouteStopsForLoad(tx, { routeId: newRouteId, tenantId, load: loadForSync });
+      }
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load. Please try again.' };
@@ -268,8 +351,8 @@ export async function deleteLoad(id: string) {
       return { error: 'Only pending or cancelled loads can be archived.' };
     }
     await prisma.load.update({ where: { id }, data: { archivedAt: new Date() } });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to archive load.' };
@@ -282,7 +365,7 @@ export async function deleteLoad(id: string) {
 /**
  * Dispatch a load by assigning a driver and truck. Status moves to DISPATCHED.
  */
-export async function dispatchLoad(id: string, prevState: any, formData: FormData) {
+export async function dispatchLoad(id: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const rawData = {
@@ -331,8 +414,8 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
       body: `Load ${load.loadNumber}: ${load.origin} → ${load.destination}`,
       data: { screen: 'loads', loadId: id },
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to dispatch load. Please try again.' };
@@ -346,7 +429,7 @@ export async function dispatchLoad(id: string, prevState: any, formData: FormDat
  * Reassign the truck on an active load (DISPATCHED, PICKED_UP, IN_TRANSIT).
  * Does not change the driver or load status — only swaps the truck.
  */
-export async function reassignTruck(loadId: string, prevState: any, formData: FormData) {
+export async function reassignTruck(loadId: string, prevState: ActionState | null, formData: FormData) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const truckId = (formData.get('truckId') as string | null)?.trim();
@@ -376,8 +459,8 @@ export async function reassignTruck(loadId: string, prevState: any, formData: Fo
       where: { id: loadId },
       data: { truckId, updatedById: userId },
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to reassign truck. Please try again.' };
@@ -412,11 +495,14 @@ export async function updateLoadStatus(id: string, newStatus: string) {
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
 
   const prisma = await getTenantPrisma();
+  // Declare tenantId at outer scope so it is available to both the notification
+  // block and the activation tracker call below.
+  const tenantId = await requireTenantId();
 
   let invoicedCustomerId: string | null = null;
 
   try {
-    const load = await prisma.load.findUnique({ where: { id }, select: { status: true, customerId: true, rate: true } });
+    const load = await prisma.load.findUnique({ where: { id }, select: { status: true, customerId: true, rate: true, isSample: true } });
     if (!load) {
       return { error: 'Load not found.' };
     }
@@ -443,13 +529,21 @@ export async function updateLoadStatus(id: string, newStatus: string) {
 
     await prisma.load.update({
       where: { id },
-      data: { status: newStatus as any },
+      data: { status: newStatus as LoadStatus },
     });
+
+    // Activation tracker: fire when first real load goes IN_TRANSIT
+    if (newStatus === 'IN_TRANSIT' && !load.isSample) {
+      try {
+        await recordActivationEvent(tenantId, 'first_load_in_transit');
+      } catch (err) {
+        console.error('[updateLoadStatus] activation tracker failed', err);
+      }
+    }
 
     // Only send for customer-relevant statuses
     if (['PICKED_UP', 'IN_TRANSIT', 'DELIVERED'].includes(newStatus)) {
-      const tId = await requireTenantId();
-      sendNotificationAndLogInteraction(prisma, tId, id, newStatus);
+      sendNotificationAndLogInteraction(prisma, tenantId, id, newStatus);
     }
 
     // Update CRM customer performance stats when a load is invoiced
@@ -462,10 +556,10 @@ export async function updateLoadStatus(id: string, newStatus: string) {
           totalRevenue: { increment: load.rate },
           lastLoadDate: new Date(),
         },
-      }).catch((err) => console.error('Failed to update customer stats:', err));
+      }).catch((err) => logger.error('Failed to update customer stats:', err));
     }
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to update load status. Please try again.' };
@@ -476,6 +570,30 @@ export async function updateLoadStatus(id: string, newStatus: string) {
   if (invoicedCustomerId) {
     revalidatePath(`/crm/${invoicedCustomerId}`);
   }
+  return { success: true };
+}
+
+/**
+ * Update the sequence (leg number) of a load on a route.
+ * Passing null clears the sequence.
+ */
+export async function updateLoadSequence(loadId: string, sequence: number | null) {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const prisma = await getTenantPrisma();
+
+  try {
+    await prisma.load.update({
+      where: { id: loadId },
+      data: { sequence },
+    });
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return { error: 'Load not found.' };
+    }
+    return { error: 'Failed to update load sequence.' };
+  }
+
+  revalidatePath('/routes');
   return { success: true };
 }
 
@@ -512,8 +630,8 @@ export async function revertLoadStatus(id: string) {
       where: { id },
       data: updateData,
     });
-  } catch (error: any) {
-    if (error?.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
       return { error: 'Load not found.' };
     }
     return { error: 'Failed to revert load status. Please try again.' };

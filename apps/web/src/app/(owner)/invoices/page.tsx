@@ -8,26 +8,48 @@ export default async function InvoicesPage() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let invoices: any[] = [];
+  let totalCount = 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let statusCounts: any[] = [];
   try {
-    invoices = await prisma.invoice.findMany({
-      where: { archivedAt: null },
-      orderBy: { createdAt: 'desc' },
-      include: { items: true },
-    });
+    [invoices, totalCount, statusCounts] = await Promise.all([
+      prisma.invoice.findMany({
+        where: { archivedAt: null },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        include: { items: true },
+      }),
+      prisma.invoice.count({ where: { archivedAt: null } }),
+      prisma.invoice.groupBy({
+        by: ['status'],
+        where: { archivedAt: null },
+        _count: true,
+        _sum: { totalAmount: true },
+      }),
+    ]);
   } catch {
     // DB failure — render empty list
   }
 
+  // Derive stats from aggregate groupBy results (accurate across all records, not just the 50 shown)
+  let draft = 0;
+  let overdue = 0;
+  let paidAmount = 0;
+  let outstandingAmount = 0;
+  for (const g of statusCounts) {
+    const amount = Number(g._sum?.totalAmount ?? 0);
+    if (g.status === 'DRAFT') draft = g._count;
+    if (g.status === 'OVERDUE') { overdue = g._count; outstandingAmount += amount; }
+    if (g.status === 'SENT') outstandingAmount += amount;
+    if (g.status === 'PAID') paidAmount = amount;
+  }
+
   const stats = {
-    total: invoices.length,
-    draft: invoices.filter((i: any) => i.status === 'DRAFT').length,
-    overdue: invoices.filter((i: any) => i.status === 'OVERDUE').length,
-    paidAmount: invoices
-      .filter((i: any) => i.status === 'PAID')
-      .reduce((sum: number, i: any) => sum + Number(i.totalAmount), 0),
-    outstandingAmount: invoices
-      .filter((i: any) => ['SENT', 'OVERDUE'].includes(i.status))
-      .reduce((sum: number, i: any) => sum + Number(i.totalAmount), 0),
+    total: totalCount,
+    draft,
+    overdue,
+    paidAmount,
+    outstandingAmount,
   };
 
   return (
@@ -36,7 +58,7 @@ export default async function InvoicesPage() {
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Invoices</h1>
           <p className="mt-1 text-muted-foreground">
-            {stats.total} invoice{stats.total !== 1 ? 's' : ''}
+            Showing {invoices.length} of {stats.total} invoice{stats.total !== 1 ? 's' : ''}
             {stats.overdue > 0 ? ` \u00b7 ${stats.overdue} overdue` : ''}
           </p>
         </div>

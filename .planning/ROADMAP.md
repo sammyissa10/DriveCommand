@@ -2,13 +2,14 @@
 
 ## Overview
 
-DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads. v5.0 extends DriveCommand into native iOS and Android applications via React Native + Expo — driver and owner portals rebuilt for mobile with background GPS, push notifications, offline support, document camera, and App Store/Play Store distribution.
+DriveCommand builds from secure multi-tenant foundations through entity management (trucks, drivers, routes) to operational workflows (documents, maintenance, notifications), platform administration, and fleet intelligence. v1.0 delivered complete fleet management (phases 1-10). v2.0 added Samsara-inspired fleet intelligence with live GPS tracking, safety analytics, fuel efficiency dashboards, tag-based organization, and modern sidebar navigation — all powered by mock data with hardware-ready API contracts. v3.0 extends operational capability with route financial tracking, unified view/edit page architecture, and driver document compliance uploads. v4.0 adds carrier operations with commercial client/contract management, route templates with iCal recurrence, auto-dispatch generation, and multi-stop execution with BOL/POD enforcement. v5.0 extends DriveCommand into native iOS and Android applications via React Native + Expo — driver and owner portals rebuilt for mobile with background GPS, push notifications, offline support, document camera, and App Store/Play Store distribution.
 
 ## Milestones
 
 - ✅ **v1.0 Fleet Management** — Phases 1-10 (shipped 2026-02-15)
 - ✅ **v2.0 Samsara-Inspired Fleet Intelligence** — Phases 11-15 (shipped 2026-02-16)
 - ✅ **v3.0 Route Finance & Driver Documents** — Phases 16-18 (shipped 2026-02-17)
+- ✅ **v4.0 Carrier Operations** — 5 build phases + quick tasks 161-181 (shipped 2026-04-05)
 - ⬜ **v5.0 DriveCommand Mobile** — Phases 29-39 (target: 9-10 weeks from kickoff)
 
 ## Phases
@@ -89,9 +90,25 @@ See: [.planning/milestones/v3.0-ROADMAP.md] for full phase details.
 | 26. QA Test Scripts | v4.0 | 3/3 | ✓ Complete | 2026-03-13 |
 | 27. Automated Playwright E2E Tests | v4.0 | 0/3 | �—� Planned | — |
 | 28. Driver History | v4.0 | 2/2 | ✓ Complete | 2026-03-21 |
+| Carrier Ops P1: DB Schema | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P2: Service Layer | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P3: API Routes | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P4: Web UI | v4.0 | —/— | ✓ Complete | 2026-04-05 |
+| Carrier Ops P5: Mobile + Tests | v4.0 | —/— | ✓ Complete | 2026-04-05 |
 | 29. Monorepo Foundation + Expo Scaffold | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 31. Driver Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-22 |
 | 32. Driver HOS + Incident Reporting | v5.0 | 4/4 | ✓ Complete | 2026-03-23 |
+| 33. Driver Native Features | v5.0 | 3/3 | ✓ Complete | 2026-03-23 |
+| 34. Driver Documents + Messaging | v5.0 | 2/2 | ✓ Complete | 2026-03-25 |
+| 35. Owner Core Screens | v5.0 | 3/3 | ✓ Complete | 2026-03-24 |
+| 36. Owner Map + Fleet Communication | v5.0 | 3/3 | ✓ Complete | 2026-03-25 |
+| 37. Polish + Performance | v5.0 | 7/7 | ✓ Complete | 2026-03-28 |
+| 37.1. Driver Portal Gaps | v5.0 | 0/3 | ○ Not started | — |
+| 37.2. Owner Route + Maintenance Mobile | v5.0 | 0/4 | ○ Not started | — |
+| 37.3. Owner Financial Tools Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.4. Owner Analytics + Support Mobile | v5.0 | 0/? | ○ Not started | — |
+| 37.5. Mobile UI/UX Design Overhaul | v5.0 | 0/? | ○ Not started | — |
+| 37.6. Web Auth Migration to Supabase | v5.0 | 0/? | ○ Not started | — |
 
 ### Phase 1: Database Integrity Hardening — Add missing RLS policies to NotificationLog/InvoiceItem/ExpenseTemplateItem, create missing migration SQL for Load and TenantIntegration tables, fix migration script error handling to fail hard instead of swallowing errors
 
@@ -109,7 +126,7 @@ Plans:
 
 **Goal:** Allow dispatchers to build routes with multiple pickup and delivery stops in a defined sequence. Each stop tracks its own status (pending → arrived → departed), scheduled time, and coordinates. Geofencing auto-marks arrival when a driver's GPS ping falls within the stop radius. The driver app shows the active stop with navigation context.
 **Depends on:** None (extends existing Route model)
-**Plans:** 3 plans
+**Plans:** 7 plans
 
 Plans:
 - [x] 19-01-PLAN.md — RouteStop model + migration SQL with RLS, Prisma schema, Zod validation, server action stop CRUD
@@ -122,7 +139,7 @@ Plans:
 
 **Goal:** Calculate driver pay automatically from completed loads based on configurable pay structures (per-mile, percentage of load rate, or flat per-load), generate itemized settlement statements covering a pay period, and link settlements to the payroll module. Eliminates manual pay calculation — dispatcher marks loads delivered, system computes what each driver is owed.
 **Depends on:** Phase 19 (multi-stop loads have more complex mileage), but can run independently
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 20-01-PLAN.md — Data model: DriverPayConfig model (driverId, payType enum PER_MILE/PERCENTAGE/FLAT, rateValue, effectiveFrom), DriverSettlement model (driverId, tenantId, periodStart, periodEnd, status DRAFT/APPROVED/PAID, totalPay Decimal), SettlementLine model (settlementId, loadId, description, miles, grossRate, payAmount), migration SQL, RLS, schema.prisma update
@@ -135,7 +152,7 @@ Plans:
 
 **Goal:** Connect a tenant's QuickBooks Online account via OAuth2, then automatically sync DriveCommand financial records to QBO: invoices become QBO invoices (with line items and customer mapping), route expenses sync as QBO expenses, and driver settlements sync as vendor bills or journal entries. Eliminates double-entry for bookkeeping. The integration framework and TenantIntegration model already exist — this wires in the actual QBO API.
 **Depends on:** Phase 20 (settlements), existing invoice/expense modules
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 21-01-PLAN.md — OAuth2 connect flow: QBO app credentials in env vars, /api/integrations/qbo/connect initiates OAuth2 code flow (redirect to Intuit), /api/integrations/qbo/callback exchanges code for access+refresh tokens, stores encrypted tokens in TenantIntegration.configJson, connect/disconnect UI on integrations settings page with connection status badge
@@ -148,7 +165,7 @@ Plans:
 
 **Goal:** Tenant owners can submit support tickets from within the owner portal (subject, description, category, priority), view ticket history, and receive replies in-thread. The DriveCommand team manages all tickets from the super-admin portal (Phase 23). Email notifications alert the owner on reply and the DriveCommand team on new ticket submission. Replaces ad-hoc email support with a trackable, in-product support channel.
 **Depends on:** None (standalone module)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 22-01-PLAN.md — Extension migration: add SupportTicketCategory/Priority/TicketMessageSenderType enums, WAITING_ON_CUSTOMER status value, category+priority columns to SupportTicket (drop type column), create TicketMessage table with FK to SupportTicket, update prisma/schema.prisma
@@ -161,7 +178,7 @@ Plans:
 
 **Goal:** A fully separate super-admin portal at /admin/* accessible only to DriveCommand team members via a hardcoded ADMIN_SECRET_KEY environment variable (not the tenant session system). Provides tenant list with key metrics, ability to create new tenants directly (bypassing the self-signup flow), suspend/reactivate tenants, view tenant details, and manage support tickets (Phase 22) across all tenants. This is the internal operations tool for running DriveCommand as a business.
 **Depends on:** Phase 22 (support ticket management is the primary admin workflow)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 23-01-PLAN.md — Admin auth layer: ADMIN_SECRET_KEY env var, /admin/login page with password form (hash comparison, no rate-limit bypass — brute-force resistant), admin session stored as separate signed cookie (admin_session, 8-hour expiry), adminMiddleware guards all /admin/* routes and redirects to /admin/login if not authenticated, admin session has no tenantId (reads across all tenants using bypass_rls pattern), logout endpoint clears cookie
@@ -186,7 +203,7 @@ Plans:
 
 **Goal:** Enable DriveCommand to bill tenants directly from the sysadmin portal. Admin can create invoices for any tenant (subscription fees, setup fees, etc.), set line items, amount, and due date, and send the invoice via email to the tenant owner. Admins can track payment status (unpaid/paid/overdue), mark invoices as paid, and view billing history per tenant on the tenant detail page. This is DriveCommand's own billing system, separate from the invoice module tenants use for their customers.
 **Depends on:** Phase 23 (sysadmin portal)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 25-01-PLAN.md — Data layer: SysAdminInvoice + SysAdminInvoiceItem models, migration SQL with RLS, generateInvoiceNumber (SINV-XXXX), all server actions (CRUD + markPaid + void + archive + markOverdueInvoices)
@@ -199,7 +216,7 @@ Plans:
 
 **Goal:** Produce step-by-step manual QA test scripts (markdown files in docs/qa/) covering every major feature across all three portals. Coworkers follow these scripts to manually test the app. Each test case specifies preconditions, numbered steps with exact field values, expected results, and Pass/Fail checkboxes. Includes a smoke test section per portal and a README with test environment setup instructions.
 **Depends on:** Phase 25 (all features complete before QA scripts are written)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 26-01-PLAN.md — SysAdmin portal test scripts: docs/qa/sysadmin-tests.md covering auth (ADMIN_SECRET_KEY), dashboard, tenant management (create/suspend/reactivate), support ticket queue, and billing/invoicing lifecycle (DRAFT→SENT→PAID→VOID) — ~50 test cases with smoke tests
@@ -224,12 +241,15 @@ Plans:
 
 **Goal:** Implement a complete Playwright end-to-end test suite covering all three portals (SysAdmin, Owner/Manager, Driver) and all critical user flows. Auth fixtures for all 3 roles eliminate per-test login overhead. Builds on existing e2e/tkt-fixes.spec.ts. App is considered production-ready when the full suite passes with a clean HTML report.
 **Depends on:** Phase 26 (QA Test Scripts serve as source of truth for what to automate)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 27-01-PLAN.md — Playwright setup + auth fixtures + SysAdmin tests: playwright.config.ts, e2e/fixtures/ with storageState for sysadmin/owner/driver roles, e2e/sysadmin/ tests covering login, dashboard, tenant CRUD, support tickets, invoicing lifecycle
 - [ ] 27-02-PLAN.md — Owner portal tests: e2e/owner/ covering dashboard, trucks CRUD, drivers CRUD, full load/dispatch lifecycle (PENDING→DISPATCHED→DELIVERED→INVOICED), route finance, document uploads
 - [ ] 27-03-PLAN.md — Driver portal tests + CI config: e2e/driver/ covering login, load status view, document access, access boundary tests; GitHub Actions workflow (.github/workflows/playwright.yml); e2e/README.md with run instructions; production readiness sign-off
+- [ ] 27-04-PLAN.md — Carrier dashboard + fleet tests: e2e/carrier/dashboard.spec.ts (page load, KPI, quick actions, nav, auth boundary) + e2e/carrier/fleet.spec.ts (driver and truck list, create, edit, form validation)
+- [ ] 27-05-PLAN.md — Carrier dispatches + loads + clients/contracts tests: e2e/carrier/dispatches.spec.ts (list, create-via-url-param, detail panels) + e2e/carrier/loads.spec.ts (list, create, edit) + e2e/carrier/clients.spec.ts (client and contract CRUD)
+- [ ] 27-06-PLAN.md — Carrier facilities + templates + reports + access boundary tests: e2e/carrier/facilities.spec.ts + e2e/carrier/reports.spec.ts (all 4 reports + mark-as-paid) + e2e/carrier/access.spec.ts (driver blocked, unauthenticated blocked, owner allowed)
 
 ---
 
@@ -245,7 +265,7 @@ Plans:
 
 **Goal:** Transform the existing single Next.js repo into a Turborepo monorepo. Move the web app to apps/web. Extract shared TypeScript types and Zod validation schemas into packages/ that both web and mobile import. Scaffold the Expo app at apps/mobile with Expo Router, NativeWind v4, and EAS configuration. Running `npx expo start` in apps/mobile produces a working blank app on a physical device.
 **Depends on:** None (additive — web app untouched, just moved/restructured)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 29-01-PLAN.md — Turborepo setup: root package.json with workspaces, turbo.json pipeline (build/lint/test tasks), move existing Next.js app into apps/web/, update all internal import paths, verify `turbo run build` succeeds for apps/web
@@ -270,7 +290,7 @@ Plans:
 
 **Goal:** Build the primary screens a driver uses daily: a dashboard showing active load summary and today's snapshot, a loads list with active and completed tabs, a load detail screen with multi-stop timeline, and the status update flow (accept → en route → delivered) with confirmation and haptic feedback.
 **Depends on:** Phase 30 (driver navigation shell)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 31-01-PLAN.md — Bearer token validator (validateMobileToken) + 4 REST endpoints: dashboard, loads list (active/history), load detail with stops/truck/customer, status update with transition validation
@@ -297,7 +317,7 @@ Plans:
 
 **Goal:** Implement the three core native capabilities that make the driver app indispensable: background GPS reporting to the existing /api/gps/report endpoint (runs even when app is backgrounded), push notifications for dispatch alerts and HOS warnings via FCM/APNs, and an offline mutation queue that buffers status updates and HOS entries when the driver has no signal and flushes them automatically on reconnect.
 **Depends on:** Phase 31 (load status updates exist to queue), Phase 32 (HOS entries exist to queue)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 33-01-PLAN.md — Background GPS: expo-location background location task (BACKGROUND_LOCATION_TASK), permission request flow (foreground then background, explain why), report interval 30s on-duty / 5min off-duty based on current HOS status, POST to /api/gps/report with driver tracking token (existing token system), battery-aware: reduce frequency when battery < 20%, GPS status indicator in driver dashboard header (green dot = active, grey = paused)
@@ -322,7 +342,7 @@ Plans:
 
 **Goal:** Build the three primary owner screens: a dashboard with at-a-glance fleet KPIs, a loads management screen where owners can view all loads and create new ones, and a driver management screen showing driver status and compliance at a glance.
 **Depends on:** Phase 30 (owner navigation shell)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 35-01-PLAN.md — Owner dashboard: KPI cards row (active loads count, drivers on duty, revenue this month, open alerts), active loads mini-list (top 5, each showing driver name + route + status badge), driver status grid (all drivers, colored dot for on-duty/off-duty/no-load), recent alerts list (maintenance due, expiring documents, incidents); calls existing getDashboardData + getActiveLoads actions via api-client; pull-to-refresh; skeleton loaders
@@ -335,7 +355,7 @@ Plans:
 
 **Goal:** Build the live map screen showing all vehicles as positioned markers using react-native-maps (replaces Leaflet which is web-only), with tap-to-select vehicle detail. Build the fleet communication screen where owners compose and send messages to individual drivers or broadcast to all drivers, with delivery status tracking.
 **Depends on:** Phase 35 (owner screens established)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 36-01-PLAN.md — Live map: full-screen MapView with status-colored VehicleMarker components, VehicleDetailSheet bottom sheet, 60s auto-refresh, fitToCoordinates on load, dark Google Maps style on Android
@@ -344,16 +364,131 @@ Plans:
 
 ---
 
-### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere ✅ COMPLETE 2026-03-25
+### Phase 37: Polish + Performance — Touch targets, animations, dark mode, and FlashList everywhere — IN PROGRESS
 
 **Goal:** Full design and performance pass across both portals. Audit every interactive element for minimum 48px touch targets. Replace all FlatList/ScrollView lists with FlashList. Add React Native Reanimated transitions between screens and Haptics on all state-changing actions. Implement system dark mode detection with NativeWind dark: variants. Add skeleton loaders to every data-fetching screen. Ensure the app feels native and polished on both iOS and Android.
 **Depends on:** Phases 31-36 (all screens built)
-**Plans:** 3 plans
+**Plans:** 7 plans
 
 Plans:
 - [x] 37-01-PLAN.md — Touch targets, FlashList audit, skeleton loaders
 - [x] 37-02-PLAN.md — Animations, haptics, dark mode
 - [x] 37-03-PLAN.md — Thumb-friendliness, tab labels, brand fixes
+- [ ] 37-04-PLAN.md — NativeWind migration (login + owner secondary screens + map.tsx AnimatedScreen)
+- [ ] 37-05-PLAN.md — Skeleton loaders (owner portal + load detail + fleet.tsx messages)
+- [ ] 37-06-PLAN.md — Accessibility labels (FABs, back buttons, KPI cards)
+- [ ] 37-07-PLAN.md — Form validation standardization (border-red-500 + text-red-500)
+
+---
+
+### Phase 37.1: Driver Portal Gaps — My Route screen and driver support tickets
+
+**Goal:** Close the two remaining gaps in the driver mobile portal. Build the My Route screen showing the driver's currently assigned route with full multi-stop timeline, route details, and status context. Build the driver support ticket FAB: persistent floating action button on all mobile screens that opens a submit-only support ticket form (category, priority, title, description).
+**Depends on:** Phase 37 (driver portal polished)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 37.1-01-PLAN.md — My Route API endpoints + RouteCard + timeline components
+- [ ] 37.1-02-PLAN.md — My Route detail screen (loads timeline, route details, route messages)
+- [ ] 37.1-03-PLAN.md — Support Ticket FAB + bottom sheet form + API endpoint
+
+
+
+---
+
+### Phase 37.1.1: Data Pipeline: Routes, Loads, and Stops (INSERTED)
+
+**Goal:** Fix the broken data pipeline between Routes, Loads, and RouteStops so the driver map has real coordinates — schema changes to link stops to loads, Nominatim geocoding on load save, auto-creation of RouteStops when a load is assigned to a route, and SQL backfill for existing routes.
+**Depends on:** Phase 37.1
+**Plans:** 2 plans
+
+Plans:
+- [ ] 37.1.1-01-PLAN.md — Prisma schema migration (RouteStop + Load field additions) with SQL backfill
+- [ ] 37.1.1-02-PLAN.md — Geocode utility extraction, RouteStop sync library, wire into all load mutation paths
+
+### Phase 37.1.2: Invoicing: Trucking Standard (INSERTED)
+
+**Goal:** Align invoicing with trucking industry standards — add freight reference fields to Invoice, itemType/unitType enums to InvoiceItem for standard trucking charges, update invoice UI for freight-standard line item entry with FSC auto-calculation.
+**Depends on:** Phase 37.1.1
+**Plans:** 2 plans
+
+Plans:
+- [ ] 37.1.2-01-PLAN.md — Schema migration (enums + freight fields) + validation + server action PERCENT fix
+- [ ] 37.1.2-02-PLAN.md — Invoice UI: Freight Details section, type/unit selectors, FSC logic, quick-add buttons, detail page
+
+### Phase 37.2: Owner Route + Maintenance Mobile — Route management and truck maintenance on mobile
+
+**Goal:** Bring route management and truck maintenance to the owner mobile portal. Route management: list all routes, view route detail (stops, assigned driver/truck, status), create new route, edit existing route. Truck maintenance: view service history per truck, log a new service event (date, type, mileage, notes), schedule upcoming service with due date/mileage trigger.
+**Depends on:** Phase 37.1
+**Plans:** 4 plans
+
+Plans:
+- [ ] 37.2-01-PLAN.md — Route creation API + collapsible status list redesign
+- [ ] 37.2-02-PLAN.md — ScheduledService CRUD API + maintenance constants
+- [ ] 37.2-03-PLAN.md — Multi-step route creation form screen
+- [ ] 37.2-04-PLAN.md — Maintenance UI: top-level screen, truck detail enhancements, truck list badges
+
+---
+
+### Phase 37.3: Owner Financial Tools Mobile — Fuel tracking and expense settings
+
+**Goal:** Add fuel tracking and expense configuration to the owner mobile portal. Fuel tracking: log fuel fill-ups (truck, gallons, cost, odometer, location), view fuel history with cost-per-mile stats. Expense settings: manage expense categories (create/edit/delete) and expense templates (reusable line-item sets for common expense patterns).
+**Depends on:** Phase 37.2
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.4: Owner Analytics + Support Mobile — Safety metrics, profit predictor, and support tickets
+
+**Goal:** Port the remaining owner portal features to mobile. Safety metrics: safety score overview, recent safety events, driver safety rankings. Profit predictor: revenue forecast inputs and output summary. Owner support tickets: same flow as driver (list, detail with thread, submit new ticket).
+**Depends on:** Phase 37.3
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.5: Mobile UI/UX Design Overhaul — Layout, color, typography, and visual polish across both portals
+
+**Goal:** Full design overhaul of both driver and owner mobile portals. Audit and improve layout structure, color palette, typography, spacing, and component consistency. Establish a cohesive visual identity across all screens. Target: the app looks and feels premium — something drivers are proud to use and owners trust as a professional tool.
+**Depends on:** Phase 37.4 (all screens built before design pass)
+**Plans:** TBD
+
+Plans:
+- [ ] TBD
+
+---
+
+### Phase 37.6: Web Auth Migration to Supabase — Migrate web authentication from custom AES-256-GCM session cookies to Supabase Auth, unifying web and mobile onto a single auth system
+
+**Goal:** Replace the custom AES-256-GCM encrypted session cookie system in the web app with Supabase Auth, so both web and mobile use the same authentication provider. This eliminates dual auth maintenance, unifies token handling, and establishes a single security surface before App Store launch. All three portals (Owner, Driver, SysAdmin) must continue to work correctly after migration.
+**Depends on:** Phase 37.5 (all mobile screens stable)
+**Plans:** 2 plans
+
+Plans:
+- [ ] 37.6-01-PLAN.md — Security hardening: move claims from user_metadata to app_metadata + cleanup
+- [ ] 37.6-02-PLAN.md — Consolidate auth helpers into supabase.ts + update 70 import paths + build verification
+
+---
+
+### Phase 37.7: Driver Map + Navigation Screen — Mapbox map with live location, OSRM route polyline, and one-tap navigation ✓ COMPLETE (2026-04-04)
+
+**Goal:** Add a Map screen to the driver mobile portal showing the driver's live location and their active load route as a drawn polyline. Restructure driver tab bar to 5 tabs + More. Auto-redirect to Map tab and open the driver's preferred navigation app when a load is started.
+**Depends on:** Phase 37.6 (auth stable)
+**Plans:** 6 plans
+
+Plans:
+- [x] 37.7-01-PLAN.md — Install @rnmapbox/maps, remove react-native-maps, initialize Mapbox token, iOS infoPlist nav app schemes
+- [x] 37.7-02-PLAN.md — Backend: /api/geocoding/directions OSRM proxy, getOSRMDirections utility, driverApi.getDirections, RouteStop lat/lng
+- [x] 37.7-03-PLAN.md — Tab bar restructure (Dashboard, Loads, Map, Messages, More), map.tsx stub, more/ stack + index
+- [x] 37.7-04-PLAN.md — Map screen: MapView + UserLocation + ShapeSource/LineLayer polyline + MarkerView stops + info panel
+- [x] 37.7-05-PLAN.md — Auto-redirect + nav deep links: StatusUpdateButton wiring, openNavigation utility, nav-settings.tsx preference screen
+- [x] 37.7-06-PLAN.md — Architecture docs update + EAS dev build checkpoint
+
 
 ---
 
@@ -361,7 +496,7 @@ Plans:
 
 **Goal:** Set up the complete build and distribution infrastructure: EAS code signing for both platforms, GitHub Actions workflows for automated lint/test/build/deploy, TestFlight external beta for iOS, and Google Play Internal Track + open testing for Android. At the end of this phase, any push to main automatically ships an OTA update to beta testers, and tagged releases trigger full native builds submitted to stores.
 **Depends on:** Phase 37 (all screens polished and stable)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 38-01-PLAN.md — EAS build setup: eas.json with development (simulator + device, debug), preview (internal distribution, production JS), production (App Store/Play Store submission) profiles; iOS code signing: Apple Developer account credentials in EAS secrets, auto-managed provisioning profiles; Android signing: generate upload keystore, store in EAS secrets; run first production build for both platforms (eas build --platform all --profile production); verify .ipa and .aab are generated without errors
@@ -374,7 +509,7 @@ Plans:
 
 **Goal:** Prepare all store assets (icon, screenshots, descriptions, privacy policy), submit to both App Store and Google Play, manage review feedback, and execute a staged rollout. App is live on both stores with a 1.0.0 production release. Includes a rejection response playbook so review issues are resolved within 24 hours.
 **Depends on:** Phase 38 (production builds exist, beta testing complete)
-**Plans:** 3 plans
+**Plans:** 6 plans
 
 Plans:
 - [ ] 39-01-PLAN.md — Store assets: app icon 1024�—1024 (DriveCommand logo, no alpha, no rounded corners — stores apply their own mask); splash screen 2732�—2732; iPhone screenshots: 6.7" (iPhone 16 Pro Max) and 6.5" (iPhone 14 Plus) — 5 screenshots each showing login, driver dashboard, load detail, map, owner dashboard; iPad 12.9" screenshots (required for universal app); Android feature graphic 1024�—500; all screenshots show realistic data (use seed data), no placeholder text
@@ -391,6 +526,181 @@ Plans:
 
 Plans:
 - [ ] TBD
+
+---
+
+## v7.0 Checklists & Workflows
+
+**Milestone Goal:** Build the Workflow Template Engine — a configurable checklist system that lets carriers define reusable playbooks (driver onboarding, vehicle inspections, partner setup), automatically assign them when real-world events happen, and block dispatch until required steps are complete. Replaces spreadsheets, paper DVIRs, and tribal knowledge.
+
+**Spec:** `docs/specs/workflow-engine.md` (source of truth for all implementation details)
+
+---
+
+### Phase 42: Workflow Engine 1 — Foundation — Playbook Builder, Step Library, and starter seed data
+
+**Goal:** Build the template creation layer. Admin creates Playbooks, adds Steps from a library, configures categories, and saves. Seed 3 starter playbooks for new tenants. No runtime, no triggers, no mobile. At the end of this phase, an admin can open Checklists & Workflows from the sidebar and build a functional Pre-Trip Inspection checklist in under 10 minutes.
+**Depends on:** None (new feature, additive)
+**Plans:** 7 plans
+
+Plans:
+- [x] 42-01-PLAN.md — Prisma schema (StepTemplate, Playbook, PlaybookStep + 5 enums) + migration SQL with RLS + idempotent seedStarterPlaybooks + post-migrate hook backfilling all tenants
+- [x] 42-02-PLAN.md — Zod validation schemas in packages/validation/src/workflows/ (enums, stepTemplate, playbook including addStep / reorderSteps)
+- [x] 42-03-PLAN.md — tRPC v11 foundation: install packages, createTRPCContext wired to Supabase session, tenantMemberProcedure + adminProcedure, App Router fetch handler at /api/trpc, client provider scoped to (owner)/layout.tsx only
+- [x] 42-04-PLAN.md — stepTemplate router (list/getById/create/update/delete) + playbook router (list/getById/create/update/delete/addStep/removeStep/reorderSteps/updateStep) + reorderPlaybookSteps transactional service
+- [x] 42-05-PLAN.md — Sidebar 'Workflows' group with 'Checklists & Workflows' link + /checklists dashboard (PlaybookCard grid, entity-type filter tabs, CreatePlaybookDialog redirecting to builder)
+- [x] 42-06-PLAN.md — Playbook Builder: 3-column page with DnD canvas (5 phase sections), StepLibraryPanel with drag-to-add + New Step Template dialog, StepDetailEditor supporting all 8 step types (FORM_FILL + INSPECTION_ITEM full editors, other 6 simpler)
+- [x] 42-07-PLAN.md — Naming lint Vitest test (spec Section 3) + human-verify checkpoint: admin builds a Pre-Trip Inspection in under 10 minutes
+
+---
+
+### Phase 43: Workflow Engine 2 — Execution — Active Checklists, step completion, and dispatch readiness
+
+**Goal:** Build the runtime layer. Dispatchers manually create Active Checklists from Playbooks, drivers complete non-inspection steps on mobile (document upload, form fill, signature, training ack). `isDispatchReady` surfaced on driver profile. Active Work Board swimlanes appear on the dashboard. Dispatch enforcement not yet wired — readiness is surfaced but not blocking.
+**Depends on:** Phase 42 (Playbook templates must exist)
+**Plans:** 7 plans
+
+Plans:
+- [ ] 43-01-PLAN.md — Prisma schema: PlaybookInstance, StepInstance, PlaybookNotification, enums, isDispatchReady fields, RLS policies
+- [ ] 43-02-PLAN.md — Zod validation schemas for instance and stepInstance inputs
+- [ ] 43-03-PLAN.md — Service layer (generatePlaybookInstance, computeDispatchReadiness, completeStep, skipStep) + tRPC routers (instance, stepInstance)
+- [ ] 43-04-PLAN.md — Active Work Board swimlanes on /checklists dashboard + Active Checklist Detail screen
+- [ ] 43-05-PLAN.md — Checklists tabs on Driver/Vehicle/Partner profiles + isDispatchReady badge + mobile REST API endpoints + fireEvent TODOs
+- [ ] 43-06-PLAN.md — Mobile: Tasks tab + My Tasks screen + DocumentUpload/FormFill/Signature screens
+- [ ] 43-07-PLAN.md — Tests: snapshot immutability, readiness, completeStep type validation, mobile tap-target audit
+
+---
+
+### ✅ Phase 44: Workflow Engine 3 — Inspection Mode — Full-screen DVIR, fail-capture, mechanic sign-offs (complete 2026-04-24)
+
+**Goal:** Build the signature UX of the product: full-screen Inspection Mode for drivers (card-by-card pass/fail, fail photo capture, completion moment). Failed inspection items auto-create mechanic approval steps. Vehicle `isDispatchReady` computed and enforced. Push + SMS notifications for `STEP_FAILED` and `APPROVAL_NEEDED`.
+**Depends on:** Phase 43 (execution layer complete)
+**Plans:** 6 plans
+
+Plans:
+- [x] 44-01-PLAN.md — Schema migration: add VEHICLE_INSPECTION to PlaybookCategory enum, make StepInstance.stepTemplateId nullable for ad-hoc APPROVAL steps
+- [x] 44-02-PLAN.md — Fix completeStep INSPECTION_ITEM PASS bug, implement failInspectionItem service + Zod schema, add fail/requestApproval/approve tRPC procedures
+- [x] 44-03-PLAN.md — REST endpoints: POST /api/mobile/driver/tasks/[id]/fail + POST /api/mobile/driver/tasks/upload-photo
+- [x] 44-04-PLAN.md — Mobile: InspectionModeScreen (card-slide UX, PASS/FAIL, fail-capture, completion screen), update TaskActionDispatcher
+- [x] 44-05-PLAN.md — Web: mechanic ApproveDialog in ChecklistDetailClient, isDispatchReady badge on truck profile
+- [x] 44-06-PLAN.md — Tests: failInspectionItem unit tests (5), InspectionModeScreen tap-target audit (4)
+
+---
+
+### Phase 45: Workflow Engine 4 — Automation — Auto-Start Rules, event triggers, dispatch enforcement
+
+**Goal:** Playbooks fire automatically based on lifecycle events (driver create, dispatch depart/deliver, etc.). Tenants toggle recipe presets from the Automation page. Dispatch creation blocks non-ready drivers with an admin override + audit trail. Full notification suite across all types and channels.
+**Depends on:** Phase 44 (readiness computation stable)
+**Plans:** 6 plans
+
+Plans:
+- [ ] 45-01-PLAN.md — Schema foundation (PlaybookTrigger + DispatchOverrideAudit + VEHICLE_INSPECTION validation fix)
+- [ ] 45-02-PLAN.md — fireEvent service + recipes constants + match/skip unit tests (DoD test 1)
+- [ ] 45-03-PLAN.md — Unified notifications module (all 7 NotifType) + DISPATCH_READY + overdue cron
+- [ ] 45-04-PLAN.md — tRPC trigger router + wire 8 lifecycle hooks (owner actions + carrier routes + dispatch transitions)
+- [ ] 45-05-PLAN.md — Auto-Start Rules page (7 recipe cards + custom rules) + dispatch enforcement modal + override audit
+- [ ] 45-06-PLAN.md — Integration tests for DoD tests 2, 3, 4 (instance preservation + audit write + block without override)
+
+---
+
+### ✅ Phase 46: Workflow Engine 5 — Polish & Analytics — Preview panel, overdue alerts, analytics (complete 2026-04-24)
+
+**Goal:** Builder Preview Panel (phone-frame driver view + dispatcher card). Overdue alerts fire per-step due date. Analytics dashboard: completion rate per playbook, average time, step drop-off. Daily email digest for Safety Managers. Skip-with-reason audit trail visible on instance detail.
+**Depends on:** Phase 45 (full feature complete)
+**Plans:** 6 plans
+
+Plans:
+- [x] 46-01-PLAN.md — Schema migration (dueWithinHours + overdueRecipient + DAILY_DIGEST) + generatePlaybookInstance update + Zod validation + vercel.json cron registration
+- [x] 46-02-PLAN.md — Overdue cron overdueRecipient fan-out (SMS/Twilio skipped by user decision)
+- [x] 46-03-PLAN.md — Skip audit trail: SKIPPED badge inline + Audit Log section on instance detail (no schema change)
+- [x] 46-04-PLAN.md — Builder Preview Panel (fixed-position, phone frame + dispatcher tab) + StepDetailEditor overdue fields
+- [x] 46-05-PLAN.md — Analytics tRPC router (3 procedures) + /checklists/analytics page with Recharts charts
+- [x] 46-06-PLAN.md — Daily Safety Manager digest (react-email template + cron route + DAILY_DIGEST dedup)
+
+---
+
+## v8.0 Tenant Self-Onboarding
+
+**Milestone Goal:** Full self-serve signup and onboarding system for DriveCommand. A trucking-company owner visits the marketing site, fills out a 6-field signup form, and within seconds is logged in to a fully provisioned tenant with sample data, a 5-step activation checklist, and behavior-driven email automations guiding them to dispatch their first load. SysAdmin portal enhanced with activation progress, engagement metrics, health scores, and a full activity timeline per tenant.
+
+**Spec:** `docs/specs/tenant-self-onboarding/01-TECHNICAL-SPEC.md`
+
+---
+
+### Phase 47: Tenant Self-Onboarding Foundation — Schema, Migration, Seed Data, and SysAdmin CRUD
+
+**Goal:** Database foundation for tenant self-onboarding. Adds new tables (Plan, Promo, Subscription, ActivationProgress, AutomationRule, AutomationRun, AppEvent, TenantMetricsDaily, TenantHealthScore), extends Tenant with slug/fleetSizeBucket/status/provisioning columns, adds isSample to domain tables, writes all RLS policies, seeds default Plans and SYSTEM AutomationRules, and builds SysAdmin CRUD for Plans and Promos.
+**Depends on:** Phase 46 (stable schema baseline)
+**Plans:** 3 plans
+
+Plans:
+- [x] 47-01-PLAN.md — DDL migration (all new tables + Tenant column additions + RLS policies) + Prisma schema update
+- [x] 47-02-PLAN.md — Seed migration (default Plans: Starter/Pro/Fleet, SYSTEM AutomationRules from spec section 7.4)
+- [x] 47-03-PLAN.md — SysAdmin CRUD UI: /admin/plans list + create/edit, /admin/promos list + create
+
+**Status: COMPLETE (2026-04-29)**
+
+---
+
+### Phase 48: Tenant Self-Onboarding — Signup and Provisioning — Validation schemas, atomic provisioning, signup page, server action, email confirmation, and welcome templates
+
+**Goal:** Complete signup-to-dashboard flow for new tenant owners. Covers three plans: B-01 provisioning logic (Zod schemas, provision-tenant.ts atomic 14-step transaction, seed-sample-data.ts forked by fleet size, hydrate-tenant.ts, AES-GCM email confirmation tokens), B-02 signup page (public /sign-up page, 6-field client form, signUpAction server action with promo support, session cookie, redirect), B-03 email confirmation (GET /api/email-confirm/[token] single-use token handler, confirm-email.tsx React Email template, welcome-owner.tsx from named human). Signup is fully atomic — any failure rolls back. Email enumeration defense and rate limiting (10/IP/hour) required.
+**Depends on:** Phase 47 (schema, Plan/Promo seed data, isSample columns all in place)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 48-01-PLAN.md — Provisioning logic: onboarding Zod schemas, provision-tenant.ts (14-step bypass_rls transaction), seed-sample-data.ts (fleet-bucket forks), hydrate-tenant.ts (idempotent), email token helpers
+- [ ] 48-02-PLAN.md — Signup page and server action: /sign-up page + form component + signUpAction (promo lookup, session set, tenant.created event, redirect)
+- [ ] 48-03-PLAN.md — Email confirmation route + confirm-email template + welcome-owner template
+
+---
+
+### Phase 49: Tenant Self-Onboarding — Onboarding UX + Activation Tracking — Welcome page checklist, activation tracker hooks, and dashboard sample-data integration
+
+**Goal:** Build the onboarding experience that greets new tenants after signup. Delivers three capabilities: (C-01) /onboarding/welcome page with 5-item activation checklist and hydration call on first landing; (C-02) activation tracker library that hooks into existing Truck/Customer/Load/User-DRIVER create actions and updates ActivationProgress + emits AppEvents on milestones; (C-03) sample-data banner and SAMPLE pill components wired into existing dashboard pages, with isSample=false filters added to all KPI/count queries. Drivers are User rows with role=DRIVER. All queries target PascalCase tables only (Truck, Customer, Load, User).
+**Depends on:** Phase 48 (signup flow, hydrate-tenant, seed-sample-data all in place)
+**Plans:** 3 plans
+
+Plans:
+- [ ] 49-01-PLAN.md — Welcome page (/onboarding/welcome) with hydration call + 5-item checklist client component (reads ActivationProgress live state); sample-data-banner.tsx + sample-pill.tsx components
+- [ ] 49-02-PLAN.md — Activation tracker (src/lib/onboarding/activation-tracker.ts): recordActivationEvent, ActivationProgress UPSERT, completionPct formula, tenant.activated AppEvent; wire into Truck/Customer/Load/User create/status-change actions
+- [ ] 49-03-PLAN.md — Dashboard sample-data integration: add sample-data-banner to owner dashboard pages, SAMPLE pills to list tables, isSample=false filters to KPI count queries
+
+### Phase 50: Rebuild activation tracking and sample data on snake_case tables
+
+**Goal:** Fix Phase 49's broken activation tracker and sample data system by rewriting the seeder to target snake_case carrier tables, wiring tracker hooks into the actual carrier API routes, and integrating SamplePill/SampleDataBanner into the carrier list pages and dashboard.
+**Depends on:** Phase 49
+**Plans:** 6 plans
+
+Plans:
+- [x] 50-01-PLAN.md — Migrations: add is_sample column to carrier_trucks, clients, loads, carrier_drivers + schema update + prisma generate
+- [x] 50-02-PLAN.md — Seeder rewrite: write to snake_case carrier tables using orgId, create User+CarrierDriver rows for sample drivers, add ONBOARDING_SEED_SAMPLES kill switch
+- [x] 50-03-PLAN.md — Trucks tracker hook: wire recordActivationEvent(first_real_truck) into carrier fleet trucks POST route
+- [x] 50-04-PLAN.md — Clients tracker hook: wire recordActivationEvent(first_real_client) into carrier clients POST route
+- [x] 50-05-PLAN.md — Dispatch tracker hook: wire recordActivationEvent(first_load_in_transit) into transitionDispatchStatus planned->in_progress
+- [x] 50-06-PLAN.md — SamplePill + SampleDataBanner: integrate into carrier list pages, fix dashboard hasSampleRecords, add isSample:false to KPI route
+
+**Status: COMPLETE (2026-05-02)**
+
+### Phase 51: Postscript: Close Activation Gaps from Phases 47-50 Live Verification
+
+**Goal:** [To be planned]
+**Depends on:** Phase 50
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 51 to break down)
+
+### Phase 52: Automation Evaluator + Behavioral Emails — evaluator core, send_email action handler, cron route, 6 email templates, SysAdmin automations UI, extend-trial action
+
+**Goal:** Build the automation evaluation engine that reads AppEvent rows, matches them against AutomationRule rows, schedules AutomationRun records, and executes the send_email action via Gmail SMTP. Wire a cron route driving the evaluator every 5 minutes. Add SysAdmin pages to inspect and manually trigger rules, view per-tenant run history, and extend a tenant's trial.
+**Depends on:** Phase 51
+**Plans:** 3 plans
+
+Plans:
+- [ ] 52-01-PLAN.md — Schema migration (PENDING/SENT enum values + scheduledAt/eventId/errorMessage columns + unique index) + evaluator core + send_email handler + template registry + activation-celebration template + AppEvent writes for truck.created.real and load.created.real
+- [ ] 52-02-PLAN.md — Cron route (/api/cron/automations, */5 * * * *) + vercel.json entry + CRON_SECRET env + cron-driven rule handlers (no_progress_nudge, add_driver_nudge, dispatch_load_nudge, trial_ending_soon) + 4 remaining email templates
+- [ ] 52-03-PLAN.md — SysAdmin /automations rule list + isActive toggle + /automations/[ruleId] detail + manual trigger + tenant detail enhancements (AutomationRun history, ActivationProgress panel, Extend Trial button/action)
 
 ---
 

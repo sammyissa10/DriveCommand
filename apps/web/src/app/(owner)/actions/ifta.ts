@@ -1,9 +1,8 @@
 'use server';
 
 import { getTenantPrisma } from '@/lib/context/tenant-context';
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import {
   getStateFromCoordinates,
   haversineDistance,
@@ -77,7 +76,6 @@ export async function getIFTAReport(
 ): Promise<IFTAReportData> {
   // OWNER/MANAGER only — drivers do not have access to IFTA tax data
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canViewIFTA');
 
   const prisma = await getTenantPrisma();
   const { startDate, endDate } = getQuarterDateRange(quarter, year);
@@ -107,6 +105,7 @@ export async function getIFTAReport(
   // Group by truckId for segment calculation
   const truckPings = new Map<string, Array<{ lat: number; lng: number }>>();
   for (const record of gpsRecords) {
+    if (!record.truckId) continue;
     const lat = parseFloat(record.latitude.toString());
     const lng = parseFloat(record.longitude.toString());
     if (!truckPings.has(record.truckId)) {

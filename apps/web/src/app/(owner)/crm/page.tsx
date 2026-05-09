@@ -1,17 +1,26 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { getTenantPrisma } from '@/lib/context/tenant-context';
+import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { CustomerList } from '@/components/crm/customer-list';
+import { SampleDataBanner } from '@/components/onboarding/sample-data-banner';
 
 export default async function CRMPage() {
-  const prisma = await getTenantPrisma();
+  const [prisma, tenantId] = await Promise.all([
+    getTenantPrisma(),
+    requireTenantId().catch(() => ''),
+  ]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let customers: any[] = [];
+  let totalCount = 0;
+  let activeCount = 0;
+  let vipCount = 0;
+  let totalRevenue = 0;
   try {
-    const [rawCustomers, loadStats] = await Promise.all([
+    const [rawCustomers, loadStats, customerTotal, activeTotal, vipTotal] = await Promise.all([
       prisma.customer.findMany({
         orderBy: { updatedAt: 'desc' },
+        take: 50,
         include: { _count: { select: { interactions: true } } },
       }),
       prisma.load.groupBy({
@@ -20,6 +29,9 @@ export default async function CRMPage() {
         _count: { id: true },
         _sum: { rate: true },
       }),
+      prisma.customer.count({ where: { isSample: false } }),
+      prisma.customer.count({ where: { status: 'ACTIVE', isSample: false } }),
+      prisma.customer.count({ where: { priority: 'VIP', isSample: false } }),
     ]);
 
     const statsMap = new Map(
@@ -31,24 +43,46 @@ export default async function CRMPage() {
       totalLoads: statsMap.get(c.id)?.totalLoads ?? 0,
       totalRevenue: statsMap.get(c.id)?.totalRevenue ?? 0,
     }));
+
+    totalCount = customerTotal;
+    activeCount = activeTotal;
+    vipCount = vipTotal;
+    totalRevenue = loadStats.reduce((sum: number, s: any) => sum + Number(s._sum.rate ?? 0), 0);
   } catch {
     // DB failure — render empty list
   }
 
   const stats = {
-    total: customers.length,
-    active: customers.filter((c: any) => c.status === 'ACTIVE').length,
-    vip: customers.filter((c: any) => c.priority === 'VIP').length,
-    totalRevenue: customers.reduce((sum: number, c: any) => sum + Number(c.totalRevenue), 0),
+    total: totalCount,
+    active: activeCount,
+    vip: vipCount,
+    totalRevenue,
   };
+
+  // Sample data banner — use already-fetched customers to detect sample records (no extra query)
+  const hasSampleRecords = customers.some((c: any) => c.isSample);
+  let sampleDataSeeded = false;
+  if (hasSampleRecords && tenantId) {
+    try {
+      const tenant = await prisma.tenant.findFirst({ select: { sampleDataSeeded: true } });
+      sampleDataSeeded = tenant?.sampleDataSeeded ?? false;
+    } catch {
+      // Non-critical — banner hidden by default
+    }
+  }
 
   return (
     <div className="space-y-6">
+      {/* Sample data banner */}
+      {sampleDataSeeded && hasSampleRecords && tenantId && (
+        <SampleDataBanner tenantId={tenantId} />
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="min-w-0">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">CRM</h1>
           <p className="mt-1 text-muted-foreground">
-            {stats.total} customer{stats.total !== 1 ? 's' : ''} &middot; {stats.active} active &middot; {stats.vip} VIP
+            Showing {customers.length} of {stats.total} customer{stats.total !== 1 ? 's' : ''} &middot; {stats.active} active &middot; {stats.vip} VIP
           </p>
         </div>
         <Link

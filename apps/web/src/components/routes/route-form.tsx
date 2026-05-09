@@ -1,8 +1,11 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { AddressAutocomplete, haversineDistanceMiles } from '@/components/shared/address-autocomplete';
-import { Navigation, Plus, ChevronUp, ChevronDown, X } from 'lucide-react';
+import type { ActionState } from '@drivecommand/types';
+
+import { useActionState, useState, useEffect } from 'react';
+import { AddressAutocomplete } from '@/components/shared/address-autocomplete';
+import { getOSRMDistanceMiles } from '@/lib/geo/osrm';
+import { Navigation, Plus, ChevronUp, ChevronDown, X, Loader2 } from 'lucide-react';
 
 interface Coords {
   lat: number;
@@ -18,7 +21,7 @@ interface StopDraft {
 }
 
 interface RouteFormProps {
-  action: (prevState: any, formData: FormData) => Promise<any>;
+  action: (prevState: ActionState | null, formData: FormData) => Promise<ActionState>;
   initialData?: {
     origin: string;
     destination: string;
@@ -78,6 +81,9 @@ export function RouteForm({
 
   const [originCoords, setOriginCoords] = useState<Coords | null>(null);
   const [destCoords, setDestCoords] = useState<Coords | null>(null);
+  const [stopCoords, setStopCoords] = useState<Map<string, Coords>>(new Map());
+  const [distance, setDistance] = useState<number | null>(null);
+  const [distanceLoading, setDistanceLoading] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState<string>(initialData?.driverId || '');
   const [coDriverIds, setCoDriverIds] = useState<string[]>(initialCoDriverIds ?? []);
 
@@ -106,10 +112,25 @@ export function RouteForm({
       }));
   });
 
-  const distance =
-    originCoords && destCoords
-      ? haversineDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
-      : null;
+  // Fetch road distance via OSRM when both coordinates are available
+  useEffect(() => {
+    if (!originCoords || !destCoords) {
+      setDistance(null);
+      return;
+    }
+    let cancelled = false;
+    setDistanceLoading(true);
+    setDistance(null);
+    getOSRMDistanceMiles(originCoords.lat, originCoords.lng, destCoords.lat, destCoords.lng)
+      .then((miles) => {
+        if (cancelled) return;
+        setDistance(miles);
+      })
+      .finally(() => {
+        if (!cancelled) setDistanceLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [originCoords, destCoords]);
 
   function addStop() {
     setStops((prev) => [
@@ -152,6 +173,7 @@ export function RouteForm({
     );
   }
 
+  const fieldErrors = typeof state?.error === 'object' ? state.error : undefined;
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
       {/* Extra hidden fields (e.g., version for optimistic locking) */}
@@ -165,6 +187,7 @@ export function RouteForm({
         name="distanceMiles"
         value={distance !== null ? String(Math.round(distance)) : (initialData?.distanceMiles ?? '')}
       />
+      {/* Note: distance state is async (OSRM); initialData.distanceMiles is used as fallback when editing */}
 
       {/* Hidden co-driver IDs — comma-separated list submitted with form */}
       <input
@@ -182,6 +205,8 @@ export function RouteForm({
           <input type="hidden" name={`stops_${idx}_type`} value={stop.type} />
           <input type="hidden" name={`stops_${idx}_scheduledAt`} value={stop.scheduledAt} />
           <input type="hidden" name={`stops_${idx}_notes`} value={stop.notes} />
+          <input type="hidden" name={`stops_${idx}_lat`} value={stopCoords.get(stop.clientId)?.lat ?? ''} />
+          <input type="hidden" name={`stops_${idx}_lng`} value={stopCoords.get(stop.clientId)?.lng ?? ''} />
         </span>
       ))}
 
@@ -217,8 +242,8 @@ export function RouteForm({
             className={inputClass}
             onPlaceSelect={(place) => setOriginCoords({ lat: place.lat, lng: place.lng })}
           />
-          {state?.error?.origin && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.origin}</p>
+          {fieldErrors?.origin && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.origin}</p>
           )}
         </div>
 
@@ -234,19 +259,25 @@ export function RouteForm({
             className={inputClass}
             onPlaceSelect={(place) => setDestCoords({ lat: place.lat, lng: place.lng })}
           />
-          {state?.error?.destination && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.destination}</p>
+          {fieldErrors?.destination && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.destination}</p>
           )}
         </div>
 
-        {/* Distance badge — shown once both locations are selected */}
-        {distance !== null && (
+        {/* Distance badge — shown while loading or once both locations are selected */}
+        {distanceLoading && (
+          <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
+            <Loader2 className="h-4 w-4 text-blue-500 dark:text-blue-400 shrink-0 animate-spin" />
+            <span className="text-sm text-blue-600 dark:text-blue-400">Calculating road distance...</span>
+          </div>
+        )}
+        {!distanceLoading && distance !== null && (
           <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40 px-4 py-2.5">
             <Navigation className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
             <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
               Estimated distance: <strong>{Math.round(distance).toLocaleString()} miles</strong>
             </span>
-            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">straight-line est.</span>
+            <span className="ml-auto text-xs text-blue-500 dark:text-blue-500">road distance</span>
           </div>
         )}
         {/* Show saved distance when editing (no new selection yet) */}
@@ -270,8 +301,8 @@ export function RouteForm({
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.scheduledDate && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.scheduledDate}</p>
+          {fieldErrors?.scheduledDate && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.scheduledDate}</p>
           )}
         </div>
       </div>
@@ -361,7 +392,14 @@ export function RouteForm({
                   disabled={isPending}
                   placeholder="Enter stop address..."
                   className={inputClass}
-                  onPlaceSelect={(place) => updateStop(stop.clientId, 'address', place.displayName)}
+                  onPlaceSelect={(place) => {
+                    updateStop(stop.clientId, 'address', place.displayName);
+                    setStopCoords((prev) => {
+                      const next = new Map(prev);
+                      next.set(stop.clientId, { lat: place.lat, lng: place.lng });
+                      return next;
+                    });
+                  }}
                 />
               </div>
 
@@ -428,8 +466,8 @@ export function RouteForm({
                 Invite drivers first before creating routes.
               </p>
             )}
-            {state?.error?.driverId && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.driverId}</p>
+            {fieldErrors?.driverId && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.driverId}</p>
             )}
           </div>
 
@@ -450,8 +488,8 @@ export function RouteForm({
                 </option>
               ))}
             </select>
-            {state?.error?.truckId && (
-              <p className="mt-1.5 text-sm text-red-600">{state.error.truckId}</p>
+            {fieldErrors?.truckId && (
+              <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.truckId}</p>
             )}
           </div>
         </div>
@@ -496,8 +534,8 @@ export function RouteForm({
             disabled={isPending}
             className={inputClass}
           />
-          {state?.error?.notes && (
-            <p className="mt-1.5 text-sm text-red-600">{state.error.notes}</p>
+          {fieldErrors?.notes && (
+            <p className="mt-1.5 text-sm text-red-600">{fieldErrors?.notes}</p>
           )}
         </div>
       </div>

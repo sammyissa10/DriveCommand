@@ -1,26 +1,29 @@
 'use server';
 
+import { Prisma } from '@/generated/prisma';
+
+import type { ActionState } from '@drivecommand/types'
+
 /**
  * Server actions for expense category management.
  * All actions enforce OWNER/MANAGER role authorization before any data access.
  */
 
-import { requireRole } from '@/lib/auth/server';
+import { requireRole } from '@/lib/auth/supabase';
 import { UserRole } from '@/lib/auth/roles';
-import { requirePermission } from '@/lib/auth/require-permission';
 import { getTenantPrisma, requireTenantId } from '@/lib/context/tenant-context';
 import { categoryCreateSchema } from '@drivecommand/validation';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 /**
  * Create a new custom expense category.
  * Requires OWNER or MANAGER role.
  * Categories are created with isSystemDefault: false.
  */
-export async function createCategory(prevState: any, formData: FormData) {
+export async function createCategory(prevState: ActionState | null, formData: FormData) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   // Parse FormData fields
   const rawData = {
@@ -51,11 +54,11 @@ export async function createCategory(prevState: any, formData: FormData) {
         isSystemDefault: false,
       },
     });
-  } catch (error: any) {
-    console.error('Failed to create category:', error);
+  } catch (error: unknown) {
+    logger.error('Failed to create category:', error);
 
     // Check for unique constraint violation (duplicate name)
-    if (error.code === 'P2002') {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       return {
         error: {
           name: ['A category with this name already exists'],
@@ -81,7 +84,6 @@ export async function createCategory(prevState: any, formData: FormData) {
 export async function deleteCategory(categoryId: string) {
   // CRITICAL: Auth check FIRST before any data access
   await requireRole([UserRole.OWNER, UserRole.MANAGER]);
-  await requirePermission('canManageSettings');
 
   const prisma = await getTenantPrisma();
 
@@ -127,7 +129,7 @@ export async function deleteCategory(categoryId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete category:', error);
+    logger.error('Failed to delete category:', error);
     return { error: 'Failed to delete category. Please try again.' };
   }
 }
