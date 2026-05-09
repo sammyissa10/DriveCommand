@@ -1,0 +1,96 @@
+---
+slug: lane-analytics
+title: Lane Analytics — Technical Reference
+summary: Profitability analysis aggregating revenue from Invoice and expenses from FuelLog, PayrollRecord, and Expense tables by lane.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Lane aggregation based on Route origin/destination"
+  - "Expense calculations span multiple tables"
+  - "Margin computed as (revenue - expenses) / revenue"
+---
+
+# Lane Analytics — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Lane Analytics aggregates profitability data by origin-destination pair.
+
+**Portal:** Owner
+**Route:** `/lane-analytics`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getLaneAnalytics", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<LaneData[]>" },
+  { name: "getLaneDetail", roleGuard: "OWNER | MANAGER", inputSchema: "{ laneId: string }", returnType: "ActionState<LaneDetail>" }
+]} />
+
+### Lane Profit Calculation
+
+<CodeBlock language="typescript">
+{`async function calculateLaneProfitability(
+  origin: string,
+  destination: string,
+  dateRange: DateRange
+): Promise<LaneMetrics> {
+  const routes = await prisma.route.findMany({
+    where: {
+      tenantId,
+      origin,
+      destination,
+      createdAt: { gte: dateRange.start, lte: dateRange.end },
+    },
+    include: { loads: { include: { invoice: true } } },
+  });
+
+  // Aggregate revenue from invoices
+  const revenue = routes.reduce((sum, route) =>
+    sum + route.loads.reduce((s, l) => s + (l.invoice?.total ?? 0), 0), 0
+  );
+
+  // Aggregate fuel costs
+  const fuelCost = await prisma.fuelLog.aggregate({
+    where: { routeId: { in: routes.map(r => r.id) } },
+    _sum: { totalCost: true },
+  });
+
+  // Aggregate driver pay
+  const driverPay = await prisma.payrollRecord.aggregate({
+    where: { routeId: { in: routes.map(r => r.id) } },
+    _sum: { basePay: true },
+  });
+
+  const expenses = (fuelCost._sum.totalCost ?? 0) + (driverPay._sum.basePay ?? 0);
+  const profit = revenue - expenses;
+  const margin = revenue > 0 ? (profit / revenue) * 100 : 0;
+
+  return { revenue, expenses, profit, margin, loadCount: routes.length };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Route" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "origin: String (lane start)",
+  "destination: String (lane end)"
+]} />
+
+<PrismaModelRef model="Load" fields={[
+  "id: String @id",
+  "routeId: String",
+  "invoiceId: String?"
+]} />
+
+## Related Features
+
+<FeatureCard slug="profit-predictor" />
+<FeatureCard slug="carrier-reports-revenue" />

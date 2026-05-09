@@ -1,0 +1,51 @@
+---
+slug: workflow-analytics
+title: Workflow Analytics
+summary: Completion metrics, bottleneck detection, and task duration analysis for active workflows to identify process improvements.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Workflow Analytics
+
+<Callout variant="info">
+Workflow Analytics shows how long workflows take to complete, which steps are bottlenecks, and what percentage of workflows are finished vs. abandoned.
+</Callout>
+
+## What this is
+
+A performance measurement tool for your workflows. See completion rates (what % of started checklists are actually finished), average duration per workflow, which steps take the longest, and which steps are most often skipped.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Access workflow analytics">
+    Navigate to **Workflows → Analytics**. The dashboard loads with completion metrics for the last 30 days.
+  </StepFlow.Step>
+  <StepFlow.Step title="Review completion rate">
+    The top card shows completion rate: percentage of workflows that were finished. Industry best practice is 90%+. If you're below that, investigate why workflows are abandoned.
+  </StepFlow.Step>
+  <StepFlow.Step title="Identify bottlenecks">
+    The bottleneck chart shows which steps have the longest average completion time. If "Upload rate confirmation" takes 10+ minutes, consider simplifying that step.
+  </StepFlow.Step>
+  <StepFlow.Step title="Check skip rate">
+    The skip rate table shows which optional steps are skipped most often. If "Verify trailer seal" is skipped 80% of the time, either make it required or remove it.
+  </StepFlow.Step>
+  <StepFlow.Step title="Drill into specific workflows">
+    Click any workflow name to see its individual analytics: completion trend over time, average duration, and step-by-step timing breakdown.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Run workflow analytics monthly. Use the data to refine your checklists—remove unnecessary steps, clarify confusing instructions, and make frequently skipped steps optional.
+</Callout>
+
+Analytics are calculated from all workflow instances, not just completed ones. Abandoned workflows count toward the completion rate to give you a realistic view of adoption.
+
+## Related
+
+<FeatureCard slug="checklists" />

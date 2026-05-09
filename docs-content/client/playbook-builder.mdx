@@ -1,0 +1,55 @@
+---
+slug: playbook-builder
+title: Playbook Builder
+summary: Visual playbook editor with drag-and-drop phases, step templates, and conditional logic for advanced workflow automation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+---
+
+# Playbook Builder
+
+<Callout variant="info">
+Playbook Builder lets you create advanced workflows with conditional branching, manager approval checkpoints, and dynamic step sequences based on user responses.
+</Callout>
+
+## What this is
+
+An advanced workflow editor for complex multi-step processes. Unlike basic checklists, playbooks support conditional logic: show step B only if the answer to step A was "Yes", branch to different phases based on load type, or require manager approval before continuing.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Create a new playbook">
+    Go to **Workflows → Playbooks** and click **New Playbook**. Choose a template or start from scratch.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add phases">
+    Drag phase blocks onto the canvas. Each phase represents a logical grouping of steps (e.g., "Safety Check", "Paperwork", "Final Inspection").
+  </StepFlow.Step>
+  <StepFlow.Step title="Add steps to phases">
+    Click a phase to add steps. Each step can be: Simple checkbox, Photo required, Signature required, Text entry, or Multiple choice.
+  </StepFlow.Step>
+  <StepFlow.Step title="Configure conditional logic">
+    Click the **Conditions** tab on a step. Set rules like "Show this step only if previous step answer = Yes" or "Branch to Phase 3 if load type = Hazmat".
+  </StepFlow.Step>
+  <StepFlow.Step title="Add approval gates">
+    Insert a **Manager Approval** checkpoint. When a driver reaches this step, a notification is sent to the manager. The workflow pauses until approval is granted.
+  </StepFlow.Step>
+  <StepFlow.Step title="Publish the playbook">
+    Click **Publish**. The playbook becomes available for auto-start rules or manual assignment.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Use conditional branching for load acceptance workflows. If a driver reports damage during pre-trip inspection, automatically branch to the incident reporting phase before allowing dispatch.
+</Callout>
+
+Playbooks are versioned. Editing a published playbook creates a new version without affecting active workflow instances running on the old version.
+
+## Related
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="workflow-automation" />

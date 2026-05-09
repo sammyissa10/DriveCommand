@@ -1,0 +1,87 @@
+---
+slug: playbook-builder
+title: Playbook Builder — Technical Reference
+summary: Visual workflow editor with JSON-based conditional logic, tRPC mutations, and phase/step template system.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 13
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Playbook JSON schema validated on save"
+  - "Conditional logic evaluated at runtime"
+  - "Versioning prevents breaking active instances"
+---
+
+# Playbook Builder — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Playbook Builder provides a visual editor for complex workflows with conditional branching.
+
+**Portal:** Owner
+**Route:** `/checklists/playbooks`
+**Plan Tier:** Business+
+
+## tRPC Routers
+
+<ApiTable rows={[
+  { name: "playbook.create", roleGuard: "OWNER | MANAGER", inputSchema: "CreatePlaybookSchema", returnType: "Playbook" },
+  { name: "playbook.update", roleGuard: "OWNER | MANAGER", inputSchema: "UpdatePlaybookSchema", returnType: "Playbook" },
+  { name: "playbook.publish", roleGuard: "OWNER | MANAGER", inputSchema: "{ playbookId }", returnType: "void" }
+]} />
+
+### Playbook JSON Schema
+
+<CodeBlock language="typescript">
+{`interface PlaybookDefinition {
+  phases: Phase[];
+  metadata: {
+    name: string;
+    version: number;
+    createdBy: string;
+  };
+}
+
+interface Phase {
+  id: string;
+  name: string;
+  steps: Step[];
+  conditions?: Condition[];
+}
+
+interface Step {
+  id: string;
+  name: string;
+  type: 'checkbox' | 'photo' | 'signature' | 'text' | 'multiple_choice';
+  required: boolean;
+  instructions: string;
+  conditions?: Condition[];
+}
+
+interface Condition {
+  type: 'show_if' | 'branch_if';
+  field: string; // Reference to previous step ID
+  operator: 'equals' | 'not_equals' | 'contains';
+  value: string;
+  targetPhaseId?: string; // For branch_if
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Checklist" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "name: String",
+  "definition: Json (PlaybookDefinition)",
+  "version: Int",
+  "isPublished: Boolean"
+]} />
+
+## Related Features
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="workflow-automation" />

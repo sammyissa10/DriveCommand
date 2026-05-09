@@ -1,0 +1,51 @@
+---
+slug: ai-document-reader
+title: AI Document Reader
+summary: Anthropic Claude-powered extraction of structured data from rate confirmations, BOLs, and load tenders to eliminate data entry.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# AI Document Reader
+
+<Callout variant="info">
+AI Document Reader uses Anthropic Claude to automatically extract pickup/delivery addresses, rates, commodity details, and reference numbers from uploaded PDFs and images.
+</Callout>
+
+## What this is
+
+An AI-powered data extraction tool. Instead of manually typing load details from a rate confirmation PDF, upload the document. Claude reads it, extracts all structured data (shipper, consignee, rate, BOL number, commodity, weight), and auto-fills the load creation form.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Upload a document">
+    When creating a new load, click **Upload Rate Confirmation** or **Upload BOL**. Select the PDF or image file from your computer.
+  </StepFlow.Step>
+  <StepFlow.Step title="AI processes the document">
+    Claude analyzes the document (usually takes 3-5 seconds). Progress indicator shows "Reading document...".
+  </StepFlow.Step>
+  <StepFlow.Step title="Review extracted data">
+    The load form auto-fills with extracted data: shipper name and address, consignee details, pickup/delivery dates, rate, weight, commodity, BOL/PO numbers.
+  </StepFlow.Step>
+  <StepFlow.Step title="Correct any errors">
+    Review the extracted data. Claude is 95%+ accurate on standard rate confirmations, but always verify addresses and rates before saving.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the load">
+    Click **Create Load**. The original document is attached to the load record for reference.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+AI Document Reader works best with standard rate confirmation formats from major brokers. Custom or handwritten forms may have lower accuracy—always review extracted data before accepting a load.
+</Callout>
+
+Supported formats: PDF, PNG, JPG. Maximum file size: 10MB. Claude can read multi-page documents and extract data from scanned images with OCR.
+
+## Related
+
+<FeatureCard slug="carrier-loads" />

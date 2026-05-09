@@ -1,0 +1,52 @@
+---
+slug: profit-predictor
+title: AI Profit Predictor
+summary: AI-powered load profitability analysis with Accept/Caution/Reject recommendations based on historical lane data and current costs.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# AI Profit Predictor
+
+<Callout variant="info">
+AI Profit Predictor uses machine learning to analyze load offers and recommend whether to accept, proceed with caution, or reject based on historical lane profitability and current market conditions.
+</Callout>
+
+## What this is
+
+An AI-powered decision tool for evaluating load offers before accepting them. Enter the pickup/delivery locations, offered rate, and load details. DriveCommand's AI compares this offer to your historical performance on the same lane, factors in current fuel prices and driver availability, and gives you a clear recommendation: Accept (green), Caution (amber), or Reject (red).
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Open Profit Predictor">
+    Navigate to **Profit Predictor** from the main menu. The input form loads.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter load details">
+    Fill in origin address, destination address, offered rate, weight, and commodity type. Use the address autocomplete for faster entry.
+  </StepFlow.Step>
+  <StepFlow.Step title="Review AI recommendation">
+    The AI analyzes your data and displays a recommendation card. **Accept (green):** Profitable based on historical data. **Caution (amber):** Marginal profit or limited historical data. **Reject (red):** Likely unprofitable.
+  </StepFlow.Step>
+  <StepFlow.Step title="See the breakdown">
+    Below the recommendation, view the detailed cost estimate: fuel cost (OSRM real road miles), estimated driver pay, deadhead miles, and projected profit margin.
+  </StepFlow.Step>
+  <StepFlow.Step title="Accept or pass">
+    Use the recommendation to inform your decision. If you accept the load, click **Create Load** to auto-populate the load creation form with the entered details.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+The AI learns from your data. The more loads you run and track in DriveCommand, the more accurate the predictions become. After 50+ loads, the recommendations are typically 85%+ accurate.
+</Callout>
+
+The AI considers: historical lane margin, current fuel prices (updated daily), driver availability, deadhead miles, and seasonal trends. Recommendations update as market conditions change.
+
+## Related
+
+<FeatureCard slug="lane-analytics" />
+<FeatureCard slug="carrier-loads" />

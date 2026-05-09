@@ -1,0 +1,118 @@
+---
+slug: profit-predictor
+title: AI Profit Predictor — Technical Reference
+summary: Machine learning load profitability prediction using historical lane data, OSRM distance API, and Anthropic Claude analysis.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 12
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Requires ANTHROPIC_API_KEY in environment"
+  - "OSRM distance calculations cached 60s"
+  - "Predictions logged for model improvement"
+---
+
+# AI Profit Predictor — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Profit Predictor uses Claude AI to analyze load offers against historical lane performance.
+
+**Portal:** Owner
+**Route:** `/profit-predictor`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "predictLoadProfit", roleGuard: "OWNER | MANAGER", inputSchema: "PredictLoadSchema", returnType: "ActionState<ProfitPrediction>" }
+]} />
+
+### Prediction Algorithm
+
+<CodeBlock language="typescript">
+{`export async function predictLoadProfit(
+  input: PredictLoadSchema
+): Promise<ActionState<ProfitPrediction>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+
+  // 1. Get real road distance via OSRM
+  const distance = await getOSRMDistance(input.origin, input.destination);
+
+  // 2. Fetch historical lane data
+  const historicalMargin = await getLaneHistoricalMargin(
+    tenantId,
+    input.origin,
+    input.destination
+  );
+
+  // 3. Calculate estimated costs
+  const fuelCost = distance * 0.15; // $0.15/mile avg
+  const driverPay = distance * 0.45; // $0.45/mile avg
+  const totalCost = fuelCost + driverPay;
+
+  // 4. Calculate margin
+  const profit = input.rate - totalCost;
+  const margin = (profit / input.rate) * 100;
+
+  // 5. Use Claude for recommendation
+  const recommendation = await getClaudeRecommendation({
+    margin,
+    historicalMargin,
+    distance,
+    rate: input.rate,
+  });
+
+  return {
+    success: true,
+    data: {
+      recommendation, // 'accept' | 'caution' | 'reject'
+      estimatedProfit: profit,
+      profitMargin: margin,
+      fuelCost,
+      driverPay,
+      distance,
+    },
+  };
+}`}
+</CodeBlock>
+
+### Claude Integration
+
+<CodeBlock language="typescript">
+{`async function getClaudeRecommendation(data: {
+  margin: number;
+  historicalMargin: number | null;
+  distance: number;
+  rate: number;
+}): Promise<'accept' | 'caution' | 'reject'> {
+  const prompt = \`Analyze this load offer:
+- Offered rate: $\${data.rate}
+- Estimated margin: \${data.margin}%
+- Historical margin on this lane: \${data.historicalMargin ?? 'N/A'}%
+- Distance: \${data.distance} miles
+
+Should the carrier accept, proceed with caution, or reject?\`;
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 100,
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  const text = response.content[0].text.toLowerCase();
+
+  if (text.includes('accept')) return 'accept';
+  if (text.includes('reject')) return 'reject';
+  return 'caution';
+}`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="lane-analytics" />
+<FeatureCard slug="carrier-loads" />

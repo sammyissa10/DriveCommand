@@ -1,0 +1,115 @@
+---
+slug: checklists
+title: Checklists & Workflows — Technical Reference
+summary: Checklist CRUD with ActiveChecklist instance management, task completion flow, and step validation logic.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 13
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Templates locked once instances are active"
+  - "Photo uploads stored in Cloudflare R2"
+  - "Signature data stored as base64 PNG in Task model"
+---
+
+# Checklists & Workflows — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Checklists provide template-based workflow management with task tracking.
+
+**Portal:** Owner
+**Route:** `/checklists`
+**Plan Tier:** Pro+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getChecklists", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<Checklist[]>" },
+  { name: "createChecklist", roleGuard: "OWNER | MANAGER", inputSchema: "CreateChecklistSchema", returnType: "ActionState<Checklist>" },
+  { name: "startChecklistInstance", roleGuard: "OWNER | MANAGER", inputSchema: "StartInstanceSchema", returnType: "ActionState<ActiveChecklist>" },
+  { name: "completeTask", roleGuard: "OWNER | MANAGER | DRIVER", inputSchema: "CompleteTaskSchema", returnType: "ActionState<Task>" }
+]} />
+
+### Task Completion Validation
+
+<CodeBlock language="typescript">
+{`export async function completeTask(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<Task>> {
+  const parsed = CompleteTaskSchema.parse({
+    taskId: formData.get('taskId'),
+    stepType: formData.get('stepType'),
+    value: formData.get('value'),
+    photoUrl: formData.get('photoUrl'),
+  });
+
+  const task = await prisma.task.findUnique({
+    where: { id: parsed.taskId },
+    include: { step: true },
+  });
+
+  // Validate based on step type
+  if (task.step.type === 'PHOTO_REQUIRED' && !parsed.photoUrl) {
+    return { success: false, error: 'Photo required' };
+  }
+
+  if (task.step.type === 'TEXT_ENTRY' && parsed.value.length < 10) {
+    return { success: false, error: 'Text must be at least 10 characters' };
+  }
+
+  const updated = await prisma.task.update({
+    where: { id: parsed.taskId },
+    data: {
+      completedAt: new Date(),
+      value: parsed.value,
+      photoUrl: parsed.photoUrl,
+      duration: differenceInSeconds(new Date(), task.createdAt),
+    },
+  });
+
+  return { success: true, data: updated };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="Checklist" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "name: String",
+  "definition: Json (phases + steps)",
+  "isTemplate: Boolean"
+]} />
+
+<PrismaModelRef model="ActiveChecklist" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "checklistId: String",
+  "assigneeId: String",
+  "status: ChecklistStatus",
+  "linkedEntityId: String? (load/driver/truck)",
+  "linkedEntityType: String?"
+]} />
+
+<PrismaModelRef model="Task" fields={[
+  "id: String @id",
+  "activeChecklistId: String",
+  "stepName: String",
+  "stepType: StepType",
+  "required: Boolean",
+  "completedAt: DateTime?",
+  "value: String? (text entry)",
+  "photoUrl: String? (R2 path)",
+  "signature: String? (base64 PNG)"
+]} />
+
+## Related Features
+
+<FeatureCard slug="playbook-builder" />
+<FeatureCard slug="workflow-automation" />
+<FeatureCard slug="driver-tasks" />

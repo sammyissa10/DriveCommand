@@ -1,0 +1,74 @@
+---
+slug: live-map
+title: Live Fleet Map — Technical Reference
+summary: Real-time GPS tracking with Mapbox rendering, status computation from GpsReport table, and 60s polling infrastructure.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "GPS data is tenant-scoped via RLS"
+  - "Status computation based on last report timestamp"
+  - "Mapbox access token required in env"
+---
+
+# Live Fleet Map — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Live Fleet Map renders real-time truck positions using Mapbox GL JS with status indicators computed from GpsReport table.
+
+**Portal:** Owner
+**Route:** `/live-map`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getFleetPositions", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<TruckPosition[]>" }
+]} />
+
+### Status Computation Logic
+
+<CodeBlock language="typescript">
+{`function computeTruckStatus(lastReport: GpsReport): TruckStatus {
+  const now = new Date();
+  const minutesSinceUpdate = differenceInMinutes(now, lastReport.timestamp);
+
+  // Offline: no GPS in 10+ minutes
+  if (minutesSinceUpdate > 10) return 'OFFLINE';
+
+  // Idle: stopped but recent GPS
+  if (lastReport.speed < 5) return 'IDLE';
+
+  // Moving: speed >= 5 mph
+  return 'MOVING';
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="GpsReport" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "truckId: String",
+  "latitude: Decimal",
+  "longitude: Decimal",
+  "speed: Decimal (mph)",
+  "heading: Decimal (degrees)",
+  "timestamp: DateTime"
+]} />
+
+<PrismaModelRef model="Truck" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "truckNumber: String",
+  "currentRouteId: String?"
+]} />
+
+## Related Features
+
+<FeatureCard slug="shipment-tracking" />

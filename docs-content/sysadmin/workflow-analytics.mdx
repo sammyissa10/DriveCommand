@@ -1,0 +1,75 @@
+---
+slug: workflow-analytics
+title: Workflow Analytics — Technical Reference
+summary: Workflow completion metrics aggregating ActiveChecklist and Task data with duration analysis and bottleneck detection.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "Analytics queries use aggregation for performance"
+  - "Duration calculations based on Task.completedAt timestamps"
+  - "Tenant-scoped analytics only"
+---
+
+# Workflow Analytics — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Workflow Analytics provides completion metrics and bottleneck analysis.
+
+**Portal:** Owner
+**Route:** `/checklists/analytics`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getWorkflowMetrics", roleGuard: "OWNER | MANAGER", inputSchema: "DateRangeSchema", returnType: "ActionState<WorkflowMetrics>" },
+  { name: "getBottleneckAnalysis", roleGuard: "OWNER | MANAGER", inputSchema: "{ checklistId: string }", returnType: "ActionState<BottleneckData[]>" }
+]} />
+
+### Completion Rate Calculation
+
+<CodeBlock language="typescript">
+{`async function calculateCompletionRate(
+  tenantId: string,
+  dateRange: DateRange
+): Promise<number> {
+  const instances = await prisma.activeChecklist.findMany({
+    where: {
+      tenantId,
+      createdAt: { gte: dateRange.start, lte: dateRange.end },
+    },
+  });
+
+  const completed = instances.filter(i => i.status === 'COMPLETED').length;
+  return instances.length > 0 ? (completed / instances.length) * 100 : 0;
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="ActiveChecklist" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "checklistId: String",
+  "status: ChecklistStatus (IN_PROGRESS | COMPLETED | ABANDONED)",
+  "startedAt: DateTime",
+  "completedAt: DateTime?"
+]} />
+
+<PrismaModelRef model="Task" fields={[
+  "id: String @id",
+  "activeChecklistId: String",
+  "stepName: String",
+  "completedAt: DateTime?",
+  "duration: Int? (seconds)"
+]} />
+
+## Related Features
+
+<FeatureCard slug="checklists" />

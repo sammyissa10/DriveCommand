@@ -1,0 +1,51 @@
+---
+slug: live-map
+title: Live Fleet Map
+summary: Real-time GPS tracking with truck status indicators, route polylines, and auto-refresh for complete fleet visibility.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Live Fleet Map
+
+<Callout variant="info">
+Live Fleet Map shows real-time GPS positions of all your trucks with status-colored markers, route polylines, and automatic updates every 60 seconds.
+</Callout>
+
+## What this is
+
+A real-time map view of your entire fleet. Each truck appears as a marker with color-coded status: green for moving, amber for idle, gray for offline. See which trucks are on the road, where they are right now, and what route they're following.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Open the live map">
+    Navigate to **Live Map** from the main menu. The map loads centered on your fleet's current location.
+  </StepFlow.Step>
+  <StepFlow.Step title="View truck positions">
+    Each truck shows as a circular marker. Green = moving, Amber = idle (stopped but engine on), Gray = offline (no GPS data in 10+ minutes).
+  </StepFlow.Step>
+  <StepFlow.Step title="Click a truck marker">
+    Tap any marker to open the truck detail card showing driver name, current load, last update time, speed, and heading.
+  </StepFlow.Step>
+  <StepFlow.Step title="View route polylines">
+    If the truck is on an active route, the planned route appears as a blue polyline. The truck's actual GPS trail shows as a green line.
+  </StepFlow.Step>
+  <StepFlow.Step title="Use filters">
+    Filter by truck status (moving/idle/offline) or by load status (empty/loaded) to focus on specific segments of your fleet.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Keep the live map open during busy dispatch hours. A truck that's been idle for more than 30 minutes may indicate a driver taking an unscheduled break or a delivery delay—call to check in.
+</Callout>
+
+The map auto-refreshes every 60 seconds. GPS positions are typically updated every 30 seconds while trucks are moving, every 5 minutes while idle, and every 10 minutes while off-duty.
+
+## Related
+
+<FeatureCard slug="shipment-tracking" />

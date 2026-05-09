@@ -1,0 +1,52 @@
+---
+slug: workflow-automation
+title: Workflow Automation
+summary: Trigger-based automation rules to auto-start workflows on load dispatch, driver invite, and truck creation events.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Workflow Automation
+
+<Callout variant="info">
+Workflow Automation lets you create rules that automatically start checklists or playbooks when specific events occur, like dispatching a load or inviting a new driver.
+</Callout>
+
+## What this is
+
+An event-driven automation system for workflows. Instead of manually starting a checklist every time you dispatch a load, create an automation rule: "When Load Dispatched → Start Pre-Trip Inspection Checklist for assigned driver". The system handles the rest.
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How to use it
+
+<StepFlow>
+  <StepFlow.Step title="Create an automation rule">
+    Go to **Workflows → Automation** and click **New Rule**. Choose the trigger event (Load Dispatched, Driver Invited, or Truck Created).
+  </StepFlow.Step>
+  <StepFlow.Step title="Select the workflow">
+    Pick which checklist or playbook should start when the trigger fires. For example, select "Driver Onboarding Checklist" for the "Driver Invited" trigger.
+  </StepFlow.Step>
+  <StepFlow.Step title="Configure assignment">
+    Specify who should be assigned the workflow. For load dispatch triggers, assign to the driver. For truck creation, assign to the fleet manager.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add conditions (optional)">
+    Set optional filters: "Only trigger if load value > $5,000" or "Only for drivers with less than 6 months experience".
+  </StepFlow.Step>
+  <StepFlow.Step title="Activate the rule">
+    Toggle the rule to **Active**. From now on, every time the trigger event occurs (and conditions are met), the workflow starts automatically.
+  </StepFlow.Step>
+</StepFlow>
+
+## Good to know
+
+<Callout variant="tip" title="Pro Tip">
+Start with 2-3 automation rules for your most common workflows. Too many rules can create workflow fatigue—drivers get overwhelmed with checklists. Focus on high-value processes like pre-trip inspections and load acceptance.
+</Callout>
+
+Automation rules can be paused without deleting them. If you're not dispatching loads for a week, pause the "Load Dispatched" rule to avoid starting empty workflows.
+
+## Related
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="playbook-builder" />

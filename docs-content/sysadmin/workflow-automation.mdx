@@ -1,0 +1,89 @@
+---
+slug: workflow-automation
+title: Workflow Automation — Technical Reference
+summary: Event-driven automation rules with trigger handlers for load dispatch, driver invite, and truck creation events.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "AutoStartRule evaluated synchronously on trigger events"
+  - "Conditional filters validated before execution"
+  - "Failed rule executions logged for debugging"
+---
+
+# Workflow Automation — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+Workflow Automation provides event-driven workflow triggers.
+
+**Portal:** Owner
+**Route:** `/checklists/automation`
+**Plan Tier:** Business+
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAutomationRules", roleGuard: "OWNER | MANAGER", inputSchema: "void", returnType: "ActionState<AutoStartRule[]>" },
+  { name: "createAutomationRule", roleGuard: "OWNER | MANAGER", inputSchema: "CreateRuleSchema", returnType: "ActionState<AutoStartRule>" },
+  { name: "toggleRule", roleGuard: "OWNER | MANAGER", inputSchema: "{ ruleId: string }", returnType: "ActionState<void>" }
+]} />
+
+### Trigger Handler
+
+<CodeBlock language="typescript">
+{`// Called when a load is dispatched
+export async function onLoadDispatched(load: Load) {
+  const rules = await prisma.autoStartRule.findMany({
+    where: {
+      tenantId: load.tenantId,
+      triggerEvent: 'LOAD_DISPATCHED',
+      isActive: true,
+    },
+  });
+
+  for (const rule of rules) {
+    // Evaluate conditions
+    if (rule.conditions && !evaluateConditions(rule.conditions, load)) {
+      continue;
+    }
+
+    // Start the workflow
+    await prisma.activeChecklist.create({
+      data: {
+        tenantId: load.tenantId,
+        checklistId: rule.checklistId,
+        assigneeId: load.driverId,
+        linkedEntityId: load.id,
+        linkedEntityType: 'LOAD',
+      },
+    });
+
+    // Send notification to driver
+    await sendPushToUser(load.driverId, {
+      title: 'New Checklist',
+      body: \`Complete "\${rule.checklist.name}" before starting this load\`,
+    });
+  }
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="AutoStartRule" fields={[
+  "id: String @id",
+  "tenantId: String",
+  "triggerEvent: TriggerEvent (LOAD_DISPATCHED | DRIVER_INVITED | TRUCK_CREATED)",
+  "checklistId: String (FK to Checklist)",
+  "conditions: Json? (optional filter conditions)",
+  "isActive: Boolean"
+]} />
+
+## Related Features
+
+<FeatureCard slug="checklists" />
+<FeatureCard slug="playbook-builder" />
