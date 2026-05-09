@@ -1,0 +1,172 @@
+---
+slug: payroll
+title: Payroll Management
+summary: Manage driver payroll with base pay, bonuses, deductions, miles logged, and PDF payslip generation for accurate and timely driver compensation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Payroll Management
+
+<Callout variant="info">
+DriveCommand payroll helps you track driver compensation with base pay, performance bonuses, deductions, and miles logged. Generate PDF payslips and export payroll data for accounting systems.
+</Callout>
+
+## Overview
+
+Use payroll to:
+
+- **Track driver earnings** — base pay, bonuses, commissions, and per-mile rates
+- **Manage deductions** — insurance, advances, equipment fees
+- **Calculate net pay** — gross pay minus deductions
+- **Generate payslips** — professional PDF payslips for driver records
+- **Export for accounting** — CSV export for QuickBooks or other systems
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## Create a payroll record
+
+<StepFlow>
+  <StepFlow.Step title="Open Payroll">
+    Navigate to **Finance → Payroll** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Payroll Record">
+    The payroll creation form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select driver and pay period">
+    Choose the driver and enter the pay period start and end dates (e.g., weekly, bi-weekly, or monthly).
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter base pay">
+    Enter the base pay amount. This can be:
+    - **Fixed salary** — flat amount per pay period
+    - **Hourly rate** — hours worked × hourly rate
+    - **Per-mile rate** — miles logged × rate per mile (auto-calculated from driver's routes)
+  </StepFlow.Step>
+  <StepFlow.Step title="Add bonuses">
+    Add performance bonuses or commissions:
+    - Safety bonus
+    - On-time delivery bonus
+    - Referral bonus
+    - Percentage of load revenue
+  </StepFlow.Step>
+  <StepFlow.Step title="Add deductions">
+    Enter deductions:
+    - Health insurance
+    - Fuel advances
+    - Equipment lease fees
+    - Other deductions
+  </StepFlow.Step>
+  <StepFlow.Step title="Review and save">
+    Verify gross pay, total deductions, and net pay. Click **Save Payroll Record**.
+  </StepFlow.Step>
+</StepFlow>
+
+## Pay period management
+
+DriveCommand supports flexible pay periods:
+
+- **Weekly** — Sunday to Saturday
+- **Bi-weekly** — every two weeks
+- **Semi-monthly** — 1st-15th and 16th-end of month
+- **Monthly** — full calendar month
+
+Set the pay period start and end dates when creating a payroll record. The system auto-calculates miles logged during that period from the driver's completed loads.
+
+## Miles logged auto-calculation
+
+When you create a payroll record for a driver, DriveCommand automatically calculates miles logged:
+
+1. Finds all loads completed by the driver during the pay period
+2. Sums the loaded miles from each load
+3. Populates the **Miles Logged** field
+4. If pay is per-mile, calculates base pay: `miles × rate per mile`
+
+You can override the auto-calculated miles if needed (e.g., for manual adjustments or deadhead miles).
+
+## Bonuses and deductions
+
+Add multiple bonuses and deductions to each payroll record:
+
+**Bonuses:**
+- Safety bonus (e.g., $100 for zero incidents in pay period)
+- On-time delivery bonus
+- Fuel efficiency bonus (based on MPG targets)
+- Referral bonus (for bringing new drivers)
+- Percentage of load revenue (commission-based pay)
+
+**Deductions:**
+- Health insurance premiums
+- Fuel or cash advances issued during the period
+- Equipment lease or rental fees
+- Uniform or safety gear purchases
+- Other deductions (garnishments, etc.)
+
+Each bonus or deduction has a description field for payslip clarity.
+
+## Net pay calculation
+
+Net pay is calculated automatically:
+
+```
+Gross Pay = Base Pay + Total Bonuses
+Net Pay = Gross Pay - Total Deductions
+```
+
+The payroll detail page shows the full breakdown with line-by-line amounts.
+
+## Generate PDF payslip
+
+Click **Download Payslip** on any payroll record to generate a PDF with:
+
+- Driver name and address
+- Pay period dates
+- Base pay (with rate and hours or miles)
+- Itemized bonuses
+- Itemized deductions
+- Gross pay, total deductions, and net pay
+- Company name and contact info
+
+Drivers can use payslips for loan applications or tax records.
+
+## Driver pay report
+
+View payroll totals and trends on the Driver Pay Report:
+
+<FeatureCard slug="carrier-reports-driver-pay" />
+
+Analyze payroll costs by driver, pay period, or pay type (salary vs. per-mile vs. commission).
+
+## Export for accounting
+
+Export payroll data to CSV for integration with QuickBooks, ADP, or other accounting systems:
+
+1. Go to **Finance → Payroll**
+2. Filter by date range or driver
+3. Click **Export to CSV**
+4. Import the CSV into your accounting software
+
+CSV includes: driver name, pay period, base pay, bonuses, deductions, gross pay, net pay.
+
+<Callout variant="tip" title="Pro Tip">
+Set up recurring payroll records for salaried drivers to save time. Create a template with standard bonuses and deductions, then duplicate it each pay period.
+</Callout>
+
+## Related features
+
+<FeatureCard slug="carrier-reports-driver-pay" />
+<FeatureCard slug="drivers" />
+<FeatureCard slug="carrier-loads" />
+
+## Frequently asked questions
+
+**Can drivers view their payroll records?**
+
+Not yet. Driver payroll visibility is planned for a future mobile app release. For now, email PDF payslips to drivers.
+
+**Does DriveCommand calculate payroll taxes?**
+
+No. DriveCommand tracks gross and net pay but does not calculate federal, state, or local taxes. Consult your accountant or use a payroll service like ADP or Gusto for tax compliance.
+
+**Can I backdate payroll records?**
+
+Yes. You can create payroll records for any historical pay period. Enter the pay period dates when creating the record.

@@ -1,0 +1,167 @@
+---
+slug: compliance-dashboard
+title: Compliance Dashboard
+summary: Track document expiry for trucks and drivers with automated email reminders, compliance scores, and proactive alerts to avoid violations.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Compliance Dashboard
+
+<Callout variant="info">
+The Compliance Dashboard centralizes all document expiry tracking for your fleet. Monitor driver licenses, medical cards, truck registrations, and insurance policies with automated reminders to avoid compliance violations.
+</Callout>
+
+## Overview
+
+Use the Compliance Dashboard to:
+
+- **Track expiry dates** — monitor all driver and truck documents in one place
+- **Get proactive alerts** — email reminders 30, 14, and 7 days before expiration
+- **View compliance scores** — see which drivers and trucks are fully compliant
+- **Prevent violations** — avoid fines and out-of-service orders with timely renewals
+- **Generate compliance reports** — export expiry reports for DOT audits
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Document categories
+
+DriveCommand tracks expiry for these document types:
+
+**Driver documents:**
+- Commercial Driver's License (CDL)
+- Medical Examiner's Certificate (DOT Medical Card)
+- Hazmat Endorsement
+- Drug & Alcohol Testing Records
+- Driver Qualification File (DQ File)
+
+**Truck documents:**
+- Vehicle Registration
+- Annual Inspection (DOT Inspection)
+- Insurance Certificate
+- IFTA License
+- IRP Registration
+- Permits (oversize, hazmat, state-specific)
+
+Upload documents on driver or truck detail pages. Each document has an expiry date field.
+
+## Compliance score calculation
+
+Each driver and truck has a compliance score from 0-100%:
+
+```
+Compliance Score = (Valid Documents ÷ Total Required Documents) × 100
+```
+
+**Valid documents:** Not expired and not expiring within 30 days
+
+**Required documents:** CDL, Medical Card, Vehicle Registration, Annual Inspection, Insurance
+
+**Score interpretation:**
+- **100%** — All required documents valid (green badge)
+- **80-99%** — One document expiring soon (amber badge)
+- **0-79%** — One or more documents expired or missing (red badge)
+
+Drivers and trucks with red or amber badges appear in the Compliance Dashboard alerts.
+
+## Compliance Dashboard overview
+
+The Compliance Dashboard shows:
+
+- **Fleet compliance score** — percentage of fleet that is 100% compliant
+- **Expiring soon** — list of documents expiring within 30 days
+- **Expired documents** — list of documents already past expiration
+- **Drivers at risk** — drivers with compliance scores below 100%
+- **Trucks at risk** — trucks with compliance scores below 100%
+
+Click any driver or truck to view their full document list and upload missing or renewed documents.
+
+## Automated email reminders
+
+DriveCommand sends automated email reminders for expiring documents:
+
+- **30 days before expiry** — first reminder
+- **14 days before expiry** — second reminder
+- **7 days before expiry** — final warning
+- **On expiry date** — document expired alert
+
+**Who receives reminders:**
+- **Driver documents** — email sent to the driver
+- **Truck documents** — email sent to fleet owner or compliance manager
+- **All critical expirations** — email sent to fleet owner
+
+Reminders include the document type, expiry date, and a link to upload the renewed document.
+
+<Callout variant="tip" title="Pro Tip">
+Set document expiry dates 1-2 weeks before the actual expiration to give yourself a buffer for renewal processing time. This helps avoid last-minute renewals.
+</Callout>
+
+## Upload or renew documents
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to driver or truck detail">
+    Find the driver or truck needing a document update.
+  </StepFlow.Step>
+  <StepFlow.Step title="Scroll to Documents section">
+    View the current document list with expiry dates.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Upload Document or Replace">
+    Choose the document type and upload the renewed document (PDF, JPG, PNG).
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter new expiry date">
+    Set the expiry date for the renewed document.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save">
+    The old document is archived, the new document is active, and the compliance score updates immediately.
+  </StepFlow.Step>
+</StepFlow>
+
+Drivers can upload their own documents from the mobile app:
+
+<FeatureCard slug="driver-documents" />
+
+## Compliance status on driver and truck lists
+
+The driver and truck list pages show compliance status dots:
+
+- **Green dot** — all documents valid (100% compliance)
+- **Amber dot** — one or more documents expiring within 30 days
+- **Red dot** — one or more documents expired or missing
+
+Click the dot to see which documents need attention.
+
+## Export compliance report
+
+Generate a compliance report for DOT audits:
+
+1. Go to **Compliance Dashboard**
+2. Click **Export Compliance Report**
+3. Select date range (e.g., last quarter)
+4. Download PDF or CSV
+
+The report includes:
+- All drivers and trucks
+- Compliance scores
+- Document expiry dates
+- Documents expiring soon or expired
+- Upload history (when documents were last renewed)
+
+## Related features
+
+<FeatureCard slug="driver-documents" />
+<FeatureCard slug="trucks" />
+<FeatureCard slug="drivers" />
+
+## Frequently asked questions
+
+**What happens if a driver's CDL expires?**
+
+The driver's compliance score drops to red, and they are flagged on the Compliance Dashboard. You'll receive an email alert. The driver should not be dispatched until the CDL is renewed.
+
+**Can I customize which documents are tracked?**
+
+Not yet. Custom document categories are planned for a future release. For now, use the "Other Permits" category for non-standard documents.
+
+**How far in advance should I set expiry reminder emails?**
+
+The 30-day, 14-day, and 7-day reminders are system defaults. If you need more lead time for renewals (e.g., medical cards that require scheduling appointments), manually set the expiry date earlier than the actual expiration.

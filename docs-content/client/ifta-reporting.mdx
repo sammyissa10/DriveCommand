@@ -1,0 +1,184 @@
+---
+slug: ifta-reporting
+title: IFTA Reporting
+summary: Generate quarterly IFTA reports with GPS-based state mileage allocation and fuel purchase tracking for accurate fuel tax compliance.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# IFTA Reporting
+
+<Callout variant="info">
+IFTA (International Fuel Tax Agreement) reporting is automated with DriveCommand. GPS data calculates state-by-state mileage, fuel logs allocate fuel purchases by jurisdiction, and quarterly reports are generated with one click.
+</Callout>
+
+## Overview
+
+IFTA reporting in DriveCommand:
+
+- **GPS-based mileage allocation** — automatically calculate miles driven in each state using GPS tracking data
+- **Fuel purchase tracking** — log fuel fill-ups by state to allocate gallons purchased
+- **Quarterly reports** — generate IFTA-compliant reports for submission to your base jurisdiction
+- **Export to PDF or CSV** — download reports for filing or accountant review
+- **Multi-truck support** — separate reports for each truck or combined fleet report
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## How IFTA reporting works
+
+IFTA requires trucking companies to report:
+
+1. **Total miles driven per state** — how many miles your trucks drove in each jurisdiction
+2. **Total fuel purchased per state** — how many gallons you bought in each jurisdiction
+3. **Tax-paid gallons** — gallons purchased with fuel tax already included (most states)
+4. **Net tax owed or credit** — the difference between fuel tax owed (based on miles) and fuel tax paid (based on purchases)
+
+DriveCommand automates steps 1 and 2 using GPS tracking and fuel logs.
+
+## GPS-based mileage allocation
+
+DriveCommand uses GPS reports from your trucks to calculate mileage per state:
+
+1. GPS pings are recorded every 30 seconds while trucks are moving (via mobile app or ELD integration)
+2. The system uses reverse geocoding to determine which state each GPS point is in
+3. Distance between consecutive GPS points is calculated
+4. Mileage is summed per state for the quarter
+
+**Accuracy:** GPS-based mileage is typically accurate within 1-2% of actual odometer miles. The system filters out stationary GPS pings (e.g., parked trucks) to avoid false mileage.
+
+<Callout variant="warning" title="Important">
+GPS tracking must be enabled for accurate IFTA reporting. Ensure drivers have the mobile app installed and GPS permissions enabled, or connect an ELD integration.
+</Callout>
+
+<FeatureCard slug="live-map" />
+
+## Fuel purchase tracking
+
+Log fuel fill-ups with purchase location (city and state):
+
+<FeatureCard slug="fuel-dashboard" />
+
+When you log a fuel fill-up, DriveCommand:
+
+1. Records the gallons purchased
+2. Records the state where fuel was purchased (from the location field)
+3. Allocates fuel taxes paid based on that state's tax rate
+4. Includes the entry in the quarterly IFTA report
+
+**Important:** Always enter the correct state for each fuel fill-up. Incorrect locations will cause inaccurate tax allocation.
+
+## Generate a quarterly IFTA report
+
+<StepFlow>
+  <StepFlow.Step title="Open IFTA Reporting">
+    Navigate to **Compliance → IFTA** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select quarter and year">
+    Choose the IFTA quarter (Q1, Q2, Q3, or Q4) and the year.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select trucks">
+    Choose which trucks to include in the report. You can generate:
+    - **Individual truck reports** — separate report per truck
+    - **Fleet report** — combined report for all trucks
+  </StepFlow.Step>
+  <StepFlow.Step title="Review summary">
+    The report preview shows:
+    - Total miles driven per state
+    - Total fuel purchased per state
+    - Estimated tax owed or credit per state
+    - Net tax owed or credit for the quarter
+  </StepFlow.Step>
+  <StepFlow.Step title="Download or export">
+    Click **Download PDF** for a printable report or **Export CSV** for spreadsheet import.
+  </StepFlow.Step>
+</StepFlow>
+
+## IFTA report structure
+
+The generated report includes:
+
+**Header:**
+- Company name, IFTA account number, and base jurisdiction
+- Quarter and year
+- Truck details (VIN, license plate, unit number)
+
+**State-by-state breakdown:**
+- State abbreviation (e.g., CA, TX, OH)
+- Total miles driven in state
+- Total gallons purchased in state
+- Fuel tax rate for state (from IFTA tax tables)
+- Tax-paid gallons
+- Net gallons (miles-based consumption minus purchased gallons)
+- Tax owed or credit
+
+**Summary:**
+- Total miles driven (all states)
+- Total gallons purchased (all states)
+- Net tax owed or credit (sum across all states)
+
+## Filing the report
+
+DriveCommand generates IFTA-compliant reports but does not file them directly with your base jurisdiction. To file:
+
+1. Download the PDF or CSV report from DriveCommand
+2. Review for accuracy (verify mileage and fuel totals match your records)
+3. Submit to your base jurisdiction via their filing portal (most states support electronic filing)
+4. Pay any net tax owed or claim credit
+
+**Filing deadlines:** IFTA reports are due by the last day of the month following the end of the quarter:
+- Q1 (Jan-Mar) — due April 30
+- Q2 (Apr-Jun) — due July 31
+- Q3 (Jul-Sep) — due October 31
+- Q4 (Oct-Dec) — due January 31
+
+## Integrations with ELD providers
+
+If you use an ELD system (Samsara, Motive/KeepTruckin), you can connect it to DriveCommand to auto-import GPS data:
+
+<FeatureCard slug="integrations" />
+
+ELD integration ensures GPS data is continuously synced, even if drivers don't use the DriveCommand mobile app.
+
+<Callout variant="tip" title="Pro Tip">
+Run an IFTA report mid-quarter to verify GPS and fuel data is being tracked correctly. This gives you time to fix issues before the filing deadline.
+</Callout>
+
+## Troubleshooting
+
+**Issue: Missing mileage for a state**
+
+**Cause:** GPS tracking was disabled or the driver's phone lost signal.
+
+**Fix:** Manually add mileage from driver logs or ELD reports. Edit the IFTA report before exporting.
+
+**Issue: Fuel purchases not appearing**
+
+**Cause:** Fuel logs were not entered or the purchase state was entered incorrectly.
+
+**Fix:** Go to Fuel Dashboard and verify all fill-ups for the quarter are logged with correct states.
+
+**Issue: Total miles don't match odometer**
+
+**Cause:** GPS-based mileage calculation includes deadhead and loaded miles. Odometer may include personal use or off-duty driving.
+
+**Fix:** Filter GPS data by on-duty time only (requires HOS integration). Adjust mileage manually if needed.
+
+## Related features
+
+<FeatureCard slug="fuel-dashboard" />
+<FeatureCard slug="live-map" />
+<FeatureCard slug="integrations" />
+
+## Frequently asked questions
+
+**Do I need GPS tracking for IFTA reporting?**
+
+Yes. IFTA requires state-by-state mileage, which is calculated from GPS data. Without GPS tracking, you'll need to manually enter mileage per state.
+
+**Can I edit mileage or fuel data after generating a report?**
+
+Yes. Edit fuel logs or manually adjust mileage in the IFTA report before exporting. Changes are saved to the report draft but do not affect historical GPS or fuel data.
+
+**Does DriveCommand calculate tax rates for each state?**
+
+Yes. DriveCommand uses the latest IFTA tax rate tables (updated quarterly) to calculate tax owed or credit per state. Rates are built into the system.

@@ -1,0 +1,162 @@
+---
+slug: invoices
+title: Invoicing
+summary: Create trucking-standard invoices with freight details, fuel surcharge calculation, typed line items, and professional PDF generation for customer billing.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Invoicing
+
+<Callout variant="info">
+DriveCommand invoicing is built for trucking companies with industry-standard freight fields, fuel surcharge auto-calculation, and typed line items. Generate professional PDF invoices for customers and track payment status.
+</Callout>
+
+## Overview
+
+Use invoicing to:
+
+- **Create professional invoices** — trucking-standard layout with BOL, PRO, PO numbers, commodity details, and weight
+- **Calculate fuel surcharges** — FSC auto-calculates as a percentage of linehaul charges
+- **Track payments** — mark invoices as sent, paid, or overdue with payment date tracking
+- **Generate PDFs** — download or email professional PDF invoices to customers
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create an invoice
+
+<StepFlow>
+  <StepFlow.Step title="Open Invoices">
+    Navigate to **Finance → Invoices** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Invoice">
+    The invoice creation form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select customer and load">
+    Choose the customer from your CRM and optionally link a load. Load details auto-populate freight fields.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter freight details">
+    Expand the **Freight Details** section and enter:
+    - **BOL Number** — Bill of Lading number
+    - **PRO Number** — Progressive number
+    - **PO Number** — Purchase Order number
+    - **Commodity** — cargo type (e.g., "Electronics", "Produce")
+    - **Weight** — total weight in pounds
+    - **Pieces** — number of pieces or pallets
+    - **Loaded Miles** — actual miles driven with cargo
+  </StepFlow.Step>
+  <StepFlow.Step title="Add line items">
+    Add invoice line items using quick-add buttons or manually:
+    - **Linehaul** — base freight charge (per mile or flat rate)
+    - **Fuel Surcharge (FSC)** — auto-calculates as percentage of linehaul
+    - **Detention** — hourly waiting charges
+    - **Stop-Off** — additional stop fees
+    - **Lumper** — loading/unloading fees
+    - **Accessorial** — other accessorial charges
+  </StepFlow.Step>
+  <StepFlow.Step title="Review and save">
+    Verify totals, set invoice date and due date, then click **Save Invoice**.
+  </StepFlow.Step>
+</StepFlow>
+
+## Line item types
+
+Different line item types serve different billing purposes:
+
+<ComparisonTable
+  headers={["Line Item Type", "Use Case", "Calculation Unit"]}
+  rows={[
+    ["Linehaul", "Base freight transportation charge", "Per Mile, Flat Rate, Per Hundredweight"],
+    ["Fuel Surcharge (FSC)", "Fuel cost recovery (% of linehaul)", "Percent"],
+    ["Detention", "Waiting time at pickup/delivery", "Per Hour"],
+    ["Stop-Off", "Additional stops beyond origin/destination", "Per Stop"],
+    ["Lumper", "Loading/unloading labor fees", "Flat Rate"],
+    ["Accessorial", "Other services (tarps, hazmat, etc.)", "Flat Rate"]
+  ]}
+/>
+
+<Callout variant="tip" title="Pro Tip">
+Use the quick-add buttons for Linehaul and FSC to automatically populate standard line items. FSC will auto-calculate as a percentage of your linehaul total.
+</Callout>
+
+## Fuel surcharge (FSC) calculation
+
+Fuel surcharge auto-calculates based on linehaul charges:
+
+1. Add a **Linehaul** line item with total amount
+2. Click **Add FSC** quick-add button
+3. Enter FSC percentage (e.g., 25%)
+4. FSC amount auto-calculates: `linehaul total × (FSC% / 100)`
+5. Helper text shows calculation (e.g., "25% of $1,200.00 linehaul = $300.00")
+
+The FSC line item updates automatically if you change the linehaul amount.
+
+## Invoice status workflow
+
+<ProcessDiagram steps={[
+  { label: "Draft", description: "Invoice created but not sent" },
+  { label: "Sent", description: "Invoice emailed or delivered to customer" },
+  { label: "Paid", description: "Payment received and recorded" }
+]} />
+
+Mark invoices as **Sent** when delivered to the customer. Mark as **Paid** when payment is received and enter the payment date for accounting records.
+
+## Generate PDF invoice
+
+Click **Download PDF** on any invoice detail page to generate a professional trucking invoice with:
+
+- Company logo and billing address
+- Customer name and address
+- Invoice number, date, and due date
+- Freight details (BOL/PRO/PO, commodity, weight, pieces, miles)
+- Itemized line items with quantities, rates, and totals
+- Subtotal, tax (if applicable), and total amount due
+- Payment terms and instructions
+
+Email the PDF directly to customers or save for your records.
+
+## Payment tracking
+
+Track invoice payments:
+
+1. Open the invoice detail page
+2. Click **Mark as Paid**
+3. Enter the payment date
+4. Optionally add payment notes (check number, wire transfer reference)
+5. Invoice status updates to **Paid**
+
+The invoice list shows payment status with color-coded badges:
+- **Draft** — gray
+- **Sent** — amber
+- **Paid** — green
+- **Overdue** — red (sent invoices past due date)
+
+## Revenue reporting
+
+View invoice totals and revenue trends on the Revenue Report:
+
+<FeatureCard slug="carrier-reports-revenue" />
+
+Filter by customer, date range, or load to analyze profitability by lane or customer.
+
+## Related features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="crm" />
+<FeatureCard slug="carrier-reports-revenue" />
+
+## Frequently asked questions
+
+**Can I edit an invoice after marking it as paid?**
+
+Yes. You can edit any invoice field at any time. If you edit a paid invoice, the payment status remains "Paid" unless you explicitly change it.
+
+**Does DriveCommand support factoring integrations?**
+
+Not yet. Factoring integration is planned for a future release. For now, export invoice PDFs and upload to your factoring portal.
+
+**Can I customize the invoice PDF template?**
+
+Not yet. Custom invoice templates with your logo and branding are planned for the Business plan.
+
+<FeatureCard slug="integrations" />

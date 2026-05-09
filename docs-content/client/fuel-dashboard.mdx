@@ -1,0 +1,136 @@
+---
+slug: fuel-dashboard
+title: Fuel Economy Tracking
+summary: Log fuel fill-ups, track MPG trends, analyze cost-per-mile, and monitor truck-level fuel efficiency to reduce operational costs.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Fuel Economy Tracking
+
+<Callout variant="info">
+Track fuel fill-ups for each truck to monitor miles per gallon (MPG), identify inefficient vehicles, and analyze fuel costs per mile. Improve fleet efficiency with data-driven insights.
+</Callout>
+
+## Overview
+
+Use fuel tracking to:
+
+- **Log fill-ups** — record gallons, price, odometer reading, and location for every fuel stop
+- **Track MPG trends** — see fuel economy over time for each truck
+- **Identify inefficient trucks** — compare MPG across your fleet to find underperformers
+- **Calculate cost-per-mile** — understand fuel costs for accurate load pricing
+- **Support IFTA reporting** — fuel logs feed into quarterly IFTA reports
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Log a fuel fill-up
+
+<StepFlow>
+  <StepFlow.Step title="Open Fuel Dashboard">
+    Navigate to **Finance → Fuel** in the sidebar, or open a truck detail page and scroll to the **Fuel Log** section.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Add Fuel Entry">
+    The fuel log form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select truck">
+    Choose the truck that was fueled.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter fill-up details">
+    Enter:
+    - **Gallons** — total fuel purchased
+    - **Price per gallon** — fuel price at the pump
+    - **Total cost** — auto-calculates as `gallons × price per gallon`
+    - **Odometer reading** — current odometer in miles
+    - **Location** — city and state where fuel was purchased
+    - **Date and time** — when the fill-up occurred
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the entry">
+    Click **Save**. The system auto-calculates MPG for this fill-up based on odometer change since the last entry.
+  </StepFlow.Step>
+</StepFlow>
+
+## MPG calculation
+
+DriveCommand automatically calculates MPG for each fill-up:
+
+1. Finds the previous fuel log entry for the same truck
+2. Calculates miles driven: `current odometer - previous odometer`
+3. Calculates MPG: `miles driven ÷ gallons purchased`
+4. Displays MPG on the fuel log entry
+
+The first fill-up for a truck has no MPG value (no prior odometer reading for comparison). All subsequent fill-ups show calculated MPG.
+
+<Callout variant="tip" title="Pro Tip">
+Fill up at consistent intervals (e.g., every time the tank is below 25%) to get accurate MPG trends. Partial fill-ups can skew MPG calculations.
+</Callout>
+
+## Fuel dashboard overview
+
+The Fuel Dashboard shows fleet-wide fuel metrics:
+
+- **Fleet average MPG** — average fuel economy across all trucks
+- **Total fuel spend (current month)** — sum of all fuel costs
+- **Cost per mile** — average fuel cost per mile driven
+- **Top performers** — trucks with highest MPG
+- **Underperformers** — trucks with lowest MPG (potential maintenance issues)
+
+Click any truck to view its detailed fuel log and MPG trend chart.
+
+## Truck-level fuel tracking
+
+Each truck detail page includes a **Fuel Log** section with:
+
+- **Recent fill-ups** — last 10 fuel entries with date, gallons, cost, and MPG
+- **MPG trend chart** — line chart showing MPG over time (last 30 days, 90 days, or 1 year)
+- **Average MPG** — truck's average fuel economy over selected period
+- **Total fuel spend** — sum of fuel costs for selected period
+
+Use this data to identify trucks needing maintenance (dropping MPG) or to validate driver fuel efficiency.
+
+## Cost-per-mile analysis
+
+Fuel cost per mile helps you price loads accurately:
+
+```
+Cost per mile = Total fuel cost ÷ Total miles driven
+```
+
+The Fuel Dashboard calculates cost-per-mile for:
+- **Entire fleet** — average across all trucks
+- **Individual trucks** — specific truck cost-per-mile
+- **Date ranges** — weekly, monthly, quarterly
+
+Use cost-per-mile when calculating load profitability with the AI Profit Predictor:
+
+<FeatureCard slug="profit-predictor" />
+
+## IFTA reporting integration
+
+Fuel logs automatically feed into IFTA quarterly reports:
+
+<FeatureCard slug="ifta-reporting" />
+
+Each fuel entry includes the purchase location (city and state), which is used to allocate fuel taxes by jurisdiction. Accurate fuel logs ensure accurate IFTA filings.
+
+## Related features
+
+<FeatureCard slug="ifta-reporting" />
+<FeatureCard slug="profit-predictor" />
+<FeatureCard slug="carrier-reports-performance" />
+
+## Frequently asked questions
+
+**Can drivers log fuel fill-ups from the mobile app?**
+
+Yes. Drivers can log fuel fill-ups from the DriveCommand mobile app. The mobile fuel log form includes the same fields as the web version.
+
+**What if I forget to log a fill-up?**
+
+You can backdate fuel entries. Enter the correct date and odometer reading when creating the entry. MPG will be calculated based on the chronological order of entries, not the order they were created.
+
+**Can I import fuel data from a fuel card provider?**
+
+Not yet. Fuel card integration (Comdata, EFS, etc.) is planned for a future release. For now, manually enter fuel logs or import CSV files.
+
+<FeatureCard slug="integrations" />
