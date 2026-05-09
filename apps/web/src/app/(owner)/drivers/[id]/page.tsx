@@ -205,6 +205,24 @@ export default async function DriverDetailPage({ params }: DriverDetailPageProps
         )}
       </div>
 
+      {/* Compensation */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold text-card-foreground mb-1">Compensation</h2>
+            <p className="text-sm text-muted-foreground">
+              Set how this driver is paid (CPM, hourly, flat, percentage, etc.).
+            </p>
+          </div>
+          <Link
+            href={`/drivers/${id}/compensation`}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors shrink-0"
+          >
+            Manage compensation
+          </Link>
+        </div>
+      </div>
+
       {/* Audit Trail */}
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-card-foreground mb-4">Record History</h2>
