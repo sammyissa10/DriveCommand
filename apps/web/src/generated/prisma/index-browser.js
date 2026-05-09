@@ -768,6 +768,7 @@ exports.Prisma.CarrierContractScalarFieldEnum = {
   autoRenew: 'autoRenew',
   status: 'status',
   notes: 'notes',
+  defaultFreeTimeMinutes: 'defaultFreeTimeMinutes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -943,6 +944,9 @@ exports.Prisma.CarrierLoadScalarFieldEnum = {
   specialInstructions: 'specialInstructions',
   notes: 'notes',
   pendingStopsJson: 'pendingStopsJson',
+  totalMiles: 'totalMiles',
+  loadedMiles: 'loadedMiles',
+  mileageSource: 'mileageSource',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -973,6 +977,8 @@ exports.Prisma.CarrierStopScalarFieldEnum = {
   contactPhone: 'contactPhone',
   specialInstructions: 'specialInstructions',
   notes: 'notes',
+  freeTimeMinutes: 'freeTimeMinutes',
+  workState: 'workState',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -1332,6 +1338,213 @@ exports.Prisma.TenantHealthScoreScalarFieldEnum = {
   computedAt: 'computedAt'
 };
 
+exports.Prisma.DriverCompensationTemplateScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  employmentType: 'employmentType',
+  payType: 'payType',
+  baseRate: 'baseRate',
+  rateUnit: 'rateUnit',
+  loadedMilesOnly: 'loadedMilesOnly',
+  fuelSurchargeRate: 'fuelSurchargeRate',
+  perDiemEnabled: 'perDiemEnabled',
+  perDiemRate: 'perDiemRate',
+  overtimeEligible: 'overtimeEligible',
+  overtimeThresholdHours: 'overtimeThresholdHours',
+  overtimeMultiplier: 'overtimeMultiplier',
+  dailyOvertimeThreshold: 'dailyOvertimeThreshold',
+  weeklyEarningGoal: 'weeklyEarningGoal',
+  currency: 'currency',
+  effectiveFrom: 'effectiveFrom',
+  effectiveTo: 'effectiveTo',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.LoadDriverAssignmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  loadId: 'loadId',
+  driverId: 'driverId',
+  driverRole: 'driverRole',
+  templateId: 'templateId',
+  payType: 'payType',
+  baseRate: 'baseRate',
+  rateUnit: 'rateUnit',
+  loadedMilesOnly: 'loadedMilesOnly',
+  fuelSurchargeRate: 'fuelSurchargeRate',
+  splitPercentage: 'splitPercentage',
+  perDiemEnabled: 'perDiemEnabled',
+  perDiemRate: 'perDiemRate',
+  overrideReason: 'overrideReason',
+  estimatedMiles: 'estimatedMiles',
+  actualMiles: 'actualMiles',
+  mileageSource: 'mileageSource',
+  mileageSourceReference: 'mileageSourceReference',
+  estimatedHours: 'estimatedHours',
+  actualHours: 'actualHours',
+  loadRevenue: 'loadRevenue',
+  payStatus: 'payStatus',
+  settlementId: 'settlementId',
+  approvedBy: 'approvedBy',
+  approvedAt: 'approvedAt',
+  paidAt: 'paidAt',
+  currency: 'currency',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.LoadPayComponentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  assignmentId: 'assignmentId',
+  loadId: 'loadId',
+  driverId: 'driverId',
+  stopId: 'stopId',
+  componentType: 'componentType',
+  category: 'category',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  rate: 'rate',
+  multiplier: 'multiplier',
+  grossAmount: 'grossAmount',
+  isTaxable: 'isTaxable',
+  isReimbursement: 'isReimbursement',
+  originalComponentId: 'originalComponentId',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  enteredBy: 'enteredBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverBonusScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  bonusType: 'bonusType',
+  amount: 'amount',
+  description: 'description',
+  triggerDate: 'triggerDate',
+  scheduledPayDate: 'scheduledPayDate',
+  paidAt: 'paidAt',
+  installmentNumber: 'installmentNumber',
+  totalInstallments: 'totalInstallments',
+  parentBonusId: 'parentBonusId',
+  referredDriverId: 'referredDriverId',
+  settlementId: 'settlementId',
+  isTaxable: 'isTaxable',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverDeductionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  deductionType: 'deductionType',
+  schedule: 'schedule',
+  amountPerPeriod: 'amountPerPeriod',
+  totalAmount: 'totalAmount',
+  amountCollected: 'amountCollected',
+  maxPercentageOfNet: 'maxPercentageOfNet',
+  startsOn: 'startsOn',
+  endsOn: 'endsOn',
+  paused: 'paused',
+  visibleToDriver: 'visibleToDriver',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverSettlementScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  status: 'status',
+  grossTaxable: 'grossTaxable',
+  grossNonTaxable: 'grossNonTaxable',
+  totalDeductions: 'totalDeductions',
+  netPay: 'netPay',
+  finalizedBy: 'finalizedBy',
+  finalizedAt: 'finalizedAt',
+  paidAt: 'paidAt',
+  settlementReference: 'settlementReference',
+  pdfUrl: 'pdfUrl',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.PayComponentAttachmentScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  componentId: 'componentId',
+  assignmentId: 'assignmentId',
+  storageKey: 'storageKey',
+  filename: 'filename',
+  contentType: 'contentType',
+  sizeBytes: 'sizeBytes',
+  uploadedBy: 'uploadedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverDisputeScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  driverId: 'driverId',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  issueCategory: 'issueCategory',
+  driverMessage: 'driverMessage',
+  status: 'status',
+  assignedTo: 'assignedTo',
+  resolutionMessage: 'resolutionMessage',
+  resolvedAt: 'resolvedAt',
+  linkedCorrectionId: 'linkedCorrectionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  deletedAt: 'deletedAt'
+};
+
+exports.Prisma.DriverPayAuditLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  action: 'action',
+  previousValue: 'previousValue',
+  newValue: 'newValue',
+  actorId: 'actorId',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1603,6 +1816,14 @@ exports.IncidentSeverity = exports.$Enums.IncidentSeverity = {
   HIGH: 'HIGH'
 };
 
+exports.MileageSource = exports.$Enums.MileageSource = {
+  PCMILER: 'PCMILER',
+  GOOGLE: 'GOOGLE',
+  ELD: 'ELD',
+  MANUAL: 'MANUAL',
+  RAND_MCNALLY: 'RAND_MCNALLY'
+};
+
 exports.InAppNotificationType = exports.$Enums.InAppNotificationType = {
   dispatch_assigned: 'dispatch_assigned',
   load_delivered: 'load_delivered',
@@ -1731,6 +1952,151 @@ exports.AutomationRunStatus = exports.$Enums.AutomationRunStatus = {
   SENT: 'SENT'
 };
 
+exports.EmploymentType = exports.$Enums.EmploymentType = {
+  W2_EMPLOYEE: 'W2_EMPLOYEE',
+  OWNER_OPERATOR_1099: 'OWNER_OPERATOR_1099',
+  LEASE_OPERATOR: 'LEASE_OPERATOR'
+};
+
+exports.DriverPayType = exports.$Enums.DriverPayType = {
+  CPM: 'CPM',
+  HOURLY: 'HOURLY',
+  FLAT_PER_LOAD: 'FLAT_PER_LOAD',
+  PERCENTAGE: 'PERCENTAGE',
+  DAILY: 'DAILY',
+  SALARY: 'SALARY'
+};
+
+exports.RateUnit = exports.$Enums.RateUnit = {
+  PER_MILE: 'PER_MILE',
+  PER_HOUR: 'PER_HOUR',
+  PER_LOAD: 'PER_LOAD',
+  PERCENTAGE: 'PERCENTAGE',
+  PER_DAY: 'PER_DAY',
+  ANNUAL: 'ANNUAL'
+};
+
+exports.DriverRole = exports.$Enums.DriverRole = {
+  MAIN_DRIVER: 'MAIN_DRIVER',
+  CO_DRIVER: 'CO_DRIVER'
+};
+
+exports.DriverAssignmentStatus = exports.$Enums.DriverAssignmentStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  PAID: 'PAID',
+  DISPUTED: 'DISPUTED',
+  CORRECTED: 'CORRECTED'
+};
+
+exports.PayComponentType = exports.$Enums.PayComponentType = {
+  BASE_PAY_MILEAGE: 'BASE_PAY_MILEAGE',
+  BASE_PAY_HOURLY: 'BASE_PAY_HOURLY',
+  BASE_PAY_FLAT: 'BASE_PAY_FLAT',
+  BASE_PAY_PERCENTAGE: 'BASE_PAY_PERCENTAGE',
+  BASE_PAY_DAILY: 'BASE_PAY_DAILY',
+  FUEL_SURCHARGE: 'FUEL_SURCHARGE',
+  OVERTIME: 'OVERTIME',
+  HAZMAT_PREMIUM: 'HAZMAT_PREMIUM',
+  HOLIDAY_PREMIUM: 'HOLIDAY_PREMIUM',
+  LOAD_COMPLETION_BONUS: 'LOAD_COMPLETION_BONUS',
+  FUEL_EFFICIENCY_BONUS: 'FUEL_EFFICIENCY_BONUS',
+  DETENTION: 'DETENTION',
+  LAYOVER: 'LAYOVER',
+  TONU: 'TONU',
+  STOP_OFF: 'STOP_OFF',
+  TARP: 'TARP',
+  BREAKDOWN: 'BREAKDOWN',
+  PER_DIEM: 'PER_DIEM',
+  LUMPER_REIMBURSEMENT: 'LUMPER_REIMBURSEMENT',
+  SCALE_REIMBURSEMENT: 'SCALE_REIMBURSEMENT',
+  FUEL_REIMBURSEMENT: 'FUEL_REIMBURSEMENT',
+  ADVANCE_REPAYMENT: 'ADVANCE_REPAYMENT',
+  ESCROW_CONTRIBUTION: 'ESCROW_CONTRIBUTION',
+  FUEL_CARD_DEBT: 'FUEL_CARD_DEBT',
+  CARGO_CLAIM: 'CARGO_CLAIM',
+  EQUIPMENT_DAMAGE: 'EQUIPMENT_DAMAGE',
+  GARNISHMENT: 'GARNISHMENT',
+  CHILD_SUPPORT: 'CHILD_SUPPORT',
+  ADJUSTMENT_POSITIVE: 'ADJUSTMENT_POSITIVE',
+  ADJUSTMENT_NEGATIVE: 'ADJUSTMENT_NEGATIVE'
+};
+
+exports.PayComponentCategory = exports.$Enums.PayComponentCategory = {
+  EARNING: 'EARNING',
+  BONUS: 'BONUS',
+  ACCESSORIAL: 'ACCESSORIAL',
+  ALLOWANCE: 'ALLOWANCE',
+  REIMBURSEMENT: 'REIMBURSEMENT',
+  DEDUCTION: 'DEDUCTION',
+  ADJUSTMENT: 'ADJUSTMENT'
+};
+
+exports.PayComponentUnit = exports.$Enums.PayComponentUnit = {
+  MILES: 'MILES',
+  HOURS: 'HOURS',
+  STOPS: 'STOPS',
+  DAYS: 'DAYS',
+  FLAT: 'FLAT',
+  PERCENTAGE: 'PERCENTAGE'
+};
+
+exports.BonusType = exports.$Enums.BonusType = {
+  SIGN_ON: 'SIGN_ON',
+  RETENTION: 'RETENTION',
+  SAFETY: 'SAFETY',
+  FUEL_EFFICIENCY: 'FUEL_EFFICIENCY',
+  REFERRAL: 'REFERRAL',
+  PERFORMANCE: 'PERFORMANCE',
+  OTHER: 'OTHER'
+};
+
+exports.DeductionType = exports.$Enums.DeductionType = {
+  ADVANCE: 'ADVANCE',
+  ESCROW: 'ESCROW',
+  GARNISHMENT: 'GARNISHMENT',
+  CHILD_SUPPORT: 'CHILD_SUPPORT',
+  EQUIPMENT_LEASE: 'EQUIPMENT_LEASE',
+  INSURANCE: 'INSURANCE',
+  OTHER: 'OTHER'
+};
+
+exports.DeductionSchedule = exports.$Enums.DeductionSchedule = {
+  ONE_TIME: 'ONE_TIME',
+  EVERY_SETTLEMENT: 'EVERY_SETTLEMENT',
+  FIXED_INSTALLMENTS: 'FIXED_INSTALLMENTS'
+};
+
+exports.DriverSettlementStatus = exports.$Enums.DriverSettlementStatus = {
+  DRAFT: 'DRAFT',
+  FINALIZED: 'FINALIZED',
+  PAID: 'PAID',
+  VOIDED: 'VOIDED'
+};
+
+exports.DisputeTargetType = exports.$Enums.DisputeTargetType = {
+  LOAD_PAY: 'LOAD_PAY',
+  SETTLEMENT: 'SETTLEMENT',
+  COMPONENT: 'COMPONENT'
+};
+
+exports.DisputeIssueCategory = exports.$Enums.DisputeIssueCategory = {
+  WRONG_AMOUNT: 'WRONG_AMOUNT',
+  MISSING_PAY: 'MISSING_PAY',
+  WRONG_MILES: 'WRONG_MILES',
+  MISSING_RECEIPT: 'MISSING_RECEIPT',
+  OTHER: 'OTHER'
+};
+
+exports.DisputeStatus = exports.$Enums.DisputeStatus = {
+  OPEN: 'OPEN',
+  IN_REVIEW: 'IN_REVIEW',
+  RESOLVED_PAID: 'RESOLVED_PAID',
+  RESOLVED_NO_CHANGE: 'RESOLVED_NO_CHANGE',
+  CLOSED: 'CLOSED'
+};
+
 exports.Prisma.ModelName = {
   Tenant: 'Tenant',
   User: 'User',
@@ -1801,7 +2167,16 @@ exports.Prisma.ModelName = {
   AutomationRun: 'AutomationRun',
   AppEvent: 'AppEvent',
   TenantMetricsDaily: 'TenantMetricsDaily',
-  TenantHealthScore: 'TenantHealthScore'
+  TenantHealthScore: 'TenantHealthScore',
+  DriverCompensationTemplate: 'DriverCompensationTemplate',
+  LoadDriverAssignment: 'LoadDriverAssignment',
+  LoadPayComponent: 'LoadPayComponent',
+  DriverBonus: 'DriverBonus',
+  DriverDeduction: 'DriverDeduction',
+  DriverSettlement: 'DriverSettlement',
+  PayComponentAttachment: 'PayComponentAttachment',
+  DriverDispute: 'DriverDispute',
+  DriverPayAuditLog: 'DriverPayAuditLog'
 };
 
 /**
