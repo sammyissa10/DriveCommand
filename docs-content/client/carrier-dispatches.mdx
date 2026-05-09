@@ -1,0 +1,107 @@
+---
+slug: carrier-dispatches
+title: Dispatch Board
+summary: Ready-to-dispatch workflow with drag-and-drop assignment, driver availability, and truck status for efficient load dispatching.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Dispatch Board
+
+<Callout variant="info">
+The Dispatch Board provides a centralized view of all ready-to-dispatch loads with real-time driver availability and truck status. Streamline your dispatch operations by quickly matching loads with available drivers and trucks.
+</Callout>
+
+## Overview
+
+The Dispatch Board shows loads that are ready for assignment but not yet dispatched. Use it to:
+
+- View all loads pending dispatch in one place
+- Check driver availability and current status
+- Match loads to trucks based on status and location
+- Assign loads to routes with a single click
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create a dispatch
+
+<StepFlow>
+  <StepFlow.Step title="Open the Dispatch Board">
+    Navigate to **Carrier Ops → Dispatches** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select a ready-to-dispatch load">
+    Loads in PENDING status appear in the ready-to-dispatch list. Click on a load to view details.
+  </StepFlow.Step>
+  <StepFlow.Step title="Choose a driver">
+    Review driver availability status:
+    - **Available** — driver is ready for assignment
+    - **On Route** — driver is currently assigned
+    - **Off Duty** — driver is not available
+  </StepFlow.Step>
+  <StepFlow.Step title="Select a truck">
+    Truck status badges indicate readiness:
+    - **Ready to Use** — all documents current, no maintenance alerts
+    - **In Use** — truck assigned to another route
+    - **In Maintenance** — truck unavailable
+    - **Expired Docs** — requires document renewal before dispatch
+  </StepFlow.Step>
+  <StepFlow.Step title="Dispatch the load">
+    Click **Dispatch** to create the route and notify the driver. The load status automatically advances to DISPATCHED.
+  </StepFlow.Step>
+</StepFlow>
+
+## Dispatch workflow
+
+<ProcessDiagram steps={[
+  { label: "Load Created", description: "Load is created in PENDING status" },
+  { label: "Ready to Dispatch", description: "Load appears on dispatch board" },
+  { label: "Driver/Truck Assigned", description: "Dispatcher selects driver and truck" },
+  { label: "Dispatched", description: "Route created, driver notified via push notification" }
+]} />
+
+## Filtering and search
+
+Use filters to narrow the dispatch board view:
+
+- **By customer** — show loads from specific shippers or brokers
+- **By pickup date** — prioritize loads by scheduled pickup time
+- **By destination** — group loads going to similar areas for route optimization
+
+<Callout variant="tip" title="Pro Tip">
+Sort loads by pickup date to ensure time-sensitive shipments are dispatched first. Loads with pickup dates in the past are highlighted in red.
+</Callout>
+
+## Driver availability indicators
+
+Driver cards show real-time status:
+
+- **Green dot** — Available for dispatch
+- **Yellow dot** — On route but approaching completion
+- **Red dot** — Unavailable (on route, off duty, or HOS limit reached)
+
+Click a driver card to view:
+- Current route and load assignments
+- Hours of Service remaining
+- Last GPS location (if enabled)
+- Compliance document status
+
+## Related features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="carrier-fleet-drivers" />
+<FeatureCard slug="carrier-fleet-trucks" />
+
+## Frequently asked questions
+
+**Can I dispatch multiple loads to one driver?**
+
+Yes. If loads share similar pickup/delivery locations, you can assign them to the same route by adding multiple loads after the initial dispatch.
+
+**What happens if I dispatch a load to a driver with expiring HOS?**
+
+The system will show a warning if the driver's remaining HOS hours are insufficient for the estimated route duration. You can override the warning or choose a different driver.
+
+**How do I un-dispatch a load?**
+
+From the load detail page, click **Actions → Revert Status** to move the load back to PENDING. This removes the route assignment and frees up the driver.

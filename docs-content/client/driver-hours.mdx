@@ -1,0 +1,147 @@
+---
+slug: driver-hours
+title: Hours of Service
+summary: HOS logging with 14h/11h duty clock math, status grid, day bar, and countdown timers to help drivers stay compliant with FMCSA regulations.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Hours of Service
+
+<Callout variant="info">
+Hours of Service (HOS) logging helps drivers track their duty status and remaining hours under FMCSA regulations. The system automatically calculates 14-hour and 11-hour limits and warns drivers when they're approaching HOS violations.
+</Callout>
+
+## Overview
+
+Drivers use the HOS screen to:
+
+- Log duty status changes (On Duty, Driving, Sleeper Berth, Off Duty)
+- View remaining hours in the current 14-hour window
+- See remaining drive time (11-hour limit)
+- Review the current day's status timeline
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## FMCSA limits
+
+DriveCommand enforces two key FMCSA rules:
+
+1. **14-hour on-duty limit** — drivers cannot drive after 14 hours of on-duty time, even if they have drive time remaining
+2. **11-hour driving limit** — drivers can drive for a maximum of 11 hours within the 14-hour window
+
+The HOS screen shows countdown timers for both limits.
+
+<Callout variant="warning" title="Compliance Notice">
+Drivers must take a minimum 10-hour break before starting a new 14-hour duty period. Attempting to go On Duty before the 10-hour break completes will trigger a violation warning.
+</Callout>
+
+## Log a status change
+
+<StepFlow>
+  <StepFlow.Step title="Open the HOS screen">
+    Tap **Hours** in the driver dashboard or bottom navigation (mobile app).
+  </StepFlow.Step>
+  <StepFlow.Step title="Select your new status">
+    The status grid shows four options:
+    - **Off Duty** — not working, not driving
+    - **Sleeper Berth** — rest period in sleeper berth (counts toward 10-hour break)
+    - **On Duty (Not Driving)** — working but not behind the wheel (pre-trip, loading, fueling)
+    - **Driving** — actively driving
+  </StepFlow.Step>
+  <StepFlow.Step title="Confirm the change">
+    Tap the status card. A confirmation modal appears showing:
+    - Old status → New status
+    - Timestamp of the change
+    - Remaining hours after this change
+  </StepFlow.Step>
+  <StepFlow.Step title="Submit">
+    Tap **Confirm**. The status change is logged immediately and cannot be edited.
+  </StepFlow.Step>
+</StepFlow>
+
+## Status workflow
+
+Drivers typically follow this pattern during a workday:
+
+<ProcessDiagram steps={[
+  { label: "Off Duty", description: "10-hour break complete, ready to start shift" },
+  { label: "On Duty (Not Driving)", description: "Pre-trip inspection, loading" },
+  { label: "Driving", description: "Actively driving to pickup or delivery" },
+  { label: "On Duty (Not Driving)", description: "Unloading, fueling, post-trip" },
+  { label: "Off Duty / Sleeper Berth", description: "Rest period begins" }
+]} />
+
+## HOS screen layout
+
+The HOS screen shows:
+
+### Status grid (2x2)
+
+Four tappable cards with current status highlighted in green. Tap any card to change status.
+
+### Day bar
+
+Visual timeline showing the current day's status changes with color-coded segments:
+- **Green** — Off Duty or Sleeper Berth
+- **Yellow** — On Duty (Not Driving)
+- **Red** — Driving
+
+### Countdown clocks
+
+Two circular timers:
+- **14-hour clock** — hours remaining in the on-duty window (turns red at < 1 hour)
+- **11-hour clock** — hours remaining for driving (turns red at < 30 minutes)
+
+### Violation warnings
+
+If a driver attempts to exceed limits, a red banner appears:
+
+- **HOS violation imminent** — less than 30 minutes remaining
+- **HOS violation** — limit reached, cannot continue driving
+- **Break required** — 10-hour break not completed
+
+<Callout variant="danger" title="Critical: HOS Violations">
+Driving after HOS limits are reached is a federal violation and can result in fines, out-of-service orders, and CSA points. Ensure drivers complete their 10-hour breaks before starting new duty periods.
+</Callout>
+
+## ELD integration
+
+If your fleet uses an integrated ELD (Samsara, Motive/KeepTruckin), HOS data syncs automatically:
+
+- Status changes from the ELD appear in DriveCommand
+- Status changes logged in DriveCommand push to the ELD
+
+To enable ELD integration, navigate to **Settings → Integrations** and connect your ELD provider.
+
+<FeatureCard slug="integrations" />
+
+## Manager view
+
+Fleet managers can view driver HOS compliance from the **Carrier Dashboard**:
+
+- **HOS alerts** — drivers approaching violations
+- **Driver detail page** — HOS history and current status
+- **Compliance dashboard** — HOS violation counts
+
+<FeatureCard slug="compliance-dashboard" />
+
+## Related features
+
+<FeatureCard slug="driver-dashboard" />
+<FeatureCard slug="integrations" />
+<FeatureCard slug="compliance-dashboard" />
+
+## Frequently asked questions
+
+**Can I edit a past HOS entry?**
+
+No. HOS entries are immutable once logged to maintain compliance records. If you need to correct an error, contact support.
+
+**What happens if I forget to log a status change?**
+
+Your last logged status remains active until you log a new one. If you forgot to go Off Duty at the end of your shift, your on-duty hours will continue accruing. Log the correct status as soon as you remember.
+
+**Does the system automatically change my status to Driving when the truck moves?**
+
+Not yet. GPS-based auto-status is planned for a future release. Currently, drivers must manually log all status changes.

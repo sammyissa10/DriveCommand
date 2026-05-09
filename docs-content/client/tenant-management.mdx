@@ -1,0 +1,116 @@
+---
+slug: tenant-management
+title: Tenant Management
+summary: Multi-tenant administration with creation, status controls, and owner invitation flow for managing DriveCommand fleet accounts.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Tenant Management
+
+<Callout variant="info">
+Tenant Management is the SysAdmin interface for managing all fleet accounts on the DriveCommand platform. Create new tenants, activate or suspend accounts, and manage owner invitations.
+</Callout>
+
+## Overview
+
+From the Tenant Management screen, SysAdmins can:
+
+- View all tenant accounts with status indicators
+- Create new tenant accounts
+- Activate, suspend, or reactivate tenants
+- Manage owner user accounts
+- View subscription plans and billing info
+
+<PlanBadge tier="enterprise" /> This feature is SysAdmin-only.
+
+<Callout variant="warning" title="SysAdmin Access Required">
+This feature requires SYSADMIN role and is only accessible via `/sysadmin/tenants` after admin login with `ADMIN_SECRET_KEY`.
+</Callout>
+
+## Tenant statuses
+
+Tenants have one of three statuses:
+
+<ComparisonTable
+  headers={["Status", "Meaning", "User Impact"]}
+  rows={[
+    ["Pending", "Tenant created but owner hasn't completed setup", "Owner cannot log in until invitation accepted"],
+    ["Active", "Tenant is operational and users can log in", "Full platform access"],
+    ["Suspended", "Tenant access temporarily disabled", "All users locked out, data retained"]
+  ]}
+/>
+
+## Create a new tenant
+
+<StepFlow>
+  <StepFlow.Step title="Open Tenant Management">
+    Navigate to **Tenants** in the SysAdmin sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Tenant">
+    The Create Tenant form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter tenant details">
+    Required fields:
+    - **Company Name** — the fleet operator's business name
+    - **Owner Email** — email address for the primary account owner
+    - **Owner Name** — full name of the account owner
+    - **Subscription Plan** — select from configured plans (Free, Starter, Pro, Business, Enterprise)
+  </StepFlow.Step>
+  <StepFlow.Step title="Submit">
+    Click **Create Tenant**. The system:
+    1. Creates the tenant record in the database
+    2. Generates a unique tenantId
+    3. Sends an invitation email to the owner
+    4. Sets tenant status to PENDING
+  </StepFlow.Step>
+</StepFlow>
+
+The owner receives an email with a link to set their password and complete account setup. Once they accept the invitation, the tenant status changes to ACTIVE.
+
+## Suspend a tenant
+
+If a tenant violates terms of service or has payment issues:
+
+1. Open the tenant detail page
+2. Click **Actions → Suspend Account**
+3. Add a suspension reason (shown to the tenant on login)
+4. Click **Confirm**
+
+Suspended tenants:
+- Cannot log in (all users see "Account suspended" message)
+- Retain all data (trucks, drivers, loads, routes)
+- Can be reactivated by SysAdmins
+
+<Callout variant="danger" title="Critical Action">
+Suspending a tenant immediately locks out all users and stops all API access. Use this action only for serious violations or non-payment.
+</Callout>
+
+## Reactivate a suspended tenant
+
+1. Open the suspended tenant's detail page
+2. Click **Actions → Reactivate Account**
+3. Clear the suspension reason
+4. Click **Confirm**
+
+The tenant status changes to ACTIVE and users can log in immediately.
+
+## Related features
+
+<FeatureCard slug="admin-billing" />
+<FeatureCard slug="admin-plans" />
+<FeatureCard slug="admin-support" />
+
+## Frequently asked questions
+
+**Can I delete a tenant permanently?**
+
+No. Tenants cannot be permanently deleted due to audit and compliance requirements. Suspend the account instead.
+
+**What happens to data when a tenant is suspended?**
+
+All data is retained. Trucks, drivers, loads, and routes remain in the database. When the tenant is reactivated, all data is immediately accessible again.
+
+**Can I change a tenant's subscription plan?**
+
+Yes. From the tenant detail page, click **Edit**, change the Subscription Plan dropdown, and save. Plan changes take effect immediately.

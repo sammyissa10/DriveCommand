@@ -1,0 +1,169 @@
+---
+slug: checklists
+title: Checklists & Workflows
+summary: Create and manage checklists and workflows for onboarding, inspections, and operational procedures to ensure consistency across your fleet.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+---
+
+# Checklists & Workflows
+
+<Callout variant="info">
+Checklists & Workflows help you standardize operational procedures with repeatable checklists. Create workflows for driver onboarding, pre-trip inspections, load acceptance, and any recurring process that requires consistent execution.
+</Callout>
+
+## Overview
+
+Use checklists to:
+
+- **Standardize processes** — ensure every driver follows the same steps for inspections, onboarding, or load verification
+- **Track completion** — see which steps are done, pending, or skipped
+- **Automate workflows** — trigger checklists automatically when loads are dispatched or drivers are invited
+- **Analyze bottlenecks** — identify which steps take longest or are most often skipped
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create a checklist
+
+<StepFlow>
+  <StepFlow.Step title="Open Checklists">
+    Navigate to **Workflows → Checklists & Workflows** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Checklist">
+    The checklist builder opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Name your checklist">
+    Choose a descriptive name like "Driver Onboarding" or "Pre-Trip Inspection".
+  </StepFlow.Step>
+  <StepFlow.Step title="Add phases">
+    Organize your checklist into phases (logical groupings of steps):
+    - Click **Add Phase**
+    - Name the phase (e.g., "Paperwork", "Vehicle Check", "Safety Review")
+    - Add a description (optional)
+  </StepFlow.Step>
+  <StepFlow.Step title="Add steps to each phase">
+    Click **Add Step** within a phase. For each step, configure:
+    - **Step name** (e.g., "Verify driver's license")
+    - **Instructions** — detailed guidance for the person completing the step
+    - **Type** — Simple (checkbox), Photo Required, Signature Required, or Text Entry
+    - **Required** — whether the step must be completed to finish the checklist
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the checklist">
+    Click **Save as Template**. The checklist is now available to run manually or auto-start via automation rules.
+  </StepFlow.Step>
+</StepFlow>
+
+## Step types
+
+Different step types capture different evidence:
+
+<ComparisonTable
+  headers={["Step Type", "Use Case", "Completion Requirement"]}
+  rows={[
+    ["Simple", "Basic confirmation task", "Check the checkbox"],
+    ["Photo Required", "Visual inspection or damage documentation", "Upload at least one photo"],
+    ["Signature Required", "Acknowledgment or approval", "Draw signature on touchscreen or trackpad"],
+    ["Text Entry", "Notes, readings, or observations", "Enter text (minimum 10 characters)"]
+  ]}
+/>
+
+<Callout variant="tip" title="Pro Tip">
+Use Photo Required steps for pre-trip inspections to create a visual record of truck condition before each route. This helps resolve damage disputes and insurance claims.
+</Callout>
+
+## Run a checklist
+
+Once a checklist template exists, you can run it:
+
+### Manual start
+
+1. Go to **Checklists → Instances**
+2. Click **Start New**
+3. Select the checklist template
+4. Choose the assignee (driver or manager)
+5. Optionally link to a load, route, truck, or driver
+6. Click **Start**
+
+The assignee receives a notification and can complete the checklist from their dashboard or mobile app.
+
+### Auto-start with automation rules
+
+Link checklists to trigger events:
+
+- **On load dispatch** — automatically start a "Load Acceptance Checklist" when a load is assigned to a driver
+- **On driver invite** — start a "Driver Onboarding Checklist" when a new driver accepts their invitation
+- **On truck creation** — start a "New Truck Setup Checklist" when a truck is added to the fleet
+
+See <FeatureCard slug="workflow-automation" /> for automation rule setup.
+
+## Track completion
+
+The **Instances** tab shows all running and completed checklists:
+
+- **In Progress** — checklist started but not finished
+- **Completed** — all required steps done
+- **Incomplete** — checklist expired or skipped
+
+Click an instance to view:
+- Which steps are complete
+- Who completed each step and when
+- Photos, signatures, or text entries captured
+- Time spent on each step
+
+## Analyze workflows
+
+The **Analytics** tab shows completion metrics:
+
+- **Completion rate** — percentage of checklists finished vs abandoned
+- **Average duration** — how long checklists take to complete
+- **Bottleneck steps** — which steps have the longest completion time
+- **Skip rate** — which optional steps are most often skipped
+
+Use this data to refine your checklists and remove unnecessary steps.
+
+<FeatureCard slug="workflow-analytics" />
+
+## Playbook builder
+
+For advanced workflows with conditional logic and branching, use the Playbook Builder:
+
+<FeatureCard slug="playbook-builder" />
+
+Playbooks allow you to:
+- Show or hide steps based on previous answers
+- Branch to different phases based on conditions
+- Require manager approval at specific checkpoints
+
+## Driver experience
+
+When a checklist is assigned to a driver, they see it in:
+
+- **Driver Dashboard** — active checklists appear as cards with progress bars
+- **Driver Tasks** screen (mobile) — full list of pending tasks
+- **Push notifications** — reminder if a checklist is overdue
+
+Drivers complete steps directly in the mobile app. Photos are captured with the device camera. Signatures use the touchscreen.
+
+<FeatureCard slug="driver-tasks" />
+
+## Related features
+
+<FeatureCard slug="workflow-automation" />
+<FeatureCard slug="playbook-builder" />
+<FeatureCard slug="workflow-analytics" />
+
+## Frequently asked questions
+
+**Can I edit a checklist after it's been started?**
+
+No. Once a checklist instance is running, the template is locked. If you need to change the steps, create a new version of the template and start new instances from the updated version.
+
+**What happens if a driver skips a required step?**
+
+The checklist cannot be marked complete until all required steps are finished. Optional steps can be skipped.
+
+**Can I assign a checklist to multiple drivers at once?**
+
+Not yet. Checklist instances are 1:1 with assignees. For broadcast tasks, use fleet messaging instead.
+
+<FeatureCard slug="carrier-messages" />
