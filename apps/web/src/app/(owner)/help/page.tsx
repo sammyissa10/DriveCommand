@@ -1,28 +1,41 @@
 import Link from 'next/link';
-import { getAllFeatures, getFeaturesByCategory } from '@/lib/docs/get-features';
+import { getAllFeatures } from '@/lib/docs/get-features';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Sparkles, FileText, Clock } from 'lucide-react';
+import {
+  BookOpen,
+  Sparkles,
+  Clock,
+  Rocket,
+  Truck,
+  Users,
+  ListChecks,
+  DollarSign,
+  Shield,
+  Brain,
+  MessageSquare,
+  Settings,
+  LifeBuoy,
+} from 'lucide-react';
+import ia from '../../../../../../docs-content/_ia.json';
 
-const categoryMeta: Record<string, { label: string; icon: React.ReactNode }> = {
-  dispatch: { label: 'Dispatch', icon: <FileText className="h-5 w-5" /> },
-  fleet: { label: 'Fleet', icon: <FileText className="h-5 w-5" /> },
-  finance: { label: 'Finance', icon: <FileText className="h-5 w-5" /> },
-  crm: { label: 'CRM', icon: <FileText className="h-5 w-5" /> },
-  compliance: { label: 'Compliance', icon: <FileText className="h-5 w-5" /> },
-  ai: { label: 'AI Tools', icon: <Sparkles className="h-5 w-5" /> },
-  reporting: { label: 'Reporting', icon: <FileText className="h-5 w-5" /> },
-  integrations: { label: 'Integrations', icon: <FileText className="h-5 w-5" /> },
-  support: { label: 'Support', icon: <FileText className="h-5 w-5" /> },
-  settings: { label: 'Settings', icon: <FileText className="h-5 w-5" /> },
+// Icon mapping for hub icons
+const iconMap: Record<string, React.ReactNode> = {
+  Rocket: <Rocket className="h-5 w-5" />,
+  Truck: <Truck className="h-5 w-5" />,
+  Users: <Users className="h-5 w-5" />,
+  ListChecks: <ListChecks className="h-5 w-5" />,
+  DollarSign: <DollarSign className="h-5 w-5" />,
+  Shield: <Shield className="h-5 w-5" />,
+  Brain: <Brain className="h-5 w-5" />,
+  MessageSquare: <MessageSquare className="h-5 w-5" />,
+  Settings: <Settings className="h-5 w-5" />,
+  LifeBuoy: <LifeBuoy className="h-5 w-5" />,
+  BookOpen: <BookOpen className="h-5 w-5" />,
 };
 
 export default function HelpHomePage() {
   const allFeatures = getAllFeatures();
-  const clientFeatures = allFeatures.filter((f) => f.requiresClientDoc && f.portal !== 'admin');
-
-  // Group by category
-  const categories = [...new Set(clientFeatures.map((f) => f.category))];
 
   return (
     <div className="space-y-8">
@@ -61,22 +74,31 @@ export default function HelpHomePage() {
         </Card>
       </div>
 
-      {/* Categories */}
-      {categories.map((category) => {
-        const features = getFeaturesByCategory(category).filter(
-          (f) => f.requiresClientDoc && f.portal !== 'admin'
+      {/* Hubs from _ia.json */}
+      {ia.clientHubs.map((hub: any) => {
+        // Skip Getting Started hub if it has no features
+        if (hub.features.length === 0) return null;
+
+        // Get features for this hub
+        const hubFeatures = allFeatures.filter(
+          (f) => hub.features.includes(f.slug) && f.requiresClientDoc
         );
-        if (features.length === 0) return null;
-        const meta = categoryMeta[category] || { label: category, icon: <FileText className="h-5 w-5" /> };
+
+        if (hubFeatures.length === 0) return null;
+
+        const icon = iconMap[hub.icon] || <BookOpen className="h-5 w-5" />;
 
         return (
-          <section key={category}>
+          <section key={hub.id}>
             <div className="flex items-center gap-2 mb-4">
-              {meta.icon}
-              <h2 className="text-lg font-semibold">{meta.label}</h2>
+              {icon}
+              <div>
+                <h2 className="text-lg font-semibold">{hub.name}</h2>
+                <p className="text-sm text-muted-foreground">{hub.description}</p>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {features.map((feature) => (
+              {hubFeatures.map((feature) => (
                 <Link key={feature.slug} href={`/owner/help/${feature.slug}`}>
                   <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
                     <CardHeader className="p-4">
