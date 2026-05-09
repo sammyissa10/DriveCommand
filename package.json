@@ -11,7 +11,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "postinstall": "cd packages/types && npm run build && cd ../api-client && npm run build"
+    "postinstall": "cd packages/types && npm run build && cd ../validation && npm run build && cd ../api-client && npm run build"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
