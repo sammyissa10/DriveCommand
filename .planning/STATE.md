@@ -13,9 +13,9 @@ Milestone: v9.0 Automation Evaluator + Behavioral Emails — Phase 52 IN PROGRES
 Phase: Phase 52 — Automation Evaluator, Behavioral Emails, Cron Route, Email Templates, SysAdmin Automations UI, Extend Trial Action
 Current Plan: 2 of 6 plans complete
 Status: 52-02 COMPLETE — Cron route /api/cron/automations (CRON_SECRET Bearer auth, runEvaluator() call), 4 cron-driven rule handlers (no_progress_nudge/add_driver_nudge/dispatch_load_nudge with lifetime dedup; trial_ending_soon with 20h windowed dedup), 4 React Email templates (no-progress-nudge, add-driver-nudge, dispatch-load-nudge, trial-ending-soon), TEMPLATE_REGISTRY expanded to 6 entries, vercel.json cron entry added (daily schedule on Hobby plan). Vercel build: 68s compiled successfully.
-Last activity: 2026-05-09 - Completed quick-290: Build MDX Component Library and Rendering Pipeline for Client + SysAdmin Docs
-Last session: 2026-05-04T00:28:56Z
-Stopped at: Completed 52-02-PLAN.md
+Last activity: 2026-05-09 - Completed quick-291: Build Client-Facing Help Center in Owner Portal with Command+K search, MDX rendering, and feedback collection
+Last session: 2026-05-09T06:14:07Z
+Stopped at: Completed quick-291
 
 Progress: [████████████████████████████████████████████████████████] 100% (3 milestones shipped)
 
@@ -3695,6 +3695,7 @@ None blocking immediate progress.
 - Quick-284 (2026-04-23): Fix workflow-engine spec filename to match CLAUDE.md loader path — renamed docs/specs/workflow-engine.md.md → docs/specs/workflow-engine.md (double extension fix), replaced docx.docx companion with PDF mirror; CLAUDE.md Always Load directive now resolves — 2 tasks, 1 file renamed, branch feat/workflow-engine-spec pushed
 - Quick-289 (2026-05-09): Create Feature Registry + Doc-Drift CI Check — Zod-validated TypeScript feature registry with 6 seed entries, synchronous read helpers, CI script enforcing MDX doc coverage, GitHub Action blocking PRs with missing docs — 3 tasks, 8 files, [289-create-feature-registry-and-doc-drift-ci](./quick/289-create-feature-registry-and-doc-drift-ci/)
 | Phase quick-290 P01 | 514 | 3 tasks | 26 files |
+- Quick-291 (2026-05-09): Build Client-Facing Help Center in Owner Portal — Command+K fuzzy search with Fuse.js, MDX documentation rendering, plan-tier upgrade banners, Yes/No feedback collection with DocFeedback model — 10 tasks, 15 files, 536s
 
 ## Accumulated Context
 
