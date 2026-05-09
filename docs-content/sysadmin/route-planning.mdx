@@ -1,0 +1,286 @@
+---
+slug: route-planning
+title: Route Planning — Technical Reference
+summary: Multi-stop route creation with leg sequencing, continuity warnings, driver assignment, and RouteStop auto-sync system.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "All route queries are tenant-scoped via RLS"
+  - "Driver assignment validation prevents cross-tenant driver access"
+  - "RouteStop geocoding happens server-side to prevent client manipulation"
+---
+
+# Route Planning — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The route planning subsystem enables multi-stop route creation with automatic leg sequencing, continuity warnings, driver/truck assignment, and bidirectional sync with the Load/RouteStop models. Routes represent a driver's planned journey with multiple pickup and delivery stops, ordered by sequence number.
+
+Key components:
+- **Route model**: Container for route metadata (name, driver, truck, dates)
+- **RouteStop model**: Individual stops with sequence, type (PICKUP/DELIVERY), coordinates, contact info, BOL/PO numbers
+- **Load integration**: Loads can be assigned to routes, auto-creating pickup + delivery stops
+- **Continuity validation**: Server-side checks warn when stops are geographically non-sequential
+
+## Server Actions
+
+Route management is implemented via server actions in `apps/web/src/actions/routes.ts`.
+
+<ApiTable rows={[
+  { name: "createRoute", roleGuard: "OWNER | MANAGER", inputSchema: "routeCreateSchema", returnType: "ActionState<Route>" },
+  { name: "updateRoute", roleGuard: "OWNER | MANAGER", inputSchema: "routeUpdateSchema", returnType: "ActionState<Route>" },
+  { name: "deleteRoute", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "assignDriver", roleGuard: "OWNER | MANAGER", inputSchema: "{ routeId: string, driverId: string }", returnType: "ActionState<Route>" },
+  { name: "addRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "routeStopCreateSchema", returnType: "ActionState<RouteStop>" },
+  { name: "updateRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "routeStopUpdateSchema", returnType: "ActionState<RouteStop>" },
+  { name: "deleteRouteStop", roleGuard: "OWNER | MANAGER", inputSchema: "string (id)", returnType: "ActionState<void>" },
+  { name: "resequenceStops", roleGuard: "OWNER | MANAGER", inputSchema: "{ routeId: string, stopIds: string[] }", returnType: "ActionState<RouteStop[]>" }
+]} />
+
+All actions use `requireRole()` to enforce RBAC and `getTenantPrisma()` to ensure tenant isolation.
+
+**Special behaviors:**
+- `createRoute` auto-sequences stops if provided in the payload (mobile app uses this)
+- `assignDriver` validates that the driver belongs to the same tenant
+- `resequenceStops` bulk-updates sequence numbers and triggers continuity check
+- `deleteRouteStop` blocks deletion if stop is linked to a load (must unlink first)
+
+## Database Schema
+
+<PrismaModelRef model="Route" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "routeNumber: String (format: RT-NNNN, unique per tenant)",
+  "name: String (user-friendly route name)",
+  "status: RouteStatus enum (PLANNING | ACTIVE | COMPLETED | CANCELLED)",
+  "driverId: String? (optional foreign key to Driver)",
+  "truckId: String? (optional foreign key to Truck)",
+  "startDate: DateTime",
+  "endDate: DateTime?",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt",
+  "stops: RouteStop[] (one-to-many relation)"
+]} />
+
+<PrismaModelRef model="RouteStop" fields={[
+  "id: String @id @default(uuid())",
+  "routeId: String (foreign key to Route)",
+  "loadId: String? (optional foreign key to Load)",
+  "sequence: Int (1-based ordering, unique per route)",
+  "stopType: StopType enum (PICKUP | DELIVERY | WAYPOINT)",
+  "address: String",
+  "lat: Decimal? (geocoded latitude)",
+  "lng: Decimal? (geocoded longitude)",
+  "contactName: String?",
+  "contactPhone: String?",
+  "bolNumber: String? (Bill of Lading number)",
+  "poNumber: String? (Purchase Order number)",
+  "scheduledArrival: DateTime?",
+  "actualArrival: DateTime?",
+  "notes: String?",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Key indexes:**
+- `RouteStop.routeId + sequence` (unique compound index for stop ordering)
+- `RouteStop.loadId` (for reverse lookup from Load)
+
+## RouteStop Sequencing
+
+Stops are ordered by the `sequence` field (1-based integer). When creating/updating stops, the server enforces:
+
+1. **Uniqueness**: No two stops on the same route can have the same sequence number
+2. **Continuity**: Sequence numbers should be consecutive (1, 2, 3, ...), but gaps are allowed for editing flexibility
+3. **Auto-fill**: If sequence is omitted, server assigns next available number
+
+<ProcessDiagram steps={[
+  { label: "Create Route", description: "Route created with empty stops array" },
+  { label: "Add Stop 1", description: "First stop assigned sequence=1" },
+  { label: "Add Stop 2", description: "Second stop assigned sequence=2" },
+  { label: "Resequence", description: "User drags stops, server bulk-updates sequences" },
+  { label: "Continuity Check", description: "Server calculates distances between sequential stops, warns if >200 miles apart" }
+]} />
+
+**Continuity Warning Logic:**
+
+The server calculates haversine distance between sequential stops. If any two adjacent stops are more than 200 miles apart, the UI shows a warning badge. This helps dispatchers catch routing errors (e.g., accidentally putting a California stop between two Texas stops).
+
+<CodeBlock language="typescript">
+{`// Continuity check (runs after resequence or stop update)
+const stops = await prisma.routeStop.findMany({
+  where: { routeId },
+  orderBy: { sequence: 'asc' },
+});
+
+const warnings = [];
+for (let i = 0; i < stops.length - 1; i++) {
+  const current = stops[i];
+  const next = stops[i + 1];
+
+  if (!current.lat || !current.lng || !next.lat || !next.lng) continue;
+
+  const distance = haversineDistance(
+    { lat: current.lat, lng: current.lng },
+    { lat: next.lat, lng: next.lng }
+  );
+
+  if (distance > 200) {
+    warnings.push({
+      stopId: current.id,
+      message: \`Stop \${current.sequence} is \${distance.toFixed(0)} miles from next stop\`,
+    });
+  }
+}
+
+return warnings;`}
+</CodeBlock>
+
+## Load ↔ RouteStop Integration
+
+When a Load is assigned to a Route (via `load.routeId`), the system automatically creates two RouteStop records:
+
+- **Pickup stop**: `stopType: PICKUP`, coordinates from `load.pickupLat/Lng`, linked via `loadId`
+- **Delivery stop**: `stopType: DELIVERY`, coordinates from `load.deliveryLat/Lng`, linked via `loadId`
+
+The Load model also maintains reverse FKs:
+- `pickupStopId`: Points to the pickup RouteStop
+- `deliveryStopId`: Points to the delivery RouteStop
+
+This bidirectional relationship enables:
+- Fast lookup of stops for a load: `load.pickupStop`, `load.deliveryStop`
+- Fast lookup of load for a stop: `stop.load`
+- Cascade delete protection: Cannot delete a RouteStop that has `loadId` set
+
+<CodeBlock language="typescript">
+{`// Example: Syncing RouteStops when load is assigned to route
+async function syncRouteStopsForLoad(prisma: PrismaClient, load: Load) {
+  // Create or update pickup stop
+  const pickupStop = await prisma.routeStop.upsert({
+    where: { id: load.pickupStopId || 'new' },
+    create: {
+      routeId: load.routeId!,
+      loadId: load.id,
+      stopType: 'PICKUP',
+      address: load.origin,
+      lat: load.pickupLat,
+      lng: load.pickupLng,
+      sequence: await getNextSequence(prisma, load.routeId!),
+      scheduledArrival: load.pickupDate,
+    },
+    update: {
+      address: load.origin,
+      lat: load.pickupLat,
+      lng: load.pickupLng,
+      scheduledArrival: load.pickupDate,
+    },
+  });
+
+  // Create or update delivery stop
+  const deliveryStop = await prisma.routeStop.upsert({
+    where: { id: load.deliveryStopId || 'new' },
+    create: {
+      routeId: load.routeId!,
+      loadId: load.id,
+      stopType: 'DELIVERY',
+      address: load.destination,
+      lat: load.deliveryLat,
+      lng: load.deliveryLng,
+      sequence: await getNextSequence(prisma, load.routeId!),
+      scheduledArrival: load.deliveryDate,
+    },
+    update: {
+      address: load.destination,
+      lat: load.deliveryLat,
+      lng: load.deliveryLng,
+      scheduledArrival: load.deliveryDate,
+    },
+  });
+
+  // Update load with stop IDs
+  await prisma.load.update({
+    where: { id: load.id },
+    data: {
+      pickupStopId: pickupStop.id,
+      deliveryStopId: deliveryStop.id,
+    },
+  });
+}`}
+</CodeBlock>
+
+## RLS Policy
+
+Tenant isolation is enforced at the database level via Row Level Security.
+
+<RlsPolicyBox name="route_tenant_isolation" policy={`CREATE POLICY route_tenant_isolation ON "Route"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );
+
+CREATE POLICY route_stop_tenant_isolation ON "RouteStop"
+  FOR ALL
+  USING (
+    route_id IN (
+      SELECT id FROM "Route" WHERE tenant_id = current_setting('app.current_tenant_id')::uuid
+    )
+  );`} />
+
+RouteStop inherits tenant isolation from its parent Route via the `routeId` foreign key. This prevents cross-tenant stop access even if a malicious user guesses a stop ID.
+
+## Security Considerations
+
+<Callout variant="danger" title="Driver Assignment Validation">
+Always validate that `driverId` belongs to the current tenant before assigning to a route. The `assignDriver` action includes this check, but custom queries must replicate it.
+</Callout>
+
+<Callout variant="warning" title="Geocoding Server-Side">
+Geocoding for RouteStop coordinates happens server-side via the `/api/geocoding/autocomplete` endpoint. Never trust client-provided lat/lng directly — always re-geocode the address on the server.
+</Callout>
+
+<Callout variant="warning" title="Sequence Number Conflicts">
+The unique index on `(routeId, sequence)` prevents duplicate sequence numbers, but bulk updates must use transactions to avoid intermediate conflicts. The `resequenceStops` action wraps the update in a Prisma transaction.
+</Callout>
+
+## Mobile API Endpoints
+
+Driver mobile app accesses routes via REST endpoints at `/api/mobile/driver/routes/*`:
+
+- `GET /api/mobile/driver/routes` - List routes assigned to authenticated driver
+- `GET /api/mobile/driver/routes/[id]` - Get route details with stops array (ordered by sequence)
+- `PATCH /api/mobile/driver/routes/[id]/stops/[stopId]` - Update actualArrival time when driver arrives
+
+All endpoints require Bearer token authentication via `validateMobileToken()` middleware.
+
+## Related Models
+
+- <PrismaModelRef model="Load" /> — Loads assigned to routes auto-create pickup + delivery stops
+- <PrismaModelRef model="Driver" /> — Routes are assigned to drivers for mobile app access
+- <PrismaModelRef model="Truck" /> — Routes are assigned to trucks for fleet tracking
+- <PrismaModelRef model="FleetMessage" /> — Route-scoped messages (routeId field) for driver communication
+
+## Performance Considerations
+
+- **Eager loading**: Always include `{ include: { stops: { orderBy: { sequence: 'asc' } } } }` when querying routes to avoid N+1 queries
+- **Geocoding cache**: The `/api/geocoding/autocomplete` endpoint caches results for 60 seconds to reduce external API calls
+- **Continuity check**: Only runs after stop resequencing, not on every stop update
+- **Index usage**: The `(routeId, sequence)` compound index makes sequential stop queries very fast
+
+## Troubleshooting
+
+1. **"Sequence number already exists" error**: Two stops were assigned the same sequence. Use `resequenceStops` action to bulk-update all stops with new sequential numbers (1, 2, 3, ...).
+
+2. **Continuity warnings on valid routes**: The 200-mile threshold is configurable. For long-haul routes, this warning is informational only — dispatchers can ignore it.
+
+3. **Load stops not appearing on route**: Check that `load.routeId` is set. The auto-sync only happens when the load is assigned to a route. Orphaned stops (created before load assignment) must be manually linked or deleted.
+
+4. **Cannot delete route with loads**: Unassign all loads from the route first (`load.routeId = null`), then delete the route. The cascade delete will remove all orphaned RouteStops.

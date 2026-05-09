@@ -60,9 +60,21 @@
     "type": "feature"
   },
   {
+    "slug": "ai-document-reader",
+    "title": "AI Document Reader — Technical Reference",
+    "summary": "Anthropic Claude-powered extraction of structured data from rate confirmations and BOLs with R2 storage, prompt engineering, and cost management.",
+    "type": "sysadmin-doc"
+  },
+  {
     "slug": "load-management",
     "title": "Load Management — Technical Reference",
     "summary": "Server actions, database schema, and RLS policies for the load management subsystem.",
+    "type": "sysadmin-doc"
+  },
+  {
+    "slug": "route-planning",
+    "title": "Route Planning — Technical Reference",
+    "summary": "Multi-stop route creation with leg sequencing, continuity warnings, driver assignment, and RouteStop auto-sync system.",
     "type": "sysadmin-doc"
   },
   {

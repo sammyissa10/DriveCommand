@@ -1,0 +1,367 @@
+---
+slug: ai-document-reader
+title: AI Document Reader — Technical Reference
+summary: Anthropic Claude-powered extraction of structured data from rate confirmations and BOLs with R2 storage, prompt engineering, and cost management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 12
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "CRITICAL: ANTHROPIC_API_KEY must never be exposed to client (server-only)"
+  - "CRITICAL: User-uploaded PDFs are validated and sanitized before processing"
+  - "Rate limiting applied to AI extraction endpoint (5 requests/minute per tenant)"
+  - "Extracted data may contain PII — logged server-side only, never sent to analytics"
+  - "Cloudflare R2 presigned URLs expire after 15 minutes"
+---
+
+# AI Document Reader — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The AI Document Reader uses Anthropic's Claude API to extract structured data from trucking documents (rate confirmations, bills of lading). Users upload a PDF, the system stores it in Cloudflare R2, sends it to Claude with a structured prompt, parses the JSON response, and pre-fills load/invoice forms.
+
+**Key components:**
+- **Upload flow**: Client → R2 presigned URL → server validation → AI extraction
+- **Prompt engineering**: Structured JSON schema with required fields + examples
+- **Response parsing**: Zod validation + fallback handling for malformed responses
+- **Cost management**: Caching, rate limiting, batch processing
+- **Error recovery**: Retry logic for transient API failures
+
+## Server Actions
+
+AI extraction is implemented in `apps/web/src/actions/documents/ai-reader.ts`.
+
+<ApiTable rows={[
+  { name: "extractDocumentData", roleGuard: "OWNER | MANAGER", inputSchema: "{ documentId: string }", returnType: "ActionState<ExtractedData>" },
+  { name: "getUploadUrl", roleGuard: "OWNER | MANAGER", inputSchema: "{ filename: string, contentType: string }", returnType: "ActionState<{ uploadUrl: string, documentId: string }>" },
+  { name: "confirmUpload", roleGuard: "OWNER | MANAGER", inputSchema: "{ documentId: string }", returnType: "ActionState<Document>" }
+]} />
+
+**Workflow:**
+
+1. Client calls `getUploadUrl` → receives R2 presigned URL + temporary documentId
+2. Client uploads PDF directly to R2 using presigned URL
+3. Client calls `confirmUpload` to mark upload complete
+4. Client calls `extractDocumentData` → server downloads from R2, sends to Claude, returns structured JSON
+
+**Rate limiting:** `extractDocumentData` is rate-limited to 5 requests/minute per tenant via Upstash Redis.
+
+## Data Flow
+
+<ProcessDiagram steps={[
+  { label: "User Upload", description: "PDF selected in browser" },
+  { label: "Presigned URL", description: "Server generates R2 presigned upload URL" },
+  { label: "R2 Storage", description: "Browser uploads PDF directly to R2 (no server bandwidth)" },
+  { label: "Extract Request", description: "User clicks 'Extract Data' button" },
+  { label: "Download PDF", description: "Server downloads PDF from R2 via presigned GET URL" },
+  { label: "Claude API", description: "Server sends PDF + prompt to Claude Vision API" },
+  { label: "Parse Response", description: "Server validates JSON with Zod schema" },
+  { label: "Pre-fill Form", description: "Client receives structured data and populates load/invoice form" }
+]} />
+
+**Why presigned URLs?**
+Uploading directly to R2 bypasses the Next.js server, reducing memory usage and deployment bundle size. Vercel Hobby plan has a 4.5MB body size limit; presigned URLs avoid hitting this limit with large PDFs.
+
+## Database Schema
+
+<PrismaModelRef model="Document" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "type: DocumentType enum (RATE_CONFIRMATION | BOL | INVOICE | DRIVER_LICENSE | etc.)",
+  "filename: String (original filename)",
+  "fileUrl: String (R2 object key)",
+  "uploadedById: String (foreign key to User)",
+  "linkedEntityType: String? (LOAD | TRUCK | DRIVER)",
+  "linkedEntityId: String? (UUID of linked entity)",
+  "extractedData: Json? (AI extraction result cached here)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Key fields:**
+- `extractedData`: JSON blob storing the Claude API response. Cached here to avoid re-extraction on subsequent views.
+- `linkedEntityType/Id`: Polymorphic relationship to Load, Truck, or Driver (depending on document type).
+
+## Prompt Engineering
+
+The Claude prompt is structured to return a specific JSON schema. Example for rate confirmations:
+
+<CodeBlock language="typescript">
+{`const RATE_CONFIRMATION_PROMPT = \`
+You are a data extraction assistant for a trucking company. Extract the following fields from the attached rate confirmation PDF. Return ONLY valid JSON with no additional text.
+
+{
+  "origin": "pickup address (street, city, state, zip)",
+  "destination": "delivery address (street, city, state, zip)",
+  "pickupDate": "ISO 8601 date string (YYYY-MM-DD)",
+  "deliveryDate": "ISO 8601 date string or null",
+  "rate": "numeric rate in dollars (e.g., 1500.00)",
+  "commodity": "commodity description or null",
+  "weight": "numeric weight in pounds or null",
+  "bolNumber": "BOL number or null",
+  "poNumber": "PO number or null",
+  "customerName": "customer/shipper name"
+}
+
+If a field is not present in the document, use null. Dates must be in YYYY-MM-DD format. Rate must be a number, not a string.
+
+Examples:
+- "Origin: 123 Main St, Dallas, TX 75001" → "origin": "123 Main St, Dallas, TX 75001"
+- "Pickup: 5/9/2026" → "pickupDate": "2026-05-09"
+- "Linehaul: $1,250.50" → "rate": 1250.50
+
+Return ONLY the JSON object, no markdown, no explanation.
+\`;`}
+</CodeBlock>
+
+**Response validation:**
+
+<CodeBlock language="typescript">
+{`const extractedDataSchema = z.object({
+  origin: z.string(),
+  destination: z.string(),
+  pickupDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  deliveryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
+  rate: z.number().positive(),
+  commodity: z.string().nullable(),
+  weight: z.number().positive().nullable(),
+  bolNumber: z.string().nullable(),
+  poNumber: z.string().nullable(),
+  customerName: z.string(),
+});
+
+// After Claude response
+const parsed = JSON.parse(response.content[0].text);
+const validated = extractedDataSchema.parse(parsed); // Throws if invalid`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="API Key Exposure">
+The `ANTHROPIC_API_KEY` environment variable must NEVER be exposed to the client. All Claude API calls happen in server actions or API routes. If you accidentally commit the key to git, rotate it immediately in the Anthropic dashboard.
+</Callout>
+
+<Callout variant="danger" title="User Upload Validation">
+Before sending a PDF to Claude, validate:
+1. File size < 10MB (Claude has a 100MB limit, but we cap at 10MB for cost control)
+2. MIME type is `application/pdf` (reject images, executables, etc.)
+3. PDF is readable by `pdf-parse` library (reject corrupted files)
+
+Malformed PDFs sent to Claude cost money and may expose system behavior to attackers probing for vulnerabilities.
+</Callout>
+
+<Callout variant="warning" title="Rate Limiting">
+The extraction endpoint is rate-limited to 5 requests/minute per tenant. This prevents:
+- Accidental cost spikes from users spamming the button
+- Malicious abuse (e.g., a compromised account uploading 1000 PDFs)
+
+Rate limit state is stored in Upstash Redis with a 60-second TTL.
+</Callout>
+
+<Callout variant="warning" title="PII in Extracted Data">
+Extracted data may contain personally identifiable information (customer names, addresses, phone numbers). This data is:
+- Logged to server-side structured logger (NOT sent to client-side analytics)
+- Stored in `Document.extractedData` JSON field (tenant-scoped via RLS)
+- Never included in error messages sent to Sentry
+
+Do NOT log extracted data to console.log() in production. Use the structured logger with `level: 'info'` and ensure sensitive fields are redacted.
+</Callout>
+
+## Code Examples
+
+<CodeBlock language="typescript">
+{`// Full extraction flow
+export async function extractDocumentData(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<ExtractedData>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  const tenantId = await requireTenantId();
+  const prisma = await getTenantPrisma();
+
+  const documentId = formData.get('documentId') as string;
+
+  // Check rate limit (Upstash Redis)
+  const rateLimitKey = \`ai-extract:\${tenantId}\`;
+  const current = await redis.incr(rateLimitKey);
+  if (current === 1) {
+    await redis.expire(rateLimitKey, 60); // 60-second window
+  }
+  if (current > 5) {
+    return {
+      success: false,
+      error: 'Rate limit exceeded. Please wait 60 seconds.',
+    };
+  }
+
+  // Fetch document from database
+  const doc = await prisma.document.findUnique({
+    where: { id: documentId },
+  });
+  if (!doc) return { success: false, error: 'Document not found' };
+
+  // Download PDF from R2
+  const presignedUrl = await getPresignedUrlForDownload(doc.fileUrl);
+  const pdfResponse = await fetch(presignedUrl);
+  const pdfBuffer = await pdfResponse.arrayBuffer();
+
+  // Validate PDF
+  if (pdfBuffer.byteLength > 10 * 1024 * 1024) {
+    return { success: false, error: 'PDF too large (max 10MB)' };
+  }
+
+  // Send to Claude
+  const anthropic = new Anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY!,
+  });
+
+  const message = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 1024,
+    messages: [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'document',
+            source: {
+              type: 'base64',
+              media_type: 'application/pdf',
+              data: Buffer.from(pdfBuffer).toString('base64'),
+            },
+          },
+          {
+            type: 'text',
+            text: RATE_CONFIRMATION_PROMPT,
+          },
+        ],
+      },
+    ],
+  });
+
+  // Parse and validate response
+  const responseText = message.content[0].text;
+  let extractedData;
+  try {
+    const parsed = JSON.parse(responseText);
+    extractedData = extractedDataSchema.parse(parsed);
+  } catch (error) {
+    logger.error('Claude response validation failed', {
+      documentId,
+      response: responseText,
+      error,
+    });
+    return {
+      success: false,
+      error: 'AI extraction failed. Please try again or enter data manually.',
+    };
+  }
+
+  // Cache result in database
+  await prisma.document.update({
+    where: { id: documentId },
+    data: { extractedData },
+  });
+
+  return { success: true, data: extractedData };
+}`}
+</CodeBlock>
+
+## Cost Considerations
+
+**Claude API pricing (as of 2026-05-09):**
+- Input: $3 per million tokens
+- Output: $15 per million tokens
+
+**Typical cost per extraction:**
+- Average PDF: ~5,000 input tokens (at 200 tokens/page for 25 pages)
+- Prompt: ~300 tokens
+- Response: ~200 output tokens
+- **Total cost: ~$0.006 per extraction**
+
+**Monthly cost projection (100 tenants, 50 extractions each):**
+- 5,000 extractions × $0.006 = **$30/month**
+
+**Cost optimization strategies:**
+1. **Caching**: Store `extractedData` in database; re-extraction only if user explicitly requests
+2. **Batch processing**: If tenant uploads 10 PDFs, queue them and process in a single Claude call with multiple images
+3. **Model selection**: For simple rate confirmations, use `claude-3-haiku` (50% cheaper than Sonnet)
+4. **Prompt compression**: Remove examples and verbose instructions; use shorter field names
+
+## Error Handling
+
+**Common failure modes:**
+
+1. **Claude API timeout (30s)**: Retry with exponential backoff (3 attempts max)
+2. **Malformed JSON response**: Log to Sentry, return error to user, suggest manual entry
+3. **Rate limit exceeded (Claude side)**: Retry after 60 seconds (Claude returns 429 status)
+4. **Invalid PDF**: Catch `pdf-parse` errors, return user-friendly message
+5. **R2 presigned URL expired**: Regenerate presigned URL and retry
+
+<CodeBlock language="typescript">
+{`// Retry logic for transient failures
+async function extractWithRetry(
+  pdfBuffer: ArrayBuffer,
+  maxRetries = 3
+): Promise<ExtractedData> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await callClaudeAPI(pdfBuffer);
+      return result;
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+
+      // Retry on timeout or 5xx errors
+      if (
+        error.code === 'ETIMEDOUT' ||
+        (error.status >= 500 && error.status < 600)
+      ) {
+        const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+
+      // Don't retry on client errors (4xx)
+      throw error;
+    }
+  }
+}`}
+</CodeBlock>
+
+## Testing Notes
+
+**Unit tests** (`ai-reader.test.ts`):
+- Mock Anthropic SDK responses for various document types
+- Test Zod schema validation with edge cases (missing fields, malformed dates)
+- Verify rate limiting logic with mocked Redis
+
+**E2E tests** (`playwright/ai-extraction.spec.ts`):
+- Upload sample PDFs (fixtures in `tests/fixtures/rate-confirmations/`)
+- Verify extracted data pre-fills load form correctly
+- Test error handling for corrupted PDFs
+- Verify rate limit triggers after 5 requests
+
+**Cost-saving tip:** Use `claude-3-haiku` in test environments to reduce API costs during CI runs.
+
+## Performance Considerations
+
+- **Async processing**: For large batches, move extraction to a background job (cron or queue) to avoid blocking the request
+- **Presigned URL caching**: Generate presigned URLs on-demand (15-minute expiry) rather than storing them in the database
+- **Prompt caching**: Claude supports prompt caching (beta feature) to reuse system prompts across requests — can reduce costs by 90% for high-volume tenants
+
+## Troubleshooting
+
+1. **"AI extraction failed" error with no details**: Check server logs for Zod validation errors. Common cause: Claude returned markdown-wrapped JSON (``json\n{...}\n``) instead of raw JSON. Update prompt to emphasize "no markdown."
+
+2. **Extraction returns null for all fields**: PDF is likely scanned without OCR. Claude cannot extract text from images without embedded text layer. Suggest user re-scan with OCR enabled or use a PDF with searchable text.
+
+3. **Rate limit hit immediately**: Redis key namespace collision. Ensure `ai-extract:${tenantId}` is unique per tenant. Check for accidental global rate limiting (missing tenantId in key).
+
+4. **High API costs**: Check for retry loops or duplicate extractions. Verify that `extractedData` cache is being read before making new API calls.
+
+## Related Features
+
+- <FeatureCard slug="load-management" /> — Extracted data pre-fills load creation form
