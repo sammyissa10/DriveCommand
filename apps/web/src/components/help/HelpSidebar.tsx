@@ -81,7 +81,7 @@ function SidebarNav({ hubs }: HelpSidebarProps) {
     <>
       <SidebarHeader className="border-b px-4 py-3">
         <Link
-          href="/owner/help"
+          href="/help"
           className="flex items-center gap-2 font-semibold text-foreground"
           onClick={() => setOpenMobile(false)}
         >
@@ -126,7 +126,7 @@ function SidebarNav({ hubs }: HelpSidebarProps) {
                                   isActive={feature.slug === currentSlug}
                                 >
                                   <Link
-                                    href={`/owner/help/${feature.slug}`}
+                                    href={`/help/${feature.slug}`}
                                     onClick={() => setOpenMobile(false)}
                                   >
                                     <span className="truncate">{feature.name}</span>
@@ -189,7 +189,7 @@ function MobileSidebarContent({ hubs, onNavigate }: MobileSidebarContentProps) {
     <div className="flex h-full flex-col">
       <div className="border-b px-4 py-3">
         <Link
-          href="/owner/help"
+          href="/help"
           className="flex items-center gap-2 font-semibold text-foreground"
           onClick={onNavigate}
         >
@@ -217,7 +217,7 @@ function MobileSidebarContent({ hubs, onNavigate }: MobileSidebarContentProps) {
                     {hub.features.map((feature) => (
                       <Link
                         key={feature.slug}
-                        href={`/owner/help/${feature.slug}`}
+                        href={`/help/${feature.slug}`}
                         onClick={onNavigate}
                         className={cn(
                           'block rounded-md px-3 py-1.5 text-sm transition-colors',

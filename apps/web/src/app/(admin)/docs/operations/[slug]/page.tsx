@@ -22,7 +22,7 @@ export default async function OperationalDocPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="mb-6">
         <Link
-          href="/admin/docs/operations"
+          href="/docs/operations"
           className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900"
         >
           <ChevronLeft className="h-4 w-4" />

@@ -39,7 +39,7 @@ export default function AdminDocsLayout({
             <ul className="space-y-1">
               <li>
                 <Link
-                  href="/admin/docs/features"
+                  href="/docs/features"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                 >
                   All Features
@@ -57,7 +57,7 @@ export default function AdminDocsLayout({
             <ul className="space-y-1">
               <li>
                 <Link
-                  href="/admin/docs/operations"
+                  href="/docs/operations"
                   className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors font-medium"
                 >
                   Overview
@@ -66,7 +66,7 @@ export default function AdminDocsLayout({
               {operationalDocs.map((doc) => (
                 <li key={doc.slug}>
                   <Link
-                    href={`/admin/docs/operations/${doc.slug}`}
+                    href={`/docs/operations/${doc.slug}`}
                     className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
                   >
                     {doc.name}

@@ -31,7 +31,7 @@ export function RelatedArticles({ slug, maxArticles = 3 }: RelatedArticlesProps)
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {visibleFeatures.map((feature) => (
-          <Link key={feature.slug} href={`/owner/help/${feature.slug}`}>
+          <Link key={feature.slug} href={`/help/${feature.slug}`}>
             <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer group">
               <CardHeader className="p-4">
                 <div className="flex items-start gap-3">

@@ -39,7 +39,7 @@ export default function WhatsNewPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {versionFeatures.map((feature) => (
-              <Link key={feature.slug} href={`/owner/help/${feature.slug}`}>
+              <Link key={feature.slug} href={`/help/${feature.slug}`}>
                 <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
                   <CardHeader className="p-4">
                     <CardTitle className="text-base">{feature.name}</CardTitle>

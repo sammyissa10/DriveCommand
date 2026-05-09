@@ -67,7 +67,7 @@ export default async function AdminLayout({
                 Promos
               </Link>
               <Link
-                href="/admin/docs"
+                href="/docs"
                 className="text-white hover:text-gray-300 font-medium"
               >
                 Docs

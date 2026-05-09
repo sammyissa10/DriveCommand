@@ -152,7 +152,7 @@ export default async function middleware(request: NextRequest) {
   }
 
   // System admin guard: restrict to admin portal paths only
-  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/plans', '/promos', '/unauthorized', '/onboarding', '/api', '/automations'];
+  const ADMIN_ALLOWED_PATHS = ['/admin', '/admin-support', '/admin-dashboard', '/tenants', '/billing', '/plans', '/promos', '/docs', '/unauthorized', '/onboarding', '/api', '/automations'];
   if (appMeta.isSystemAdmin) {
     const isAdminPath = ADMIN_ALLOWED_PATHS.some((p) => pathname.startsWith(p));
     if (!isAdminPath) {

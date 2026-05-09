@@ -124,7 +124,7 @@ export default function AdminFeaturesListPage() {
               <TableRow key={feature.slug}>
                 <TableCell>
                   <Link
-                    href={`/admin/docs/features/${feature.slug}`}
+                    href={`/docs/features/${feature.slug}`}
                     className="font-medium text-blue-600 hover:underline"
                   >
                     {feature.name}

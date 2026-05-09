@@ -41,7 +41,7 @@ export default function HelpHomePage() {
     <div className="space-y-8">
       {/* Quick Links */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Link href="/owner/help/whats-new">
+        <Link href="/help/whats-new">
           <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center gap-3 p-4">
               <Sparkles className="h-5 w-5 text-primary" />
@@ -99,7 +99,7 @@ export default function HelpHomePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {hubFeatures.map((feature) => (
-                <Link key={feature.slug} href={`/owner/help/${feature.slug}`}>
+                <Link key={feature.slug} href={`/help/${feature.slug}`}>
                   <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
                     <CardHeader className="p-4">
                       <div className="flex items-start justify-between gap-2">

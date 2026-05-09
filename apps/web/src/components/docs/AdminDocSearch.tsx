@@ -41,7 +41,7 @@ export function AdminDocSearch() {
 
   // Fetch search index on mount
   useEffect(() => {
-    fetch('/admin/api/docs-index')
+    fetch('/api/docs-index')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch search index');
         return res.json();
@@ -81,9 +81,9 @@ export function AdminDocSearch() {
 
     // Navigate based on type
     if (entry.type === 'feature' || entry.type === 'sysadmin-doc') {
-      router.push(`/admin/docs/features/${entry.slug}`);
+      router.push(`/docs/features/${entry.slug}`);
     } else if (entry.type === 'operations-doc') {
-      router.push(`/admin/docs/operations/${entry.slug}`);
+      router.push(`/docs/operations/${entry.slug}`);
     }
   };
 

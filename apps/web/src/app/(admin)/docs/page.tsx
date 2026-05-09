@@ -49,10 +49,10 @@ export default async function AdminDocsPage() {
           const icon = iconMap[hub.icon] || <BookOpen className="h-8 w-8 text-gray-600" />;
           const href =
             hub.id === 'feature-reference'
-              ? '/admin/docs/features'
+              ? '/docs/features'
               : hub.id === 'support-operations'
-                ? '/admin/docs/operations'
-                : '/admin/docs/operations';
+                ? '/docs/operations'
+                : '/docs/operations';
 
           const count =
             hub.id === 'feature-reference'

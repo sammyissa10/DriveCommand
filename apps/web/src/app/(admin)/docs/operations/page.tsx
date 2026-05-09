@@ -19,7 +19,7 @@ export default async function OperationsDocsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {docs.map((doc) => (
-          <Link key={doc.slug} href={`/admin/docs/operations/${doc.slug}`}>
+          <Link key={doc.slug} href={`/docs/operations/${doc.slug}`}>
             <Card className="hover:border-gray-400 transition-colors cursor-pointer h-full">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">

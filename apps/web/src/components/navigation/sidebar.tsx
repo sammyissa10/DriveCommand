@@ -22,6 +22,7 @@ import {
   BarChart3,
   MessageSquare,
   ListChecks,
+  HelpCircle,
 } from "lucide-react"
 import {
   Sidebar,
@@ -515,6 +516,18 @@ export function AppSidebar({ supportBadge }: AppSidebarProps) {
                     <LifeBuoy />
                     <span>My Tickets</span>
                     {isOwner && supportBadge}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/help')}
+                  tooltip="Help Center"
+                >
+                  <Link href="/help" onClick={handleNavClick}>
+                    <HelpCircle />
+                    <span>Help Center</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

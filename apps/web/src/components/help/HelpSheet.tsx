@@ -59,7 +59,7 @@ export function HelpSheet({ open, onOpenChange, initialQuery = '' }: HelpSheetPr
   const handleSelect = (slug: string) => {
     onOpenChange(false);
     setQuery('');
-    router.push(`/owner/help/${slug}`);
+    router.push(`/help/${slug}`);
   };
 
   return (
@@ -113,7 +113,7 @@ export function HelpSheet({ open, onOpenChange, initialQuery = '' }: HelpSheetPr
           {/* Footer link */}
           <div className="pt-4 border-t">
             <Link
-              href="/owner/help"
+              href="/help"
               onClick={() => onOpenChange(false)}
               className="text-sm text-primary hover:underline"
             >

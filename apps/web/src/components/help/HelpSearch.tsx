@@ -57,7 +57,7 @@ export function HelpSearch() {
   const handleSelect = (slug: string) => {
     setOpen(false);
     setQuery('');
-    router.push(`/owner/help/${slug}`);
+    router.push(`/help/${slug}`);
   };
 
   // Group results by category
