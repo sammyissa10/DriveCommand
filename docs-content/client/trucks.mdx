@@ -1,0 +1,146 @@
+---
+slug: trucks
+title: Legacy Truck Management
+summary: Manage your truck fleet with VIN tracking, make/model details, document management, maintenance history, and automated status badges for compliance readiness.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Legacy Truck Management
+
+<Callout variant="info">
+Legacy Truck Management is the original truck interface providing fleet management with VIN tracking, document uploads, maintenance logs, and automated status badges. For the enhanced interface with advanced features, see Carrier Truck Management.
+</Callout>
+
+## Overview
+
+The truck list shows all vehicles in your fleet with key details at a glance:
+
+- **Unit Number** — your internal fleet identifier
+- **VIN, make, model, year** — vehicle specifications
+- **Status badge** — Ready to Use, In Use, In Maintenance, or Expired Docs
+- **Current driver** — who's assigned to the truck
+- **Document compliance** — expiry alerts with color-coded dots
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Add a truck
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Trucks">
+    In the sidebar, click **Trucks** under Legacy Features.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Add Truck">
+    The truck creation form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter required fields">
+    - **Unit Number** — internal fleet ID (e.g., "T-101")
+    - **VIN** — 17-character vehicle identification number
+    - **Make** — manufacturer (Freightliner, Volvo, Peterbilt, etc.)
+    - **Model** — model name (Cascadia, VNL 760, 579, etc.)
+    - **Year** — model year
+  </StepFlow.Step>
+  <StepFlow.Step title="Add optional details">
+    - License plate and state
+    - Fuel type (Diesel, Gas, Electric, Hybrid)
+    - Current odometer reading
+    - Purchase date and cost
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the truck">
+    Click **Save**. The truck appears in your fleet list with "Ready to Use" status.
+  </StepFlow.Step>
+</StepFlow>
+
+## Status badges
+
+Trucks automatically display one of four statuses based on real-time checks:
+
+<ComparisonTable
+  headers={["Status", "Meaning", "Dispatch Availability"]}
+  rows={[
+    ["Ready to Use", "All documents current, no maintenance flags, not on active route", "Available"],
+    ["In Use", "Currently assigned to an active route with a driver", "Unavailable"],
+    ["In Maintenance", "Marked for repairs or has overdue scheduled service", "Unavailable"],
+    ["Expired Docs", "One or more compliance documents past expiry date", "Blocked (compliance violation)"]
+  ]}
+/>
+
+<Callout variant="warning" title="Compliance Requirement">
+Trucks with expired documents cannot be dispatched until documents are renewed and uploaded. Check the Compliance Dashboard for upcoming expiries.
+</Callout>
+
+## Upload compliance documents
+
+Each truck requires three core compliance documents:
+
+1. **Registration** — state vehicle registration
+2. **Insurance** — proof of commercial vehicle insurance
+3. **Annual Inspection** — DOT annual inspection certificate
+
+To upload documents:
+
+1. Click the truck in the list to open the detail page
+2. Scroll to **Documents** section
+3. Click **Upload Document**
+4. Select document type, expiry date, and choose file
+5. Click **Upload**
+
+Documents expiring in 30 days show a yellow warning dot. Expired documents show a red alert dot.
+
+<Callout variant="tip" title="Pro Tip">
+Set up automatic email reminders in the Compliance Dashboard. You'll receive alerts 30 days and 7 days before any document expires.
+</Callout>
+
+## Track maintenance history
+
+Log maintenance and repairs to track vehicle costs and identify high-maintenance units:
+
+<StepFlow>
+  <StepFlow.Step title="Open truck detail page">
+    Click the truck from the fleet list.
+  </StepFlow.Step>
+  <StepFlow.Step title="Go to Maintenance tab">
+    Click the **Maintenance** tab in the top navigation.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Add Maintenance Record">
+    Enter service type, date, odometer reading, cost, and notes.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the record">
+    Click **Save**. The record appears in the maintenance history timeline.
+  </StepFlow.Step>
+</StepFlow>
+
+Use the maintenance history to calculate total cost of ownership and identify which trucks need the most repairs.
+
+## Schedule preventive maintenance
+
+Set up recurring maintenance reminders based on date or mileage:
+
+1. Open the truck detail page
+2. Go to **Maintenance** tab
+3. Click **Schedule Service**
+4. Choose service type (Oil Change, Tire Rotation, DOT Inspection)
+5. Set trigger: **Date-based** or **Mileage-based**
+6. Click **Schedule**
+
+When scheduled service comes due, the truck's status badge changes to "In Maintenance" automatically.
+
+## Related features
+
+<FeatureCard slug="carrier-fleet-trucks" />
+<FeatureCard slug="compliance-dashboard" />
+<FeatureCard slug="carrier-dispatches" />
+
+## Frequently asked questions
+
+**What's the difference between Trucks and Carrier Trucks?**
+
+Trucks is the original legacy interface. Carrier Trucks is the newer interface with enhanced features like batch operations and advanced filtering. Both access the same truck data.
+
+**Can I deactivate a truck without deleting it?**
+
+Yes. Edit the truck and change the status to "Inactive". Inactive trucks remain in your database but don't appear in dispatch views or availability lists.
+
+**How do I assign a driver to a truck?**
+
+Driver assignment happens automatically when you dispatch a route. Assign both the driver and truck to a route, and the system links them for the duration of that route.

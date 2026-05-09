@@ -1,0 +1,173 @@
+---
+slug: routes
+title: Route Planning
+summary: Create multi-stop routes with leg sequencing, continuity warnings, driver and truck assignment, and automated load linkage for efficient dispatch.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Route Planning
+
+<Callout variant="info">
+Route Planning lets you create multi-stop routes with sequential legs, assign drivers and trucks, and link multiple loads. The system validates route continuity and warns you if stops are out of sequence.
+</Callout>
+
+## Overview
+
+Routes organize multiple stops into a logical sequence for dispatch. Each route includes:
+
+- **Route name** — internal identifier
+- **Driver assignment** — who's driving this route
+- **Truck assignment** — which vehicle is used
+- **Stop sequence** — pickup and delivery locations in order
+- **Linked loads** — which shipments are on this route
+- **Status** — PENDING, IN_PROGRESS, or COMPLETED
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create a route
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Routes">
+    In the sidebar, click **Routes** under Legacy Features.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Route">
+    The route creation form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Name the route">
+    Enter a descriptive name like "ATL-MIA Round Trip" or "West Coast Loop".
+  </StepFlow.Step>
+  <StepFlow.Step title="Assign driver and truck">
+    Select the driver and truck from dropdowns. Only available (not in-use) assets appear.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add stops">
+    Click **Add Stop** and enter:
+    - **Stop type** — Pickup or Delivery
+    - **Address** — full street address (uses autocomplete)
+    - **Contact name and phone** (optional)
+    - **BOL/PO numbers** (optional)
+    - **Scheduled date and time**
+  </StepFlow.Step>
+  <StepFlow.Step title="Sequence stops correctly">
+    Drag stops to reorder them. The system shows warnings if pickups come after their corresponding deliveries.
+  </StepFlow.Step>
+  <StepFlow.Step title="Link loads (optional)">
+    If you have existing loads, select them from the load dropdown. The system auto-links loads to their corresponding pickup/delivery stops.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the route">
+    Click **Save Route**. The route appears in the route list with PENDING status.
+  </StepFlow.Step>
+</StepFlow>
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Route created, not yet started" },
+  { label: "IN_PROGRESS", description: "Driver has started the route" },
+  { label: "COMPLETED", description: "All stops delivered, route closed" }
+]} />
+
+## Understand leg sequencing
+
+Routes are broken into **legs** — segments between consecutive stops. Proper leg sequencing ensures drivers follow a logical path:
+
+1. **Leg 1**: Origin → First Stop
+2. **Leg 2**: First Stop → Second Stop
+3. **Leg 3**: Second Stop → Third Stop
+4. **Leg N**: Last Stop → Destination (if needed)
+
+The system calculates distances between stops and warns you if the sequence is inefficient.
+
+<Callout variant="warning" title="Continuity Warning">
+If a delivery stop appears before its corresponding pickup stop, you'll see a red warning. Reorder stops to resolve the continuity issue before dispatching.
+</Callout>
+
+## Link loads to routes
+
+Loads and routes are connected via stops:
+
+- Each load has a **pickup stop** and a **delivery stop**
+- When you create a route with stops, you can assign loads to those stops
+- The system auto-detects matching stops based on address and BOL/PO numbers
+
+To manually link a load:
+
+1. Open the route detail page
+2. Scroll to **Linked Loads** section
+3. Click **Link Load**
+4. Select the load from the dropdown
+5. Confirm pickup and delivery stop assignments
+
+The load's status automatically syncs with the route's progress.
+
+## Assign driver and truck
+
+Only available drivers and trucks appear in assignment dropdowns:
+
+- **Drivers**: Must be Active and not currently on another route
+- **Trucks**: Must have "Ready to Use" or "In Use" status (not In Maintenance or Expired Docs)
+
+To reassign after route creation:
+
+1. Open route detail page
+2. Click **Edit Route**
+3. Change driver or truck dropdown
+4. Click **Save**
+
+<Callout variant="tip" title="Pro Tip">
+If a truck or driver isn't showing in the dropdown, check their status. Trucks with expired documents or drivers with expired CDLs won't appear.
+</Callout>
+
+## Monitor route progress
+
+Drivers update route status from the Driver Portal. As the route progresses:
+
+- Route status changes from PENDING → IN_PROGRESS → COMPLETED
+- Each stop shows completion timestamp
+- Linked load statuses update automatically (e.g., AT_PICKUP → IN_TRANSIT → DELIVERED)
+- GPS tracking shows current location (if enabled)
+
+View real-time route progress on the Live Map.
+
+## Edit or cancel a route
+
+**To edit a route:**
+
+1. Open route detail page
+2. Click **Edit Route**
+3. Make changes (add/remove stops, reassign driver/truck)
+4. Click **Save**
+
+**To cancel a route:**
+
+1. Open route detail page
+2. Click **Actions → Cancel Route**
+3. Confirm cancellation
+4. The route status changes to CANCELLED and driver/truck become available again
+
+<Callout variant="danger" title="Warning">
+Cancelling a route does NOT cancel linked loads. You must manually update load statuses separately.
+</Callout>
+
+## Related features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="carrier-dispatches" />
+<FeatureCard slug="driver-my-route" />
+<FeatureCard slug="live-map" />
+
+## Frequently asked questions
+
+**What's the difference between a route and a load?**
+
+A **route** is a driver's trip with multiple stops. A **load** is a single shipment with one pickup and one delivery. Routes can contain multiple loads.
+
+**Can I have a route with only pickups or only deliveries?**
+
+Yes. Routes don't require paired pickup/delivery stops. You can create a route with any combination of stop types.
+
+**How do I optimize stop order for fuel efficiency?**
+
+Use the Profit Predictor or Lane Analytics features to analyze distance and fuel costs. The system doesn't auto-optimize stop order, but it will warn you about inefficient sequencing.
+
+**Can multiple loads share the same route?**
+
+Yes. This is the primary use case for routes. Assign multiple loads to a single route to consolidate freight and maximize truck utilization.

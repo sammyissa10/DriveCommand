@@ -1,0 +1,160 @@
+---
+slug: safety-analytics
+title: Safety Analytics
+summary: Driver safety scoring with harsh braking detection, speeding events, incident tracking, and safety trend charts for fleet risk management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Safety Analytics
+
+<Callout variant="info">
+Safety Analytics aggregates driver safety data from GPS tracking, incident reports, and ELD integrations to calculate safety scores and identify high-risk drivers. Use this data to reduce insurance costs and improve fleet safety.
+</Callout>
+
+## Overview
+
+The Safety Analytics dashboard provides fleet-wide safety metrics:
+
+- **Fleet safety score** — average across all drivers (0-100)
+- **Harsh braking events** — sudden deceleration incidents
+- **Speeding violations** — tracked via GPS and ELD
+- **Incident reports** — driver-reported accidents and near-misses
+- **Driver rankings** — sorted by safety score
+- **Trend charts** — weekly and monthly safety trends
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## Understand safety scores
+
+Driver safety scores range from 0 to 100 and are calculated from multiple data sources:
+
+<ComparisonTable
+  headers={["Data Source", "Weight", "Impact"]}
+  rows={[
+    ["Incident reports", "40%", "Accidents and near-misses have highest impact"],
+    ["Harsh braking events", "25%", "Sudden stops indicate defensive driving issues"],
+    ["Speeding violations", "20%", "Exceeding speed limit by 10+ mph"],
+    ["HOS violations", "15%", "Driving beyond 11-hour or 14-hour limits"]
+  ]}
+/>
+
+Score categories:
+
+- **90-100**: Excellent (green badge)
+- **70-89**: Good (yellow badge)
+- **Below 70**: Needs improvement (red badge)
+
+Scores update in real-time as new events are logged.
+
+## Track harsh braking events
+
+Harsh braking events are detected when a driver decelerates faster than a safe threshold (typically 8+ mph per second):
+
+- **GPS-based detection** — calculated from GPS speed changes
+- **ELD integration** — imported from Samsara, Motive/KeepTruckin, or other connected ELDs
+- **Event details** — timestamp, location, speed before/after
+
+View harsh braking events on the Safety Analytics dashboard or on individual driver detail pages.
+
+<Callout variant="tip" title="Pro Tip">
+Harsh braking often indicates following too closely or distracted driving. Use these events to coach drivers on maintaining safe following distances.
+</Callout>
+
+## Monitor speeding violations
+
+Speeding events are logged when drivers exceed speed limits:
+
+- **10+ mph over limit**: Yellow warning
+- **20+ mph over limit**: Red violation
+
+Speeding data comes from:
+
+- **GPS tracking** — compared against posted speed limit databases
+- **ELD integration** — imported from connected devices
+
+Frequent speeding violations lower a driver's safety score and increase insurance risk.
+
+## Review incident reports
+
+Drivers can report incidents from the Driver Portal:
+
+- **Accident** — collision with another vehicle or object
+- **Near-miss** — close call that could have been an accident
+- **Injury** — driver or passenger injury
+- **Property damage** — damage to cargo or equipment
+
+Each incident includes:
+
+- **Severity** — Low, Medium, High, Critical
+- **Category** — Accident, Near-Miss, Injury, Property Damage
+- **Description** — driver's narrative
+- **Photos** — evidence captured at the scene
+- **Location and timestamp**
+
+Incidents with High or Critical severity trigger immediate alerts to fleet managers.
+
+<Callout variant="warning" title="Compliance Requirement">
+All accidents involving injury, fatality, or tow-away must be reported to FMCSA within 10 days. Use incident reports to ensure timely compliance.
+</Callout>
+
+## Identify high-risk drivers
+
+The driver ranking table shows all drivers sorted by safety score:
+
+1. Navigate to **Safety Analytics**
+2. Scroll to **Driver Rankings** section
+3. Click on any driver to view detailed safety history
+
+Drivers with red badges (score below 70) should receive immediate coaching or retraining.
+
+## View safety trends
+
+Safety trend charts show fleet-wide metrics over time:
+
+- **Weekly trends** — last 8 weeks
+- **Monthly trends** — last 12 months
+- **Event type breakdown** — harsh braking vs. speeding vs. incidents
+
+Use trend data to measure the effectiveness of safety programs and training initiatives.
+
+<Callout variant="success">
+If you see safety scores improving over time, share the results with your team. Positive reinforcement encourages continued safe driving.
+</Callout>
+
+## Export safety reports
+
+Generate safety reports for insurance audits or compliance reviews:
+
+1. Navigate to **Safety Analytics**
+2. Click **Export Report**
+3. Select date range
+4. Choose format (PDF or CSV)
+5. Click **Download**
+
+Reports include fleet summary, driver-level details, and event logs.
+
+## Related features
+
+<FeatureCard slug="driver-incidents" />
+<FeatureCard slug="live-map" />
+<FeatureCard slug="drivers" />
+<FeatureCard slug="carrier-fleet-drivers" />
+
+## Frequently asked questions
+
+**How often do safety scores update?**
+
+Safety scores recalculate in real-time whenever a new event is logged (harsh braking, speeding, incident report).
+
+**Can I adjust the harsh braking threshold?**
+
+Not currently. The threshold is set at 8 mph/second based on industry standards. Custom thresholds are planned for a future release.
+
+**What if a driver disputes a speeding violation?**
+
+Review the GPS event details including timestamp, location, and speed. Compare against posted speed limits and road conditions. Contact support if data appears incorrect.
+
+**Do safety scores affect driver pay?**
+
+Only if you configure safety-based bonuses in your payroll structure. DriveCommand does not automatically adjust driver pay based on safety scores.

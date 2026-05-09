@@ -1,0 +1,163 @@
+---
+slug: loads
+title: Legacy Load Management
+summary: Manage individual loads with status workflow (PENDING to DELIVERED), customer assignment, and tracking token generation for shipment visibility.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Legacy Load Management
+
+<Callout variant="info">
+Legacy Load Management provides the original load CRUD interface with status workflow, customer assignment, and tracking token generation. For the enhanced Carrier Load Management interface with advanced filtering and route integration, see Carrier Loads.
+</Callout>
+
+## Overview
+
+The load list shows all shipments with key details:
+
+- **Load number** — unique identifier
+- **Customer** — shipper or broker
+- **Origin and destination** — pickup and delivery addresses
+- **Status** — PENDING, AT_PICKUP, IN_TRANSIT, or DELIVERED
+- **Driver assignment** (if dispatched)
+- **Revenue** — total load value
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create a load
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Loads">
+    In the sidebar, click **Loads** under Legacy Features.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Load">
+    The load creation form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select customer">
+    Choose the customer from the dropdown, or click **Add New Customer** to create one.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter pickup details">
+    - **Pickup address** (uses autocomplete)
+    - **Pickup contact name and phone**
+    - **Scheduled pickup date and time**
+    - **BOL number** (optional)
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter delivery details">
+    - **Delivery address** (uses autocomplete)
+    - **Delivery contact name and phone**
+    - **Scheduled delivery date and time**
+    - **PO number** (optional)
+  </StepFlow.Step>
+  <StepFlow.Step title="Add freight details (optional)">
+    - **Commodity** — what's being shipped
+    - **Weight and pieces**
+    - **Rate** — revenue for this load
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the load">
+    Click **Save**. The load appears in the list with PENDING status.
+  </StepFlow.Step>
+</StepFlow>
+
+## Understand load statuses
+
+Loads progress through four statuses:
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Load created, not yet dispatched" },
+  { label: "AT_PICKUP", description: "Driver arrived at pickup location" },
+  { label: "IN_TRANSIT", description: "Load picked up, en route to delivery" },
+  { label: "DELIVERED", description: "Load delivered, route complete" }
+]} />
+
+Only drivers can advance load status from the Driver Portal. Owners cannot manually change statuses to ensure accurate tracking.
+
+<Callout variant="tip" title="Pro Tip">
+If a driver advances status by mistake, use the **Revert Status** action to move the load back one step. This is available in Carrier Load Management.
+</Callout>
+
+## Assign a load to a route
+
+Loads become part of a route during dispatch:
+
+1. Create or open an existing route
+2. Add pickup and delivery stops matching the load's addresses
+3. Link the load to the route
+4. The load's status syncs with the route's progress
+
+Alternatively, use the Dispatch Board for drag-and-drop assignment.
+
+## Generate a tracking token
+
+Give customers real-time shipment visibility with public tracking:
+
+1. Open the load detail page
+2. Click **Generate Tracking Link**
+3. Copy the unique URL
+4. Share with your customer via email or SMS
+
+Customers can visit the tracking page to see:
+
+- Current load status
+- GPS location (if driver has location enabled)
+- ETA to delivery
+- Stop timeline
+
+Tracking links remain active for 30 days after delivery.
+
+<Callout variant="warning" title="Privacy Note">
+Tracking links are public and accessible by anyone with the URL. Only generate tracking links for loads where the customer needs visibility.
+</Callout>
+
+## View load history
+
+The load detail page includes:
+
+- **Status timeline** — when each status change occurred
+- **Assigned driver and truck**
+- **Route information** (if part of a route)
+- **Documents** — rate confirmations, BOLs, delivery receipts
+- **Messages** — load-scoped communication with driver
+- **Revenue and cost** — profitability breakdown
+
+Use load history to analyze performance and resolve customer inquiries.
+
+## Cancel a load
+
+If a load is cancelled before dispatch:
+
+1. Open the load detail page
+2. Click **Actions → Cancel Load**
+3. Enter a cancellation reason
+4. Click **Confirm**
+
+The load status changes to CANCELLED and is removed from dispatch views. Cancelled loads remain in the system for historical reporting.
+
+<Callout variant="danger" title="Warning">
+Loads that are IN_TRANSIT cannot be cancelled. Contact the driver to return the load or coordinate with the customer before cancelling.
+</Callout>
+
+## Related features
+
+<FeatureCard slug="carrier-loads" />
+<FeatureCard slug="routes" />
+<FeatureCard slug="driver-my-load" />
+<FeatureCard slug="shipment-tracking" />
+
+## Frequently asked questions
+
+**What's the difference between Loads and Carrier Loads?**
+
+Loads is the original legacy interface. Carrier Loads is the newer interface with 4-tab filtering (All/Active/Pending/Delivered), advanced search, and route integration. Both manage the same load data.
+
+**Can I edit a load after it's IN_TRANSIT?**
+
+No. Once a load is picked up, key fields (customer, addresses, BOL/PO numbers) are locked to maintain data integrity. You can still add documents and messages.
+
+**How do I invoice a delivered load?**
+
+Navigate to **Invoices** and click **New Invoice**. Select the customer and the system will show all delivered loads for that customer. Add the load to the invoice.
+
+**What happens if a driver doesn't have internet during delivery?**
+
+The mobile app queues status updates offline and syncs when connectivity is restored. Load status will update once the driver reconnects.

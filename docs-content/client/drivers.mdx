@@ -1,0 +1,153 @@
+---
+slug: drivers
+title: Legacy Driver Management
+summary: Manage driver profiles with email invitations, document tracking, safety scores, and compliance monitoring for your fleet team.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 6
+---
+
+# Legacy Driver Management
+
+<Callout variant="info">
+Legacy Driver Management provides driver profile management, email-based invitation flow, document tracking, and safety scoring. For the enhanced interface with real-time status and advanced features, see Carrier Driver Management.
+</Callout>
+
+## Overview
+
+The driver list shows all active and invited drivers with key information:
+
+- **Name and contact information**
+- **Email and phone number**
+- **License number and CDL class**
+- **Compliance status** — green (current), yellow (expiring soon), red (expired)
+- **Current load assignment**
+- **Safety score** — calculated from incident reports and safety events
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Invite a driver
+
+DriveCommand uses email invitations to onboard drivers securely:
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to Drivers">
+    In the sidebar, click **Drivers** under Legacy Features.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Invite Driver">
+    The invitation form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter driver details">
+    Required fields:
+    - **First and last name**
+    - **Email address** — driver will receive invitation here
+    - **Phone number**
+    - **License number and state**
+    - **CDL class** (A, B, or C)
+  </StepFlow.Step>
+  <StepFlow.Step title="Set permissions (optional)">
+    If using Team Permissions, configure driver access levels before sending the invite.
+  </StepFlow.Step>
+  <StepFlow.Step title="Send invitation">
+    Click **Send Invitation**. The driver receives an email with a secure acceptance link.
+  </StepFlow.Step>
+</StepFlow>
+
+<ProcessDiagram steps={[
+  { label: "Invite Sent", description: "Driver receives email with unique token link" },
+  { label: "Driver Accepts", description: "Driver creates password and verifies email" },
+  { label: "Profile Complete", description: "Driver appears as Active and can access Driver Portal" }
+]} />
+
+<Callout variant="tip" title="Pro Tip">
+Drivers must accept the invitation within 7 days. After 7 days, the invitation link expires and you'll need to resend it.
+</Callout>
+
+## Track driver documents
+
+Each driver must maintain three core compliance documents:
+
+1. **Commercial Driver's License (CDL)** — valid CDL with proper class
+2. **Medical Certificate** — DOT medical examiner's certificate
+3. **MVR (Motor Vehicle Record)** — annual driving record check
+
+To upload driver documents:
+
+1. Click the driver in the list
+2. Scroll to **Documents** section
+3. Click **Upload Document**
+4. Select document type, expiry date, and file
+5. Click **Upload**
+
+Documents expiring within 30 days show a yellow warning. Expired documents show a red alert.
+
+<Callout variant="warning" title="Compliance Requirement">
+Drivers with expired CDL or medical certificates cannot be assigned to loads. Ensure all documents are current before dispatch.
+</Callout>
+
+## Monitor safety scores
+
+Driver safety scores are calculated from multiple data sources:
+
+- **Incident reports** — accidents, near-misses, and safety violations
+- **Harsh braking events** — from GPS tracking or ELD integration
+- **Speeding violations** — tracked via GPS or ELD
+- **HOS violations** — hours of service rule breaks
+
+Scores range from 0 to 100:
+
+- **90-100**: Excellent (green)
+- **70-89**: Good (yellow)
+- **Below 70**: Needs improvement (red)
+
+View detailed safety analytics and trends on the Safety Analytics page.
+
+## View driver activity
+
+The driver detail page shows:
+
+- **Current load** — active shipment in progress
+- **Load history** — past 90 days of completed loads
+- **Total miles driven** — lifetime and last 30 days
+- **Incident history** — logged incidents with severity and dates
+- **Document status** — compliance overview with expiry dates
+
+Use this information to evaluate driver performance and identify training opportunities.
+
+## Deactivate a driver
+
+If a driver leaves your company:
+
+1. Open the driver detail page
+2. Click **Actions → Deactivate Driver**
+3. Confirm deactivation
+
+Deactivated drivers cannot log in to the Driver Portal and won't appear in dispatch assignment lists. Their historical data remains in the system for reporting.
+
+<Callout variant="warning" title="Important">
+Deactivated drivers cannot be reactivated. If a driver returns, you must send a new invitation.
+</Callout>
+
+## Related features
+
+<FeatureCard slug="carrier-fleet-drivers" />
+<FeatureCard slug="driver-dashboard" />
+<FeatureCard slug="safety-analytics" />
+<FeatureCard slug="compliance-dashboard" />
+
+## Frequently asked questions
+
+**What's the difference between Drivers and Carrier Drivers?**
+
+Drivers is the original legacy interface. Carrier Drivers is the newer interface with real-time status updates, compliance dots, and current load visibility. Both manage the same driver data.
+
+**Can a driver update their own documents?**
+
+Yes. Drivers can upload documents via the Driver Portal under Documents. You'll receive a notification when they upload new files.
+
+**How do I resend an invitation?**
+
+Open the driver detail page and click **Resend Invitation**. The previous invitation link is invalidated and a new one is sent.
+
+**What happens to driver data when they're deactivated?**
+
+All historical data (loads, incidents, safety scores) is preserved for reporting. Only login access and dispatch availability are revoked.

@@ -1,0 +1,183 @@
+---
+slug: crm
+title: Customer Relationship Management
+summary: Manage customers and contacts with load history, revenue totals, interaction logging, and relationship tracking for shippers and brokers.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Customer Relationship Management
+
+<Callout variant="info">
+CRM provides customer and contact management for shippers, brokers, and consignees. Track load history, revenue totals, communication logs, and relationship health to grow your business.
+</Callout>
+
+## Overview
+
+The CRM system helps you manage business relationships with:
+
+- **Customers** — companies you haul freight for (shippers, brokers, 3PLs)
+- **Contacts** — individual people at those companies
+- **Interactions** — logged calls, emails, and meetings
+- **Load history** — all shipments for each customer
+- **Revenue analytics** — total revenue and trends per customer
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Add a customer
+
+<StepFlow>
+  <StepFlow.Step title="Navigate to CRM">
+    In the sidebar, click **CRM** under Legacy Features.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Customer">
+    The customer creation form appears.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter company details">
+    Required fields:
+    - **Company name** (e.g., "ABC Logistics")
+    - **Customer type** — Shipper, Broker, 3PL, or Consignee
+
+    Optional fields:
+    - **MC number** — FMCSA motor carrier number
+    - **DOT number** — for carrier customers
+    - **Address** — company headquarters
+    - **Website**
+  </StepFlow.Step>
+  <StepFlow.Step title="Add billing information (optional)">
+    - **Payment terms** — Net 15, Net 30, Net 60, etc.
+    - **Credit limit**
+    - **Factoring preference** — if customer requires factoring
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the customer">
+    Click **Save**. The customer appears in your CRM list.
+  </StepFlow.Step>
+</StepFlow>
+
+## Add contacts to a customer
+
+Each customer can have multiple contacts (sales reps, dispatchers, billing departments):
+
+1. Open the customer detail page
+2. Scroll to **Contacts** section
+3. Click **Add Contact**
+4. Enter:
+   - **Name**
+   - **Role** (e.g., "Dispatcher", "Accounts Payable", "Sales Manager")
+   - **Email and phone number**
+   - **Primary contact** checkbox (one per customer)
+5. Click **Save**
+
+Primary contacts appear first in autocomplete dropdowns when creating loads.
+
+<Callout variant="tip" title="Pro Tip">
+Add multiple contacts for different purposes: one for dispatch, one for billing, one for sales. This ensures you always reach the right person.
+</Callout>
+
+## Log customer interactions
+
+Track every conversation, email, and meeting to maintain relationship continuity:
+
+<StepFlow>
+  <StepFlow.Step title="Open customer detail page">
+    Click the customer in the CRM list.
+  </StepFlow.Step>
+  <StepFlow.Step title="Scroll to Interactions section">
+    Click **Log Interaction**.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select interaction type">
+    Choose from:
+    - **Phone call**
+    - **Email**
+    - **In-person meeting**
+    - **Note** (general entry)
+  </StepFlow.Step>
+  <StepFlow.Step title="Add details">
+    - **Subject** — brief summary (e.g., "Rate negotiation call")
+    - **Notes** — detailed description of conversation
+    - **Date and time**
+    - **Contact** — which contact you spoke with
+  </StepFlow.Step>
+  <StepFlow.Step title="Save the interaction">
+    Click **Save**. The interaction appears in the timeline with newest first.
+  </StepFlow.Step>
+</StepFlow>
+
+Use interaction logs to prepare for follow-up calls and ensure your team knows the relationship history.
+
+## View load history
+
+The customer detail page shows all loads for that customer:
+
+- **Total loads** — lifetime count
+- **Active loads** — currently IN_TRANSIT or AT_PICKUP
+- **Delivered loads** — completed shipments
+- **Load timeline** — chronological list with dates, routes, and revenue
+
+Click any load in the timeline to view full load details.
+
+## Track revenue analytics
+
+The CRM dashboard shows revenue metrics per customer:
+
+- **Total revenue** — all-time earnings from this customer
+- **Last 30 days** — recent revenue
+- **Average load value** — typical shipment size
+- **Payment status** — outstanding invoices vs. paid
+
+Use this data to identify your best customers and prioritize relationship-building efforts.
+
+<Callout variant="success">
+Sort the customer list by "Total Revenue" to see your top customers at a glance. Focus retention efforts on high-value accounts.
+</Callout>
+
+## Set payment terms
+
+Configure payment expectations for each customer:
+
+1. Open customer detail page
+2. Click **Edit Customer**
+3. Set **Payment Terms** (Net 15, Net 30, etc.)
+4. Set **Credit Limit** (optional)
+5. Click **Save**
+
+When creating invoices, the system auto-applies the customer's payment terms and warns you if the invoice exceeds their credit limit.
+
+## Manage customer tags
+
+Organize customers with tags for filtering and grouping:
+
+1. Open customer detail page
+2. Scroll to **Tags** section
+3. Click **Add Tag**
+4. Select an existing tag or create a new one
+5. Click **Apply**
+
+Example tags: "Preferred Customer", "High Volume", "Requires Factoring", "Net 30 Terms"
+
+Filter the CRM list by tags to quickly find customer segments.
+
+## Related features
+
+<FeatureCard slug="carrier-clients" />
+<FeatureCard slug="carrier-contracts" />
+<FeatureCard slug="invoices" />
+<FeatureCard slug="tags" />
+
+## Frequently asked questions
+
+**What's the difference between CRM and Carrier Clients?**
+
+CRM is the original customer management interface. Carrier Clients is the newer interface with advanced filtering, contract management, and rate tables. Both access the same customer data.
+
+**Can I import customers from a spreadsheet?**
+
+Not yet. Customers must be added individually through the web interface. Bulk import is planned for a future release.
+
+**How do I merge duplicate customers?**
+
+Contact support via the Support Ticket system. Merging customers requires database-level changes to preserve load history and prevent data loss.
+
+**Can customers log in to see their load status?**
+
+No. Customers don't have login access. Instead, generate public tracking links for each load and share those URLs with your customers.
