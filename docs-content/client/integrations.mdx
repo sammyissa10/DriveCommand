@@ -1,0 +1,244 @@
+---
+slug: integrations
+title: Third-Party Integrations
+summary: Connect DriveCommand with QuickBooks, Samsara, Motive/KeepTruckin, factoring services, and email providers to streamline workflows and sync data.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 7
+---
+
+# Third-Party Integrations
+
+<Callout variant="info">
+DriveCommand integrates with popular trucking and business software to eliminate manual data entry. Connect accounting systems, ELD providers, factoring services, and email platforms for seamless data flow.
+</Callout>
+
+## Overview
+
+Use Integrations to:
+
+- **Sync accounting data** — export invoices and expenses to QuickBooks or Xero
+- **Import GPS and HOS data** — connect Samsara or Motive/KeepTruckin for automatic GPS tracking
+- **Automate factoring** — send invoices directly to factoring companies for faster payment
+- **Email from your domain** — use custom SMTP for branded email notifications
+- **Reduce manual entry** — data flows automatically between systems
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## Available integrations
+
+DriveCommand supports integrations with:
+
+**Accounting:**
+- QuickBooks Online
+- Xero
+- Sage 50 (planned)
+
+**ELD / GPS Tracking:**
+- Samsara
+- Motive (formerly KeepTruckin)
+- Omnitracs (planned)
+
+**Factoring:**
+- OTR Capital
+- Triumph Business Capital
+- RTS Financial (planned)
+
+**Email:**
+- Gmail SMTP
+- SendGrid
+- Mailgun
+- Custom SMTP
+
+**Fuel Cards:**
+- Comdata (planned)
+- EFS / FleetOne (planned)
+
+## QuickBooks Online integration
+
+Sync invoices, expenses, and customers with QuickBooks Online.
+
+### Setup
+
+<StepFlow>
+  <StepFlow.Step title="Open Integrations">
+    Navigate to **Settings → Integrations** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Connect next to QuickBooks Online">
+    You'll be redirected to Intuit's authorization page.
+  </StepFlow.Step>
+  <StepFlow.Step title="Log in to QuickBooks">
+    Sign in with your QuickBooks account credentials.
+  </StepFlow.Step>
+  <StepFlow.Step title="Authorize DriveCommand">
+    Grant DriveCommand permission to read and write invoices, expenses, and customers.
+  </StepFlow.Step>
+  <StepFlow.Step title="Return to DriveCommand">
+    You'll be redirected back to DriveCommand. The integration is now active.
+  </StepFlow.Step>
+</StepFlow>
+
+### What syncs
+
+Once connected, DriveCommand syncs:
+
+- **Invoices** → QuickBooks Invoices (synced when invoice is marked "Sent" or "Paid")
+- **Customers** → QuickBooks Customers (synced when customer is created in CRM)
+- **Expenses** → QuickBooks Expenses (synced daily at midnight)
+
+**Sync direction:** DriveCommand → QuickBooks (one-way). Changes made in QuickBooks are not synced back to DriveCommand.
+
+**Sync frequency:** Invoices sync immediately, customers sync hourly, expenses sync daily.
+
+### Troubleshooting
+
+**Issue: Invoice not appearing in QuickBooks**
+
+Check:
+1. Invoice status is "Sent" or "Paid" (draft invoices are not synced)
+2. Integration is connected (green checkmark on Integrations page)
+3. Check error log on Integrations page for sync failures
+
+**Issue: Duplicate customers in QuickBooks**
+
+DriveCommand matches customers by email address. If a customer with the same email exists in QuickBooks, it updates the existing record instead of creating a duplicate. Ensure email addresses are consistent.
+
+## Samsara ELD integration
+
+Import GPS tracking data and driver HOS logs from Samsara.
+
+### Setup
+
+<StepFlow>
+  <StepFlow.Step title="Get Samsara API key">
+    Log in to Samsara dashboard → Settings → API Tokens → Create New Token.
+  </StepFlow.Step>
+  <StepFlow.Step title="Open Integrations in DriveCommand">
+    Navigate to **Settings → Integrations** → Samsara section.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter API key">
+    Paste your Samsara API token into the API Key field.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Connect">
+    DriveCommand validates the token and fetches your fleet list.
+  </StepFlow.Step>
+  <StepFlow.Step title="Map trucks">
+    Match Samsara vehicles to DriveCommand trucks by VIN or name.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save mapping">
+    Click **Save**. GPS and HOS data will sync automatically.
+  </StepFlow.Step>
+</StepFlow>
+
+### What syncs
+
+Once connected, DriveCommand imports:
+
+- **GPS reports** — truck location pings (every 5 minutes) for live map and IFTA reporting
+- **HOS entries** — driver duty status changes (driving, on-duty, off-duty, sleeper berth)
+- **Vehicle diagnostics** — odometer, fuel level, engine hours (displayed on truck detail page)
+
+**Sync frequency:** GPS every 5 minutes, HOS every 15 minutes, diagnostics hourly.
+
+**Data retention:** GPS and HOS data is stored for 2 years to support IFTA reporting and compliance.
+
+## Motive (KeepTruckin) integration
+
+Similar to Samsara, Motive integration imports GPS and HOS data.
+
+Setup steps are identical to Samsara:
+1. Get Motive API key from Motive dashboard
+2. Enter API key in DriveCommand Integrations
+3. Map vehicles
+4. Sync runs automatically
+
+## Factoring integration (OTR Capital example)
+
+Send invoices to your factoring company for immediate payment.
+
+### Setup
+
+<StepFlow>
+  <StepFlow.Step title="Open Integrations">
+    Navigate to **Settings → Integrations** → Factoring section.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select factoring provider">
+    Choose OTR Capital (or your provider from the dropdown).
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter factoring account ID">
+    Enter your OTR Capital account number or customer ID.
+  </StepFlow.Step>
+  <StepFlow.Step title="Authorize connection">
+    Click **Connect**. You may be redirected to OTR Capital to authorize the connection.
+  </StepFlow.Step>
+  <StepFlow.Step title="Configure auto-submit">
+    Choose whether invoices are submitted automatically when marked "Sent" or require manual approval.
+  </StepFlow.Step>
+</StepFlow>
+
+### How it works
+
+1. Create an invoice in DriveCommand
+2. Mark invoice as "Sent"
+3. DriveCommand submits invoice to factoring company via API
+4. Factoring company advances payment (typically 80-95% within 24 hours)
+5. When factoring company receives payment from customer, they remit the balance to you
+
+Factoring status is displayed on the invoice detail page (Submitted, Funded, Completed).
+
+## Custom SMTP email integration
+
+Use your own email server for branded notifications.
+
+### Setup
+
+1. Go to **Settings → Integrations** → Email section
+2. Enter SMTP settings:
+   - **SMTP Host** (e.g., smtp.gmail.com)
+   - **SMTP Port** (587 for TLS, 465 for SSL)
+   - **Username** (your email address)
+   - **Password** (app password or SMTP password)
+   - **From Name** (your company name)
+   - **From Email** (your email address)
+3. Click **Test Connection** to verify settings
+4. Click **Save**
+
+All DriveCommand notification emails (driver invitations, expiry reminders, etc.) will now send from your email address instead of noreply@drivecommand.com.
+
+<Callout variant="tip" title="Pro Tip">
+Use an app-specific password for Gmail SMTP instead of your main password. Generate an app password in Google Account Settings → Security → App Passwords.
+</Callout>
+
+## Disconnect integrations
+
+To disconnect an integration:
+
+1. Go to **Settings → Integrations**
+2. Find the connected integration
+3. Click **Disconnect**
+4. Confirm the action
+
+**Data impact:** Disconnecting does not delete synced data. Historical data (invoices, GPS reports) remains in DriveCommand. Future syncs will stop.
+
+## Related features
+
+<FeatureCard slug="invoices" />
+<FeatureCard slug="live-map" />
+<FeatureCard slug="ifta-reporting" />
+
+## Frequently asked questions
+
+**Can I connect multiple QuickBooks accounts?**
+
+No. DriveCommand supports one QuickBooks connection per account. If you have multiple QuickBooks companies, choose the primary one for sync.
+
+**What happens if an invoice sync fails?**
+
+Failed syncs are logged on the Integrations page. Click **View Error Log** to see the error message. Common issues: missing customer in QuickBooks, invalid account mapping. Retry the sync after fixing the issue.
+
+**Can I sync data from QuickBooks to DriveCommand?**
+
+Not yet. Sync is currently one-way (DriveCommand → QuickBooks). Two-way sync is planned for a future release.
+
+**Do integrations cost extra?**
+
+No. Integrations are included in the Business and Enterprise plans at no additional cost. You may incur costs from the third-party service (e.g., QuickBooks subscription, Samsara API fees).

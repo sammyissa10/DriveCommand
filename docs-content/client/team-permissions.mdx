@@ -1,0 +1,229 @@
+---
+slug: team-permissions
+title: Team Permissions
+summary: Manage team members with role-based access control, granular permissions, manager role configuration, and secure driver invitations.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+---
+
+# Team Permissions
+
+<Callout variant="info">
+Team Permissions give you fine-grained control over who can access what in DriveCommand. Assign roles, configure permissions, and manage team members with secure invitation workflows.
+</Callout>
+
+## Overview
+
+Use Team Permissions to:
+
+- **Control access** — define who can view, create, edit, or delete loads, trucks, drivers, and invoices
+- **Assign roles** — owner, manager, dispatcher, or driver roles with default permissions
+- **Customize permissions** — override defaults to match your operational structure
+- **Invite team members** — send secure email invitations with pre-configured permissions
+- **Audit activity** — track who made changes and when
+
+<PlanBadge tier="business" /> This feature requires a Business plan or higher.
+
+## User roles
+
+DriveCommand supports four primary roles:
+
+<ComparisonTable
+  headers={["Role", "Primary Use Case", "Default Permissions"]}
+  rows={[
+    ["Owner", "Company owner or administrator", "Full access to all features and settings"],
+    ["Manager", "Operations manager or supervisor", "Manage loads, routes, drivers, trucks; cannot change billing or subscription"],
+    ["Dispatcher", "Dispatch coordinator", "Create and assign loads, view routes, message drivers; read-only on trucks and invoices"],
+    ["Driver", "Truck driver", "View assigned loads, update load status, upload documents, log HOS"]
+  ]}
+/>
+
+**Owner role** has unrestricted access and cannot be edited. At least one owner must exist for each account.
+
+**Manager, Dispatcher, and Driver roles** can be customized with granular permissions.
+
+## Granular permissions
+
+Each role can be configured with specific permissions across feature areas:
+
+**Dispatch permissions:**
+- View loads
+- Create loads
+- Edit loads
+- Delete loads
+- Assign drivers to loads
+- Change load status
+- View routes
+- Create routes
+- Edit routes
+
+**Fleet permissions:**
+- View drivers
+- Invite drivers
+- Edit driver profiles
+- View trucks
+- Create trucks
+- Edit trucks
+- Delete trucks
+
+**Finance permissions:**
+- View invoices
+- Create invoices
+- Edit invoices
+- Delete invoices
+- Mark invoices as paid
+- View payroll
+- Create payroll records
+
+**Compliance permissions:**
+- View compliance dashboard
+- Upload documents
+- Manage IFTA reports
+
+**Settings permissions:**
+- Manage team members
+- Change subscription
+- Configure integrations
+
+Permissions are checkboxes on the team member edit page. Check to grant access, uncheck to deny.
+
+## Invite a team member
+
+<StepFlow>
+  <StepFlow.Step title="Open Team Permissions">
+    Navigate to **Settings → Team Permissions** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click Invite Team Member">
+    The invitation form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter email and name">
+    Enter the new team member's email address and full name.
+  </StepFlow.Step>
+  <StepFlow.Step title="Select role">
+    Choose the role: Manager, Dispatcher, or Driver. (Owner invitations are handled differently.)
+  </StepFlow.Step>
+  <StepFlow.Step title="Configure permissions">
+    Review and adjust permissions for this team member. Default permissions are pre-selected based on the role.
+  </StepFlow.Step>
+  <StepFlow.Step title="Send invitation">
+    Click **Send Invitation**. The team member receives an email with a secure link to accept the invitation and set their password.
+  </StepFlow.Step>
+</StepFlow>
+
+**Invitation expiry:** Invitation links expire after 7 days. If the team member doesn't accept within 7 days, resend the invitation.
+
+## Accept invitation workflow
+
+When a team member receives an invitation:
+
+1. They click the link in the email
+2. The invitation acceptance page loads
+3. They enter a password and confirm it
+4. They click **Accept Invitation**
+5. Their account is created and they are logged in
+6. They see the DriveCommand portal based on their role (owner/manager/dispatcher → web portal, driver → mobile app prompt)
+
+<Callout variant="tip" title="Pro Tip">
+Set permissions before sending the invitation. This ensures the team member has the correct access from day one. You can always adjust permissions later.
+</Callout>
+
+## Edit team member permissions
+
+To change permissions for an existing team member:
+
+1. Go to **Settings → Team Permissions**
+2. Find the team member in the list
+3. Click **Edit**
+4. Check or uncheck permissions
+5. Click **Save**
+
+Permission changes take effect immediately. If the team member is logged in, they may need to refresh the page to see updated access.
+
+## Remove team member access
+
+To revoke access:
+
+1. Go to **Settings → Team Permissions**
+2. Find the team member in the list
+3. Click **Remove** (or **Suspend** to temporarily disable access)
+4. Confirm the action
+
+**Removed vs. Suspended:**
+- **Removed** — team member is permanently deleted, cannot log in
+- **Suspended** — team member account is disabled but not deleted, can be reactivated later
+
+Removed team members' historical actions (loads created, invoices issued) remain in the system with their name attached for audit purposes.
+
+## Manager role examples
+
+**Use case 1: Operations manager**
+
+Permissions:
+- Create/edit loads, routes, drivers, trucks
+- View invoices (read-only)
+- Manage team members
+- Cannot change subscription or billing settings
+
+**Use case 2: Compliance manager**
+
+Permissions:
+- View drivers and trucks
+- Upload documents
+- View compliance dashboard
+- Manage IFTA reports
+- Cannot create loads or invoices
+
+**Use case 3: Safety manager**
+
+Permissions:
+- View drivers
+- View incidents
+- View safety analytics
+- Cannot edit loads or routes
+
+Customize the Manager role to match your operational structure.
+
+## Driver invitations
+
+Driver invitations work the same as other team member invitations, but with driver-specific defaults:
+
+- **Default role:** Driver
+- **Default permissions:** View my loads, update load status, upload documents, log HOS, view messages
+- **Portal redirect:** Drivers are redirected to download the DriveCommand mobile app after accepting the invitation
+
+Drivers can log into the web portal, but their primary experience is the mobile app.
+
+<FeatureCard slug="drivers" />
+
+## Audit log
+
+The Team Permissions page shows:
+- Who invited each team member
+- When the invitation was sent
+- When the invitation was accepted
+- Last login date
+
+For a full audit log of actions (who created/edited/deleted records), see the activity log on individual load, truck, or invoice detail pages.
+
+## Related features
+
+<FeatureCard slug="drivers" />
+<FeatureCard slug="subscription" />
+
+## Frequently asked questions
+
+**Can I have multiple owners?**
+
+Yes. You can add additional owners by inviting a team member and selecting the Owner role. Owners have full access and cannot have permissions restricted.
+
+**Can a driver be promoted to dispatcher or manager?**
+
+Yes. Edit the driver's team member record and change their role to Dispatcher or Manager. Adjust permissions as needed.
+
+**What happens if I remove the only owner?**
+
+You cannot remove the last owner. DriveCommand requires at least one owner per account for billing and administrative purposes. Add a new owner before removing the current one.
+
+**Can team members reset their own passwords?**
+
+Yes. Team members can use the "Forgot Password" link on the login page to reset their password via email.

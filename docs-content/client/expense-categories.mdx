@@ -1,0 +1,138 @@
+---
+slug: expense-categories
+title: Expense Categories
+summary: Configure custom expense categories for fuel, maintenance, tolls, and other operational costs to organize and track fleet expenses.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 4
+---
+
+# Expense Categories
+
+<Callout variant="info">
+Expense Categories help you organize fleet expenses into logical groups. Create custom categories for fuel, maintenance, tolls, permits, and other operational costs to track spending and generate financial reports.
+</Callout>
+
+## Overview
+
+Use Expense Categories to:
+
+- **Organize expenses** — group similar costs for accurate financial tracking
+- **Customize categories** — create categories that match your accounting structure
+- **Track spending trends** — see total spend per category over time
+- **Simplify tax reporting** — categorize deductible expenses for accountants
+- **Link to expense templates** — recurring expenses use categories for consistency
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Default categories
+
+DriveCommand includes pre-configured expense categories:
+
+- **Fuel** — diesel, gasoline, DEF (diesel exhaust fluid)
+- **Maintenance** — repairs, oil changes, tire replacements
+- **Tolls** — highway tolls, bridge tolls
+- **Permits** — oversize permits, state-specific permits
+- **Insurance** — truck insurance premiums, cargo insurance
+- **Lease Payments** — truck lease or rental payments
+- **Driver Pay** — salaries, bonuses, per-mile pay
+- **Office Expenses** — software subscriptions, office supplies
+- **Other** — miscellaneous operational costs
+
+Default categories cannot be deleted but can be renamed.
+
+## Create a custom category
+
+<StepFlow>
+  <StepFlow.Step title="Open Expense Categories">
+    Navigate to **Settings → Expense Categories** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Category">
+    The category creation form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter category name">
+    Choose a descriptive name (e.g., "Parking Fees", "Lumper Fees", "Advertising").
+  </StepFlow.Step>
+  <StepFlow.Step title="Select a color (optional)">
+    Choose a color to visually distinguish this category in reports and charts.
+  </StepFlow.Step>
+  <StepFlow.Step title="Add description (optional)">
+    Enter a brief description of what expenses belong in this category.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save category">
+    Click **Save**. The category is now available when logging expenses.
+  </StepFlow.Step>
+</StepFlow>
+
+## Edit or delete categories
+
+To modify an existing category:
+
+1. Go to **Settings → Expense Categories**
+2. Find the category in the list
+3. Click **Edit** to rename or change the color
+4. Click **Save**
+
+To delete a category:
+
+1. Click **Delete** next to the category
+2. Confirm the deletion
+
+**Important:** Deleting a category does not delete expenses. Expenses linked to the deleted category will be moved to the "Other" category.
+
+<Callout variant="warning" title="Important">
+Deleting a category is permanent. If you're unsure, rename it to "Archived - [Name]" instead.
+</Callout>
+
+## Use categories when logging expenses
+
+When creating an expense record:
+
+1. Select the expense category from the dropdown
+2. Enter the amount and date
+3. Optionally link to a truck, driver, or load
+4. Save the expense
+
+The expense appears in the category's total on the Expense Dashboard and in financial reports.
+
+## Category spending reports
+
+The Expense Dashboard shows spending by category:
+
+- **Total spend per category** — sum of all expenses in each category for the selected period
+- **Percentage breakdown** — pie chart showing category distribution
+- **Top categories** — categories with highest spend
+- **Month-over-month trends** — line chart showing category spend over time
+
+Use category reports to identify cost reduction opportunities (e.g., high toll costs may indicate route optimization opportunities).
+
+## Link categories to templates
+
+Expense templates use categories for recurring expenses:
+
+<FeatureCard slug="expense-templates" />
+
+For example, create an "Insurance" expense template with the "Insurance" category. When the template generates a recurring expense, it automatically uses the "Insurance" category.
+
+## Related features
+
+<FeatureCard slug="expense-templates" />
+
+## Frequently asked questions
+
+**How many custom categories can I create?**
+
+Unlimited. Create as many categories as needed to match your accounting structure.
+
+**Can I merge two categories?**
+
+Not directly. To merge categories:
+1. Edit all expenses in Category A and change them to Category B
+2. Delete Category A
+
+**Can categories have sub-categories?**
+
+Not yet. Category hierarchy (parent/child categories) is planned for a future release. For now, use naming conventions like "Maintenance - Tires" and "Maintenance - Oil Changes".
+
+**Are categories shared across all users?**
+
+Yes. Expense categories are account-wide. All team members see the same category list when logging expenses.

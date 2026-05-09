@@ -1,0 +1,195 @@
+---
+slug: expense-templates
+title: Expense Templates
+summary: Create recurring expense templates for predictable costs like insurance, leases, and subscriptions to automate expense tracking and budgeting.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 5
+---
+
+# Expense Templates
+
+<Callout variant="info">
+Expense Templates automate recurring expenses. Set up templates for insurance premiums, truck leases, software subscriptions, and other predictable costs, then let DriveCommand create expense records automatically.
+</Callout>
+
+## Overview
+
+Use Expense Templates to:
+
+- **Automate recurring expenses** — create expense records automatically on a schedule
+- **Track fixed costs** — monitor monthly or quarterly expenses like insurance and leases
+- **Simplify budgeting** — see upcoming recurring expenses in financial forecasts
+- **Reduce manual entry** — set once, forget it
+- **Link to categories** — templates use expense categories for consistent tracking
+
+<PlanBadge tier="pro" /> This feature requires a Pro plan or higher.
+
+## Create an expense template
+
+<StepFlow>
+  <StepFlow.Step title="Open Expense Templates">
+    Navigate to **Settings → Expense Templates** in the sidebar.
+  </StepFlow.Step>
+  <StepFlow.Step title="Click New Template">
+    The template creation form opens.
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter template name">
+    Choose a descriptive name (e.g., "Monthly Truck Insurance", "Quarterly Software License").
+  </StepFlow.Step>
+  <StepFlow.Step title="Select expense category">
+    Choose the category for expenses created from this template (e.g., "Insurance", "Lease Payments").
+  </StepFlow.Step>
+  <StepFlow.Step title="Enter amount">
+    Enter the fixed expense amount (e.g., $450 for monthly insurance).
+  </StepFlow.Step>
+  <StepFlow.Step title="Set recurrence">
+    Choose how often the expense recurs:
+    - Weekly
+    - Bi-weekly
+    - Monthly
+    - Quarterly
+    - Annually
+  </StepFlow.Step>
+  <StepFlow.Step title="Set start date and optional end date">
+    Enter when the first expense should be created. Optionally set an end date (e.g., lease expires in 12 months).
+  </StepFlow.Step>
+  <StepFlow.Step title="Link to truck or driver (optional)">
+    If the expense is truck-specific (e.g., truck lease) or driver-specific (e.g., driver uniform allowance), link to the truck or driver.
+  </StepFlow.Step>
+  <StepFlow.Step title="Save template">
+    Click **Save**. The template is now active and will create expense records on the schedule.
+  </StepFlow.Step>
+</StepFlow>
+
+## Recurrence options
+
+Templates support flexible recurrence schedules:
+
+<ComparisonTable
+  headers={["Recurrence", "Example Use Case", "When Expenses are Created"]}
+  rows={[
+    ["Weekly", "Weekly fuel card charges", "Every 7 days from start date"],
+    ["Bi-weekly", "Bi-weekly driver uniform cleaning", "Every 14 days from start date"],
+    ["Monthly", "Monthly truck insurance premium", "Same day each month (e.g., 1st of month)"],
+    ["Quarterly", "Quarterly software subscription", "Every 3 months on the same day"],
+    ["Annually", "Annual truck registration renewal", "Once per year on the same date"]
+  ]}
+/>
+
+DriveCommand creates expense records automatically at midnight on the scheduled date.
+
+## Template-generated expenses
+
+When a template generates an expense record:
+
+1. The expense is created with the template's amount, category, and linked truck/driver
+2. The expense appears in the Expense Dashboard
+3. You receive a notification (if enabled)
+4. The expense is editable (you can adjust the amount or delete it if needed)
+
+Template-generated expenses are marked with a "Recurring" badge to distinguish them from manually entered expenses.
+
+## Edit or pause templates
+
+To modify an existing template:
+
+1. Go to **Settings → Expense Templates**
+2. Find the template in the list
+3. Click **Edit** to change amount, recurrence, or category
+4. Click **Save**
+
+**Changes apply to future expenses only.** Previously created expenses are not updated.
+
+To pause a template without deleting it:
+
+1. Click **Pause** next to the template
+2. The template stops creating new expenses but is retained
+
+To resume a paused template:
+
+1. Click **Resume** next to the paused template
+2. The template resumes creating expenses on the next scheduled date
+
+## Delete templates
+
+To delete a template:
+
+1. Go to **Settings → Expense Templates**
+2. Click **Delete** next to the template
+3. Confirm the deletion
+
+**Important:** Deleting a template does not delete expenses already created. It only stops future expense generation.
+
+<Callout variant="tip" title="Pro Tip">
+Use templates for any expense that's the same amount each period. Even if the amount varies slightly (e.g., insurance premiums that adjust annually), create the template and manually edit the generated expense when the amount changes.
+</Callout>
+
+## Upcoming expenses forecast
+
+The Expense Dashboard includes an **Upcoming Recurring Expenses** section showing:
+
+- Template name
+- Next expense date
+- Amount
+- Total estimated spend for the next 30 days
+
+Use this to forecast cash flow and budget for upcoming expenses.
+
+## Template examples
+
+**Example 1: Monthly truck insurance**
+
+- Name: "Truck #102 Insurance"
+- Category: Insurance
+- Amount: $450
+- Recurrence: Monthly
+- Start date: 1st of each month
+- Linked to: Truck #102
+
+**Example 2: Quarterly software subscription**
+
+- Name: "DriveCommand Pro Plan"
+- Category: Office Expenses
+- Amount: $747 (quarterly billing)
+- Recurrence: Quarterly
+- Start date: January 1st
+
+**Example 3: Annual permit renewal**
+
+- Name: "Oregon Permit Renewal"
+- Category: Permits
+- Amount: $120
+- Recurrence: Annually
+- Start date: March 15th each year
+
+## Link to expense categories
+
+Templates use expense categories for consistency:
+
+<FeatureCard slug="expense-categories" />
+
+When creating a template, select the category. All expenses generated from that template will inherit the category.
+
+## Related features
+
+<FeatureCard slug="expense-categories" />
+
+## Frequently asked questions
+
+**Can I create a template with variable amounts?**
+
+Not yet. Templates support fixed amounts only. For variable expenses (e.g., fuel costs), manually log each expense or use fuel tracking:
+
+<FeatureCard slug="fuel-dashboard" />
+
+**What happens if a template generates an expense on a weekend or holiday?**
+
+The expense is created on the scheduled date, even if it's a weekend or holiday. You can manually adjust the date after creation if needed.
+
+**Can I create a template that expires after a certain number of occurrences?**
+
+Yes. Set the end date to the date of the last occurrence. For example, for a 12-month lease starting January 1st with monthly payments, set the end date to December 1st.
+
+**Can I link one template to multiple trucks?**
+
+Not directly. Create a separate template for each truck. For example, if you have 10 trucks with $450/month insurance each, create 10 templates (one per truck).
