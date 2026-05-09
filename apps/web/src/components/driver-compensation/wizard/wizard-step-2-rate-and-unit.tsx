@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import type { WizardFormState } from '@/app/(owner)/drivers/[id]/compensation/wizard/page';
+import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
 
 const RATE_UNIT_OPTIONS: Record<WizardFormState['payType'], { value: WizardFormState['rateUnit']; label: string }[]> = {
   CPM: [{ value: 'PER_MILE', label: 'Per mile' }],

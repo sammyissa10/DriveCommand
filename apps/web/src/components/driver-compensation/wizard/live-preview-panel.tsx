@@ -2,7 +2,7 @@
 
 import Decimal from 'decimal.js';
 import { Card } from '@/components/ui/card';
-import type { WizardFormState } from '@/app/(owner)/drivers/[id]/compensation/wizard/page';
+import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
 
 const SAMPLE_MILES = 412;
 const SAMPLE_HOURS = 8;

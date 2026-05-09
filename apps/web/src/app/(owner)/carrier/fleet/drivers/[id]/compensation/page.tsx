@@ -57,7 +57,7 @@ export default async function DriverCompensationPage({ params }: CompensationPag
       {/* Header */}
       <div>
         <Link
-          href={`/drivers/${driverId}`}
+          href={`/carrier/fleet/drivers/${driverId}`}
           className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
@@ -71,7 +71,7 @@ export default async function DriverCompensationPage({ params }: CompensationPag
             <p className="text-muted-foreground text-sm mt-1">{driverName}</p>
           </div>
           <Button asChild>
-            <Link href={`/drivers/${driverId}/compensation/wizard`}>
+            <Link href={`/carrier/fleet/drivers/${driverId}/compensation/wizard`}>
               <Plus className="h-4 w-4 mr-1.5" />
               {activeTemplate ? 'End and replace' : 'Create template'}
             </Link>
@@ -93,7 +93,7 @@ export default async function DriverCompensationPage({ params }: CompensationPag
             downstream payroll calculations.
           </p>
           <Button asChild>
-            <Link href={`/drivers/${driverId}/compensation/wizard`}>
+            <Link href={`/carrier/fleet/drivers/${driverId}/compensation/wizard`}>
               Create compensation template
             </Link>
           </Button>

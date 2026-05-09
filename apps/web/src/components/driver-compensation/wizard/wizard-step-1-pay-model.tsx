@@ -7,7 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ChevronDown, Truck, Clock, Package, Percent, Calendar, DollarSign } from 'lucide-react';
 import { STARTER_TEMPLATES, type StarterTemplate } from './starter-templates';
 import { getCopyableTemplates, type CopyableTemplate } from '@/app/(owner)/actions/driver-compensation-templates';
-import type { WizardFormState } from '@/app/(owner)/drivers/[id]/compensation/wizard/page';
+import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
 
 type PayModel = {
   value: WizardFormState['payType'];

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import type { WizardFormState } from '@/app/(owner)/drivers/[id]/compensation/wizard/page';
+import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
 
 interface WizardStep3Props {
   state: WizardFormState;

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Pencil, Loader2 } from 'lucide-react';
-import type { WizardFormState } from '@/app/(owner)/drivers/[id]/compensation/wizard/page';
+import type { WizardFormState } from '@/app/(owner)/carrier/fleet/drivers/[id]/compensation/wizard/page';
 
 const PAY_TYPE_LABELS: Record<WizardFormState['payType'], string> = {
   CPM: 'Cost Per Mile (CPM)',

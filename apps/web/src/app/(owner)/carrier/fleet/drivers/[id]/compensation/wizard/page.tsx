@@ -113,7 +113,7 @@ export default function CompensationWizardPage() {
 
       if (result.data) {
         toast.success('Template saved. Active for new loads.');
-        router.push(`/drivers/${driverId}/compensation`);
+        router.push(`/carrier/fleet/drivers/${driverId}/compensation`);
       } else {
         toast.error(typeof result.error === 'string' ? result.error : 'Failed to save template.');
       }
@@ -138,7 +138,7 @@ export default function CompensationWizardPage() {
       {/* Header */}
       <div>
         <Link
-          href={`/drivers/${driverId}/compensation`}
+          href={`/carrier/fleet/drivers/${driverId}/compensation`}
           className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
