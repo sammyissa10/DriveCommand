@@ -1,0 +1,304 @@
+---
+slug: admin-support
+title: SysAdmin Support Queue — Technical Reference
+summary: Cross-tenant support ticket queue with status filtering, AI suggestions, and reply threads for platform support management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required — uses bypass_rls for cross-tenant access"
+  - "AI suggestions powered by Anthropic Claude API"
+  - "File attachments stored in R2 with presigned URLs"
+---
+
+# SysAdmin Support Queue — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the client Help Center.
+</Callout>
+
+## Overview
+
+The SysAdmin Support Queue provides a centralized interface for managing all support tickets across all tenants. Key features:
+
+- **Cross-tenant visibility** — view tickets from all tenants in a single queue
+- **Status filtering** — filter by OPEN, IN_PROGRESS, RESOLVED, CLOSED
+- **AI suggestions** — Anthropic Claude generates resolution suggestions based on ticket content
+- **Reply threads** — support staff can reply directly to tickets with message threading
+- **File attachments** — screenshots and files auto-uploaded to R2 with presigned URLs
+
+This is a SYSADMIN-only feature. Regular users create tickets via the Support Tickets feature, which are then visible in this queue.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAllTickets", roleGuard: "SYSADMIN", inputSchema: "{ status?: string }", returnType: "ActionState<SupportTicket[]>" },
+  { name: "getTicket", roleGuard: "SYSADMIN", inputSchema: "{ ticketId: string }", returnType: "ActionState<SupportTicket>" },
+  { name: "updateTicketStatus", roleGuard: "SYSADMIN", inputSchema: "UpdateTicketStatusSchema", returnType: "ActionState<void>" },
+  { name: "addReply", roleGuard: "SYSADMIN", inputSchema: "AddReplySchema", returnType: "ActionState<void>" },
+  { name: "generateAISuggestion", roleGuard: "SYSADMIN", inputSchema: "{ ticketId: string }", returnType: "ActionState<string>" }
+]} />
+
+### `getAllTickets()`
+
+Retrieves all support tickets across all tenants using `bypass_rls`.
+
+<CodeBlock language="typescript">
+{`export async function getAllTickets(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<SupportTicket[]>> {
+  await requireSysAdmin();
+
+  const status = formData.get('status') as string | null;
+
+  const tickets = await prisma.supportTicket.findMany({
+    where: status ? { status } : {},
+    include: {
+      tenant: { select: { companyName: true } },
+      user: { select: { name: true, email: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return { success: true, data: tickets };
+}`}
+</CodeBlock>
+
+**Important:** This action bypasses RLS to access tickets from all tenants. Only accessible to SYSADMIN role.
+
+### `generateAISuggestion()`
+
+Uses Anthropic Claude API to generate resolution suggestions based on ticket content.
+
+<CodeBlock language="typescript">
+{`export async function generateAISuggestion(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<string>> {
+  await requireSysAdmin();
+
+  const ticketId = formData.get('ticketId') as string;
+
+  const ticket = await prisma.supportTicket.findUnique({
+    where: { id: ticketId },
+    include: { user: true },
+  });
+
+  if (!ticket) {
+    return { success: false, error: 'Ticket not found' };
+  }
+
+  const response = await anthropic.messages.create({
+    model: 'claude-3-5-sonnet-20241022',
+    max_tokens: 1024,
+    messages: [
+      {
+        role: 'user',
+        content: \`You are a technical support assistant for DriveCommand, a fleet management platform. A user has submitted a support ticket. Analyze the issue and provide a helpful resolution suggestion.
+
+Ticket subject: \${ticket.subject}
+Ticket description: \${ticket.description}
+
+Provide a concise, actionable resolution suggestion.\`,
+      },
+    ],
+  });
+
+  const suggestion = response.content[0].text;
+
+  return { success: true, data: suggestion };
+}`}
+</CodeBlock>
+
+**AI integration:**
+- Uses Claude 3.5 Sonnet model
+- 1024 max tokens (approx 200-300 words)
+- Suggestion displayed in SysAdmin UI as a callout
+- Not automatically added to ticket — SysAdmin can copy/edit before replying
+
+## Database Schema
+
+<PrismaModelRef model="SupportTicket" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "userId: String (foreign key to User)",
+  "subject: String",
+  "description: String (full ticket content)",
+  "status: SupportTicketStatus (OPEN | IN_PROGRESS | RESOLVED | CLOSED)",
+  "priority: Priority (LOW | MEDIUM | HIGH | URGENT)",
+  "attachmentUrls: String[] (R2 presigned URLs)",
+  "screenshotUrl: String? (auto-captured screenshot)",
+  "replies: Json[] (message thread)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Indexes:**
+- `(tenantId, status)` — used by client-side ticket list
+- `(status)` — used by SysAdmin queue filtering
+
+**Relationships:**
+- `tenant: Tenant` — ticket belongs to one tenant
+- `user: User` — ticket created by one user
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "OPEN", description: "Ticket created by user, awaiting SysAdmin response" },
+  { label: "IN_PROGRESS", description: "SysAdmin has replied, working on resolution" },
+  { label: "RESOLVED", description: "Issue resolved, awaiting user confirmation" },
+  { label: "CLOSED", description: "Ticket closed, no further action" }
+]} />
+
+**State transitions:**
+- OPEN → IN_PROGRESS: SysAdmin adds first reply
+- IN_PROGRESS → RESOLVED: SysAdmin marks as resolved
+- RESOLVED → CLOSED: User confirms or auto-closed after 7 days
+- Any status → OPEN: User replies to ticket (reopens)
+
+## RLS Policy
+
+SupportTicket table has RLS policy for client access:
+
+<RlsPolicyBox name="tenant_isolation_policy" policy={`CREATE POLICY tenant_isolation_policy ON "SupportTicket"
+  FOR ALL
+  USING (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  )
+  WITH CHECK (
+    tenant_id = current_setting('app.current_tenant_id')::uuid
+  );`} />
+
+**SysAdmin access bypasses RLS:**
+SysAdmin sessions use `bypass_rls` to view all tickets across all tenants.
+
+## Code Examples
+
+### Filtering tickets by status
+
+<CodeBlock language="typescript">
+{`// SysAdmin UI component
+'use client';
+
+export function SupportQueueFilter({ currentStatus }: { currentStatus: string | null }) {
+  const [isPending, startTransition] = useTransition();
+
+  function handleFilter(status: string | null) {
+    startTransition(async () => {
+      const formData = new FormData();
+      if (status) formData.set('status', status);
+      await getAllTickets(null, formData);
+    });
+  }
+
+  return (
+    <div className="flex gap-2">
+      <Button onClick={() => handleFilter(null)} variant={!currentStatus ? 'default' : 'outline'}>
+        All
+      </Button>
+      <Button onClick={() => handleFilter('OPEN')} variant={currentStatus === 'OPEN' ? 'default' : 'outline'}>
+        Open
+      </Button>
+      <Button onClick={() => handleFilter('IN_PROGRESS')} variant={currentStatus === 'IN_PROGRESS' ? 'default' : 'outline'}>
+        In Progress
+      </Button>
+      <Button onClick={() => handleFilter('RESOLVED')} variant={currentStatus === 'RESOLVED' ? 'default' : 'outline'}>
+        Resolved
+      </Button>
+    </div>
+  );
+}`}
+</CodeBlock>
+
+### Adding a reply with AI suggestion
+
+<CodeBlock language="typescript">
+{`// SysAdmin reply form
+async function handleReply(ticketId: string, replyText: string) {
+  const formData = new FormData();
+  formData.set('ticketId', ticketId);
+  formData.set('message', replyText);
+
+  const result = await addReply(null, formData);
+
+  if (result.success) {
+    toast.success('Reply sent');
+    // Auto-update status to IN_PROGRESS
+    await updateTicketStatus(null, new FormData([
+      ['ticketId', ticketId],
+      ['status', 'IN_PROGRESS'],
+    ]));
+  }
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: SYSADMIN Only">
+All SysAdmin Support actions require SYSADMIN role. Never expose these endpoints to regular users. Use `bypass_rls` only in SysAdmin server actions.
+</Callout>
+
+<Callout variant="warning" title="AI Suggestion Privacy">
+Ticket content is sent to Anthropic Claude API. Ensure no PII or sensitive data is logged. AI suggestions are ephemeral (not stored in database).
+</Callout>
+
+**Other security notes:**
+- File attachments use presigned R2 URLs (7-day expiry)
+- Screenshots auto-captured via html2canvas (client-side)
+- Reply threads stored as JSON array (no separate table)
+
+## Mobile API Endpoints
+
+Mobile app has separate endpoints for ticket creation:
+
+<CodeBlock language="typescript">
+{`// POST /api/mobile/support/tickets
+// Auth: Bearer token required
+// Body: { subject, description, attachmentUrls?, screenshotUrl? }
+
+// Returns: { ticket: SupportTicket }
+
+// Example response:
+{
+  "ticket": {
+    "id": "uuid",
+    "subject": "Cannot update load status",
+    "status": "OPEN",
+    "createdAt": "2026-05-09T07:00:00Z"
+  }
+}`}
+</CodeBlock>
+
+## Performance Considerations
+
+- `getAllTickets` is not paginated — returns all tickets (assumes < 10,000 tickets)
+- If ticket count exceeds 10,000, implement cursor-based pagination
+- AI suggestion API calls take 1-3 seconds — use optimistic UI updates
+
+## Troubleshooting
+
+**Issue: AI suggestion fails**
+
+Check:
+1. `ANTHROPIC_API_KEY` is set in env
+2. API rate limits not exceeded (5000 requests/min)
+3. Ticket content is not empty
+
+**Issue: Ticket not visible in queue**
+
+Verify:
+1. SysAdmin session has `bypass_rls` enabled
+2. Ticket status matches filter
+3. Ticket exists in database
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find ticket by ID
+SELECT * FROM "SupportTicket"
+WHERE id = 'ticket-uuid';`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="support-tickets" />
+<FeatureCard slug="tenant-management" />

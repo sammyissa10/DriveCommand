@@ -1,0 +1,393 @@
+---
+slug: admin-billing
+title: SysAdmin Billing — Technical Reference
+summary: DriveCommand-to-tenant invoicing with line items, email delivery, overdue cron, and subscription billing automation.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 12
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required — uses bypass_rls for cross-tenant access"
+  - "Overdue cron runs daily at 9am UTC"
+  - "Email delivery via Nodemailer SMTP"
+  - "No permanent deletion — invoices are audit trail"
+---
+
+# SysAdmin Billing — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+SysAdmin Billing enables DriveCommand to invoice tenant accounts for subscription fees, usage overages, and one-time charges. Key features:
+
+- **Invoice CRUD** — create, read, update invoices with line items
+- **Email delivery** — send invoice PDFs via email to tenant billing contacts
+- **Overdue cron** — daily job to send overdue reminders and auto-suspend accounts
+- **Subscription billing** — auto-generate invoices based on subscription plan
+
+**Important:** This is DriveCommand → Tenant billing. For Tenant → Customer billing, see the Invoicing feature.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAllInvoices", roleGuard: "SYSADMIN", inputSchema: "{ tenantId?: string, status?: string }", returnType: "ActionState<SysAdminInvoice[]>" },
+  { name: "getInvoice", roleGuard: "SYSADMIN", inputSchema: "{ invoiceId: string }", returnType: "ActionState<SysAdminInvoice>" },
+  { name: "createInvoice", roleGuard: "SYSADMIN", inputSchema: "CreateInvoiceSchema", returnType: "ActionState<SysAdminInvoice>" },
+  { name: "sendInvoiceEmail", roleGuard: "SYSADMIN", inputSchema: "{ invoiceId: string }", returnType: "ActionState<void>" },
+  { name: "markPaid", roleGuard: "SYSADMIN", inputSchema: "{ invoiceId: string, paidAt: Date }", returnType: "ActionState<void>" },
+  { name: "voidInvoice", roleGuard: "SYSADMIN", inputSchema: "{ invoiceId: string, reason: string }", returnType: "ActionState<void>" }
+]} />
+
+### `createInvoice()`
+
+Creates a new SysAdmin invoice with line items.
+
+<CodeBlock language="typescript">
+{`export async function createInvoice(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<SysAdminInvoice>> {
+  await requireSysAdmin();
+
+  const parsed = CreateInvoiceSchema.parse({
+    tenantId: formData.get('tenantId'),
+    dueDate: new Date(formData.get('dueDate') as string),
+    lineItems: JSON.parse(formData.get('lineItems') as string),
+  });
+
+  // Calculate total
+  const subtotal = parsed.lineItems.reduce((sum, item) => sum + item.amount, 0);
+  const total = subtotal; // Tax calculation if needed
+
+  const invoice = await prisma.sysAdminInvoice.create({
+    data: {
+      tenantId: parsed.tenantId,
+      invoiceNumber: await generateInvoiceNumber(),
+      dueDate: parsed.dueDate,
+      subtotal,
+      total,
+      status: 'PENDING',
+      items: {
+        create: parsed.lineItems.map(item => ({
+          description: item.description,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          amount: item.amount,
+        })),
+      },
+    },
+    include: { items: true, tenant: true },
+  });
+
+  return { success: true, data: invoice };
+}`}
+</CodeBlock>
+
+**Invoice number generation:**
+Format: `DC-YYYYMM-NNNN` (e.g., `DC-202605-0001`)
+
+### `sendInvoiceEmail()`
+
+Sends invoice PDF via email to tenant billing contact.
+
+<CodeBlock language="typescript">
+{`export async function sendInvoiceEmail(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const invoiceId = formData.get('invoiceId') as string;
+
+  const invoice = await prisma.sysAdminInvoice.findUnique({
+    where: { id: invoiceId },
+    include: { items: true, tenant: true },
+  });
+
+  if (!invoice) {
+    return { success: false, error: 'Invoice not found' };
+  }
+
+  // Generate PDF
+  const pdf = await generateInvoicePDF(invoice);
+
+  // Send email
+  await sendEmail({
+    to: invoice.tenant.billingEmail || invoice.tenant.ownerEmail,
+    subject: \`DriveCommand Invoice \${invoice.invoiceNumber}\`,
+    html: invoiceEmailTemplate({
+      companyName: invoice.tenant.companyName,
+      invoiceNumber: invoice.invoiceNumber,
+      total: invoice.total,
+      dueDate: invoice.dueDate,
+    }),
+    attachments: [
+      {
+        filename: \`invoice-\${invoice.invoiceNumber}.pdf\`,
+        content: pdf,
+      },
+    ],
+  });
+
+  // Update sent timestamp
+  await prisma.sysAdminInvoice.update({
+    where: { id: invoiceId },
+    data: { sentAt: new Date() },
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+**Email delivery:**
+- Uses Nodemailer with Gmail SMTP
+- PDF generated via Puppeteer (server-side HTML → PDF)
+- Emails sent from `billing@drivecommand.com`
+
+## Database Schema
+
+<PrismaModelRef model="SysAdminInvoice" fields={[
+  "id: String @id @default(uuid())",
+  "tenantId: String (foreign key to Tenant)",
+  "invoiceNumber: String @unique (DC-YYYYMM-NNNN format)",
+  "dueDate: DateTime",
+  "subtotal: Decimal",
+  "taxRate: Decimal? (default 0)",
+  "taxAmount: Decimal? (default 0)",
+  "total: Decimal",
+  "status: InvoiceStatus (PENDING | SENT | PAID | OVERDUE | VOID)",
+  "sentAt: DateTime? (when email was sent)",
+  "paidAt: DateTime? (when marked as paid)",
+  "voidReason: String? (reason for voiding)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="SysAdminInvoiceItem" fields={[
+  "id: String @id @default(uuid())",
+  "invoiceId: String (foreign key to SysAdminInvoice)",
+  "description: String (e.g., 'Pro Plan - May 2026')",
+  "quantity: Int",
+  "unitPrice: Decimal",
+  "amount: Decimal (quantity * unitPrice)",
+  "createdAt: DateTime @default(now())"
+]} />
+
+**Indexes:**
+- `(tenantId, status)` — used by invoice list queries
+- `(invoiceNumber)` — unique constraint for invoice number lookup
+- `(dueDate)` — used by overdue cron job
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "PENDING", description: "Invoice created, not yet sent" },
+  { label: "SENT", description: "Email sent to tenant, awaiting payment" },
+  { label: "PAID", description: "Payment received, invoice closed" },
+  { label: "OVERDUE", description: "Past due date, reminder emails sent" },
+  { label: "VOID", description: "Invoice voided, not collectible" }
+]} />
+
+**State transitions:**
+- PENDING → SENT: SysAdmin sends invoice email
+- SENT → PAID: SysAdmin marks as paid (manual entry)
+- SENT → OVERDUE: Cron detects past due date (auto)
+- OVERDUE → PAID: Payment received (manual)
+- Any status → VOID: SysAdmin voids invoice
+
+## Cron Jobs
+
+### Overdue Invoice Cron
+
+**Route:** `/api/cron/sysadmin-invoices`
+
+**Schedule:** Daily at 9am UTC (configured in `vercel.json`)
+
+**Auth:** `CRON_SECRET` Bearer token
+
+<CodeBlock language="typescript">
+{`// /api/cron/sysadmin-invoices/route.ts
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== \`Bearer \${process.env.CRON_SECRET}\`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const today = new Date();
+
+  // Find overdue invoices
+  const overdueInvoices = await prisma.sysAdminInvoice.findMany({
+    where: {
+      status: 'SENT',
+      dueDate: { lt: today },
+    },
+    include: { tenant: true },
+  });
+
+  for (const invoice of overdueInvoices) {
+    // Update status to OVERDUE
+    await prisma.sysAdminInvoice.update({
+      where: { id: invoice.id },
+      data: { status: 'OVERDUE' },
+    });
+
+    // Send overdue reminder email
+    await sendEmail({
+      to: invoice.tenant.billingEmail || invoice.tenant.ownerEmail,
+      subject: \`Overdue Invoice \${invoice.invoiceNumber}\`,
+      html: overdueReminderTemplate({
+        companyName: invoice.tenant.companyName,
+        invoiceNumber: invoice.invoiceNumber,
+        total: invoice.total,
+        dueDate: invoice.dueDate,
+        daysOverdue: Math.floor((today.getTime() - invoice.dueDate.getTime()) / (1000 * 60 * 60 * 24)),
+      }),
+    });
+  }
+
+  // Auto-suspend tenants with invoices 30+ days overdue
+  const criticalOverdue = overdueInvoices.filter(invoice => {
+    const daysOverdue = Math.floor((today.getTime() - invoice.dueDate.getTime()) / (1000 * 60 * 60 * 24));
+    return daysOverdue >= 30;
+  });
+
+  for (const invoice of criticalOverdue) {
+    await prisma.tenant.update({
+      where: { id: invoice.tenantId },
+      data: {
+        status: 'SUSPENDED',
+        suspensionReason: 'Payment overdue 30+ days',
+      },
+    });
+
+    // Revoke all user sessions
+    const users = await prisma.user.findMany({
+      where: { tenantId: invoice.tenantId },
+    });
+
+    for (const user of users) {
+      if (user.supabaseUserId) {
+        await revokeUserSessions(user.supabaseUserId);
+      }
+    }
+  }
+
+  return Response.json({ processed: overdueInvoices.length, suspended: criticalOverdue.length });
+}`}
+</CodeBlock>
+
+**Cron behavior:**
+1. Find invoices with `status = SENT` and `dueDate < today`
+2. Update status to OVERDUE
+3. Send overdue reminder email
+4. If 30+ days overdue, suspend tenant and revoke sessions
+
+## Code Examples
+
+### Creating a subscription invoice
+
+<CodeBlock language="typescript">
+{`// Auto-generate monthly subscription invoice
+async function generateMonthlyInvoice(tenantId: string) {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+  });
+
+  if (!tenant) return;
+
+  const planPricing = {
+    FREE: 0,
+    STARTER: 49,
+    PRO: 149,
+    BUSINESS: 299,
+    ENTERPRISE: 999,
+  };
+
+  const amount = planPricing[tenant.subscriptionPlan];
+
+  const formData = new FormData();
+  formData.set('tenantId', tenantId);
+  formData.set('dueDate', new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()); // 14 days
+  formData.set('lineItems', JSON.stringify([
+    {
+      description: \`\${tenant.subscriptionPlan} Plan - \${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}\`,
+      quantity: 1,
+      unitPrice: amount,
+      amount,
+    },
+  ]));
+
+  await createInvoice(null, formData);
+}`}
+</CodeBlock>
+
+### Querying overdue invoices
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all overdue invoices
+SELECT i.*, t.company_name
+FROM "SysAdminInvoice" i
+JOIN "Tenant" t ON i.tenant_id = t.id
+WHERE i.status = 'OVERDUE'
+ORDER BY i.due_date ASC;
+
+-- Find tenants with multiple overdue invoices
+SELECT t.company_name, COUNT(*) as overdue_count, SUM(i.total) as total_owed
+FROM "SysAdminInvoice" i
+JOIN "Tenant" t ON i.tenant_id = t.id
+WHERE i.status = 'OVERDUE'
+GROUP BY t.id, t.company_name
+HAVING COUNT(*) > 1;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: SYSADMIN Only">
+All billing actions require SYSADMIN role. Invoice data is sensitive (financial records). Use `bypass_rls` only in SysAdmin server actions.
+</Callout>
+
+<Callout variant="warning" title="Auto-Suspension">
+Cron job auto-suspends tenants with 30+ day overdue invoices. Ensure email notifications are sent before suspension. No grace period after 30 days.
+</Callout>
+
+**Other security notes:**
+- Invoice PDFs stored in R2 (not public)
+- Email delivery logs stored for audit trail
+- No permanent deletion — void instead
+
+## Performance Considerations
+
+- `getAllInvoices` is not paginated — returns all invoices (assumes < 100,000 invoices)
+- PDF generation takes 2-5 seconds per invoice (use background jobs for batch sends)
+- Cron job processes up to 1000 invoices/minute (Nodemailer rate limit)
+
+## Troubleshooting
+
+**Issue: Invoice email not received**
+
+Check:
+1. Email is in `SysAdminInvoice.sentAt` field
+2. Nodemailer logs for send errors
+3. Spam folder (emails from billing@drivecommand.com)
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "SysAdminInvoice"
+WHERE id = 'invoice-uuid';`}
+</CodeBlock>
+
+**Issue: Tenant suspended incorrectly**
+
+Verify:
+1. Invoice is truly 30+ days overdue
+2. Payment not recorded in system (check `paidAt` field)
+3. Cron job ran successfully (check Vercel logs)
+
+## Related Features
+
+<FeatureCard slug="tenant-management" />
+<FeatureCard slug="admin-plans" />
+<FeatureCard slug="subscription" />

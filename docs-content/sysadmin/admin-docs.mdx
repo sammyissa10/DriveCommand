@@ -1,0 +1,296 @@
+---
+slug: admin-docs
+title: SysAdmin Knowledge Base — Technical Reference
+summary: Technical knowledge base system with MDX documentation, admin search, feature registry integration, and sysadmin-specific reference docs.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 10
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required for access"
+  - "MDX files located in docs-content/sysadmin/"
+  - "Search powered by client-side fuse.js"
+  - "No RLS — all docs accessible to all sysadmins"
+---
+
+# SysAdmin Knowledge Base — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. This is meta-documentation — docs about the docs system itself.
+</Callout>
+
+## Overview
+
+The SysAdmin Knowledge Base provides technical reference documentation for all DriveCommand features, visible only to SysAdmin users. Key features:
+
+- **MDX documentation** — technical docs in `docs-content/sysadmin/` directory
+- **Feature registry integration** — auto-links features to docs via slug matching
+- **Admin search** — client-side search with fuse.js (fuzzy matching)
+- **Sysadmin-specific content** — server actions, Prisma models, RLS policies, cron jobs
+- **Component library** — shared MDX components (Callout, CodeBlock, PrismaModelRef, etc.)
+
+This is the documentation system you're reading right now.
+
+## Architecture
+
+<ProcessDiagram steps={[
+  { label: "MDX Files", description: "docs-content/sysadmin/*.mdx" },
+  { label: "Feature Registry", description: "apps/web/src/lib/docs/feature-registry.ts" },
+  { label: "Search Index", description: "Client-side fuse.js" },
+  { label: "SysAdmin UI", description: "/sysadmin/docs route" }
+]} />
+
+**Data flow:**
+1. Sysadmin navigates to `/sysadmin/docs`
+2. Server loads all MDX files from `docs-content/sysadmin/`
+3. Client builds search index from frontmatter + content
+4. User searches → fuse.js fuzzy match → results filtered by relevance
+5. User clicks result → MDX rendered with React components
+
+## File Structure
+
+<CodeBlock language="bash" copyable={false}>
+{`docs-content/
+├── sysadmin/
+│   ├── _template.mdx          # Template for new docs
+│   ├── tenant-management.mdx  # Admin Portal feature
+│   ├── admin-support.mdx      # Admin Portal feature
+│   ├── admin-billing.mdx      # Admin Portal feature
+│   ├── carrier-dashboard.mdx  # Owner Portal feature
+│   ├── driver-dashboard.mdx   # Driver Portal feature
+│   ├── support-tickets.mdx    # Shared feature
+│   └── ...                    # 70+ feature docs
+└── client/
+    ├── _template.mdx          # Template for client docs
+    ├── carrier-dashboard.mdx  # User-facing docs
+    ├── driver-dashboard.mdx
+    └── ...                    # 60+ client docs`}
+</CodeBlock>
+
+**Naming convention:**
+- File name must match feature registry `slug` field
+- Example: `carrier-dashboard.mdx` → `slug: carrier-dashboard`
+- Hyphenated slugs, lowercase only
+
+## MDX Frontmatter Schema
+
+<CodeBlock language="yaml">
+{`---
+# Required fields
+slug: feature-slug-here          # Must match feature registry
+title: Feature Title — Technical Reference
+summary: Technical summary for search (max 300 chars)
+lastReviewed: "2026-05-09T00:00:00Z"  # ISO date
+estimatedReadMinutes: 10         # 1-60
+
+# Sysadmin-specific fields
+engineeringOwner: "Platform Team"  # Team responsible
+runbookUrl: https://notion.so/...   # Optional
+securityNotes:                      # Optional array
+  - "SYSADMIN role required"
+  - "Uses bypass_rls"
+---`}
+</CodeBlock>
+
+**Validation:**
+- All required fields must be present (build fails if missing)
+- `slug` must match a feature in `feature-registry.ts`
+- `lastReviewed` must be valid ISO date
+- `estimatedReadMinutes` must be 1-60
+
+## Feature Registry Integration
+
+<CodeBlock language="typescript">
+{`// apps/web/src/lib/docs/feature-registry.ts
+export const features: Feature[] = [
+  {
+    slug: 'tenant-management',
+    name: 'Tenant Management',
+    portal: 'admin',
+    requiresClientDoc: false,      // <-- Admin features don't need client docs
+    requiresSysadminDoc: true,     // <-- Must have sysadmin doc
+    // ... other fields
+  },
+  {
+    slug: 'support-tickets',
+    name: 'Support Tickets',
+    portal: 'shared',
+    requiresClientDoc: true,       // <-- Shared features need both
+    requiresSysadminDoc: true,
+    // ... other fields
+  },
+];`}
+</CodeBlock>
+
+**Doc requirement rules:**
+- `portal: 'admin'` → `requiresClientDoc: false`, `requiresSysadminDoc: true`
+- `portal: 'shared'` → both docs required
+- `portal: 'owner' | 'driver'` → both docs required
+
+**CI validation:**
+Build fails if required docs are missing for any feature.
+
+## MDX Component Library
+
+Available components in sysadmin docs:
+
+<ApiTable rows={[
+  { name: "Callout", props: "variant: info | tip | success | warning | danger", usage: "Highlighted notices" },
+  { name: "CodeBlock", props: "language: string, copyable?: boolean", usage: "Syntax-highlighted code" },
+  { name: "PrismaModelRef", props: "model: string, fields: string[]", usage: "Database schema reference" },
+  { name: "ApiTable", props: "rows: Array<{ name, roleGuard, inputSchema, returnType }>", usage: "Server action reference" },
+  { name: "RlsPolicyBox", props: "name: string, policy: string", usage: "SQL RLS policy display" },
+  { name: "ProcessDiagram", props: "steps: Array<{ label, description }>", usage: "Workflow visualization" },
+  { name: "FeatureCard", props: "slug: string", usage: "Related feature link" },
+  { name: "Screenshot", props: "src, alt, caption, hotspots?", usage: "Annotated screenshots" }
+]} />
+
+**Usage example:**
+
+<CodeBlock language="tsx">
+{`<Callout variant="danger" title="Critical">
+Security-critical information here.
+</Callout>
+
+<CodeBlock language="typescript">
+{\`export async function myAction() {
+  // Code here
+}\`}
+</CodeBlock>
+
+<PrismaModelRef model="Tenant" fields={[
+  "id: String @id",
+  "companyName: String"
+]} />`}
+</CodeBlock>
+
+## Search Implementation
+
+**Client-side search with fuse.js:**
+
+<CodeBlock language="typescript">
+{`// Search configuration
+const fuseOptions = {
+  keys: [
+    { name: 'title', weight: 3 },
+    { name: 'summary', weight: 2 },
+    { name: 'content', weight: 1 },
+  ],
+  threshold: 0.3,  // 0 = exact match, 1 = match anything
+  includeScore: true,
+};
+
+const fuse = new Fuse(docs, fuseOptions);
+
+function search(query: string) {
+  const results = fuse.search(query);
+  return results.slice(0, 20); // Top 20 results
+}`}
+</CodeBlock>
+
+**Search features:**
+- Fuzzy matching (typo-tolerant)
+- Weighted fields (title > summary > content)
+- Instant results (no server round-trip)
+- Highlight matching text
+
+## Adding a New Doc
+
+1. **Check feature registry** — ensure feature has `requiresSysadminDoc: true`
+
+2. **Copy template:**
+
+<CodeBlock language="bash">
+{`cp docs-content/sysadmin/_template.mdx docs-content/sysadmin/my-feature.mdx`}
+</CodeBlock>
+
+3. **Fill in frontmatter:**
+   - `slug` must match feature registry
+   - `title` includes "— Technical Reference"
+   - `summary` is 1-2 sentences, max 300 chars
+   - `lastReviewed` is today's date
+   - `estimatedReadMinutes` is word count ÷ 200
+
+4. **Write content:**
+   - Follow template structure (Overview, Server Actions, Database Schema, etc.)
+   - Use MDX components (Callout, CodeBlock, PrismaModelRef)
+   - Include code examples and troubleshooting section
+
+5. **Verify build:**
+
+<CodeBlock language="bash">
+{`npm run build
+# Should succeed with no errors`}
+</CodeBlock>
+
+6. **Commit:**
+
+<CodeBlock language="bash">
+{`git add docs-content/sysadmin/my-feature.mdx
+git commit -m "docs: add sysadmin doc for my-feature"`}
+</CodeBlock>
+
+## Content Guidelines
+
+**Technical depth:**
+- Assume reader is an engineer familiar with TypeScript/Prisma/Next.js
+- Include server action signatures, Prisma models, RLS policies
+- Document edge cases, security considerations, performance notes
+
+**Code examples:**
+- Always include realistic examples (not "// TODO")
+- Show both TypeScript and SQL where applicable
+- Use `copyable={false}` for read-only SQL queries
+
+**Security notes:**
+- Use `danger` variant Callout for critical security issues
+- Document when to use `bypass_rls` (almost never)
+- Explain auth requirements (SYSADMIN, Bearer token, etc.)
+
+**Word count:**
+- Aim for 300-700 words per doc (2-4 minute read)
+- Complex features can be longer (e.g., tenant-management is 1200 words)
+
+## Security Considerations
+
+<Callout variant="danger" title="SYSADMIN Access Only">
+All docs in `/sysadmin/docs` require SYSADMIN role. Middleware enforces this at route level. Do NOT expose technical docs to regular users.
+</Callout>
+
+**No sensitive data:**
+- Docs should NOT include API keys, passwords, or PII
+- Runbook URLs can point to Notion (access-controlled separately)
+
+## Performance Considerations
+
+- All MDX files loaded at build time (static generation)
+- Search index built client-side (no server load)
+- Typical search query: < 50ms
+
+## Troubleshooting
+
+**Issue: Build fails with "Missing required doc"**
+
+Check:
+1. Feature registry has `requiresSysadminDoc: true`
+2. Doc file exists at `docs-content/sysadmin/{slug}.mdx`
+3. Frontmatter `slug` matches feature registry `slug` exactly
+
+**Issue: Doc not showing in search**
+
+Verify:
+1. Frontmatter is valid YAML
+2. `slug` field is present
+3. File is in `docs-content/sysadmin/` directory
+4. Build succeeded (check for MDX parse errors)
+
+**Issue: MDX component not rendering**
+
+Check:
+1. Component is imported in `MDXProvider`
+2. Props match component signature
+3. No JSX syntax errors (curly braces, quotes)
+
+## Related Features
+
+<FeatureCard slug="help-center" />
+<FeatureCard slug="tenant-management" />

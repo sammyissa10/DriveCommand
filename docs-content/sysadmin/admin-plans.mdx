@@ -1,0 +1,289 @@
+---
+slug: admin-plans
+title: Subscription Plan Management — Technical Reference
+summary: Configure subscription plans with pricing, features, limits, and billing intervals for tenant subscription management.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 8
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required"
+  - "Plan changes affect feature availability immediately"
+  - "Downgrade triggers feature access revocation"
+---
+
+# Subscription Plan Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+Subscription Plan Management allows SysAdmins to configure and update subscription plans that tenants can subscribe to. Key features:
+
+- **Plan CRUD** — create, read, update plan configurations
+- **Pricing management** — set monthly/annual pricing tiers
+- **Feature flags** — define which features are available per plan
+- **Resource limits** — set limits for trucks, drivers, loads per plan
+- **Tenant assignment** — assign or change tenant subscription plans
+
+Plans available: FREE, STARTER, PRO, BUSINESS, ENTERPRISE
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAllPlans", roleGuard: "SYSADMIN", inputSchema: "void", returnType: "ActionState<SubscriptionPlan[]>" },
+  { name: "getPlan", roleGuard: "SYSADMIN", inputSchema: "{ planId: string }", returnType: "ActionState<SubscriptionPlan>" },
+  { name: "updatePlan", roleGuard: "SYSADMIN", inputSchema: "UpdatePlanSchema", returnType: "ActionState<SubscriptionPlan>" },
+  { name: "assignPlanToTenant", roleGuard: "SYSADMIN", inputSchema: "{ tenantId: string, planTier: string }", returnType: "ActionState<void>" }
+]} />
+
+### `updatePlan()`
+
+Updates plan pricing, features, or limits.
+
+<CodeBlock language="typescript">
+{`export async function updatePlan(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<SubscriptionPlan>> {
+  await requireSysAdmin();
+
+  const parsed = UpdatePlanSchema.parse({
+    planId: formData.get('planId'),
+    monthlyPrice: parseFloat(formData.get('monthlyPrice') as string),
+    annualPrice: parseFloat(formData.get('annualPrice') as string),
+    maxTrucks: parseInt(formData.get('maxTrucks') as string),
+    maxDrivers: parseInt(formData.get('maxDrivers') as string),
+    features: JSON.parse(formData.get('features') as string),
+  });
+
+  const plan = await prisma.subscriptionPlan.update({
+    where: { id: parsed.planId },
+    data: {
+      monthlyPrice: parsed.monthlyPrice,
+      annualPrice: parsed.annualPrice,
+      maxTrucks: parsed.maxTrucks,
+      maxDrivers: parsed.maxDrivers,
+      features: parsed.features,
+    },
+  });
+
+  return { success: true, data: plan };
+}`}
+</CodeBlock>
+
+### `assignPlanToTenant()`
+
+Changes a tenant's subscription plan.
+
+<CodeBlock language="typescript">
+{`export async function assignPlanToTenant(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const tenantId = formData.get('tenantId') as string;
+  const planTier = formData.get('planTier') as SubscriptionPlan;
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+  });
+
+  if (!tenant) {
+    return { success: false, error: 'Tenant not found' };
+  }
+
+  // Check if downgrade (feature revocation required)
+  const currentPlanRank = PLAN_RANKS[tenant.subscriptionPlan];
+  const newPlanRank = PLAN_RANKS[planTier];
+
+  if (newPlanRank < currentPlanRank) {
+    // Downgrade — revoke features
+    await revokeDowngradedFeatures(tenantId, tenant.subscriptionPlan, planTier);
+  }
+
+  await prisma.tenant.update({
+    where: { id: tenantId },
+    data: {
+      subscriptionPlan: planTier,
+      subscriptionStartDate: new Date(),
+    },
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+**Downgrade behavior:**
+- If new plan < current plan → revoke features
+- Example: PRO → STARTER revokes AI Profit Predictor, Lane Analytics, IFTA Reporting
+- Users see "Upgrade required" message when accessing revoked features
+
+## Database Schema
+
+<PrismaModelRef model="SubscriptionPlan" fields={[
+  "id: String @id @default(uuid())",
+  "tier: PlanTier @unique (FREE | STARTER | PRO | BUSINESS | ENTERPRISE)",
+  "name: String (display name)",
+  "monthlyPrice: Decimal",
+  "annualPrice: Decimal (discounted annual rate)",
+  "maxTrucks: Int (resource limit)",
+  "maxDrivers: Int (resource limit)",
+  "maxLoads: Int (concurrent loads limit)",
+  "features: Json (array of enabled feature slugs)",
+  "description: String (plan description)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+**Features field structure:**
+
+<CodeBlock language="json">
+{`{
+  "features": [
+    "carrier-dashboard",
+    "carrier-loads",
+    "carrier-fleet-drivers",
+    "carrier-fleet-trucks",
+    "routes",
+    "invoices",
+    "fuel-dashboard",
+    "compliance-dashboard"
+  ]
+}`}
+</CodeBlock>
+
+**Plan comparison:**
+
+| Tier       | Monthly | Annual | Trucks | Drivers | Loads | AI Features |
+|------------|---------|--------|--------|---------|-------|-------------|
+| FREE       | $0      | $0     | 2      | 2       | 10    | No          |
+| STARTER    | $49     | $490   | 5      | 5       | 50    | No          |
+| PRO        | $149    | $1490  | 20     | 20      | 200   | Basic       |
+| BUSINESS   | $299    | $2990  | 50     | 50      | 500   | Full        |
+| ENTERPRISE | $999    | $9990  | ∞      | ∞       | ∞     | Full + API  |
+
+## Feature Access Control
+
+Feature availability is enforced at runtime via `requirePlanTier()` middleware:
+
+<CodeBlock language="typescript">
+{`// Example: AI Profit Predictor requires BUSINESS plan
+export async function predictProfit(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<ProfitPrediction>> {
+  await requireRole([UserRole.OWNER, UserRole.MANAGER]);
+  await requirePlanTier(['BUSINESS', 'ENTERPRISE']); // <-- Plan check
+
+  // ... profit prediction logic
+}`}
+</CodeBlock>
+
+**Enforcement points:**
+1. Server actions — `requirePlanTier()` guard
+2. UI rendering — features hidden if not in tenant's plan
+3. API routes — plan tier checked in middleware
+
+## Code Examples
+
+### Checking plan limits
+
+<CodeBlock language="typescript">
+{`// Check if tenant can add more trucks
+async function canAddTruck(tenantId: string): Promise<boolean> {
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    include: { _count: { select: { trucks: true } } },
+  });
+
+  const plan = await prisma.subscriptionPlan.findUnique({
+    where: { tier: tenant.subscriptionPlan },
+  });
+
+  return tenant._count.trucks < plan.maxTrucks;
+}`}
+</CodeBlock>
+
+### Revoking features on downgrade
+
+<CodeBlock language="typescript">
+{`async function revokeDowngradedFeatures(
+  tenantId: string,
+  oldPlan: PlanTier,
+  newPlan: PlanTier
+) {
+  const oldPlanFeatures = await getPlanFeatures(oldPlan);
+  const newPlanFeatures = await getPlanFeatures(newPlan);
+
+  const revokedFeatures = oldPlanFeatures.filter(
+    feature => !newPlanFeatures.includes(feature)
+  );
+
+  // Log revocation for audit trail
+  await prisma.planChangeLog.create({
+    data: {
+      tenantId,
+      oldPlan,
+      newPlan,
+      revokedFeatures,
+      timestamp: new Date(),
+    },
+  });
+
+  // Delete data if feature requires it
+  for (const feature of revokedFeatures) {
+    if (feature === 'lane-analytics') {
+      // Keep historical data, just hide access
+      // Do NOT delete
+    }
+  }
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Feature Access">
+Always enforce plan tier checks in server actions. UI hiding is NOT sufficient — users can bypass with API calls. Use `requirePlanTier()` on every guarded action.
+</Callout>
+
+<Callout variant="warning" title="Downgrade Data Loss">
+Downgrading does NOT delete data (audit trail). Users cannot access downgraded features, but data is retained. Upgrade restores access immediately.
+</Callout>
+
+## Performance Considerations
+
+- Plan queries are cached in Redis (1-hour TTL)
+- Feature checks are per-request (no caching) — sub-millisecond overhead
+- Tenant plan assignment triggers cache invalidation
+
+## Troubleshooting
+
+**Issue: Feature still accessible after downgrade**
+
+Check:
+1. Tenant record has correct `subscriptionPlan` value
+2. Redis cache invalidated (clear manually if needed)
+3. `requirePlanTier()` guard is present in server action
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT subscription_plan FROM "Tenant"
+WHERE id = 'tenant-uuid';`}
+</CodeBlock>
+
+**Issue: User cannot access feature on correct plan**
+
+Verify:
+1. Feature slug is in plan's `features` JSON array
+2. Feature is not deprecated/removed
+3. User role has permission (RBAC separate from plan tier)
+
+## Related Features
+
+<FeatureCard slug="subscription" />
+<FeatureCard slug="admin-billing" />
+<FeatureCard slug="tenant-management" />

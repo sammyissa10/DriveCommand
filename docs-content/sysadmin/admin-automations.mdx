@@ -1,0 +1,415 @@
+---
+slug: admin-automations
+title: Platform Automation Rules — Technical Reference
+summary: Platform-wide behavioral email automation with rule types, cron evaluation, deduplication windows, and React Email templates.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 11
+engineeringOwner: "Platform Team"
+runbookUrl: https://notion.so/drivecommand/automation-runbook
+securityNotes:
+  - "SYSADMIN role required for UI management"
+  - "Cron route requires CRON_SECRET Bearer token"
+  - "All rules use bypass_rls for cross-tenant evaluation"
+  - "Email deduplication prevents spam (lifetime + windowed)"
+---
+
+# Platform Automation Rules — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+Platform Automation Rules enable DriveCommand to send behavioral emails automatically based on tenant activity (or inactivity). Key features:
+
+- **Rule types** — no-progress nudge, add-driver nudge, dispatch-load nudge, trial-ending reminder
+- **Cron evaluation** — daily evaluation at 9am UTC via `/api/cron/automations`
+- **Deduplication** — lifetime dedup for engagement nudges, windowed dedup for trial reminders
+- **React Email templates** — 4 templates in `emails/` directory with TEMPLATE_REGISTRY
+- **SysAdmin UI** — enable/disable rules, view sent history, test email delivery
+
+This is a SYSADMIN-only management feature. End users receive emails but cannot configure rules.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAllRules", roleGuard: "SYSADMIN", inputSchema: "void", returnType: "ActionState<AutomationRule[]>" },
+  { name: "getRule", roleGuard: "SYSADMIN", inputSchema: "{ ruleId: string }", returnType: "ActionState<AutomationRule>" },
+  { name: "updateRule", roleGuard: "SYSADMIN", inputSchema: "UpdateRuleSchema", returnType: "ActionState<AutomationRule>" },
+  { name: "toggleRule", roleGuard: "SYSADMIN", inputSchema: "{ ruleId: string, enabled: boolean }", returnType: "ActionState<void>" },
+  { name: "testRule", roleGuard: "SYSADMIN", inputSchema: "{ ruleId: string, tenantId: string }", returnType: "ActionState<void>" }
+]} />
+
+### `toggleRule()`
+
+Enable or disable an automation rule.
+
+<CodeBlock language="typescript">
+{`export async function toggleRule(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const ruleId = formData.get('ruleId') as string;
+  const enabled = formData.get('enabled') === 'true';
+
+  await prisma.automationRule.update({
+    where: { id: ruleId },
+    data: { enabled },
+  });
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+### `testRule()`
+
+Manually trigger a rule for a specific tenant (testing only).
+
+<CodeBlock language="typescript">
+{`export async function testRule(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<void>> {
+  await requireSysAdmin();
+
+  const ruleId = formData.get('ruleId') as string;
+  const tenantId = formData.get('tenantId') as string;
+
+  const rule = await prisma.automationRule.findUnique({
+    where: { id: ruleId },
+  });
+
+  if (!rule) {
+    return { success: false, error: 'Rule not found' };
+  }
+
+  // Execute rule handler manually
+  await executeRuleHandler(rule.type, tenantId);
+
+  return { success: true };
+}`}
+</CodeBlock>
+
+## Database Schema
+
+<PrismaModelRef model="AutomationRule" fields={[
+  "id: String @id @default(uuid())",
+  "type: RuleType (no_progress_nudge | add_driver_nudge | dispatch_load_nudge | trial_ending_soon)",
+  "name: String (display name)",
+  "description: String (rule description)",
+  "enabled: Boolean @default(true)",
+  "triggerConditions: Json (rule-specific config)",
+  "lastEvaluatedAt: DateTime? (last cron run timestamp)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="AutomationExecution" fields={[
+  "id: String @id @default(uuid())",
+  "ruleId: String (foreign key to AutomationRule)",
+  "tenantId: String (foreign key to Tenant)",
+  "executedAt: DateTime @default(now())",
+  "emailSent: Boolean",
+  "emailRecipient: String (email address)",
+  "deduplicationKey: String? (for windowed dedup)"
+]} />
+
+**Indexes:**
+- `(type, enabled)` — used by cron evaluator
+- `(tenantId, ruleId, deduplicationKey)` — composite for dedup checks
+
+## Rule Types
+
+### 1. no_progress_nudge
+
+**Trigger:** Tenant created 3+ days ago, no trucks/drivers/loads added yet
+
+**Deduplication:** Lifetime (send once per tenant, never again)
+
+**Template:** `no-progress-nudge.tsx`
+
+<CodeBlock language="typescript">
+{`async function handleNoProgressNudge() {
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
+  const inactiveTenants = await prisma.tenant.findMany({
+    where: {
+      createdAt: { lte: threeDaysAgo },
+      status: 'ACTIVE',
+    },
+    include: {
+      _count: {
+        select: { trucks: true, drivers: true, loads: true },
+      },
+      users: { where: { role: 'OWNER' } },
+    },
+  });
+
+  for (const tenant of inactiveTenants) {
+    if (tenant._count.trucks > 0 || tenant._count.drivers > 0 || tenant._count.loads > 0) {
+      continue; // Has activity, skip
+    }
+
+    // Check lifetime dedup
+    const alreadySent = await prisma.automationExecution.findFirst({
+      where: {
+        ruleId: 'no-progress-nudge-rule-id',
+        tenantId: tenant.id,
+      },
+    });
+
+    if (alreadySent) continue;
+
+    // Send email
+    await sendEmail({
+      to: tenant.users[0].email,
+      template: 'no-progress-nudge',
+      data: { companyName: tenant.companyName },
+    });
+
+    // Record execution
+    await prisma.automationExecution.create({
+      data: {
+        ruleId: 'no-progress-nudge-rule-id',
+        tenantId: tenant.id,
+        emailSent: true,
+        emailRecipient: tenant.users[0].email,
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+### 2. add_driver_nudge
+
+**Trigger:** Tenant has 1+ trucks but 0 drivers (7+ days old)
+
+**Deduplication:** Lifetime (send once per tenant)
+
+**Template:** `add-driver-nudge.tsx`
+
+### 3. dispatch_load_nudge
+
+**Trigger:** Tenant has 1+ trucks and 1+ drivers, but no loads (7+ days old)
+
+**Deduplication:** Lifetime (send once per tenant)
+
+**Template:** `dispatch-load-nudge.tsx`
+
+### 4. trial_ending_soon
+
+**Trigger:** Trial subscription ends in 3 days
+
+**Deduplication:** Windowed (send once per trial period, within 20-hour window)
+
+**Template:** `trial-ending-soon.tsx`
+
+<CodeBlock language="typescript">
+{`async function handleTrialEndingSoon() {
+  const threeDaysFromNow = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+  const twentyHoursAgo = new Date(Date.now() - 20 * 60 * 60 * 1000);
+
+  const expiringTrials = await prisma.tenant.findMany({
+    where: {
+      subscriptionPlan: 'FREE',
+      subscriptionEndDate: {
+        gte: new Date(),
+        lte: threeDaysFromNow,
+      },
+    },
+    include: { users: { where: { role: 'OWNER' } } },
+  });
+
+  for (const tenant of expiringTrials) {
+    // Check windowed dedup (20-hour window)
+    const dedupKey = \`trial-ending-\${tenant.id}\`;
+    const recentSend = await prisma.automationExecution.findFirst({
+      where: {
+        ruleId: 'trial-ending-soon-rule-id',
+        tenantId: tenant.id,
+        deduplicationKey: dedupKey,
+        executedAt: { gte: twentyHoursAgo },
+      },
+    });
+
+    if (recentSend) continue;
+
+    // Send email
+    await sendEmail({
+      to: tenant.users[0].email,
+      template: 'trial-ending-soon',
+      data: {
+        companyName: tenant.companyName,
+        expiryDate: tenant.subscriptionEndDate,
+      },
+    });
+
+    // Record execution
+    await prisma.automationExecution.create({
+      data: {
+        ruleId: 'trial-ending-soon-rule-id',
+        tenantId: tenant.id,
+        emailSent: true,
+        emailRecipient: tenant.users[0].email,
+        deduplicationKey: dedupKey,
+      },
+    });
+  }
+}`}
+</CodeBlock>
+
+## Cron Route
+
+**Route:** `/api/cron/automations`
+
+**Schedule:** Daily at 9am UTC (configured in `vercel.json`)
+
+**Auth:** `CRON_SECRET` Bearer token
+
+<CodeBlock language="typescript">
+{`// /api/cron/automations/route.ts
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== \`Bearer \${process.env.CRON_SECRET}\`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
+  const enabledRules = await prisma.automationRule.findMany({
+    where: { enabled: true },
+  });
+
+  for (const rule of enabledRules) {
+    await runEvaluator(rule.type);
+
+    // Update last evaluated timestamp
+    await prisma.automationRule.update({
+      where: { id: rule.id },
+      data: { lastEvaluatedAt: new Date() },
+    });
+  }
+
+  return Response.json({ evaluated: enabledRules.length });
+}`}
+</CodeBlock>
+
+**Evaluator function:**
+
+<CodeBlock language="typescript">
+{`async function runEvaluator(ruleType: RuleType) {
+  switch (ruleType) {
+    case 'no_progress_nudge':
+      await handleNoProgressNudge();
+      break;
+    case 'add_driver_nudge':
+      await handleAddDriverNudge();
+      break;
+    case 'dispatch_load_nudge':
+      await handleDispatchLoadNudge();
+      break;
+    case 'trial_ending_soon':
+      await handleTrialEndingSoon();
+      break;
+  }
+}`}
+</CodeBlock>
+
+## Email Templates
+
+Templates located in `emails/` directory, registered in `TEMPLATE_REGISTRY`:
+
+<CodeBlock language="typescript">
+{`// emails/registry.ts
+export const TEMPLATE_REGISTRY = {
+  'no-progress-nudge': NoProgressNudge,
+  'add-driver-nudge': AddDriverNudge,
+  'dispatch-load-nudge': DispatchLoadNudge,
+  'trial-ending-soon': TrialEndingSoon,
+  // ... other templates
+};`}
+</CodeBlock>
+
+**Example template:**
+
+<CodeBlock language="tsx">
+{`// emails/no-progress-nudge.tsx
+export function NoProgressNudge({ companyName }: { companyName: string }) {
+  return (
+    <Html>
+      <Head />
+      <Preview>Get started with DriveCommand in 3 easy steps</Preview>
+      <Body>
+        <Container>
+          <Heading>Hi {companyName}!</Heading>
+          <Text>
+            We noticed you created your DriveCommand account a few days ago but haven't added any trucks or drivers yet.
+          </Text>
+          <Section>
+            <Heading as="h2">Get started in 3 steps:</Heading>
+            <Text>1. Add your first truck</Text>
+            <Text>2. Invite a driver</Text>
+            <Text>3. Create your first load</Text>
+          </Section>
+          <Button href="https://drivecommand.com/trucks">
+            Add Your First Truck
+          </Button>
+        </Container>
+      </Body>
+    </Html>
+  );
+}`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Deduplication Required">
+Always check deduplication before sending emails. Without dedup, tenants receive spam. Lifetime dedup for one-time nudges, windowed dedup for recurring reminders.
+</Callout>
+
+<Callout variant="warning" title="Cron Auth">
+Cron route MUST validate `CRON_SECRET` header. Vercel cron requests include this header automatically. Do NOT expose cron endpoint without auth.
+</Callout>
+
+**Other security notes:**
+- Rules use `bypass_rls` to evaluate all tenants
+- Email content does not include sensitive data (PII)
+- Execution logs stored for audit trail
+
+## Performance Considerations
+
+- Cron job processes up to 10,000 tenants/minute (Nodemailer limit)
+- Dedup queries use composite index (sub-millisecond)
+- Rule evaluation is sequential (not parallelized) — takes 1-5 minutes for all rules
+
+## Troubleshooting
+
+**Issue: Email not sent**
+
+Check:
+1. Rule is enabled (`enabled = true`)
+2. Tenant meets trigger conditions
+3. Deduplication not blocking (check `AutomationExecution` table)
+4. Nodemailer logs for send errors
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "AutomationExecution"
+WHERE tenant_id = 'tenant-uuid'
+  AND rule_id = 'rule-uuid'
+ORDER BY executed_at DESC;`}
+</CodeBlock>
+
+**Issue: Cron not running**
+
+Verify:
+1. Vercel cron schedule configured in `vercel.json`
+2. `CRON_SECRET` env var is set
+3. Vercel logs show cron execution (Deployments → Logs)
+
+## Related Features
+
+<FeatureCard slug="tenant-management" />
+<FeatureCard slug="admin-billing" />

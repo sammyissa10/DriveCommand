@@ -1,0 +1,315 @@
+---
+slug: admin-promos
+title: Promotional Code Management — Technical Reference
+summary: Create and manage promo codes with percentage/fixed discounts, expiry dates, usage limits, and tenant redemption tracking.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required"
+  - "Promo codes are case-insensitive"
+  - "Single-use codes deleted after redemption"
+  - "Usage tracking per tenant for multi-use codes"
+---
+
+# Promotional Code Management — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+Promotional Code Management enables SysAdmins to create discount codes for tenant subscriptions. Key features:
+
+- **Code CRUD** — create, read, update, deactivate promo codes
+- **Discount types** — percentage (e.g., 20% off) or fixed amount (e.g., $50 off)
+- **Expiry management** — set expiration dates for limited-time offers
+- **Usage limits** — single-use codes or multi-use with max redemption count
+- **Tenant tracking** — track which tenants redeemed which codes
+
+Common use cases:
+- Trial extension offers (e.g., `TRIAL30` for 30 days free)
+- Partner discounts (e.g., `PARTNER20` for 20% off first year)
+- Seasonal promotions (e.g., `SUMMER2026` for summer discount)
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getAllPromoCodes", roleGuard: "SYSADMIN", inputSchema: "{ active?: boolean }", returnType: "ActionState<PromoCode[]>" },
+  { name: "getPromoCode", roleGuard: "SYSADMIN", inputSchema: "{ codeId: string }", returnType: "ActionState<PromoCode>" },
+  { name: "createPromoCode", roleGuard: "SYSADMIN", inputSchema: "CreatePromoCodeSchema", returnType: "ActionState<PromoCode>" },
+  { name: "updatePromoCode", roleGuard: "SYSADMIN", inputSchema: "UpdatePromoCodeSchema", returnType: "ActionState<PromoCode>" },
+  { name: "deactivatePromoCode", roleGuard: "SYSADMIN", inputSchema: "{ codeId: string }", returnType: "ActionState<void>" },
+  { name: "validatePromoCode", roleGuard: "ANY", inputSchema: "{ code: string, tenantId: string }", returnType: "ActionState<PromoCode>" }
+]} />
+
+### `createPromoCode()`
+
+Creates a new promo code with discount configuration.
+
+<CodeBlock language="typescript">
+{`export async function createPromoCode(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<PromoCode>> {
+  await requireSysAdmin();
+
+  const parsed = CreatePromoCodeSchema.parse({
+    code: formData.get('code'),
+    discountType: formData.get('discountType'),
+    discountValue: parseFloat(formData.get('discountValue') as string),
+    expiresAt: formData.get('expiresAt') ? new Date(formData.get('expiresAt') as string) : null,
+    maxUses: formData.get('maxUses') ? parseInt(formData.get('maxUses') as string) : null,
+  });
+
+  // Code must be uppercase, alphanumeric + hyphens only
+  const normalizedCode = parsed.code.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+
+  // Check for duplicate
+  const existing = await prisma.promoCode.findUnique({
+    where: { code: normalizedCode },
+  });
+
+  if (existing) {
+    return { success: false, error: 'Promo code already exists' };
+  }
+
+  const promoCode = await prisma.promoCode.create({
+    data: {
+      code: normalizedCode,
+      discountType: parsed.discountType,
+      discountValue: parsed.discountValue,
+      expiresAt: parsed.expiresAt,
+      maxUses: parsed.maxUses,
+      currentUses: 0,
+      isActive: true,
+    },
+  });
+
+  return { success: true, data: promoCode };
+}`}
+</CodeBlock>
+
+**Code normalization:**
+- Always uppercase (e.g., `trial30` → `TRIAL30`)
+- Only alphanumeric + hyphens allowed
+- Unique constraint on `code` field
+
+### `validatePromoCode()`
+
+Validates a promo code for tenant redemption (public endpoint).
+
+<CodeBlock language="typescript">
+{`export async function validatePromoCode(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<PromoCode>> {
+  const code = (formData.get('code') as string).toUpperCase();
+  const tenantId = formData.get('tenantId') as string;
+
+  const promoCode = await prisma.promoCode.findUnique({
+    where: { code },
+    include: { redemptions: true },
+  });
+
+  if (!promoCode) {
+    return { success: false, error: 'Invalid promo code' };
+  }
+
+  // Check if active
+  if (!promoCode.isActive) {
+    return { success: false, error: 'Promo code is no longer active' };
+  }
+
+  // Check if expired
+  if (promoCode.expiresAt && promoCode.expiresAt < new Date()) {
+    return { success: false, error: 'Promo code has expired' };
+  }
+
+  // Check max uses
+  if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
+    return { success: false, error: 'Promo code has reached maximum usage limit' };
+  }
+
+  // Check if tenant already redeemed
+  const tenantRedemption = promoCode.redemptions.find(r => r.tenantId === tenantId);
+  if (tenantRedemption) {
+    return { success: false, error: 'Promo code already redeemed by your account' };
+  }
+
+  return { success: true, data: promoCode };
+}`}
+</CodeBlock>
+
+**Validation checks:**
+1. Code exists
+2. Code is active
+3. Code not expired
+4. Usage limit not reached
+5. Tenant hasn't already redeemed
+
+**Redemption flow:**
+1. User enters promo code at `/subscription` page
+2. `validatePromoCode()` checks eligibility
+3. If valid, apply discount to invoice
+4. Create `PromoCodeRedemption` record
+5. Increment `currentUses` counter
+
+## Database Schema
+
+<PrismaModelRef model="PromoCode" fields={[
+  "id: String @id @default(uuid())",
+  "code: String @unique (uppercase alphanumeric + hyphens)",
+  "discountType: DiscountType (PERCENTAGE | FIXED)",
+  "discountValue: Decimal (e.g., 20 for 20% or $20)",
+  "expiresAt: DateTime? (null = never expires)",
+  "maxUses: Int? (null = unlimited)",
+  "currentUses: Int @default(0)",
+  "isActive: Boolean @default(true)",
+  "createdAt: DateTime @default(now())",
+  "updatedAt: DateTime @updatedAt"
+]} />
+
+<PrismaModelRef model="PromoCodeRedemption" fields={[
+  "id: String @id @default(uuid())",
+  "promoCodeId: String (foreign key to PromoCode)",
+  "tenantId: String (foreign key to Tenant)",
+  "redeemedAt: DateTime @default(now())",
+  "discountApplied: Decimal (amount saved)"
+]} />
+
+**Indexes:**
+- `(code)` — unique constraint for code lookup
+- `(isActive, expiresAt)` — used by active code queries
+- `(promoCodeId, tenantId)` — composite unique on PromoCodeRedemption
+
+## Workflow / State Machine
+
+<ProcessDiagram steps={[
+  { label: "ACTIVE", description: "Code available for redemption" },
+  { label: "EXPIRED", description: "Code past expiry date (auto-detected)" },
+  { label: "DEPLETED", description: "Code reached max usage limit" },
+  { label: "DEACTIVATED", description: "Code manually deactivated by SysAdmin" }
+]} />
+
+**State transitions:**
+- ACTIVE → EXPIRED: `expiresAt < now()` (auto)
+- ACTIVE → DEPLETED: `currentUses >= maxUses` (auto)
+- ACTIVE → DEACTIVATED: SysAdmin deactivates code (manual)
+
+**No reactivation:** Once expired or depleted, codes cannot be reactivated. Create a new code instead.
+
+## Code Examples
+
+### Applying promo code discount
+
+<CodeBlock language="typescript">
+{`// Apply promo code to subscription invoice
+async function applyPromoCode(tenantId: string, promoCode: PromoCode) {
+  const plan = await prisma.subscriptionPlan.findUnique({
+    where: { tier: tenant.subscriptionPlan },
+  });
+
+  let discount = 0;
+
+  if (promoCode.discountType === 'PERCENTAGE') {
+    discount = (plan.monthlyPrice * promoCode.discountValue) / 100;
+  } else if (promoCode.discountType === 'FIXED') {
+    discount = promoCode.discountValue;
+  }
+
+  const finalPrice = Math.max(0, plan.monthlyPrice - discount);
+
+  // Record redemption
+  await prisma.promoCodeRedemption.create({
+    data: {
+      promoCodeId: promoCode.id,
+      tenantId,
+      discountApplied: discount,
+    },
+  });
+
+  // Increment usage counter
+  await prisma.promoCode.update({
+    where: { id: promoCode.id },
+    data: { currentUses: { increment: 1 } },
+  });
+
+  return finalPrice;
+}`}
+</CodeBlock>
+
+### Querying active promo codes
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Find all active promo codes
+SELECT * FROM "PromoCode"
+WHERE is_active = true
+  AND (expires_at IS NULL OR expires_at > NOW())
+  AND (max_uses IS NULL OR current_uses < max_uses)
+ORDER BY created_at DESC;
+
+-- Find most popular promo codes
+SELECT code, current_uses, max_uses
+FROM "PromoCode"
+WHERE current_uses > 0
+ORDER BY current_uses DESC
+LIMIT 10;`}
+</CodeBlock>
+
+## Security Considerations
+
+<Callout variant="danger" title="Critical: Single-Use Enforcement">
+Ensure `validatePromoCode()` checks for prior tenant redemption. Without this, users can redeem single-use codes multiple times by creating multiple accounts.
+</Callout>
+
+<Callout variant="warning" title="Code Enumeration">
+Promo codes are public (users can share). Do NOT rely on codes for authentication. Always validate redemption eligibility on the server.
+</Callout>
+
+**Other security notes:**
+- Codes are case-insensitive (normalized to uppercase)
+- No rate limiting on validation (low abuse risk)
+- Redemption is idempotent (duplicate redemption returns error)
+
+## Performance Considerations
+
+- `validatePromoCode()` includes redemption join — cache result if validating multiple times
+- Promo code queries are infrequent (user-initiated only) — no caching needed
+- Usage counter increment is atomic (no race condition risk)
+
+## Troubleshooting
+
+**Issue: User claims code doesn't work**
+
+Check:
+1. Code exists (case-insensitive search)
+2. Code is active (`isActive = true`)
+3. Code not expired (`expiresAt > now()`)
+4. Code not depleted (`currentUses < maxUses`)
+5. Tenant hasn't redeemed (`PromoCodeRedemption` table)
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`SELECT * FROM "PromoCode"
+WHERE UPPER(code) = 'TRIAL30';
+
+SELECT * FROM "PromoCodeRedemption"
+WHERE promo_code_id = 'code-uuid'
+  AND tenant_id = 'tenant-uuid';`}
+</CodeBlock>
+
+**Issue: Discount not applied correctly**
+
+Verify:
+1. Discount type is PERCENTAGE or FIXED
+2. Discount value is correct (20 = 20%, not 0.20)
+3. Final price calculation uses `Math.max(0, ...)` (no negative prices)
+
+## Related Features
+
+<FeatureCard slug="subscription" />
+<FeatureCard slug="admin-billing" />
+<FeatureCard slug="admin-plans" />

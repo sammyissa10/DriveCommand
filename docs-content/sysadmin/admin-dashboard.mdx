@@ -1,0 +1,332 @@
+---
+slug: admin-dashboard
+title: Platform Metrics Dashboard — Technical Reference
+summary: Platform health metrics dashboard with total tenants, active users, system status, and cross-tenant aggregation queries.
+lastReviewed: "2026-05-09T00:00:00Z"
+estimatedReadMinutes: 9
+engineeringOwner: "Platform Team"
+securityNotes:
+  - "SYSADMIN role required — uses bypass_rls for cross-tenant aggregation"
+  - "Metrics cached in Redis (5-minute TTL)"
+  - "No PII displayed (aggregate counts only)"
+---
+
+# Platform Metrics Dashboard — Technical Reference
+
+<Callout variant="warning">
+Internal engineering documentation. For user-facing docs, see the SysAdmin portal.
+</Callout>
+
+## Overview
+
+The Platform Metrics Dashboard provides SysAdmins with real-time visibility into platform health and tenant activity. Key features:
+
+- **Tenant metrics** — total tenants, active/suspended counts, new signups
+- **User metrics** — total users, active users (logged in last 7 days), role breakdown
+- **Activity metrics** — loads created, messages sent, documents uploaded
+- **System health** — database size, API response times, error rates
+- **Tenant breakdown** — by subscription plan, by activity level
+
+All metrics use `bypass_rls` to aggregate across all tenants.
+
+## Server Actions
+
+<ApiTable rows={[
+  { name: "getDashboardMetrics", roleGuard: "SYSADMIN", inputSchema: "void", returnType: "ActionState<DashboardMetrics>" },
+  { name: "getTenantBreakdown", roleGuard: "SYSADMIN", inputSchema: "{ groupBy: 'plan' | 'status' }", returnType: "ActionState<BreakdownData[]>" },
+  { name: "getActivityTimeline", roleGuard: "SYSADMIN", inputSchema: "{ days: number }", returnType: "ActionState<TimelineData[]>" },
+  { name: "refreshMetrics", roleGuard: "SYSADMIN", inputSchema: "void", returnType: "ActionState<void>" }
+]} />
+
+### `getDashboardMetrics()`
+
+Retrieves aggregated platform metrics with Redis caching.
+
+<CodeBlock language="typescript">
+{`export async function getDashboardMetrics(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<DashboardMetrics>> {
+  await requireSysAdmin();
+
+  // Check cache first
+  const cached = await redis.get('platform:metrics');
+  if (cached) {
+    return { success: true, data: JSON.parse(cached) };
+  }
+
+  // Query metrics
+  const tenants = await prisma.tenant.findMany({
+    include: {
+      _count: {
+        select: {
+          users: true,
+          trucks: true,
+          drivers: true,
+          loads: true,
+        },
+      },
+    },
+  });
+
+  const totalTenants = tenants.length;
+  const activeTenants = tenants.filter(t => t.status === 'ACTIVE').length;
+  const suspendedTenants = tenants.filter(t => t.status === 'SUSPENDED').length;
+
+  const totalUsers = tenants.reduce((sum, t) => sum + t._count.users, 0);
+  const totalTrucks = tenants.reduce((sum, t) => sum + t._count.trucks, 0);
+  const totalDrivers = tenants.reduce((sum, t) => sum + t._count.drivers, 0);
+  const totalLoads = tenants.reduce((sum, t) => sum + t._count.loads, 0);
+
+  // Active users (logged in last 7 days)
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const activeUsers = await prisma.user.count({
+    where: {
+      lastLoginAt: { gte: sevenDaysAgo },
+    },
+  });
+
+  const metrics: DashboardMetrics = {
+    tenants: {
+      total: totalTenants,
+      active: activeTenants,
+      suspended: suspendedTenants,
+      pending: totalTenants - activeTenants - suspendedTenants,
+    },
+    users: {
+      total: totalUsers,
+      active: activeUsers,
+      owners: await prisma.user.count({ where: { role: 'OWNER' } }),
+      drivers: await prisma.user.count({ where: { role: 'DRIVER' } }),
+    },
+    resources: {
+      trucks: totalTrucks,
+      drivers: totalDrivers,
+      loads: totalLoads,
+    },
+    lastUpdated: new Date(),
+  };
+
+  // Cache for 5 minutes
+  await redis.set('platform:metrics', JSON.stringify(metrics), 'EX', 300);
+
+  return { success: true, data: metrics };
+}`}
+</CodeBlock>
+
+**Caching strategy:**
+- Redis cache with 5-minute TTL
+- Cache key: `platform:metrics`
+- Cache invalidated on `refreshMetrics()` call
+
+### `getTenantBreakdown()`
+
+Groups tenants by plan or status.
+
+<CodeBlock language="typescript">
+{`export async function getTenantBreakdown(
+  prevState: ActionState | null,
+  formData: FormData
+): Promise<ActionState<BreakdownData[]>> {
+  await requireSysAdmin();
+
+  const groupBy = formData.get('groupBy') as 'plan' | 'status';
+
+  if (groupBy === 'plan') {
+    const breakdown = await prisma.tenant.groupBy({
+      by: ['subscriptionPlan'],
+      _count: { id: true },
+    });
+
+    return {
+      success: true,
+      data: breakdown.map(b => ({
+        label: b.subscriptionPlan,
+        count: b._count.id,
+      })),
+    };
+  } else {
+    const breakdown = await prisma.tenant.groupBy({
+      by: ['status'],
+      _count: { id: true },
+    });
+
+    return {
+      success: true,
+      data: breakdown.map(b => ({
+        label: b.status,
+        count: b._count.id,
+      })),
+    };
+  }
+}`}
+</CodeBlock>
+
+## Dashboard UI Components
+
+**Metric cards:**
+- Total Tenants (ACTIVE count in green)
+- Active Users (7-day login count)
+- Total Loads (all-time)
+- Total Trucks (all-time)
+
+**Charts:**
+- Tenant breakdown by plan (pie chart)
+- Activity timeline (line chart, 30 days)
+- User growth (area chart, 90 days)
+
+**Tables:**
+- Most active tenants (by loads created)
+- Recently suspended tenants
+- Newest signups (last 7 days)
+
+## Database Queries
+
+### Most active tenants
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Top 10 tenants by loads created (last 30 days)
+SELECT t.company_name, COUNT(l.id) as load_count
+FROM "Tenant" t
+LEFT JOIN "Load" l ON l.tenant_id = t.id
+  AND l.created_at > NOW() - INTERVAL '30 days'
+WHERE t.status = 'ACTIVE'
+GROUP BY t.id, t.company_name
+ORDER BY load_count DESC
+LIMIT 10;`}
+</CodeBlock>
+
+### User growth over time
+
+<CodeBlock language="sql" copyable={false}>
+{`-- New users per day (last 30 days)
+SELECT DATE(created_at) as date, COUNT(*) as new_users
+FROM "User"
+WHERE created_at > NOW() - INTERVAL '30 days'
+GROUP BY DATE(created_at)
+ORDER BY date ASC;`}
+</CodeBlock>
+
+### Subscription plan distribution
+
+<CodeBlock language="sql" copyable={false}>
+{`-- Tenant count by plan
+SELECT subscription_plan, COUNT(*) as tenant_count
+FROM "Tenant"
+WHERE status = 'ACTIVE'
+GROUP BY subscription_plan
+ORDER BY tenant_count DESC;`}
+</CodeBlock>
+
+## Code Examples
+
+### Refreshing metrics manually
+
+<CodeBlock language="typescript">
+{`// SysAdmin can force cache refresh
+async function handleRefresh() {
+  await refreshMetrics(null, new FormData());
+  toast.success('Metrics refreshed');
+  window.location.reload();
+}`}
+</CodeBlock>
+
+### Activity timeline query
+
+<CodeBlock language="typescript">
+{`async function getActivityTimeline(days: number) {
+  const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+  const loads = await prisma.load.groupBy({
+    by: ['createdAt'],
+    where: { createdAt: { gte: startDate } },
+    _count: { id: true },
+  });
+
+  const messages = await prisma.fleetMessage.groupBy({
+    by: ['createdAt'],
+    where: { createdAt: { gte: startDate } },
+    _count: { id: true },
+  });
+
+  // Combine into timeline data
+  const timeline = [];
+  for (let i = 0; i < days; i++) {
+    const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+    timeline.push({
+      date,
+      loads: loads.filter(l => isSameDay(l.createdAt, date))[0]?._count.id || 0,
+      messages: messages.filter(m => isSameDay(m.createdAt, date))[0]?._count.id || 0,
+    });
+  }
+
+  return timeline;
+}`}
+</CodeBlock>
+
+## RLS Bypass
+
+All dashboard queries use `bypass_rls` to access cross-tenant data:
+
+<CodeBlock language="typescript">
+{`// Example: Tenant count query
+const tenants = await prisma.$queryRawUnsafe(\`
+  SET LOCAL role = bypass_rls;
+  SELECT COUNT(*) FROM "Tenant";
+\`);`}
+</CodeBlock>
+
+<Callout variant="danger" title="Critical: SYSADMIN Only">
+Dashboard metrics use `bypass_rls` to aggregate across all tenants. This is ONLY safe because the dashboard requires SYSADMIN role. Never expose bypass_rls queries to regular users.
+</Callout>
+
+## Security Considerations
+
+**No PII displayed:**
+- Aggregate counts only (no names, emails, addresses)
+- Company names shown only in "most active" table (not sensitive)
+- No financial data (revenue, invoices)
+
+**Access control:**
+- Middleware enforces SYSADMIN role on `/sysadmin/admin-dashboard` route
+- Server actions all require `requireSysAdmin()`
+
+## Performance Considerations
+
+- Metrics cached in Redis (5-minute TTL) — reduces DB load
+- `groupBy` queries use indexes (fast even with 100k+ records)
+- Activity timeline limited to 90 days max (prevents slow queries)
+
+**Query optimization:**
+- Use `_count` instead of `COUNT(*)` where possible (Prisma optimization)
+- Pre-compute daily aggregates for long-term trends (cron job)
+
+## Troubleshooting
+
+**Issue: Metrics not updating**
+
+Check:
+1. Redis cache TTL (5 minutes) — wait or force refresh
+2. Database queries completing successfully (check logs)
+3. Middleware allowing SYSADMIN access
+
+**Issue: Slow dashboard load**
+
+Optimize:
+1. Check `groupBy` query performance (EXPLAIN ANALYZE)
+2. Verify Redis cache is working (check cache hits)
+3. Reduce timeline query range (90 days → 30 days)
+
+Query:
+
+<CodeBlock language="sql" copyable={false}>
+{`EXPLAIN ANALYZE
+SELECT subscription_plan, COUNT(*)
+FROM "Tenant"
+GROUP BY subscription_plan;`}
+</CodeBlock>
+
+## Related Features
+
+<FeatureCard slug="tenant-management" />
+<FeatureCard slug="admin-billing" />
